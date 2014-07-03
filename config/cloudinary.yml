@@ -1,0 +1,19 @@
+---
+development:
+  cloud_name: ddoadcjjl
+  api_key: '926849638736153'
+  api_secret: coxoBT9jXRAXlD-Ytv39tihA2g0
+  enhance_image_tag: true
+  static_image_support: false
+production:
+  cloud_name: ddoadcjjl
+  api_key: '926849638736153'
+  api_secret: coxoBT9jXRAXlD-Ytv39tihA2g0
+  enhance_image_tag: true
+  static_image_support: true
+test:
+  cloud_name: ddoadcjjl
+  api_key: '926849638736153'
+  api_secret: coxoBT9jXRAXlD-Ytv39tihA2g0
+  enhance_image_tag: true
+  static_image_support: false
