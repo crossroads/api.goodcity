@@ -80,6 +80,6 @@ test:
 #
 production:
   <<: *default
-  database: goodcity_server_production
-  username: goodcity_server
-  password: <%= ENV['GOODCITY_SERVER_DATABASE_PASSWORD'] %>
+  database: goodcity_server_development
+  #username: goodcity_server
+  #password: <%= ENV['GOODCITY_SERVER_DATABASE_PASSWORD'] %>
