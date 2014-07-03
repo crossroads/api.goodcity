@@ -27,6 +27,7 @@ end
 
 group :development, :test do
   gem 'debugger'
+  gem 'rack-cors'
   gem 'rspec-rails'
 end
 

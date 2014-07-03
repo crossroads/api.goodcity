@@ -26,8 +26,16 @@ module GoodCityServer
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
-    
+
     config.autoload_paths += %W(#{config.root}/serializers #{config.root}/uploaders)
-    
+    unless Rails.env.production?
+      config.middleware.use Rack::Cors do
+        allow do
+          origins '*'
+          resource '*', headers: :any,
+                        methods: [:get, :post, :put, :delete, :options]
+        end
+      end
+    end
   end
 end
