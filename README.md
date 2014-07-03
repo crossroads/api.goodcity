@@ -1,8 +1,8 @@
 # Goodcity server prototype
 
-This is the server prototype that will form the foundations of the Goodcity server API.
+The GoodCity server is a rails-api based JSON API server for the GoodCity.hk project.
 
-In it's current form it will provide a basic set of database models, validations, relationships, tests and API for interaction with Ember and mobile apps.
+It provides a set of database models, validations, relationships, tests and JSON API endpoints for interaction with frontend Ember web-apps and mobile apps.
 
 ## Installation
 
@@ -12,8 +12,6 @@ To get started, download this code and run the following commands:
     rake db:create db:migrate db:seed
 
 Then bootup your rails console and you should have a DB with data.
-
-(There is no API access just yet)
 
 ## Tests
 
@@ -37,9 +35,5 @@ This will deploy changes to api.goodcity.hk
 
 Generate model/controller documentation using the railroady gem. (You must have graphviz packages installed on your machine first.)
 
-    mkdir doc/
+    gem install railroady
     rake diagram:all
-
-Then move the doc folder into public/ so we can serve it over http.
-
-    mv -f doc public/
