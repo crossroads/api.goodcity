@@ -4,9 +4,10 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :quantity, :length, :width, :height, :notes,
-      :item_id, :state, :received_at, :rejected_at, :package_type,
+      :item_id, :state, :received_at, :rejected_at,
       :created_at, :updated_at
 
+    has_one :package_type, serializer: ItemTypeSerializer
   end
 
 end

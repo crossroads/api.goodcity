@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       get "item_types/:id" => "item_types#show"
       get "messages" => "messages#index"
       get "messages/:id" => "messages#show"
+      get "packages" => "packages#index"
+      get "packages/:id" => "packages#show"
       get "rejection_reasons" => "rejection_reasons#index"
 
     end
