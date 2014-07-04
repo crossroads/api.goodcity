@@ -2,15 +2,19 @@ Rails.application.routes.draw do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
-  namespace 'api' do
-    namespace 'v1', defaults: { format: 'json' } do
-      get 'offers' => "offers#index"
+  namespace "api" do
+    namespace "v1", defaults: { format: "json" } do
+      get "offers" => "offers#index"
       get "offers/:id" => "offers#show"
       put "offers/:id" => "offers#update"
       delete "offers/:id" => "offers#destroy"
 
-      get 'rejection_reasons' => "rejection_reasons#index"
-      get 'item_types' => "item_types#index"
+      get "items" => "items#index"
+      get "items/:id" => "items#show"
+      get "item_types" => "item_types#index"
+      get "item_types/:id" => "item_types#show"
+      get "rejection_reasons" => "rejection_reasons#index"
+
     end
   end
 

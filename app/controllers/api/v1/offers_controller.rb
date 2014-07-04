@@ -1,12 +1,12 @@
 module Api::V1
   class OffersController < Api::V1::ApiController
 
-    before_filter :load_offer, except: [:index]
+    before_filter :eager_load_offer, except: [:index]
     load_and_authorize_resource :offer, parent: false
 
     # /offers?ids=1,2,3,4
     def index
-      @offers = Offer.with_eager_load
+      @offers = @offers.with_eager_load # this maintains security
       if params[:ids].present?
         @offers = @offers.find( params[:ids].split(",") )
       end
@@ -30,12 +30,12 @@ module Api::V1
 
     private
 
-    def serializer
-      Api::V1::OfferSerializer
+    def eager_load_offer
+      @offer = Offer.with_eager_load.find(params[:id])
     end
 
-    def load_offer
-      @offer = Offer.with_eager_load.find( params[:id] )
+    def serializer
+      Api::V1::OfferSerializer
     end
 
   end
