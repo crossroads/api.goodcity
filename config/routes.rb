@@ -19,6 +19,8 @@ Rails.application.routes.draw do
       get "packages/:id" => "packages#show"
       get "rejection_reasons" => "rejection_reasons#index"
       get "rejection_reasons/:id" => "rejection_reasons#show"
+      get "users" => "users#index"
+      get "users/:id" => "users#show"
 
     end
   end
