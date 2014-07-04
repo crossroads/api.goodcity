@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       get "items/:id" => "items#show"
       get "item_types" => "item_types#index"
       get "item_types/:id" => "item_types#show"
+      get "messages" => "messages#index"
+      get "messages/:id" => "messages#show"
       get "rejection_reasons" => "rejection_reasons#index"
 
     end
