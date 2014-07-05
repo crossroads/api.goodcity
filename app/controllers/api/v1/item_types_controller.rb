@@ -14,7 +14,8 @@ module Api::V1
       if params[:ids].present?
         json = json.where(id: params[:ids].split(","))
       end
-      render text: "{ \"item_types\": #{json.all_json} }"
+      json = json.all_json( columns: [:id, :name, :code] )
+      render text: "{ \"item_types\": #{json} }"
     end
 
     def show
