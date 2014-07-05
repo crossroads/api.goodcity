@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get "items" => "items#index"
       get "items/:id" => "items#show"
       get "item_types" => "item_types#index"
+      post "items" => "items#create"
       get "item_types/:id" => "item_types#show"
       get "messages" => "messages#index"
       get "messages/:id" => "messages#show"
