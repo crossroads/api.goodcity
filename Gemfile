@@ -14,6 +14,7 @@ gem 'active_model_serializers'
 gem 'execjs'
 gem 'carrierwave'
 gem 'cloudinary'
+gem 'surus'
 
 group :development do
   gem 'spring'

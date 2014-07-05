@@ -4,10 +4,17 @@ module Api::V1
     load_and_authorize_resource :item_type, parent: false
 
     def index
+      #~ if params[:ids].present?
+        #~ @item_types = @item_types.find( params[:ids].split(",") )
+      #~ end
+      #~ render json: @item_types, each_serializer: serializer
+
+      # Trying out Surus all_json method (needs postgresql >= 9.2)
+      json = ItemType
       if params[:ids].present?
-        @item_types = @item_types.find( params[:ids].split(",") )
+        json = json.where(id: params[:ids].split(","))
       end
-      render json: @item_types, each_serializer: serializer
+      render text: "{ \"item_types\": #{json.all_json} }"
     end
 
     def show

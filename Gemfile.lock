@@ -180,6 +180,8 @@ GEM
       colorize
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    surus (0.5.0)
+      activerecord (~> 4.0)
     thin (1.6.2)
       daemons (>= 1.0.9)
       eventmachine (>= 1.0.0)
@@ -219,4 +221,5 @@ DEPENDENCIES
   rspec-rails
   shoulda-matchers
   spring
+  surus
   thin
