@@ -9,7 +9,10 @@ module Api::V1
       end
       render json: @users, each_serializer: serializer
     end
+    #TODO: Shivani yet to implement
+    def login
 
+    end
     def show
       render json: @user, serializer: serializer
     end
