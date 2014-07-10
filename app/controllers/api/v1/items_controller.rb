@@ -24,6 +24,18 @@ module Api::V1
       render json: @item, serializer: serializer
     end
 
+    def generate_cloudinary_signature
+      unix_timestamp = Time.now.to_i
+      secret_key = 'wQ1y_MmLsk4ShY1H4E1QpGeDhP0'
+      cors_url = "http://localhost:3000/cloudinary_cors.html"
+      serialized_params = "callback=#{cors_url}&timestamp=#{unix_timestamp}#{secret_key}"
+      signature = Digest::SHA1.hexdigest(serialized_params)
+      render json: {api_key: '457459653293635',
+        callback: cors_url,
+        signature: signature,
+        timestamp: unix_timestamp }.to_json
+    end
+
     private
 
     def serializer
