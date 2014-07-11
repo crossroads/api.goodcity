@@ -16,7 +16,7 @@ class ApplicationController < ActionController::API
   #TODO:: Yet to add ActiveModel_OTP logic here
   def validate_pin
     user = warden.authenticate! :pin
-    user? puts user : puts "failed"
+    puts "#{user? ? user : "failed"}"
   end
 end
 
