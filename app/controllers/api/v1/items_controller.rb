@@ -25,13 +25,12 @@ module Api::V1
     end
 
     def generate_cloudinary_signature
-      unix_timestamp = Time.now.to_i
-      secret_key = 'wQ1y_MmLsk4ShY1H4E1QpGeDhP0'
-      cors_url = "http://localhost:3000/cloudinary_cors.html"
-      serialized_params = "callback=#{cors_url}&timestamp=#{unix_timestamp}#{secret_key}"
-      signature = Digest::SHA1.hexdigest(serialized_params)
-      render json: {api_key: '457459653293635',
-        callback: cors_url,
+      unix_timestamp    = Time.now.to_i
+      serialized_params = "callback=#{CORS_FILE_PATH}&timestamp=#{unix_timestamp}#{COLUDINARY_CONFIG[:api_secret]}"
+      signature         = Digest::SHA1.hexdigest(serialized_params)
+      render json: {
+        api_key:   COLUDINARY_CONFIG[:api_key],
+        callback:  CORS_FILE_PATH,
         signature: signature,
         timestamp: unix_timestamp }.to_json
     end
