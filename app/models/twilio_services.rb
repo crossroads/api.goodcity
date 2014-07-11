@@ -12,10 +12,11 @@ class TwilioServices
     @user = user
   end
 
-  def sms_verification_pin(user)
+  def sms_verification_pin(options = {})
     TWILIO_CLIENT.account.sms.messages.create({
         from: TWILIO_CONF['twilio_phone_number'],
-        to: user.mobile,
-        body: "your pin is 1111"})
+        to: @user.mobile,
+        body: "Your pin is #{options[:otp]} and this pin will expire by #{options[:otp_expires]}"})
   end
+
 end

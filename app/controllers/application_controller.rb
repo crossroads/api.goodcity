@@ -1,22 +1,23 @@
 class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
-  before_filter :validate_pin
+  # before_action :validate_pin
+  helper_method :current_user
 
-  private
-    def current_user
-      warden.user
-    end
-
-    helper_method :current_user
-
-  def warden
-    env["warden"]
-  end
 
   #TODO:: Yet to add ActiveModel_OTP logic here
   def validate_pin
     user = warden.authenticate! :pin
     puts "#{user? ? user : "failed"}"
   end
+
+  def warden
+    env["warden"]
+  end
+
+  private
+    def current_user
+      warden.user
+    end
+
 end
 

@@ -22,7 +22,10 @@ Rails.application.routes.draw do
       get "rejection_reasons/:id" => "rejection_reasons#show"
       get "users" => "users#index"
       get "users/:id" => "users#show"
-      get "login" => "users#login"
+      get "signup" => "users#new"
+      get "login" => "sessions#new"
+      get "logout" => "sessions#destroy"
+      post "sessions" => "sessions#create"
     end
   end
 

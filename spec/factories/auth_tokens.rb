@@ -2,9 +2,11 @@
 
 FactoryGirl.define do
   factory :auth_token do
-    verification_pin 1
-    verification_pin_expiry "2014-07-10 23:45:42"
-    secure_token "MyString"
+    association :user
+
+    otp_code 903920
+    otp_code_expiry { Date.today + 1.days }
+    otp_secret_key  { User.auth_token.otp_secret_key }
     user_id 1
   end
 end

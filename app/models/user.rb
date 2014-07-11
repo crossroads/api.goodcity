@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
   has_many :messages, foreign_key: :sender_id, inverse_of: :sender
   has_and_belongs_to_many :permissions
   accepts_nested_attributes_for :auth_tokens
+  after_create :generate_auth_record
 
   def reviewer?
     permissions.pluck(:name).include?('Reviewer')
@@ -25,12 +26,18 @@ class User < ActiveRecord::Base
     send_verification_pin if mobile.eql?(self.mobile)
   end
 
-  def generate_verification_pin
-
+  def send_verification_pin
+    twilio_sms = TwilioServices.new(self)
+    user_auth_pin = self.auth_tokens.first
+    new_otp = user_auth_pin.otp_code
+    new_otp_expiry = Time.now + 30.minutes
+    self.auth_tokens.first.update_columns(otp_code: new_otp, otp_code_expiry: new_otp_expiry)
+    twilio_sms.sms_verification_pin({otp: new_otp, otp_expires: new_otp_expiry})
+    user_token = user_auth_pin.otp_secret_key
   end
 
-  def send_verification_pin
-    return TwilioServices.new(self)
+  def generate_auth_record
+    auth_tokens.create({user_id:  self.id})
   end
 
 end

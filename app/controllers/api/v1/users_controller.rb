@@ -9,19 +9,31 @@ module Api::V1
       end
       render json: @users, each_serializer: serializer
     end
-    #TODO: Shivani yet to implement
-    def login
-
+    #TODO: API is done using Factory Data it is not using real information at the moment
+    def new
+      user1 = FactoryGirl.build(:user)
+      params["user_auth"]= {"mobile" =>  "+91 993 000 1948",
+                            "first_name" => user1.first_name,
+                            "last_name" => user1.last_name,
+                            "email" => user1.email}
+      @user = User.new(user_auth_params)
+      warden.set_user(@user) if @user.save
+      user_token = @user.send_verification_pin
+      render json: {token: user_token}
     end
+
     def show
       render json: @user, serializer: serializer
     end
 
     private
+    def user_auth_params
+       params.require(:user_auth).permit(:mobile, :first_name, :last_name, :email,
+       auth_token_attributes: [ :user_id ])
+    end
 
     def serializer
       Api::V1::UserSerializer
     end
-
   end
 end
