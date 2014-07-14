@@ -6,7 +6,7 @@ class Offer < ActiveRecord::Base
 
   scope :with_eager_load, -> {
     includes( [:created_by, {messages: :sender},
-               {items: [:rejection_reason, {messages: :sender}, { packages: :package_type }]}
+               {items: [:rejection_reason, :images, {messages: :sender}, { packages: :package_type }]}
            ])
   }
 

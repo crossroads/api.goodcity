@@ -15,6 +15,7 @@ gem 'execjs'
 gem 'carrierwave'
 gem 'cloudinary'
 gem 'surus'
+gem 'rack-cors'
 
 group :development do
   gem 'spring'
@@ -28,7 +29,6 @@ end
 
 group :development, :test do
   gem 'debugger'
-  gem 'rack-cors'
   gem 'rspec-rails'
 end
 
