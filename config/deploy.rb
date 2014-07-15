@@ -58,6 +58,3 @@ task :invoke, [:command] => 'deploy:set_rails_env' do |task, args|
     end
   end
 end
-
-        require './config/boot'
-        require 'airbrake/capistrano'
