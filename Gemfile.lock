@@ -29,6 +29,9 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
+    airbrake (4.0.0)
+      builder
+      multi_json
     annotate (2.6.5)
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
@@ -201,6 +204,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  airbrake
   annotate
   cancancan (~> 1.8)
   capistrano-bundler
