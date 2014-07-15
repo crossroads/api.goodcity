@@ -28,14 +28,6 @@ module GoodCityServer
     # config.i18n.default_locale = :de
 
     config.autoload_paths += %W(#{config.root}/serializers #{config.root}/uploaders)
-    unless Rails.env.production?
-      config.middleware.use Rack::Cors do
-        allow do
-          origins '*'
-          resource '*', headers: :any,
-                        methods: [:get, :post, :put, :delete, :options]
-        end
-      end
-    end
+       
   end
 end
