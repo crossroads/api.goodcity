@@ -39,4 +39,5 @@ end
 
 group :production do
   gem 'airbrake'
+  gem 'sucker_punch'
 end

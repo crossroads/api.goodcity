@@ -5,8 +5,6 @@ if Rails.env == 'production'
     config.host    = airbrake_yml['host']
     config.port    = airbrake_yml['port']
     config.secure  = config.port == 443
-    config.async do |notice|
-      Thread.new { Airbrake.sender.send_to_airbrake(notice) }
-    end
+    config.async   = true
   end
 end
