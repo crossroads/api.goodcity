@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     namespace "v1", defaults: { format: "json" } do
       get "offers" => "offers#index"
       get "offers/:id" => "offers#show"
+      post "offers" => "offers#create"
       put "offers/:id" => "offers#update"
       delete "offers/:id" => "offers#destroy"
 
