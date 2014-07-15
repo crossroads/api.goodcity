@@ -5,6 +5,6 @@ if Rails.env == 'production'
     config.host    = airbrake_yml['host']
     config.port    = airbrake_yml['port']
     config.secure  = config.port == 443
-    config.async   = true
+    #config.async   = true # TODO should use sucker_punch but doesn't work
   end
 end
