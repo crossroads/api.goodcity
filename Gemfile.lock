@@ -41,6 +41,9 @@ GEM
     arel (5.0.1.20140414130214)
     aws_cf_signer (0.1.3)
     builder (3.2.2)
+    byebug (3.1.2)
+      columnize (~> 0.8)
+      debugger-linecache (~> 1.2)
     cancancan (1.8.4)
     capistrano (3.2.1)
       i18n
@@ -69,12 +72,7 @@ GEM
     colorize (0.7.3)
     columnize (0.8.9)
     daemons (1.1.9)
-    debugger (1.6.8)
-      columnize (>= 0.3.1)
-      debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.3.5)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.3.5)
     diff-lcs (1.2.5)
     erubis (2.7.0)
     eventmachine (1.0.3)
@@ -221,13 +219,13 @@ DEPENDENCIES
   active_model_serializers
   airbrake
   annotate
+  byebug
   cancancan (~> 1.8)
   capistrano-bundler
   capistrano-rails
   capistrano-rvm
   carrierwave
   cloudinary
-  debugger
   execjs
   factory_girl_rails
   ffaker

@@ -22,10 +22,11 @@ Rails.application.routes.draw do
       get "rejection_reasons/:id" => "rejection_reasons#show"
       get "users" => "users#index"
       get "users/:id" => "users#show"
-      get "signup" => "users#new"
+      post "signup" => "users#new"
       get "login" => "sessions#new"
       get "logout" => "sessions#destroy"
       post "sessions" => "sessions#create"
+      post 'verify' => 'users#validate_pin'
     end
   end
 

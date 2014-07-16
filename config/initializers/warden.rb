@@ -1,15 +1,15 @@
 Rails.application.config.middleware.use Warden::Manager do |manager|
   manager.default_strategies :pin
-  manager.failure_app = lambda { |env| SessionsController.action(:new).call(env) }
+  manager.failure_app = ApplicationController.action(:unauthenticated)
 end
 
  # Setup Session Serialization
 Warden::Manager.serialize_into_session do |user|
-  user.id
+  user.auth_tokens.first.otp_secret_key
 end
 
-Warden::Manager.serialize_from_session do |id|
-  User.find(id)
+Warden::Manager.serialize_from_session do |otp_key|
+  user.auth_tokens.first.find(otp_key)
 end
 
 # Strategies
@@ -21,11 +21,11 @@ Warden::Strategies.add(:pin) do
  # TODO:: Yet to wrap up completedly with the methods of ActiveModel_otp
  def authenticate!
     unless params["token"].blank?
-      user = User.auth_tokens.where("token = ? ", params["token"])
-      if user && user.auth_tokens.authenticate_otp(params["pin"])
+      user = User.joins(:auth_tokens).where("otp_secret_key = ? ", params["token"]).first
+      if user && user.auth_tokens.first.authenticate_otp(params["pin"], {drift: OTP_TOKEN_VALIDITY})
         success! user
       else
-        fail! "error"
+        fail! user
       end
     end
  end

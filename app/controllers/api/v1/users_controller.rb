@@ -9,17 +9,17 @@ module Api::V1
       end
       render json: @users, each_serializer: serializer
     end
-    #TODO: API is done using Factory Data it is not using real information at the moment
+
     def new
-      user1 = FactoryGirl.build(:user)
-      params["user_auth"]= {"mobile" =>  "+91 993 000 1948",
-                            "first_name" => user1.first_name,
-                            "last_name" => user1.last_name,
-                            "email" => user1.email}
       @user = User.new(user_auth_params)
       warden.set_user(@user) if @user.save
       user_token = @user.send_verification_pin
       render json: {token: user_token}
+    end
+
+    def validate_pin
+      user = warden.authenticate! :pin
+      render json: {token: "#{user.present? ? current_user.friendly_token : ""}"}
     end
 
     def show

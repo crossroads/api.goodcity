@@ -6,6 +6,14 @@ class User < ActiveRecord::Base
   accepts_nested_attributes_for :auth_tokens
   after_create :generate_auth_record
 
+  def friendly_token
+    auth_tokens.first.otp_secret_key
+  end
+
+  def token_expiry
+    auth_tokens.first.otp_code_expiry
+  end
+
   def reviewer?
     permissions.pluck(:name).include?('Reviewer')
   end
@@ -29,7 +37,7 @@ class User < ActiveRecord::Base
   def send_verification_pin
     twilio_sms = TwilioServices.new(self)
     user_auth_pin = self.auth_tokens.first
-    new_otp = user_auth_pin.otp_code
+    new_otp = user_auth_pin.otp_code(Time.now + 30.minutes)
     new_otp_expiry = Time.now + 30.minutes
     self.auth_tokens.first.update_columns(otp_code: new_otp, otp_code_expiry: new_otp_expiry)
     twilio_sms.sms_verification_pin({otp: new_otp, otp_expires: new_otp_expiry})
