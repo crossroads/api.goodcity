@@ -36,3 +36,8 @@ group :test do
   gem 'guard-rspec'
   gem 'shoulda-matchers'
 end
+
+group :production do
+  gem 'airbrake'
+  gem 'sucker_punch'
+end
