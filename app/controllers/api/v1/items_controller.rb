@@ -14,17 +14,6 @@ module Api::V1
       end
     end
 
-    def generate_cloudinary_signature
-      unix_timestamp    = Time.now.to_i
-      serialized_params = "callback=#{CORS_FILE_PATH}&timestamp=#{unix_timestamp}#{COLUDINARY_CONFIG[:api_secret]}"
-      signature         = Digest::SHA1.hexdigest(serialized_params)
-      render json: {
-        api_key:   COLUDINARY_CONFIG[:api_key],
-        callback:  CORS_FILE_PATH,
-        signature: signature,
-        timestamp: unix_timestamp }.to_json
-    end
-
     # /items?ids=1,2,3,4
     def index
       if params[:ids].present?
