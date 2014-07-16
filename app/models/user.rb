@@ -7,11 +7,11 @@ class User < ActiveRecord::Base
   after_create :generate_auth_record
 
   def friendly_token
-    auth_tokens.first.otp_secret_key
+    auth_tokens.recent_auth_token.otp_secret_key
   end
 
   def token_expiry
-    auth_tokens.first.otp_code_expiry
+    auth_tokens.recent_auth_token.otp_code_expiry
   end
 
   def reviewer?
@@ -49,10 +49,10 @@ class User < ActiveRecord::Base
 
   def send_verification_pin
     twilio_sms = TwilioServices.new(self)
-    user_auth_pin = self.auth_tokens.first
+    user_auth_pin = self.auth_tokens.recent_auth_token
     drift_time = Time.now + 30.minutes
     new_otp = user_auth_pin.otp_code(drift_time)
-    self.auth_tokens.first.update_columns(otp_code: new_otp, otp_code_expiry: drift_time)
+    auth_tokens.recent_auth_token.update_columns(otp_code: new_otp, otp_code_expiry: drift_time)
     twilio_sms.sms_verification_pin({otp: new_otp, otp_expires: drift_time})
     user_token = user_auth_pin.otp_secret_key
   end
