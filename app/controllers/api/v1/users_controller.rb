@@ -11,10 +11,13 @@ module Api::V1
     end
 
     def new
-      @user = User.new(user_auth_params)
-      warden.set_user(@user) if @user.save
-      user_token = @user.send_verification_pin
-      render json: {token: user_token}
+      @result = User.creation(user_auth_params)
+      if @result.class == User
+        warden.set_user(@result)
+        render json: {token: @result.friendly_token, status: "success"}
+      else
+        render json: {token: "", status: @result}
+      end
     end
 
     def validate_pin
@@ -28,8 +31,7 @@ module Api::V1
 
     private
     def user_auth_params
-       params.require(:user_auth).permit(:mobile, :first_name, :last_name, :email,
-       auth_token_attributes: [ :user_id ])
+       params.require(:user_auth).permit(:mobile, :first_name, :last_name, :email)
     end
 
     def serializer

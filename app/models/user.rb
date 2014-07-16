@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
   has_many :messages, foreign_key: :sender_id, inverse_of: :sender
   has_and_belongs_to_many :permissions
-  accepts_nested_attributes_for :auth_tokens
+
   after_create :generate_auth_record
 
   def friendly_token
@@ -34,18 +34,30 @@ class User < ActiveRecord::Base
     send_verification_pin if mobile.eql?(self.mobile)
   end
 
+  def self.creation(nested_params)
+    begin
+      transaction do
+        user = new(nested_params)
+        user.send_verification_pin if user.save
+        user
+      end
+    rescue Exception => e
+      e.message
+    end
+
+  end
+
   def send_verification_pin
     twilio_sms = TwilioServices.new(self)
     user_auth_pin = self.auth_tokens.first
-    new_otp = user_auth_pin.otp_code(Time.now + 30.minutes)
-    new_otp_expiry = Time.now + 30.minutes
-    self.auth_tokens.first.update_columns(otp_code: new_otp, otp_code_expiry: new_otp_expiry)
-    twilio_sms.sms_verification_pin({otp: new_otp, otp_expires: new_otp_expiry})
+    drift_time = Time.now + 30.minutes
+    new_otp = user_auth_pin.otp_code(drift_time)
+    self.auth_tokens.first.update_columns(otp_code: new_otp, otp_code_expiry: drift_time)
+    twilio_sms.sms_verification_pin({otp: new_otp, otp_expires: drift_time})
     user_token = user_auth_pin.otp_secret_key
   end
 
   def generate_auth_record
     auth_tokens.create({user_id:  self.id})
   end
-
 end
