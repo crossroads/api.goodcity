@@ -21,7 +21,8 @@ Rails.application.routes.draw do
       get "rejection_reasons" => "rejection_reasons#index"
       get "rejection_reasons/:id" => "rejection_reasons#show"
       get "users" => "users#index"
-      get "users/:id" => "users#show"      
+      get "users/:id" => "users#show"
+      get "generate_signature" => "items#generate_cloudinary_signature"
     end
   end
 
