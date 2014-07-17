@@ -7,7 +7,7 @@
     <script language="javascript">
      function signup(){
 
-        $.post("/api/v1/signup", {user_auth: { mobile: "+91 993 000 1948", first_name: "Doug", last_name: "Gallegar", email: "doug@example.com"}} );
+        $.post("/api/v1/signup", {user_auth: { mobile: "+91 993 000 1948", first_name: "Doug", last_name: "Gallegar"}} );
      }
      function authenticate(){
         $.post("/api/v1/verify", { token: "oquj5b7dddxvobof", pin: "479714" } );
@@ -44,6 +44,9 @@
       <li><a href="javascript:signup()">Register User</a></li>
       <li><a href="/api/v1/users/login.json">Login User</a></li>
       <li><a href="javascript:authenticate()">Authenticate</a></li>
+      <li><a href="/api/v1/users/check_mobile?mobile=1-136-281-6903 x330">Validate Mobile number (Already Exists)</a></li>
+      <li><a href="/api/v1/users/check_mobile?mobile=1-136-281-6903 x331">Validate Mobile number (Does not Exist)</a></li>
+
     </ul>
 
     <p>API Diagrams</p>

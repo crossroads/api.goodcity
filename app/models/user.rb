@@ -6,6 +6,22 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_record
 
+  def self.check_for_mobile_uniqueness(entered_mobile)
+    where("mobile = ?", entered_mobile).count
+  end
+
+  def self.creation_with_auth(user_params)
+    begin
+      transaction do
+        user = new(user_params)
+        user.send_verification_pin if user.save
+        user
+      end
+    rescue Exception => e
+      e.message
+    end
+  end
+
   def friendly_token
     auth_tokens.recent_auth_token.otp_secret_key
   end
@@ -32,19 +48,6 @@ class User < ActiveRecord::Base
 
   def authenticate(mobile)
     send_verification_pin if mobile.eql?(self.mobile)
-  end
-
-  def self.creation(nested_params)
-    begin
-      transaction do
-        user = new(nested_params)
-        user.send_verification_pin if user.save
-        user
-      end
-    rescue Exception => e
-      e.message
-    end
-
   end
 
   def send_verification_pin

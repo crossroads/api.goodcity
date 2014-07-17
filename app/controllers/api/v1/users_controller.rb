@@ -11,13 +11,18 @@ module Api::V1
     end
 
     def new
-      @result = User.creation(user_auth_params)
+      @result = User.creation_with_auth(user_auth_params)
       if @result.class == User
         warden.set_user(@result)
         render json: {token: @result.friendly_token, status: "success"}
       else
         render json: {token: "", status: @result}
       end
+    end
+
+    def is_unique_mobile_number
+      is_unique = User.check_for_mobile_uniqueness(params[:mobile]).zero?
+      render json: { is_unique_mobile: is_unique }
     end
 
     def validate_pin
@@ -31,7 +36,7 @@ module Api::V1
 
     private
     def user_auth_params
-       params.require(:user_auth).permit(:mobile, :first_name, :last_name, :email)
+       params.require(:user_auth).permit(:mobile, :first_name, :last_name)
     end
 
     def serializer

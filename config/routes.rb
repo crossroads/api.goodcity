@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       post "items" => "items#create"
       get  "item_types/:id" => "item_types#show"
       get  "images/generate_signature" => "images#generate_cloudinary_signature"
+      get  "users/check_mobile" => "users#is_unique_mobile_number"
       get  "messages" => "messages#index"
       get  "messages/:id" => "messages#show"
       get  "offers" => "offers#index"
