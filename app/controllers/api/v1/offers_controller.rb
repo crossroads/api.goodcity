@@ -5,7 +5,7 @@ module Api::V1
     load_and_authorize_resource :offer, parent: false
 
     def create
-      @offer = Offer.with_eager_load.new(offer_params)
+      @offer = Offer.new(offer_params)
       if @offer.save
         render json: @offer, serializer: serializer, status: 201
       else
