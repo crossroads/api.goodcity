@@ -6,7 +6,7 @@ class ApplicationController < ActionController::API
   end
 
   def unauthenticated
-    render json: {token: ""}
+    render json: {token: "", error: "wrong pin"}
   end
 
   private

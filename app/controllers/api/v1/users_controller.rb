@@ -32,7 +32,7 @@ module Api::V1
     def validate_pin
       user = warden.authenticate! :pin
       json_token = generate_enc_session_token(user.mobile, user.friendly_token) if user
-      render json: {jwt_token: "#{user.present? ? json_token : ""}"}
+      render json: {jwt_token: (user.present? ? json_token : "")}
     end
 
     def show

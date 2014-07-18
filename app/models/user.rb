@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  has_many :auth_tokens
+  has_many :auth_tokens, dependent: :destroy
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
   has_many :messages, foreign_key: :sender_id, inverse_of: :sender
   has_and_belongs_to_many :permissions
