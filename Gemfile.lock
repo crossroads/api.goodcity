@@ -52,11 +52,6 @@ GEM
     capistrano-rvm (0.1.1)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
-    carrierwave (0.10.0)
-      activemodel (>= 3.2.0)
-      activesupport (>= 3.2.0)
-      json (>= 1.7)
-      mime-types (>= 1.16)
     celluloid (0.15.2)
       timers (~> 1.1.0)
     cloudinary (1.0.72)
@@ -212,7 +207,6 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-rails
   capistrano-rvm
-  carrierwave
   cloudinary
   debugger
   execjs

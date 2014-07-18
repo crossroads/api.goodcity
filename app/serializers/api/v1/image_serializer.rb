@@ -1,20 +1,18 @@
 module Api::V1
 
   class ImageSerializer < ActiveModel::Serializer
+    include CloudinaryHelper
+
     embed :ids, include: true
 
-    attributes :id, :image_url, :thumb_image_url, :standard_image_url, :favourite, :order
+    attributes :id, :image_url, :thumb_image_url, :favourite, :order
 
     def image_url
-      object.image.url
+      cl_image_path(object.image)
     end
 
     def thumb_image_url
-      object.image.thumbnail.url
-    end
-
-    def standard_image_url
-      object.image.standard.url
+      cl_image_path(object.image, width: 50, height: 50, crop: :fill)
     end
   end
 end

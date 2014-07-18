@@ -12,7 +12,6 @@ gem 'factory_girl_rails' # used in rake db:seed in production
 gem 'ffaker'
 gem 'active_model_serializers'
 gem 'execjs'
-gem 'carrierwave'
 gem 'cloudinary'
 gem 'surus'
 gem 'rack-cors'

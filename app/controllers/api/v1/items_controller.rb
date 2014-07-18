@@ -1,6 +1,5 @@
 module Api::V1
   class ItemsController < Api::V1::ApiController
-    include CloudinaryHelper
 
     load_and_authorize_resource :item, parent: false
 
@@ -40,7 +39,7 @@ module Api::V1
 
     def store_images
       params[:item][:image_identifiers].split(',').each do |img|
-        Image.create(remote_image_url: cl_image_path(img), parent: @item)
+        Image.create(image: img, parent: @item)
       end
     end
 
