@@ -30,8 +30,8 @@ module Api::V1
     end
 
     def validate_pin
-      user = warden.authenticate! :pin
-      json_token = generate_enc_session_token(user.mobile, user.friendly_token) if user
+      user       = warden.authenticate! :pin
+      json_token = generate_enc_session_token(user) if user
       render json: {jwt_token: (user.present? ? json_token : "")}
     end
 
@@ -53,20 +53,21 @@ module Api::V1
     end
 
     def validate_token
-      token =  request.headers['Authorization'].split(' ').last
+      token = request.headers['Authorization'].split(' ').last
       decode_session_token(token)
     end
 
-    #Generate an encoded Json Web Token to send to client app
-    #on successful completion of the authentication process
-    def generate_enc_session_token(user_mobile, user_otp_skey)
-      JWT.encode({"mobile" => user_mobile,
-                  "otp_secret_key" => user_otp_skey},
-                  SECRET_KEY,
-                  HMAC_SHA_ALGO)
+    # Generate an encoded Json Web Token to send to client app
+    # on successful completion of the authentication process
+    def generate_enc_session_token(user)
+      JWT.encode({"mobile" => user.mobile,
+        "otp_secret_key" => user.friendly_token},
+        SECRET_KEY,
+        HMAC_SHA_ALGO)
     end
-    # Decode the json wen token when we receive it from the client
-    #before proceeding ahead
+
+    # Decode the json web token when we receive it from the client
+    # before proceeding ahead
     def decode_session_token(token)
       begin
         JWT.decode(token, SECRET_KEY,HMAC_SHA_ALGO)
