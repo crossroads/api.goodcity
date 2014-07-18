@@ -6,6 +6,10 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_record
 
+  def self.find_user_based_on_auth(otp_key)
+    joins(:auth_tokens).where("auth_tokens.otp_secret_key = ? ", otp_key).first
+  end
+
   def self.check_for_mobile_uniqueness(entered_mobile)
     where("mobile = ?", entered_mobile).count
   end

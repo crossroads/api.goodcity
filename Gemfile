@@ -14,6 +14,7 @@ gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
 gem 'ffaker'
 gem 'execjs'
+gem 'jwt'
 gem 'rack-cors'
 gem 'surus'
 gem 'twilio-ruby'

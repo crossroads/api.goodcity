@@ -230,6 +230,7 @@ DEPENDENCIES
   factory_girl_rails
   ffaker
   guard-rspec
+  jwt
   pg
   rack-cors
   railroady

@@ -20,6 +20,10 @@ module Api::V1
       end
     end
 
+    def login
+      # @result = User.creation_with_auth(step2_auth_params)
+    end
+
     def is_unique_mobile_number
       is_unique = User.check_for_mobile_uniqueness(params[:mobile]).zero?
       render json: { is_unique_mobile: is_unique }
@@ -27,7 +31,8 @@ module Api::V1
 
     def validate_pin
       user = warden.authenticate! :pin
-      render json: {token: "#{user.present? ? current_user.friendly_token : ""}"}
+      json_token = generate_enc_session_token(user.mobile, user.friendly_token) if user
+      render json: {jwt_token: "#{user.present? ? json_token : ""}"}
     end
 
     def show
@@ -39,8 +44,35 @@ module Api::V1
        params.require(:user_auth).permit(:mobile, :first_name, :last_name)
     end
 
+    def user_auth_details_params
+      params.require(:user_auth_details).permit(:otp_secret_key, :pin)
+    end
+
     def serializer
       Api::V1::UserSerializer
+    end
+
+    def validate_token
+      token =  request.headers['Authorization'].split(' ').last
+      decode_session_token(token)
+    end
+
+    #Generate an encoded Json Web Token to send to client app
+    #on successful completion of the authentication process
+    def generate_enc_session_token(user_mobile, user_otp_skey)
+      JWT.encode({"mobile" => user_mobile,
+                  "otp_secret_key" => user_otp_skey},
+                  SECRET_KEY,
+                  HMAC_SHA_ALGO)
+    end
+    # Decode the json wen token when we receive it from the client
+    #before proceeding ahead
+    def decode_session_token(token)
+      begin
+        JWT.decode(token, SECRET_KEY,HMAC_SHA_ALGO)
+      rescue JWT::DecodeError
+        render nothing: true, status: :unauthorized
+      end
     end
   end
 end

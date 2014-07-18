@@ -21,8 +21,8 @@ Warden::Strategies.add(:pin) do
  # TODO:: Yet to wrap up completedly with the methods of ActiveModel_otp
  def authenticate!
     unless params["token"].blank?
-      user = User.joins(:auth_tokens).where("otp_secret_key = ? ", params["token"]).first
-      if user && user.auth_tokens.first.authenticate_otp(params["pin"], {drift: OTP_TOKEN_VALIDITY})
+      user = User.find_user_based_on_auth(params["token"])
+      if user && user.auth_tokens.recent_auth_token.authenticate_otp(params["pin"], {drift: OTP_TOKEN_VALIDITY})
         success! user
       else
         fail! user
