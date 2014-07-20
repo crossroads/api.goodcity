@@ -15,18 +15,21 @@ end
 # Strategies
 Warden::Strategies.add(:pin) do
  def valid?
-  params["token"] || params["pin"]
+  auth_token.present? && params["pin"].present?
  end
 
  # TODO:: Yet to wrap up completedly with the methods of ActiveModel_otp
  def authenticate!
-    unless params["token"].blank?
-      user = User.find_user_based_on_auth(params["token"])
-      if user && user.auth_tokens.recent_auth_token.authenticate_otp(params["pin"], {drift: OTP_TOKEN_VALIDITY})
-        success! user
-      else
-        fail! user
-      end
+    user = User.find_user_based_on_auth(auth_token)
+    if user && user.auth_tokens.recent_auth_token.authenticate_otp(params["pin"], {drift: OTP_TOKEN_VALIDITY})
+      success! user
+    else
+      fail! user
     end
+
+ end
+
+ def auth_token
+    env['HTTP_AUTHORIZATION'].split(' ').last
  end
 end
