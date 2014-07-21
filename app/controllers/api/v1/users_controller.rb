@@ -10,7 +10,7 @@ module Api::V1
       render json: @users, each_serializer: serializer
     end
 
-    def new
+    def signup
       @result = User.creation_with_auth(user_auth_params)
       if @result.class == User
         warden.set_user(@result)

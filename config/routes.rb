@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       get  "rejection_reasons/:id" => "rejection_reasons#show"
       get  "users" => "users#index"
       get  "users/:id" => "users#show"
-      post "signup" => "users#new"
+      post "signup" => "users#signup"
       post 'verify' => 'users#validate_pin'
     end
   end
