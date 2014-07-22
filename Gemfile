@@ -6,15 +6,18 @@ gem 'pg'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
-
+gem 'active_model_otp'
+gem 'active_model_serializers'
 gem 'cancancan', '~> 1.8'
+gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
 gem 'ffaker'
-gem 'active_model_serializers'
 gem 'execjs'
-gem 'cloudinary'
-gem 'surus'
+gem 'jwt', '~> 0.1.13'
 gem 'rack-cors'
+gem 'surus'
+gem 'twilio-ruby'
+gem 'warden'
 
 group :development do
   gem 'spring'
@@ -27,7 +30,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'debugger'
+  gem 'byebug'
   gem 'rspec-rails'
 end
 
