@@ -9,7 +9,6 @@ gem 'pg'
 gem 'active_model_otp'
 gem 'active_model_serializers'
 gem 'cancancan', '~> 1.8'
-gem 'carrierwave'
 gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
 gem 'ffaker'
