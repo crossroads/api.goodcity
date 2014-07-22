@@ -4,26 +4,28 @@ Rails.application.routes.draw do
 
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
-      get "offers" => "offers#index"
-      get "offers/:id" => "offers#show"
-      post "offers" => "offers#create"
-      put "offers/:id" => "offers#update"
-      delete "offers/:id" => "offers#destroy"
-
-      get "items" => "items#index"
-      get "items/:id" => "items#show"
-      get "item_types" => "item_types#index"
+      get  "items" => "items#index"
+      get  "items/:id" => "items#show"
+      get  "item_types" => "item_types#index"
       post "items" => "items#create"
-      get "item_types/:id" => "item_types#show"
-      get "messages" => "messages#index"
-      get "messages/:id" => "messages#show"
-      get "packages" => "packages#index"
-      get "packages/:id" => "packages#show"
-      get "rejection_reasons" => "rejection_reasons#index"
-      get "rejection_reasons/:id" => "rejection_reasons#show"
-      get "users" => "users#index"
-      get "users/:id" => "users#show"
-      get "images/generate_signature" => "images#generate_cloudinary_signature"
+      get  "item_types/:id" => "item_types#show"
+      get  "images/generate_signature" => "images#generate_cloudinary_signature"
+      get  "users/check_mobile" => "users#is_unique_mobile_number"
+      get  "messages" => "messages#index"
+      get  "messages/:id" => "messages#show"
+      get  "offers" => "offers#index"
+      get  "offers/:id" => "offers#show"
+      post "offers" => "offers#create"
+      put  "offers/:id" => "offers#update"
+      delete "offers/:id" => "offers#destroy"
+      get  "packages" => "packages#index"
+      get  "packages/:id" => "packages#show"
+      get  "rejection_reasons" => "rejection_reasons#index"
+      get  "rejection_reasons/:id" => "rejection_reasons#show"
+      get  "users" => "users#index"
+      get  "users/:id" => "users#show"
+      post "signup" => "users#signup"
+      post 'verify' => 'users#validate_pin'
     end
   end
 

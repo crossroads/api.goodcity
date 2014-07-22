@@ -1,4 +1,19 @@
 <html>
+  <head>
+    <meta charset="utf-8">
+    <title>APIs</title>
+    <script src="/javascripts/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="javascripts/jquery.mockjson.js"></script>
+    <script language="javascript">
+     function signup(){
+
+        $.post("/api/v1/signup", {user_auth: { mobile: "+91 993 000 1948", first_name: "Doug", last_name: "Gallegar"}} );
+     }
+     function authenticate(){
+        $.post("/api/v1/verify", { token: "oquj5b7dddxvobof", pin: "479714" } );
+     }
+    </script>
+  </head>
   <body>
     <h1>GoodCity API server</h1>
 
@@ -25,6 +40,13 @@
       <li><a href="/api/v1/users.json">/api/v1/users.json</a></li>
       <li><a href="/api/v1/users.json?ids=1,2">/api/v1/users.json?ids=1,2</a></li>
       <li><a href="/api/v1/users/1.json">/api/v1/users/1.json</a></li>
+
+      <li><a href="javascript:signup()">Register User</a></li>
+      <li><a href="/api/v1/users/login.json">Login User</a></li>
+      <li><a href="javascript:authenticate()">Authenticate</a></li>
+      <li><a href="/api/v1/users/check_mobile?mobile=1-136-281-6903 x330">Validate Mobile number (Already Exists)</a></li>
+      <li><a href="/api/v1/users/check_mobile?mobile=1-136-281-6903 x331">Validate Mobile number (Does not Exist)</a></li>
+
     </ul>
 
     <p>API Diagrams</p>
