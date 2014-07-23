@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   end
 
   def self.check_for_mobile_uniqueness(entered_mobile)
-    where("mobile = ?", entered_mobile).count
+    where("mobile = ?", entered_mobile).first
   end
 
   def self.creation_with_auth(user_params)

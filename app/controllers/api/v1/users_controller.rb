@@ -1,6 +1,7 @@
 module Api::V1
   class UsersController < Api::V1::ApiController
-
+    skip_before_action :validate_token, only: [:signup, :is_unique_mobile_number,
+                                          :validate_pin, :is_mobile_exist, :resend]
     load_and_authorize_resource :user, parent: false
 
     def index
@@ -24,9 +25,39 @@ module Api::V1
 
     end
 
+    def is_mobile_exist
+      resend
+    end
+
+    def search_by_mobile
+      user = unique_user
+      if user.present?
+        user.send_verification_pin
+        render json: { mobile_exist: true , token: user.friendly_token}
+      else
+        render json: { mobile_exist: false, token: "" }
+      end
+    end
+
+    def search_by_token
+      user= User.find_user_based_on_auth(token_header)
+      if user.send_verification_pin
+        render json: { token: token_header, status: :ok, msg: "Pin has been sent suceessfully" }
+      else
+        render json: { token: "", status: :unauthorized, msg: "Please provide mobile number" }
+      end
+    end
+
+    def resend
+      (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
+    end
+
     def is_unique_mobile_number
-      is_unique = User.check_for_mobile_uniqueness(params[:mobile]).zero?
-      render json: { is_unique_mobile: is_unique }
+      render json: { is_unique_mobile: unique_user.blank? }
+    end
+
+    def unique_user
+      User.check_for_mobile_uniqueness(params[:mobile])
     end
 
     def validate_pin

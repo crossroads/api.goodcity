@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
-  before_action :validate_token, except: [:signup, :is_unique_mobile_number,
-                                          :validate_pin]
+  before_action :validate_token
   helper_method :current_user
   def warden
     env["warden"]
@@ -11,17 +10,13 @@ class ApplicationController < ActionController::API
     env["warden.options"]
   end
 
-  # def unauthenticated(status= :unauthorized, status_message = "Token invalid")
-  #   status = warden_options[:status]
-  # end
-
   private
     def current_user
       warden.user
     end
 
     def token_header
-      request.headers['Authorization'].split(' ').last
+      request.headers['Authorization'].try(:split, ' ').try(:last)
     end
 
     #TODO: Shivani need to fail the auth if value returned is FALSE
