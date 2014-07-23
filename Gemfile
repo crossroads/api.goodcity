@@ -32,7 +32,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'byebug'
+  gem 'byebug', platform: 'mri'
   gem 'rspec-rails'
 end
 
