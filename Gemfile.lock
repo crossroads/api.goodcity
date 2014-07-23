@@ -66,6 +66,8 @@ GEM
     coderay (1.1.0)
     colorize (0.7.3)
     columnize (0.8.9)
+    connection_pool (2.0.0)
+    dalli (2.7.2)
     debugger-linecache (1.2.0)
     diff-lcs (1.2.5)
     erubis (2.7.0)
@@ -219,6 +221,8 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rvm
   cloudinary
+  connection_pool
+  dalli
   execjs
   factory_girl_rails
   ffaker

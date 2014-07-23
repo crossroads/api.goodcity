@@ -43,4 +43,6 @@ end
 group :production do
   gem 'airbrake'
   gem 'sucker_punch'
+  gem 'connection_pool' # for threading with dalli
+  gem 'dalli'
 end
