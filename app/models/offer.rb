@@ -10,4 +10,8 @@ class Offer < ActiveRecord::Base
            ])
   }
 
+  def update_saleable_items
+    items.update_saleable
+  end
+
 end

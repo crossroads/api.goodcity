@@ -7,4 +7,8 @@ class Item < ActiveRecord::Base
   has_many   :images,    as: :parent, dependent: :destroy
   has_many   :packages
 
+  def self.update_saleable
+    update_all(saleable: true)
+  end
+
 end
