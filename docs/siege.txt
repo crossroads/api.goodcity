@@ -1,0 +1,100 @@
+Benchmarks from running siege on localhost.
+
+Will run 50 users concurrently (up to 10 seconds delay) for 1 minute.
+
+    timeout -sHUP 1m siege -c50 -d10 -i -f docs/site.txt
+
+
+(All in development mode. A better test would be production)
+
+Running Thin on MRI
+
+    Transactions:                    977 hits
+    Availability:                 100.00 %
+    Elapsed time:                 103.35 secs
+    Data transferred:              10.00 MB
+    Response time:                  0.19 secs
+    Transaction rate:               9.45 trans/sec
+    Throughput:                     0.10 MB/sec
+    Concurrency:                    1.80
+    Successful transactions:         977
+    Failed transactions:               0
+    Longest transaction:            1.17
+    Shortest transaction:           0.00
+
+Running Thin on MRI in production
+
+    Transactions:                    530 hits
+    Availability:                 100.00 %
+    Elapsed time:                  60.00 secs
+    Data transferred:               5.59 MB
+    Response time:                  0.26 secs
+    Transaction rate:               8.83 trans/sec
+    Throughput:                     0.09 MB/sec
+    Concurrency:                    2.26
+    Successful transactions:         530
+    Failed transactions:               0
+    Longest transaction:            2.10
+    Shortest transaction:           0.00
+
+
+Running Puma on MRI
+
+    Transactions:                    530 hits
+    Availability:                 100.00 %
+    Elapsed time:                  57.33 secs
+    Data transferred:               4.33 MB
+    Response time:                  0.14 secs
+    Transaction rate:               9.24 trans/sec
+    Throughput:                     0.08 MB/sec
+    Concurrency:                    1.28
+    Successful transactions:         530
+    Failed transactions:               0
+    Longest transaction:            0.81
+    Shortest transaction:           0.00
+
+Running Puma on MRI (production)
+
+    Transactions:                    598 hits
+    Availability:                 100.00 %
+    Elapsed time:                  60.00 secs
+    Data transferred:               5.29 MB
+    Response time:                  0.10 secs
+    Transaction rate:               9.97 trans/sec
+    Throughput:                     0.09 MB/sec
+    Concurrency:                    0.98
+    Successful transactions:         598
+    Failed transactions:               0
+    Longest transaction:            1.68
+    Shortest transaction:           0.00
+
+
+Running Puma on Rbx
+
+    Transactions:                    292 hits
+    Availability:                 100.00 %
+    Elapsed time:                  41.65 secs
+    Data transferred:               3.29 MB
+    Response time:                  1.53 secs
+    Transaction rate:               7.01 trans/sec
+    Throughput:                     0.08 MB/sec
+    Concurrency:                   10.72
+    Successful transactions:         292
+    Failed transactions:               0
+    Longest transaction:            3.84
+    Shortest transaction:           0.01
+
+Running Puma on Rbx (production)
+
+    Transactions:                    600 hits
+    Availability:                 100.00 %
+    Elapsed time:                  60.00 secs
+    Data transferred:               5.60 MB
+    Response time:                  0.11 secs
+    Transaction rate:              10.00 trans/sec
+    Throughput:                     0.09 MB/sec
+    Concurrency:                    1.07
+    Successful transactions:         600
+    Failed transactions:               0
+    Longest transaction:            1.21
+    Shortest transaction:           0.00

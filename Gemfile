@@ -18,6 +18,8 @@ gem 'rack-cors'
 gem 'surus'
 gem 'twilio-ruby'
 gem 'warden'
+gem 'puma'
+gem 'rack-timeout'
 
 group :development do
   gem 'spring'
@@ -25,7 +27,6 @@ group :development do
   gem 'capistrano-bundler'
   gem 'capistrano-rvm'
   gem 'annotate'
-  gem 'thin'
   gem 'railroady'
 end
 
