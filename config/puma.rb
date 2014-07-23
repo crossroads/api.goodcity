@@ -7,6 +7,8 @@ rackup      DefaultRackup
 port        ENV['PORT']     || 3000
 environment ENV['RACK_ENV'] || 'development'
 
+bind "unix://#{File.expand_path('tmp/sockets/puma.sock')}"
+
 on_worker_boot do
   # worker specific setup
   ActiveSupport.on_load(:active_record) do
