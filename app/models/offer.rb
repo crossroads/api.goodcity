@@ -10,6 +10,14 @@ class Offer < ActiveRecord::Base
            ])
   }
 
+  state_machine :state, initial: :draft do
+    state :submit
+
+    event :submit do
+      transition :draft => :submit
+    end
+  end
+
   def update_saleable_items
     items.update_saleable
   end
