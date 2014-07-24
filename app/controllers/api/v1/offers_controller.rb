@@ -16,9 +16,7 @@ module Api::V1
     # /offers?ids=1,2,3,4
     def index
       @offers = @offers.with_eager_load # this maintains security
-      if params[:ids].present?
-        @offers = @offers.find( params[:ids].split(",") )
-      end
+      @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
       render json: @offers, each_serializer: serializer
     end
 
@@ -27,8 +25,8 @@ module Api::V1
     end
 
     def update
-      # TODO whitelisting
-      @offer.update_attributes( params[:offer], :without_protection => true )
+      @offer.update_attributes(offer_params)
+      @offer.update_saleable_items if params[:offer][:saleable]
       render json: @offer, serializer: serializer
     end
 

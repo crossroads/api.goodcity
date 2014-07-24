@@ -4,11 +4,11 @@ Rails.application.routes.draw do
 
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
-      get  "items" => "items#index"
-      get  "items/:id" => "items#show"
+      resources :items
+
       get  "item_types" => "item_types#index"
-      post "items" => "items#create"
       get  "item_types/:id" => "item_types#show"
+
       get  "images/generate_signature" => "images#generate_cloudinary_signature"
       get  "users/check_mobile" => "users#is_unique_mobile_number"
       get  "users/verify_mobile" => "users#is_mobile_exist"
