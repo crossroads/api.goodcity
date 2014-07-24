@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
       get  "images/generate_signature" => "images#generate_cloudinary_signature"
       get  "users/check_mobile" => "users#is_unique_mobile_number"
+      get  "users/verify_mobile" => "users#is_mobile_exist"
       get  "messages" => "messages#index"
       get  "messages/:id" => "messages#show"
       get  "offers" => "offers#index"
@@ -24,6 +25,7 @@ Rails.application.routes.draw do
       get  "rejection_reasons/:id" => "rejection_reasons#show"
       get  "users" => "users#index"
       get  "users/:id" => "users#show"
+      get  "resend" =>  "users#resend"
       post "signup" => "users#signup"
       post 'verify' => 'users#validate_pin'
     end

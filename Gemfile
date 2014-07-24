@@ -15,10 +15,14 @@ gem 'ffaker'
 gem 'execjs'
 gem 'jwt', '~> 0.1.13'
 gem 'rack-cors'
+gem 'rack-protection'
 gem 'state_machine', '~> 1.2.0'
 gem 'surus'
 gem 'twilio-ruby'
 gem 'warden'
+gem 'puma'
+gem 'rack-timeout'
+gem 'newrelic_rpm'
 
 group :development do
   gem 'spring'
@@ -26,12 +30,11 @@ group :development do
   gem 'capistrano-bundler'
   gem 'capistrano-rvm'
   gem 'annotate'
-  gem 'thin'
   gem 'railroady'
 end
 
 group :development, :test do
-  gem 'byebug'
+  gem 'byebug', platform: 'mri'
   gem 'rspec-rails'
 end
 
@@ -43,4 +46,6 @@ end
 group :production do
   gem 'airbrake'
   gem 'sucker_punch'
+  gem 'connection_pool' # for threading with dalli
+  gem 'dalli'
 end

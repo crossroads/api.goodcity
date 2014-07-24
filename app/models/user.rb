@@ -4,14 +4,14 @@ class User < ActiveRecord::Base
   has_many :messages, foreign_key: :sender_id, inverse_of: :sender
   has_and_belongs_to_many :permissions
 
-  after_create :generate_auth_record
+  after_create :generate_auth_token
 
   def self.find_user_based_on_auth(otp_key)
     joins(:auth_tokens).where("auth_tokens.otp_secret_key = ? ", otp_key).first
   end
 
   def self.check_for_mobile_uniqueness(entered_mobile)
-    where("mobile = ?", entered_mobile).count
+    where("mobile = ?", entered_mobile).first
   end
 
   def self.creation_with_auth(user_params)
@@ -64,7 +64,7 @@ class User < ActiveRecord::Base
     user_token = user_auth_pin.otp_secret_key
   end
 
-  def generate_auth_record
+  def generate_auth_token
     auth_tokens.create({user_id:  self.id})
   end
 end

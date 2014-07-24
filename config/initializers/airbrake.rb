@@ -1,4 +1,4 @@
-if Rails.env == 'production'
+if defined?(Airbrake)
   airbrake_yml = YAML.load_file("#{Rails.root}/config/airbrake.yml")
   Airbrake.configure do |config|
     config.api_key = airbrake_yml['api_key']
