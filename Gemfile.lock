@@ -110,6 +110,7 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
     netrc (0.7.7)
+    newrelic_rpm (3.9.0.229)
     pg (0.17.1)
     polyglot (0.3.5)
     pry (0.10.0)
@@ -230,6 +231,7 @@ DEPENDENCIES
   ffaker
   guard-rspec
   jwt (~> 0.1.13)
+  newrelic_rpm
   pg
   puma
   rack-cors

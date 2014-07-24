@@ -21,6 +21,7 @@ gem 'twilio-ruby'
 gem 'warden'
 gem 'puma'
 gem 'rack-timeout'
+gem 'newrelic_rpm'
 
 group :development do
   gem 'spring'
