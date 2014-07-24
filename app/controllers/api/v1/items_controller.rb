@@ -15,14 +15,17 @@ module Api::V1
 
     # /items?ids=1,2,3,4
     def index
-      if params[:ids].present?
-        @items = @items.find( params[:ids].split(",") )
-      end
+      @items = @items.find(params[:ids].split(",")) if params[:ids].present?
       render json: @items, each_serializer: serializer
     end
 
     def show
       render json: @item, serializer: serializer
+    end
+
+    def destroy
+      @item.destroy
+      render json: {}
     end
 
     private
