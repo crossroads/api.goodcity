@@ -11,10 +11,10 @@ class Offer < ActiveRecord::Base
   }
 
   state_machine :state, initial: :draft do
-    state :submit
+    state :submitted
 
     event :submit do
-      transition :draft => :submit
+      transition :draft => :submitted
     end
   end
 

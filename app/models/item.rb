@@ -8,21 +8,20 @@ class Item < ActiveRecord::Base
   has_many   :packages
 
   state_machine :state, initial: :draft do
-    state :submit # awaiting review
-    state :not_needed
-    state :need_detail
-    state :confirmed
+    state :rejected
+    state :pending
+    state :accepted
 
-    event :submit do
-      transition :draft => :submit
+    event :accept do
+      transition [:draft, :pending] => :accepted
     end
 
-    event :confirmed do
-      transition [:submit, :need_detail] => :confirmed
+    event :reject do
+      transition [:draft, :pending] => :rejected
     end
 
-    event :need_detail do
-      transition :submit => :need_detail
+    event :question do
+      transition :draft => :pending
     end
   end
 
