@@ -30,6 +30,6 @@ Warden::Strategies.add(:pin) do
  end
 
  def auth_token
-    env['HTTP_AUTHORIZATION'].split(' ').last
+    env['HTTP_AUTHORIZATION'].try(:split, ' ').try(:last)
  end
 end

@@ -15,9 +15,9 @@ module Api::V1
       @result = User.creation_with_auth(user_auth_params)
       if @result.class == User
         warden.set_user(@result)
-        render json: {token: @result.friendly_token, status: "success"}
+        render json: {token: @result.friendly_token, msg: "success"}, status: :ok
       else
-        render json: {token: "", status: @result}
+        render json: {token: "", msg: @result}, status: :forbidden
       end
     end
 
@@ -33,18 +33,18 @@ module Api::V1
       user = unique_user
       if user.present?
         user.send_verification_pin
-        render json: { mobile_exist: true , token: user.friendly_token}
+        render json: { mobile_exist: true , token: user.friendly_token}, status: :ok
       else
-        render json: { mobile_exist: false, token: "" }
+        render json: { mobile_exist: false, token: "" }, status: :unauthorized
       end
     end
 
     def search_by_token
       user= User.find_user_based_on_auth(token_header)
       if user.send_verification_pin
-        render json: { token: token_header, status: :ok, msg: "Pin has been sent suceessfully" }
+        render json: { token: token_header, msg: "Pin has been sent suceessfully" }, status: :ok
       else
-        render json: { token: "", status: :unauthorized, msg: "Please provide mobile number" }
+        render json: { token: "", msg: "Please provide mobile number" }, status: :unauthorized
       end
     end
 

@@ -15,12 +15,15 @@ class User < ActiveRecord::Base
   end
 
   def self.creation_with_auth(user_params)
+
     begin
       transaction do
         user = new(user_params)
         user.send_verification_pin if user.save
         user
       end
+    rescue Twilio::REST::RequestError => e
+      e.message.try(:split,'.').try(:first)
     rescue Exception => e
       e.message
     end
