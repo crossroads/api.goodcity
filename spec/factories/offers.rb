@@ -13,7 +13,6 @@ FactoryGirl.define do
     estimated_size { [1,2,3,4].sample }
     notes          { Faker::Lorem.paragraph }
     created_by_id  { create(:user).id }
-    items          { create_list(:item, (rand(5)+1)) }
     messages       { create_list(:offer_message, (rand(10)+1), sender_id: created_by_id, recipient_id: id) }
   end
 
