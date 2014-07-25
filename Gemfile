@@ -23,6 +23,7 @@ gem 'warden'
 gem 'puma'
 gem 'rack-timeout'
 gem 'newrelic_rpm'
+gem 'traco'
 
 group :development do
   gem 'spring'

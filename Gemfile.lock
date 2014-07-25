@@ -199,6 +199,8 @@ GEM
     thread_safe (0.3.4)
     tilt (1.4.1)
     timers (1.1.0)
+    traco (3.1.2)
+      activerecord (>= 3.0)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
@@ -247,5 +249,6 @@ DEPENDENCIES
   state_machine (~> 1.2.0)
   sucker_punch
   surus
+  traco
   twilio-ruby
   warden

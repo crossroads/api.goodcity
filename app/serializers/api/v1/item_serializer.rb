@@ -10,6 +10,7 @@ module Api::V1
     has_many :messages, serializer: MessageSerializer
     has_many :images,   serializer: ImageSerializer
     has_one  :rejection_reason, serializer: RejectionReasonSerializer
+    has_one  :item_type, serializer: ItemTypeSerializer
 
   end
 

@@ -14,7 +14,7 @@ module Api::V1
       if params[:ids].present?
         json = json.where(id: params[:ids].split(","))
       end
-      json = json.all_json( columns: [:id, :name, :code] )
+      json = json.all_json( columns: [:id, "name_#{I18n.locale}", :code] ).gsub('name_en', 'name')
       render text: "{ \"item_types\": #{json} }"
     end
 
