@@ -28,6 +28,8 @@ Rails.application.routes.draw do
       get  "resend" =>  "users#resend"
       post "signup" => "users#signup"
       post 'verify' => 'users#validate_pin'
+      get  "districts" => "districts#index"
+      get  "districts/:id" => "districts#show"
     end
   end
 

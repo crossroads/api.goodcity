@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
-  before_action :validate_token
+  #before_action :validate_token
   helper_method :current_user
   def warden
     env["warden"]

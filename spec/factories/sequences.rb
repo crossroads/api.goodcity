@@ -4,6 +4,21 @@ FactoryGirl.define do
     %w(New Used).sample
   end
 
+  sequence :districts do |n|
+    # district name => [ district chinese name , territory name]
+    {
+      "Sheung Shui" => ['上水', 'New Territories'],
+    }
+  end
+
+  sequence :territories do |n|
+    {
+      "New Territories"  => "新界",
+      "Kowloon"          => "九龍",
+      "Hong Kong Island" => "香港島"
+    }
+  end
+
   # this isn't strictly a sequence but is a useful way to store the hash
   # for usage inside FactoryGirl
   sequence :item_types do |n|
