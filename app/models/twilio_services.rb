@@ -14,10 +14,11 @@ class TwilioServices
 
   def sms_verification_pin(options = {})
     begin
+      body = I18n.t('twilio.sms_verification_pin', pin: options[:otp], expiry: options[:otp_expires])
       TWILIO_CLIENT.account.sms.messages.create({
         from: TWILIO_CONF['twilio_phone_number'],
         to: @user.mobile,
-        body: "Your pin is #{options[:otp]} and this pin will expire by #{options[:otp_expires]}"})
+        body: body})
     rescue Twilio::REST::RequestError => e
        raise
     end

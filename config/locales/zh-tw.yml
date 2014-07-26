@@ -1,6 +1,12 @@
 ---
 zh-tw:
+  success: Success
   warden:
     token_invalid: Invalid token
     token_expired: Expired token
     token_valid: Valid token
+  auth:
+    pin_sent: A pin has been sent to your mobile device.
+    mobile_required: Please provide a mobile number.
+  twilio:
+    sms_verification_pin: Your pin is %{pin} and will expire by %{expiry}.
