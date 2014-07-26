@@ -119,9 +119,10 @@ ActiveRecord::Schema.define(version: 20140725080520) do
   add_index "permissions_users", ["permission_id", "user_id"], name: "index_permissions_users_on_permission_id_and_user_id", unique: true, using: :btree
 
   create_table "rejection_reasons", force: true do |t|
-    t.string   "name"
+    t.string   "name_en"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "name_zh_tw"
   end
 
   create_table "territories", force: true do |t|

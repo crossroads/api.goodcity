@@ -13,4 +13,12 @@ describe Api::V1::DistrictSerializer do
     expect(json['territories'].first['name']).to eql(district.territory.name)
   end
 
+  it "translates JSON" do
+    I18n.locale = 'zh-tw'
+    serializer = Api::V1::DistrictSerializer.new(district)
+    json = JSON.parse( serializer.to_json )
+    expect(json['district']['name']).to eql(district.name_zh_tw)
+    expect(json['territories'].first['name']).to eql(district.territory.name_zh_tw)
+  end
+
 end

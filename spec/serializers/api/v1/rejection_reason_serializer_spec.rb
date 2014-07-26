@@ -11,4 +11,11 @@ describe Api::V1::RejectionReasonSerializer do
     expect(json['rejection_reason']['name']).to eql(rejection_reason.name)
   end
 
+  it "translates JSON" do
+    I18n.locale = 'zh-tw'
+    serializer = Api::V1::RejectionReasonSerializer.new(rejection_reason)
+    json = JSON.parse( serializer.to_json )
+    expect(json['rejection_reason']['name']).to eql(rejection_reason.name_zh_tw)
+  end
+
 end
