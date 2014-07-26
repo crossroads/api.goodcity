@@ -9,7 +9,7 @@ module Api::V1
     end
 
     def show
-      render json: @districts, serializer: serializer
+      render json: @district, serializer: serializer
     end
 
     private

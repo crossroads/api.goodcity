@@ -28,6 +28,8 @@ module GoodCityServer
     # config.i18n.default_locale = :de
 
     config.autoload_paths += %W(#{config.root}/serializers #{config.root}/uploaders)
-       
+
+    config.i18n.available_locales = ['en', 'zh-tw']
+
   end
 end

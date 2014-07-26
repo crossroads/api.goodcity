@@ -30,6 +30,8 @@ Rails.application.routes.draw do
       post 'verify' => 'users#validate_pin'
       get  "districts" => "districts#index"
       get  "districts/:id" => "districts#show"
+      get  "territories" => "territories#index"
+      get  "territories/:id" => "territories#show"
     end
   end
 

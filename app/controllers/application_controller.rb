@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
   #before_action :validate_token
+  before_action :set_locale
   helper_method :current_user
   def warden
     env["warden"]
@@ -11,6 +12,15 @@ class ApplicationController < ActionController::API
   end
 
   private
+
+    def set_locale
+      locale = (request.headers['Accept-Language'] || '').strip
+      if !I18n.available_locales.map(&:to_s).include?(locale)
+        locale = 'en' # default if none selected or invalid value
+      end
+      I18n.locale = locale
+    end
+
     def current_user
       warden.user
     end

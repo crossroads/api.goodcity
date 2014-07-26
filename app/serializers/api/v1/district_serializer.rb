@@ -6,9 +6,6 @@ module Api::V1
 
     has_one :territory, serializer: TerritorySerializer
 
-    def name
-      object.name
-    end
   end
 
 end
