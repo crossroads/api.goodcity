@@ -24,6 +24,7 @@ gem 'puma'
 gem 'rack-timeout'
 gem 'newrelic_rpm'
 gem 'traco'
+gem 'rails-i18n', '~> 4'
 
 group :development do
   gem 'spring'

@@ -1,5 +1,5 @@
 ---
-en:
+zh-tw:
   warden:
     token_invalid: Invalid token
     token_expired: Expired token
