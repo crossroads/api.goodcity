@@ -25,6 +25,7 @@ gem 'rack-timeout'
 gem 'newrelic_rpm'
 gem 'traco'
 gem 'rails-i18n', '~> 4'
+gem 'http_accept_language'
 
 group :development do
   gem 'spring'

@@ -90,6 +90,7 @@ GEM
       guard (~> 2.1)
       rspec (>= 2.14, < 4.0)
     hike (1.2.3)
+    http_accept_language (2.0.1)
     i18n (0.6.11)
     json (1.8.1)
     jwt (0.1.13)
@@ -248,6 +249,7 @@ DEPENDENCIES
   factory_girl_rails
   ffaker
   guard-rspec
+  http_accept_language
   jwt (~> 0.1.13)
   newrelic_rpm
   pg

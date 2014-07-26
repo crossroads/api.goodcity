@@ -17,11 +17,7 @@ class ApplicationController < ActionController::API
   private
 
     def set_locale
-      locale = (request.headers['Accept-Language'] || '').strip
-      if !I18n.available_locales.map(&:to_s).include?(locale)
-        locale = 'en' # default if none selected or invalid value
-      end
-      I18n.locale = locale
+      I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
     end
 
     def current_user
