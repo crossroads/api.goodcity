@@ -5,18 +5,11 @@ FactoryGirl.define do
   end
 
   sequence :districts do |n|
-    # district name => [ district chinese name , territory name]
-    {
-      "Sheung Shui" => ['上水', 'New Territories'],
-    }
+    @districts ||= YAML.load_file("#{Rails.root}/db/districts.yml")
   end
 
   sequence :territories do |n|
-    {
-      "New Territories"  => "新界",
-      "Kowloon"          => "九龍",
-      "Hong Kong Island" => "香港島"
-    }
+    @territories ||= YAML.load_file("#{Rails.root}/db/territories.yml")
   end
 
   # this isn't strictly a sequence but is a useful way to store the hash

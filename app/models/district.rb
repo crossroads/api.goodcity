@@ -1,5 +1,7 @@
 class District < ActiveRecord::Base
   belongs_to :territory
-  validates :name, presence: true
+  validates :name_en, presence: true
   validates :territory_id, presence: true
+
+  translates :name
 end

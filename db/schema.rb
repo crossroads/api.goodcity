@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20140725080520) do
   end
 
   create_table "districts", force: true do |t|
-    t.string   "name"
+    t.string   "name_en"
     t.string   "name_zh_tw"
     t.integer  "territory_id"
     t.datetime "created_at"
@@ -125,7 +125,7 @@ ActiveRecord::Schema.define(version: 20140725080520) do
   end
 
   create_table "territories", force: true do |t|
-    t.string   "name"
+    t.string   "name_en"
     t.string   "name_zh_tw"
     t.datetime "created_at"
     t.datetime "updated_at"

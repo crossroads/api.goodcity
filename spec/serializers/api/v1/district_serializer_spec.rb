@@ -9,10 +9,8 @@ describe Api::V1::DistrictSerializer do
     json = JSON.parse( serializer.to_json )
     expect(json['district']['id']).to eql(district.id)
     expect(json['district']['name']).to eql(district.name)
-    expect(json['district']['name_zh_tw']).to eql(district.name_zh_tw)
     expect(json['territories'].first['id']).to eql(district.territory.id)
     expect(json['territories'].first['name']).to eql(district.territory.name)
-    expect(json['territories'].first['name_zh_tw']).to eql(district.territory.name_zh_tw)
   end
 
 end

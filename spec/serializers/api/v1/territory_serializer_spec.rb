@@ -9,7 +9,6 @@ describe Api::V1::TerritorySerializer do
     json = JSON.parse( serializer.to_json )
     expect(json['territory']['id']).to eql(territory.id)
     expect(json['territory']['name']).to eql(territory.name)
-    expect(json['territory']['name_zh_tw']).to eql(territory.name_zh_tw)
   end
 
 end

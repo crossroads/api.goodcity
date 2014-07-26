@@ -2,8 +2,8 @@
 
 FactoryGirl.define do
   factory :territory do
-    name       { generate(:territories).keys.sample }
-    name_zh_tw { generate(:territories)[name] }
-    initialize_with { Territory.find_or_initialize_by(name: name) }
+    name_en         { generate(:territories).keys.sample }
+    name_zh_tw      { generate(:territories)[name_en][:name_zh_tw] }
+    initialize_with { Territory.find_or_initialize_by(name_en: name_en) }
   end
 end
