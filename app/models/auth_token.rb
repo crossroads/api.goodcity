@@ -3,6 +3,6 @@ class AuthToken < ActiveRecord::Base
   has_one_time_password
 
   def self.recent_auth_token
-    order("otp_code_expiry desc").first
+    order("id desc").first
   end
 end

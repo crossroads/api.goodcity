@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 describe User, :type => :model do
+
   let!(:user_valid_attr) {{
       mobile: "+919930001948",
       first_name: "John1",
@@ -13,6 +14,7 @@ describe User, :type => :model do
       last_name: "Dey2"
   }}
   let!(:user_fg) {create :user}
+
   describe 'Association' do
     it { should have_many :auth_tokens }
     it { should have_many :offers }
@@ -65,7 +67,8 @@ describe User, :type => :model do
 
       it 'raise error if mobile is invalid' do
         twilio_error = User.creation_with_auth(user_invalid_attr)
-        expect(twilio_error).to eq("The 'To' number #{user_invalid_attr[:mobile]} is not a valid phone number")
+        expect(twilio_error).to eq("The 'To' number #{user_invalid_attr[:mobile]} \
+                                   is not a valid phone number")
       end
     end
   end
@@ -95,27 +98,26 @@ describe User, :type => :model do
   end
 
   describe '#send_verification_pin' do
-    before(:all) do
-      @valid_mobile_user = create :user_with_specifics
-      @before_otp_code   = @valid_mobile_user.auth_tokens.first.otp_code
-      @before_otp_expiry = @valid_mobile_user.token_expiry
-      @token_key         = @valid_mobile_user.send_verification_pin(1.seconds)
-      sleep(30.seconds)
-      @after_otp_code    = @valid_mobile_user.auth_tokens.first.otp_code
-      @after_otp_expiry  = @valid_mobile_user.token_expiry
-    end
 
     it 'update otp_code for the user' do
+      before_n_after_otp_for_twilio_sms
       expect(@before_otp_code).not_to eq(@after_otp_code)
     end
 
     it 'update otp_code_Expiry for the user' do
+      before_n_after_otp_for_twilio_sms
       expect(@before_otp_expiry).not_to eq(@after_otp_expiry)
     end
 
-    it 'sms new otp_code'
+    it 'sms new otp_code' do
+      # before_n_after_otp_for_twilio_sms
+      # sms_text = "Your pin is #{@before_otp_code} and will expire by #{@before_otp_expiry}."
+      # puts "#{sms_text}"
+      # expect(current_text_message).not_to have_body sms_text
+    end
 
     it 'return otp_secret_token' do
+      before_n_after_otp_for_twilio_sms
       expect(@token_key).to eq(@valid_mobile_user.friendly_token)
     end
 
