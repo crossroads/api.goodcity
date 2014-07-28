@@ -28,6 +28,13 @@ Rails.application.routes.draw do
       get  "resend" =>  "users#resend"
       post "signup" => "users#signup"
       post 'verify' => 'users#validate_pin'
+      get  "districts" => "districts#index"
+      get  "districts/:id" => "districts#show"
+      get  "territories" => "territories#index"
+      get  "territories/:id" => "territories#show"
+      post "auth/signup" => "authentication#signup"
+      post "auth/signup" => "authentication#signup"
+      get  "auth/resend" =>  "authentication#resend"
     end
   end
 

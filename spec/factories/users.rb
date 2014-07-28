@@ -17,4 +17,8 @@ FactoryGirl.define do
       permissions { [create(:administrator_permission)] }
     end
   end
+
+  factory :user_with_specifics, parent: :user do
+    mobile {"+919930001948"}
+  end
 end

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ItemType, :type => :model do
+RSpec.describe District, :type => :model do
 
   describe "validations" do
 

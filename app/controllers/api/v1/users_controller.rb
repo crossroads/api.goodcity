@@ -15,7 +15,7 @@ module Api::V1
       @result = User.creation_with_auth(user_auth_params)
       if @result.class == User
         warden.set_user(@result)
-        render json: {token: @result.friendly_token, msg: "success"}, status: :ok
+        render json: {token: @result.friendly_token, msg: I18n.t(:success)}, status: :ok
       else
         render json: {token: "", msg: @result}, status: :forbidden
       end
@@ -42,9 +42,9 @@ module Api::V1
     def search_by_token
       user= User.find_user_based_on_auth(token_header)
       if user.send_verification_pin
-        render json: { token: token_header, msg: "Pin has been sent suceessfully" }, status: :ok
+        render json: { token: token_header, msg: I18n.t('auth.pin_sent') }, status: :ok
       else
-        render json: { token: "", msg: "Please provide mobile number" }, status: :unauthorized
+        render json: { token: "", msg: I18n.t('auth.mobile_required') }, status: :unauthorized
       end
     end
 

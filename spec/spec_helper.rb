@@ -13,8 +13,11 @@
 # The `.rspec` file also contains a few flags that are not defaults but that
 # users commonly want.
 #
+ActiveRecord::Migration.maintain_test_schema! if defined?(ActiveRecord::Migration)
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
 =begin

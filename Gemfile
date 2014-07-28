@@ -23,6 +23,9 @@ gem 'warden'
 gem 'puma'
 gem 'rack-timeout'
 gem 'newrelic_rpm'
+gem 'traco'
+gem 'rails-i18n', '~> 4'
+gem 'http_accept_language', '~> 2.0.1'
 
 group :development do
   gem 'spring'
@@ -40,6 +43,7 @@ end
 
 group :test do
   gem 'guard-rspec'
+  gem 'simplecov', require: false
   gem 'shoulda-matchers'
 end
 

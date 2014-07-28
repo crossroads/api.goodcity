@@ -16,3 +16,4 @@
 /tmp
 
 /config/airbrake.yml
+coverage/
