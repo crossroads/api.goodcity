@@ -28,6 +28,12 @@ module Api::V1
       render json: {}
     end
 
+    def update
+      @item.update_attributes(item_params)
+      store_images
+      render json: @item, serializer: serializer, status: 201
+    end
+
     private
 
     def item_params
@@ -41,8 +47,12 @@ module Api::V1
     end
 
     def store_images
-      params[:item][:image_identifiers].split(',').each do |img|
-        Image.create(image: img, parent: @item)
+      image_ids = params[:item][:image_identifiers].split(',')
+      image_ids.each do |img|
+        Image.where(image: img, parent: @item).first_or_create
+      end
+      (@item.image_identifiers - image_ids).each do |img|
+        Image.where(image: img).first.try(:destroy)
       end
     end
 

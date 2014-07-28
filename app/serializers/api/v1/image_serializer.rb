@@ -5,14 +5,20 @@ module Api::V1
 
     embed :ids, include: true
 
-    attributes :id, :image_url, :thumb_image_url, :favourite, :order
+    attributes :id, :image_url, :thumb_image_url, :favourite, :order, :image_id
 
     def image_url
-      cl_image_path(object.image)
+      image = "v" + object.image
+      cl_image_path(image)
     end
 
     def thumb_image_url
-      cl_image_path(object.image, width: 50, height: 50, crop: :fill)
+      image = "v" + object.image
+      cl_image_path(image, width: 50, height: 50, crop: :fill)
+    end
+
+    def image_id
+      object.image
     end
   end
 end
