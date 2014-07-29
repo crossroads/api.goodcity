@@ -49,7 +49,8 @@ module Api::V1
     end
 
     def resend
-      (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
+      (token_header != "undefined" && token_header.present?) ?
+        search_by_token : search_by_mobile
     end
 
     def is_unique_mobile_number
@@ -71,8 +72,9 @@ module Api::V1
     end
 
     private
+
     def user_auth_params
-       params.require(:user_auth).permit(:mobile, :first_name, :last_name)
+      params.require(:user_auth).permit(:mobile, :first_name, :last_name)
     end
 
     def user_auth_details_params
