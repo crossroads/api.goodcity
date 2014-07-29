@@ -7,6 +7,7 @@ RSpec.describe ApplicationController, :type => :controller do
     it "should set locale to zh-tw" do
       I18n.locale = 'en'
       request.env['HTTP_ACCEPT_LANGUAGE'] = 'zh-tw'
+      HttpAcceptLanguage::Middleware.new(lambda {|env| env }).call(request.env)
       controller.send(:set_locale)
       expect(I18n.locale).to eql(:'zh-tw')
     end
@@ -14,12 +15,7 @@ RSpec.describe ApplicationController, :type => :controller do
     it "should set locale to en" do
       I18n.locale = 'zh-tw'
       request.env['HTTP_ACCEPT_LANGUAGE'] = 'en'
-      controller.send(:set_locale)
-      expect(I18n.locale).to eql(:en)
-    end
-
-    it "should ignore unacceptable language and default to en" do
-      request.env['HTTP_ACCEPT_LANGUAGE'] = 'de'
+      HttpAcceptLanguage::Middleware.new(lambda {|env| env }).call(request.env)
       controller.send(:set_locale)
       expect(I18n.locale).to eql(:en)
     end
