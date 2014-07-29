@@ -1,7 +1,8 @@
 module Api::V1
   class UsersController < Api::V1::ApiController
-    skip_before_action :validate_token, only: [:signup, :is_unique_mobile_number,
-                                          :validate_pin, :is_mobile_exist, :resend]
+    skip_before_action :validate_token,
+      only: [:signup, :is_unique_mobile_number, :validate_pin,
+      :is_mobile_exist, :resend]
     load_and_authorize_resource :user, parent: false
 
     def index
