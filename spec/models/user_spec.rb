@@ -40,14 +40,23 @@ describe User, :type => :model do
     end
 
     describe '.check_for_mobile_uniqueness' do
+      let!(:user) {create :user_with_specifics}
       it 'check for mobile number' do
-        user = create :user_with_specifics
         expect(User.check_for_mobile_uniqueness(user_valid_attr[:mobile])).to eq(user)
       end
     end
 
     describe '.creation_with_auth' do
-      let!(:custom_user) {User.creation_with_auth(user_valid_attr)}
+      let!(:custom_user) {
+        VCR.use_cassette "valid user with verified mobile" do
+          User.creation_with_auth(user_valid_attr)
+        end
+      }
+      let!(:twilio_error){
+        VCR.use_cassette "invalid user with unverified mobile" do
+          User.creation_with_auth(user_invalid_attr)
+        end
+      }
 
       it 'create a user' do
         expect(User.where("mobile=?", user_valid_attr[:mobile]).first).to eq(custom_user)
@@ -66,9 +75,7 @@ describe User, :type => :model do
       end
 
       it 'raise error if mobile is invalid' do
-        twilio_error = User.creation_with_auth(user_invalid_attr)
-        expect(twilio_error).to eq("The 'To' number #{user_invalid_attr[:mobile]} \
-                                   is not a valid phone number")
+        expect(twilio_error).to eq("The 'To' number #{user_invalid_attr[:mobile]} is not a valid phone number")
       end
     end
   end
@@ -88,17 +95,23 @@ describe User, :type => :model do
   end
 
   describe '#authenticate' do
-    let!(:custom_user) {User.creation_with_auth(user_valid_attr)}
-
+    let!(:custom_user) {
+      VCR.use_cassette "valid user with verified mobile" do
+        User.creation_with_auth(user_valid_attr)
+      end
+    }
+    let!(:ret_otp_secret) {
+      VCR.use_cassette "authenticate user" do
+        custom_user.authenticate(user_valid_attr[:mobile])
+      end
+    }
     it 'check for user mobile and successfully send sms' do
-      ret_otp_secret = custom_user.authenticate(user_valid_attr[:mobile])
-      expect(ret_otp_secret).not_to be_nil
-      expect(ret_otp_secret).to eq(custom_user.friendly_token)
+      expect(ret_otp_secret.first).not_to be_nil
+      expect(ret_otp_secret.first).to eq(custom_user.friendly_token)
     end
   end
 
   describe '#send_verification_pin' do
-
     it 'update otp_code for the user' do
       before_n_after_otp_for_twilio_sms
       expect(@before_otp_code).not_to eq(@after_otp_code)
@@ -110,15 +123,14 @@ describe User, :type => :model do
     end
 
     it 'sms new otp_code' do
-      # before_n_after_otp_for_twilio_sms
-      # sms_text = "Your pin is #{@before_otp_code} and will expire by #{@before_otp_expiry}."
-      # puts "#{sms_text}"
-      # expect(current_text_message).not_to have_body sms_text
+      before_n_after_otp_for_twilio_sms
+      sms_text = "Your pin is #{@before_otp_code} and will expire by #{@before_otp_expiry}."
+      expect(@token_key.second.body).not_to eq(sms_text)
     end
 
     it 'return otp_secret_token' do
       before_n_after_otp_for_twilio_sms
-      expect(@token_key).to eq(@valid_mobile_user.friendly_token)
+      expect(@token_key.first).to eq(@valid_mobile_user.friendly_token)
     end
 
     after(:all) do

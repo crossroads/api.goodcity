@@ -5,7 +5,7 @@ http_interactions:
     uri: https://AC6b8a8ca83ef5241cfba565c7cc3072f1:7264f04e543924113253ee98f2ef5d89@api.twilio.com/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages.json
     body:
       encoding: US-ASCII
-      string: From=%2B18653126796&To=%2B919930001948&Body=Your+pin+is+614979+and+will+expire+by+2014-07-29+11%3A00%3A00+UTC.
+      string: From=%2B18653126796&To=%2B919930001948&Body=Your+pin+is+585896+and+will+expire+by+2014-07-29+09%3A25%3A49+UTC.
     headers:
       Accept:
       - application/json
@@ -23,7 +23,7 @@ http_interactions:
       message: CREATED
     headers:
       Date:
-      - Tue, 29 Jul 2014 10:14:04 GMT
+      - Tue, 29 Jul 2014 08:55:55 GMT
       Content-Type:
       - application/json; charset=utf-8
       Content-Length:
@@ -31,22 +31,22 @@ http_interactions:
       Connection:
       - close
       Last-Modified:
-      - Tue, 29 Jul 2014 10:14:04 +0000
+      - Tue, 29 Jul 2014 08:55:55 +0000
       Etag:
-      - 23420ab6f4f234146a77b7b6d2e96ad3
+      - 7f5f4ca1631487ebc2bce42f1e72787f
       X-Powered-By:
       - AT-5000
       X-Shenanigans:
       - none
     body:
       encoding: UTF-8
-      string: '{"sid": "SM11008a2ea8d696327b79aeedf6dfc7d7", "date_created": "Tue,
-        29 Jul 2014 10:14:04 +0000", "date_updated": "Tue, 29 Jul 2014 10:14:04 +0000",
+      string: '{"sid": "SMae0706f7a7bda61b863c2858a804ecbf", "date_created": "Tue,
+        29 Jul 2014 08:55:55 +0000", "date_updated": "Tue, 29 Jul 2014 08:55:55 +0000",
         "date_sent": null, "account_sid": "AC6b8a8ca83ef5241cfba565c7cc3072f1", "to":
-        "+919930001948", "from": "+18653126796", "body": "Your pin is 614979 and will
-        expire by 2014-07-29 11:00:00 UTC.", "status": "queued", "direction": "outbound-api",
-        "api_version": "2010-04-01", "price": null, "price_unit": "USD", "uri": "/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages/SM11008a2ea8d696327b79aeedf6dfc7d7.json",
+        "+919930001948", "from": "+18653126796", "body": "Your pin is 585896 and will
+        expire by 2014-07-29 09:25:49 UTC.", "status": "queued", "direction": "outbound-api",
+        "api_version": "2010-04-01", "price": null, "price_unit": "USD", "uri": "/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages/SMae0706f7a7bda61b863c2858a804ecbf.json",
         "num_segments": "1"}'
     http_version: 
-  recorded_at: Tue, 29 Jul 2014 10:14:03 GMT
+  recorded_at: Tue, 29 Jul 2014 08:55:54 GMT
 recorded_with: VCR 2.4.0
