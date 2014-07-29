@@ -48,9 +48,11 @@ module Api::V1
 
     def store_images
       image_ids = params[:item][:image_identifiers].split(',')
+      # assign newly added images
       image_ids.each do |img|
         Image.where(image: img, parent: @item).first_or_create
       end
+      # remove deleted image records
       (@item.image_identifiers - image_ids).each do |img|
         Image.where(image: img).first.try(:destroy)
       end

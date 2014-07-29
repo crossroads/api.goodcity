@@ -8,13 +8,11 @@ module Api::V1
     attributes :id, :image_url, :thumb_image_url, :favourite, :order, :image_id
 
     def image_url
-      image = "v" + object.image
-      cl_image_path(image)
+      cl_image_path("v"+object.image)
     end
 
     def thumb_image_url
-      image = "v" + object.image
-      cl_image_path(image, width: 50, height: 50, crop: :fill)
+      cl_image_path("v"+object.image, width: 50, height: 50, crop: :fill)
     end
 
     def image_id
