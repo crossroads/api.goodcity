@@ -14,12 +14,4 @@ RSpec.describe Image, type: :model do
     it { should have_db_column(:parent_type).of_type(:string) }
     it { should have_db_column(:parent_id).of_type(:integer) }
   end
-
-  describe 'set_image_public_id' do
-    let!(:image) { create :image }
-
-    it "should prepend 'v' to image string" do
-      expect(image.image.start_with? 'v').to eq(true)
-    end
-  end
 end

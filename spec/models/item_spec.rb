@@ -35,4 +35,16 @@ RSpec.describe Item, type: :model do
     end
   end
 
+  describe 'Instance Methods' do
+    let!(:item)  { create :item }
+    let!(:image) { create :image, parent: item }
+
+    describe 'image_identifiers' do
+      it 'should update all items of offer' do
+        expect(
+          item.image_identifiers
+        ).to include(image.image)
+      end
+    end
+  end
 end
