@@ -30,10 +30,12 @@ class ApplicationController < ActionController::API
 
     # TODO: Shivani need to fail the auth if value returned is FALSE
     def validate_token
-      jwt_decoded_json = decode_session_token(token_header)
-      auth_info = validate_authenticity_of_jwt(jwt_decoded_json)
-      if auth_info[:value] == true
+      unless token_header.blank?
+        jwt_decoded_json = decode_session_token(token_header)
+        auth_info = validate_authenticity_of_jwt(jwt_decoded_json)
+        # if auth_info[:value] == true
         # render json: {token: token_header, status: :ok}
+      # end
       end
     end
 

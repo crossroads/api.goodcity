@@ -6,11 +6,10 @@
     <script type="text/javascript" src="javascripts/jquery.mockjson.js"></script>
     <script language="javascript">
      function signup(){
-
-        $.post("/api/v1/signup", {user_auth: { mobile: "+91 993 000 1948", first_name: "Doug", last_name: "Gallegar"}} );
+        $.post("/api/v1/auth/signup", {user_auth: { mobile: "+91 993 000 1948", first_name: "Doug", last_name: "Gallegar"}} );
      }
      function authenticate(){
-        $.post("/api/v1/verify", { token: "oquj5b7dddxvobof", pin: "479714" } );
+        $.post("/api/v1/auth/verify", { token: "oquj5b7dddxvobof", pin: "479714" } );
      }
     </script>
   </head>
@@ -47,8 +46,8 @@
       <li><a href="javascript:signup()">Register User</a></li>
       <li><a href="/api/v1/users/login.json">Login User</a></li>
       <li><a href="javascript:authenticate()">Authenticate</a></li>
-      <li><a href="/api/v1/users/check_mobile?mobile=1-136-281-6903 x330">Validate Mobile number (Already Exists)</a></li>
-      <li><a href="/api/v1/users/check_mobile?mobile=1-136-281-6903 x331">Validate Mobile number (Does not Exist)</a></li>
+      <li><a href="/api/v1/auth/check_mobile?mobile=1-136-281-6903 x330">Validate Mobile number (Already Exists)</a></li>
+      <li><a href="/api/v1/auth/check_mobile?mobile=1-136-281-6903 x331">Validate Mobile number (Does not Exist)</a></li>
 
     </ul>
 
