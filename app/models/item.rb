@@ -29,4 +29,8 @@ class Item < ActiveRecord::Base
     update_all(saleable: true)
   end
 
+  def image_identifiers
+    images.pluck(:image)
+  end
+
 end
