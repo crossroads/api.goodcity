@@ -7,15 +7,14 @@ class ApplicationController < ActionController::API
   helper_method :current_user
 
   def warden
-    env["warden"]
+    request.env['warden']
   end
 
   def warden_options
-    env["warden.options"]
+    request.env["warden.options"]
   end
 
   private
-
   def set_locale
     I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
   end
@@ -25,7 +24,8 @@ class ApplicationController < ActionController::API
   end
 
   def token_header
-    request.headers['Authorization'].try(:split, ' ').try(:last)
+    authurization_token = request.headers['Authorization'].try(:sub, "Bearer","")
+    authurization_token.present? ? authurization_token.try(:split, ' ').try(:last) : "undefined"
   end
 
   def validate_token
