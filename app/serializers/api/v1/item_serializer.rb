@@ -5,7 +5,7 @@ module Api::V1
 
     attributes :id, :donor_description, :donor_condition, :state, :offer_id,
       :item_type_id, :rejection_reason_id, :rejection_other_reason,
-      :created_at, :updated_at, :image_identifiers
+      :created_at, :updated_at, :image_identifiers, :favourite_image
 
     has_many :packages, serializer: PackageSerializer
     has_many :messages, serializer: MessageSerializer
@@ -15,6 +15,10 @@ module Api::V1
 
     def image_identifiers
       object.images.pluck(:image).join(',')
+    end
+
+    def favourite_image
+      object.images.get_favourite.try(:image)
     end
   end
 

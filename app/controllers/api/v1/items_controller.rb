@@ -50,13 +50,16 @@ module Api::V1
       image_ids = params[:item][:image_identifiers].split(',')
       # assign newly added images
       image_ids.each do |img|
-        Image.where(image: img, parent: @item).first_or_create
+        @item.images.where(image: img).first_or_create
       end
 
       # remove deleted image records
       (@item.image_identifiers - image_ids).each do |img|
-        Image.where(image: img).first.try(:destroy)
+        @item.images.where(image: img).first.try(:destroy)
       end
+
+      # set favourite image
+      @item.set_favourite_image(params[:item][:favourite_image])
     end
 
   end
