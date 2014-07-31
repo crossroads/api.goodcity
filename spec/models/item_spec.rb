@@ -37,13 +37,24 @@ RSpec.describe Item, type: :model do
 
   describe 'Instance Methods' do
     let!(:item)  { create :item }
-    let!(:image) { create :image, parent: item }
+    let!(:image1) { create :favourite_image, parent: item }
+    let!(:image2) { create :image, parent: item  }
 
     describe 'image_identifiers' do
       it 'should update all items of offer' do
         expect(
           item.image_identifiers
-        ).to include(image.image)
+        ).to include(image1.image)
+      end
+    end
+
+    describe 'set_favourite_image' do
+      it 'should set given image as favourite image' do
+        expect{
+          item.set_favourite_image(image2.image)
+        }.to change {
+          item.images.get_favourite
+        }.from( image1 ).to( image2 )
       end
     end
   end

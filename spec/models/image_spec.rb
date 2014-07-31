@@ -14,4 +14,28 @@ RSpec.describe Image, type: :model do
     it { should have_db_column(:parent_type).of_type(:string) }
     it { should have_db_column(:parent_id).of_type(:integer) }
   end
+
+  describe 'Scope Methods' do
+    let!(:images) { create_list :image, 3 }
+    let!(:fav_image) { create :favourite_image }
+
+    it 'get_favourite' do
+      expect(Image.get_favourite).to eq(fav_image)
+    end
+  end
+
+  describe 'Instance Methods' do
+    let!(:fav_image) { create :favourite_image }
+    let!(:image) { create :image }
+
+    it 'set_favourite' do
+      expect{ image.set_favourite }.to change { image.favourite }.to(true)
+    end
+
+    it 'remove_favourite' do
+      expect{
+        fav_image.remove_favourite
+      }.to change { fav_image.favourite }.to(false)
+    end
+  end
 end
