@@ -5,6 +5,10 @@ FactoryGirl.define do
     order 1
     image { Faker::Lorem.characters(10) }
     favourite false
-    association :parent
+    association :parent, factory: :item
+
+    factory :favourite_image do
+      favourite true
+    end
   end
 end
