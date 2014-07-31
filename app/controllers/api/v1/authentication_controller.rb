@@ -15,7 +15,7 @@ module Api::V1
         render json: {token: @result.friendly_token,
           msg: I18n.t(:success)}, status: :ok
       else
-      render json: {token: "", msg: @result}, status: :forbidden
+        render json: {token: "", msg: @result}, status: :forbidden
       end
     end
 
