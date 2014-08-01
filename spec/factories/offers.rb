@@ -14,6 +14,7 @@ FactoryGirl.define do
     notes          { Faker::Lorem.paragraph }
     created_by_id  { create(:user).id }
     messages       { create_list(:offer_message, (rand(10)+1), sender_id: created_by_id, recipient_id: id) }
+    items          { [create(:item)] }
   end
 
 end

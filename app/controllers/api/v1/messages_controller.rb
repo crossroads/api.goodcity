@@ -4,9 +4,7 @@ module Api::V1
     load_and_authorize_resource :message, parent: false
 
     def index
-      if params[:ids].present?
-        @messages = @messages.find( params[:ids].split(",") )
-      end
+      @messages = @messages.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @messages, each_serializer: serializer
     end
 

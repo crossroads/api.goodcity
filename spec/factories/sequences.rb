@@ -1,7 +1,7 @@
 FactoryGirl.define do
 
   sequence :donor_conditions do |n|
-    %w(New Used).sample
+    @donor_conditions ||= YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
   end
 
   sequence :rejection_reasons do |n|

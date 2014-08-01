@@ -3,9 +3,7 @@ module Api::V1
     load_and_authorize_resource :user, parent: false
 
     def index
-      if params[:ids].present?
-        @users = @users.find( params[:ids].split(",") )
-      end
+      @users = @users.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @users, each_serializer: serializer
     end
 

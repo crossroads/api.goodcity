@@ -28,6 +28,8 @@ Rails.application.routes.draw do
       get  "rejection_reasons/:id" => "rejection_reasons#show"
       get  "territories" => "territories#index"
       get  "territories/:id" => "territories#show"
+      get  "donor_conditions" => "donor_conditions#index"
+      get  "donor_conditions/:id" => "donor_conditions#show"
       get  "users" => "users#index"
       get  "users/:id" => "users#show"
     end

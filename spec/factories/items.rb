@@ -2,9 +2,8 @@
 
 FactoryGirl.define do
   factory :item do
-    association            :offer
     donor_description      { Faker::Lorem.sentence }
-    donor_condition        { generate :donor_conditions }
+    donor_condition        { create :donor_condition }
     state                  'draft'
     item_type_id           { create(:item_type).id }
     rejection_reason_id    { create(:rejection_reason).id }

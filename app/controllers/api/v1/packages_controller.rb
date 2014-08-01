@@ -4,9 +4,7 @@ module Api::V1
     load_and_authorize_resource :package, parent: false
 
     def index
-      if params[:ids].present?
-        @packages = @packages.find( params[:ids].split(",") )
-      end
+      @packages = @packages.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @packages, each_serializer: serializer
     end
 

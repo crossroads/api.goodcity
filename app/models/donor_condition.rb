@@ -1,4 +1,4 @@
-class RejectionReason < ActiveRecord::Base
+class DonorCondition < ActiveRecord::Base
 
   has_many :items
   translates :name
