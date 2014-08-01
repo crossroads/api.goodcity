@@ -1,4 +1,430 @@
 ---
 Sheung Shui:
-  :name_zh_tw: 上水
+  :name_zh_tw: "上水"
+  :territory_name_en: New Territories
+Sheung Wan:
+  :name_zh_tw: "上環"
+  :territory_name_en: Hong Kong Island
+Central:
+  :name_zh_tw: "中環"
+  :territory_name_en: Hong Kong Island
+Jordan:
+  :name_zh_tw: "佐敦"
+  :territory_name_en: Kowloon
+Yuen Long:
+  :name_zh_tw: "元朗"
+  :territory_name_en: New Territories
+North Point:
+  :name_zh_tw: "北角"
+  :territory_name_en: Hong Kong Island
+Mid-Levels:
+  :name_zh_tw: "半山`"
+  :territory_name_en: Hong Kong Island
+Nam Cheong:
+  :name_zh_tw: "南昌"
+  :territory_name_en: Kowloon
+Kwu Tung:
+  :name_zh_tw: "古洞"
+  :territory_name_en: New Territories
+Kai Tak:
+  :name_zh_tw: "啟德"
+  :territory_name_en: Kowloon
+Tai Wai:
+  :name_zh_tw: "大圍"
+  :territory_name_en: New Territories
+Tai Hau:
+  :name_zh_tw: "大坑"
+  :territory_name_en: Hong Kong Island
+Taipo:
+  :name_zh_tw: "大埔"
+  :territory_name_en: New Territories
+Tai Tong:
+  :name_zh_tw: "大棠"
+  :territory_name_en: New Territories
+Tai Lam:
+  :name_zh_tw: "大欖"
+  :territory_name_en: New Territories
+Tai Tam:
+  :name_zh_tw: "大潭"
+  :territory_name_en: Hong Kong Island
+Tin Hau:
+  :name_zh_tw: "天后"
+  :territory_name_en: Hong Kong Island
+Tai Koo:
+  :name_zh_tw: "太古"
+  :territory_name_en: Hong Kong Island
+Tai Wo:
+  :name_zh_tw: "太和"
+  :territory_name_en: New Territories
+Prince Edward:
+  :name_zh_tw: "太子"
+  :territory_name_en: Kowloon
+Olympic:
+  :name_zh_tw: "奧運"
+  :territory_name_en: Kowloon
+Siu Lam:
+  :name_zh_tw: "小欖"
+  :territory_name_en: New Territories
+Tuen Mun:
+  :name_zh_tw: "屯門"
+  :territory_name_en: New Territories
+The Peak:
+  :name_zh_tw: "山頂"
+  :territory_name_en: Hong Kong Island
+Choi Hung:
+  :name_zh_tw: "彩虹"
+  :territory_name_en: Kowloon
+Mong Kok:
+  :name_zh_tw: "旺角"
+  :territory_name_en: Kowloon
+Tung Chung:
+  :name_zh_tw: "東涌"
+  :territory_name_en: New Territories
+Chai Wan:
+  :name_zh_tw: "柴灣"
+  :territory_name_en: Hong Kong Island
+Lok Fu:
+  :name_zh_tw: "樂富"
+  :territory_name_en: Kowloon
+Airport:
+  :name_zh_tw: "機場"
+  :territory_name_en: New Territories
+Ting Kau:
+  :name_zh_tw: "汀九"
+  :territory_name_en: New Territories
+Sha Tin:
+  :name_zh_tw: "沙田"
+  :territory_name_en: New Territories
+Yau Tong:
+  :name_zh_tw: "油塘"
+  :territory_name_en: New Territories
+Sham Tseng:
+  :name_zh_tw: "深井"
+  :territory_name_en: New Territories
+The University of Hong Kong HKU:
+  :name_zh_tw: "香港大學"
+  :territory_name_en: Hong Kong Island
+Wan Chai:
+  :name_zh_tw: "灣仔"
+  :territory_name_en: Hong Kong Island
+Fo Tan:
+  :name_zh_tw: "火炭"
+  :territory_name_en: New Territories
+Shek Kong:
+  :name_zh_tw: "石崗"
+  :territory_name_en: New Territories
+Shek O:
+  :name_zh_tw: "石澳"
+  :territory_name_en: Hong Kong Island
+Fanling:
+  :name_zh_tw: "粉嶺"
+  :territory_name_en: New Territories
+Hung Hom:
+  :name_zh_tw: "紅磡"
+  :territory_name_en: Kowloon
+Mei Foo:
+  :name_zh_tw: "美孚"
+  :territory_name_en: Kowloon
+Tsuen Wan:
+  :name_zh_tw: "荃灣"
+  :territory_name_en: New Territories
+Lai King:
+  :name_zh_tw: "荔景"
+  :territory_name_en: New Territories
+Kwai Chung:
+  :name_zh_tw: "葵涌"
+  :territory_name_en: New Territories
+Lam Tei:
+  :name_zh_tw: "藍地"
+  :territory_name_en: New Territories
+Lam Tin:
+  :name_zh_tw: "藍田"
+  :territory_name_en: Kowloon
+Ho Chung:
+  :name_zh_tw: "蠔涌"
+  :territory_name_en: New Territories
+Sai Wan:
+  :name_zh_tw: "西環"
+  :territory_name_en: Hong Kong Island
+Sai Kung:
+  :name_zh_tw: "西貢"
+  :territory_name_en: New Territories
+Kwun Tong:
+  :name_zh_tw: "觀塘"
+  :territory_name_en: Kowloon
+Stanley:
+  :name_zh_tw: "赤柱"
+  :territory_name_en: Hong Kong Island
+Kwan Tei:
+  :name_zh_tw: "軍地"
+  :territory_name_en: New Territories
+Kam Shan:
+  :name_zh_tw: "金山"
+  :territory_name_en: Kowloon
+Admiralty:
+  :name_zh_tw: "金鐘"
+  :territory_name_en: Hong Kong Island
+Kam Tin:
+  :name_zh_tw: "錦田"
+  :territory_name_en: New Territories
+Fairview Park:
+  :name_zh_tw: "錦繡"
+  :territory_name_en: New Territories
+Tsing Yi:
+  :name_zh_tw: "青衣"
+  :territory_name_en: New Territories
+Ma Wan:
+  :name_zh_tw: "馬灣"
+  :territory_name_en: New Territories
+Sam Mun Tsai:
+  :name_zh_tw: "三門仔"
+  :territory_name_en: New Territories
+Kau To Shan:
+  :name_zh_tw: "九肚山"
+  :territory_name_en: New Territories
+Kowloon City:
+  :name_zh_tw: "九龍城"
+  :territory_name_en: Kowloon
+Kowloon Tong:
+  :name_zh_tw: "九龍塘"
+  :territory_name_en: Kowloon
+Kowloon Bay:
+  :name_zh_tw: "九龍灣"
+  :territory_name_en: Kowloon
+Tseng Lan Shue:
+  :name_zh_tw: "井欗樹"
+  :territory_name_en: Kowloon
+Ho Man Tin:
+  :name_zh_tw: "何文田"
+  :territory_name_en: Kowloon
+Shap Sze Heung:
+  :name_zh_tw: "十四鄉"
+  :territory_name_en: New Territories
+Asia World-Expo:
+  :name_zh_tw: "博覽館"
+  :territory_name_en: New Territories
+To Kwa Wan:
+  :name_zh_tw: "土瓜灣"
+  :territory_name_en: Kowloon
+Tai Au Mun:
+  :name_zh_tw: "大坳門"
+  :territory_name_en: New Territories
+Tai Mei Tuk:
+  :name_zh_tw: "大尾篤"
+  :territory_name_en: New Territories
+Tai Mo Shan:
+  :name_zh_tw: "大帽山"
+  :territory_name_en: New Territories
+Tai Mong Tsai:
+  :name_zh_tw: "大網仔"
+  :territory_name_en: New Territories
+Tai Kok Tsui:
+  :name_zh_tw: "大角咀"
+  :territory_name_en: Kowloon
+Tin Shui Wai:
+  :name_zh_tw: "天水圍"
+  :territory_name_en: New Territories
+Braemar Hill:
+  :name_zh_tw: "寶馬山"
+  :territory_name_en: Hong Kong Island
+Tseung Kwan O:
+  :name_zh_tw: "將軍澳"
+  :territory_name_en: New Territories
+Siu Sai Wan:
+  :name_zh_tw: "小西灣"
+  :territory_name_en: Hong Kong Island
+Tsim Sha Tsui:
+  :name_zh_tw: "尖沙咀"
+  :territory_name_en: Kowloon
+Po Toi O:
+  :name_zh_tw: "布袋澳"
+  :territory_name_en: New Territories
+Hong Lok Yuen:
+  :name_zh_tw: "康樂園"
+  :territory_name_en: New Territories
+Discovery Bay:
+  :name_zh_tw: "愉景灣"
+  :territory_name_en: New Territories
+Tsz Wan Shan:
+  :name_zh_tw: "慈雲山"
+  :territory_name_en: Kowloon
+Mount Davis:
+  :name_zh_tw: "摩星嶺"
+  :territory_name_en: Hong Kong Island
+Cyberport:
+  :name_zh_tw: "數碼港"
+  :territory_name_en: Hong Kong Island
+San Po Kong:
+  :name_zh_tw: "新蒲崗"
+  :territory_name_en: Kowloon
+Stonecutters Island:
+  :name_zh_tw: "昂船洲"
+  :territory_name_en: Kowloon
+Lei Muk Shue:
+  :name_zh_tw: "梨木樹"
+  :territory_name_en: New Territories
+Wang Tau Hom:
+  :name_zh_tw: "橫頭磡"
+  :territory_name_en: Kowloon
+Sha Tau Kok:
+  :name_zh_tw: "沙頭角"
+  :territory_name_en: New Territories
+Yau Ma Tei:
+  :name_zh_tw: "油麻地"
+  :territory_name_en: Kowloon
+Hung Shui Kiu:
+  :name_zh_tw: "洪水橋"
+  :territory_name_en: New Territories
+Lau Fau Shan:
+  :name_zh_tw: "流浮山"
+  :territory_name_en: New Territories
+Sham Shui Po:
+  :name_zh_tw: "深水埗"
+  :territory_name_en: Kowloon
+Deep Water Bay:
+  :name_zh_tw: "深水灣"
+  :territory_name_en: Hong Kong Island
+Repulse Bay:
+  :name_zh_tw: "淺水灣"
+  :territory_name_en: Hong Kong Island
+Jardines Lookout:
+  :name_zh_tw: "渣甸山"
+  :territory_name_en: Hong Kong Island
+Fortress Hill:
+  :name_zh_tw: "炮台山"
+  :territory_name_en: Hong Kong Island
+Ngau Tau Kok:
+  :name_zh_tw: "牛頭角"
+  :territory_name_en: Kowloon
+Beacon Hill:
+  :name_zh_tw: "畢架山"
+  :territory_name_en: Kowloon
+Shek Kip Mei:
+  :name_zh_tw: "石硤尾"
+  :territory_name_en: Kowloon
+Sau Mau Ping:
+  :name_zh_tw: "秀茂坪"
+  :territory_name_en: Kowloon
+Shau Kei Wan:
+  :name_zh_tw: "筲箕灣"
+  :territory_name_en: Hong Kong Island
+Chung Hom Kok:
+  :name_zh_tw: "舂坎角"
+  :territory_name_en: Hong Kong Island
+Lai Chi Kok:
+  :name_zh_tw: "荔枝角"
+  :territory_name_en: Kowloon
+Lok Ma Chau:
+  :name_zh_tw: "落馬洲"
+  :territory_name_en: New Territories
+Pok Fu Lam:
+  :name_zh_tw: "薄扶林"
+  :territory_name_en: Hong Kong Island
+Sai Wan Ho:
+  :name_zh_tw: "西灣河"
+  :territory_name_en: Hong Kong Island
+Sai Ying Pun:
+  :name_zh_tw: "西營盤"
+  :territory_name_en: Hong Kong Island
+Happy Valley:
+  :name_zh_tw: "跑馬地"
+  :territory_name_en: Hong Kong Island
+Disneyland:
+  :name_zh_tw: "迪士尼"
+  :territory_name_en: New Territories
+Silverstrand:
+  :name_zh_tw: "銀線灣"
+  :territory_name_en: New Territories
+Causeway Bay:
+  :name_zh_tw: "銅鑼灣"
+  :territory_name_en: Hong Kong Island
+Diamond Hill:
+  :name_zh_tw: "鑽石山"
+  :territory_name_en: Kowloon
+Cheung Sha Wan:
+  :name_zh_tw: "長沙灣"
+  :territory_name_en: Kowloon
+Hong Kong Parkview:
+  :name_zh_tw: "陽明山"
+  :territory_name_en: Hong Kong Island
+Shun Lee:
+  :name_zh_tw: "順利村"
+  :territory_name_en: Kowloon
+Fei Ngo Shan:
+  :name_zh_tw: "飛鵝山"
+  :territory_name_en: Kowloon
+Aberdeen:
+  :name_zh_tw: "香港仔"
+  :territory_name_en: Hong Kong Island
+Ma Liu Shui:
+  :name_zh_tw: "馬料水"
+  :territory_name_en: New Territories
+Ma Yau Tong:
+  :name_zh_tw: "馬油塘"
+  :territory_name_en: Kowloon
+Ma On Shan:
+  :name_zh_tw: "馬鞍山"
+  :territory_name_en: New Territories
+Quarry Bay:
+  :name_zh_tw: "鰂魚涌"
+  :territory_name_en: Hong Kong Island
+Ap Lei Chau:
+  :name_zh_tw: "鴨利洲"
+  :territory_name_en: Hong Kong Island
+Wong Tai Sin:
+  :name_zh_tw: "黃大仙"
+  :territory_name_en: Kowloon
+Wong Chuk Hang:
+  :name_zh_tw: "黃竹坑"
+  :territory_name_en: Hong Kong Island
+Lung Kwu Tan:
+  :name_zh_tw: "龍鼓灘"
+  :territory_name_en: New Territories
+Tate's Cairn:
+  :name_zh_tw: "大老山"
+  :territory_name_en: New Territories
+Kwun Yam Shan:
+  :name_zh_tw: "觀音山"
+  :territory_name_en: New Territories
+The Chinese University of Hong Kong CUHK:
+  :name_zh_tw: "中文大學"
+  :territory_name_en: New Territories
+Palm Springs:
+  :name_zh_tw: "加洲花園"
+  :territory_name_en: New Territories
+City University of Hong Kong:
+  :name_zh_tw: "城市大學"
+  :territory_name_en: Kowloon
+Kennedy Town:
+  :name_zh_tw: "堅尼地城"
+  :territory_name_en: Hong Kong Island
+Lingnan University:
+  :name_zh_tw: "嶺南大學"
+  :territory_name_en: New Territories
+The Hong Kong Institute of Education:
+  :name_zh_tw: "教育學院"
+  :territory_name_en: New Territories
+Lohas Park:
+  :name_zh_tw: "日出康城"
+  :territory_name_en: New Territories
+Hong Kong Shue Yan University:
+  :name_zh_tw: "樹仁大學"
+  :territory_name_en: Hong Kong Island
+The Ocean Park:
+  :name_zh_tw: "海洋公園"
+  :territory_name_en: Hong Kong Island
+Hong Kong Baptist University HKBU:
+  :name_zh_tw: "浸會大學"
+  :territory_name_en: Kowloon
+The Hong Kong Polytechnic University HKPU:
+  :name_zh_tw: "理工大學"
+  :territory_name_en: Kowloon
+The Hong Kong University of Science and Technology HKUST:
+  :name_zh_tw: "科技大學"
+  :territory_name_en: New Territories
+Wonderland Villas:
+  :name_zh_tw: "華景山莊"
+  :territory_name_en: New Territories
+Tseung Kwan O Industrial Estate:
+  :name_zh_tw: "將軍澳工業邨"
   :territory_name_en: New Territories
