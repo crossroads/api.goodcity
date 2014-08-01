@@ -15,6 +15,7 @@ class ApplicationController < ActionController::API
   end
 
   private
+
   def set_locale
     I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
   end
@@ -24,8 +25,8 @@ class ApplicationController < ActionController::API
   end
 
   def token_header
-    authurization_token = request.headers['Authorization'].try(:sub, "Bearer","")
-    authurization_token.present? ? authurization_token.try(:split, ' ').try(:last) : "undefined"
+    authorization_token = request.headers['Authorization'].try(:sub, "Bearer","")
+    authorization_token.present? ? authorization_token.try(:split, ' ').try(:last) : "undefined"
   end
 
   def validate_token
