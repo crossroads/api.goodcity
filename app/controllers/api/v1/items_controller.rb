@@ -54,7 +54,7 @@ module Api::V1
       end
 
       # remove deleted image records
-      (@item.image_identifiers - image_ids).each do |img|
+      (@item.images.image_identifiers - image_ids).each do |img|
         @item.images.where(image_id: img).first.try(:destroy)
       end
 
