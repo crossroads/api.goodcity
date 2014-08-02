@@ -31,12 +31,12 @@ class Item < ActiveRecord::Base
   end
 
   def image_identifiers
-    images.pluck(:image)
+    images.pluck(:image_id)
   end
 
   def set_favourite_image(fav_image_id)
     images.get_favourite.try(:remove_favourite)
-    images.where(image: fav_image_id).first.set_favourite
+    images.where(image_id: fav_image_id).first.set_favourite
   end
 
 end

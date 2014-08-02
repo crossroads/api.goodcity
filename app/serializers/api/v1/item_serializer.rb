@@ -15,11 +15,11 @@ module Api::V1
     has_one  :donor_condition, serializer: DonorConditionSerializer
 
     def image_identifiers
-      object.images.pluck(:image).join(',')
+      object.images.pluck(:image_id).join(',')
     end
 
     def favourite_image
-      object.images.get_favourite.try(:image)
+      object.images.get_favourite.try(:image_id)
     end
   end
 
