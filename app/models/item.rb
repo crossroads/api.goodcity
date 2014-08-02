@@ -8,6 +8,8 @@ class Item < ActiveRecord::Base
   has_many   :images,    as: :parent, dependent: :destroy
   has_many   :packages
 
+  validates :donor_condition_id, presence: true
+
   state_machine :state, initial: :draft do
     state :rejected
     state :pending

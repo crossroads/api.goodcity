@@ -22,6 +22,10 @@ RSpec.describe Item, type: :model do
     it { should have_db_column(:saleable).of_type(:boolean) }
   end
 
+  describe "validations" do
+    it { should validate_presence_of(:donor_condition_id) }
+  end
+
   describe 'Scope Methods' do
     let!(:offer)   { create :offer } # creates it's own item
     let!(:an_item) { create :item } # this item should not be changed
