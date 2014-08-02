@@ -41,22 +41,15 @@ RSpec.describe Item, type: :model do
     let!(:image1) { create :favourite_image, parent: item }
     let!(:image2) { create :image, parent: item  }
 
-    describe 'image_identifiers' do
-      it 'should update all items of offer' do
-        expect(
-          item.image_identifiers
-        ).to include(image1.image_id)
-      end
-    end
-
     describe 'set_favourite_image' do
       it 'should set given image as favourite image' do
         expect{
           item.set_favourite_image(image2.image_id)
         }.to change {
-          item.images.get_favourite
-        }.from( image1 ).to( image2 )
+          item.images.favourites.to_a
+        }.from( [image1] ).to( [image2] )
       end
+
     end
   end
 end

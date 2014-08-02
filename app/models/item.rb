@@ -30,13 +30,9 @@ class Item < ActiveRecord::Base
     update_all(saleable: true)
   end
 
-  def image_identifiers
-    images.pluck(:image_id)
-  end
-
-  def set_favourite_image(fav_image_id)
-    images.get_favourite.try(:remove_favourite)
-    images.where(image_id: fav_image_id).first.set_favourite
+  def set_favourite_image(image_id)
+    images.favourites.map(&:remove_favourite)
+    images.find_by_image_id(image_id).try(:set_favourite)
   end
 
 end

@@ -17,15 +17,19 @@ RSpec.describe Image, type: :model do
 
   describe 'Scope Methods' do
     let!(:images) { create_list :image, 3 }
-    let!(:fav_image) { create :favourite_image }
+    let!(:favourite_image) { create :favourite_image }
 
-    it 'get_favourite' do
-      expect(Image.get_favourite).to eq(fav_image)
+    it 'favourites' do
+      expect(Image.favourites).to eq( [favourite_image] )
+    end
+
+    it 'image_identifiers' do
+      expect(Image.image_identifiers).to eq( Image.all.order(:id).pluck(:image_id) )
     end
   end
 
   describe 'Instance Methods' do
-    let!(:fav_image) { create :favourite_image }
+    let!(:favourite_image) { create :favourite_image }
     let!(:image) { create :image }
 
     it 'set_favourite' do
@@ -34,8 +38,8 @@ RSpec.describe Image, type: :model do
 
     it 'remove_favourite' do
       expect{
-        fav_image.remove_favourite
-      }.to change { fav_image.favourite }.to(false)
+        favourite_image.remove_favourite
+      }.to change { favourite_image.favourite }.to(false)
     end
   end
 end

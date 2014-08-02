@@ -5,7 +5,8 @@ class Image < ActiveRecord::Base
   belongs_to :parent, polymorphic: true
   before_destroy :delete_image_from_cloudinary
 
-  scope :get_favourite, -> { where(favourite: true).first }
+  scope :favourites, -> { order(:id).where(favourite: true) }
+  scope :image_identifiers, -> { order(:id).pluck(:image_id) }
 
   def set_favourite
     update_column(:favourite, true)

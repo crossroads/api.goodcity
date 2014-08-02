@@ -9,5 +9,9 @@ FactoryGirl.define do
     rejection_reason_id    { create(:rejection_reason).id }
     rejection_other_reason { Faker::Lorem.sentence }
     packages               { create_list(:package, (rand(2)+1)) }
+
+    trait :with_images do
+      images               { create_list(:image, 2) }
+    end
   end
 end
