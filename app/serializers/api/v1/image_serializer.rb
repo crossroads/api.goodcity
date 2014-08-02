@@ -13,9 +13,5 @@ module Api::V1
       object.thumb_image_url
     end
 
-    def image_id
-      object.image_id
-    end
-
   end
 end
