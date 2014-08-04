@@ -13,24 +13,36 @@ module Api::V1
       if @result.class == User
         warden.set_user(@result)
         render json: {token: @result.friendly_token,
-          msg: I18n.t(:success)}, status: :ok
+          message: I18n.t(:success)}, status: :ok
       else
-        render json: {token: "", msg: @result}, status: :forbidden
+        throw(:warden, {status: :forbidden,
+          message: {
+          text:  @result,
+          token: ""}
+      })
       end
     end
 
     def verify
-      user       = warden.authenticate! :pin
-      json_token = generate_enc_session_token(user.mobile, token_header) if user
-      render json: {jwt_token: (user.present? ? json_token : "")}
+      user = warden.authenticate! :pin
+      if warden.authenticated?
+        json_token = generate_enc_session_token(user.mobile, token_header) if user
+        render json: {jwt_token: (user.present? ? json_token : "")}, status: :ok
+      else
+        throw(:warden, {status: :unauthorized,
+          message: {
+            text: I18n.t('warden.token_invalid'),
+            jwt_token: ""}
+        })
+      end
     end
 
     def is_unique_mobile_number
-      render json: { is_unique_mobile: unique_user.blank? }
+      render json: { is_unique_mobile: unique_user.blank? }, status: :ok
     end
 
     def unique_user
-      User.check_for_mobile_uniqueness(params[:mobile])
+      User.check_for_mobile_uniqueness(params[:mobile]).first
     end
 
     private
@@ -45,19 +57,24 @@ module Api::V1
         render json: { mobile_exist: true ,
           token: user.friendly_token}, status: :ok
       else
-        render json: { mobile_exist: false, token: "" }, status: :unauthorized
+        throw(:warden, {status: :unauthorized,
+          message: {
+            text: I18n.t('auth.mobile_doesnot_exists'),
+            token: "",
+            mobile_exist: false}
+        })
       end
     end
 
     def search_by_token
-      user= User.find_user_based_on_auth(token_header)
-      if user.send_verification_pin
-        render json: { token: token_header,
-          msg: I18n.t('auth.pin_sent') }, status: :ok
-      else
-        render json: { token: "",
-          msg: I18n.t('auth.mobile_required') }, status: :unauthorized
-      end
+      user = User.find_user_based_on_auth(token_header).first
+      render json: { token: token_header, message: I18n.t('auth.pin_sent') }, status: :ok if  user.send_verification_pin
+    rescue
+      throw(:warden, {status: :unauthorized,
+        message: {
+          text:  I18n.t('auth.mobile_required'),
+          token: ""}
+      })
     end
   end
 end

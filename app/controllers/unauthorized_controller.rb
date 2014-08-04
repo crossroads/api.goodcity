@@ -1,18 +1,27 @@
 class UnauthorizedController < ActionController::Metal
   include ActionController::UrlFor
+  include ActionController::RackDelegation
   include ActionController::Redirecting
-  include Rails.application.routes.url_helpers
-  include Rails.application.routes.mounted_helpers
+  include AbstractController::Rendering
+  include ActionController::Renderers::All
 
   def self.call(env)
     @respond ||= action(:respond)
     @respond.call(env)
   end
 
+  def warden_options
+    request.env["warden.options"]
+  end
+
+  def warden_message
+
+    @message ||= (warden_options.fetch(:message, "unauthorized.user"))
+  end
+
   def respond
-    unless request.get?
-      message = env['warden.options'].fetch(:message, "unauthorized.user")
-      # I18n.t(message)
-    end
+    self.status = @status ||= :unauthorized
+    self.content_type = request.format.to_s
+    self.response_body = { :error => warden_message }.to_json
   end
 end

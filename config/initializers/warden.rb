@@ -2,7 +2,6 @@ Rails.application.config.middleware.use Warden::Manager do |manager|
   manager.default_strategies :pin
   manager.failure_app = UnauthorizedController
 end
-
  # Setup Session Serialization
 Warden::Manager.serialize_into_session do |user|
   user.auth_tokens.first.otp_secret_key
@@ -18,15 +17,13 @@ Warden::Strategies.add(:pin) do
     auth_token.present? && params["pin"].present?
   end
 
-  # TODO:: Yet to wrap up completedly with the methods of ActiveModel_otp
   def authenticate!
-    user = User.find_user_based_on_auth(auth_token)
+    user = User.find_user_based_on_auth(auth_token).first
     if user && user.auth_tokens.recent_auth_token.authenticate_otp(params["pin"], {drift: OTP_TOKEN_VALIDITY})
       success! user
     else
       fail! user
     end
-
  end
 
  def auth_token

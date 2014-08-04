@@ -8,5 +8,7 @@ en:
   auth:
     pin_sent: A pin has been sent to your mobile device.
     mobile_required: Please provide a mobile number.
+    mobile_exists: Mobile number already exists.
+    mobile_doesnot_exists: Mobile number does not exist.
   twilio:
     sms_verification_pin: Your pin is %{pin} and will expire by %{expiry}.

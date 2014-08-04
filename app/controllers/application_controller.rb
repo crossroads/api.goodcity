@@ -30,9 +30,12 @@ class ApplicationController < ActionController::API
   end
 
   def validate_token
-    unless token_header.blank?
+    unless token_header.blank? || token_header == "undefined"
       jwt_decoded_json = decode_session_token(token_header)
-      auth_info = validate_authenticity_of_jwt(jwt_decoded_json)
+      validate_authenticity_of_jwt(jwt_decoded_json)
+    else
+      throw(:warden, {status: :unauthorized,
+       message: I18n.t('warden.token_invalid'), value: false})
     end
   end
 
@@ -52,11 +55,10 @@ class ApplicationController < ActionController::API
   # Decode the json web token when we receive it from the client
   # before proceeding ahead
   def decode_session_token(token)
-    #TODO: while decoding time use Time.at(iat)
     begin
       JWT.decode(token, SECRET_KEY, HMAC_SHA_ALGO)
     rescue JWT::DecodeError
-      render nothing: true, status: :unauthorized
+      render json: {message: "JWT::DecodeError"}, status: :unauthorized
     end
   end
 
@@ -66,29 +68,29 @@ class ApplicationController < ActionController::API
   # Time.now should not be more than 14 days, that means time.now and
   # exp should not be equal
   def validate_authenticity_of_jwt(jwt_decoded_json)
-    unless jwt_decoded_json.all? &:blank?
+    unless (jwt_decoded_json.all? &:blank?)
       cur_time = Time.now
       iat_time = Time.at(jwt_decoded_json["iat"])
       exp_time = Time.at(jwt_decoded_json["exp"])
       case cur_time.present?
         when (iat_time < cur_time && exp_time >= cur_time && iat_time < exp_time) == true
-          {msg: I18n.t('warden.token_valid'), status: :ok , value: true}
+          {message: I18n.t('warden.token_valid'), status: :ok , value: true}
         when iat_time > cur_time == true
           throw(:warden, {status: :forbidden,
-            msg: I18n.t('warden.token_invalid'), value: false})
+            message: I18n.t('warden.token_invalid'), value: false})
         when exp_time < cur_time == true
           throw(:warden, {status: :forbidden,
-            msg: I18n.t('warden.token_expired'), value: false})
+            message: I18n.t('warden.token_expired'), value: false})
         when iat_time < exp_time == true
           throw(:warden, {status: :forbidden,
-            msg: I18n.t('warden.token_invalid'), value: false})
+            message: I18n.t('warden.token_invalid'), value: false})
         else
           throw(:warden, {status: :unauthorized,
-            msg: I18n.t('warden.token_invalid'), value: false})
+            message: I18n.t('warden.token_invalid'), value: false})
       end
     else
       throw(:warden, {status: :unauthorized,
-        msg: I18n.t('warden.token_invalid'), value: false})
+        message: I18n.t('warden.token_invalid'), value: false})
     end
   end
 end

@@ -35,14 +35,14 @@ describe User, :type => :model do
         user1 = user_fg
         user2 = user_fg
         auth_user1_otp_skey = user1.auth_tokens.first.otp_secret_key
-        expect(User.find_user_based_on_auth(auth_user1_otp_skey)).to eq (user1)
+        expect(User.find_user_based_on_auth(auth_user1_otp_skey).first).to eq (user1)
       end
     end
 
     describe '.check_for_mobile_uniqueness' do
       let!(:user) {create :user_with_specifics}
       it 'check for mobile number' do
-        expect(User.check_for_mobile_uniqueness(user_valid_attr[:mobile])).to eq(user)
+        expect(User.check_for_mobile_uniqueness(user_valid_attr[:mobile]).first).to eq(user)
       end
     end
 
