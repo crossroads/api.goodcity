@@ -2,7 +2,7 @@ class ApplicationController < ActionController::API
 
   include CanCan::ControllerAdditions
 
-  #~ before_action :validate_token
+  before_action :validate_token
   before_action :set_locale
   helper_method :current_user
 
