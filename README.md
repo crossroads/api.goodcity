@@ -29,7 +29,7 @@ Using capistrano, commit all changes to master branch and push to github. Then t
 
     cap production deploy
 
-This will deploy changes to api.goodcity.hk
+This will deploy changes to api.goodcity.hk (make sure your ssh keys are loaded)
 
 ## Documentation
 
