@@ -1,6 +1,6 @@
 module Api::V1
   class TerritoriesController < Api::V1::ApiController
-
+    skip_before_action :validate_token, only: [:index]
     load_and_authorize_resource :territory, parent: false
 
     def index
