@@ -1,7 +1,7 @@
 base: &BASE
-  account_sid: "AC6b8a8ca83ef5241cfba565c7cc3072f1"
-  auth_token: "7264f04e543924113253ee98f2ef5d89"
-  twilio_phone_number: "+18653126796"
+  account_sid: <%= ENV['TWILIO_ACCOUNT_SID'] %>
+  auth_token: <%= ENV['TWILIO_AUTH_TOKEN'] %>
+  twilio_phone_number: <%= ENV['TWILIO_PHONE_NUMBER'] %>
 
 development:
   <<: *BASE
