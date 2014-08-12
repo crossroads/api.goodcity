@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   has_many :messages, foreign_key: :sender_id, inverse_of: :sender
   has_and_belongs_to_many :permissions
 
+  validates_uniqueness_of :mobile
+
   after_create :generate_auth_token
 
   scope :find_user_based_on_auth, ->(otp_key) {
@@ -14,7 +16,7 @@ class User < ActiveRecord::Base
     begin
       transaction do
         user = new(user_params)
-        user.send_verification_pin if user.save
+        user.send_verification_pin if user.save!
         user
       end
     rescue Twilio::REST::RequestError => e
@@ -26,11 +28,11 @@ class User < ActiveRecord::Base
   end
 
   def friendly_token
-    auth_tokens.recent_auth_token["otp_secret_key"]
+    auth_tokens.recent_auth_token["otp_secret_key"] unless auth_tokens.blank?
   end
 
   def token_expiry
-    auth_tokens.recent_auth_token["otp_code_expiry"]
+    auth_tokens.recent_auth_token["otp_code_expiry"] unless auth_tokens.blank?
   end
 
   def reviewer?

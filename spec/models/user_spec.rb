@@ -63,7 +63,7 @@ describe User, :type => :model do
       end
       it 'raise error if mobile alreay exists' do
         user_with_same_mobile = User.new(user_valid_attr)
-        expect {user_with_same_mobile.save}.to raise_error(ActiveRecord::RecordNotUnique)
+        expect {user_with_same_mobile.save!}.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'create an auth_token' do

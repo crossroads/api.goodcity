@@ -4,7 +4,7 @@ Rails.application.config.middleware.use Warden::Manager do |manager|
 end
  # Setup Session Serialization
 Warden::Manager.serialize_into_session do |user|
-  user.auth_tokens.first.otp_secret_key
+  user.auth_tokens.first.try(:otp_secret_key)
 end
 
 Warden::Manager.serialize_from_session do |otp_key|
@@ -16,7 +16,6 @@ Warden::Strategies.add(:pin) do
   def valid?
     auth_token.present? && params["pin"].present?
   end
-
   def authenticate!
     user = User.find_user_based_on_auth(auth_token).first
     if user && user.auth_tokens.recent_auth_token.authenticate_otp(params["pin"], {drift: OTP_TOKEN_VALIDITY})

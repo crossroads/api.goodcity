@@ -4,7 +4,7 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :name
 
-    # has_one :territory, serializer: TerritorySerializer
+    has_one :territory, serializer: TerritorySerializer
 
   end
 
