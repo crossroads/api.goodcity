@@ -48,7 +48,7 @@ class ApplicationController < ActionController::API
       "exp" => (cur_time + 14.days).to_i,
       "mobile"  => user_mobile,
       "otp_secret_key"  => user_otp_skey},
-      SECRET_KEY,
+      JWT_SECRET_KEY,
       HMAC_SHA_ALGO)
   end
 
@@ -56,7 +56,7 @@ class ApplicationController < ActionController::API
   # before proceeding ahead
   def decode_session_token(token)
     begin
-      JWT.decode(token, SECRET_KEY, HMAC_SHA_ALGO)
+      JWT.decode(token, JWT_SECRET_KEY, HMAC_SHA_ALGO)
     rescue JWT::DecodeError
       render json: {message: "JWT::DecodeError"}, status: :unauthorized
     end
