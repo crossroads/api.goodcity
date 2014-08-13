@@ -3,8 +3,9 @@ Rails.application.config.middleware.use Rack::Cors do
     #~ if Rails.env == 'production'
       #~ origins 'app.goodcity.hk'
     #~ else
-      origins '*'
+      #~ origins '*'
     #~ end
+    origins '*'
     resource '*', headers: :any,
                   methods: [:get, :post, :put, :delete, :options]
   end

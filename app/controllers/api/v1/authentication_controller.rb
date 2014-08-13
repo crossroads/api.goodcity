@@ -59,7 +59,7 @@ module Api::V1
       else
         throw(:warden, {status: :unauthorized,
           message: {
-            text: I18n.t('auth.mobile_doesnot_exists'),
+            text: I18n.t('auth.mobile_doesnot_exist'),
             token: "",
             mobile_exist: false}
         })
