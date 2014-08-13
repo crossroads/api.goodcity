@@ -8,6 +8,6 @@ FactoryGirl.define do
 
   factory :scenario_before_auth_token, parent: :auth_token do
     otp_code {521175}
-    otp_code_expiry { Time.now + OTP_TOKEN_VALIDITY }
+    otp_code_expiry { Time.now + Rails.application.secrets.jwt['otp_token_validity'] }
   end
 end

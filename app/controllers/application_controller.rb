@@ -44,19 +44,19 @@ class ApplicationController < ActionController::API
   def generate_enc_session_token(user_mobile, user_otp_skey)
     cur_time = Time.now
     JWT.encode({"iat" => cur_time.to_i,
-      "iss" => ISSUER,
+      "iss" => jwt_config['issuer'],
       "exp" => (cur_time + 14.days).to_i,
       "mobile"  => user_mobile,
       "otp_secret_key"  => user_otp_skey},
-      JWT_SECRET_KEY,
-      HMAC_SHA_ALGO)
+      jwt_config['secret_key'],
+      jwt_config['hmac_sha_algo'])
   end
 
   # Decode the json web token when we receive it from the client
   # before proceeding ahead
   def decode_session_token(token)
     begin
-      JWT.decode(token, JWT_SECRET_KEY, HMAC_SHA_ALGO)
+      JWT.decode(token, jwt_config['secret_key'], jwt_config['hmac_sha_algo'])
     rescue JWT::DecodeError
       render json: {message: "JWT::DecodeError"}, status: :unauthorized
     end
@@ -93,4 +93,9 @@ class ApplicationController < ActionController::API
         message: I18n.t('warden.token_invalid'), value: false})
     end
   end
+
+  def jwt_config
+    Rails.application.secrets.jwt
+  end
+
 end

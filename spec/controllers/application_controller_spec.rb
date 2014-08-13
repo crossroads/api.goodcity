@@ -65,7 +65,7 @@ RSpec.describe ApplicationController, type: :controller do
         jwt_decoded_json = controller.send(:decode_session_token, token_header_value)
 
         expect(jwt_decoded_json["iat"]).to be <= cur_time
-        expect(jwt_decoded_json["iss"]).to eq(ISSUER)
+        expect(jwt_decoded_json["iss"]).to eq(Rails.application.secrets.jwt['issuer'])
         expect(jwt_decoded_json["exp"]).to be > cur_time
         expect(jwt_decoded_json["mobile"]).to eq(user.mobile)
         expect(jwt_decoded_json["otp_secret_key"]).to eq(user.friendly_token)

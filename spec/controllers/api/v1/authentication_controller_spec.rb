@@ -53,7 +53,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         decoded_token = controller.send(:decode_session_token , jwt_token)
         expect(decoded_token["mobile"]).to eq(user.mobile)
         expect(decoded_token["otp_secret_key"]).to eq(user.friendly_token)
-        expect(decoded_token["iss"]).to eq(ISSUER)
+        expect(decoded_token["iss"]).to eq(Rails.application.secrets.jwt['issuer'])
         expect(decoded_token["exp"]).to be > cur_time.to_i
         expect(decoded_token["iat"]).to be <= cur_time.to_i
       end

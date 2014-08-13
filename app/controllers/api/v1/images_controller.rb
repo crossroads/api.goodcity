@@ -3,13 +3,24 @@ module Api::V1
 
     def generate_cloudinary_signature
       unix_timestamp    = Time.now.to_i
-      serialized_params = "callback=#{CORS_FILE_PATH}&timestamp=#{unix_timestamp}#{CLOUDINARY_CONFIG[:api_secret]}"
+      serialized_params = "callback=#{callback}&timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
       signature         = Digest::SHA1.hexdigest(serialized_params)
       render json: {
-        api_key:   CLOUDINARY_CONFIG[:api_key],
-        callback:  CORS_FILE_PATH,
+        api_key:   cloudinary_config['api_key'],
+        callback:  callback,
         signature: signature,
         timestamp: unix_timestamp }.to_json
+    end
+
+    private
+
+    def cloudinary_config
+      Rails.application.secrets.cloudinary
+    end
+
+    def callback
+      host = request.original_url.gsub(request.fullpath, '')
+      "#{host}/cloudinary_cors.html"
     end
 
   end
