@@ -30,8 +30,12 @@ class Ability
       # Image
       # Message
       # Package
-      # User
 
+      # User
+      can [:show, :update], User, id: user.id
+      can [:index, :show, :update], User if user.reviewer? or user.supervisor?
+
+      # Taxonomies
       can [:index, :show], DonorCondition
       can [:index, :show], ItemType
       can [:index, :show], RejectionReason
