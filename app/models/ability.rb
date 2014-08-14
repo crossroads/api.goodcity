@@ -1,37 +1,41 @@
 class Ability
   include CanCan::Ability
 
+  #
+  # Actions :index, :show, :create, :update, :destroy, :manage
+  # See the wiki for details: https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
+  #
+
   def initialize(user)
 
-    user ||= User.new # guest user (not logged in)
-    if user.admin?
-      can :manage, :all
-    elsif user.reviewer?
-      can :manage, :all
-    elsif user.supervisor?
-      can :manage, :all
-    else
-      #~ can :read, :create, :update, Offer, created_by_id: id
-      can :manage, :all # ALERT!! OPEN ACCESS FOR NOW
+    if user.present?
+
+      can(:manage, :all) if user.admin?
+
+      # Offer
+      can :create, Offer
+      can [:index, :show, :update], Offer, created_by_id: user.id
+      can [:index, :show, :update], Offer if user.reviewer? or user.supervisor?
+      can :destroy, Offer, created_by_id: user.id, state: 'draft'
+      can :destroy, Offer, state: 'draft' if user.reviewer?
+      can :destroy, Offer if user.supervisor?
+
+      #Item
+      can [:index, :show, :create, :update], Item, offer: { created_by_id: user.id }
+      can [:index, :show, :create, :update], Item if user.reviewer? or user.supervisor?
+      can :destroy, Item, offer: { created_by_id: user.id }, state: 'draft'
+      can :destroy, Item, state: 'draft' if user.reviewer?
+      can :destroy, Item if user.supervisor?
+
+    else # Guest user (not logged in)
+      #~ can [:index, :show], DonorCondition
+      #~ can [:index, :show], ItemType
+      #~ can [:index, :show], RejectionReason
     end
 
-    #
-    # The first argument to `can` is the action you are giving the user
-    # permission to do.
-    # If you pass :manage it will apply to every action. Other common actions
-    # here are :read, :create, :update and :destroy.
-    #
-    # The second argument is the resource the user can perform the action on.
-    # If you pass :all it will apply to every resource. Otherwise pass a Ruby
-    # class of the resource.
-    #
-    # The third argument is an optional hash of conditions to further filter the
-    # objects.
-    # For example, here the user can only update published articles.
-    #
-    #   can :update, Article, :published => true
-    #
-    # See the wiki for details:
-    # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
+    # ALL
+    can [:index, :show], District
+    can [:index, :show], Territory
+
   end
 end
