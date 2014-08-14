@@ -20,20 +20,25 @@ class Ability
       can :destroy, Offer, state: 'draft' if user.reviewer?
       can :destroy, Offer if user.supervisor?
 
-      #Item
+      # Item
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user.id }
       can [:index, :show, :create, :update], Item if user.reviewer? or user.supervisor?
       can :destroy, Item, offer: { created_by_id: user.id }, state: 'draft'
       can :destroy, Item, state: 'draft' if user.reviewer?
       can :destroy, Item if user.supervisor?
 
-    else # Guest user (not logged in)
-      #~ can [:index, :show], DonorCondition
-      #~ can [:index, :show], ItemType
-      #~ can [:index, :show], RejectionReason
+      # Image
+      # Message
+      # Package
+      # User
+
+      can [:index, :show], DonorCondition
+      can [:index, :show], ItemType
+      can [:index, :show], RejectionReason
+
     end
 
-    # ALL
+    # Anonymous and all users
     can [:index, :show], District
     can [:index, :show], Territory
 
