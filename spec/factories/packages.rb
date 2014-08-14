@@ -7,9 +7,13 @@ FactoryGirl.define do
     width       { rand(199) + 1 }
     height      { rand(199) + 1 }
     notes       { Faker::Lorem.paragraph }
-    state       'draft'
-    package_type_id { create(:item_type).id }
     received_at nil
     rejected_at nil
+
+    association :package_type, factory: :item_type
+
+    trait :with_item do
+      association :item
+    end
   end
 end
