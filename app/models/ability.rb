@@ -27,14 +27,20 @@ class Ability
       can :destroy, Item, state: 'draft' if user.reviewer?
       can :destroy, Item if user.supervisor?
 
-      # Package (same as item permissions
+      # Package (same as item permissions)
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user.id } }
       can [:index, :show, :create, :update], Package if user.reviewer? or user.supervisor?
       can :destroy, Package, item: { offer: { created_by_id: user.id }, state: 'draft' }
       can :destroy, Package, item: { state: 'draft' } if user.reviewer?
       can :destroy, Package if user.supervisor?
 
-      # Image
+      # Image (same as item permissions)
+      can [:index, :show, :create, :update], Image, parent: { offer: { created_by_id: user.id } }
+      can [:index, :show, :create, :update], Image if user.reviewer? or user.supervisor?
+      can :destroy, Image, parent: { offer: { created_by_id: user.id }, state: 'draft' }
+      can :destroy, Image, parent: { state: 'draft' } if user.reviewer?
+      can :destroy, Image if user.supervisor?
+
       # Message
 
       # User
