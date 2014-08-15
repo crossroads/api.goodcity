@@ -41,7 +41,12 @@ class Ability
       can :destroy, Image, parent: { state: 'draft' } if user.reviewer?
       can :destroy, Image if user.supervisor?
 
-      # Message
+      # Message (recipient and sender and admins, not user if private is true)
+      can [:index, :show, :create, :update, :destroy], Message if user.supervisor?
+      can [:index, :show, :create], Message if user.reviewer?
+      can [:index, :show, :create], Message, sender_id: user.id, private: false
+      can [:index, :show, :create], Message, recipient: { created_by_id: user.id }, private: false
+
 
       # User
       can [:show, :update], User, id: user.id

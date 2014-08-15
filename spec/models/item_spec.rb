@@ -29,7 +29,7 @@ RSpec.describe Item, type: :model do
   end
 
   describe 'Scope Methods' do
-    let!(:offer)   { create :offer } # creates it's own item
+    let!(:offer)   { create :offer, :with_items }
     let!(:an_item) { create :item } # this item should not be changed
 
     describe 'update_saleable' do
