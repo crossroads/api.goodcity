@@ -120,6 +120,8 @@ GEM
     net-ssh (2.9.1)
     netrc (0.7.7)
     newrelic_rpm (3.9.0.229)
+    oj (2.10.0)
+    oj_mimic_json (1.0.1)
     pg (0.17.1)
     polyglot (0.3.5)
     pry (0.10.0)
@@ -270,6 +272,8 @@ DEPENDENCIES
   http_accept_language (~> 2.0.1)
   jwt (~> 0.1.13)
   newrelic_rpm
+  oj
+  oj_mimic_json
   pg
   puma
   rack-cors

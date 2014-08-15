@@ -27,6 +27,8 @@ gem 'traco'
 gem 'rails-i18n', '~> 4'
 gem 'http_accept_language', '~> 2.0.1'
 gem 'dotenv-rails'
+gem 'oj'
+gem 'oj_mimic_json'
 
 group :development do
   gem 'spring'
