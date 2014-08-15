@@ -3,7 +3,7 @@
 
 donor_conditions = YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
 donor_conditions.each do |name, value|
-  FactoryGirl.create :donor_condition, name: name, name_zh_tw: value[:name_zh_tw]
+  FactoryGirl.create :donor_condition, name_en: name, name_zh_tw: value[:name_zh_tw]
 end
 
 item_types = YAML.load_file("#{Rails.root}/db/item_types.yml")
