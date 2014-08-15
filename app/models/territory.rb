@@ -3,4 +3,7 @@ class Territory < ActiveRecord::Base
   validates :name_en, presence: true
 
   translates :name
+
+  scope :with_eager_load, -> { includes( :districts ) }
+
 end

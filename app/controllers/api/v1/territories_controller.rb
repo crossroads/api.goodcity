@@ -4,6 +4,7 @@ module Api::V1
     load_and_authorize_resource :territory, parent: false
 
     def index
+      @territories = @territories.with_eager_load # this maintains security
       @territories = @territories.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @territories, each_serializer: serializer
     end
