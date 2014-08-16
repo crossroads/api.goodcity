@@ -31,7 +31,5 @@ module GoodCityServer
 
     config.i18n.available_locales = ['en', 'zh-tw']
 
-    #~ config.cache_store = :redis_store, { namespace: 'goodcity' }
-
   end
 end

@@ -29,7 +29,7 @@ gem 'dotenv-rails'
 gem 'oj'
 gem 'oj_mimic_json'
 gem 'redis'
-gem 'redis-store'
+gem 'redis-rails'
 
 group :development do
   gem 'spring'
