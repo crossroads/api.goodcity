@@ -25,7 +25,6 @@ module Api::V1
 
     def destroy
       @item.offer.submitted? ? @item.destroy : @item.really_destroy!
-      @item.destroy
       render json: {}
     end
 
