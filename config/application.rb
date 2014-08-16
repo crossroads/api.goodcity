@@ -27,9 +27,11 @@ module GoodCityServer
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    config.autoload_paths += %W(#{config.root}/serializers #{config.root}/uploaders)
+    config.autoload_paths += %W(#{config.root}/serializers)
 
     config.i18n.available_locales = ['en', 'zh-tw']
+
+    #~ config.cache_store = :redis_store, { namespace: 'goodcity' }
 
   end
 end

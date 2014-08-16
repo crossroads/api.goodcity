@@ -29,6 +29,8 @@ gem 'http_accept_language', '~> 2.0.1'
 gem 'dotenv-rails'
 gem 'oj'
 gem 'oj_mimic_json'
+gem 'redis'
+gem 'redis-store'
 
 group :development do
   gem 'spring'
@@ -55,6 +57,4 @@ end
 group :production do
   gem 'airbrake'
   gem 'sucker_punch'
-  gem 'connection_pool' # for threading with dalli
-  gem 'dalli'
 end

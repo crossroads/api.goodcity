@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::TerritorySerializer do
 
-  let(:territory) { create(:territory_districts) }
+  let(:territory)  { create(:territory_districts) }
   let(:serializer) { Api::V1::TerritorySerializer.new(territory) }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
