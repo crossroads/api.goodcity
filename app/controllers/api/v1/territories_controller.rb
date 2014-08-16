@@ -5,7 +5,13 @@ module Api::V1
     load_and_authorize_resource :territory, parent: false
 
     def index
-      params[:ids].blank? ? render_cached_results : render_filtered_results
+      if params[:ids].blank?
+        render json: Territory.cached_json
+        return
+      end
+      @territories = @territories.with_eager_load
+      @territories = @territories.find( params[:ids].split(",") ) if params[:ids].present?
+      render json: @territories, each_serializer: serializer
     end
 
     def show
@@ -16,33 +22,6 @@ module Api::V1
 
     def serializer
       Api::V1::TerritorySerializer
-    end
-
-    def territories
-      Territory.with_eager_load
-    end
-
-    def render_filtered_results
-      @territories = territories
-      @territories = @territories.find( params[:ids].split(",") ) if params[:ids].present?
-      render json: @territories, each_serializer: serializer
-    end
-
-    def render_cached_results
-      @territories = cached_territories_json
-      if @territories.blank?
-        @territories = ActiveModel::ArraySerializer.new(territories, each_serializer: serializer).to_json
-        Rails.cache.write(territories_cache_key, @territories)
-      end
-      render(json: @territories)
-    end
-
-    def cached_territories_json
-      @cached_territories ||= Rails.cache.fetch(territories_cache_key)
-    end
-
-    def territories_cache_key
-      "territories:#{I18n.locale}"
     end
 
   end
