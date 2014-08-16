@@ -29,6 +29,7 @@ class Offer < ActiveRecord::Base
   end
 
   def submitted?
+    state == 'submitted'
   end
 
 end
