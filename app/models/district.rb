@@ -1,4 +1,7 @@
 class District < ActiveRecord::Base
+
+  include CacheableJson
+
   belongs_to :territory, inverse_of: :districts
   has_many :user
 
@@ -6,4 +9,5 @@ class District < ActiveRecord::Base
   validates :territory_id, presence: true
 
   translates :name
+
 end

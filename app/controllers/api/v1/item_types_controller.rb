@@ -8,7 +8,6 @@ module Api::V1
         render json: ItemType.cached_json
         return
       end
-      @item_types = @item_types.with_eager_load
       @item_types = @item_types.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @item_types, each_serializer: serializer
     end

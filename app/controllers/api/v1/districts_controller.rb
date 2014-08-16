@@ -4,6 +4,10 @@ module Api::V1
     load_and_authorize_resource :district, parent: false
 
     def index
+      if params[:ids].blank?
+        render json: District.cached_json
+        return
+      end
       @districts = @districts.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @districts, each_serializer: serializer
     end
