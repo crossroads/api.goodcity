@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140812160148) do
+ActiveRecord::Schema.define(version: 20140816101803) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20140812160148) do
     t.integer  "parent_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   create_table "item_types", force: true do |t|
@@ -70,6 +71,7 @@ ActiveRecord::Schema.define(version: 20140812160148) do
     t.datetime "updated_at"
     t.boolean  "saleable",               default: false
     t.integer  "donor_condition_id"
+    t.datetime "deleted_at"
   end
 
   create_table "messages", force: true do |t|
@@ -80,6 +82,7 @@ ActiveRecord::Schema.define(version: 20140812160148) do
     t.boolean  "private"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   create_table "offers", force: true do |t|
@@ -95,6 +98,7 @@ ActiveRecord::Schema.define(version: 20140812160148) do
     t.integer  "created_by_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   create_table "packages", force: true do |t|
@@ -110,6 +114,7 @@ ActiveRecord::Schema.define(version: 20140812160148) do
     t.integer  "package_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   create_table "permissions", force: true do |t|

@@ -1,6 +1,7 @@
 class Image < ActiveRecord::Base
 
   include CloudinaryHelper
+  acts_as_paranoid
 
   belongs_to :parent, polymorphic: true
   before_destroy :delete_image_from_cloudinary

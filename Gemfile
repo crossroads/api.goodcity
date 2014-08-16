@@ -8,6 +8,7 @@ gem 'pg'
 # gem 'bcrypt-ruby', '~> 3.1.2'
 gem 'active_model_otp'
 gem 'active_model_serializers'
+gem 'paranoia', '~> 2.0'
 gem 'cancancan', '~> 1.8'
 gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production

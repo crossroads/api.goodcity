@@ -1,8 +1,9 @@
 class Offer < ActiveRecord::Base
+  acts_as_paranoid
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
-  has_many :messages, as: :recipient
-  has_many :items, inverse_of: :offer
+  has_many :messages, as: :recipient, dependent: :destroy
+  has_many :items, inverse_of: :offer, dependent: :destroy
 
   scope :with_eager_load, -> {
     includes( [:created_by, {messages: :sender},
@@ -20,6 +21,14 @@ class Offer < ActiveRecord::Base
 
   def update_saleable_items
     items.update_saleable
+  end
+
+  # restore offer and its dependently destroyed associated records
+  def recover
+    restore(recursive: true)
+  end
+
+  def submitted?
   end
 
 end
