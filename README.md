@@ -13,6 +13,11 @@ To get started, download this code and run the following commands:
 
 Then bootup your rails console and you should have a DB with data.
 
+In production mode, you will also need a local redis server.
+
+    yum install redis
+    apt-get install redis
+
 ## Tests
 
 Simply run rake
