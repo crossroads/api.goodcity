@@ -1,5 +1,5 @@
 class Item < ActiveRecord::Base
-  acts_as_paranoid
+  include Paranoid
 
   belongs_to :offer,     inverse_of: :items
   belongs_to :item_type, inverse_of: :items
@@ -36,11 +36,6 @@ class Item < ActiveRecord::Base
   def set_favourite_image(image_id)
     images.favourites.map(&:remove_favourite)
     images.find_by_image_id(image_id).try(:set_favourite)
-  end
-
-  # restore offer and its dependently destroyed associated records
-  def recover
-    restore(recursive: true)
   end
 
 end

@@ -1,5 +1,5 @@
 class Offer < ActiveRecord::Base
-  acts_as_paranoid
+  include Paranoid
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   has_many :messages, as: :recipient, dependent: :destroy
@@ -22,14 +22,4 @@ class Offer < ActiveRecord::Base
   def update_saleable_items
     items.update_saleable
   end
-
-  # restore offer and its dependently destroyed associated records
-  def recover
-    restore(recursive: true)
-  end
-
-  def submitted?
-    state == 'submitted'
-  end
-
 end
