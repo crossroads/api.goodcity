@@ -13,5 +13,10 @@ FactoryGirl.define do
     trait :with_images do
       images               { create_list(:image, 2) }
     end
+
+    factory :paranoid_item do
+      state  { ["pending", "accepted", "rejected"].sample }
+      images { create_list(:image, 2) }
+    end
   end
 end
