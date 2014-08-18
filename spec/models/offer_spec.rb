@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Offer, type: :model do
 
+  it_behaves_like 'paranoid'
+
   describe 'Associations' do
     it { should belong_to :created_by }
     it { should have_many :messages }

@@ -15,6 +15,11 @@ FactoryGirl.define do
     created_by_id  { create(:user).id }
     messages       { create_list(:offer_message, (rand(10)+1), sender_id: created_by_id, recipient_id: id) }
     items          { [create(:item)] }
+
+    factory :paranoid_offer do
+      state      "submitted"
+      items      { [create(:item)] }
+    end
   end
 
 end

@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Item, type: :model do
 
+  it_behaves_like 'paranoid'
+
   describe 'Associations' do
     it { should belong_to :offer }
     it { should belong_to :item_type }

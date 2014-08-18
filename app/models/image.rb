@@ -1,9 +1,10 @@
 class Image < ActiveRecord::Base
 
   include CloudinaryHelper
+  acts_as_paranoid
 
   belongs_to :parent, polymorphic: true
-  before_destroy :delete_image_from_cloudinary
+  before_destroy :delete_image_from_cloudinary, unless: "Rails.env.test?"
 
   scope :favourites, -> { order(:id).where(favourite: true) }
   scope :image_identifiers, -> { order(:id).pluck(:image_id) }

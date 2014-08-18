@@ -1,8 +1,9 @@
 class Offer < ActiveRecord::Base
+  include Paranoid
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
-  has_many :messages, as: :recipient
-  has_many :items, inverse_of: :offer
+  has_many :messages, as: :recipient, dependent: :destroy
+  has_many :items, inverse_of: :offer, dependent: :destroy
 
   scope :with_eager_load, -> {
     includes( [:created_by, {messages: :sender},
@@ -21,5 +22,4 @@ class Offer < ActiveRecord::Base
   def update_saleable_items
     items.update_saleable
   end
-
 end

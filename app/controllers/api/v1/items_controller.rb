@@ -24,7 +24,7 @@ module Api::V1
     end
 
     def destroy
-      @item.destroy
+      @item.offer.draft? ? @item.really_destroy! : @item.destroy
       render json: {}
     end
 

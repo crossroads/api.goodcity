@@ -1,12 +1,13 @@
 class Item < ActiveRecord::Base
+  include Paranoid
 
   belongs_to :offer,     inverse_of: :items
   belongs_to :item_type, inverse_of: :items
   belongs_to :rejection_reason
   belongs_to :donor_condition
-  has_many   :messages,  as: :recipient
+  has_many   :messages,  as: :recipient, dependent: :destroy
   has_many   :images,    as: :parent, dependent: :destroy
-  has_many   :packages
+  has_many   :packages, dependent: :destroy
 
   validates :donor_condition_id, presence: true
 

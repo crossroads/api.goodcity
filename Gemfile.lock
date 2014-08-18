@@ -121,6 +121,8 @@ GEM
     newrelic_rpm (3.9.1.236)
     oj (2.10.0)
     oj_mimic_json (1.0.1)
+    paranoia (2.0.2)
+      activerecord (~> 4.0)
     pg (0.17.1)
     polyglot (0.3.5)
     pry (0.10.0)
@@ -275,6 +277,7 @@ DEPENDENCIES
   newrelic_rpm
   oj
   oj_mimic_json
+  paranoia (~> 2.0)
   pg
   puma
   rack-cors
