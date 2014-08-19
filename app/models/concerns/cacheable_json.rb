@@ -22,7 +22,8 @@ module CacheableJson
     # Save the json representation to cache (operates on all objects)
     def cache_json
       records = try(:with_eager_load) || all
-      objects = ActiveModel::ArraySerializer.new(records, each_serializer: "Api::V1::#{name}Serializer".constantize).to_json
+      objects = ActiveModel::ArraySerializer.new(records, each_serializer: "Api::V1::#{name}Serializer".constantize)
+      # .to_json
       Rails.cache.write(cache_key, objects)
       objects
     end
