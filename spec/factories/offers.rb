@@ -22,7 +22,7 @@ FactoryGirl.define do
         items_count 1
       end
       after(:create) do |offer, evaluator|
-        create_list(:item, evaluator.items_count, offer: offer)
+        evaluator.items_count.times { create :item, :with_packages, :with_images, offer: offer }
       end
     end
 
