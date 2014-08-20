@@ -67,7 +67,7 @@ module Api::V1
     end
 
     def search_by_token
-      user = User.find_by_otp_secret_key(token_header).first
+      user = User.find_all_by_otp_secret_key(token_header).first
       render json: { token: token_header, message: I18n.t('auth.pin_sent') }, status: :ok if  user.send_verification_pin
     rescue
       throw(:warden, {status: :unauthorized,

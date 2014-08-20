@@ -30,12 +30,12 @@ describe User, :type => :model do
   end
 
   describe 'Scope Methods' do
-    describe '.find_by_otp_secret_key' do
+    describe '.find_all_by_otp_secret_key' do
       it 'find user by otp_secret_key' do
         user1 = user_fg
         user2 = user_fg
         auth_user1_otp_skey = user1.auth_tokens.first.otp_secret_key
-        expect(User.find_by_otp_secret_key(auth_user1_otp_skey).first).to eq (user1)
+        expect(User.find_all_by_otp_secret_key(auth_user1_otp_skey).first).to eq (user1)
       end
     end
 

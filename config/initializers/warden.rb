@@ -17,7 +17,7 @@ Warden::Strategies.add(:pin) do
     auth_token.present? && params["pin"].present?
   end
   def authenticate!
-    user = User.find_by_otp_secret_key(auth_token).first
+    user = User.find_all_by_otp_secret_key(auth_token).first
     otp_token_validity = Rails.application.secrets.jwt['otp_token_validity']
     if user && user.auth_tokens.recent_auth_token.authenticate_otp(params["pin"], {drift: otp_token_validity})
       success! user
