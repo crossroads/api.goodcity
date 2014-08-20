@@ -6,9 +6,10 @@ class Offer < ActiveRecord::Base
   has_many :items, inverse_of: :offer, dependent: :destroy
 
   scope :with_eager_load, -> {
-    eager_load( [:created_by, {messages: :sender},
-               {items: [:item_type, :rejection_reason, :donor_condition, :images, {messages: :sender}, { packages: :package_type }]}
-           ])
+    eager_load( [:created_by, { messages: :sender },
+      { items: [:item_type, :rejection_reason, :donor_condition, :images,
+               { messages: :sender }, { packages: :package_type }] }
+    ])
   }
 
   state_machine :state, initial: :draft do

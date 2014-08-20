@@ -15,10 +15,14 @@ module Api::V1
     has_one  :donor_condition, serializer: DonorConditionSerializer
 
     def image_identifiers
+      # This can take advantage of eager loaded images but sacrifices 'separation of concerns'
+      # object.images.map(&:image_id).join(',')
       object.images.image_identifiers.join(',')
     end
 
     def favourite_image
+      # This can take advantage of eager loaded images but sacrifices 'separation of concerns'
+      # object.images.select(&:favourite).first.try(:image_id)
       object.images.favourites.image_identifiers.first
     end
   end

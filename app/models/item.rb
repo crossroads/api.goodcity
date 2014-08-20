@@ -11,6 +11,12 @@ class Item < ActiveRecord::Base
 
   validates :donor_condition_id, presence: true
 
+  scope :with_eager_load, -> {
+    eager_load( [:item_type, :rejection_reason, :donor_condition, :images,
+      { messages: :sender }, { packages: :package_type }
+    ] )
+  }
+
   state_machine :state, initial: :draft do
     state :rejected
     state :pending

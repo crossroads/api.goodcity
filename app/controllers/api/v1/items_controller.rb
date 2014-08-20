@@ -15,6 +15,7 @@ module Api::V1
 
     # /items?ids=1,2,3,4
     def index
+      @items = @items.with_eager_load # this maintains security
       @items = @items.find(params[:ids].split(",")) if params[:ids].present?
       render json: @items, each_serializer: serializer
     end
