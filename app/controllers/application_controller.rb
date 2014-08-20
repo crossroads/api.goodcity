@@ -98,4 +98,10 @@ class ApplicationController < ActionController::API
     Rails.application.secrets.jwt
   end
 
+  # When CanCan denys access, this is what it will do
+  rescue_from CanCan::AccessDenied do |exception|
+    throw(:warden, {status: :unauthorized, message: I18n.t('warden.unauthorized'), value: false}) if request.format.json?
+    render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
+  end
+
 end

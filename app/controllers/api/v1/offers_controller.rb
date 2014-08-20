@@ -6,6 +6,7 @@ module Api::V1
 
     def create
       @offer = Offer.new(offer_params)
+      @offer.created_by = current_user
       if @offer.save
         render json: @offer, serializer: serializer, status: 201
       else
