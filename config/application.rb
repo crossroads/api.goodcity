@@ -31,5 +31,7 @@ module GoodCityServer
 
     config.i18n.available_locales = ['en', 'zh-tw']
 
+    config.filter_parameters << :otp_secret_key
+
   end
 end

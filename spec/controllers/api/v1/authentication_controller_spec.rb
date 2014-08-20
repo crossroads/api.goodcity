@@ -37,8 +37,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
     context "verify user" do
       it 'should allow access to user after signed-in' do
-        allow(controller.warden).to receive(:authenticate!).with(:pin).and_return(user, true)
-        allow(controller.warden).to receive(:authenticated?).and_return(true)
+        allow(controller.send(:warden)).to receive(:authenticate!).with(:pin).and_return(user, true)
+        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{token}"
 
         post :verify, format: 'json', token: token, pin: pin

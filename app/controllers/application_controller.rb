@@ -6,6 +6,8 @@ class ApplicationController < ActionController::API
   before_action :set_locale
   helper_method :current_user
 
+  private
+
   def warden
     request.env['warden']
   end
@@ -14,14 +16,15 @@ class ApplicationController < ActionController::API
     request.env["warden.options"]
   end
 
-  private
-
   def set_locale
     I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
   end
 
   def current_user
-    warden.user
+    @current_user ||= begin
+      otp_secret_key = decode_session_token(token_header)['otp_secret_key']
+      User.find_all_by_otp_secret_key(otp_secret_key).first
+    end
   end
 
   def token_header
