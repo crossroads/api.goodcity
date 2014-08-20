@@ -6,9 +6,7 @@ module Api::V1
 
     def index
       if params[:ids].blank?
-        districts = District.cached_json
-        territories = Territory.cached_json
-        render json:{districts: districts, territories: territories}
+        render json: Territory.cached_json
         return
       end
       @territories = @territories.with_eager_load
