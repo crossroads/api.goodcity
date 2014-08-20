@@ -11,6 +11,7 @@ class Ability
     if user.present?
 
       # Cache repeated queries
+      user_id = user.id
       admin = user.admin?
       supervisor = user.supervisor?
       reviewer = user.reviewer?
@@ -19,42 +20,41 @@ class Ability
 
       # Offer
       can :create, Offer
-      can [:index, :show, :update], Offer, created_by_id: user.id
+      can [:index, :show, :update], Offer, created_by_id: user_id
       can [:index, :show, :update], Offer if reviewer or supervisor
-      can :destroy, Offer, created_by_id: user.id, state: 'draft'
+      can :destroy, Offer, created_by_id: user_id, state: 'draft'
       can :destroy, Offer, state: 'draft' if reviewer
       can :destroy, Offer if supervisor
 
       # Item
-      can [:index, :show, :create, :update], Item, offer: { created_by_id: user.id }
+      can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
       can [:index, :show, :create, :update], Item if reviewer or supervisor
-      can :destroy, Item, offer: { created_by_id: user.id }, state: 'draft'
+      can :destroy, Item, offer: { created_by_id: user_id }, state: 'draft'
       can :destroy, Item, state: 'draft' if reviewer
       can :destroy, Item if supervisor
 
       # Package (same as item permissions)
-      can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user.id } }
+      can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user_id } }
       can [:index, :show, :create, :update], Package if reviewer or supervisor
-      can :destroy, Package, item: { offer: { created_by_id: user.id }, state: 'draft' }
+      can :destroy, Package, item: { offer: { created_by_id: user_id }, state: 'draft' }
       can :destroy, Package, item: { state: 'draft' } if reviewer
       can :destroy, Package if supervisor
 
       # Image (same as item permissions)
-      can [:index, :show, :create, :update], Image, parent: { offer: { created_by_id: user.id } }
+      can [:index, :show, :create, :update], Image, parent: { offer: { created_by_id: user_id } }
       can [:index, :show, :create, :update], Image if reviewer or supervisor
-      can :destroy, Image, parent: { offer: { created_by_id: user.id }, state: 'draft' }
+      can :destroy, Image, parent: { offer: { created_by_id: user_id }, state: 'draft' }
       can :destroy, Image, parent: { state: 'draft' } if reviewer
       can :destroy, Image if supervisor
 
       # Message (recipient and sender and admins, not user if private is true)
       can [:index, :show, :create, :update, :destroy], Message if supervisor
       can [:index, :show, :create], Message if reviewer
-      can [:index, :show, :create], Message, sender_id: user.id, private: false
-      can [:index, :show, :create], Message, recipient: { created_by_id: user.id }, private: false
-
+      can [:index, :show, :create], Message, sender_id: user_id, private: false
+      can [:index, :show, :create], Message, recipient: { created_by_id: user_id }, private: false
 
       # User
-      can [:show, :update], User, id: user.id
+      can [:show, :update], User, id: user_id
       can [:index, :show, :update], User if reviewer or supervisor
 
       # Taxonomies
