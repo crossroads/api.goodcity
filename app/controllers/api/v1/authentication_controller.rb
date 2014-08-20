@@ -46,6 +46,7 @@ module Api::V1
     end
 
     private
+
     def auth_params
       params.require(:user_auth).permit(:mobile, :first_name, :last_name)
     end

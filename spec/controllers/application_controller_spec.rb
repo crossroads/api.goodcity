@@ -74,14 +74,14 @@ RSpec.describe ApplicationController, type: :controller do
       it 'should not be decoded by encoding key' do
         login_as(user)
         token_header_value = controller.send(:token_header).sub("e","x")
-        expect{controller.send(:decode_session_token, token_header_value)}.to raise_error(Module::DelegationError)
+        expect{controller.send(:decode_session_token, token_header_value)}.to throw_symbol(:warden)
       end
 
       it 'should be authenitic token' do
         login_as(user)
         token_header_value = controller.send(:token_header)
         jwt_decoded_json = controller.send(:decode_session_token, token_header_value)
-        expect((controller.send(:validate_authenticity_of_jwt,
+        expect((controller.send(:validate_authenticity_of_token,
           jwt_decoded_json))[:message]).to eq(I18n.t('warden.token_valid'))
       end
 

@@ -2,8 +2,8 @@ class ApplicationController < ActionController::API
 
   include CanCan::ControllerAdditions
 
-  before_action :validate_token
   before_action :set_locale
+  before_action :validate_token
   helper_method :current_user
 
   private
@@ -22,8 +22,12 @@ class ApplicationController < ActionController::API
 
   def current_user
     @current_user ||= begin
-      otp_secret_key = decode_session_token(token_header)['otp_secret_key']
-      User.find_all_by_otp_secret_key(otp_secret_key).first
+      if token_header == 'undefined'
+        nil
+      else
+        otp_secret_key = token['otp_secret_key']
+        User.find_all_by_otp_secret_key(otp_secret_key).first
+      end
     end
   end
 
@@ -32,10 +36,13 @@ class ApplicationController < ActionController::API
     authorization_token.present? ? authorization_token.try(:split, ' ').try(:last) : "undefined"
   end
 
+  def token
+    decode_session_token(token_header)
+  end
+
   def validate_token
     unless token_header.blank? || token_header == "undefined"
-      jwt_decoded_json = decode_session_token(token_header)
-      validate_authenticity_of_jwt(jwt_decoded_json)
+      validate_authenticity_of_token(token)
     else
       throw(:warden, {status: :unauthorized,
        message: I18n.t('warden.token_invalid'), value: false})
@@ -61,7 +68,7 @@ class ApplicationController < ActionController::API
     begin
       JWT.decode(token, jwt_config['secret_key'], jwt_config['hmac_sha_algo'])
     rescue JWT::DecodeError
-      render json: {message: "JWT::DecodeError"}, status: :unauthorized
+      throw(:warden, {status: :unauthorized, message: I18n.t('warden.token_invalid'), value: false})
     end
   end
 
@@ -70,7 +77,7 @@ class ApplicationController < ActionController::API
   # iat should be in the past
   # Time.now should not be more than 14 days, that means time.now and
   # exp should not be equal
-  def validate_authenticity_of_jwt(jwt_decoded_json)
+  def validate_authenticity_of_token(jwt_decoded_json)
     unless (jwt_decoded_json.all? &:blank?)
       cur_time = Time.now
       iat_time = Time.at(jwt_decoded_json["iat"])
