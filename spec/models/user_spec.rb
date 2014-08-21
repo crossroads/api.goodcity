@@ -26,7 +26,12 @@ describe User, :type => :model do
     it{ should  have_db_column(:first_name).of_type(:string)}
     it{ should  have_db_column(:last_name).of_type(:string)}
     it{ should  have_db_column(:mobile).of_type(:string)}
-    # it{ should  have_db_column(:district_id).of_type(:integer)}
+    it{ should  have_db_column(:district_id).of_type(:integer)}
+  end
+
+  describe "Validations" do
+    it { should validate_presence_of(:mobile) }
+    it { should validate_uniqueness_of(:mobile) }
   end
 
   describe 'Scope Methods' do

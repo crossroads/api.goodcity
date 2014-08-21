@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
   has_and_belongs_to_many :permissions
   belongs_to :district
 
-  validates_uniqueness_of :mobile
+  validates :mobile, presence: true, uniqueness: true
 
   after_create :generate_auth_token
 
