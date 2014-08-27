@@ -32,6 +32,14 @@ class User < ActiveRecord::Base
     auth_tokens.recent_auth_token["otp_secret_key"] unless auth_tokens.blank?
   end
 
+  def full_name
+    [first_name, last_name]
+      .reject(&:blank?)
+      .map(&:downcase)
+      .map(&:capitalize)
+      .join(' ')
+  end
+
   def token_expiry
     auth_tokens.recent_auth_token["otp_code_expiry"] unless auth_tokens.blank?
   end
