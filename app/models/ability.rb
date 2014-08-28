@@ -18,6 +18,12 @@ class Ability
 
       can(:manage, :all) if admin
 
+      # Address
+      can :create, Address
+
+      # Contact
+      can :create, Contact
+
       # Offer
       can :create, Offer
       can [:index, :show, :update], Offer, created_by_id: user_id

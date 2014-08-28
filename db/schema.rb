@@ -39,8 +39,7 @@ ActiveRecord::Schema.define(version: 20140827085942) do
 
   create_table "contacts", force: true do |t|
     t.string   "name"
-    t.string   "phone"
-    t.integer  "address_id"
+    t.string   "mobile"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
