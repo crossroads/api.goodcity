@@ -19,7 +19,7 @@ module Api::V1
     end
 
     def address_params
-      params.require(:address).permit(:street, :flat, :building)
+      params.require(:address).permit(:street, :flat, :building, :district_id, :address_type, :addressable_id, :addressable_type)
     end
 
   end
