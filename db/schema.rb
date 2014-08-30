@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140816101803) do
+ActiveRecord::Schema.define(version: 20140830084303) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "auth_tokens", force: true do |t|
-    t.integer  "otp_code"
+    t.string   "otp_code",        limit: 6
     t.datetime "otp_code_expiry"
     t.string   "otp_secret_key"
     t.integer  "user_id"
