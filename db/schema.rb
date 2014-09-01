@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 20140901070003) do
   end
 
   create_table "auth_tokens", force: true do |t|
-    t.integer  "otp_code"
+    t.string   "otp_code",        limit: 6
     t.datetime "otp_code_expiry"
     t.string   "otp_secret_key"
     t.integer  "user_id"

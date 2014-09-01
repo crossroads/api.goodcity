@@ -6,7 +6,8 @@ gem 'pg'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
-gem 'active_model_otp'
+# gem 'active_model_otp'
+gem 'active_model_otp', git: 'git@github.com:shivanibhanwal/active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'paranoia', '~> 2.0'
 gem 'cancancan', '~> 1.8'

@@ -76,7 +76,7 @@ class User < ActiveRecord::Base
   def update_otp(drift)
     user_auth_pin = self.auth_tokens.recent_auth_token
     drift_time = Time.now + drift
-    new_otp = user_auth_pin.otp_code(drift_time)
+    new_otp = user_auth_pin.otp_code({drift: drift_time, padding: true})
     auth_tokens.recent_auth_token.update_columns(otp_code: new_otp,
       otp_code_expiry: drift_time)
     self.auth_tokens.recent_auth_token

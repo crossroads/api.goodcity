@@ -1,3 +1,11 @@
+GIT
+  remote: git@github.com:shivanibhanwal/active_model_otp
+  revision: aab48b3f1498c82973e3b96bdc9d86400c799981
+  specs:
+    active_model_otp (1.0.0)
+      activemodel
+      rotp
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -14,9 +22,6 @@ GEM
       activesupport (= 4.1.1)
       builder (~> 3.1)
       erubis (~> 2.7.0)
-    active_model_otp (1.0.0)
-      activemodel
-      rotp
     active_model_serializers (0.8.1)
       activemodel (>= 3.0)
     activemodel (4.1.1)
@@ -42,9 +47,10 @@ GEM
     arel (5.0.1.20140414130214)
     aws_cf_signer (0.1.3)
     builder (3.2.2)
-    byebug (3.2.0)
+    byebug (3.3.0)
       columnize (~> 0.8)
       debugger-linecache (~> 1.2)
+      slop (~> 3.6)
     cancancan (1.9.2)
     capistrano (3.2.1)
       i18n
@@ -53,7 +59,7 @@ GEM
     capistrano-bundler (1.1.3)
       capistrano (~> 3.1)
       sshkit (~> 1.2)
-    capistrano-rails (1.1.1)
+    capistrano-rails (1.1.2)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
     capistrano-rvm (0.1.1)
@@ -61,7 +67,7 @@ GEM
       sshkit (~> 1.2)
     celluloid (0.15.2)
       timers (~> 1.1.0)
-    cloudinary (1.0.75)
+    cloudinary (1.0.76)
       aws_cf_signer
       rest-client
     coderay (1.1.0)
@@ -84,7 +90,7 @@ GEM
     factory_girl_rails (4.4.1)
       factory_girl (~> 4.4.0)
       railties (>= 3.0.0)
-    ffaker (1.24.0)
+    ffaker (1.25.0)
     ffi (1.9.3)
     formatador (0.2.5)
     guard (2.6.1)
@@ -112,20 +118,20 @@ GEM
       treetop (~> 1.4.8)
     method_source (0.8.2)
     mime-types (1.25.1)
-    minitest (5.4.0)
+    minitest (5.4.1)
     multi_json (1.10.1)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
     netrc (0.7.7)
-    newrelic_rpm (3.9.1.236)
-    oj (2.10.0)
+    newrelic_rpm (3.9.3.241)
+    oj (2.10.2)
     oj_mimic_json (1.0.1)
     paranoia (2.0.2)
       activerecord (~> 4.0)
     pg (0.17.1)
     polyglot (0.3.5)
-    pry (0.10.0)
+    pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
@@ -257,7 +263,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_otp
+  active_model_otp!
   active_model_serializers (~> 0.8.0)
   airbrake
   annotate
