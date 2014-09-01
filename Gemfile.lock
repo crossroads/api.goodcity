@@ -258,7 +258,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_otp
-  active_model_serializers
+  active_model_serializers (~> 0.8.0)
   airbrake
   annotate
   byebug

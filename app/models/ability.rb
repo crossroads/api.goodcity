@@ -24,6 +24,9 @@ class Ability
       # Contact
       can :create, Contact
 
+      # Delivery
+      can [:create, :show, :update], Delivery
+
       # Offer
       can :create, Offer
       can [:index, :show, :update], Offer, created_by_id: user_id

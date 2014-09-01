@@ -5,6 +5,7 @@ module Api::V1
 
     attributes :id, :first_name, :last_name, :created_at, :updated_at
 
+    has_many :offers, serializer: OfferSerializer
   end
 
 end
