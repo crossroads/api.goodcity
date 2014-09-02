@@ -2,17 +2,18 @@
 http_interactions:
 - request:
     method: post
-    uri: https://AC6b8a8ca83ef5241cfba565c7cc3072f1:7264f04e543924113253ee98f2ef5d89@api.twilio.com/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages.json
+    uri: https://<twilio account sid>:<twilio auth token>@api.twilio.com/2010-04-01/Accounts/<twilio
+      account sid>/SMS/Messages.json
     body:
       encoding: US-ASCII
-      string: From=%2B18653126796&To=919930001999&Body=Your+pin+is+462114+and+will+expire+by+2014-07-29+09%3A25%3A54+UTC.
+      string: From=18653126796&To=85211111112&Body=Your+pin+is+2664+and+will+expire+by+2014-09-02+12%3A30%3A39+UTC.
     headers:
       Accept:
       - application/json
       Accept-Charset:
       - utf-8
       User-Agent:
-      - twilio-ruby/3.11.5 (true/x86_64-darwin12.0 2.1.1-p76)
+      - twilio-ruby/3.11.6 (ruby/x86_64-darwin12.0 2.1.1-p76)
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Content-Type:
@@ -23,11 +24,11 @@ http_interactions:
       message: BAD REQUEST
     headers:
       Date:
-      - Tue, 29 Jul 2014 08:55:58 GMT
+      - Tue, 02 Sep 2014 12:00:40 GMT
       Content-Type:
       - application/json; charset=utf-8
       Content-Length:
-      - '159'
+      - '158'
       Connection:
       - close
       X-Powered-By:
@@ -36,9 +37,9 @@ http_interactions:
       - none
     body:
       encoding: UTF-8
-      string: '{"code": 21211, "message": "The ''To'' number 919930001999 is not a
+      string: '{"code": 21211, "message": "The ''To'' number 85211111112 is not a
         valid phone number.", "more_info": "https://www.twilio.com/docs/errors/21211",
         "status": 400}'
-    http_version: 
-  recorded_at: Tue, 29 Jul 2014 08:55:57 GMT
-recorded_with: VCR 2.4.0
+    http_version:
+  recorded_at: Tue, 02 Sep 2014 12:00:42 GMT
+recorded_with: VCR 2.9.2

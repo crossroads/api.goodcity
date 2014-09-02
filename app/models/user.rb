@@ -1,9 +1,11 @@
 class User < ActiveRecord::Base
+  has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
   has_many :messages, foreign_key: :sender_id, inverse_of: :sender
   has_and_belongs_to_many :permissions
-  belongs_to :district
+
+  accepts_nested_attributes_for :address, allow_destroy: true
 
   validates :mobile, presence: true, uniqueness: true
 

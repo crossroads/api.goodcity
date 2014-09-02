@@ -3,13 +3,14 @@ require 'rails_helper'
 describe User, :type => :model do
 
   let!(:user_valid_attr) {{
-      mobile: "+919930001948",
+      mobile: "+85211111111",
       first_name: "John1",
-      last_name: "Dey1"
+      last_name: "Dey1",
+      address_attributes: {district_id: "9", address_type: "profile"}
   }}
 
   let!(:user_invalid_attr) {{
-      mobile: "919930001999",
+      mobile: "85211111112",
       first_name: "John2",
       last_name: "Dey2"
   }}
@@ -20,6 +21,7 @@ describe User, :type => :model do
     it { should have_many :offers }
     it { should have_many :messages }
     it { should have_and_belong_to_many :permissions }
+    it { should have_one :address }
   end
 
   describe 'Database columns' do
@@ -73,6 +75,11 @@ describe User, :type => :model do
 
       it 'create an auth_token' do
         expect(custom_user.auth_tokens.count).to be >= 1
+      end
+
+      it 'create an address with provided district id' do
+        expect(custom_user.address).not_to be_nil
+        expect(custom_user.address.district_id).to eq(9)
       end
 
       it 'sms a verification pin' do

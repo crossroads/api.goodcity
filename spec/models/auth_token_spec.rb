@@ -7,7 +7,7 @@ describe AuthToken, :type => :model do
   end
 
   describe 'Database columns' do
-    it{ should  have_db_column(:otp_code).of_type(:integer)}
+    it{ should  have_db_column(:otp_code).of_type(:string)}
     it{ should  have_db_column(:otp_code_expiry).of_type(:datetime)}
     it{ should  have_db_column(:otp_secret_key).of_type(:string)}
     it{ should  have_db_column(:user_id).of_type(:integer)}

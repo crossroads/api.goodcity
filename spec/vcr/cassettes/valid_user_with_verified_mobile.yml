@@ -2,17 +2,18 @@
 http_interactions:
 - request:
     method: post
-    uri: https://AC6b8a8ca83ef5241cfba565c7cc3072f1:7264f04e543924113253ee98f2ef5d89@api.twilio.com/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages.json
+    uri: https://<twilio account sid>:<twilio auth token>@api.twilio.com/2010-04-01/Accounts/<twilio
+      account sid>/SMS/Messages.json
     body:
       encoding: US-ASCII
-      string: From=%2B18653126796&To=%2B919930001948&Body=Your+pin+is+585896+and+will+expire+by+2014-07-29+09%3A25%3A49+UTC.
+      string: From=18653126796&To=%2B85211111111&Body=Your+pin+is+6216+and+will+expire+by+2014-09-02+12%3A28%3A30+UTC.
     headers:
       Accept:
       - application/json
       Accept-Charset:
       - utf-8
       User-Agent:
-      - twilio-ruby/3.11.5 (true/x86_64-darwin12.0 2.1.1-p76)
+      - twilio-ruby/3.11.6 (ruby/x86_64-darwin12.0 2.1.1-p76)
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Content-Type:
@@ -23,30 +24,31 @@ http_interactions:
       message: CREATED
     headers:
       Date:
-      - Tue, 29 Jul 2014 08:55:55 GMT
+      - Tue, 02 Sep 2014 11:58:32 GMT
       Content-Type:
       - application/json; charset=utf-8
       Content-Length:
-      - '594'
+      - '591'
       Connection:
       - close
       Last-Modified:
-      - Tue, 29 Jul 2014 08:55:55 +0000
+      - Tue, 02 Sep 2014 11:58:32 +0000
       Etag:
-      - 7f5f4ca1631487ebc2bce42f1e72787f
+      - 8d58810d8ee23e294073dd53a733256a
       X-Powered-By:
       - AT-5000
       X-Shenanigans:
       - none
     body:
       encoding: UTF-8
-      string: '{"sid": "SMae0706f7a7bda61b863c2858a804ecbf", "date_created": "Tue,
-        29 Jul 2014 08:55:55 +0000", "date_updated": "Tue, 29 Jul 2014 08:55:55 +0000",
-        "date_sent": null, "account_sid": "AC6b8a8ca83ef5241cfba565c7cc3072f1", "to":
-        "+919930001948", "from": "+18653126796", "body": "Your pin is 585896 and will
-        expire by 2014-07-29 09:25:49 UTC.", "status": "queued", "direction": "outbound-api",
-        "api_version": "2010-04-01", "price": null, "price_unit": "USD", "uri": "/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages/SMae0706f7a7bda61b863c2858a804ecbf.json",
-        "num_segments": "1"}'
-    http_version: 
-  recorded_at: Tue, 29 Jul 2014 08:55:54 GMT
-recorded_with: VCR 2.4.0
+      string: '{"sid": "SM1ff586a9818522887452f50301ff9399", "date_created": "Tue,
+        02 Sep 2014 11:58:32 +0000", "date_updated": "Tue, 02 Sep 2014 11:58:32 +0000",
+        "date_sent": null, "account_sid": "<twilio account sid>", "to": "+85211111111",
+        "from": "+18653126796", "body": "Your pin is 6216 and will expire by 2014-09-02
+        12:28:30 UTC.", "status": "queued", "direction": "outbound-api", "api_version":
+        "2010-04-01", "price": null, "price_unit": "USD", "uri": "/2010-04-01/Accounts/<twilio
+        account sid>/SMS/Messages/SM1ff586a9818522887452f50301ff9399.json", "num_segments":
+        "1"}'
+    http_version:
+  recorded_at: Tue, 02 Sep 2014 11:58:34 GMT
+recorded_with: VCR 2.9.2

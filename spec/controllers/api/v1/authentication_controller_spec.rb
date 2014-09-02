@@ -7,7 +7,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     let!(:jwt_token) {
       controller.send(:generate_enc_session_token,user.mobile,token)
     }
-    let!(:mobile_no){ "+919930001948" }
+    let!(:mobile_no){ "+85211111111" }
 
     it 'verifies mobile exists' do
       get :is_unique_mobile_number, format: 'json', mobile: mobile_no
@@ -26,7 +26,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       end
 
       it 'new user unsuccessful' do
-        wrong_mobile_no = "+9199930001949"
+        wrong_mobile_no = "+85211111112"
         VCR.use_cassette "unsuccessful sign up user" do
           post :signup, format: 'json', user_auth: {mobile: wrong_mobile_no, first_name: "Jake",
             last_name: "Deamon"}
@@ -94,7 +94,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       it 'should resend pin for a valid mobile' do
         login_as user
         VCR.use_cassette "valid user with verified mobile" do
-          get :resend, format: 'json', mobile: '+919930001948'
+          get :resend, format: 'json', mobile: '+85211111111'
         end
         expect(JSON.parse(response.body)["mobile_exist"]).to be true
         expect(JSON.parse(response.body)["token"]).not_to eql("")
@@ -103,7 +103,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       it 'should not send pin to an invalid mobile' do
         login_as user
         VCR.use_cassette "valid user with verified mobile" do
-          get :resend, format: 'json', mobile: '+919930001949'
+          get :resend, format: 'json', mobile: '+85211111112'
         end
         expect(request.env["warden.options"][:message][:mobile_exist]).to be false
         expect(request.env["warden.options"][:message][:token]).to eql("")
