@@ -1,15 +1,15 @@
 ---
-zh-tw:
+en:
   success: Success
   warden:
-    token_invalid: Invalid token
-    token_expired: Expired token
-    token_valid: Valid token
     unauthorized: You are not authorized to take this action.
   auth:
     pin_sent: A pin has been sent to your mobile device.
     mobile_required: Please provide a mobile number.
     mobile_exists: Mobile number already exists.
     mobile_doesnot_exist: Mobile number does not exist.
+  token:
+    invalid: Invalid token
+    expired: Expired token
   twilio:
     sms_verification_pin: Your pin is %{pin} and will expire by %{expiry}.

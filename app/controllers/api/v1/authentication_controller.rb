@@ -1,11 +1,12 @@
 module Api::V1
   class AuthenticationController < Api::V1::ApiController
+
     skip_before_action :validate_token,
       only: [:is_mobile_exist, :is_unique_mobile_number,:signup, :verify,
       :resend]
 
     def resend
-      (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
+      token.valid? ? search_by_token : search_by_mobile
     end
 
     def signup
@@ -26,12 +27,12 @@ module Api::V1
     def verify
       user = warden.authenticate! :pin
       if warden.authenticated?
-        json_token = generate_enc_session_token(user.mobile, token_header) if user
-        render json: {jwt_token: (user.present? ? json_token : "")}, status: :ok
+        json_token = user.present? ? token.generate(mobile: user.mobile) : ""
+        render json: {jwt_token: json_token}, status: :ok
       else
         throw(:warden, {status: :unauthorized,
           message: {
-            text: I18n.t('warden.token_invalid'),
+            text: I18n.t('token.invalid'),
             jwt_token: ""}
         })
       end
@@ -52,8 +53,7 @@ module Api::V1
     end
 
     def search_by_mobile
-      user = unique_user
-      if user.present?
+      if (user = unique_user).present?
         user.send_verification_pin
         render json: { mobile_exist: true ,
           token: user.friendly_token}, status: :ok
@@ -68,14 +68,13 @@ module Api::V1
     end
 
     def search_by_token
-      user = User.find_all_by_otp_secret_key(token_header).first
-      render json: { token: token_header, message: I18n.t('auth.pin_sent') }, status: :ok if  user.send_verification_pin
-    rescue
-      throw(:warden, {status: :unauthorized,
-        message: {
-          text:  I18n.t('auth.mobile_required'),
-          token: ""}
-      })
+      if token.valid? && (user = User.find_all_by_otp_secret_key(token.header).first).present?
+        user.send_verification_pin
+        render( json: { token: token.header, message: I18n.t('auth.pin_sent') }, status: :ok)
+      else
+        throw(:warden, {status: :unauthorized, message: { text:  I18n.t('token.invalid'), token: ""} })
+      end
     end
+
   end
 end
