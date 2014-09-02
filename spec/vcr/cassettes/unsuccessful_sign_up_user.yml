@@ -5,7 +5,7 @@ http_interactions:
     uri: https://AC6b8a8ca83ef5241cfba565c7cc3072f1:7264f04e543924113253ee98f2ef5d89@api.twilio.com/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages.json
     body:
       encoding: US-ASCII
-      string: From=%2B18653126796&To=%2B9199930001949&Body=Your+pin+is+769837+and+will+expire+by+2014-07-31+18%3A56%3A31+UTC.
+      string: From=%2B18653126796&To=%2B85211111112&Body=Your+pin+is+769837+and+will+expire+by+2014-07-31+18%3A56%3A31+UTC.
     headers:
       Accept:
       - application/json
@@ -36,11 +36,11 @@ http_interactions:
       - none
     body:
       encoding: UTF-8
-      string: '{"code": 21608, "message": "The number +9199930001949 is unverified.
-        Trial accounts cannot send messages to unverified numbers; verify +9199930001949
+      string: '{"code": 21608, "message": "The number +85211111112 is unverified.
+        Trial accounts cannot send messages to unverified numbers; verify +85211111112
         at twilio.com/user/account/phone-numbers/verified, or purchase a Twilio number
         to send messages to unverified numbers.", "more_info": "https://www.twilio.com/docs/errors/21608",
         "status": 400}'
-    http_version: 
+    http_version:
   recorded_at: Thu, 31 Jul 2014 18:26:35 GMT
 recorded_with: VCR 2.4.0

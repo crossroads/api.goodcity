@@ -11,16 +11,46 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140830084303) do
+ActiveRecord::Schema.define(version: 20140901070003) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "addresses", force: true do |t|
+    t.string   "flat"
+    t.string   "building"
+    t.string   "street"
+    t.integer  "district_id"
+    t.integer  "addressable_id"
+    t.string   "addressable_type"
+    t.string   "address_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "auth_tokens", force: true do |t|
     t.string   "otp_code",        limit: 6
     t.datetime "otp_code_expiry"
     t.string   "otp_secret_key"
     t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "contacts", force: true do |t|
+    t.string   "name"
+    t.string   "mobile"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "deliveries", force: true do |t|
+    t.integer  "offer_id"
+    t.integer  "contact_id"
+    t.integer  "schedule_id"
+    t.string   "delivery_type"
+    t.datetime "start"
+    t.datetime "finish"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
