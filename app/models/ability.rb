@@ -31,7 +31,7 @@ class Ability
       can :create, Offer
       can [:index, :show, :update], Offer, created_by_id: user_id
       can [:index, :show, :update], Offer if reviewer or supervisor
-      can :destroy, Offer, created_by_id: user_id, state: 'draft'
+      can :destroy, Offer, created_by_id: user_id, state: ['draft', 'submitted']
       can :destroy, Offer, state: 'draft' if reviewer
       can :destroy, Offer if supervisor
 
