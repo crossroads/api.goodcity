@@ -6,6 +6,14 @@ GIT
       activemodel
       rotp
 
+GIT
+  remote: https://github.com/radar/paranoia.git
+  revision: fe706284ff0cc805ffef4a65bf9bf4f52b9f1ed5
+  ref: fe70628
+  specs:
+    paranoia (2.0.2)
+      activerecord (~> 4.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -127,8 +135,6 @@ GEM
     newrelic_rpm (3.9.3.241)
     oj (2.10.2)
     oj_mimic_json (1.0.1)
-    paranoia (2.0.2)
-      activerecord (~> 4.0)
     pg (0.17.1)
     polyglot (0.3.5)
     pry (0.10.1)
@@ -283,7 +289,7 @@ DEPENDENCIES
   newrelic_rpm
   oj
   oj_mimic_json
-  paranoia (~> 2.0)
+  paranoia!
   pg
   puma
   rack-cors

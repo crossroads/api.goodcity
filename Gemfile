@@ -9,7 +9,11 @@ gem 'pg'
 # gem 'active_model_otp'
 gem 'active_model_otp', git: 'git@github.com:shivanibhanwal/active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
-gem 'paranoia', '~> 2.0'
+
+# Gem does not released for this issue-fix. Once released remove git reference.
+# "Hard-destory of Parent record should destroy child records"
+gem 'paranoia', git: 'https://github.com/radar/paranoia.git', ref: 'fe70628'
+
 gem 'cancancan', '~> 1.8'
 gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
