@@ -6,6 +6,8 @@ class Offer < ActiveRecord::Base
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_one :delivery
 
+  scope :submitted, -> { where(state: 'submitted') }
+
   scope :with_eager_load, -> {
     eager_load( [:created_by, { messages: :sender },
       { items: [:item_type, :rejection_reason, :donor_condition, :images,
