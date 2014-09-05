@@ -6,6 +6,8 @@ class Offer < ActiveRecord::Base
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_one :delivery
 
+  before_save :set_submit_time
+
   scope :submitted, -> { where(state: 'submitted') }
 
   scope :with_eager_load, -> {
@@ -25,5 +27,9 @@ class Offer < ActiveRecord::Base
 
   def update_saleable_items
     items.update_saleable
+  end
+
+  def set_submit_time
+    self.submitted_at = Time.now if state_changed? && state == 'submitted'
   end
 end
