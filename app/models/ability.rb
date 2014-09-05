@@ -27,27 +27,12 @@ class Ability
       # Delivery
       can [:create, :show, :update], Delivery
 
-      # Offer
-      can :create, Offer
-      can [:index, :show, :update], Offer, created_by_id: user_id
-      can [:index, :show, :update], Offer if reviewer or supervisor
-      can :destroy, Offer, created_by_id: user_id, state: ['draft', 'submitted']
-      can :destroy, Offer, state: 'draft' if reviewer
-      can :destroy, Offer if supervisor
-
       # Item
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
       can [:index, :show, :create, :update], Item if reviewer or supervisor
       can :destroy, Item, offer: { created_by_id: user_id }, state: 'draft'
       can :destroy, Item, state: 'draft' if reviewer
       can :destroy, Item if supervisor
-
-      # Package (same as item permissions)
-      can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user_id } }
-      can [:index, :show, :create, :update], Package if reviewer or supervisor
-      can :destroy, Package, item: { offer: { created_by_id: user_id }, state: 'draft' }
-      can :destroy, Package, item: { state: 'draft' } if reviewer
-      can :destroy, Package if supervisor
 
       # Image (same as item permissions)
       can [:index, :show, :create, :update], Image, parent: { offer: { created_by_id: user_id } }
@@ -61,6 +46,24 @@ class Ability
       can [:index, :show, :create], Message if reviewer
       can [:index, :show, :create], Message, sender_id: user_id, private: false
       can [:index, :show, :create], Message, recipient: { created_by_id: user_id }, private: false
+
+      # Offer
+      can :create, Offer
+      can [:index, :show, :update], Offer, created_by_id: user_id
+      can [:index, :show, :update], Offer if reviewer or supervisor
+      can :destroy, Offer, created_by_id: user_id, state: ['draft', 'submitted']
+      can :destroy, Offer, state: 'draft' if reviewer
+      can :destroy, Offer if supervisor
+
+      # Package (same as item permissions)
+      can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user_id } }
+      can [:index, :show, :create, :update], Package if reviewer or supervisor
+      can :destroy, Package, item: { offer: { created_by_id: user_id }, state: 'draft' }
+      can :destroy, Package, item: { state: 'draft' } if reviewer
+      can :destroy, Package if supervisor
+
+      # Schedule
+      can :create, Schedule
 
       # User
       can [:show, :update], User, id: user_id
@@ -76,6 +79,6 @@ class Ability
     # Anonymous and all users
     can [:index, :show], District
     can [:index, :show], Territory
-
+    can [:index, :show, :availableTimeSlots], Schedule
   end
 end
