@@ -3,20 +3,13 @@ module Api::V1
   class UserSerializer < ActiveModel::Serializer
     embed :ids, include: true
 
-    attributes :id, :first_name, :last_name, :mobile, :full_name, :district
+    attributes :id, :first_name, :last_name, :mobile
 
     has_many :permissions, serializer: PermissionSerializer
+    has_one :address, serializer: AddressSerializer
 
     def mobile
       object.try(:mobile) && object.mobile.slice!(4..-1)
-    end
-
-    def full_name
-      object.try(:full_name)
-    end
-
-    def district
-      object.try(:address).try(:district).try(:name_en)
     end
   end
 
