@@ -39,6 +39,8 @@ Rails.application.routes.draw do
       post "deliveries" => "deliveries#create"
       get  "deliveries/:id" => "deliveries#show"
       put  "deliveries/:id" => "deliveries#update"
+      get  "schedules" => "schedules#availableTimeSlots"
+      post "schedules" => "schedules#create"
     end
   end
 end

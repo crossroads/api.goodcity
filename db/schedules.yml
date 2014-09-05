@@ -1,0 +1,37 @@
+---
+1:
+  :resource: Truck A
+  :scheduled_at: 1
+  :slot: 2
+  :slot_name: Morning,11am-1pm
+  :zone: East
+2:
+  :resource: Truck B
+  :scheduled_at: 1
+  :slot: 3
+  :slot_name: Afternoon,2pm-4pm
+  :zone: West
+3:
+  :resource: Truck C
+  :scheduled_at: 2
+  :slot: 4
+  :slot_name: Evening,4pm-6pm
+  :zone: South
+4:
+  :resource: Truck A
+  :scheduled_at: 2
+  :slot: 1
+  :slot_name: Morning,9am-11am
+  :zone: West
+5:
+  :resource: Truck D
+  :scheduled_at: 3
+  :slot: 3
+  :slot_name: Afternoon,2pm-4pm
+  :zone: West
+6:
+  :resource: Truck B
+  :scheduled_at: 3
+  :slot: 4
+  :slot_name: Evening,4pm-6pm
+  :zone: North
