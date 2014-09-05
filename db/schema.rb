@@ -168,6 +168,16 @@ ActiveRecord::Schema.define(version: 20140905075736) do
     t.string   "name_zh_tw"
   end
 
+  create_table "schedules", force: true do |t|
+    t.string   "resource"
+    t.integer  "slot"
+    t.string   "slot_name"
+    t.string   "zone"
+    t.datetime "scheduled_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "territories", force: true do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
