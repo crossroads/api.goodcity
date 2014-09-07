@@ -43,9 +43,8 @@ module Api::V1
     end
 
     def offer_params
-      params.require(:offer).permit(:language, :collection_contact_name,
-        :state, :origin, :stairs, :parking, :estimated_size, :notes,
-        :created_by_id, :collection_contact_phone)
+      params.require(:offer).permit(:language, :state, :origin,
+        :stairs, :parking, :estimated_size, :notes, :created_by_id)
     end
 
     def serializer

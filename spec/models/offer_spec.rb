@@ -12,9 +12,7 @@ RSpec.describe Offer, type: :model do
 
   describe 'Database Columns' do
     it { should have_db_column(:language).of_type(:string) }
-    it { should have_db_column(:collection_contact_name).of_type(:string) }
     it { should have_db_column(:state).of_type(:string) }
-    it { should have_db_column(:collection_contact_phone).of_type(:string) }
     it { should have_db_column(:origin).of_type(:string) }
     it { should have_db_column(:stairs).of_type(:boolean) }
     it { should have_db_column(:parking).of_type(:boolean) }
