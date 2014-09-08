@@ -5,7 +5,7 @@ module Api::V1
     attributes :id, :name, :address_ids
 
     def address_ids
-      object.addresses.map(&:id)
+      object.addresses.pluck(:id)
     end
   end
 

@@ -18,7 +18,7 @@ module Api::V1
     def index
       @offers = @offers.with_eager_load # this maintains security
       @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
-      @offers = @offers.submitted if params[:state] == 'submitted'
+      @offers = @offers.by_state(params['state']) if params['state']
       render json: @offers, each_serializer: serializer
     end
 
