@@ -5,8 +5,6 @@ FactoryGirl.define do
   factory :offer do
     language       "en"
     state          "draft"
-    collection_contact_name { Faker::Name.name }
-    collection_contact_phone { Faker::PhoneNumber.phone_number }
     origin         "web"
     stairs         { [false, true].sample }
     parking        { [false, true].sample }

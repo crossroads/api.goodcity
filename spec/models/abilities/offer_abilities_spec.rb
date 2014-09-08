@@ -71,8 +71,8 @@ describe "Offer abilities" do
 
     context "and offer is submitted" do
       let(:offer)     { create :offer, state: 'submitted', created_by: user }
-      let(:can)       { [:index, :show, :create, :update] }
-      let(:cannot)    { [:destroy, :manage] }
+      let(:can)       { [:index, :show, :create, :update, :destroy] }
+      let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, offer)
       end}
