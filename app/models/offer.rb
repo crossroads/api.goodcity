@@ -18,10 +18,22 @@ class Offer < ActiveRecord::Base
   }
 
   state_machine :state, initial: :draft do
-    state :submitted
+    state :submitted, :review_progressed, :reviewed, :scheduled
 
     event :submit do
       transition :draft => :submitted
+    end
+
+    event :start_review do
+      transition :submitted => :review_progressed
+    end
+
+    event :finish_review do
+      transition :review_progressed => :reviewed
+    end
+
+    event :schedule do
+      transition [:submitted, :reviewed] => :scheduled
     end
   end
 
