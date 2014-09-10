@@ -27,7 +27,8 @@ module Api::V1
       user = warden.authenticate! :pin
       if warden.authenticated?
         json_token = generate_enc_session_token(user.mobile, token_header) if user
-        render json: {jwt_token: (user.present? ? json_token : "")}, status: :ok
+        render json: { user_id: user.try(:id),
+          jwt_token: (user.present? ? json_token : "") }, status: :ok
       else
         throw(:warden, {status: :unauthorized,
           message: {
