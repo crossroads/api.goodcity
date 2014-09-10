@@ -7,7 +7,7 @@ module Api::V1
     def availableTimeSlots
       result_hash = HashWithIndifferentAccess.new(AVAILABLESLOTS).map {|k,v| v}
       @schedules  = result_hash.each_with_index{|k,i|
-                      k[:scheduled_at] = "#{Time.now + 1.weeks + k["scheduled_at"]}"
+                      k[:scheduled_at] = "#{Time.now + 1.weeks + k["scheduled_at"].day}"
                       k.store("id", i+1)
                     }
       render json: @schedules
