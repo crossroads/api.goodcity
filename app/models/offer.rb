@@ -6,8 +6,6 @@ class Offer < ActiveRecord::Base
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_one :delivery
 
-  before_save :set_submit_time
-
   scope :by_state, ->(state) { where(state: valid_state?(state) ? state : 'submitted') }
 
   scope :with_eager_load, -> {
@@ -21,7 +19,6 @@ class Offer < ActiveRecord::Base
     state :submitted, :review_progressed, :reviewed, :scheduled
 
     event :submit do
-
       transition :draft => :submitted
     end
 
@@ -37,20 +34,19 @@ class Offer < ActiveRecord::Base
       transition [:submitted, :reviewed] => :scheduled
     end
 
+    before_transition :on => :submit do |offer, transition|
+      offer.submitted_at = Time.now
+    end
+
     after_transition :on => :submit, :do => :review_message
   end
 
   def review_message
     PushOffer.new( offer: self ).notify_review
-    #PushService.new({channel: 'reviews', event: 'submit', message: self }).notify
   end
 
   def update_saleable_items
     items.update_saleable
-  end
-
-  def set_submit_time
-    self.submitted_at = Time.now if state_changed? && state == 'submitted'
   end
 
   def self.valid_state?(state)

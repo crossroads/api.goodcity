@@ -27,6 +27,7 @@ module Api::V1
     end
 
     def update
+      byebug
       @offer.update_attributes(offer_params)
       @offer.update_saleable_items if params[:offer][:saleable]
       render json: @offer, serializer: serializer
@@ -45,7 +46,7 @@ module Api::V1
 
     def offer_params
       params.require(:offer).permit(:language, :state, :origin,
-        :stairs, :parking, :estimated_size, :notes, :created_by_id)
+        :stairs, :parking, :estimated_size, :notes, :created_by_id, :state_event)
     end
 
     def serializer
