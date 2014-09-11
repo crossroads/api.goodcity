@@ -27,7 +27,6 @@ module Api::V1
     end
 
     def update
-      byebug
       @offer.update_attributes(offer_params)
       @offer.update_saleable_items if params[:offer][:saleable]
       render json: @offer, serializer: serializer
