@@ -21,6 +21,7 @@ class Offer < ActiveRecord::Base
     state :submitted, :review_progressed, :reviewed, :scheduled
 
     event :submit do
+
       transition :draft => :submitted
     end
 
@@ -35,6 +36,13 @@ class Offer < ActiveRecord::Base
     event :schedule do
       transition [:submitted, :reviewed] => :scheduled
     end
+
+    after_transition :on => :submit, :do => :review_message
+  end
+
+  def review_message
+    PushOffer.new( offer: self ).notify_review
+    #PushService.new({channel: 'reviews', event: 'submit', message: self }).notify
   end
 
   def update_saleable_items
