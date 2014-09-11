@@ -19,7 +19,7 @@ class Ability
       can(:manage, :all) if admin
 
       # Address
-      can :create, Address
+      can [:create, :show], Address
 
       # Contact
       can :create, Contact

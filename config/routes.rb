@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       get  "users/:id" => "users#show"
 
       post "addresses" => "addresses#create"
+      get  "addresses/:id" => "addresses#show"
       post "contacts" => "contacts#create"
       post "deliveries" => "deliveries#create"
       get  "deliveries/:id" => "deliveries#show"

@@ -12,6 +12,10 @@ module Api::V1
       end
     end
 
+    def show
+     render json: @address, serializer: serializer
+    end
+
     private
 
     def serializer
