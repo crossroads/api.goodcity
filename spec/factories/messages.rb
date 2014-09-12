@@ -4,9 +4,12 @@ FactoryGirl.define do
 
   factory :message do
     body        { Faker::Lorem.paragraph }
-    recipient   { |m| m.association(:offer) }
+    recipient   { |m| m.association(:user) }
     sender      { |m| m.association(:user) }
-    private     false
+    is_private  false
+    state       { 'unread' }
+    offer
+    item
   end
 
 end

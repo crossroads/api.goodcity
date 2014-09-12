@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Offer, type: :model do
 
+  let(:offer) { create :offer }
+
   it_behaves_like 'paranoid'
 
   describe 'Associations' do
@@ -21,14 +23,13 @@ RSpec.describe Offer, type: :model do
     it { should have_db_column(:created_by_id).of_type(:integer) }
   end
 
-  describe 'set_submit_time' do
-    let!(:offer) { create :offer }
-    it 'should set submitted_at time to current_time' do
-      expect{
-        offer.update_attributes(state: 'submitted')
-      }.to change(offer, :submitted_at)
-    end
+  it 'should set submitted_at when submitted' do
+    expect(Pusher).to receive(:trigger)
+    expect( offer.submitted_at ).to be_nil
+    offer.update_attributes(state_event: 'submit')
+    expect( offer.submitted_at ).to_not be_nil
   end
+
 
   describe 'valid_state?' do
     it 'should verify state valid or not' do
@@ -39,7 +40,8 @@ RSpec.describe Offer, type: :model do
 
   describe 'valid_states' do
     it 'should return list of valid states' do
-      expect(Offer.valid_states).to eq(['draft', 'submitted'])
+      expect(Offer.valid_states).to include('draft')
+      expect(Offer.valid_states).to include('submitted')
     end
   end
 
