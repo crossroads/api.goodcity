@@ -44,8 +44,8 @@ class Ability
       # Message (recipient and sender and admins, not user if private is true)
       can [:index, :show, :create, :update, :destroy], Message if supervisor
       can [:index, :show, :create], Message if reviewer
-      can [:index, :show, :create], Message, sender_id: user_id, private: false
-      can [:index, :show, :create], Message, recipient: { created_by_id: user_id }, private: false
+      can [:index, :show, :create], Message, sender_id: user_id, is_private: false
+      can [:index, :show, :create], Message, recipient: { created_by_id: user_id }, is_private: false
 
       # Offer
       can :create, Offer
