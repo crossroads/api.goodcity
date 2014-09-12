@@ -18,6 +18,8 @@ Rails.application.routes.draw do
       get  "images/generate_signature" => "images#generate_cloudinary_signature"
       get  "messages" => "messages#index"
       get  "messages/:id" => "messages#show"
+      post "messages" => "messages#create"
+
       get  "offers" => "offers#index"
       get  "offers/:id" => "offers#show"
       post "offers" => "offers#create"
