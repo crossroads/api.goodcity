@@ -6,6 +6,8 @@ class Message < ActiveRecord::Base
   belongs_to :offer, inverse_of: :messages
   belongs_to :item, inverse_of: :messages
 
+  after_create :notify_message
+
   state_machine :state, initial: :unread do
     state :unread, :read, :replied
 
@@ -20,6 +22,10 @@ class Message < ActiveRecord::Base
     event :reply do
       transition [:read, :unread] => :replied
     end
+  end
+
+  def notify_message
+    PushMessage.new(message: self).notify_new_message
   end
 
 end
