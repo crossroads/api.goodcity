@@ -7,11 +7,15 @@ class PushMessage < PushService
     super(options)
   end
 
-  def notify_new_message
-    @channel = "user_#{@message.recipient_id}"
+  def notify
+    if @message.is_private?
+      @channel = "supervisors"
+    else
+      @channel = "user_#{@message.recipient_id}"
+    end
     @event = 'message'
     @data = serialize(@message)
-    notify
+    super
   end
 
   private

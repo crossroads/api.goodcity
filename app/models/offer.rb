@@ -1,12 +1,11 @@
 class Offer < ActiveRecord::Base
   include Paranoid
+  include StateMachineScope
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   has_many :messages
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_one :delivery
-
-  scope :by_state, ->(state) { where(state: valid_state?(state) ? state : 'submitted') }
 
   scope :with_eager_load, -> {
     eager_load( [:created_by, { messages: :sender },
@@ -49,11 +48,4 @@ class Offer < ActiveRecord::Base
     items.update_saleable
   end
 
-  def self.valid_state?(state)
-    valid_states.include?(state)
-  end
-
-  def self.valid_states
-    state_machine.states.map {|state| state.name.to_s }
-  end
 end

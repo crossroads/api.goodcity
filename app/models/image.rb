@@ -1,7 +1,7 @@
 class Image < ActiveRecord::Base
 
   include CloudinaryHelper
-  acts_as_paranoid
+  include Paranoid
 
   belongs_to :parent, polymorphic: true
   before_destroy :delete_image_from_cloudinary, unless: "Rails.env.test?"
