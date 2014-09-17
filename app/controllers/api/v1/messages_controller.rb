@@ -20,7 +20,7 @@ module Api::V1
       if @message.save
         render json: @message, serializer: serializer, status: 201
       else
-        render json: @message.errors.to_json, status: 500
+        render json: @message.errors.to_json, status: 422
       end
     end
 
