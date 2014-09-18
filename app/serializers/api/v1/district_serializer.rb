@@ -4,6 +4,8 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :name, :address_ids
 
+    has_one :territory, serializer: TerritorySerializer
+
     def address_ids
       object.addresses.pluck(:id)
     end
