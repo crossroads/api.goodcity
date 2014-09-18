@@ -12,7 +12,7 @@ class Message < ActiveRecord::Base
   }
 
   after_create :notify_message
-  before_save :set_recipient
+  before_save :set_recipient, unless: "is_private"
 
   state_machine :state, initial: :unread do
     state :unread, :read, :replied
