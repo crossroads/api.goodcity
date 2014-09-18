@@ -21,7 +21,7 @@ describe User, :type => :model do
     it { should have_many :offers }
     it { should have_many :messages }
     it { should have_many :sent_messages }
-    it { should have_and_belong_to_many :permissions }
+    it { should belong_to :permission }
     it { should have_one :address }
   end
 
@@ -29,7 +29,6 @@ describe User, :type => :model do
     it{ should  have_db_column(:first_name).of_type(:string)}
     it{ should  have_db_column(:last_name).of_type(:string)}
     it{ should  have_db_column(:mobile).of_type(:string)}
-    it{ should  have_db_column(:district_id).of_type(:integer)}
   end
 
   describe "Validations" do

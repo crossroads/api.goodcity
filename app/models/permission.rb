@@ -1,3 +1,3 @@
 class Permission < ActiveRecord::Base
-    belongs_to :user
+  has_many :users, inverse_of: :permission
 end
