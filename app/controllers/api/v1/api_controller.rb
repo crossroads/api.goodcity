@@ -14,7 +14,7 @@ module Api::V1
 
     def error_500(exception)
       Rails.logger.error(exception)
-      Rails.logger.error(exception.backtrace)
+      exception.backtrace.each{|e| Rails.logger.error(e)}
       render json: {}, status: '500'
     end
 
