@@ -7,6 +7,7 @@ module Api::V1
       @messages = @messages.with_eager_load # this maintains security
       @messages = @messages.where( id: params[:ids].split(",") ) if params[:ids].present?
       @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
+      @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
       @messages = @messages.by_state(params[:state]) if params[:state]
       render json: @messages, each_serializer: serializer
     end
