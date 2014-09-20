@@ -44,8 +44,10 @@ module Api::V1
     end
 
     def offer_params
-      params.require(:offer).permit(:language, :state, :origin,
-        :stairs, :parking, :estimated_size, :notes, :created_by_id, :state_event)
+      attributes = [:language, :state, :origin, :stairs, :parking, :estimated_size,
+        :notes, :created_by_id, :state_event]
+      attributes << :reviewed_by_id if can?(:review, @offer)
+      params.require(:offer).permit(attributes)
     end
 
     def serializer
