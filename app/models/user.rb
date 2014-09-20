@@ -2,8 +2,13 @@ class User < ActiveRecord::Base
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
+
   has_many :messages, foreign_key: :recipient_id, inverse_of: :recipient
   has_many :sent_messages, class_name: 'Message', foreign_key: :sender_id, inverse_of: :sender
+
+  has_many :subscribptions, dependent: :destroy
+  has_many :offers_subscription, class_name: "Offer", through: :subscribptions
+
   belongs_to :permission, inverse_of: :users
 
   accepts_nested_attributes_for :address, allow_destroy: true

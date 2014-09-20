@@ -8,6 +8,11 @@ module Api::V1
 
     has_one :sender, serializer: UserSerializer, root: :user
     has_one :recipient, serializer: UserSerializer, root: :user
+
+    def state
+      object.try("message_state")
+    end
   end
+
 
 end
