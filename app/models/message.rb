@@ -17,21 +17,21 @@ class Message < ActiveRecord::Base
   after_create :notify_message
   before_save :set_recipient, unless: "is_private"
 
-  state_machine :state, initial: :unread do
-    state :unread, :read, :replied
+  # state_machine :state, initial: :unread do
+  #   state :unread, :read, :replied
 
-    event :read do
-      transition :unread => :read
-    end
+  #   event :read do
+  #     transition :unread => :read
+  #   end
 
-    event :unread do
-      transition :read => :unread
-    end
+  #   event :unread do
+  #     transition :read => :unread
+  #   end
 
-    event :reply do
-      transition [:read, :unread] => :replied
-    end
-  end
+  #   event :reply do
+  #     transition [:read, :unread] => :replied
+  #   end
+  # end
 
   def self.current_user_messages(current_user, message_id=nil)
     messages_with_state = Message.joins("LEFT OUTER JOIN subscriptions
