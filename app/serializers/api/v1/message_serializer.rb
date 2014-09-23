@@ -1,6 +1,7 @@
 module Api::V1
 
   class MessageSerializer < ActiveModel::Serializer
+
     embed :ids, include: true
 
     attributes :id, :body, :state, :recipient_id, :sender_id,
@@ -10,9 +11,8 @@ module Api::V1
     has_one :recipient, serializer: UserSerializer, root: :user
 
     def state
-      object.try("message_state")
+      # debugger
+      object.try("state").blank? ? object.state_for(current_user) : object.try("state")
     end
   end
-
-
 end

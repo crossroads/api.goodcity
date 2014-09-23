@@ -11,12 +11,8 @@ class PushMessage < PushService
     if @message.is_private?
       @channel = "supervisors"
     else
-      # TODO
-      # Recipient will be now list of userIds so we would be
-      # sending message to a common channel rather than a separate
-      # channel, All the subscribed users will be allowed to listen to that
-      # channel
-      @channel = "user_#{@message.recipient_id}"
+      @message.state = "unread"
+      @channel = listener_channels(@message)
     end
     @event = 'message'
     @data = serialize(@message)
@@ -29,4 +25,8 @@ class PushMessage < PushService
     Api::V1::MessageSerializer.new(message)
   end
 
+  def listener_channels(message)
+    message.subscriptions.subscribed_users(message.sender_id).map { |subscriber|
+      "user_#{subscriber}"}
+  end
 end

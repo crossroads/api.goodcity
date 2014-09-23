@@ -16,7 +16,13 @@ class PushService
     %w(channel event data).each do |opt|
       raise PushServiceError, "'#{opt}' has not been set" if send(opt).blank?
     end
-    Pusher.trigger(channel, event, data)
-  end
 
+    if channel.is_a? Array
+      channel.in_groups_of(10, false){ |subarray_of_channels|
+        Pusher.trigger(subarray_of_channels, event, data)
+      }
+    else
+      Pusher.trigger(channel, event, data)
+    end
+  end
 end
