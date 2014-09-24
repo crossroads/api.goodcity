@@ -40,9 +40,7 @@ class Message < ActiveRecord::Base
   def save_with_subscriptions(subscriptions_details={})
     save
     add_subscription(subscriptions_details[:state])
-    #get list of all subscribed users and then insert the records
     subscribe_users_to_message
-    # send message to 10 channels at a time
     notify_message
     Message.current_user_messages(sender_id, self.id)
   end
