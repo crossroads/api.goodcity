@@ -14,7 +14,7 @@ class PushMessage < PushService
       @message.state = "unread"
       @channel = listener_channels(@message)
     end
-    @event = 'message'
+    @event = 'update_store'
     @data = serialize(@message)
     super
   end
