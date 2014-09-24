@@ -1,7 +1,7 @@
 class Offer < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
-
+  MESSAGE_FROM_DONOR = "I have made an offer."
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
 
@@ -53,10 +53,15 @@ class Offer < ActiveRecord::Base
 
   def review_message
     PushOffer.new( offer: self ).notify_review
+    Message.on_offer_submittion({
+           body: MESSAGE_FROM_DONOR,
+           sender_id: self.created_by_id,
+           is_private: false,
+           offer_id: self.id
+      })
   end
 
   def update_saleable_items
     items.update_saleable
   end
-
 end

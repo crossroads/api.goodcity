@@ -23,7 +23,6 @@ module Api::V1
       @message.attributes = message_params.merge(sender_id: current_user.id)
       @message = @message.save_with_subscriptions({state: params[:message][:state]})
       if @message
-        puts "Message --- #{@message.to_json}"
         render json: @message, serializer: serializer, status: 201
       else
         render json: @message.errors.to_json, status: 422
