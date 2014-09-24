@@ -48,7 +48,9 @@ class Message < ActiveRecord::Base
   end
 
   def notify_message
-    PushMessage.new(message: self).notify
+    if self.subscriptions.subscribed_users(self.sender_id).any?
+      PushMessage.new(message: self).notify
+    end
   end
 
   def save_with_subscriptions(subscriptions_details={})
