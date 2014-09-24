@@ -129,6 +129,8 @@ ActiveRecord::Schema.define(version: 20140920041523) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.datetime "submitted_at"
+    t.integer  "reviewed_by_id"
+    t.datetime "reviewed_at"
   end
 
   create_table "packages", force: true do |t|

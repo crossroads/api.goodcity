@@ -54,6 +54,7 @@ class Ability
       can :destroy, Offer, created_by_id: user_id, state: ['draft', 'submitted']
       can :destroy, Offer, state: 'draft' if reviewer
       can :destroy, Offer if supervisor
+      can :review, Offer if reviewer or supervisor
 
       # Package (same as item permissions)
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user_id } }

@@ -3,9 +3,11 @@ class Offer < ActiveRecord::Base
   include StateMachineScope
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
+  belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
+
   has_one :delivery
   has_many :items, inverse_of: :offer, dependent: :destroy
-
+  has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :messages, through: :subscriptions
   has_many :users, through: :subscriptions
@@ -20,18 +22,18 @@ class Offer < ActiveRecord::Base
   }
 
   state_machine :state, initial: :draft do
-    state :submitted, :review_progressed, :reviewed, :scheduled
+    state :submitted, :under_review, :reviewed, :scheduled
 
     event :submit do
       transition :draft => :submitted
     end
 
     event :start_review do
-      transition :submitted => :review_progressed
+      transition :submitted => :under_review
     end
 
     event :finish_review do
-      transition :review_progressed => :reviewed
+      transition :under_review => :reviewed
     end
 
     event :schedule do
@@ -40,6 +42,10 @@ class Offer < ActiveRecord::Base
 
     before_transition :on => :submit do |offer, transition|
       offer.submitted_at = Time.now
+    end
+
+    before_transition :on => :start_review do |offer, transition|
+      offer.reviewed_at = Time.now
     end
 
     after_transition :on => :submit, :do => :review_message
