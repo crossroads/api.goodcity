@@ -13,7 +13,7 @@ class PushMessage < PushService
     else
       @channel = "user_#{@message.recipient_id}"
     end
-    @event = 'message'
+    @event = 'update_store'
     @data = serialize(@message)
     super
   end
