@@ -37,6 +37,7 @@ gem 'oj_mimic_json'
 gem 'redis'
 gem 'redis-rails'
 gem 'pusher'
+gem 'apipie-rails'
 
 group :development do
   gem 'spring'
