@@ -1,19 +1,15 @@
-class PushMessage < PushService
+ class PushMessage < PushService
 
   attr_accessor :message
 
   def initialize(options = {})
     @message = options[:message]
+    @channel = options[:channel]
     super(options)
   end
 
   def notify
-    if @message.is_private?
-      @channel = "supervisors"
-    else
-      @message.state = "unread"
-      @channel = listener_channels(@message)
-    end
+    @message.state = "unread"
     @event = 'update_store'
     @data = serialize(@message)
     super
@@ -23,10 +19,5 @@ class PushMessage < PushService
 
   def serialize(message)
     Api::V1::MessageSerializer.new(message)
-  end
-
-  def listener_channels(message)
-    message.subscriptions.subscribed_users(message.sender_id).map { |subscriber|
-      "user_#{subscriber}"}
   end
 end

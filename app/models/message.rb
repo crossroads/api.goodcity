@@ -12,9 +12,7 @@ class Message < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
-  scope :with_eager_load, -> {
-    eager_load( [:sender] )
-  }
+  scope :with_eager_load, ->{ eager_load( [:sender] ) }
 
   before_save :set_recipient, unless: "is_private"
 
@@ -32,13 +30,15 @@ class Message < ActiveRecord::Base
   end
 
   def notify_message
-    if self.subscriptions.subscribed_users(self.sender_id).any?
-      PushMessage.new(message: self).notify
+    channel_listeners = list_of_listeners()
+    if channel_listeners.any?
+      PushMessage.new({message: self, channel: channel_listeners}).notify
     end
   end
 
   def save_with_subscriptions(subscriptions_details={})
     save
+    # added sender as subscriber
     add_subscription(subscriptions_details[:state])
     subscribe_users_to_message
     notify_message
@@ -46,9 +46,13 @@ class Message < ActiveRecord::Base
   end
 
   def subscribe_users_to_message
-    list_of_users = offer.users.where("users.id <> ?", sender_id).group('users.id').pluck(:id)
-    list_of_users.each do |user|
-      add_subscription("unread", user)
+    if (sender_permission.blank? || !is_private?)
+      list_of_users = offer.subscriptions.subscribed_users(sender_id).pluck(:user_id)
+    else
+      list_of_users = offer.subscriptions.subscribed_privileged_users(sender_id).pluck(:user_id)
+    end
+    list_of_users.each do |user_id|
+      add_subscription("unread", user_id)
     end
   end
 
@@ -66,7 +70,48 @@ class Message < ActiveRecord::Base
 
   private
 
+  def sender_permission
+   User.find(sender_id).try(:permission).try(:name)
+  end
   def set_recipient
     self.recipient_id = offer.created_by_id if offer_id
+  end
+
+  def list_of_listeners
+    case [sender_permission, is_private?]
+    when['Reviewer' || 'Supervisor', true]
+      byebug
+      list_of_reviewer_or_supervisor(sender_permission)
+    else
+       subscribed_users = offer.subscriptions.subscribed_users(sender_id)
+      if subscribed_users.length === 0
+        User.get_by_permission(Permission.reviewer.id).pluck(:id).map { |subscriber|
+        "user_#{subscriber}"}
+      else
+        channel_for_subscribed_all_users()
+      end
+    end
+  end
+
+  def list_of_reviewer_or_supervisor(sender_permission)
+    subscribed_users = offer.subscriptions.subscribed_privileged_users(sender_id)
+    # if sender is Reviewer then get data for supervisor and vice-versa
+    permission = sender_permission == 'Reviewer'? Permission.supervisor : Permission.reviewer
+    if subscribed_users.length === 0
+      User.get_by_permission(permission.id).pluck(:id).map { |subscriber|
+      "user_#{subscriber}"}
+    else
+      channel_for_subscribed_privilaged_users()
+    end
+  end
+
+  def channel_for_subscribed_all_users
+    offer.subscriptions.subscribed_users(sender_id).map { |subscriber|
+      "user_#{subscriber}"}
+  end
+
+  def channel_for_subscribed_privilaged_users
+    offer.subscriptions.subscribed_privileged_users(sender_id).map { |subscriber|
+      "user_#{subscriber.id}"}
   end
 end

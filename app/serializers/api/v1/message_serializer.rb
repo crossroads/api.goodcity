@@ -11,7 +11,6 @@ module Api::V1
     has_one :recipient, serializer: UserSerializer, root: :user
 
     def state
-      # debugger
       object.try("state").blank? ? object.state_for(current_user) : object.try("state")
     end
   end
