@@ -9,7 +9,7 @@ module Api::V1
     has_one :permission, serializer: PermissionSerializer
 
     def mobile
-      object.try(:mobile) && object.mobile.slice!(4..-1)
+      object.try(:mobile) && object.mobile.slice(4..-1)
     end
 
     def address_id
