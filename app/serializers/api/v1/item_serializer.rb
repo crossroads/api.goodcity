@@ -4,7 +4,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :donor_description, :donor_condition_id, :state, :offer_id,
-      :item_type_id, :rejection_reason_id, :rejection_other_reason,
+      :item_type_id, :rejection_reason_id, :rejection_other_reason, :saleable,
       :created_at, :updated_at, :image_identifiers, :favourite_image
 
     has_many :packages, serializer: PackageSerializer
