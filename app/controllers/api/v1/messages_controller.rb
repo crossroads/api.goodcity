@@ -4,11 +4,14 @@ module Api::V1
     load_and_authorize_resource :message, parent: false
 
     def index
-      @messages = @messages.with_eager_load # this maintains security
+      @messages = Message.current_user_messages(current_user.id)
+      # @messages = @messages.with_eager_load # this maintains security
       @messages = @messages.where( id: params[:ids].split(",") ) if params[:ids].present?
       @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
       @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
-      @messages = @messages.by_state(params[:state]) if params[:state]
+      # @messages = @messages.by_state(params[:state]) if params[:state]
+      # @messages = Message.current_user_messages(current_user.id)
+
       render json: @messages, each_serializer: serializer
     end
 
@@ -18,7 +21,8 @@ module Api::V1
 
     def create
       @message.attributes = message_params.merge(sender_id: current_user.id)
-      if @message.save
+      @message = @message.save_with_subscriptions({state: params[:message][:state]})
+      if @message
         render json: @message, serializer: serializer, status: 201
       else
         render json: @message.errors.to_json, status: 422
@@ -32,8 +36,8 @@ module Api::V1
     end
 
     def message_params
-      params.require(:message).permit(:body, :is_private, :recipient_id, :offer_id, :item_id)
+      params.require(:message).permit(:body, :is_private, :recipient_id,
+        :offer_id, :item_id)
     end
-
   end
 end

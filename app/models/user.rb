@@ -5,6 +5,10 @@ class User < ActiveRecord::Base
   has_many :reviewed_offers, foreign_key: :reviewed_by_id, inverse_of: :reviewed_by, class_name: 'Offer'
   has_many :messages, foreign_key: :recipient_id, inverse_of: :recipient
   has_many :sent_messages, class_name: 'Message', foreign_key: :sender_id, inverse_of: :sender
+
+  has_many :subscribptions, dependent: :destroy
+  has_many :offers_subscription, class_name: "Offer", through: :subscribptions
+
   belongs_to :permission, inverse_of: :users
 
   accepts_nested_attributes_for :address, allow_destroy: true
@@ -16,6 +20,7 @@ class User < ActiveRecord::Base
   scope :find_all_by_otp_secret_key, ->(otp_secret_key) {
     joins(:auth_tokens).where( auth_tokens: { otp_secret_key: otp_secret_key } ) }
   scope :check_for_mobile_uniqueness, ->(entered_mobile) { where("mobile = ?", entered_mobile)}
+  scope :get_by_permission, ->(role_id) { where('permission_id in (?)', role_id) }
 
   def self.creation_with_auth(user_params)
     begin
@@ -25,7 +30,6 @@ class User < ActiveRecord::Base
         user
       end
     rescue Twilio::REST::RequestError => e
-      # e.message.to_s.try(:split,'\;').try(:first)
       e.message.try(:split,'.').try(:first)
     rescue Exception => e
       e.message

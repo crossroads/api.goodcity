@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140920030756) do
+ActiveRecord::Schema.define(version: 20140920041523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -114,7 +114,6 @@ ActiveRecord::Schema.define(version: 20140920030756) do
     t.datetime "deleted_at"
     t.integer  "offer_id"
     t.integer  "item_id"
-    t.string   "state"
   end
 
   create_table "offers", force: true do |t|
@@ -173,12 +172,14 @@ ActiveRecord::Schema.define(version: 20140920030756) do
     t.datetime "updated_at"
   end
 
-  create_table "subscriptions", id: false, force: true do |t|
-    t.integer "user_id",    null: false
-    t.integer "message_id", null: false
+  create_table "subscriptions", force: true do |t|
+    t.integer "offer_id"
+    t.integer "user_id"
+    t.integer "message_id"
+    t.string  "state"
   end
 
-  add_index "subscriptions", ["user_id", "message_id"], name: "user_message", unique: true, using: :btree
+  add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
 
   create_table "territories", force: true do |t|
     t.string   "name_en"
