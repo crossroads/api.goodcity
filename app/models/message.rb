@@ -78,9 +78,8 @@ class Message < ActiveRecord::Base
   end
 
   def list_of_listeners
-    case [sender_permission, is_private?]
-    when['Reviewer' || 'Supervisor', true]
-      byebug
+    case [sender_permission.present?, is_private?]
+    when[true, true]
       list_of_reviewer_or_supervisor(sender_permission)
     else
        subscribed_users = offer.subscriptions.subscribed_users(sender_id)
@@ -107,11 +106,11 @@ class Message < ActiveRecord::Base
 
   def channel_for_subscribed_all_users
     offer.subscriptions.subscribed_users(sender_id).map { |subscriber|
-      "user_#{subscriber}"}
+      "user_#{subscriber.user_id}"}
   end
 
   def channel_for_subscribed_privilaged_users
     offer.subscriptions.subscribed_privileged_users(sender_id).map { |subscriber|
-      "user_#{subscriber.id}"}
+      "user_#{subscriber.user_id}"}
   end
 end
