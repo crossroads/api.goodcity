@@ -1,0 +1,15 @@
+language: ruby
+rvm:
+  - rbx-2
+  - 2.1.1
+
+env:
+  - CLOUDINARY_CLOUD_NAME=test
+  - CLOUDINARY_API_KEY=1234567890
+  - CLOUDINARY_API_SECRET=test
+  - SECRET_KEY_BASE=21ff5a7a2ed8a8f5ac06c36a5118055bbdd7a7268907328d04073e9e8879c9f0636d031ff06b65befa41e74df45835c985df735d64411fa80ddd64a4303d0c9b
+
+bundler_args: --path=vendor/bundle --without production
+
+before_script:
+  - sh -c "RAILS_ENV=test bundle exec rake db:create"
