@@ -8,7 +8,7 @@ class PushOffer < PushService
 
   def notify_review
     # @channel = 'reviewer'
-    @channel = listener_channels(@message)
+    @channel = listener_channels
     @event = 'update_store'
     @data = serialize(@offer)
     notify
@@ -20,9 +20,8 @@ class PushOffer < PushService
     Api::V1::OfferSerializer.new(offer)
   end
 
-  def listener_channels(message)
-    User.get_by_permission(Permission.reviewer.id).pluck(:id).map { |subscriber|
-      "user_#{subscriber}"}
+  def listener_channels
+    Permission.reviewer.users.pluck(:id).map{ |id| "user_#{id}" }
   end
 
 end

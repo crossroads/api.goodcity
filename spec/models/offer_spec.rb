@@ -24,12 +24,12 @@ RSpec.describe Offer, type: :model do
   end
 
   it 'should set submitted_at when submitted' do
+    create(:reviewer) # needed for message sending
     expect(Pusher).to receive(:trigger)
     expect( offer.submitted_at ).to be_nil
     offer.update_attributes(state_event: 'submit')
     expect( offer.submitted_at ).to_not be_nil
   end
-
 
   describe 'valid_state?' do
     it 'should verify state valid or not' do

@@ -73,6 +73,7 @@ class Message < ActiveRecord::Base
   def sender_permission
    User.find(sender_id).try(:permission).try(:name)
   end
+
   def set_recipient
     self.recipient_id = offer.created_by_id if offer_id
   end
@@ -84,8 +85,7 @@ class Message < ActiveRecord::Base
     else
        subscribed_users = offer.subscriptions.subscribed_users(sender_id)
       if subscribed_users.length === 0
-        User.get_by_permission(Permission.reviewer.id).pluck(:id).map { |subscriber|
-        "user_#{subscriber}"}
+        Permission.reviewer.users.pluck(:id).map{ |id| "user_#{id}" }
       else
         channel_for_subscribed_all_users()
       end
@@ -97,8 +97,7 @@ class Message < ActiveRecord::Base
     # if sender is Reviewer then get data for supervisor and vice-versa
     permission = sender_permission == 'Reviewer'? Permission.supervisor : Permission.reviewer
     if subscribed_users.length === 0
-      User.get_by_permission(permission.id).pluck(:id).map { |subscriber|
-      "user_#{subscriber}"}
+      permission.users.pluck(:id).map{ |id| "user_#{id}" }
     else
       channel_for_subscribed_privilaged_users()
     end

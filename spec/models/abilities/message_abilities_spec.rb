@@ -10,7 +10,7 @@ describe "Message abilities" do
   let(:is_private)     { false }
   let(:message)     { create :message, sender: sender, recipient: recipient, is_private: is_private }
 
-  before { expect(Pusher).to receive(:trigger) }
+  #~ before { expect(Pusher).to receive(:trigger) }
 
   context "when Administrator" do
     let(:user) { create :administrator }

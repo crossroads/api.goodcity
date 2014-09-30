@@ -20,7 +20,6 @@ class User < ActiveRecord::Base
   scope :find_all_by_otp_secret_key, ->(otp_secret_key) {
     joins(:auth_tokens).where( auth_tokens: { otp_secret_key: otp_secret_key } ) }
   scope :check_for_mobile_uniqueness, ->(entered_mobile) { where("mobile = ?", entered_mobile)}
-  scope :get_by_permission, ->(role_id) { where('permission_id in (?)', role_id) }
 
   def self.creation_with_auth(user_params)
     begin
