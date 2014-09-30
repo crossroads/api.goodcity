@@ -1,5 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
+require 'support/env' # Must load our dummy env vars before rails
 require 'spec_helper'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
@@ -14,11 +15,6 @@ if ENV['RAILS_ENV'] == 'test'
 end
 WebMock.disable_net_connect!
 
-# Setup dummy tokens for vcr
-ENV['TWILIO_ACCOUNT_SID']  = "f02e3c85572dc9ad7cb77c2a638e3be24"
-ENV['TWILIO_AUTH_TOKEN']   = "cc1b5bea9fdbb0b0299c9668475c534"
-ENV['TWILIO_PHONE_NUMBER'] = "+123456789"
-
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -26,6 +22,7 @@ ENV['TWILIO_PHONE_NUMBER'] = "+123456789"
 # run twice. It is recommended that you do not name files matching this glob to
 # end with _spec.rb. You can configure this pattern with with the --pattern
 # option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
+
 Dir[Rails.root.join('spec/support/*.rb')].each { |f| require f }
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
