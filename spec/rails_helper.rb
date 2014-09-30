@@ -14,6 +14,11 @@ if ENV['RAILS_ENV'] == 'test'
 end
 WebMock.disable_net_connect!
 
+# Setup dummy tokens for vcr
+ENV['TWILIO_ACCOUNT_SID']  = "f02e3c85572dc9ad7cb77c2a638e3be24"
+ENV['TWILIO_AUTH_TOKEN']   = "cc1b5bea9fdbb0b0299c9668475c534"
+ENV['TWILIO_PHONE_NUMBER'] = "+123456789"
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end

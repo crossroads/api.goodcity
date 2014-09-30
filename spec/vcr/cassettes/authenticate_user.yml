@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://AC6b8a8ca83ef5241cfba565c7cc3072f1:7264f04e543924113253ee98f2ef5d89@api.twilio.com/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages.json
+    uri: https://f02e3c85572dc9ad7cb77c2a638e3be24:cc1b5bea9fdbb0b0299c9668475c534@api.twilio.com/2010-04-01/Accounts/f02e3c85572dc9ad7cb77c2a638e3be24/SMS/Messages.json
     body:
       encoding: US-ASCII
       string: From=%2B18653126796&To=%2B85211111111&Body=Your+pin+is+542459+and+will+expire+by+2014-07-29+09%3A25%3A57+UTC.
@@ -42,10 +42,10 @@ http_interactions:
       encoding: UTF-8
       string: '{"sid": "SMbe52f8077a82e02b6a4d05e8ef4ef8a3", "date_created": "Tue,
         29 Jul 2014 08:56:02 +0000", "date_updated": "Tue, 29 Jul 2014 08:56:02 +0000",
-        "date_sent": null, "account_sid": "AC6b8a8ca83ef5241cfba565c7cc3072f1", "to":
+        "date_sent": null, "account_sid": "f02e3c85572dc9ad7cb77c2a638e3be24", "to":
         "+85211111111", "from": "+18653126796", "body": "Your pin is 542459 and will
         expire by 2014-07-29 09:25:57 UTC.", "status": "queued", "direction": "outbound-api",
-        "api_version": "2010-04-01", "price": null, "price_unit": "USD", "uri": "/2010-04-01/Accounts/AC6b8a8ca83ef5241cfba565c7cc3072f1/SMS/Messages/SMbe52f8077a82e02b6a4d05e8ef4ef8a3.json",
+        "api_version": "2010-04-01", "price": null, "price_unit": "USD", "uri": "/2010-04-01/Accounts/f02e3c85572dc9ad7cb77c2a638e3be24/SMS/Messages/SMbe52f8077a82e02b6a4d05e8ef4ef8a3.json",
         "num_segments": "1"}'
     http_version:
   recorded_at: Tue, 29 Jul 2014 08:56:01 GMT
