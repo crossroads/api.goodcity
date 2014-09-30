@@ -7,3 +7,6 @@ bundler_args: --path=vendor/bundle --without production
 
 before_script:
   - sh -c "RAILS_ENV=test bundle exec rake db:create"
+
+notifications:
+  flowdock: 7810528ead9733543fd77e874400b1c1
