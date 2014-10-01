@@ -7,7 +7,7 @@ gem 'pg'
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 # gem 'active_model_otp'
-gem 'active_model_otp', git: 'git@github.com:shivanibhanwal/active_model_otp'
+gem 'active_model_otp', git: 'https://github.com/shivanibhanwal/active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
 
 # Gem does not released for this issue-fix. Once released remove git reference.
