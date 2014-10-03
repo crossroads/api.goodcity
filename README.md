@@ -1,4 +1,7 @@
-# GoodCity API <a href="https://travis-ci.org/crossroads/api.goodcity"><img src="https://travis-ci.org/crossroads/api.goodcity.svg?branch=master" /></a>
+# GoodCity API
+[![Travis](https://travis-ci.org/crossroads/api.goodcity.svg?branch=master)](https://travis-ci.org/crossroads/api.goodcity)
+[![Code Climate](https://codeclimate.com/github/crossroads/api.goodcity/badges/gpa.svg)](https://codeclimate.com/github/crossroads/api.goodcity)
+[![Test Coverage](https://codeclimate.com/github/crossroads/api.goodcity/badges/coverage.svg)](https://codeclimate.com/github/crossroads/api.goodcity)
 
 The GoodCity server is a [rails-api](https://github.com/rails-api/rails-api) based JSON API server for the GoodCity.hk project.
 
