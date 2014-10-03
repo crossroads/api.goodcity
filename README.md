@@ -46,8 +46,14 @@ This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure
 
 ## Documentation
 
-* API documentation is available online at http://api.goodcity.hk/api/docs 
+* API documentation is available online at http://api.goodcity.hk/api/docs
 * Generate model/controller documentation using the [railroady](https://github.com/preston/railroady) gem. (You must have [graphviz](http://www.graphviz.org/) packages installed on your machine first.)
 
     gem install railroady
     rake diagram:all
+
+## License
+
+Copyright © 2014 by [Crossroads Foundation Ltd](https://www.crossroads.org.hk)
+
+All rights reserved. No part of this software may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of Crossroads Foundation Ltd. For permission requests, write to Crossroads Foundation Ltd., addressed “Attention: CTO” using the general contact details found on [www.crossroads.org.hk](https://www.crossroads.org.hk).
