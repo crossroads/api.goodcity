@@ -57,10 +57,10 @@ end
 
 group :test do
   gem 'guard-rspec'
-  gem 'simplecov', require: false
   gem 'shoulda-matchers'
   gem 'vcr'
   gem 'webmock'
+  gem "codeclimate-test-reporter", require: nil #if ENV["CI"]
 end
 
 group :production do

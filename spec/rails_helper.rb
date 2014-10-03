@@ -1,4 +1,8 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
+unless ENV["CI"]
+  require "codeclimate-test-reporter"
+  CodeClimate::TestReporter.start
+end
 ENV["RAILS_ENV"] ||= 'test'
 require 'support/env' # Must load our dummy env vars before rails
 require 'spec_helper'
@@ -9,10 +13,6 @@ require 'ffaker'
 require 'webmock/rspec'
 require 'vcr'
 
-if ENV['RAILS_ENV'] == 'test'
-  require 'simplecov'
-  SimpleCov.start 'rails'
-end
 WebMock.disable_net_connect!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in

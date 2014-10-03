@@ -80,6 +80,8 @@ GEM
     cloudinary (1.0.76)
       aws_cf_signer
       rest-client
+    codeclimate-test-reporter (0.4.1)
+      simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.0)
     colorize (0.7.3)
     columnize (0.8.9)
@@ -288,6 +290,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rvm
   cloudinary
+  codeclimate-test-reporter
   dotenv-rails
   execjs
   factory_girl_rails
@@ -313,7 +316,6 @@ DEPENDENCIES
   redis-rails
   rspec-rails
   shoulda-matchers
-  simplecov
   spring
   state_machine (~> 1.2.0)
   sucker_punch
