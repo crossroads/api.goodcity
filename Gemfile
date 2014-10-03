@@ -25,7 +25,7 @@ gem 'rack-protection'
 gem 'state_machine', '~> 1.2.0'
 gem 'twilio-ruby'
 gem 'warden'
-gem 'puma'
+gem 'puma' unless ENV["CI"]
 gem 'rack-timeout'
 gem 'newrelic_rpm'
 gem 'traco'
@@ -40,16 +40,18 @@ gem 'pusher'
 gem 'apipie-rails'
 
 group :development do
-  gem 'spring'
-  gem 'capistrano-rails'
-  gem 'capistrano-bundler'
-  gem 'capistrano-rvm'
-  gem 'annotate'
-  gem 'railroady'
+  unless ENV["CI"]
+    gem 'spring'
+    gem 'capistrano-rails'
+    gem 'capistrano-bundler'
+    gem 'capistrano-rvm'
+    gem 'annotate'
+    gem 'railroady'
+  end
 end
 
 group :development, :test do
-  gem 'byebug', platform: 'mri'
+  gem 'byebug', platform: 'mri' unless ENV["CI"]
   gem 'rspec-rails'
 end
 
