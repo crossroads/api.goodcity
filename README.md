@@ -1,30 +1,35 @@
-# Goodcity server prototype
+# GoodCity API <a href="https://travis-ci.org/crossroads/api.goodcity"><img src="https://travis-ci.org/crossroads/api.goodcity.svg?branch=master" /></a>
 
-The GoodCity server is a rails-api based JSON API server for the GoodCity.hk project.
+The GoodCity server is a [rails-api](https://github.com/rails-api/rails-api) based JSON API server for the GoodCity.hk project.
 
 It provides a set of database models, validations, relationships, tests and JSON API endpoints for interaction with frontend Ember web-apps and mobile apps.
 
+## Prerequisties
+
+* ruby 2.1.1 ([rvm](http://rvm.io/) can make this easy)
+
 ## Installation
 
-To get started, download this code and run the following commands:
+Clone this repository and run the following commands:
 
     bundle install
     rake db:create db:migrate db:seed
 
 Then bootup your rails console and you should have a DB with data.
 
-In production mode, you will also need a local redis server.
+In production mode, you will also need a local [redis](http://redis.io/) server, type one of the following:
 
-    yum install redis
-    apt-get install redis
+    yum install redis (RedHat)
+    apt-get install redis (Debian)
+    brew install redis (Mac OS X with Homebrew)
 
 ## Tests
 
-Simply run rake
+Simply run
 
     rake
 
-For individual specs, run rspec
+For individual specs, use rspec
 
     rspec spec/serializers
 
@@ -34,11 +39,12 @@ Using capistrano, commit all changes to master branch and push to github. Then t
 
     cap production deploy
 
-This will deploy changes to api.goodcity.hk (make sure your ssh keys are loaded)
+This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure your ssh keys are loaded)
 
 ## Documentation
 
-Generate model/controller documentation using the railroady gem. (You must have graphviz packages installed on your machine first.)
+* API documentation is available online at http://api.goodcity.hk/api/docs 
+* Generate model/controller documentation using the [railroady](https://github.com/preston/railroady) gem. (You must have [graphviz](http://www.graphviz.org/) packages installed on your machine first.)
 
     gem install railroady
     rake diagram:all
