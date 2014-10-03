@@ -10,6 +10,7 @@ It provides a set of database models, validations, relationships, tests and JSON
 ## Prerequisties
 
 * ruby 2.1.1 ([rvm](http://rvm.io/) can make this easy)
+* [postgresql](http://www.postgresql.org/) (v9.2 or greater)
 
 ## Installation
 
