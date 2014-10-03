@@ -1,6 +1,5 @@
 language: ruby
 rvm:
-  - rbx-2
   - 2.1.1
 
 bundler_args: --path=vendor/bundle --without production
