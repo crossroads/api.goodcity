@@ -6,13 +6,11 @@ module Api::V1
 
     resource_description do
       short 'List, create, update and delete offers.'
-      formats ['js']
+      formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
+      error 422, "Validation Error"
       error 500, "Internal Server Error"
-      description <<-EOS
-        == Description
-      EOS
     end
 
     def_param_group :offer do
@@ -25,7 +23,9 @@ module Api::V1
         param :estimated_size, String, desc: "How big is the item?"
         param :notes, String, desc: "Not yet used"
         param :saleable, [true, false], desc: "Can these items be sold?"
-        param :reviewed_by_id, Integer, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers."
+        param :reviewed_by_id, Integer, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."
+        param :reviewed_at, Time, allow_nil: true, desc: ""
+        param :delivery_id, Integer, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."
       end
     end
 
@@ -42,8 +42,8 @@ module Api::V1
     end
 
     api :GET, '/v1/offers', "List all offers"
-    param :ids, Array, of: Integer, desc: "Filter by offer id e.g. ids = [1,2,3,4]"
-    param :state, Offer.valid_states, desc: "Filter by offer state e.g. state=draft"
+    param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
+    param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
     def index
       @offers = @offers.with_eager_load # this maintains security
       @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
@@ -52,7 +52,6 @@ module Api::V1
     end
 
     api :GET, '/v1/offers/1', "List an offer"
-    description "Returns json formatted offer details"
     def show
       render json: @offer, serializer: serializer
     end

@@ -8,7 +8,7 @@ FactoryGirl.define do
     origin         "web"
     stairs         { [false, true].sample }
     parking        { [false, true].sample }
-    estimated_size { [1,2,3,4].sample }
+    estimated_size { [1,2,3,4].sample.to_s }
     notes          { Faker::Lorem.paragraph }
     created_by_id  { create(:user).id }
 

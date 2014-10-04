@@ -1,0 +1,102 @@
+{
+  "offers#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/offers/1398",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [
+          {
+            "id" : 5418,
+            "first_name" : "Piper",
+            "last_name" : "Wolf",
+            "mobile" : "381.0485 x74299",
+            "address_id" : null,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [],
+        "permissions" : [],
+        "deliveries" : [],
+        "offer" : {
+          "id" : 1398,
+          "language" : "en",
+          "state" : "draft",
+          "origin" : "web",
+          "stairs" : true,
+          "parking" : false,
+          "estimated_size" : "3",
+          "notes" : "Doloremque voluptatem eos praesentium sunt neque maxime. Sunt animi quasi repellendus illo omnis perspiciatis. Eligendi dolorem in optio repudiandae consequatur vel. Veniam nisi magni corrupti nostrum aut. Corporis est rerum reiciendis qui.",
+          "created_by_id" : 5418,
+          "created_at" : "2014-10-04T04:51:37.089Z",
+          "updated_at" : "2014-10-04T04:51:37.089Z",
+          "submitted_at" : null,
+          "user_id" : 5418,
+          "delivery_id" : null,
+          "reviewed_by_id" : null,
+          "reviewed_at" : null,
+          "item_ids" : [],
+          "message_ids" : []
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/offers/1399",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [
+          {
+            "id" : 5419,
+            "first_name" : "Sidney",
+            "last_name" : "Okuneva",
+            "mobile" : ")165-5481",
+            "address_id" : null,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [],
+        "permissions" : [],
+        "deliveries" : [],
+        "offer" : {
+          "id" : 1399,
+          "language" : "en",
+          "state" : "draft",
+          "origin" : "web",
+          "stairs" : false,
+          "parking" : true,
+          "estimated_size" : "1",
+          "notes" : "Facilis hic vel nisi accusantium. Et accusantium unde in autem maiores. Odit provident cupiditate voluptatem est eum laborum qui. Perspiciatis nesciunt unde est facere dolores error doloribus natus. Voluptate non labore ad numquam.",
+          "created_by_id" : 5419,
+          "created_at" : "2014-10-04T04:51:37.254Z",
+          "updated_at" : "2014-10-04T04:51:37.254Z",
+          "submitted_at" : null,
+          "user_id" : 5419,
+          "delivery_id" : null,
+          "reviewed_by_id" : null,
+          "reviewed_at" : null,
+          "item_ids" : [],
+          "message_ids" : []
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 0,
+      "recorded" : true
+    }
+  ]
+}
