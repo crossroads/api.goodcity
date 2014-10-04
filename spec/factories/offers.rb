@@ -10,7 +10,9 @@ FactoryGirl.define do
     parking        { [false, true].sample }
     estimated_size { [1,2,3,4].sample.to_s }
     notes          { Faker::Lorem.paragraph }
-    created_by_id  { create(:user).id }
+    created_by_id  { build(:user).id }
+    reviewed_by_id nil
+    reviewed_at    nil
 
     trait :with_items do
       ignore do

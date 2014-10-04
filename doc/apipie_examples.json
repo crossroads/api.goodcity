@@ -1,4 +1,64 @@
 {
+  "offers#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/offers",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "offer" : {
+          "language" : "en",
+          "origin" : "web",
+          "stairs" : false,
+          "parking" : true,
+          "estimated_size" : "4",
+          "notes" : "Qui veniam laudantium quae numquam ut doloremque. Consequuntur beatae maxime sed perferendis sit et eum. Repellat quia quasi earum nihil. Ducimus quidem temporibus itaque ut. Cupiditate ratione impedit qui enim quo vero voluptas."
+        }
+      },
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [
+          {
+            "id" : 7240,
+            "first_name" : "Evie",
+            "last_name" : "Beer",
+            "mobile" : "11111111",
+            "address_id" : null,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [],
+        "permissions" : [],
+        "deliveries" : [],
+        "offer" : {
+          "id" : 1892,
+          "language" : "en",
+          "state" : "draft",
+          "origin" : "web",
+          "stairs" : false,
+          "parking" : true,
+          "estimated_size" : "4",
+          "notes" : "Qui veniam laudantium quae numquam ut doloremque. Consequuntur beatae maxime sed perferendis sit et eum. Repellat quia quasi earum nihil. Ducimus quidem temporibus itaque ut. Cupiditate ratione impedit qui enim quo vero voluptas.",
+          "created_by_id" : 7240,
+          "created_at" : "2014-10-04T09:12:00.358Z",
+          "updated_at" : "2014-10-04T09:12:00.358Z",
+          "submitted_at" : null,
+          "user_id" : 7240,
+          "delivery_id" : null,
+          "reviewed_by_id" : null,
+          "reviewed_at" : null,
+          "item_ids" : [],
+          "message_ids" : []
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "offers#show" : [
     {
       "verb" : "GET",
@@ -38,6 +98,68 @@
           "updated_at" : "2014-10-04T07:59:46.233Z",
           "submitted_at" : null,
           "user_id" : 6667,
+          "delivery_id" : null,
+          "reviewed_by_id" : null,
+          "reviewed_at" : null,
+          "item_ids" : [],
+          "message_ids" : []
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "offers#update" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/offers/1910",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "offer" : {
+          "language" : "en",
+          "origin" : "web",
+          "stairs" : false,
+          "parking" : true,
+          "estimated_size" : "4",
+          "notes" : "Labore incidunt eos aut tenetur et omnis numquam laborum. Numquam reprehenderit dicta laudantium aut cumque perferendis rerum. Aut ut labore possimus et.",
+          "state_event" : "submit",
+          "saleable" : true
+        }
+      },
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [
+          {
+            "id" : 7282,
+            "first_name" : "Michelle",
+            "last_name" : "Reinger",
+            "mobile" : "11111111",
+            "address_id" : null,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [],
+        "permissions" : [],
+        "deliveries" : [],
+        "offer" : {
+          "id" : 1910,
+          "language" : "en",
+          "state" : "submitted",
+          "origin" : "web",
+          "stairs" : false,
+          "parking" : true,
+          "estimated_size" : "4",
+          "notes" : "Labore incidunt eos aut tenetur et omnis numquam laborum. Numquam reprehenderit dicta laudantium aut cumque perferendis rerum. Aut ut labore possimus et.",
+          "created_by_id" : 7282,
+          "created_at" : "2014-10-04T12:02:48.876Z",
+          "updated_at" : "2014-10-04T12:02:49.010Z",
+          "submitted_at" : "2014-10-04T12:02:49.009Z",
+          "user_id" : 7282,
           "delivery_id" : null,
           "reviewed_by_id" : null,
           "reviewed_at" : null,

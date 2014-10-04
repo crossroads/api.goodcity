@@ -22,10 +22,7 @@ module Api::V1
         param :parking, [true, false], desc: "Is parking provided?"
         param :estimated_size, String, desc: "How big is the item?"
         param :notes, String, desc: "Not yet used"
-        param :saleable, [true, false], desc: "Can these items be sold?"
         param :reviewed_by_id, Integer, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."
-        param :reviewed_at, Time, allow_nil: true, desc: ""
-        param :delivery_id, Integer, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."
       end
     end
 
@@ -58,6 +55,7 @@ module Api::V1
 
     api :PUT, '/v1/offers/1', "Update an offer"
     param_group :offer
+    param :saleable, [true, false], desc: "Can these items be sold?"
     def update
       @offer.update_attributes(offer_params)
       @offer.update_saleable_items if params[:offer][:saleable]
@@ -78,7 +76,7 @@ module Api::V1
     end
 
     def offer_params
-      attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event, :saleable]
+      attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event]
       attributes << :reviewed_by_id if can?(:review, @offer)
       params.require(:offer).permit(attributes)
     end
