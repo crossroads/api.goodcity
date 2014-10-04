@@ -85,7 +85,7 @@ class Message < ActiveRecord::Base
     else
        subscribed_users = offer.subscriptions.subscribed_users(sender_id)
       if subscribed_users.length === 0
-        Permission.reviewer.users.pluck(:id).map{ |id| "user_#{id}" }
+        User.reviewers.pluck(:id).map{ |id| "user_#{id}" }
       else
         channel_for_subscribed_all_users()
       end
@@ -95,9 +95,9 @@ class Message < ActiveRecord::Base
   def list_of_reviewer_or_supervisor(sender_permission)
     subscribed_users = offer.subscriptions.subscribed_privileged_users(sender_id)
     # if sender is Reviewer then get data for supervisor and vice-versa
-    permission = sender_permission == 'Reviewer'? Permission.supervisor : Permission.reviewer
+    admins = sender_permission == 'Reviewer'? User.supervisors : User.reviewers
     if subscribed_users.length === 0
-      permission.users.pluck(:id).map{ |id| "user_#{id}" }
+      admins.pluck(:id).map{ |id| "user_#{id}" }
     else
       channel_for_subscribed_privilaged_users()
     end

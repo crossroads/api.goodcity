@@ -7,11 +7,10 @@ class PushOffer < PushService
   end
 
   def notify_review
-    # @channel = 'reviewer'
     @channel = listener_channels
     @event = 'update_store'
     @data = serialize(@offer)
-    notify
+    notify if @channel.any?
   end
 
   private
@@ -21,7 +20,7 @@ class PushOffer < PushService
   end
 
   def listener_channels
-    Permission.reviewer.users.pluck(:id).map{ |id| "user_#{id}" }
+    User.reviewers.pluck(:id).map{ |id| "user_#{id}" }
   end
 
 end
