@@ -5,6 +5,7 @@ module Api::V1
 
     rescue_from ActiveRecord::RecordNotFound, with: :not_found
     rescue_from StandardError, with: :error_500
+    rescue_from CanCan::AccessDenied, with: :error_403
 
     private
 
@@ -16,6 +17,11 @@ module Api::V1
       Rails.logger.error(exception)
       exception.backtrace.each{|e| Rails.logger.error(e)}
       render json: {}, status: '500'
+    end
+
+    def error_403
+      throw(:warden, {status: 403, message: I18n.t('warden.unauthorized'), value: false}) if request.format.json?
+      render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
     end
 
   end
