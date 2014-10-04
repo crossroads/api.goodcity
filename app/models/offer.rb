@@ -12,6 +12,8 @@ class Offer < ActiveRecord::Base
   has_many :messages, through: :subscriptions
   has_many :users, through: :subscriptions
 
+  validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
+
   accepts_nested_attributes_for :subscriptions
 
   scope :with_eager_load, -> {
@@ -20,6 +22,8 @@ class Offer < ActiveRecord::Base
                { messages: :sender }, { packages: :package_type }] }
     ])
   }
+
+  before_create :set_language
 
   state_machine :state, initial: :draft do
     state :submitted, :under_review, :reviewed, :scheduled
@@ -64,4 +68,12 @@ class Offer < ActiveRecord::Base
   def update_saleable_items
     items.update_saleable
   end
+
+  private
+
+  # Set a default offer language if it hasn't been set already
+  def set_language
+    self.language = I18n.locale.to_s unless self.language.present?
+  end
+
 end

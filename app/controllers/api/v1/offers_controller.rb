@@ -1,6 +1,9 @@
 module Api::V1
   class OffersController < Api::V1::ApiController
 
+    before_filter :eager_load_offer, except: [:index, :create]
+    load_and_authorize_resource :offer, parent: false
+
     resource_description do
       short 'List, create, update and delete offers.'
       formats ['js']
@@ -12,10 +15,22 @@ module Api::V1
       EOS
     end
 
-    before_filter :eager_load_offer, except: [:index, :create]
-    load_and_authorize_resource :offer, parent: false
+    def_param_group :offer do
+      param :offer, Hash, required: true do
+        param :language, I18n.available_locales.map(&:to_s), desc: "Offer language. If not set, defaults to API header language."
+        param :state_event, Offer.valid_events, desc: "Fires the state transition (if allowed) for this offer."
+        param :origin, String, desc: "Not yet used"
+        param :stairs, [true, false], desc: "Does offer collection involve using stairs?"
+        param :parking, [true, false], desc: "Is parking provided?"
+        param :estimated_size, String, desc: "How big is the item?"
+        param :notes, String, desc: "Not yet used"
+        param :saleable, [true, false], desc: "Can these items be sold?"
+        param :reviewed_by_id, Integer, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers."
+      end
+    end
 
     api :POST, '/v1/offers', "Create an offer"
+    param_group :offer
     def create
       @offer = Offer.new(offer_params)
       @offer.created_by = current_user
@@ -37,15 +52,13 @@ module Api::V1
     end
 
     api :GET, '/v1/offers/1', "List an offer"
-    description "Returns json formatted offer details E.g."
-    error code: 401, desc: "Unauthorized"
-    error code: 404, desc: "Not Found"
-    error code: 500, desc: "Internal Server Error"
+    description "Returns json formatted offer details"
     def show
       render json: @offer, serializer: serializer
     end
 
     api :PUT, '/v1/offers/1', "Update an offer"
+    param_group :offer
     def update
       @offer.update_attributes(offer_params)
       @offer.update_saleable_items if params[:offer][:saleable]
@@ -66,8 +79,7 @@ module Api::V1
     end
 
     def offer_params
-      attributes = [:language, :state, :origin, :stairs, :parking, :estimated_size,
-        :notes, :created_by_id, :state_event]
+      attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event, :saleable]
       attributes << :reviewed_by_id if can?(:review, @offer)
       params.require(:offer).permit(attributes)
     end

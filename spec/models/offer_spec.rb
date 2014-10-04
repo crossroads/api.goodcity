@@ -23,6 +23,15 @@ RSpec.describe Offer, type: :model do
     it { should have_db_column(:created_by_id).of_type(:integer) }
   end
 
+  describe "validations" do
+
+    it do
+      should validate_inclusion_of(:language).
+        in_array( I18n.available_locales.map(&:to_s) )
+    end
+
+  end
+
   it 'should set submitted_at when submitted' do
     create(:reviewer) # needed for message sending
     expect(Pusher).to receive(:trigger)
