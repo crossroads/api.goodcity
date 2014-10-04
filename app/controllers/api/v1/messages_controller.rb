@@ -29,6 +29,12 @@ module Api::V1
       end
     end
 
+    def update
+      subscription = @message.subscriptions.find_by_user_id(current_user.id)
+      subscription.update_attribute('state', 'read')
+      render json: @message, serializer: serializer
+    end
+
     private
 
     def serializer

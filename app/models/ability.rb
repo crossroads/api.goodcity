@@ -42,10 +42,11 @@ class Ability
       can :destroy, Image if supervisor
 
       # Message (recipient and sender and admins, not user if private is true)
-      can [:index, :show, :create, :update, :destroy], Message if supervisor
+      can [:index, :show, :create, :destroy], Message if supervisor
       can [:index, :show, :create], Message if reviewer
       can [:index, :show, :create], Message, sender_id: user_id, is_private: false
       can [:index, :show, :create], Message, recipient_id: user_id, is_private: false
+      can :update, Message
 
       # Offer
       can :create, Offer
