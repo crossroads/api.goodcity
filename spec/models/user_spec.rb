@@ -47,7 +47,7 @@ describe User, :type => :model do
     end
 
     describe '.check_for_mobile_uniqueness' do
-      let!(:user) {create :user_with_specifics}
+      let!(:user) {create :user_with_token}
       it 'check for mobile number' do
         expect(User.check_for_mobile_uniqueness(user_valid_attr[:mobile]).first).to eq(user)
       end

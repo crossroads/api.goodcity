@@ -19,7 +19,7 @@ FactoryGirl.define do
     end
   end
 
-  factory :user_with_specifics, parent: :user do
+  factory :user_with_token, parent: :user do
     mobile {"+85211111111"}
     after(:create) do |user|
       user.auth_tokens << create(:scenario_before_auth_token)

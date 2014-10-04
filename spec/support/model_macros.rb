@@ -1,6 +1,6 @@
 module ModelMacros
   def before_n_after_otp_for_twilio_sms
-    @valid_mobile_user = create :user_with_specifics
+    @valid_mobile_user = create :user_with_token
     @before_otp_code   = @valid_mobile_user.auth_tokens.recent_auth_token[:otp_code]
     @before_otp_expiry = @valid_mobile_user.token_expiry
     expect_any_instance_of(User).to receive(:update_otp){
