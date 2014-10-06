@@ -19,6 +19,237 @@
       "recorded" : true
     }
   ],
+  "items#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/items",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "item" : {
+          "donor_description" : "Maxime expedita sequi repudiandae labore voluptatem.",
+          "state" : "draft",
+          "offer_id" : "649",
+          "item_type_id" : "1017",
+          "rejection_reason_id" : "809",
+          "rejection_other_reason" : "Laudantium culpa vero voluptatem molestias.",
+          "created_at" : "2014-10-06 13:22:47 UTC",
+          "updated_at" : "2014-10-06 13:22:47 UTC",
+          "saleable" : false,
+          "donor_condition_id" : "838",
+          "deleted_at" : null,
+          "image_identifiers" : "z5be3w0xfj"
+        }
+      },
+      "response_data" : {
+        "packages" : [],
+        "messages" : [],
+        "images" : [
+          {
+            "id" : 391,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vz5be3w0xfj",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vz5be3w0xfj",
+            "favourite" : null,
+            "order" : null,
+            "image_id" : "z5be3w0xfj"
+          }
+        ],
+        "rejection_reasons" : [
+          {
+            "id" : 809,
+            "name" : "Size"
+          }
+        ],
+        "item_types" : [
+          {
+            "id" : 1017,
+            "name" : "Urology",
+            "code" : "MSU"
+          }
+        ],
+        "donor_conditions" : [
+          {
+            "id" : 838,
+            "name" : "New"
+          }
+        ],
+        "item" : {
+          "id" : 895,
+          "donor_description" : "Maxime expedita sequi repudiandae labore voluptatem.",
+          "donor_condition_id" : 838,
+          "state" : "draft",
+          "offer_id" : 649,
+          "item_type_id" : 1017,
+          "rejection_reason_id" : 809,
+          "rejection_other_reason" : "Laudantium culpa vero voluptatem molestias.",
+          "saleable" : false,
+          "created_at" : "2014-10-06T13:22:47.462Z",
+          "updated_at" : "2014-10-06T13:22:47.462Z",
+          "image_identifiers" : "z5be3w0xfj",
+          "favourite_image" : null,
+          "package_ids" : [],
+          "message_ids" : [],
+          "image_ids" : [
+            391
+          ]
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "items#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/items/892",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "packages" : [],
+        "messages" : [],
+        "images" : [
+          {
+            "id" : 389,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vs8leo80ly5",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vs8leo80ly5",
+            "favourite" : true,
+            "order" : 1,
+            "image_id" : "s8leo80ly5"
+          }
+        ],
+        "rejection_reasons" : [
+          {
+            "id" : 808,
+            "name" : "Other"
+          }
+        ],
+        "item_types" : [
+          {
+            "id" : 1015,
+            "name" : "Women's Health",
+            "code" : "MW"
+          }
+        ],
+        "donor_conditions" : [
+          {
+            "id" : 837,
+            "name" : "Heavily Used"
+          }
+        ],
+        "item" : {
+          "id" : 892,
+          "donor_description" : "Asperiores aut dolore ratione excepturi ducimus et quis.",
+          "donor_condition_id" : 837,
+          "state" : "draft",
+          "offer_id" : 648,
+          "item_type_id" : 1015,
+          "rejection_reason_id" : 808,
+          "rejection_other_reason" : "Deserunt assumenda dolorum inventore architecto voluptatem nisi necessitatibus et.",
+          "saleable" : false,
+          "created_at" : "2014-10-06T13:22:47.226Z",
+          "updated_at" : "2014-10-06T13:22:47.226Z",
+          "image_identifiers" : "s8leo80ly5",
+          "favourite_image" : "s8leo80ly5",
+          "package_ids" : [],
+          "message_ids" : [],
+          "image_ids" : [
+            389
+          ]
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "items#update" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/items/897",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "item" : {
+          "donor_description" : "Test item",
+          "state" : "draft",
+          "offer_id" : "650",
+          "item_type_id" : "1019",
+          "rejection_reason_id" : "810",
+          "rejection_other_reason" : "Possimus qui qui optio natus quia.",
+          "created_at" : "2014-10-06 13:22:47 UTC",
+          "updated_at" : "2014-10-06 13:22:47 UTC",
+          "saleable" : false,
+          "donor_condition_id" : "840",
+          "deleted_at" : null,
+          "image_identifiers" : "lgzga5s287"
+        }
+      },
+      "response_data" : {
+        "packages" : [],
+        "messages" : [],
+        "images" : [
+          {
+            "id" : 393,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vlgzga5s287",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vlgzga5s287",
+            "favourite" : null,
+            "order" : null,
+            "image_id" : "lgzga5s287"
+          }
+        ],
+        "rejection_reasons" : [
+          {
+            "id" : 810,
+            "name" : "Other"
+          }
+        ],
+        "item_types" : [
+          {
+            "id" : 1019,
+            "name" : "PALLET OF Childrens clothing, NEW, unsorted",
+            "code" : "CLZC"
+          }
+        ],
+        "donor_conditions" : [
+          {
+            "id" : 840,
+            "name" : "Lightly Used"
+          }
+        ],
+        "item" : {
+          "id" : 897,
+          "donor_description" : "Test item",
+          "donor_condition_id" : 840,
+          "state" : "draft",
+          "offer_id" : 650,
+          "item_type_id" : 1019,
+          "rejection_reason_id" : 810,
+          "rejection_other_reason" : "Possimus qui qui optio natus quia.",
+          "saleable" : false,
+          "created_at" : "2014-10-06T13:22:47.563Z",
+          "updated_at" : "2014-10-06T13:22:47.585Z",
+          "image_identifiers" : "lgzga5s287",
+          "favourite_image" : null,
+          "package_ids" : [],
+          "message_ids" : [],
+          "image_ids" : [
+            393
+          ]
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "offers#create" : [
     {
       "verb" : "POST",

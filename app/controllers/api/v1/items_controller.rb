@@ -3,6 +3,30 @@ module Api::V1
 
     load_and_authorize_resource :item, parent: false
 
+    resource_description do
+      short 'List, create, update and delete items.'
+      formats ['json']
+      error 401, "Unauthorized"
+      error 404, "Not Found"
+      error 422, "Validation Error"
+      error 500, "Internal Server Error"
+    end
+
+    def_param_group :item do
+      param :item, Hash, required: true do
+        param :donor_description, String, desc: "Description/Details of item given by Item-Donor"
+        param :donor_condition_id, String, desc: "Describes the item's condition #{DonorCondition.pluck(:name_en)}"
+        param :state, Item.valid_states, desc: "Fires the state transition (if allowed) for this item."
+        param :offer_id, String, desc: "Id of Offer to which item belongs."
+        param :item_type_id, String, allow_nil: true, desc: "Not yet used"
+        param :rejection_reason_id, String, allow_nil: true, desc: "Not yet used"
+        param :rejection_other_reason, String, allow_nil: true, desc: "Not yet used"
+        param :image_identifiers, String, desc: "comma seperated list of image-ids uploaded to cloudinary"
+      end
+    end
+
+    api :POST, '/v1/items', "Create an item"
+    param_group :item
     def create
       @item.attributes = item_params
       if @item.save
@@ -13,22 +37,28 @@ module Api::V1
       end
     end
 
-    # /items?ids=1,2,3,4
+    api :GET, '/v1/items', "List all items"
+    param :ids, Array, of: Integer, desc: "Filter by item ids e.g. ids = [1,2,3,4]"
     def index
       @items = @items.with_eager_load # this maintains security
       @items = @items.find(params[:ids].split(",")) if params[:ids].present?
       render json: @items, each_serializer: serializer
     end
 
+    api :GET, '/v1/item/1', "List an item"
     def show
       render json: @item, serializer: serializer
     end
 
+    api :DELETE, '/v1/items/1', "Delete an item"
+    description "If an offer of item is in draft state it will be destroyed. Any other state and it will be marked as deleted but remain recoverable."
     def destroy
       @item.offer.draft? ? @item.really_destroy! : @item.destroy
       render json: {}
     end
 
+    api :PUT, '/v1/items/1', "Update an item"
+    param_group :item
     def update
       @item.update_attributes(item_params)
       store_images
