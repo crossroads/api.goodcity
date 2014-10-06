@@ -1,4 +1,24 @@
 {
+  "images#generate_cloudinary_signature" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/images/generate_signature",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "api_key" : 1234567890,
+        "callback" : "http://test.host/cloudinary_cors.html",
+        "signature" : "335f4d4c9a4690e6ebb2514a3dbd2ea0cba0350b",
+        "timestamp" : 1412595083
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "offers#create" : [
     {
       "verb" : "POST",
@@ -166,27 +186,6 @@
           "item_ids" : [],
           "message_ids" : []
         }
-      },
-      "code" : "200",
-      "show_in_doc" : 1,
-      "recorded" : true
-    }
-  ],
-
-  "images#generate_cloudinary_signature" : [
-    {
-      "verb" : "GET",
-      "path" : "/api/v1/images/generate_cloudinary_signature",
-      "versions" : [
-        "v1"
-      ],
-      "query" : "",
-      "request_data" : null,
-      "response_data" : {
-        "api_key" : 875198476397862,
-        "callback" : "http://localhost:3000/cloudinary_cors.html",
-        "signature" : "fea96b2dbbaab7314586cb9c976c520216dcd205",
-        "timestamp" : 1412590188
       },
       "code" : "200",
       "show_in_doc" : 1,
