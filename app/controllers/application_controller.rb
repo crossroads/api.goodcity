@@ -22,7 +22,7 @@ class ApplicationController < ActionController::API
 
   def current_user
     @current_user ||= begin
-      if token_header == 'undefined'
+      if (['undefined', 'null'].include?(token_header))
         nil
       else
         otp_secret_key = token['otp_secret_key']
