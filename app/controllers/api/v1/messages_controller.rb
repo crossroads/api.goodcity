@@ -29,9 +29,9 @@ module Api::V1
       end
     end
 
-    def update
+    def mark_read
       subscription = @message.subscriptions.find_by_user_id(current_user.id)
-      subscription.update_attribute('state', 'read')
+      subscription.update_attribute('state', 'read') if subscription
       render json: @message, serializer: serializer
     end
 

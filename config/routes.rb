@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       get  "messages/:id" => "messages#show"
       post "messages" => "messages#create"
       put  "messages/:id" => "messages#update"
+      put  "messages/:id/mark_read" => "messages#mark_read"
 
       get  "offers" => "offers#index"
       get  "offers/:id" => "offers#show"

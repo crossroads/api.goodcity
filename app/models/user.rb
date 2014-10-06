@@ -6,8 +6,8 @@ class User < ActiveRecord::Base
   has_many :messages, foreign_key: :recipient_id, inverse_of: :recipient
   has_many :sent_messages, class_name: 'Message', foreign_key: :sender_id, inverse_of: :sender
 
-  has_many :subscribptions, dependent: :destroy
-  has_many :offers_subscription, class_name: "Offer", through: :subscribptions
+  has_many :subscriptions, dependent: :destroy
+  has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
   belongs_to :permission, inverse_of: :users
 

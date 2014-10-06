@@ -4,7 +4,7 @@ require 'cancan/matchers'
 describe "Message abilities" do
 
   subject(:ability) { Ability.new(user) }
-  let(:all_actions) { [:index, :show, :create, :destroy, :manage] }
+  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:sender)      { create :user }
   let(:recipient)   { create :user }
   let(:is_private)     { false }
@@ -52,7 +52,7 @@ describe "Message abilities" do
     let(:user) { create :reviewer }
     context "and message is not is_private" do
       let(:can)    { [:index, :show, :create] }
-      let(:cannot) { [:destroy, :manage] }
+      let(:cannot) { [:update, :destroy, :manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, message)
       end}
@@ -63,7 +63,7 @@ describe "Message abilities" do
     context "and message is is_private" do
       let(:is_private) { true }
       let(:can)     { [:index, :show, :create] }
-      let(:cannot)  { [:destroy, :manage] }
+      let(:cannot)  { [:update, :destroy, :manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, message)
       end}
@@ -78,7 +78,7 @@ describe "Message abilities" do
       let(:user)   { sender }
       context "and message is not is_private" do
         let(:can)    { [:index, :show, :create] }
-        let(:cannot) { [:destroy, :manage] }
+        let(:cannot) { [:update, :destroy, :manage] }
         it{ can.each do |do_action|
           should be_able_to(do_action, message)
         end}
@@ -95,7 +95,7 @@ describe "Message abilities" do
       let(:user)   { sender }
       context "and message is not is_private" do
         let(:can)    { [:index, :show, :create] }
-        let(:cannot) { [:destroy, :manage] }
+        let(:cannot) { [:update, :destroy, :manage] }
         it{ can.each do |do_action|
           should be_able_to(do_action, message)
         end}
