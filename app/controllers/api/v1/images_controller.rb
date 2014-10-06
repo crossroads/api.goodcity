@@ -14,7 +14,7 @@ module Api::V1
       param :image, Hash do
         param :order, Integer, desc: "Not yet used"
         param :image_id, String, desc: "id of image uploaded to cloudinary"
-        param :favourite, [true, false], desc: "This image will be used as main image to describe item."
+        param :favourite, [true, false], desc: "This image will be used as default image for item."
         param :parent_type, String, desc: "Image belongs to? (polymorphic relationship like 'Item' or 'User')"
         param :parent_id, Integer
       end
