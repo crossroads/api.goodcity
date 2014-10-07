@@ -40,14 +40,12 @@ module Api::V1
       (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
     end
 
-    api :POST, '/v1/auth/signup', "Register user"
-    description "Register user, during save process generate unique otp token.
-    Call twilio api internally to validate the Mobile number.
-    On successful validation
-      generate otp code and send sms to user.
-      return api json response as friendly token
-    On failure
-      return forbidden error with error message"
+    api :POST, '/v1/auth/signup', "Register a new user"
+    description <<-EOS
+    Create user and send a new OTP token to the user mobile.
+    * If successful, generate and return a friendly token which will later be sent back with OTP code.
+    * Otherwise, return status 403 (Forbidden)
+    EOS
     def signup
       @result = User.creation_with_auth(auth_params)
       if @result.class == User
