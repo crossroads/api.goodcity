@@ -16,7 +16,7 @@ module Api::V1
     def_param_group :offer do
       param :offer, Hash, required: true do
         param :language, I18n.available_locales.map(&:to_s), desc: "Offer language. If not set, defaults to API header language.", allow_nil: true
-        param :state_event, Offer.valid_events, desc: "Fires the state transition (if allowed) for this offer."
+        param :state_event, Offer.valid_events, desc: "Fires the state transition (if allowed) for this offer.", allow_nil: true
         param :origin, String, desc: "Not yet used", allow_nil: true
         param :stairs, [true, false], desc: "Does offer collection involve using stairs?", allow_nil: true
         param :parking, [true, false], desc: "Is parking provided?", allow_nil: true
