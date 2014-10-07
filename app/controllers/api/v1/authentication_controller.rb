@@ -16,12 +16,12 @@ module Api::V1
 
     def_param_group :user do
       param :auth_params, Hash, required: true do
-        param :mobile, String, allow_nil: false, desc: "What is user Mobile number"
-        param :first_name, String, allow_nil: false, desc: "What is user's given name?"
-        param :last_name, String, allow_nil: false, desc: "What is user's family name?"
+        param :mobile, String, desc: "Mobile number e.g. +85212345678"
+        param :first_name, String, allow_nil: false, desc: "Given name (first name)"
+        param :last_name, String, allow_nil: false, desc: "Family name (last name)"
         param :address_attributes, Hash, required: true do
-          param :district_id, Fixnum, allow_nil: false, desc: "What belongs to which district?"
-          param :address_type, String, allow_nil: false, desc: "Helps to decide address type e.g. profile or collection etc "
+          param :district_id, Fixnum, allow_nil: false, desc: "Hong Kong district"
+          param :address_type, String, allow_nil: false, desc: "Type of address e.g. 'Profile' or 'Collection'"
         end
       end
     end
@@ -46,6 +46,7 @@ module Api::V1
     * If successful, generate and return a friendly token which will later be sent back with OTP code.
     * Otherwise, return status 403 (Forbidden)
     EOS
+    param_group :user
     def signup
       @result = User.creation_with_auth(auth_params)
       if @result.class == User
@@ -61,16 +62,14 @@ module Api::V1
       end
     end
 
-    api :POST, '/v1/auth/verify', "Verify token and sms code"
-    description "First of all verify passed sms code and step one token is validate
-    (to check that call warden pin strategy)?
-    if it returns user object and authenticated? as true then generate JWT token
-     response back with :OK and json_token as JWT token
-    if it fails to verify the token and sms code
-      response back with unauthorized error and json_token will be empty
-    "
-    param :token_header, String, desc: "user's step one friendly token"
-    param :pin, String, desc: "user's otp code which is received via sms"
+    api :POST, '/v1/auth/verify', "Verify OTP code and friendly token"
+    description <<-EOS
+    Verify both OTP code (sent via SMS) and friendly token are valid
+    * If verified, generate and send back a JWT token.
+    * If verification fails, return 401 (Unauthorized)
+    EOS
+    param :token_header, String, desc: "Friendly token"
+    param :pin, String, desc: "OTP code which is received via sms"
     def verify
       user = warden.authenticate! :pin
       if warden.authenticated?
@@ -85,10 +84,13 @@ module Api::V1
         })
       end
     end
-    api :GET, 'vi/auth/check_mobile', "To find out whether mobile number is unique or not?"
-    description "response will be TRUE if mobile number does not exist otherwise it will
-    return FALSE"
-    param :mobile, String, desc: "mobile number"
+
+    api :GET, 'vi/auth/check_mobile', "Is the given mobile number unique?"
+    description <<-EOS
+    * Return TRUE if mobile number does not exist
+    * Return FALSE in all other cases
+    EOS
+    param :mobile, String, desc: "Mobile number", required: true
     def is_unique_mobile_number
       render json: { is_unique_mobile: unique_user.blank? }, status: :ok
     end
