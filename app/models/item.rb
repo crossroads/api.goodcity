@@ -1,5 +1,6 @@
 class Item < ActiveRecord::Base
   include Paranoid
+  include StateMachineScope
 
   belongs_to :offer,     inverse_of: :items
   belongs_to :item_type, inverse_of: :items

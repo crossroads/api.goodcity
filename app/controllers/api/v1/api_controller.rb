@@ -16,6 +16,7 @@ module Api::V1
     def error_500(exception)
       Rails.logger.error(exception)
       exception.backtrace.each{|e| Rails.logger.error(e)}
+      raise(exception) if Rails.env == "test"
       render json: {}, status: '500'
     end
 
