@@ -30,7 +30,7 @@ class Message < ActiveRecord::Base
   end
 
   def notify_message
-    channel_listeners = list_of_listeners()
+    channel_listeners = list_of_listeners
     if channel_listeners.any?
       PushMessage.new({message: self, channel: channel_listeners}).notify
     end
@@ -71,7 +71,7 @@ class Message < ActiveRecord::Base
   private
 
   def sender_permission
-   User.find(sender_id).try(:permission).try(:name)
+    User.find(sender_id).try(:permission).try(:name)
   end
 
   def set_recipient
@@ -87,7 +87,7 @@ class Message < ActiveRecord::Base
       if subscribed_users.length === 0
         User.reviewers.pluck(:id).map{ |id| "user_#{id}" }
       else
-        channel_for_subscribed_all_users()
+        channel_for_subscribed_all_users
       end
     end
   end

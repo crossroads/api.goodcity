@@ -11,6 +11,7 @@ module Api::V1
     has_one :recipient, serializer: UserSerializer, root: :user
 
     def state
+      current_user = scope || object.sender
       object.try("state").blank? ? object.state_for(current_user) : object.try("state")
     end
   end
