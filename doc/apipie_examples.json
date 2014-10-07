@@ -29,18 +29,18 @@
       "query" : null,
       "request_data" : {
         "item" : {
-          "donor_description" : "Maxime expedita sequi repudiandae labore voluptatem.",
+          "donor_description" : "Sed reiciendis sed neque labore et.",
           "state" : "draft",
-          "offer_id" : "649",
-          "item_type_id" : "1017",
-          "rejection_reason_id" : "809",
-          "rejection_other_reason" : "Laudantium culpa vero voluptatem molestias.",
-          "created_at" : "2014-10-06 13:22:47 UTC",
-          "updated_at" : "2014-10-06 13:22:47 UTC",
+          "offer_id" : "2358",
+          "item_type_id" : "3387",
+          "rejection_reason_id" : "2677",
+          "rejection_other_reason" : "Quod magnam dicta consequatur deleniti iure est ipsa quis.",
+          "created_at" : "2014-10-07 04:07:24 UTC",
+          "updated_at" : "2014-10-07 04:07:24 UTC",
           "saleable" : false,
-          "donor_condition_id" : "838",
+          "donor_condition_id" : "2643",
           "deleted_at" : null,
-          "image_identifiers" : "z5be3w0xfj"
+          "image_identifiers" : "heeagkwcp8"
         }
       },
       "response_data" : {
@@ -48,51 +48,51 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 391,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vz5be3w0xfj",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vz5be3w0xfj",
+            "id" : 1121,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vheeagkwcp8",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vheeagkwcp8",
             "favourite" : null,
             "order" : null,
-            "image_id" : "z5be3w0xfj"
+            "image_id" : "heeagkwcp8"
           }
         ],
         "rejection_reasons" : [
           {
-            "id" : 809,
-            "name" : "Size"
+            "id" : 2677,
+            "name" : "Quality"
           }
         ],
         "item_types" : [
           {
-            "id" : 1017,
-            "name" : "Urology",
-            "code" : "MSU"
+            "id" : 3387,
+            "name" : "Speaker",
+            "code" : "EUS"
           }
         ],
         "donor_conditions" : [
           {
-            "id" : 838,
-            "name" : "New"
+            "id" : 2643,
+            "name" : "Broken"
           }
         ],
         "item" : {
-          "id" : 895,
-          "donor_description" : "Maxime expedita sequi repudiandae labore voluptatem.",
-          "donor_condition_id" : 838,
+          "id" : 2682,
+          "donor_description" : "Sed reiciendis sed neque labore et.",
+          "donor_condition_id" : 2643,
           "state" : "draft",
-          "offer_id" : 649,
-          "item_type_id" : 1017,
-          "rejection_reason_id" : 809,
-          "rejection_other_reason" : "Laudantium culpa vero voluptatem molestias.",
+          "offer_id" : 2358,
+          "item_type_id" : 3387,
+          "rejection_reason_id" : 2677,
+          "rejection_other_reason" : "Quod magnam dicta consequatur deleniti iure est ipsa quis.",
           "saleable" : false,
-          "created_at" : "2014-10-06T13:22:47.462Z",
-          "updated_at" : "2014-10-06T13:22:47.462Z",
-          "image_identifiers" : "z5be3w0xfj",
+          "created_at" : "2014-10-07T04:07:24.593Z",
+          "updated_at" : "2014-10-07T04:07:24.593Z",
+          "image_identifiers" : "heeagkwcp8",
           "favourite_image" : null,
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            391
+            1121
           ]
         }
       },
@@ -104,7 +104,7 @@
   "items#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/items/892",
+      "path" : "/api/v1/items/2679",
       "versions" : [
         "v1"
       ],
@@ -115,51 +115,51 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 389,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vs8leo80ly5",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vs8leo80ly5",
+            "id" : 1119,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vojzcn9p4sr",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vojzcn9p4sr",
             "favourite" : true,
             "order" : 1,
-            "image_id" : "s8leo80ly5"
+            "image_id" : "ojzcn9p4sr"
           }
         ],
         "rejection_reasons" : [
           {
-            "id" : 808,
+            "id" : 2675,
             "name" : "Other"
           }
         ],
         "item_types" : [
           {
-            "id" : 1015,
-            "name" : "Women's Health",
-            "code" : "MW"
+            "id" : 3385,
+            "name" : "Adult fiction (english)",
+            "code" : "PGF"
           }
         ],
         "donor_conditions" : [
           {
-            "id" : 837,
+            "id" : 2642,
             "name" : "Heavily Used"
           }
         ],
         "item" : {
-          "id" : 892,
-          "donor_description" : "Asperiores aut dolore ratione excepturi ducimus et quis.",
-          "donor_condition_id" : 837,
+          "id" : 2679,
+          "donor_description" : "Facilis doloremque saepe tempora voluptatem nostrum eius optio tenetur.",
+          "donor_condition_id" : 2642,
           "state" : "draft",
-          "offer_id" : 648,
-          "item_type_id" : 1015,
-          "rejection_reason_id" : 808,
-          "rejection_other_reason" : "Deserunt assumenda dolorum inventore architecto voluptatem nisi necessitatibus et.",
+          "offer_id" : 2357,
+          "item_type_id" : 3385,
+          "rejection_reason_id" : 2675,
+          "rejection_other_reason" : "Distinctio praesentium quisquam non vitae.",
           "saleable" : false,
-          "created_at" : "2014-10-06T13:22:47.226Z",
-          "updated_at" : "2014-10-06T13:22:47.226Z",
-          "image_identifiers" : "s8leo80ly5",
-          "favourite_image" : "s8leo80ly5",
+          "created_at" : "2014-10-07T04:07:24.347Z",
+          "updated_at" : "2014-10-07T04:07:24.347Z",
+          "image_identifiers" : "ojzcn9p4sr",
+          "favourite_image" : "ojzcn9p4sr",
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            389
+            1119
           ]
         }
       },
@@ -171,7 +171,7 @@
   "items#update" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/items/897",
+      "path" : "/api/v1/items/2684",
       "versions" : [
         "v1"
       ],
@@ -180,16 +180,16 @@
         "item" : {
           "donor_description" : "Test item",
           "state" : "draft",
-          "offer_id" : "650",
-          "item_type_id" : "1019",
-          "rejection_reason_id" : "810",
-          "rejection_other_reason" : "Possimus qui qui optio natus quia.",
-          "created_at" : "2014-10-06 13:22:47 UTC",
-          "updated_at" : "2014-10-06 13:22:47 UTC",
+          "offer_id" : "2359",
+          "item_type_id" : "3389",
+          "rejection_reason_id" : "2678",
+          "rejection_other_reason" : "Minima sint nihil quis provident.",
+          "created_at" : "2014-10-07 04:07:24 UTC",
+          "updated_at" : "2014-10-07 04:07:24 UTC",
           "saleable" : false,
-          "donor_condition_id" : "840",
+          "donor_condition_id" : "2644",
           "deleted_at" : null,
-          "image_identifiers" : "lgzga5s287"
+          "image_identifiers" : "kyl3v153zq"
         }
       },
       "response_data" : {
@@ -197,55 +197,55 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 393,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vlgzga5s287",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vlgzga5s287",
+            "id" : 1123,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vkyl3v153zq",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vkyl3v153zq",
             "favourite" : null,
             "order" : null,
-            "image_id" : "lgzga5s287"
+            "image_id" : "kyl3v153zq"
           }
         ],
         "rejection_reasons" : [
           {
-            "id" : 810,
-            "name" : "Other"
+            "id" : 2678,
+            "name" : "Size"
           }
         ],
         "item_types" : [
           {
-            "id" : 1019,
-            "name" : "PALLET OF Childrens clothing, NEW, unsorted",
-            "code" : "CLZC"
+            "id" : 3389,
+            "name" : "Intravenous equipment",
+            "code" : "MGV"
           }
         ],
         "donor_conditions" : [
           {
-            "id" : 840,
-            "name" : "Lightly Used"
+            "id" : 2644,
+            "name" : "Heavily Used"
           }
         ],
         "item" : {
-          "id" : 897,
+          "id" : 2684,
           "donor_description" : "Test item",
-          "donor_condition_id" : 840,
+          "donor_condition_id" : 2644,
           "state" : "draft",
-          "offer_id" : 650,
-          "item_type_id" : 1019,
-          "rejection_reason_id" : 810,
-          "rejection_other_reason" : "Possimus qui qui optio natus quia.",
+          "offer_id" : 2359,
+          "item_type_id" : 3389,
+          "rejection_reason_id" : 2678,
+          "rejection_other_reason" : "Minima sint nihil quis provident.",
           "saleable" : false,
-          "created_at" : "2014-10-06T13:22:47.563Z",
-          "updated_at" : "2014-10-06T13:22:47.585Z",
-          "image_identifiers" : "lgzga5s287",
+          "created_at" : "2014-10-07T04:07:24.666Z",
+          "updated_at" : "2014-10-07T04:07:24.686Z",
+          "image_identifiers" : "kyl3v153zq",
           "favourite_image" : null,
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            393
+            1123
           ]
         }
       },
-      "code" : "201",
+      "code" : "200",
       "show_in_doc" : 1,
       "recorded" : true
     }
