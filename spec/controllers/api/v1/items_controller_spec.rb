@@ -10,13 +10,14 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   let(:serialized_item_json) { JSON.parse( serialized_item.to_json ) }
   let(:item_params) { item.attributes.except("id").merge("image_identifiers" => Faker::Lorem.characters(10)) }
 
+  subject { JSON.parse(response.body) }
+
   describe "GET item" do
     before { generate_and_set_token(user) }
     it "return serialized item", :show_in_doc do
       get :show, id: item.id
-      body = JSON.parse(response.body)
       expect(response.status).to eq(200)
-      expect( body ).to eq(serialized_item_json)
+      expect(subject).to eq(serialized_item_json)
     end
   end
 
