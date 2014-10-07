@@ -5,7 +5,7 @@ module Api::V1
       :resend]
 
     def resend
-      (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
+      (params[:mobile].presence) ? search_by_mobile : search_by_token
     end
 
     def signup
