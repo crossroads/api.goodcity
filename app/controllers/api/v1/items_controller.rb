@@ -15,7 +15,7 @@ module Api::V1
     def_param_group :item do
       param :item, Hash, required: true do
         param :donor_description, String, desc: "Description/Details of item given by Item-Donor"
-        param :donor_condition_id, String, desc: "Describes the item's condition #{DonorCondition.pluck(:name_en)}"
+        param :donor_condition_id, %w(1 2 3 4), desc: "Describes the item's condition "<< DonorCondition.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; ")
         param :state, Item.valid_states, desc: "Fires the state transition (if allowed) for this item."
         param :offer_id, String, desc: "Id of Offer to which item belongs."
         param :item_type_id, String, allow_nil: true, desc: "Not yet used"
