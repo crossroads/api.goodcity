@@ -2,6 +2,8 @@
 
 FactoryGirl.define do
   factory :user do
+    association :address
+
     first_name { Faker::Name.first_name }
     last_name  { Faker::Name.last_name }
     mobile     { Faker::PhoneNumber.phone_number }
@@ -26,4 +28,11 @@ FactoryGirl.define do
     end
   end
 
+  factory :user_with_correct_number, parent: :user do
+    mobile {"+85211111111"}
+  end
+
+  factory :user_with_wrong_number, parent: :user do
+    mobile {"+85211111112"}
+  end
 end
