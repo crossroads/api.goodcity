@@ -5,7 +5,7 @@ module Api::V1
       :resend]
 
     resource_description do
-      short 'Handle login, sign up and user verification.'
+      short "Handle login, sign up and user verification."
       formats ['json']
       error 401, "Unauthorized"
       error 403, "Forbidden"
@@ -45,6 +45,9 @@ module Api::V1
     Create user and send a new OTP token to the user mobile.
     * If successful, generate and return a friendly token which will later be sent back with OTP code.
     * Otherwise, return status 403 (Forbidden)
+
+    To understand the registration process in detail refer
+    {attached Registration flowcharts}[/doc/registration_flowchart.pdf]
     EOS
     param_group :user_auth
     def signup
@@ -67,6 +70,8 @@ module Api::V1
     Verify both OTP code (sent via SMS) and friendly token are valid
     * If verified, generate and send back a JWT token.
     * If verification fails, return 401 (Unauthorized)
+
+    To understand the registration process in detail refer {attached Login flowchart}[/doc/login_flowchart.pdf]
     EOS
     param :token_header, String, desc: "Friendly token"
     param :pin, String, desc: "OTP code which is received via sms"
