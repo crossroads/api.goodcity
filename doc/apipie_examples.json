@@ -1,4 +1,255 @@
 {
+  "images#generate_signature" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/images/generate_signature",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "api_key" : 1234567890,
+        "callback" : "http://test.host/cloudinary_cors.html",
+        "signature" : "335f4d4c9a4690e6ebb2514a3dbd2ea0cba0350b",
+        "timestamp" : 1412595083
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "items#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/items",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "item" : {
+          "donor_description" : "Sed reiciendis sed neque labore et.",
+          "state" : "draft",
+          "offer_id" : "2358",
+          "item_type_id" : "3387",
+          "rejection_reason_id" : "2677",
+          "rejection_other_reason" : "Quod magnam dicta consequatur deleniti iure est ipsa quis.",
+          "created_at" : "2014-10-07 04:07:24 UTC",
+          "updated_at" : "2014-10-07 04:07:24 UTC",
+          "saleable" : false,
+          "donor_condition_id" : "2643",
+          "deleted_at" : null,
+          "image_identifiers" : "heeagkwcp8"
+        }
+      },
+      "response_data" : {
+        "packages" : [],
+        "messages" : [],
+        "images" : [
+          {
+            "id" : 1121,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vheeagkwcp8",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vheeagkwcp8",
+            "favourite" : null,
+            "order" : null,
+            "image_id" : "heeagkwcp8"
+          }
+        ],
+        "rejection_reasons" : [
+          {
+            "id" : 2677,
+            "name" : "Quality"
+          }
+        ],
+        "item_types" : [
+          {
+            "id" : 3387,
+            "name" : "Speaker",
+            "code" : "EUS"
+          }
+        ],
+        "donor_conditions" : [
+          {
+            "id" : 2643,
+            "name" : "Broken"
+          }
+        ],
+        "item" : {
+          "id" : 2682,
+          "donor_description" : "Sed reiciendis sed neque labore et.",
+          "donor_condition_id" : 2643,
+          "state" : "draft",
+          "offer_id" : 2358,
+          "item_type_id" : 3387,
+          "rejection_reason_id" : 2677,
+          "rejection_other_reason" : "Quod magnam dicta consequatur deleniti iure est ipsa quis.",
+          "saleable" : false,
+          "created_at" : "2014-10-07T04:07:24.593Z",
+          "updated_at" : "2014-10-07T04:07:24.593Z",
+          "image_identifiers" : "heeagkwcp8",
+          "favourite_image" : null,
+          "package_ids" : [],
+          "message_ids" : [],
+          "image_ids" : [
+            1121
+          ]
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "items#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/items/2679",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "packages" : [],
+        "messages" : [],
+        "images" : [
+          {
+            "id" : 1119,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vojzcn9p4sr",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vojzcn9p4sr",
+            "favourite" : true,
+            "order" : 1,
+            "image_id" : "ojzcn9p4sr"
+          }
+        ],
+        "rejection_reasons" : [
+          {
+            "id" : 2675,
+            "name" : "Other"
+          }
+        ],
+        "item_types" : [
+          {
+            "id" : 3385,
+            "name" : "Adult fiction (english)",
+            "code" : "PGF"
+          }
+        ],
+        "donor_conditions" : [
+          {
+            "id" : 2642,
+            "name" : "Heavily Used"
+          }
+        ],
+        "item" : {
+          "id" : 2679,
+          "donor_description" : "Facilis doloremque saepe tempora voluptatem nostrum eius optio tenetur.",
+          "donor_condition_id" : 2642,
+          "state" : "draft",
+          "offer_id" : 2357,
+          "item_type_id" : 3385,
+          "rejection_reason_id" : 2675,
+          "rejection_other_reason" : "Distinctio praesentium quisquam non vitae.",
+          "saleable" : false,
+          "created_at" : "2014-10-07T04:07:24.347Z",
+          "updated_at" : "2014-10-07T04:07:24.347Z",
+          "image_identifiers" : "ojzcn9p4sr",
+          "favourite_image" : "ojzcn9p4sr",
+          "package_ids" : [],
+          "message_ids" : [],
+          "image_ids" : [
+            1119
+          ]
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "items#update" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/items/2684",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "item" : {
+          "donor_description" : "Test item",
+          "state" : "draft",
+          "offer_id" : "2359",
+          "item_type_id" : "3389",
+          "rejection_reason_id" : "2678",
+          "rejection_other_reason" : "Minima sint nihil quis provident.",
+          "created_at" : "2014-10-07 04:07:24 UTC",
+          "updated_at" : "2014-10-07 04:07:24 UTC",
+          "saleable" : false,
+          "donor_condition_id" : "2644",
+          "deleted_at" : null,
+          "image_identifiers" : "kyl3v153zq"
+        }
+      },
+      "response_data" : {
+        "packages" : [],
+        "messages" : [],
+        "images" : [
+          {
+            "id" : 1123,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vkyl3v153zq",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vkyl3v153zq",
+            "favourite" : null,
+            "order" : null,
+            "image_id" : "kyl3v153zq"
+          }
+        ],
+        "rejection_reasons" : [
+          {
+            "id" : 2678,
+            "name" : "Size"
+          }
+        ],
+        "item_types" : [
+          {
+            "id" : 3389,
+            "name" : "Intravenous equipment",
+            "code" : "MGV"
+          }
+        ],
+        "donor_conditions" : [
+          {
+            "id" : 2644,
+            "name" : "Heavily Used"
+          }
+        ],
+        "item" : {
+          "id" : 2684,
+          "donor_description" : "Test item",
+          "donor_condition_id" : 2644,
+          "state" : "draft",
+          "offer_id" : 2359,
+          "item_type_id" : 3389,
+          "rejection_reason_id" : 2678,
+          "rejection_other_reason" : "Minima sint nihil quis provident.",
+          "saleable" : false,
+          "created_at" : "2014-10-07T04:07:24.666Z",
+          "updated_at" : "2014-10-07T04:07:24.686Z",
+          "image_identifiers" : "kyl3v153zq",
+          "favourite_image" : null,
+          "package_ids" : [],
+          "message_ids" : [],
+          "image_ids" : [
+            1123
+          ]
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "offers#create" : [
     {
       "verb" : "POST",

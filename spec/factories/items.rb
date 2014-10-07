@@ -4,11 +4,11 @@ FactoryGirl.define do
   factory :item do
     donor_description      { Faker::Lorem.sentence }
     state                  'draft'
-    item_type_id           { create(:item_type).id }
-    rejection_reason_id    { create(:rejection_reason).id }
     rejection_other_reason { Faker::Lorem.sentence }
 
-    donor_condition
+    association :donor_condition
+    association :item_type
+    association :rejection_reason
 
     trait :with_packages do
       packages             { create_list(:package, 2) }
