@@ -37,7 +37,7 @@ module Api::V1
     EOS
     param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85212345678"
     def resend
-      (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
+      (params[:mobile].presence) ? search_by_mobile : search_by_token
     end
 
     api :POST, '/v1/auth/signup', "Register a new user"

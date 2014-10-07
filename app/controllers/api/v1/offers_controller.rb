@@ -22,7 +22,7 @@ module Api::V1
         param :parking, [true, false], desc: "Is parking provided?", allow_nil: true
         param :estimated_size, String, desc: "How big is the item?", allow_nil: true
         param :notes, String, desc: "Not yet used", allow_nil: true
-        param :reviewed_by_id, Integer, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."
+        param :reviewed_by_id, String, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."
       end
     end
 

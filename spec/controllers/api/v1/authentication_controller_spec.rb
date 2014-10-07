@@ -83,7 +83,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         login_as(user)
         request.env['HTTP_AUTHORIZATION'] = "  Bearer    "
         get :resend
-        expect(request.env["warden.options"][:message][:text]).to eq("Mobile number does not exist.")
+        expect(request.env["warden.options"][:message][:text]).to eq("Please provide a mobile number.")
         expect(request.env["warden.options"][:message][:token]).to eq("")
         expect(response.status_message.downcase).to eq("unauthorized")
       end

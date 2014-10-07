@@ -20,7 +20,7 @@ class PushOffer < PushService
   end
 
   def listener_channels
-    User.reviewers.pluck(:id).map{ |id| "user_#{id}" }
+    User.reviewers.map{ |user| "user_#{user.id}" }
   end
 
 end
