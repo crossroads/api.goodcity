@@ -104,8 +104,6 @@ module Api::V1
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
       params.require(:user_auth).permit(attributes)
-      # :mobile, :first_name, :last_name,
-      #   address_attributes: [:district_id, :address_type])
     end
 
     def search_by_mobile
