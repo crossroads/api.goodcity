@@ -1,5 +1,5 @@
 {
-  "images#generate_cloudinary_signature" : [
+  "images#generate_signature" : [
     {
       "verb" : "GET",
       "path" : "/api/v1/images/generate_signature",
