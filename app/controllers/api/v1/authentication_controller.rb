@@ -5,7 +5,7 @@ module Api::V1
       :resend]
 
     resource_description do
-      short 'Resend, signup, verify and is_unique_mobile_number.'
+      short 'Handle login, sign up and user verification.'
       formats ['json']
       error 401, "Unauthorized"
       error 403, "Forbidden"
@@ -26,11 +26,16 @@ module Api::V1
       end
     end
 
-    api :GET, '/v1/auth/resend', "Resend SMS code to the autherized mobile"
-    description "If token_header is undefined/empty in that case search user by
-    mobile number. However if token_header is present and not undefined in that
-    case search by the JWT token"
-    param :token_header, String, desc: "User token/mobile number"
+    api :GET, '/v1/auth/resend', "Resend SMS code to the authorized mobile"
+    description <<-EOS
+    1. If "Bearer" header is empty, locate user using _mobile_  param, or
+    2. If "Bearer" header is contains a valid JWT token, locate user using token.
+
+    Bearer header takes the form of:
+
+      AUTHORIZATION "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MDkwMzgzNjUsImlzcyI6Ikdvb2RDaXR5SEsiLCJleHAiOjE0MTAyNDc5NjUsIm1vYmlsZSI6Iis4NTI2MTA5MjAwMSIsIm90cF9zZWNyZXRfa2V5IjoiemRycGZ4c2VnM3cyeWt2aSJ9.lZQaME1oKw7E5cdfks0jG3A_gxlOZ7VfUVG4IMJbc08"
+    EOS
+    param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85212345678"
     def resend
       (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
     end
