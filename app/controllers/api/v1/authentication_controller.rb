@@ -30,7 +30,7 @@ module Api::V1
     description "If token_header is undefined/empty in that case search user by
     mobile number. However if token_header is present and not undefined in that
     case search by the JWT token"
-    params :token_header, String, desc: "User token/mobile number"
+    param :token_header, String, desc: "User token/mobile number"
     def resend
       (token_header != "undefined" && token_header.present?) ? search_by_token : search_by_mobile
     end
@@ -66,8 +66,8 @@ module Api::V1
     if it fails to verify the token and sms code
       response back with unauthorized error and json_token will be empty
     "
-    params :token_header, String, desc: "user's step one friendly token"
-    params :pin, String, desc: "user's otp code which is received via sms"
+    param :token_header, String, desc: "user's step one friendly token"
+    param :pin, String, desc: "user's otp code which is received via sms"
     def verify
       user = warden.authenticate! :pin
       if warden.authenticated?
@@ -85,7 +85,7 @@ module Api::V1
     api :GET, 'vi/auth/check_mobile', "To find out whether mobile number is unique or not?"
     description "response will be TRUE if mobile number does not exist otherwise it will
     return FALSE"
-    params :mobile, String, desc: "mobile number"
+    param :mobile, String, desc: "mobile number"
     def is_unique_mobile_number
       render json: { is_unique_mobile: unique_user.blank? }, status: :ok
     end
