@@ -14,13 +14,13 @@ module Api::V1
       error 500, "Internal Server Error"
     end
 
-    def_param_group :user do
-      param :auth_params, Hash, required: true do
+    def_param_group :user_auth do
+      param :user_auth, Hash, required: true do
         param :mobile, String, desc: "Mobile number e.g. +85212345678"
         param :first_name, String, allow_nil: false, desc: "Given name (first name)"
         param :last_name, String, allow_nil: false, desc: "Family name (last name)"
         param :address_attributes, Hash, required: true do
-          param :district_id, Fixnum, allow_nil: false, desc: "Hong Kong district"
+          param :district_id, String, allow_nil: false, desc: "Hong Kong district"
           param :address_type, String, allow_nil: false, desc: "Type of address e.g. 'Profile' or 'Collection'"
         end
       end
@@ -46,7 +46,7 @@ module Api::V1
     * If successful, generate and return a friendly token which will later be sent back with OTP code.
     * Otherwise, return status 403 (Forbidden)
     EOS
-    param_group :user
+    param_group :user_auth
     def signup
       @result = User.creation_with_auth(auth_params)
       if @result.class == User

@@ -10,4 +10,9 @@ FactoryGirl.define do
     addressable_type "MyString"
     address_type "MyString"
   end
+
+  factory :profile_address, parent: :address do
+    address_type "profile"
+    district_id "1"
+  end
 end

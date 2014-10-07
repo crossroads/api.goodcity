@@ -1,4 +1,88 @@
 {
+  "authentication#is_unique_mobile_number" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/auth/check_mobile",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "mobile=%2B85211111111",
+      "request_data" : null,
+      "response_data" : {
+        "is_unique_mobile" : false
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "authentication#resend" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/auth/verify_mobile",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "token" : "ordsvnm5zstztuxk",
+        "message" : "A pin has been sent to your mobile device."
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "authentication#signup" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/auth/signup",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "user_auth" : {
+          "first_name" : "Albert",
+          "last_name" : "DuBuque",
+          "mobile" : "+85211111111",
+          "address_attributes" : {
+            "district_id" : "1",
+            "address_type" : "profile"
+          }
+        }
+      },
+      "response_data" : {
+        "token" : "wexj4uudsetbslom",
+        "message" : "Success"
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "authentication#verify" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/auth/verify",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "token" : "7difyec6tbqk6ir6",
+        "pin" : "521175"
+      },
+      "response_data" : {
+        "user_id" : 475,
+        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTI2OTA3NzMsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMzkwMDM3MywibW9iaWxlIjoiKzg1MjExMTExMTExIiwib3RwX3NlY3JldF9rZXkiOiI3ZGlmeWVjNnRicWs2aXI2In0.t-O9LH5pUYaN-40TfGi3ns3BZV67IVCvYS3434Lfv04"
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "images#generate_signature" : [
     {
       "verb" : "GET",

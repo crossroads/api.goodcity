@@ -1,5 +1,6 @@
 require 'rails_helper'
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
+
   describe '.login' do
     let!(:user) {create(:user_with_token)}
     let!(:pin) {user.auth_tokens.recent_auth_token[:otp_code]}
@@ -8,35 +9,43 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       controller.send(:generate_enc_session_token,user.mobile,token)
     }
     let!(:mobile_no){ "+85211111111" }
-
-    it 'verifies mobile exists' do
-      get :is_unique_mobile_number, format: 'json', mobile: mobile_no
-      expect(JSON.parse(response.body)["is_unique_mobile"]).to be false
+    let(:correct_mobile_params) {
+      attributes_for(:user_with_correct_number).merge(
+        {address_attributes: attributes_for(:profile_address).slice(:district_id, :address_type)})
+    }
+    let(:wrong_mobile_params) {
+      attributes_for(:user_with_wrong_number).merge(
+        {address_attributes: attributes_for(:profile_address).slice(:district_id, :address_type)})
+    }
+    describe  "GET - Is the given mobile number unique?" do
+      it 'return true if mobile does not exist', :show_in_doc do
+        get :is_unique_mobile_number, format: 'json', mobile: mobile_no
+        body = JSON.parse(response.body)
+        expect(body["is_unique_mobile"]).to be false
+      end
     end
 
-    context "sign up" do
-      it 'new user successfully' do
-        User.where("mobile =?", mobile_no).first.try(:delete)
+    context "POST auth/signup" do
+      it 'returns 200', :show_in_doc do
+        User.where("mobile =?", correct_mobile_params[:mobile]).first.try(:delete)
         VCR.use_cassette "sign up user" do
-          post :signup, format: 'json', user_auth: {mobile: mobile_no, first_name: "Jake",
-            last_name: "Deamon"}
+          post :signup, format: 'json', user_auth: correct_mobile_params
         end
         expect((JSON.parse(response.body)["token"]).length).to be >= 16
         expect(JSON.parse(response.body)["message"]).to eq("Success")
       end
 
-      it 'new user unsuccessful' do
-        wrong_mobile_no = "+85211111112"
+      it 'return 403', :show_in_doc do
         VCR.use_cassette "unsuccessful sign up user" do
-          post :signup, format: 'json', user_auth: {mobile: wrong_mobile_no, first_name: "Jake",
-            last_name: "Deamon"}
+          post :signup, format: 'json', user_auth: wrong_mobile_params
         end
-        expect(request.env["warden.options"][:message][:text]).to eq("The number #{wrong_mobile_no} is unverified")
+        expect(request.env["warden.options"][:message][:text]).to eq("The number #{wrong_mobile_params[:mobile]} is unverified")
         expect(request.env["warden.options"][:status]).to eq(:forbidden)
       end
     end
-    context "verify user" do
-      it 'should allow access to user after signed-in' do
+
+    context "POST auth/verify" do
+      it 'should allow access to user after signed-in', :show_in_doc do
         allow(controller.send(:warden)).to receive(:authenticate!).with(:pin).and_return(user, true)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{token}"
@@ -47,7 +56,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(controller.send(:generate_enc_session_token , user.mobile, token)).not_to be nil
       end
 
-      it 'decode encoded token should have valid data' do
+      it 'decode encoded token should have valid data', :show_in_doc do
         login_as(user)
         cur_time = Time.now
         decoded_token = controller.send(:decode_session_token , jwt_token)
@@ -59,8 +68,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       end
     end
 
-    context "should retrieve details using OTP secret token" do
-      it 'should resend pin for a valid secret token' do
+    context "GET auth/resend" do
+      it 'should resend pin for a valid secret token', :show_in_doc do
         login_as(user)
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{token}"
         VCR.use_cassette "user OTP secret token" do
@@ -70,7 +79,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(JSON.parse(response.body)["message"]).to eq(I18n.t('auth.pin_sent'))
       end
 
-      it 'should not resend pin for a token is empty' do
+      it 'should not resend pin for a token is empty', :show_in_doc do
         login_as(user)
         request.env['HTTP_AUTHORIZATION'] = "  Bearer    "
         get :resend
@@ -79,7 +88,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(response.status_message.downcase).to eq("unauthorized")
       end
 
-      it 'should not resend pin as secret token is not in autherized ' do
+      it 'should not resend pin as secret token is not in autherized ', :show_in_doc do
         login_as(user)
         request.env['HTTP_AUTHORIZATION'] = "Bearer  xr2ysdkj12kkjs2"
         VCR.use_cassette "user OTP secret token" do
