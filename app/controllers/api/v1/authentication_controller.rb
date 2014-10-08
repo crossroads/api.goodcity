@@ -6,6 +6,11 @@ module Api::V1
 
     resource_description do
       short "Handle login, sign up and user verification."
+      description <<-EOS
+      ==Diagrams
+      * {Login flowchart}[link:/doc/login_flowchart.pdf]
+      * {Registration flowchart}[link:/doc/registration_flowchart.pdf]
+      EOS
       formats ['json']
       error 401, "Unauthorized"
       error 403, "Forbidden"
