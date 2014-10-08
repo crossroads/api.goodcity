@@ -277,7 +277,7 @@ DEPENDENCIES
   annotate
   apipie-rails
   byebug
-  cancancan (~> 1.8)
+  cancancan
   capistrano-bundler
   capistrano-rails
   capistrano-rvm
@@ -287,10 +287,10 @@ DEPENDENCIES
   factory_girl_rails
   ffaker
   guard-rspec
-  http_accept_language (~> 2.0.1)
+  http_accept_language
   jwt (~> 0.1.13)
   newrelic_rpm
-  oj
+  oj (= 2.10.2)
   oj_mimic_json
   paranoia!
   pg
@@ -302,13 +302,13 @@ DEPENDENCIES
   railroady
   rails (= 4.1.1)
   rails-api
-  rails-i18n (~> 4)
+  rails-i18n
   redis
   redis-rails
   rspec-rails
   shoulda-matchers
   spring
-  state_machine (~> 1.2.0)
+  state_machine
   sucker_punch
   traco
   twilio-ruby
