@@ -77,6 +77,7 @@ class User < ActiveRecord::Base
   def send_verification_pin(drift=30.minutes)
     twilio_sms = TwilioService.new(self)
     new_auth = update_otp(drift)
+    EmailFlowdockService.email_otp(new_auth)
     message_data = twilio_sms.sms_verification_pin(
       {otp: new_auth[:otp_code], otp_expires: new_auth[:otp_code_expiry]})
     user_token = new_auth.otp_secret_key
