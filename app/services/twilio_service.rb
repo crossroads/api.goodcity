@@ -1,5 +1,7 @@
 require 'twilio-ruby'
-class TwilioServices
+class TwilioService
+
+  attr_accessor :user
 
   def initialize(user)
     @user = user
