@@ -7,5 +7,6 @@ class Delivery < ActiveRecord::Base
 
   def update_offer_state
     offer.schedule  if contact_id_changed? && contact.present?
+    true
   end
 end
