@@ -11,5 +11,9 @@ en:
     mobile_required: Please provide a mobile number.
     mobile_exists: Mobile number already exists.
     mobile_doesnot_exist: Mobile number does not exist.
+    invalid_credentials: Sorry, your mobile and pin number do not match.
+  token:
+    invalid: Invalid token
+    expired: Expired token
   twilio:
     sms_verification_pin: Your pin is %{pin} and will expire by %{expiry}.

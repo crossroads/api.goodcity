@@ -24,8 +24,10 @@ module Api::V1
     end
 
     private
+
     def serializer
       Api::V1::UserSerializer
     end
+
   end
 end

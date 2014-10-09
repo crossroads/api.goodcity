@@ -9,15 +9,12 @@ module ControllerMacros
   # Creates a token and sets the request header effectively logging the user in
   def generate_and_set_token(user=nil)
     user ||= create(:user_with_token)
-    cur_time = Time.now
+    current_time = Time.now
     jwt_config = Rails.application.secrets.jwt
-    mobile = user.mobile
-    otp_secret_key = user.friendly_token
-    token = JWT.encode({"iat" => cur_time.to_i,
+    token = JWT.encode({"iat" => current_time.to_i,
       "iss" => jwt_config['issuer'],
-      "exp" => (cur_time + 14.days).to_i,
-      "mobile"  => mobile,
-      "otp_secret_key"  => otp_secret_key},
+      "exp" => (current_time + 14.days).to_i,
+      "user_id"  => user.id},
       jwt_config['secret_key'],
       jwt_config['hmac_sha_algo'])
     request.headers['Authorization'] = "Bearer #{token}"

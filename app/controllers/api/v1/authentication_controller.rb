@@ -1,11 +1,9 @@
 module Api::V1
   class AuthenticationController < Api::V1::ApiController
-    skip_before_action :validate_token,
-      only: [:is_mobile_exist, :is_unique_mobile_number,:signup, :verify,
-      :resend]
+    skip_before_action :validate_token, only: [:signup, :verify, :send_pin, :is_unique_mobile_number]
 
     resource_description do
-      short "Handle login, sign up and user verification."
+      short "Handle user login and registration"
       description <<-EOS
       ==Diagrams
       * {Login flowchart}[link:/doc/login_flowchart.pdf]
@@ -31,24 +29,23 @@ module Api::V1
       end
     end
 
-    api :GET, '/v1/auth/resend', "Resend SMS code to the authorized mobile"
+    api :POST, '/v1/auth/send_pin', "Send SMS code to the registered mobile"
     description <<-EOS
-    1. If "Bearer" header is empty, locate user using _mobile_  param, or
-    2. If "Bearer" header is contains a valid JWT token, locate user using token.
-
-    Bearer header takes the form of:
-
-      AUTHORIZATION "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MDkwMzgzNjUsImlzcyI6Ikdvb2RDaXR5SEsiLCJleHAiOjE0MTAyNDc5NjUsIm1vYmlsZSI6Iis4NTI2MTA5MjAwMSIsIm90cF9zZWNyZXRfa2V5IjoiemRycGZ4c2VnM3cyeWt2aSJ9.lZQaME1oKw7E5cdfks0jG3A_gxlOZ7VfUVG4IMJbc08"
+    Send an OTP code via SMS if the given mobile number has an account in our system.
+    Always returns 200 regardless of whether mobile number exists or not.
     EOS
     param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85212345678"
-    def resend
-      (params[:mobile].presence) ? search_by_mobile : search_by_token
+    def send_pin
+      # Lookup user based on mobile. Don't allow params[:mobile] to be nil
+      user = params[:mobile].present? ? User.find_by_mobile(params[:mobile]) : nil
+      user.send_verification_pin if user.present?
+      render json: { text: "Success! Assuming that mobile number is registered, we've sent a pin code." }
     end
 
     api :POST, '/v1/auth/signup', "Register a new user"
     description <<-EOS
     Create user and send a new OTP token to the user mobile.
-    * If successful, generate and return a friendly token which will later be sent back with OTP code.
+    * If successful, an SMS will be sent with an OTP code
     * Otherwise, return status 403 (Forbidden)
 
     To understand the registration process in detail refer
@@ -56,91 +53,50 @@ module Api::V1
     EOS
     param_group :user_auth
     def signup
-      @result = User.creation_with_auth(auth_params)
-      if @result.class == User
-        warden.set_user(@result)
-        render json: {token: @result.friendly_token,
-          message: I18n.t(:success)}, status: :ok
+      @user = User.creation_with_auth(auth_params)
+      if @user.valid? && @user.persisted?
+        render json: { message: I18n.t(:success) }, status: :ok
       else
-        throw(:warden, {status: :forbidden,
-          message: {
-          text:  @result,
-          token: ""}
-      })
+        render json: { errors: @user.errors.full_messages.join }, status: 422
       end
     end
 
-    api :POST, '/v1/auth/verify', "Verify OTP code and friendly token"
+    api :POST, '/v1/auth/verify', "Verify OTP code"
     description <<-EOS
-    Verify both OTP code (sent via SMS) and friendly token are valid
-    * If verified, generate and send back a JWT token.
+    Verify the OTP code (sent via SMS)
+    * If verified, generate and send back an authenticated JWT token and the user id so it can be retreived via an API call
     * If verification fails, return 401 (Unauthorized)
 
     To understand the registration process in detail refer {attached Login flowchart}[/doc/login_flowchart.pdf]
     EOS
-    param :token_header, String, desc: "Friendly token"
     param :pin, String, desc: "OTP code which is received via sms"
+    param :mobile, String, desc: "Mobile number e.g. +85212345678"
     def verify
-      user = warden.authenticate! :pin
+      user = warden.authenticate!(:pin)
       if warden.authenticated?
-        json_token = generate_enc_session_token(user.mobile, token_header) if user
-        render json: { user_id: user.try(:id),
-          jwt_token: (user.present? ? json_token : "") }, status: :ok
+        render json: { jwt_token: generate_token(user_id: user.id), user_id: user.id }
       else
-        throw(:warden, {status: :unauthorized,
-          message: {
-            text: I18n.t('warden.token_invalid'),
-            jwt_token: ""}
-        })
+        throw(:warden, {status: :unauthorized, message: { text: I18n.t('auth.invalid_credentials'), jwt_token: ""} })
       end
     end
 
-    api :GET, 'vi/auth/check_mobile', "Is the given mobile number unique?"
-    description <<-EOS
-    * Return TRUE if mobile number does not exist
-    * Return FALSE in all other cases
-    EOS
-    param :mobile, String, desc: "Mobile number", required: true
+    #api :GET, 'vi/auth/check_mobile', "Is the given mobile number unique?"
+    #description <<-EOS
+    #* Return TRUE if mobile number does not exist
+    #* Return FALSE in all other cases
+    #EOS
+    #param :mobile, String, desc: "Mobile number", required: true
     def is_unique_mobile_number
-      render json: { is_unique_mobile: unique_user.blank? }, status: :ok
+      unique_user = User.check_for_mobile_uniqueness(params[:mobile]).first
+      render json: { is_unique_mobile: unique_user.blank? }
     end
 
     private
-
-    def unique_user
-      User.check_for_mobile_uniqueness(params[:mobile]).first
-    end
 
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
       params.require(:user_auth).permit(attributes)
     end
 
-    def search_by_mobile
-      user = unique_user
-      if user.present?
-        user.send_verification_pin
-        render json: { mobile_exist: true ,
-          token: user.friendly_token}, status: :ok
-      else
-        throw(:warden, {status: :unauthorized,
-          message: {
-            text: I18n.t('auth.mobile_doesnot_exist'),
-            token: "",
-            mobile_exist: false}
-        })
-      end
-    end
-
-    def search_by_token
-      user = User.find_all_by_otp_secret_key(token_header).first
-      render json: { token: token_header, message: I18n.t('auth.pin_sent') }, status: :ok if  user.send_verification_pin
-    rescue
-      throw(:warden, {status: :unauthorized,
-        message: {
-          text:  I18n.t('auth.mobile_required'),
-          token: ""}
-      })
-    end
   end
 end

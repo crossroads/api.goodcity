@@ -86,15 +86,8 @@ describe User, :type => :model do
       end
 
       it 'raise error if mobile is invalid' do
-        expect(twilio_error).to eq("The 'To' number #{user_invalid_attr[:mobile]} is not a valid phone number")
+        expect(twilio_error.errors.full_messages.join).to eq("The 'To' number #{user_invalid_attr[:mobile]} is not a valid phone number")
       end
-    end
-  end
-
-  describe '#get_friendly_token' do
-    it 'give auth_token otp_secret_token' do
-      user1_token = user.most_recent_token.otp_secret_key
-      expect(user1_token).to eq(user.friendly_token)
     end
   end
 

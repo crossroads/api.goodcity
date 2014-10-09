@@ -25,22 +25,19 @@ class User < ActiveRecord::Base
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
 
   def self.creation_with_auth(user_params)
+    user = new(user_params)
     begin
       transaction do
-        user = new(user_params)
-        user.send_verification_pin if user.save!
-        user
+        user.save!
+        user.send_verification_pin
       end
     rescue Twilio::REST::RequestError => e
-      e.message.try(:split,'.').try(:first)
+      msg = e.message.try(:split,'.').try(:first)
+      user.errors.add(:base, msg)
     rescue Exception => e
-      e.message
+      user.errors.add(:base, e.message)
     end
-  end
-
-  # TODO DEPRECATE?
-  def friendly_token
-    most_recent_token["otp_secret_key"] unless auth_tokens.blank?
+    user
   end
 
   def most_recent_token

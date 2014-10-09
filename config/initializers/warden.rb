@@ -16,12 +16,12 @@ end
 Warden::Strategies.add(:pin) do
 
   def valid?
-    otp_secret_key.present? && params["pin"].present?
+    params["pin"].present? && params['mobile'].present?
   end
 
   def authenticate!
-    user = User.find_all_by_otp_secret_key(otp_secret_key).first
-    if user && user.most_recent_token.authenticate_otp(params["pin"], {drift: otp_code_validity})
+    user = User.where(mobile: params['mobile']).first
+    if user && user.most_recent_token.authenticate_otp(params["pin"], { drift: otp_code_validity })
       success! user
     else
       fail! user
@@ -30,10 +30,6 @@ Warden::Strategies.add(:pin) do
 
   def otp_code_validity
     Rails.application.secrets.token['otp_code_validity']
-  end
-
-  def otp_secret_key
-    env['HTTP_AUTHORIZATION'].try(:split, ' ').try(:last)
   end
 
 end
