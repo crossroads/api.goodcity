@@ -83,6 +83,34 @@
       "recorded" : true
     }
   ],
+  "contacts#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/contacts",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "contact" : {
+          "name" : "Araceli Paucek",
+          "phone" : "1-783-038-8094 x054"
+        }
+      },
+      "response_data" : {
+        "addresses" : [],
+        "contact" : {
+          "id" : 2,
+          "name" : "Araceli Paucek",
+          "mobile" : null,
+          "address_id" : null
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "images#generate_signature" : [
     {
       "verb" : "GET",

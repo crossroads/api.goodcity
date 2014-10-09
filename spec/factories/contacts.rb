@@ -2,8 +2,7 @@
 
 FactoryGirl.define do
   factory :contact do
-    name "MyString"
-    phone "MyString"
-    address_id 1
+    name { Faker::Name.name }
+    phone { Faker::PhoneNumber.phone_number }
   end
 end
