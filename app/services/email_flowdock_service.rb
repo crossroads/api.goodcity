@@ -1,7 +1,14 @@
 class EmailFlowdockService
 
-  def self.email_otp(otp)
-    FlowdockNotification.otp(otp).deliver
+  attr_accessor :user
+
+  def initialize(user)
+    @user = user
+  end
+
+  def send_otp
+    token = @user.most_recent_token
+    FlowdockNotification.otp(token).deliver
   end
 
 end

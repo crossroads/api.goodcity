@@ -4,8 +4,8 @@ RSpec.describe ApplicationController, type: :controller do
   describe "ApplicationController" do
     #------------------------------------------------------------------------
     let!(:user) {create(:user_with_token)}
-    let!(:pin) {user.auth_tokens.recent_auth_token[:otp_code]}
-    let!(:token) {user.auth_tokens.recent_auth_token[:otp_secret_key]}
+    let!(:pin) {user.most_recent_token[:otp_code]}
+    let!(:token) {user.most_recent_token[:otp_secret_key]}
 
     let!(:jwt_token) {
       controller.send(:generate_enc_session_token,user.mobile,token)}

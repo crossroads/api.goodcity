@@ -14,15 +14,15 @@ describe User, :type => :model do
       first_name: "John2",
       last_name: "Dey2"
   }}
-  let!(:user_fg) {create :user}
+  let(:user) { create :user }
 
-  describe 'Association' do
+  describe 'Associations' do
     it { should have_many :auth_tokens }
     it { should have_many :offers }
     it { should have_many :messages }
     it { should have_many :sent_messages }
     it { should belong_to :permission }
-    it { should have_one :address }
+    it { should have_one  :address }
   end
 
   describe 'Database columns' do
@@ -38,11 +38,10 @@ describe User, :type => :model do
 
   describe 'Scope Methods' do
     describe '.find_all_by_otp_secret_key' do
+      let!(:user) { create :user }
       it 'find user by otp_secret_key' do
-        user1 = user_fg
-        user2 = user_fg
-        auth_user1_otp_skey = user1.auth_tokens.first.otp_secret_key
-        expect(User.find_all_by_otp_secret_key(auth_user1_otp_skey).first).to eq (user1)
+        secret_key = user.auth_tokens.first.otp_secret_key
+        expect(User.find_all_by_otp_secret_key(secret_key).first).to eq(user)
       end
     end
 
@@ -83,7 +82,7 @@ describe User, :type => :model do
       end
 
       it 'sms a verification pin' do
-        expect(custom_user.auth_tokens.recent_auth_token.otp_code).not_to be_nil
+        expect(custom_user.most_recent_token.otp_code).not_to be_nil
       end
 
       it 'raise error if mobile is invalid' do
@@ -94,63 +93,33 @@ describe User, :type => :model do
 
   describe '#get_friendly_token' do
     it 'give auth_token otp_secret_token' do
-      user1_token = user_fg.auth_tokens.first.otp_secret_key
-      expect(user1_token).to eq(user_fg.friendly_token)
-    end
-  end
-
-  describe '#get_token_expiry_date' do
-    it 'give auth_token otp_code_Expiry' do
-      user1_token = user_fg.auth_tokens.first.otp_code_expiry
-      expect(user1_token).to eq(user_fg.token_expiry)
-    end
-  end
-
-  describe '#authenticate' do
-    let!(:custom_user) {
-      VCR.use_cassette "valid user with verified mobile" do
-        User.creation_with_auth(user_valid_attr)
-      end
-    }
-    let!(:ret_otp_secret) {
-      VCR.use_cassette "authenticate user" do
-        custom_user.authenticate(user_valid_attr[:mobile])
-      end
-    }
-    it 'check for user mobile and successfully send sms' do
-      expect(ret_otp_secret.first).not_to be_nil
-      expect(ret_otp_secret.first).to eq(custom_user.friendly_token)
+      user1_token = user.most_recent_token.otp_secret_key
+      expect(user1_token).to eq(user.friendly_token)
     end
   end
 
   describe '#send_verification_pin' do
-    it 'update otp_code for the user' do
-      before_n_after_otp_for_twilio_sms
-      expect(@before_otp_code).not_to eq(@after_otp_code)
+
+    let(:flowdock)   { EmailFlowdockService.new(user) }
+    let(:twilio)     { TwilioService.new(user) }
+
+    it "should send pin via Twilio" do
+      expect(EmailFlowdockService).to receive(:new).with(user).and_return(flowdock)
+      expect(flowdock).to receive(:send_otp)
+      expect(TwilioService).to receive(:new).with(user).and_return(twilio)
+      expect(twilio).to receive(:sms_verification_pin)
+      user.send_verification_pin
     end
 
-    it 'update otp_code_Expiry for the user' do
-      before_n_after_otp_for_twilio_sms
-      expect(@before_otp_expiry).not_to eq(@after_otp_expiry)
-    end
-
-    it 'sms new otp_code' do
-      before_n_after_otp_for_twilio_sms
-      sms_text = "Your pin is #{@before_otp_code} and will expire by #{@before_otp_expiry}."
-      expect(@token_key.second.body).not_to eq(sms_text)
-    end
-
-    it 'return otp_secret_token' do
-      before_n_after_otp_for_twilio_sms
-      expect(@token_key.first).to eq(@valid_mobile_user.friendly_token)
-    end
-
-    after(:all) do
-      User.destroy_all
-    end
   end
 
   describe '#generate_auth_token' do
-    it 'create a auth_token record, after user creation'
+    it 'create an auth_token record, after user creation' do
+      user = build(:user)
+      expect(user.auth_tokens.size).to eq(0)
+      user.save!
+      expect(user.auth_tokens.size).to_not eq(0)
+    end
   end
+
 end
