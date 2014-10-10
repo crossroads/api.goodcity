@@ -5023,4 +5023,80 @@ http_interactions:
       string: "{}"
     http_version: 
   recorded_at: Fri, 10 Oct 2014 15:14:07 GMT
+- request:
+    method: post
+    uri: http://api.pusherapp.com/apps/89060/events?auth_key=ef16f3c0f3a2f14f5498&auth_signature=28a4886c20abf8d0632313efb107c40b611d6713ab31791a06a2ced15c0097bb&auth_timestamp=1412956946&auth_version=1.0&body_md5=d5a5607ef9663e292d1007860547ae46
+    body:
+      encoding: UTF-8
+      string: '{"name":"update_store","channels":["user_10227"],"data":"{\"items\":[],\"messages\":[],\"user\":[{\"id\":10225,\"first_name\":\"Adriana\",\"last_name\":\"Halvorson\",\"mobile\":\"11111111\",\"address_id\":12411,\"permission_id\":null}],\"addresses\":[{\"id\":12411,\"street\":\"Avery
+        Lights\",\"flat\":\"Suite 255\",\"building\":\"76451\",\"district_id\":1862,\"addressable_id\":10225,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":1862,\"name\":\"Sha
+        Tau Kok\",\"territory_id\":1712}],\"permissions\":[],\"deliveries\":[],\"offer\":{\"id\":3203,\"language\":\"en\",\"state\":\"submitted\",\"origin\":\"web\",\"stairs\":false,\"parking\":true,\"estimated_size\":\"2\",\"notes\":\"Consequatur
+        temporibus doloremque eveniet non vel omnis at modi. Rerum culpa laborum atque
+        mollitia cum molestias et quis. Vel qui iusto est aut. Non illo dolorum nam
+        consequatur et.\",\"created_by_id\":10225,\"created_at\":\"2014-10-10T16:02:26.440Z\",\"updated_at\":\"2014-10-10T16:02:26.444Z\",\"submitted_at\":\"2014-10-10T16:02:26.443Z\",\"user_id\":10225,\"delivery_id\":null,\"reviewed_by_id\":null,\"reviewed_at\":null,\"item_ids\":[],\"message_ids\":[]}}"}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
+      Accept:
+      - "*/*"
+      Date:
+      - Fri, 10 Oct 2014 16:02:26 GMT
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/html;charset=utf-8
+      Server:
+      - thin 1.6.1 codename Death Proof
+      Content-Length:
+      - '2'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "{}"
+    http_version: 
+  recorded_at: Fri, 10 Oct 2014 16:02:28 GMT
+- request:
+    method: post
+    uri: http://api.pusherapp.com/apps/89060/events?auth_key=ef16f3c0f3a2f14f5498&auth_signature=3745843b73da7b09d1db390eac29dfa035422b39f54adfd539e2761cc9df645c&auth_timestamp=1412956948&auth_version=1.0&body_md5=f866724ff1f2cffe424d6337178f3f41
+    body:
+      encoding: UTF-8
+      string: '{"name":"update_store","channels":["user_10227"],"data":"{\"user\":[{\"id\":10225,\"first_name\":\"Adriana\",\"last_name\":\"Halvorson\",\"mobile\":\"11111111\",\"address_id\":12411,\"permission_id\":null}],\"addresses\":[{\"id\":12411,\"street\":\"Avery
+        Lights\",\"flat\":\"Suite 255\",\"building\":\"76451\",\"district_id\":1862,\"addressable_id\":10225,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":1862,\"name\":\"Sha
+        Tau Kok\",\"territory_id\":1712}],\"permissions\":[],\"message\":{\"id\":1093,\"body\":\"Distinctio
+        beatae reiciendis illo nam velit expedita. Quidem quos ut est eveniet quia
+        occaecati totam architecto. Delectus illum omnis debitis vel. Sed dolores
+        ab quaerat pariatur qui id. Quis mollitia eligendi ea ex.\",\"state\":\"unread\",\"recipient_id\":10225,\"sender_id\":10225,\"is_private\":false,\"created_at\":\"2014-10-10T16:02:28.151Z\",\"updated_at\":\"2014-10-10T16:02:28.151Z\",\"offer_id\":3203,\"item_id\":null}}"}'
+    headers:
+      User-Agent:
+      - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
+      Accept:
+      - "*/*"
+      Date:
+      - Fri, 10 Oct 2014 16:02:28 GMT
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/html;charset=utf-8
+      Server:
+      - thin 1.6.1 codename Death Proof
+      Content-Length:
+      - '2'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: "{}"
+    http_version: 
+  recorded_at: Fri, 10 Oct 2014 16:02:29 GMT
 recorded_with: VCR 2.9.3
