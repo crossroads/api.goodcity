@@ -8,16 +8,8 @@ class ApplicationController < ActionController::API
 
   private
 
-  def warden
-    request.env['warden']
-  end
-
-  def warden_options
-    request.env["warden.options"]
-  end
-
   def set_locale
-    I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
+    I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales) || 'en'
   end
 
   def current_user

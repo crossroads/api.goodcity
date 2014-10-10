@@ -11,14 +11,14 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
       expect(JSON.parse(response.body)["message"]).to eq(I18n.t(:success))
     end
-    
+
     it 'is invalid (duplicate mobile)' do
       create :user, mobile: '+85212345678'
       post :signup, format: 'json', user_auth: { mobile: '+85212345678', first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
       expect(JSON.parse(response.body)["errors"]).to eq("Mobile has already been taken")
     end
   end
-  
+
   context "verify" do
     it 'should allow access to user after signed-in' do
       allow(controller.send(:warden)).to receive(:authenticate!).with(:pin).and_return(user, true)
@@ -39,6 +39,12 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
     it 'empty mobile'
     it 'no user found with valid mobile'
+  end
+
+  context 'verify warden' do
+    it 'warden object' do
+      expect(controller.send(:warden)).to eq(request.env["warden"])
+    end
   end
 
 end

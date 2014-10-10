@@ -15,16 +15,44 @@ RSpec.describe ApplicationController, type: :controller do
         controller.send(:set_locale)
         expect(I18n.locale).to eql(:en)
       end
+
+      it "should set locale to en when unknown language" do
+        set_locale('za')
+        controller.send(:set_locale)
+        expect(I18n.locale).to eql(:en)
+      end
+
     end
 
-    context 'verify warden' do
-      it 'warden object' do
-        expect(controller.send(:warden)).to eq(request.env["warden"])
+    context "current_user" do
+
+      let(:data)  { {'user_id' => '1'} }
+      let(:token) { double(data: data) }
+      let(:user) { build :user }
+      before { allow(controller).to receive(:token).and_return(token) }
+
+      context "with valid token" do
+        before { expect(token).to receive('valid?').and_return(true) }
+        it "should find the user by id" do
+          expect(token).to receive('data').and_return(data)
+          expect(User).to receive(:find_by_id).with('1').and_return(user)
+          expect( controller.send(:current_user) ).to eql(user)
+        end
+        it "should not find the user_id" do
+          expect(token).to receive('data').and_return({})
+          expect(User).to_not receive(:find_by_id)
+          expect( controller.send(:current_user) ).to eql(nil)
+        end
       end
 
-      it 'env[warden_options] object' do
-        expect(controller.send(:warden_options)).to eq(request.env["warden_options"])
+      context "with invalid token" do
+        before { expect(token).to receive('valid?').and_return(false) }
+        it "should return nil if token invalid" do
+          expect(User).to_not receive(:find_by_id)
+          expect( controller.send(:current_user) ).to eql(nil)
+        end
       end
+
     end
 
   end

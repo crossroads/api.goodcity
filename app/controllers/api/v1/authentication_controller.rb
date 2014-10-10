@@ -98,5 +98,9 @@ module Api::V1
       params.require(:user_auth).permit(attributes)
     end
 
+    def warden
+      request.env['warden']
+    end
+
   end
 end
