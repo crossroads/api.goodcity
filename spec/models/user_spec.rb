@@ -37,13 +37,6 @@ describe User, :type => :model do
   end
 
   describe 'Scope Methods' do
-    describe '.find_all_by_otp_secret_key' do
-      let!(:user) { create :user }
-      it 'find user by otp_secret_key' do
-        secret_key = user.auth_tokens.first.otp_secret_key
-        expect(User.find_all_by_otp_secret_key(secret_key).first).to eq(user)
-      end
-    end
 
     describe '.check_for_mobile_uniqueness' do
       let!(:user) {create :user_with_token}

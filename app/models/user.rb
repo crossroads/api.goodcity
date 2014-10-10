@@ -17,8 +17,6 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  scope :find_all_by_otp_secret_key, -> (otp_secret_key) {
-    joins(:auth_tokens).where( auth_tokens: { otp_secret_key: otp_secret_key } ) }
   scope :check_for_mobile_uniqueness, -> (entered_mobile) { where("mobile = ?", entered_mobile) }
 
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
