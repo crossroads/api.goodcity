@@ -534,5 +534,59 @@
       "show_in_doc" : 1,
       "recorded" : true
     }
+  ],
+  "territories#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/territories/306",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "districts" : [
+          {
+            "id" : 118,
+            "name" : "Shek Kong",
+            "territory_id" : 306
+          },
+          {
+            "id" : 119,
+            "name" : "Tsz Wan Shan",
+            "territory_id" : 306
+          },
+          {
+            "id" : 120,
+            "name" : "Hung Hom",
+            "territory_id" : 306
+          },
+          {
+            "id" : 121,
+            "name" : "Mount Davis",
+            "territory_id" : 306
+          },
+          {
+            "id" : 122,
+            "name" : "Hong Kong Baptist University HKBU",
+            "territory_id" : 306
+          }
+        ],
+        "territory" : {
+          "id" : 306,
+          "name" : "New Territories",
+          "district_ids" : [
+            118,
+            119,
+            120,
+            121,
+            122
+          ]
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
   ]
 }
