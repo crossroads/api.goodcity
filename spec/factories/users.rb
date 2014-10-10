@@ -8,16 +8,16 @@ FactoryGirl.define do
     last_name  { Faker::Name.last_name }
     mobile     { Faker::PhoneNumber.phone_number }
 
-    factory :reviewer do
-      permission { create(:reviewer_permission) }
+    trait :reviewer do
+      association :permission, factory: :reviewer_permission
     end
 
-    factory :supervisor do
-      permission { create(:supervisor_permission) }
+    trait :supervisor do
+      association :permission, factory: :supervisor_permission
     end
 
-    factory :administrator do
-      permission { create(:administrator_permission) }
+    trait :administrator do
+      association :permission, factory: :administrator_permission
     end
   end
 

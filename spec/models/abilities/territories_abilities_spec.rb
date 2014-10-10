@@ -7,13 +7,13 @@ describe "Territory abilities" do
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
   context "when Administrator" do
-    let(:user)      { create :administrator }
+    let(:user)      { create(:user, :administrator) }
     let(:territory) { create :territory }
     it{ all_actions.each { |do_action| should be_able_to(do_action, territory) } }
   end
 
   context "when Supervisor" do
-    let(:user)      { create :supervisor }
+    let(:user)      { create(:user, :supervisor) }
     let(:territory) { create :territory }
     let(:can)       { [:index, :show] }
     let(:cannot)    { [:create, :update, :destroy, :manage] }
@@ -26,7 +26,7 @@ describe "Territory abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)      { create :reviewer }
+    let(:user)      { create(:user, :reviewer) }
     let(:territory) { create :territory }
     let(:can)       { [:index, :show] }
     let(:cannot)    { [:create, :update, :destroy, :manage] }

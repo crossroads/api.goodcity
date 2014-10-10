@@ -7,13 +7,13 @@ describe "ItemType abilities" do
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
   context "when Administrator" do
-    let(:user)     { create :administrator }
+    let(:user)     { create(:user, :administrator) }
     let(:item_type) { create :item_type }
     it{ all_actions.each { |do_action| should be_able_to(do_action, item_type) } }
   end
 
   context "when Supervisor" do
-    let(:user)     { create :supervisor }
+    let(:user)     { create(:user, :supervisor) }
     let(:item_type) { create :item_type }
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
@@ -26,7 +26,7 @@ describe "ItemType abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)     { create :reviewer }
+    let(:user)     { create(:user, :reviewer) }
     let(:item_type) { create :item_type }
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }

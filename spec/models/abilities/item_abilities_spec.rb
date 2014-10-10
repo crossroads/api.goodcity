@@ -9,12 +9,12 @@ describe "Item abilities" do
   let(:item)        { create :item, :with_offer, state: state }
 
   context "when Administrator" do
-    let(:user) { create :administrator }
+    let(:user) { create(:user, :administrator) }
     it{ all_actions.each { |do_action| should be_able_to(do_action, item) } }
   end
 
   context "when Supervisor" do
-    let(:user)  { create :supervisor }
+    let(:user)  { create(:user, :supervisor) }
     context "and item is draft" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
@@ -28,7 +28,7 @@ describe "Item abilities" do
   end
 
   context "when Reviewer" do
-    let(:user) { create :reviewer }
+    let(:user) { create(:user, :reviewer) }
 
     context "and item is draft" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }

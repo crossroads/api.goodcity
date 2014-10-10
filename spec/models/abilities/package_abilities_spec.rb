@@ -10,12 +10,12 @@ describe "Package abilities" do
   let(:package)     { create :package, item: item }
 
   context "when Administrator" do
-    let(:user)    { create :administrator }
+    let(:user)    { create(:user, :administrator) }
     it{ all_actions.each { |do_action| should be_able_to(do_action, package) } }
   end
 
   context "when Supervisor" do
-    let(:user) { create :supervisor }
+    let(:user) { create(:user, :supervisor) }
     context "and package belongs to draft item" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
@@ -29,7 +29,7 @@ describe "Package abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)    { create :reviewer }
+    let(:user)    { create(:user, :reviewer) }
     context "and package belongs to draft item" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }

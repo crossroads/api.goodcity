@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::OffersController, :type => :controller do
 
   let(:user) { create(:user_with_token) }
-  let(:reviewer) { create(:reviewer) }
+  let(:reviewer) { create(:user, :reviewer) }
   let(:offer) { create(:offer, created_by: user) }
   let(:serialized_offer) { Api::V1::OfferSerializer.new(offer) }
   let(:serialized_offer_json) { JSON.parse( serialized_offer.to_json ) }

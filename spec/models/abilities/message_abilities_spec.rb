@@ -13,7 +13,7 @@ describe "Message abilities" do
   #~ before { expect(Pusher).to receive(:trigger) }
 
   context "when Administrator" do
-    let(:user) { create :administrator }
+    let(:user) { create(:user, :administrator) }
     context "and message is not is_private" do
       it{ all_actions.each { |do_action| should be_able_to(do_action, message) } }
     end
@@ -24,7 +24,7 @@ describe "Message abilities" do
   end
 
   context "when Supervisor" do
-    let(:user) { create :supervisor }
+    let(:user) { create(:user, :supervisor) }
     context "and message is not is_private" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
@@ -49,7 +49,7 @@ describe "Message abilities" do
   end
 
   context "when Reviewer" do
-    let(:user) { create :reviewer }
+    let(:user) { create(:user, :reviewer) }
     context "and message is not is_private" do
       let(:can)    { [:index, :show, :create] }
       let(:cannot) { [:update, :destroy, :manage] }

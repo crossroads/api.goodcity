@@ -7,13 +7,13 @@ describe "User abilities" do
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
   context "when Administrator" do
-    let(:user)   { create :administrator }
+    let(:user)   { create(:user, :administrator) }
     let(:person) { create :user }
     it{ all_actions.each { |do_action| should be_able_to(do_action, person) } }
   end
 
   context "when Supervisor" do
-    let(:user)   { create :supervisor }
+    let(:user)   { create(:user, :supervisor) }
     let(:person) { create :user }
     let(:can)    { [:index, :show, :update] }
     let(:cannot) { [:create, :destroy, :manage] }
@@ -26,7 +26,7 @@ describe "User abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)   { create :reviewer }
+    let(:user)   { create(:user, :reviewer) }
     let(:person) { create :user }
     let(:can)    { [:index, :show, :update] }
     let(:cannot) { [:create, :destroy, :manage] }
