@@ -27,7 +27,7 @@ gem 'twilio-ruby'
 gem 'warden'
 gem 'puma' unless ENV["CI"]
 gem 'rack-timeout'
-gem 'newrelic_rpm'
+gem 'newrelic_rpm' unless ENV["CI"]
 gem 'traco'
 gem 'rails-i18n'
 gem 'http_accept_language'
