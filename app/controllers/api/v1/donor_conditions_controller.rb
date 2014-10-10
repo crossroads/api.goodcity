@@ -3,6 +3,17 @@ module Api::V1
 
     load_and_authorize_resource :donor_condition, parent: false
 
+    resource_description do
+      short 'List Donor-Conditions.'
+      formats ['json']
+      error 401, "Unauthorized"
+      error 404, "Not Found"
+      error 422, "Validation Error"
+      error 500, "Internal Server Error"
+    end
+
+    api :GET, '/v1/donor_conditions', "List all Donor-Conditions."
+    param :ids, Array, of: Integer, desc: "Filter by donor-condition ids e.g. ids = [1,2,3,4]"
     def index
       if params[:ids].blank?
         render json: DonorCondition.cached_json
@@ -12,6 +23,7 @@ module Api::V1
       render json: @donor_conditions, each_serializer: serializer
     end
 
+    api :GET, '/v1/donor_conditions/1', "List a Donor-Condition"
     def show
       render json: @donor_condition, serializer: serializer
     end
