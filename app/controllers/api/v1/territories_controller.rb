@@ -13,7 +13,7 @@ module Api::V1
       error 500, "Internal Server Error"
     end
 
-    def_param_group :offer do
+    def_param_group :territory do
       param :territory, Hash, required: true do
         param :name, String, desc: "Name of Territory"
       end
