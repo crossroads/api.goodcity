@@ -20,18 +20,21 @@ class User < ActiveRecord::Base
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
 
+  # If user exists, ignore data and just send_verification_pin
+  # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params)
-    user = new(user_params)
+    mobile = user_params['mobile']
+    user = nil
+    user = self.find_by_mobile(mobile) if mobile.present?
+    user ||= new(user_params)
     begin
       transaction do
         user.save!
         user.send_verification_pin
       end
     rescue Twilio::REST::RequestError => e
-      msg = e.message.try(:split,'.').try(:first)
+      msg = e.message.try(:split, '.').try(:first)
       user.errors.add(:base, msg)
-    rescue Exception => e
-      user.errors.add(:base, e.message)
     end
     user
   end
@@ -61,6 +64,7 @@ class User < ActiveRecord::Base
   end
 
   def send_verification_pin
+    most_recent_token.cycle_otp_auth_key!
     EmailFlowdockService.new(self).send_otp
     TwilioService.new(self).sms_verification_pin
   end
@@ -68,7 +72,7 @@ class User < ActiveRecord::Base
   private
 
   def generate_auth_token
-    auth_tokens.create({user_id:  self.id})
+    auth_tokens.create( user_id:  self.id )
   end
 
 end

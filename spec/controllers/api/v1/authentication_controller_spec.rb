@@ -15,10 +15,11 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(JSON.parse(response.body)["otp_auth_key"]).to eq( otp_auth_key )
     end
 
-    it 'is invalid (duplicate mobile)', :show_in_doc do
-      create :user, mobile: mobile
+    it "with duplicate mobile don't create new user, send pin to existing number", :show_in_doc do
+      allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+      expect(user).to receive(:send_verification_pin)
       post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
-      expect(JSON.parse(response.body)["errors"]).to eq("Mobile has already been taken")
+      expect(response.status).to eq(200)
     end
   end
 

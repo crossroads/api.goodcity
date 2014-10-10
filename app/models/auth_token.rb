@@ -13,8 +13,12 @@ class AuthToken < ActiveRecord::Base
   # Cycle the otp_auth_key so it it not always the same.
   def otp_code(options={})
     options.reverse_merge!( time: drift_time )
-    update_columns( otp_code_expiry: drift_time, otp_auth_key: new_otp_auth_key )
+    update_columns( otp_code_expiry: drift_time )
     super(options)
+  end
+
+  def cycle_otp_auth_key!
+    update_columns( otp_auth_key: new_otp_auth_key )
   end
 
   def new_otp_auth_key
