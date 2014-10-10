@@ -1,4 +1,78 @@
 {
+  "addresses#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/addresses",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "address" : {
+          "flat" : "Suite 444",
+          "building" : "3368",
+          "street" : "Powlowski Knoll",
+          "address_type" : "Collection",
+          "addressable_id" : "39",
+          "addressable_type" : "Contact",
+          "district_id" : "188"
+        }
+      },
+      "response_data" : {
+        "districts" : [
+          {
+            "id" : 188,
+            "name" : "Shun Lee",
+            "territory_id" : 366
+          }
+        ],
+        "address" : {
+          "id" : 1671,
+          "street" : "Powlowski Knoll",
+          "flat" : "Suite 444",
+          "building" : "3368",
+          "district_id" : 188,
+          "addressable_id" : 39,
+          "addressable_type" : "Contact"
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "addresses#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/addresses/1674",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "districts" : [
+          {
+            "id" : 189,
+            "name" : "Tai Wo",
+            "territory_id" : 367
+          }
+        ],
+        "address" : {
+          "id" : 1674,
+          "street" : "Ledner Summit",
+          "flat" : "Suite 652",
+          "building" : "817",
+          "district_id" : 189,
+          "addressable_id" : 42,
+          "addressable_type" : "Contact"
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "authentication#is_unique_mobile_number" : [
     {
       "verb" : "GET",

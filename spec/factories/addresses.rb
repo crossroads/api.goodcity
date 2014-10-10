@@ -2,13 +2,14 @@
 
 FactoryGirl.define do
   factory :address do
-    flat "MyString"
-    building "MyString"
-    street "MyString"
-    district_id 1
-    addressable_id 1
-    addressable_type "MyString"
-    address_type "MyString"
+    flat         { Faker::Address.secondary_address }
+    building     { Faker::Address.building_number }
+    street       { Faker::Address.street_name }
+    association  :district
+    address_type "Collection"
+    addressable_id   { create(:contact).id }
+    addressable_type 'Contact'
+
   end
 
   factory :profile_address, parent: :address do
