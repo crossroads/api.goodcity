@@ -27,7 +27,7 @@ gem 'twilio-ruby'
 gem 'warden'
 gem 'puma' unless ENV["CI"]
 gem 'rack-timeout'
-gem 'newrelic_rpm'
+gem 'newrelic_rpm' unless ENV["CI"]
 gem 'traco'
 gem 'rails-i18n'
 gem 'http_accept_language'
@@ -47,6 +47,8 @@ group :development do
     gem 'capistrano-rvm'
     gem 'annotate'
     gem 'railroady'
+    gem "spring-commands-rspec", group: :development
+    gem 'guard-rspec', require: false
   end
 end
 
@@ -56,10 +58,9 @@ group :development, :test do
 end
 
 group :test do
-  gem 'guard-rspec'
-  gem 'shoulda-matchers'
   gem 'vcr'
   gem 'webmock'
+  gem 'shoulda-matchers', require: false
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
 end
 
