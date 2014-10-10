@@ -26,25 +26,40 @@ module Api::V1
 
     api :POST, '/v1/auth/send_pin', "Send SMS code to the registered mobile"
     description <<-EOS
-    Send an OTP code via SMS if the given mobile number has an account in our system.
-    Always returns 200 regardless of whether mobile number exists or not.
+    Send an OTP code via SMS if the given mobile number has an account in the system.
+
+    Response status codes
+    * 200 - returned regardless of whether mobile number exists or not
+    * 422 - returned if the mobile does not start with "+852"
+
+    Each time a new OTP code is generated, the +otp_auth_key+ is cycled. The client is
+    responsible for sending back the newest +otp_auth_key+ with the OTP code.
+    If the user account doesn't exist, a random +otp_auth_key+ is returned.
     EOS
     param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85212345678"
+    error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
     error 500, "Internal Server Error"
     def send_pin
       # Lookup user based on mobile. Don't allow params[:mobile] to be nil
-      user = params[:mobile].present? ? User.find_by_mobile(params[:mobile]) : nil
-      user.send_verification_pin if user.present?
-      render json: { text: "Success! Assuming that mobile number is registered, we've sent a pin code." }
+      mobile = params[:mobile]
+      if mobile.starts_with?("+852")
+        @user = User.find_by_mobile(mobile)
+        @user.send_verification_pin if @user.present?
+        render json: { otp_auth_key: otp_auth_key_for(@user) }
+      else
+        render json: { errors: I18n.t('auth.invalid_mobile') }, status: 422
+      end
     end
 
     api :POST, '/v1/auth/signup', "Register a new user"
     description <<-EOS
-    Create user and send a new OTP token to the user mobile.
-    * If successful, an SMS will be sent with an OTP code
-    * Otherwise, return status 403 (Forbidden)
+    Create a new user and send an OTP token to the user's mobile.
 
-    To understand the registration process in detail refer
+    Upon success:
+    * an OTP code will be sent via SMS to the user's mobile
+    * an +otp_auth_key+ will be returned to the client
+
+    To understand the registration process in detail please refer to the
     {attached Registration flowcharts}[/doc/registration_flowchart.pdf]
     EOS
     param_group :user_auth
@@ -53,7 +68,7 @@ module Api::V1
     def signup
       @user = User.creation_with_auth(auth_params)
       if @user.valid? && @user.persisted?
-        render json: { message: I18n.t(:success) }, status: :ok
+        render json: { otp_auth_key: otp_auth_key_for(@user) }, status: :ok
       else
         render json: { errors: @user.errors.full_messages.join }, status: 422
       end
@@ -62,13 +77,13 @@ module Api::V1
     api :POST, '/v1/auth/verify', "Verify OTP code"
     description <<-EOS
     Verify the OTP code (sent via SMS)
-    * If verified, generate and send back an authenticated JWT token and the user id so it can be retreived via an API call
+    * If verified, generate and send back an authenticated +jwt_token+ and +user_id+
     * If verification fails, return 401 (Unauthorized)
 
     To understand the registration process in detail refer {attached Login flowchart}[/doc/login_flowchart.pdf]
     EOS
-    param :pin, String, desc: "OTP code which is received via sms"
-    param :mobile, String, desc: "Mobile number e.g. +85212345678"
+    param :pin, String, desc: "OTP code received via SMS"
+    param :otp_auth_key, String, desc: "The authentication key received during 'send_pin' or 'signup' steps"
     error 401, "Unauthorized"
     error 403, "Forbidden"
     error 422, "Validation Error"
@@ -78,7 +93,7 @@ module Api::V1
       if warden.authenticated?
         render json: { jwt_token: generate_token(user_id: user.id), user_id: user.id }
       else
-        throw(:warden, {status: :unauthorized, message: { text: I18n.t('auth.invalid_credentials'), jwt_token: ""} })
+        throw(:warden, {status: :unauthorized, jwt_token: ""})
       end
     end
 
@@ -94,6 +109,19 @@ module Api::V1
     end
 
     private
+
+    # Generate a token that contains the otp_auth_key.
+    # A client must return this token (which contains the embedded otp_auth_key) AND the correct OTP code
+    # to successfully authenticate. This helps prevent man-in-the-middle attacks by ensuring that only this
+    # client that can authenticate the OTP code with it.
+    # Note: if user is nil, we generate a fake token so as to ward off unruly hackers.
+    def otp_auth_key_for(user)
+      if user.present?
+        user.most_recent_token.otp_auth_key
+      else
+        AuthToken.new.new_otp_auth_key
+      end
+    end
 
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]

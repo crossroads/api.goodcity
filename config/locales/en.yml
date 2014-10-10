@@ -10,8 +10,7 @@ en:
     pin_sent: A pin has been sent to your mobile device.
     mobile_required: Please provide a mobile number.
     mobile_exists: Mobile number already exists.
-    mobile_doesnot_exist: Mobile number does not exist.
-    invalid_credentials: Sorry, your mobile and pin number do not match.
+    invalid_mobile: Sorry, your mobile must begin with +852.
   token:
     invalid: Invalid token
     expired: Expired token

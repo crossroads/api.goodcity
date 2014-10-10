@@ -99,10 +99,10 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+919930001948"
+        "mobile" : "+85212345678"
       },
       "response_data" : {
-        "text" : "Success! Assuming that mobile number is registered, we've sent a pin code."
+        "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
       },
       "code" : "200",
       "show_in_doc" : 1,
@@ -119,7 +119,7 @@
       "query" : null,
       "request_data" : {
         "user_auth" : {
-          "mobile" : "+919930001948",
+          "mobile" : "+85212345678",
           "first_name" : "Jake",
           "last_name" : "Deamon",
           "address_attributes" : {
@@ -129,7 +129,7 @@
         }
       },
       "response_data" : {
-        "message" : "Success"
+        "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
       },
       "code" : "200",
       "show_in_doc" : 1,
@@ -170,12 +170,12 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+85212345678",
+        "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA==",
         "pin" : "1234"
       },
       "response_data" : {
-        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo0Nzk3LCJpYXQiOjE0MTI5MTUyMDUsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMjkxNzAwNX0.6zdI2FpBkEOlXpJob23jh-TX3P2KjybwpODP-vVmqvw",
-        "user_id" : 4797
+        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTI5MjQ3ODUsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMjkyNjU4NX0.145pS-baundv6B7MT84v3w_Yjxkh2pu_onTrNto92Nc",
+        "user_id" : 826
       },
       "code" : "200",
       "show_in_doc" : 1,
