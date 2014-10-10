@@ -28,8 +28,8 @@ unless ENV['LIVE'] == "true"
 
   10.times { FactoryGirl.create :offer, :with_items, :with_messages }
 
-  FactoryGirl.create :reviewer
-  FactoryGirl.create :supervisor
-  FactoryGirl.create :administrator
+  FactoryGirl.create :user, :reviewer
+  FactoryGirl.create :user, :supervisor
+  FactoryGirl.create :user, :administrator
 
 end
