@@ -7,11 +7,10 @@ Rails.application.routes.draw do
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
       resources :items
-      get  "auth/check_mobile" => "authentication#is_unique_mobile_number"
       post "auth/signup" => "authentication#signup"
       post "auth/verify" => "authentication#verify"
       post "auth/send_pin" => "authentication#send_pin"
-      
+
       get  "districts" => "districts#index"
       get  "districts/:id" => "districts#show"
       get  "item_types" => "item_types#index"

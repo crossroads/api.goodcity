@@ -97,17 +97,6 @@ module Api::V1
       end
     end
 
-    #api :GET, 'vi/auth/check_mobile', "Is the given mobile number unique?"
-    #description <<-EOS
-    #* Return TRUE if mobile number does not exist
-    #* Return FALSE in all other cases
-    #EOS
-    #param :mobile, String, desc: "Mobile number", required: true
-    def is_unique_mobile_number
-      unique_user = User.check_for_mobile_uniqueness(params[:mobile]).first
-      render json: { is_unique_mobile: unique_user.blank? }
-    end
-
     private
 
     # Generate a token that contains the otp_auth_key.

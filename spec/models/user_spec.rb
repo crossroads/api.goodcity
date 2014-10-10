@@ -38,13 +38,6 @@ describe User, :type => :model do
 
   describe 'Scope Methods' do
 
-    describe '.check_for_mobile_uniqueness' do
-      let!(:user) {create :user_with_token}
-      it 'check for mobile number' do
-        expect(User.check_for_mobile_uniqueness(user_valid_attr[:mobile]).first).to eq(user)
-      end
-    end
-
     describe '.creation_with_auth' do
       let!(:custom_user) {
         VCR.use_cassette "valid user with verified mobile" do

@@ -17,8 +17,6 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  scope :check_for_mobile_uniqueness, -> (entered_mobile) { where("mobile = ?", entered_mobile) }
-
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
 
