@@ -111,6 +111,27 @@
       "recorded" : true
     }
   ],
+  "districts#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/districts/158",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "district" : {
+          "id" : 158,
+          "name" : "Kwu Tung",
+          "territory_id" : 337
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "images#generate_signature" : [
     {
       "verb" : "GET",
