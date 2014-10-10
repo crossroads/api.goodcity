@@ -206,6 +206,52 @@
       "recorded" : true
     }
   ],
+  "donor_conditions#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/donor_conditions",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "donor_conditions" : [
+          {
+            "id" : 2536,
+            "name" : "Broken"
+          },
+          {
+            "id" : 2537,
+            "name" : "Lightly Used"
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "donor_conditions#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/donor_conditions/2535",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "donor_condition" : {
+          "id" : 2535,
+          "name" : "Lightly Used"
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "images#generate_signature" : [
     {
       "verb" : "GET",
