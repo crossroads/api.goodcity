@@ -683,5 +683,125 @@
       "show_in_doc" : 1,
       "recorded" : true
     }
+  ],
+  "users#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/users",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "addresses" : [
+          {
+            "id" : 3170,
+            "street" : "Jan Forges",
+            "flat" : "Apt. 476",
+            "building" : "053",
+            "district_id" : 1730,
+            "addressable_id" : 6198,
+            "addressable_type" : "User"
+          },
+          {
+            "id" : 3171,
+            "street" : "Joanny Mills",
+            "flat" : "Apt. 319",
+            "building" : "089",
+            "district_id" : 1731,
+            "addressable_id" : 6199,
+            "addressable_type" : "User"
+          }
+        ],
+        "districts" : [
+          {
+            "id" : 1730,
+            "name" : "Shau Kei Wan",
+            "territory_id" : 1659
+          },
+          {
+            "id" : 1731,
+            "name" : "Tai Mong Tsai",
+            "territory_id" : 1660
+          }
+        ],
+        "permissions" : [
+          {
+            "id" : 1395,
+            "name" : "Reviewer"
+          }
+        ],
+        "users" : [
+          {
+            "id" : 6198,
+            "first_name" : "Josie",
+            "last_name" : "Maggio",
+            "mobile" : "11111111",
+            "address_id" : 3170,
+            "permission_id" : 1395
+          },
+          {
+            "id" : 6199,
+            "first_name" : "Coralie",
+            "last_name" : "Purdy",
+            "mobile" : "9-176-5839 x014",
+            "address_id" : 3171,
+            "permission_id" : null
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "users#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/users/6196",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "addresses" : [
+          {
+            "id" : 3168,
+            "street" : "Haley Corners",
+            "flat" : "Suite 958",
+            "building" : "9064",
+            "district_id" : 1728,
+            "addressable_id" : 6196,
+            "addressable_type" : "User"
+          }
+        ],
+        "districts" : [
+          {
+            "id" : 1728,
+            "name" : "Chai Wan",
+            "territory_id" : 1658
+          }
+        ],
+        "permissions" : [
+          {
+            "id" : 1394,
+            "name" : "Reviewer"
+          }
+        ],
+        "user" : {
+          "id" : 6196,
+          "first_name" : "Aurelia",
+          "last_name" : "Windler",
+          "mobile" : "11111111",
+          "address_id" : 3168,
+          "permission_id" : 1394
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
   ]
 }

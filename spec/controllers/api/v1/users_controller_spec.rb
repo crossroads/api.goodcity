@@ -1,37 +1,39 @@
  require 'rails_helper'
 
-RSpec.describe Api::V1::UsersController, :type => :controller do
+RSpec.describe Api::V1::UsersController, type: :controller do
 
-     # describe '.signup' do
+  let(:user) { create(:user_with_token, :reviewer) }
+  let(:serialized_user) { Api::V1::UserSerializer.new(user) }
+  let(:serialized_user_json) { JSON.parse( serialized_user.to_json ) }
 
-     #    it 'has valid mobile number' do
+  let(:users) { create_list(:user, 2) }
 
-     #    end
+  describe "GET user" do
+    before { generate_and_set_token(user) }
 
-     #    it 'save the mobile, firstname, lastname, district details' do
-     #      mobile = '+852 111 111 1111'
-     #    end
+    it "returns 200" do
+      get :show, id: user.id
+      expect(response.status).to eq(200)
+    end
 
-     #    it 'on save generate OTP SECRET KEY' do
-     #    end
+    it "return serialized user", :show_in_doc do
+      get :show, id: user.id
+      body = JSON.parse(response.body)
+      expect( body ).to eq(serialized_user_json)
+    end
+  end
 
-     #    it 'generate OTP CODE' do
+  describe "GET users" do
+    before { generate_and_set_token(user) }
+    it "returns 200", :show_in_doc do
+      get :index
+      expect(response.status).to eq(200)
+    end
 
-     #    end
-
-     #    it 'Sms OTP CODE' do
-
-     #    end
-
-     #    it 'authentication successful with valid OTP CODE' do
-     #    end
-
-     #    it 'authentication failed with invalid OTP Code' do
-     #    end
-     #  end
-
-     #  describe '.login' do
-     #    it 'mobile number already existed for the user' do
-     #    end
-     #  end
+    it "return serialized users" do
+      get :index
+      body = JSON.parse(response.body)
+      expect( body['users'].length ).to eq(User.count)
+    end
+  end
 end
