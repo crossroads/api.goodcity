@@ -14,7 +14,7 @@ class Token
   def initialize(options = {})
     @bearer = options[:bearer] || '' # "Bearer zxcasdqwesdfsdfqwe"
   end
-  
+
   # Generate an encoded Json Web Token to send to client app
   # as part of the authentication/authorization process
   # Additional options can be encoded inside the token
@@ -28,14 +28,14 @@ class Token
     })
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
-  
+
   # Allow access to the data stored inside the token e.g. mobile number
   def data
     token
   end
-  
-  private  
-  
+
+  private
+
   def jwt_string
     @jwt_string ||= @bearer.sub("Bearer ","")
   end
@@ -64,7 +64,7 @@ class Token
   rescue JWT::DecodeError
     errors.add(:base, I18n.t('token.invalid'))
   end
-  
+
   def jwt_config
     Rails.application.secrets.jwt
   end
@@ -81,7 +81,7 @@ class Token
   def issuer
     jwt_config['issuer']
   end
-  
+
   # Number of seconds the token is valid for
   def validity
     jwt_config['validity']

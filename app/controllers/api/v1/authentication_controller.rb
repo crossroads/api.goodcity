@@ -10,11 +10,6 @@ module Api::V1
       * {Registration flowchart}[link:/doc/registration_flowchart.pdf]
       EOS
       formats ['json']
-      error 401, "Unauthorized"
-      error 403, "Forbidden"
-      error 404, "Not Found"
-      error 422, "Validation Error"
-      error 500, "Internal Server Error"
     end
 
     def_param_group :user_auth do
@@ -35,6 +30,7 @@ module Api::V1
     Always returns 200 regardless of whether mobile number exists or not.
     EOS
     param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85212345678"
+    error 500, "Internal Server Error"
     def send_pin
       # Lookup user based on mobile. Don't allow params[:mobile] to be nil
       user = params[:mobile].present? ? User.find_by_mobile(params[:mobile]) : nil
@@ -52,6 +48,8 @@ module Api::V1
     {attached Registration flowcharts}[/doc/registration_flowchart.pdf]
     EOS
     param_group :user_auth
+    error 422, "Validation Error"
+    error 500, "Internal Server Error"
     def signup
       @user = User.creation_with_auth(auth_params)
       if @user.valid? && @user.persisted?
@@ -71,6 +69,10 @@ module Api::V1
     EOS
     param :pin, String, desc: "OTP code which is received via sms"
     param :mobile, String, desc: "Mobile number e.g. +85212345678"
+    error 401, "Unauthorized"
+    error 403, "Forbidden"
+    error 422, "Validation Error"
+    error 500, "Internal Server Error"
     def verify
       user = warden.authenticate!(:pin)
       if warden.authenticated?
