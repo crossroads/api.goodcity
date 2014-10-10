@@ -10,6 +10,7 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 
 require 'ffaker'
+require 'shoulda/matchers'
 require 'webmock/rspec'
 require 'vcr'
 
