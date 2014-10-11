@@ -28,15 +28,15 @@ module Api::V1
     description <<-EOS
     Send an OTP code via SMS if the given mobile number has an account in the system.
 
-    Response status codes
-    * 200 - returned regardless of whether mobile number exists or not
-    * 422 - returned if the mobile does not start with "+852"
-
     Each time a new OTP code is generated, the +otp_auth_key+ is cycled. The client is
     responsible for sending back the newest +otp_auth_key+ with the OTP code.
     If the user account doesn't exist, a random +otp_auth_key+ is returned.
+
+    ===Response status codes
+    * 200 - returned regardless of whether mobile number exists or not
+    * 422 - returned if the mobile number is invalid
     EOS
-    param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85212345678"
+    param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85262345678"
     error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
     error 500, "Internal Server Error"
     def send_pin
@@ -56,9 +56,25 @@ module Api::V1
     description <<-EOS
     Create a new user and send an OTP token to the user's mobile.
 
-    Upon success:
+    ===If successful:
     * an OTP code will be sent via SMS to the user's mobile
     * an +otp_auth_key+ will be returned to the client
+
+    ===Hong Kong mobile numbers
+    * must begin with +8525, +8526, or +8529
+    * must contain a further 7 digits.
+
+    ====Valid examples:
+    * +85251234567
+    * +85261234567
+    * +85291234567
+
+    ====Invalid examples:
+
+    * +11112345678  - must begin with +8525, +8526, or +8529
+    * +85212345678  - must begin with +8525, +8526, or +8529
+    * +8525234567   - too short
+    * +852523456789 - too long
 
     To understand the registration process in detail please refer to the
     {attached Registration flowcharts}[/doc/registration_flowchart.pdf]
@@ -80,6 +96,10 @@ module Api::V1
     Verify the OTP code (sent via SMS)
     * If verified, generate and send back an authenticated +jwt_token+ and +user_id+
     * If verification fails, return 401 (Unauthorized)
+
+    ===If successful
+    * a +jwt_token+ will be returned. This should be included in all subsequent requests as part of the AUTHORIZATION header to authenticate the API calls.
+    * the +user_id+ is returned. This is useful for a subsequent request to get the currently logged in user's properties.
 
     To understand the registration process in detail refer {attached Login flowchart}[/doc/login_flowchart.pdf]
     EOS

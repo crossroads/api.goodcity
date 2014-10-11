@@ -99,7 +99,7 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+85212345678"
+        "mobile" : "+85253807188"
       },
       "response_data" : {
         "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
@@ -119,7 +119,7 @@
       "query" : null,
       "request_data" : {
         "user_auth" : {
-          "mobile" : "+85212345678",
+          "mobile" : "+85254245708",
           "first_name" : "Jake",
           "last_name" : "Deamon",
           "address_attributes" : {
@@ -144,7 +144,7 @@
       "query" : null,
       "request_data" : {
         "user_auth" : {
-          "mobile" : "+85212345678",
+          "mobile" : "+85268700357",
           "first_name" : "Jake",
           "last_name" : "Deamon",
           "address_attributes" : {
@@ -154,9 +154,9 @@
         }
       },
       "response_data" : {
-        "errors" : "Mobile has already been taken"
+        "otp_auth_key" : "P8VXBFztuGgLDtrBzVpi4A=="
       },
-      "code" : "422",
+      "code" : "200",
       "show_in_doc" : 0,
       "recorded" : true
     }
@@ -174,8 +174,8 @@
         "pin" : "1234"
       },
       "response_data" : {
-        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTI5MjQ3ODUsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMjkyNjU4NX0.145pS-baundv6B7MT84v3w_Yjxkh2pu_onTrNto92Nc",
-        "user_id" : 826
+        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTMwMDEzNTcsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMzAwMzE1N30.iaYkKuAtKWsHMtDYPza_PCRnrdlkeY852F7c4rCSNLc",
+        "user_id" : 4539
       },
       "code" : "200",
       "show_in_doc" : 1,
