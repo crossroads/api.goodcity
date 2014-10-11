@@ -13,7 +13,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  validates :mobile, presence: true, uniqueness: true
+  validates :mobile, presence: true, uniqueness: true, format: { with: /\A\+852[569]\d{7}\z/ }
 
   after_create :generate_auth_token
 
@@ -29,8 +29,8 @@ class User < ActiveRecord::Base
     user ||= new(user_params)
     begin
       transaction do
-        user.save!
-        user.send_verification_pin
+        user.save
+        user.send_verification_pin if user.valid?
       end
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, '.').try(:first)

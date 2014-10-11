@@ -28,4 +28,8 @@ FactoryGirl.define do
     @schedules ||= YAML.load_file("#{Rails.root}/db/schedules.yml")
   end
 
+  sequence :mobile do |n|
+    "+852" << (%w(5 6 9).sample) << (1..7).map{rand(9)}.join
+  end
+
 end

@@ -2,7 +2,8 @@ require 'rails_helper'
 
 describe TwilioService do
 
-  let(:user)   { create :user }
+  let(:mobile) { generate(:mobile) }
+  let(:user)   { create :user, mobile: mobile }
   let(:twilio) { TwilioService.new(user) }
 
   context "initialize" do

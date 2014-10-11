@@ -3,7 +3,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user_with_token) }
   let(:pin)    { user.most_recent_token[:otp_code] }
-  let(:mobile) { "+85212345678" }
+  let(:mobile) { generate(:mobile) }
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
   let(:jwt_token)    { Token.new.generate }
 
@@ -21,6 +21,17 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
       expect(response.status).to eq(200)
     end
+
+    it "with invalid mobile number" do
+      post :signup, format: 'json', user_auth: { mobile: "123456", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
+      expect(JSON.parse(response.body)["errors"]).to eq( 'Mobile must begin with +852' )
+    end
+
+    it "with blank mobile number" do
+      post :signup, format: 'json', user_auth: { mobile: "", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
+      expect(JSON.parse(response.body)["errors"]).to eq( "Mobile can't be blank. Mobile must begin with +852" )
+    end
+
   end
 
   context "verify" do
@@ -73,7 +84,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :send_pin, mobile: ""
         expect(response.status).to eq(422)
         body = JSON.parse(response.body)
-        expect(body['errors']).to eql( I18n.t('auth.invalid_mobile') )
+        expect(body['errors']).to eql( "Mobile can't be blank. Mobile must begin with +852" )
       end
       it "not +852..." do
         expect(User).to_not receive(:find_by_mobile)
@@ -82,7 +93,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :send_pin, mobile: "+9101234567"
         expect(response.status).to eq(422)
         body = JSON.parse(response.body)
-        expect(body['errors']).to eql( I18n.t('auth.invalid_mobile') )
+        expect(body['errors']).to eql( "Mobile must begin with +852" )
       end
     end
 

@@ -40,14 +40,15 @@ module Api::V1
     error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
     error 500, "Internal Server Error"
     def send_pin
-      # Lookup user based on mobile. Don't allow params[:mobile] to be nil
-      mobile = params[:mobile]
-      if mobile.starts_with?("+852")
-        @user = User.find_by_mobile(mobile)
+      # Lookup user based on mobile. Create dummy user in order to validate mobile first.
+      @user = User.new(mobile: params[:mobile])
+      @user.valid?
+      if @user.errors['mobile'].empty?
+        @user = User.find_by_mobile(params[:mobile])
         @user.send_verification_pin if @user.present?
         render json: { otp_auth_key: otp_auth_key_for(@user) }
       else
-        render json: { errors: I18n.t('auth.invalid_mobile') }, status: 422
+        render json: { errors: @user.errors.full_messages_for(:mobile).join('. ') }, status: 422
       end
     end
 
@@ -70,7 +71,7 @@ module Api::V1
       if @user.valid? && @user.persisted?
         render json: { otp_auth_key: otp_auth_key_for(@user) }, status: :ok
       else
-        render json: { errors: @user.errors.full_messages.join }, status: 422
+        render json: { errors: @user.errors.full_messages.join('. ') }, status: 422
       end
     end
 

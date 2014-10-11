@@ -16,3 +16,10 @@ zh-tw:
     expired: Expired token
   twilio:
     sms_verification_pin: Your pin is %{pin} and will expire by %{expiry}.
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            mobile:
+              invalid: "must begin with +852"

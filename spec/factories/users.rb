@@ -6,7 +6,7 @@ FactoryGirl.define do
 
     first_name { Faker::Name.first_name }
     last_name  { Faker::Name.last_name }
-    mobile     { Faker::PhoneNumber.phone_number }
+    mobile     { generate(:mobile) }
 
     trait :reviewer do
       association :permission, factory: :reviewer_permission
@@ -22,17 +22,10 @@ FactoryGirl.define do
   end
 
   factory :user_with_token, parent: :user do
-    mobile {"+85211111111"}
+    mobile { generate(:mobile) }
     after(:create) do |user|
       user.auth_tokens << create(:scenario_before_auth_token)
     end
   end
 
-  factory :user_with_correct_number, parent: :user do
-    mobile {"+85211111111"}
-  end
-
-  factory :user_with_wrong_number, parent: :user do
-    mobile {"+85211111112"}
-  end
 end
