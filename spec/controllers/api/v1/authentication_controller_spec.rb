@@ -84,7 +84,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :send_pin, mobile: ""
         expect(response.status).to eq(422)
         body = JSON.parse(response.body)
-        expect(body['errors']).to eql( "Mobile can't be blank. Mobile must begin with +852" )
+        expect(body['errors']).to eql( "Mobile can't be blank" )
       end
       it "not +852..." do
         expect(User).to_not receive(:find_by_mobile)

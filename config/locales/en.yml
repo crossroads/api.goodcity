@@ -17,9 +17,13 @@ en:
   twilio:
     sms_verification_pin: Your pin is %{pin} and will expire by %{expiry}.
   activerecord:
+    attributes:
+      user:
+        mobile: "Mobile"
     errors:
       models:
         user:
           attributes:
             mobile:
               invalid: "must begin with +852"
+              blank: "can't be blank"

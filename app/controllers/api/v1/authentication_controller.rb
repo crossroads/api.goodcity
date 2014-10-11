@@ -39,16 +39,19 @@ module Api::V1
     param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85262345678"
     error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
     error 500, "Internal Server Error"
+    # Lookup user based on mobile. Validate mobile format first.
     def send_pin
-      # Lookup user based on mobile. Create dummy user in order to validate mobile first.
-      @user = User.new(mobile: params[:mobile])
-      @user.valid?
-      if @user.errors['mobile'].empty?
+      mobile = params[:mobile]
+      if (User::HongKongMobileRegExp === mobile)
         @user = User.find_by_mobile(params[:mobile])
         @user.send_verification_pin if @user.present?
         render json: { otp_auth_key: otp_auth_key_for(@user) }
       else
-        render json: { errors: @user.errors.full_messages_for(:mobile).join('. ') }, status: 422
+        attr = I18n.t('activerecord.attributes.user.mobile')
+        reason = mobile.blank? ? 'blank' : 'invalid'
+        err = I18n.t("activerecord.errors.models.user.attributes.mobile.#{reason}")
+        message = I18n.t('errors.format', attribute: attr, message: err)
+        render json: { errors: message }, status: 422
       end
     end
 
@@ -110,9 +113,9 @@ module Api::V1
     error 422, "Validation Error"
     error 500, "Internal Server Error"
     def verify
-      user = warden.authenticate!(:pin)
+      @user = warden.authenticate!(:pin)
       if warden.authenticated?
-        render json: { jwt_token: generate_token(user_id: user.id), user_id: user.id }
+        render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserSerializer.new(@user) }
       else
         throw(:warden, {status: :unauthorized, jwt_token: ""})
       end
