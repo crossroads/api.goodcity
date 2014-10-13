@@ -7,26 +7,19 @@ class TwilioService
     @user = user
   end
 
-  def sms_verification_pin(options = {})
-    begin
-      body = I18n.t('twilio.sms_verification_pin', pin: options[:otp], expiry: options[:otp_expires])
-      twilio_client.account.sms.messages.create({
-        from: twilio_conf['phone_number'],
-        to: @user.mobile,
-        body: body})
-    rescue Twilio::REST::RequestError => e
-       raise
-    end
+  def sms_verification_pin
+    token = user.most_recent_token
+    body = I18n.t('twilio.sms_verification_pin', pin: token.otp_code, expiry: token.otp_code_expiry)
+    options = { from: twilio_conf['phone_number'], to: @user.mobile, body: body}
+    twilio_client.account.sms.messages.create(options)
   end
 
   private
 
   def twilio_client
     @twilio_client ||= begin
-        Twilio::REST::Client.new(twilio_conf['account_sid'], twilio_conf['auth_token'])
-      rescue Twilio::REST::RequestError => e
-       raise
-      end
+      Twilio::REST::Client.new(twilio_conf['account_sid'], twilio_conf['auth_token'])
+    end
   end
 
   def twilio_conf

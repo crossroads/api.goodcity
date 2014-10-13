@@ -34,7 +34,6 @@ RSpec.configure do |config|
   config.include Warden::Test::Helpers
   config.include Warden::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
-  config.include ModelMacros, type: :model
 
   Warden.test_mode!
 

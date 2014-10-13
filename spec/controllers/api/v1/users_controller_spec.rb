@@ -1,4 +1,4 @@
- require 'rails_helper'
+require 'rails_helper'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
 
@@ -36,4 +36,5 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect( body['users'].length ).to eq(User.count)
     end
   end
+
 end

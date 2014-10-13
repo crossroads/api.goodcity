@@ -2,20 +2,6 @@ require 'rails_helper'
 
 RSpec.describe ApplicationController, type: :controller do
   describe "ApplicationController" do
-    #------------------------------------------------------------------------
-    let!(:user) {create(:user_with_token)}
-    let!(:pin) {user.auth_tokens.recent_auth_token[:otp_code]}
-    let!(:token) {user.auth_tokens.recent_auth_token[:otp_secret_key]}
-
-    let!(:jwt_token) {
-      controller.send(:generate_enc_session_token,user.mobile,token)}
-
-    let!(:set_jwt_auth_header){
-      request.env['HTTP_AUTHORIZATION'] = "Bearer #{jwt_token}" }
-
-    let!(:authorized_jwt_token){
-      set_jwt_auth_header.try(:sub, "Bearer","").try(:split, ' ').try(:last) }
-    #------------------------------------------------------------------------
 
     context "set_locale" do
       it "should set locale to zh-tw" do
@@ -29,67 +15,45 @@ RSpec.describe ApplicationController, type: :controller do
         controller.send(:set_locale)
         expect(I18n.locale).to eql(:en)
       end
-    end
 
-    context 'token header' do
-      it 'has validate authorization header set' do
-        request.headers['Authorization'] = "Bearer  s2xtqb5mspzg4rq7"
-        expect(controller.send(:token_header)).to eq("s2xtqb5mspzg4rq7")
-      end
-      it 'had empty authorization header' do
-        request.headers['Authorization'] = "Bearer   "
-        expect(controller.send(:token_header)).to eq("undefined")
-      end
-    end
-
-    context 'verify warden' do
-      it 'warden object' do
-        expect(controller.send(:warden)).to eq(request.env["warden"])
-      end
-
-      it 'env[warden_options] object' do
-        expect(controller.send(:warden_options)).to eq(request.env["warden_options"])
-      end
-    end
-
-    context 'validate JWT token' do
-      it 'should be present' do
-        login_as(user)
-        expect(controller.send(:token_header)).not_to be_blank
-      end
-
-      it 'should be decoded by encoding key' do
-        login_as(user)
-        cur_time = Time.now.to_i
-        token_header_value = controller.send(:token_header)
-        jwt_decoded_json = controller.send(:decode_session_token, token_header_value)
-
-        expect(jwt_decoded_json["iat"]).to be <= cur_time
-        expect(jwt_decoded_json["iss"]).to eq(Rails.application.secrets.jwt['issuer'])
-        expect(jwt_decoded_json["exp"]).to be > cur_time
-        expect(jwt_decoded_json["mobile"]).to eq(user.mobile)
-        expect(jwt_decoded_json["otp_secret_key"]).to eq(user.friendly_token)
-      end
-
-      it 'should not be decoded by encoding key' do
-        login_as(user)
-        token_header_value = controller.send(:token_header).sub("e","x")
-        expect{controller.send(:decode_session_token, token_header_value)}.to throw_symbol(:warden)
-      end
-
-      it 'should be authenitic token' do
-        login_as(user)
-        token_header_value = controller.send(:token_header)
-        jwt_decoded_json = controller.send(:decode_session_token, token_header_value)
-        expect((controller.send(:validate_authenticity_of_token,
-          jwt_decoded_json))[:message]).to eq(I18n.t('warden.token_valid'))
-      end
-
-      it 'should be valid authenitic token' do
-        login_as(user)
-        expect((controller.send(:validate_token))[:message]).to eq(I18n.t('warden.token_valid'))
+      it "should set locale to en when unknown language" do
+        set_locale('za')
+        controller.send(:set_locale)
+        expect(I18n.locale).to eql(:en)
       end
 
     end
+
+    context "current_user" do
+
+      let(:data)  { {'user_id' => '1'} }
+      let(:token) { double(data: data) }
+      let(:user) { build :user }
+      before { allow(controller).to receive(:token).and_return(token) }
+
+      context "with valid token" do
+        before { expect(token).to receive('valid?').and_return(true) }
+        it "should find the user by id" do
+          expect(token).to receive('data').and_return(data)
+          expect(User).to receive(:find_by_id).with('1').and_return(user)
+          expect( controller.send(:current_user) ).to eql(user)
+        end
+        it "should not find the user_id" do
+          expect(token).to receive('data').and_return({})
+          expect(User).to_not receive(:find_by_id)
+          expect( controller.send(:current_user) ).to eql(nil)
+        end
+      end
+
+      context "with invalid token" do
+        before { expect(token).to receive('valid?').and_return(false) }
+        it "should return nil if token invalid" do
+          expect(User).to_not receive(:find_by_id)
+          expect( controller.send(:current_user) ).to eql(nil)
+        end
+      end
+
+    end
+
   end
 end

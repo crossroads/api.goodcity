@@ -7,12 +7,12 @@ gem 'pg'
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 # gem 'active_model_otp'
-gem 'active_model_otp', git: 'https://github.com/shivanibhanwal/active_model_otp'
+gem 'active_model_otp', github: 'shivanibhanwal/active_model_otp'
 gem 'active_model_serializers', '~> 0.8.0'
 
 # Gem does not released for this issue-fix. Once released remove git reference.
-# "Hard-destory of Parent record should destroy child records"
-gem 'paranoia', git: 'https://github.com/radar/paranoia.git', ref: 'fe70628'
+# "Hard-destroy of Parent record should destroy child records"
+gem 'paranoia', github: 'radar/paranoia', ref: 'fe70628'
 
 gem 'cancancan'
 gem 'cloudinary'

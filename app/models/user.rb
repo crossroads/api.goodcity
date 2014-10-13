@@ -13,45 +13,40 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  validates :mobile, presence: true, uniqueness: true
+  HongKongMobileRegExp = /\A\+852[569]\d{7}\z/
+
+  validates :mobile, presence: true, uniqueness: true, format: { with: HongKongMobileRegExp }
 
   after_create :generate_auth_token
 
-  scope :find_all_by_otp_secret_key, ->(otp_secret_key) {
-    joins(:auth_tokens).where( auth_tokens: { otp_secret_key: otp_secret_key } ) }
-  scope :check_for_mobile_uniqueness, ->(entered_mobile) { where("mobile = ?", entered_mobile)}
-
-  scope :reviewers, -> { where( permissions: { name: 'Reviewer' } ).joins(:permission) }
+  scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
 
+  # If user exists, ignore data and just send_verification_pin
+  # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params)
+    mobile = user_params['mobile']
+    user = nil
+    user = self.find_by_mobile(mobile) if mobile.present?
+    user ||= new(user_params)
     begin
       transaction do
-        user = new(user_params)
-        user.send_verification_pin if user.save!
-        user
+        user.save
+        user.send_verification_pin if user.valid?
       end
     rescue Twilio::REST::RequestError => e
-      e.message.try(:split,'.').try(:first)
-    rescue Exception => e
-      e.message
+      msg = e.message.try(:split, '.').try(:first)
+      user.errors.add(:base, msg)
     end
+    user
   end
 
-  def friendly_token
-    auth_tokens.recent_auth_token["otp_secret_key"] unless auth_tokens.blank?
+  def most_recent_token
+    auth_tokens.most_recent.first
   end
 
   def full_name
-    [first_name, last_name]
-      .reject(&:blank?)
-      .map(&:downcase)
-      .map(&:capitalize)
-      .join(' ')
-  end
-
-  def token_expiry
-    auth_tokens.recent_auth_token["otp_code_expiry"] unless auth_tokens.blank?
+    [first_name, last_name].reject(&:blank?).map(&:downcase).map(&:capitalize).join(' ')
   end
 
   def reviewer?
@@ -70,29 +65,16 @@ class User < ActiveRecord::Base
     permission.try(:name) == 'Administrator'
   end
 
-  def authenticate(mobile)
-    send_verification_pin if mobile.eql?(self.mobile)
+  def send_verification_pin
+    most_recent_token.cycle_otp_auth_key!
+    EmailFlowdockService.new(self).send_otp
+    TwilioService.new(self).sms_verification_pin
   end
 
-  def send_verification_pin(drift=30.minutes)
-    twilio_sms = TwilioService.new(self)
-    new_auth = update_otp(drift)
-    message_data = twilio_sms.sms_verification_pin(
-      {otp: new_auth[:otp_code], otp_expires: new_auth[:otp_code_expiry]})
-    user_token = new_auth.otp_secret_key
-    [user_token, message_data]
-  end
-
-  def update_otp(drift)
-    user_auth_pin = self.auth_tokens.recent_auth_token
-    drift_time = Time.now + drift
-    new_otp = user_auth_pin.otp_code({drift: drift_time, padding: true})
-    auth_tokens.recent_auth_token.update_columns(otp_code: new_otp,
-      otp_code_expiry: drift_time)
-    self.auth_tokens.recent_auth_token
-  end
+  private
 
   def generate_auth_token
-    auth_tokens.create({user_id:  self.id})
+    auth_tokens.create( user_id:  self.id )
   end
+
 end

@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/radar/paranoia.git
+  remote: git://github.com/radar/paranoia.git
   revision: fe706284ff0cc805ffef4a65bf9bf4f52b9f1ed5
   ref: fe70628
   specs:
@@ -7,7 +7,7 @@ GIT
       activerecord (~> 4.0)
 
 GIT
-  remote: https://github.com/shivanibhanwal/active_model_otp
+  remote: git://github.com/shivanibhanwal/active_model_otp.git
   revision: aab48b3f1498c82973e3b96bdc9d86400c799981
   specs:
     active_model_otp (1.0.0)

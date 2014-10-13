@@ -2,27 +2,21 @@ require 'rails_helper'
 
 describe User, :type => :model do
 
-  let!(:user_valid_attr) {{
-      mobile: "+85211111111",
-      first_name: "John1",
-      last_name: "Dey1",
-      address_attributes: {district_id: "9", address_type: "profile"}
-  }}
+  let(:mobile) { generate(:mobile) }
+  let(:address_attributes) { { 'district_id' => "9", 'address_type' => "profile" } }
+  let(:user_attributes) {  FactoryGirl.attributes_for(:user).merge('mobile' => mobile, 'address_attributes' => address_attributes).stringify_keys }
 
-  let!(:user_invalid_attr) {{
-      mobile: "85211111112",
-      first_name: "John2",
-      last_name: "Dey2"
-  }}
-  let!(:user_fg) {create :user}
+  let(:invalid_user_attributes) { { 'mobile' => "85211111112", 'first_name' => "John2", 'last_name' => "Dey2" } }
 
-  describe 'Association' do
+  let(:user) { create :user }
+
+  describe 'Associations' do
     it { should have_many :auth_tokens }
     it { should have_many :offers }
     it { should have_many :messages }
     it { should have_many :sent_messages }
     it { should belong_to :permission }
-    it { should have_one :address }
+    it { should have_one  :address }
   end
 
   describe 'Database columns' do
@@ -32,125 +26,74 @@ describe User, :type => :model do
   end
 
   describe "Validations" do
-    it { should validate_presence_of(:mobile) }
-    it { should validate_uniqueness_of(:mobile) }
+
+    context "mobile" do
+      it { should validate_presence_of(:mobile) }
+      it { should validate_uniqueness_of(:mobile) }
+      it { should allow_value('+85251234567').for(:mobile) }
+      it { should allow_value('+85261234567').for(:mobile) }
+      it { should allow_value('+85291234567').for(:mobile) }
+      it { should_not allow_value('+85211234567').for(:mobile) }
+      it { should_not allow_value('+44123456675').for(:mobile) }
+      it { should_not allow_value('4412345').for(:mobile) }
+      it { should_not allow_value('invalid').for(:mobile) }
+    end
+
   end
 
-  describe 'Scope Methods' do
-    describe '.find_all_by_otp_secret_key' do
-      it 'find user by otp_secret_key' do
-        user1 = user_fg
-        user2 = user_fg
-        auth_user1_otp_skey = user1.auth_tokens.first.otp_secret_key
-        expect(User.find_all_by_otp_secret_key(auth_user1_otp_skey).first).to eq (user1)
+  describe '.creation_with_auth' do
+
+    context "when mobile does not exist" do
+      let(:new_user) { build(:user) }
+      it "should create new user" do
+        allow(new_user).to receive(:send_verification_pin)
+        expect(User).to receive(:new).with(user_attributes).and_return(new_user)
+        User.creation_with_auth(user_attributes)
       end
     end
 
-    describe '.check_for_mobile_uniqueness' do
-      let!(:user) {create :user_with_token}
-      it 'check for mobile number' do
-        expect(User.check_for_mobile_uniqueness(user_valid_attr[:mobile]).first).to eq(user)
+    context "when mobile does exist" do
+      it "should send pin to existing user" do
+        user = create(:user, mobile: mobile)
+        expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+        expect(user).to receive(:send_verification_pin)
+        User.creation_with_auth(user_attributes)
       end
     end
 
-    describe '.creation_with_auth' do
-      let!(:custom_user) {
-        VCR.use_cassette "valid user with verified mobile" do
-          User.creation_with_auth(user_valid_attr)
-        end
-      }
-      let!(:twilio_error){
-        VCR.use_cassette "invalid user with unverified mobile" do
-          User.creation_with_auth(user_invalid_attr)
-        end
-      }
-
-      it 'create a user' do
-        expect(User.where("mobile=?", user_valid_attr[:mobile]).first).to eq(custom_user)
-      end
-      it 'raise error if mobile alreay exists' do
-        user_with_same_mobile = User.new(user_valid_attr)
-        expect {user_with_same_mobile.save!}.to raise_error(ActiveRecord::RecordInvalid)
-      end
-
-      it 'create an auth_token' do
-        expect(custom_user.auth_tokens.count).to be >= 1
-      end
-
-      it 'create an address with provided district id' do
-        expect(custom_user.address).not_to be_nil
-        expect(custom_user.address.district_id).to eq(9)
-      end
-
-      it 'sms a verification pin' do
-        expect(custom_user.auth_tokens.recent_auth_token.otp_code).not_to be_nil
-      end
-
-      it 'raise error if mobile is invalid' do
-        expect(twilio_error).to eq("The 'To' number #{user_invalid_attr[:mobile]} is not a valid phone number")
+    context "when mobile blank" do
+      let(:mobile) { nil }
+      it "should raise validation error" do
+        user = User.creation_with_auth(user_attributes)
+        expect(user.errors[:mobile]).to include("can't be blank")
+        expect(user.errors[:mobile]).to include("must begin with +852")
       end
     end
-  end
 
-  describe '#get_friendly_token' do
-    it 'give auth_token otp_secret_token' do
-      user1_token = user_fg.auth_tokens.first.otp_secret_key
-      expect(user1_token).to eq(user_fg.friendly_token)
-    end
-  end
-
-  describe '#get_token_expiry_date' do
-    it 'give auth_token otp_code_Expiry' do
-      user1_token = user_fg.auth_tokens.first.otp_code_expiry
-      expect(user1_token).to eq(user_fg.token_expiry)
-    end
-  end
-
-  describe '#authenticate' do
-    let!(:custom_user) {
-      VCR.use_cassette "valid user with verified mobile" do
-        User.creation_with_auth(user_valid_attr)
-      end
-    }
-    let!(:ret_otp_secret) {
-      VCR.use_cassette "authenticate user" do
-        custom_user.authenticate(user_valid_attr[:mobile])
-      end
-    }
-    it 'check for user mobile and successfully send sms' do
-      expect(ret_otp_secret.first).not_to be_nil
-      expect(ret_otp_secret.first).to eq(custom_user.friendly_token)
-    end
   end
 
   describe '#send_verification_pin' do
-    it 'update otp_code for the user' do
-      before_n_after_otp_for_twilio_sms
-      expect(@before_otp_code).not_to eq(@after_otp_code)
+
+    let(:flowdock)   { EmailFlowdockService.new(user) }
+    let(:twilio)     { TwilioService.new(user) }
+
+    it "should send pin via Twilio" do
+      expect(EmailFlowdockService).to receive(:new).with(user).and_return(flowdock)
+      expect(flowdock).to receive(:send_otp)
+      expect(TwilioService).to receive(:new).with(user).and_return(twilio)
+      expect(twilio).to receive(:sms_verification_pin)
+      user.send_verification_pin
     end
 
-    it 'update otp_code_Expiry for the user' do
-      before_n_after_otp_for_twilio_sms
-      expect(@before_otp_expiry).not_to eq(@after_otp_expiry)
-    end
-
-    it 'sms new otp_code' do
-      before_n_after_otp_for_twilio_sms
-      sms_text = "Your pin is #{@before_otp_code} and will expire by #{@before_otp_expiry}."
-      expect(@token_key.second.body).not_to eq(sms_text)
-    end
-
-    it 'return otp_secret_token' do
-      before_n_after_otp_for_twilio_sms
-      expect(@token_key.first).to eq(@valid_mobile_user.friendly_token)
-    end
-
-    after(:all) do
-      User.destroy_all
-    end
   end
 
   describe '#generate_auth_token' do
-    it 'create a auth_token record, after user creation'
+    it 'create an auth_token record, after user creation' do
+      user = build(:user)
+      expect(user.auth_tokens.size).to eq(0)
+      user.save!
+      expect(user.auth_tokens.size).to_not eq(0)
+    end
   end
+
 end

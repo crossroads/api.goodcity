@@ -90,18 +90,19 @@
       "recorded" : true
     }
   ],
-  "authentication#resend" : [
+  "authentication#send_pin" : [
     {
-      "verb" : "GET",
-      "path" : "/api/v1/auth/verify_mobile",
+      "verb" : "POST",
+      "path" : "/api/v1/auth/send_pin",
       "versions" : [
         "v1"
       ],
-      "query" : "",
-      "request_data" : null,
+      "query" : null,
+      "request_data" : {
+        "mobile" : "+85253807188"
+      },
       "response_data" : {
-        "token" : "ordsvnm5zstztuxk",
-        "message" : "A pin has been sent to your mobile device."
+        "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
       },
       "code" : "200",
       "show_in_doc" : 1,
@@ -118,21 +119,45 @@
       "query" : null,
       "request_data" : {
         "user_auth" : {
-          "first_name" : "Albert",
-          "last_name" : "DuBuque",
-          "mobile" : "+85211111111",
+          "mobile" : "+85254245708",
+          "first_name" : "Jake",
+          "last_name" : "Deamon",
           "address_attributes" : {
             "district_id" : "1",
-            "address_type" : "profile"
+            "address_type" : "Profile"
           }
         }
       },
       "response_data" : {
-        "token" : "wexj4uudsetbslom",
-        "message" : "Success"
+        "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
       },
       "code" : "200",
       "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/auth/signup",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "user_auth" : {
+          "mobile" : "+85268700357",
+          "first_name" : "Jake",
+          "last_name" : "Deamon",
+          "address_attributes" : {
+            "district_id" : "1",
+            "address_type" : "Profile"
+          }
+        }
+      },
+      "response_data" : {
+        "otp_auth_key" : "P8VXBFztuGgLDtrBzVpi4A=="
+      },
+      "code" : "200",
+      "show_in_doc" : 0,
       "recorded" : true
     }
   ],
@@ -145,12 +170,12 @@
       ],
       "query" : null,
       "request_data" : {
-        "token" : "7difyec6tbqk6ir6",
-        "pin" : "521175"
+        "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA==",
+        "pin" : "1234"
       },
       "response_data" : {
-        "user_id" : 475,
-        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTI2OTA3NzMsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMzkwMDM3MywibW9iaWxlIjoiKzg1MjExMTExMTExIiwib3RwX3NlY3JldF9rZXkiOiI3ZGlmeWVjNnRicWs2aXI2In0.t-O9LH5pUYaN-40TfGi3ns3BZV67IVCvYS3434Lfv04"
+        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTMwMDEzNTcsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMzAwMzE1N30.iaYkKuAtKWsHMtDYPza_PCRnrdlkeY852F7c4rCSNLc",
+        "user_id" : 4539
       },
       "code" : "200",
       "show_in_doc" : 1,
