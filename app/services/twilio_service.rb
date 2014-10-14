@@ -10,8 +10,9 @@ class TwilioService
   def sms_verification_pin
     return unless allowed_to_send?
     token = user.most_recent_token
-    expiry = token.otp_code_expiry
-    body = I18n.t('twilio.sms_verification_pin', pin: token.otp_code, expiry: expiry)
+    code = token.otp_code
+    expiry = token.otp_code_expiry.strftime("%A %b %e %H:%M")
+    body = I18n.t('twilio.sms_verification_pin', pin: code, expiry: expiry)
     options = { from: twilio_conf['phone_number'], to: @user.mobile, body: body}
     twilio_client.account.sms.messages.create(options)
   end
