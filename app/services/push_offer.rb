@@ -22,5 +22,4 @@ class PushOffer < PushService
   def listener_channels
     User.reviewers.map{ |user| "user_#{user.id}" }
   end
-
 end
