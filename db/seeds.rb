@@ -26,10 +26,19 @@ end
 # This is for dummy data
 unless ENV['LIVE'] == "true"
 
-  10.times { FactoryGirl.create :offer, :with_items, :with_messages }
+  # A hardcoded list of donors
+  donor_mobiles = %w( +85251111111 +85251111112 +85251111113 +85251111114 )
 
-  FactoryGirl.create :user, :reviewer
-  FactoryGirl.create :user, :supervisor
-  FactoryGirl.create :user, :administrator
+  # A hardcoded list of reviewers
+  reviewer_mobiles = %w( +85261111111 +85261111112 +85261111113 +85261111114 )
+
+  # A hardcoded list of supervisors
+  supervisor_mobiles = %w( +85291111111 +85291111112 +85291111113 +85291111114 )
+
+  donor_mobiles.each {|mobile| FactoryGirl.create(:user, mobile: mobile) }
+  reviewer_mobiles.each {|mobile| FactoryGirl.create(:user, :reviewer, mobile: mobile) }
+  supervisor_mobiles.each {|mobile| FactoryGirl.create(:user, :supervisor, mobile: mobile) }
+
+  10.times { FactoryGirl.create :offer, :with_items, :with_messages, created_by: User.donors.sample }
 
 end

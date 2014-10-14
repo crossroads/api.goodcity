@@ -19,6 +19,7 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
+  scope :donors,      -> { where( permission_id: nil ) }
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
 
