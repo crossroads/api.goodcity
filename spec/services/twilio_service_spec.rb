@@ -19,6 +19,7 @@ describe TwilioService do
   context "sms_verification_pin" do
 
     before do
+      allow(twilio).to receive(:allowed_to_send?).and_return(true)
       VCR.use_cassette "sms_otp_code" do
         # otp_code is 614979
         # otp_code_expiry is 2014-07-29 11:00:00 UTC

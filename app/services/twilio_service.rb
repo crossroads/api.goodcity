@@ -8,8 +8,10 @@ class TwilioService
   end
 
   def sms_verification_pin
+    return unless allowed_to_send?
     token = user.most_recent_token
-    body = I18n.t('twilio.sms_verification_pin', pin: token.otp_code, expiry: token.otp_code_expiry)
+    expiry = token.otp_code_expiry
+    body = I18n.t('twilio.sms_verification_pin', pin: token.otp_code, expiry: expiry)
     options = { from: twilio_conf['phone_number'], to: @user.mobile, body: body}
     twilio_client.account.sms.messages.create(options)
   end
@@ -24,6 +26,11 @@ class TwilioService
 
   def twilio_conf
     Rails.application.secrets.twilio
+  end
+
+  def allowed_to_send?
+    mobile = @user.mobile
+    ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).include?(mobile)
   end
 
 end
