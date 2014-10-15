@@ -307,18 +307,19 @@
       "query" : null,
       "request_data" : {
         "item" : {
-          "donor_description" : "Sed reiciendis sed neque labore et.",
+          "donor_description" : "Velit in tenetur quo ratione pariatur eum.",
           "state" : "draft",
-          "offer_id" : "2358",
-          "item_type_id" : "3387",
-          "rejection_reason_id" : "2677",
-          "rejection_other_reason" : "Quod magnam dicta consequatur deleniti iure est ipsa quis.",
-          "created_at" : "2014-10-07 04:07:24 UTC",
-          "updated_at" : "2014-10-07 04:07:24 UTC",
+          "offer_id" : "2",
+          "item_type_id" : "4",
+          "rejection_reason_id" : "3",
+          "rejection_other_reason" : "Porro id est ut voluptatem rerum suscipit perspiciatis.",
+          "created_at" : "2014-10-15 14:41:43 +0800",
+          "updated_at" : "2014-10-15 14:41:43 +0800",
           "saleable" : false,
-          "donor_condition_id" : "2643",
+          "donor_condition_id" : "4",
           "deleted_at" : null,
-          "image_identifiers" : "heeagkwcp8"
+          "image_identifiers" : "ppztxxwuki,86zkcwq1yt",
+          "favourite_image" : "86zkcwq1yt"
         }
       },
       "response_data" : {
@@ -326,51 +327,60 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 1121,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vheeagkwcp8",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vheeagkwcp8",
-            "favourite" : null,
+            "id" : 3,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vppztxxwuki",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vppztxxwuki",
+            "favourite" : false,
             "order" : null,
-            "image_id" : "heeagkwcp8"
+            "image_id" : "ppztxxwuki"
+          },
+          {
+            "id" : 4,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/v86zkcwq1yt",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/v86zkcwq1yt",
+            "favourite" : true,
+            "order" : null,
+            "image_id" : "86zkcwq1yt"
           }
         ],
         "rejection_reasons" : [
           {
-            "id" : 2677,
-            "name" : "Quality"
+            "id" : 3,
+            "name" : "Size"
           }
         ],
         "item_types" : [
           {
-            "id" : 3387,
-            "name" : "Speaker",
-            "code" : "EUS"
+            "id" : 4,
+            "name" : "Cassette recorder",
+            "code" : "EUC"
           }
         ],
         "donor_conditions" : [
           {
-            "id" : 2643,
+            "id" : 4,
             "name" : "Broken"
           }
         ],
         "item" : {
-          "id" : 2682,
-          "donor_description" : "Sed reiciendis sed neque labore et.",
-          "donor_condition_id" : 2643,
+          "id" : 5,
+          "donor_description" : "Velit in tenetur quo ratione pariatur eum.",
+          "donor_condition_id" : 4,
           "state" : "draft",
-          "offer_id" : 2358,
-          "item_type_id" : 3387,
-          "rejection_reason_id" : 2677,
-          "rejection_other_reason" : "Quod magnam dicta consequatur deleniti iure est ipsa quis.",
+          "offer_id" : 2,
+          "item_type_id" : 4,
+          "rejection_reason_id" : 3,
+          "rejection_other_reason" : "Porro id est ut voluptatem rerum suscipit perspiciatis.",
           "saleable" : false,
-          "created_at" : "2014-10-07T04:07:24.593Z",
-          "updated_at" : "2014-10-07T04:07:24.593Z",
-          "image_identifiers" : "heeagkwcp8",
-          "favourite_image" : null,
+          "created_at" : "2014-10-15T14:41:43.788+08:00",
+          "updated_at" : "2014-10-15T14:41:43.788+08:00",
+          "image_identifiers" : "ppztxxwuki,86zkcwq1yt",
+          "favourite_image" : "86zkcwq1yt",
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            1121
+            3,
+            4
           ]
         }
       },
@@ -382,7 +392,7 @@
   "items#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/items/2679",
+      "path" : "/api/v1/items/2",
       "versions" : [
         "v1"
       ],
@@ -393,51 +403,51 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 1119,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vojzcn9p4sr",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vojzcn9p4sr",
+            "id" : 1,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/va5zw64okhf",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/va5zw64okhf",
             "favourite" : true,
             "order" : 1,
-            "image_id" : "ojzcn9p4sr"
+            "image_id" : "a5zw64okhf"
           }
         ],
         "rejection_reasons" : [
           {
-            "id" : 2675,
-            "name" : "Other"
+            "id" : 2,
+            "name" : "Quality"
           }
         ],
         "item_types" : [
           {
-            "id" : 3385,
-            "name" : "Adult fiction (english)",
-            "code" : "PGF"
+            "id" : 2,
+            "name" : "PALLET OF Household Orphanage Unsorted",
+            "code" : "HZR"
           }
         ],
         "donor_conditions" : [
           {
-            "id" : 2642,
-            "name" : "Heavily Used"
+            "id" : 2,
+            "name" : "New"
           }
         ],
         "item" : {
-          "id" : 2679,
-          "donor_description" : "Facilis doloremque saepe tempora voluptatem nostrum eius optio tenetur.",
-          "donor_condition_id" : 2642,
+          "id" : 2,
+          "donor_description" : "Est id magni ea numquam minima asperiores ipsam.",
+          "donor_condition_id" : 2,
           "state" : "draft",
-          "offer_id" : 2357,
-          "item_type_id" : 3385,
-          "rejection_reason_id" : 2675,
-          "rejection_other_reason" : "Distinctio praesentium quisquam non vitae.",
+          "offer_id" : 1,
+          "item_type_id" : 2,
+          "rejection_reason_id" : 2,
+          "rejection_other_reason" : "Quidem voluptatem dolore cum sed.",
           "saleable" : false,
-          "created_at" : "2014-10-07T04:07:24.347Z",
-          "updated_at" : "2014-10-07T04:07:24.347Z",
-          "image_identifiers" : "ojzcn9p4sr",
-          "favourite_image" : "ojzcn9p4sr",
+          "created_at" : "2014-10-15T14:41:43.587+08:00",
+          "updated_at" : "2014-10-15T14:41:43.587+08:00",
+          "image_identifiers" : "a5zw64okhf",
+          "favourite_image" : "a5zw64okhf",
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            1119
+            1
           ]
         }
       },
@@ -449,7 +459,7 @@
   "items#update" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/items/2684",
+      "path" : "/api/v1/items/7",
       "versions" : [
         "v1"
       ],
@@ -458,16 +468,17 @@
         "item" : {
           "donor_description" : "Test item",
           "state" : "draft",
-          "offer_id" : "2359",
-          "item_type_id" : "3389",
-          "rejection_reason_id" : "2678",
-          "rejection_other_reason" : "Minima sint nihil quis provident.",
-          "created_at" : "2014-10-07 04:07:24 UTC",
-          "updated_at" : "2014-10-07 04:07:24 UTC",
+          "offer_id" : "3",
+          "item_type_id" : "6",
+          "rejection_reason_id" : "5",
+          "rejection_other_reason" : "Iste nemo vitae et qui omnis qui.",
+          "created_at" : "2014-10-15 14:41:43 +0800",
+          "updated_at" : "2014-10-15 14:41:43 +0800",
           "saleable" : false,
-          "donor_condition_id" : "2644",
+          "donor_condition_id" : "6",
           "deleted_at" : null,
-          "image_identifiers" : "kyl3v153zq"
+          "image_identifiers" : "qe07q1ma5c",
+          "favourite_image" : "jlw5nui0b4"
         }
       },
       "response_data" : {
@@ -475,51 +486,51 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 1123,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vkyl3v153zq",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vkyl3v153zq",
-            "favourite" : null,
+            "id" : 6,
+            "image_url" : "http://res.cloudinary.com/test/image/upload/vqe07q1ma5c",
+            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vqe07q1ma5c",
+            "favourite" : false,
             "order" : null,
-            "image_id" : "kyl3v153zq"
+            "image_id" : "qe07q1ma5c"
           }
         ],
         "rejection_reasons" : [
           {
-            "id" : 2678,
+            "id" : 5,
             "name" : "Size"
           }
         ],
         "item_types" : [
           {
-            "id" : 3389,
-            "name" : "Intravenous equipment",
-            "code" : "MGV"
+            "id" : 6,
+            "name" : "Other visual appliances",
+            "code" : "EVX"
           }
         ],
         "donor_conditions" : [
           {
-            "id" : 2644,
-            "name" : "Heavily Used"
+            "id" : 6,
+            "name" : "Broken"
           }
         ],
         "item" : {
-          "id" : 2684,
+          "id" : 7,
           "donor_description" : "Test item",
-          "donor_condition_id" : 2644,
+          "donor_condition_id" : 6,
           "state" : "draft",
-          "offer_id" : 2359,
-          "item_type_id" : 3389,
-          "rejection_reason_id" : 2678,
-          "rejection_other_reason" : "Minima sint nihil quis provident.",
+          "offer_id" : 3,
+          "item_type_id" : 6,
+          "rejection_reason_id" : 5,
+          "rejection_other_reason" : "Iste nemo vitae et qui omnis qui.",
           "saleable" : false,
-          "created_at" : "2014-10-07T04:07:24.666Z",
-          "updated_at" : "2014-10-07T04:07:24.686Z",
-          "image_identifiers" : "kyl3v153zq",
+          "created_at" : "2014-10-15T14:41:43.897+08:00",
+          "updated_at" : "2014-10-15T14:41:43.914+08:00",
+          "image_identifiers" : "qe07q1ma5c",
           "favourite_image" : null,
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            1123
+            6
           ]
         }
       },

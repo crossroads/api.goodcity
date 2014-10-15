@@ -8,7 +8,10 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   let(:item)  { create(:item, offer: offer, images: [image]) }
   let(:serialized_item) { Api::V1::ItemSerializer.new(item) }
   let(:serialized_item_json) { JSON.parse( serialized_item.to_json ) }
-  let(:item_params) { item.attributes.except("id").merge("image_identifiers" => Faker::Lorem.characters(10)) }
+  let(:image_identifier1)  { Faker::Lorem.characters(10) }
+  let(:image_identifier2)  { Faker::Lorem.characters(10) }
+  let(:image_identifiers) { image_identifier1 << ',' << image_identifier2 }
+  let(:item_params) { item.attributes.except("id").merge("image_identifiers" => image_identifiers, "favourite_image" => image_identifier2) }
 
   subject { JSON.parse(response.body) }
 

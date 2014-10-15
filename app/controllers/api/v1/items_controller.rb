@@ -22,6 +22,7 @@ module Api::V1
         param :rejection_reason_id, String, desc: "A categorisation describing the reason the item was rejected "<< RejectionReason.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; "), allow_nil: true
         param :rejection_other_reason, String, allow_nil: true, desc: "Reviewer description of why the item was rejected"
         param :image_identifiers, String, desc: "Comma seperated list of image-ids uploaded to Cloudinary"
+        param :favourite_image, String, desc: "An existing image-id that will become the default image for this item"
       end
     end
 
