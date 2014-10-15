@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :donor_condition, parent: false
 
     resource_description do
-      short 'List Donor-Conditions.'
+      short 'Categorise the state a donation item is in. E.g. New / Used / Broken'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
@@ -12,8 +12,8 @@ module Api::V1
       error 500, "Internal Server Error"
     end
 
-    api :GET, '/v1/donor_conditions', "List all Donor-Conditions."
-    param :ids, Array, of: Integer, desc: "Filter by donor-condition ids e.g. ids = [1,2,3,4]"
+    api :GET, '/v1/donor_conditions', "List all donor conditions."
+    param :ids, Array, of: Integer, desc: "Filter by donor condition ids e.g. ids = [1,2,3,4]"
     def index
       if params[:ids].blank?
         render json: DonorCondition.cached_json
