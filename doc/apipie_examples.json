@@ -210,6 +210,34 @@
       "recorded" : true
     }
   ],
+  "districts#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/districts",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "districts" : [
+          {
+            "id" : 898,
+            "name" : "Lam Tei",
+            "territory_id" : 731
+          },
+          {
+            "id" : 899,
+            "name" : "Causeway Bay",
+            "territory_id" : 732
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "districts#show" : [
     {
       "verb" : "GET",

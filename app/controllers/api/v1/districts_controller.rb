@@ -5,7 +5,7 @@ module Api::V1
     load_and_authorize_resource :district, parent: false
 
     resource_description do
-      short 'List Districts.'
+      short 'Districts are sub-regions of Hong Kong territories'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"

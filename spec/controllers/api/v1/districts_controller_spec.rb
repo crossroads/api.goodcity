@@ -27,7 +27,9 @@ RSpec.describe Api::V1::DistrictsController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "return serialized districts" do
+    it "return serialized districts", :show_in_doc do
+      create(:district)
+      create(:district)
       get :index
       body = JSON.parse(response.body)
       expect( body['districts'].length ).to eq(District.count)
