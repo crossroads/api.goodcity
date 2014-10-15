@@ -5,7 +5,7 @@ module Api::V1
     load_and_authorize_resource :territory, parent: false
 
     resource_description do
-      short 'List Territories.'
+      short 'Hong Kong is divided into territories which is further subdivided into districts.'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"

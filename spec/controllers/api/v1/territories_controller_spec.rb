@@ -27,7 +27,9 @@ RSpec.describe Api::V1::TerritoriesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "return serialized territories" do
+    it "return serialized territories", :show_in_doc do
+      create(:territory_districts, districts_count: 2)
+      create(:territory_districts, districts_count: 2)
       get :index
       body = JSON.parse(response.body)
       expect( body['territories'].length ).to eq(Territory.count)

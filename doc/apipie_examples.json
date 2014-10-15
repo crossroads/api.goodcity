@@ -712,6 +712,62 @@
       "recorded" : true
     }
   ],
+  "territories#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/territories",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "districts" : [
+          {
+            "id" : 602,
+            "name" : "Sham Shui Po",
+            "territory_id" : 489
+          },
+          {
+            "id" : 603,
+            "name" : "Wang Tau Hom",
+            "territory_id" : 489
+          },
+          {
+            "id" : 604,
+            "name" : "Kowloon Tong",
+            "territory_id" : 490
+          },
+          {
+            "id" : 605,
+            "name" : "Sheung Wan",
+            "territory_id" : 490
+          }
+        ],
+        "territories" : [
+          {
+            "id" : 489,
+            "name" : "Kowloon",
+            "district_ids" : [
+              602,
+              603
+            ]
+          },
+          {
+            "id" : 490,
+            "name" : "Hong Kong Island",
+            "district_ids" : [
+              604,
+              605
+            ]
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "territories#show" : [
     {
       "verb" : "GET",
