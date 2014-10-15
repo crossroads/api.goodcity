@@ -9,7 +9,6 @@
   end
 
   def notify
-    byebug
     @message.state = "unread"
     @event = 'update_store'
     @data = serialize(@message)
