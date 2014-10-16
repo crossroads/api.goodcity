@@ -1,6 +1,7 @@
 module Api::V1
   class AuthenticationController < Api::V1::ApiController
     skip_before_action :validate_token, only: [:signup, :verify, :send_pin, :is_unique_mobile_number]
+    skip_authorization_check only: [:signup, :verify, :send_pin, :is_unique_mobile_number]
 
     resource_description do
       short "Handle user login and registration"

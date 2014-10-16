@@ -3,6 +3,8 @@ class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
   include TokenValidatable
 
+  check_authorization
+
   before_action :set_locale
   helper_method :current_user
 

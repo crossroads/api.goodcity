@@ -1,5 +1,6 @@
 module Api::V1
   class ImagesController < Api::V1::ApiController
+    skip_authorization_check only: [:generate_signature]
 
     resource_description do
       short 'Generate an image signature for Cloudinary service'
