@@ -16,85 +16,35 @@
   <body>
     <h1>GoodCity API server</h1>
 
-    <p>API documentation <a href="/api/docs">/api/docs/</a> is underway but incomplete. For a more comprehensive list of undocumented endpoints, see below.</p>
+    <p>For API documentation, please <a href="/api/docs">click here</a>.</p>
 
     <h3>Dummy user accounts</h3>
 
     <p>You can login with the following dummy user accounts.<br/>
        <strong>Please note:</strong> pin numbers will be sent to Flowdock (bypassing Twilio)</p>
 
-    <strong>Donors</strong>
+    <h3>Donor mobile numbers</h3>
     <ul>
-    <li>+85251111111</li>
-    <li>+85251111112</li>
-    <li>+85251111113</li>
-    <li>+85251111114</li>
+    <li>51111111</li>
+    <li>51111112</li>
+    <li>51111113</li>
+    <li>51111114</li>
     </ul>
 
-    <strong>Reviewers</strong>
+    <h3>Reviewer mobile numbers</h3>
     <ul>
-    <li>+85261111111</li>
-    <li>+85261111112</li>
-    <li>+85261111113</li>
-    <li>+85261111114</li>
+    <li>61111111</li>
+    <li>61111112</li>
+    <li>61111113</li>
+    <li>61111114</li>
     </ul>
 
-    <strong>Supervisors</strong>
+    <h3>Supervisor mobile numbers</h3>
     <ul>
-    <li>+85291111111</li>
-    <li>+85291111112</li>
-    <li>+85291111113</li>
-    <li>+85291111114</li>
-    </ul>
-
-    <strong>API Endpoints</strong>
-    <ul>
-      <li><a href="/api/v1/offers.json">/api/v1/offers.json</a></li>
-      <li><a href="/api/v1/offers?ids=1,2,3,4">/api/v1/offers.json?ids=1,2,3,4</a></li>
-      <li><a href="/api/v1/offers/1.json">/api/v1/offers/1.json</a></li>
-      <li><a href="/api/v1/items.json">/api/v1/items.json</a></li>
-      <li><a href="/api/v1/items.json?ids=1,2,3,4">/api/v1/items.json?ids=1,2,3,4</a></li>
-      <li><a href="/api/v1/items/1.json">/api/v1/items/1.json</a></li>
-      <li><a href="/api/v1/item_types.json">/api/v1/item_types.json</a></li>
-      <li><a href="/api/v1/item_types.json?ids=1,2,3,4">/api/v1/item_types.json?ids=1,2,3,4</a></li>
-      <li><a href="/api/v1/item_types/1.json">/api/v1/item_types/1.json</a></li>
-      <li><a href="/api/v1/messages.json">/api/v1/messages.json</a></li>
-      <li><a href="/api/v1/messages.json?ids=1,2,3,4">/api/v1/messages.json?ids=1,2,3,4</a></li>
-      <li><a href="/api/v1/messages/1.json">/api/v1/messages/1.json</a></li>
-      <li><a href="/api/v1/packages.json">/api/v1/packages.json</a></li>
-      <li><a href="/api/v1/packages.json?ids=1,2,3,4">/api/v1/packages.json?ids=1,2,3,4</a></li>
-      <li><a href="/api/v1/packages/1.json">/api/v1/packages/1.json</a></li>
-      <li><a href="/api/v1/rejection_reasons.json">/api/v1/rejection_reasons.json</a></li>
-      <li><a href="/api/v1/rejection_reasons.json?ids=1,2">/api/v1/rejection_reasons.json?ids=1,2</a></li>
-      <li><a href="/api/v1/rejection_reasons/1.json">/api/v1/rejection_reasons/1.json</a></li>
-      <li><a href="/api/v1/users.json">/api/v1/users.json</a></li>
-      <li><a href="/api/v1/users.json?ids=1,2">/api/v1/users.json?ids=1,2</a></li>
-      <li><a href="/api/v1/users/1.json">/api/v1/users/1.json</a></li>
-      <li><a href="/api/v1/districts.json">/api/v1/districts.json</a></li>
-      <li><a href="/api/v1/districts.json?ids=1,2,3,4">/api/v1/districts.json?ids=1,2,3,4</a></li>
-      <li><a href="/api/v1/districts/1.json">/api/v1/districts/1.json</a></li>
-      <li><a href="/api/v1/territories.json">/api/v1/territories.json</a></li>
-      <li><a href="/api/v1/territories.json?ids=1,2">/api/v1/territories.json?ids=1,2</a></li>
-      <li><a href="/api/v1/territories/1.json">/api/v1/territories/1.json</a></li>
-      <li><a href="/api/v1/donor_conditions.json">/api/v1/donor_conditions.json</a></li>
-      <li><a href="/api/v1/donor_conditions.json?ids=1,2,3,4">/api/v1/donor_conditions.json?ids=1,2,3,4</a></li>
-      <li><a href="/api/v1/donor_conditions/1.json">/api/v1/donor_conditions/1.json</a></li>
-
-      <li><a href="javascript:signup()">Register User</a></li>
-      <li><a href="/api/v1/users/login.json">Login User</a></li>
-      <li><a href="javascript:authenticate()">Authenticate</a></li>
-      <li><a href="/api/v1/auth/check_mobile?mobile=1-136-281-6903 x330">Validate Mobile number (Already Exists)</a></li>
-      <li><a href="/api/v1/auth/check_mobile?mobile=1-136-281-6903 x331">Validate Mobile number (Does not Exist)</a></li>
-      <li><a href="/api/v1/schedules">Get Schedules</a></li>
-    </ul>
-
-    <p>API Diagrams</p>
-
-    <ul>
-      <li><a href="/doc/controllers_brief.svg">Controllers (brief)</a></li>
-      <li><a href="/doc/controllers_complete.svg">Controllers (complete)</a></li>
-      <li><a href="/doc/models_brief.svg">Models (brief)</a></li>
-      <li><a href="/doc/models_complete.svg">Models (complete)</a></li>
+    <li>91111111</li>
+    <li>91111112</li>
+    <li>91111113</li>
+    <li>91111114</li>
     </ul>
 
   </body>
