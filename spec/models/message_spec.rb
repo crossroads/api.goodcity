@@ -3,8 +3,8 @@ require 'rails_helper'
 describe Message, :type => :model do
   let(:user) {create :user}
   let(:message) {create :message}
-  let(:lsit_of_users) {create_list(:user,2)}
-  let(:channel) {lsit_of_users.collect{|k| "user_#{k.id}"}}
+  let(:list_of_users) {create_list(:user,2)}
+  let(:channel) {list_of_users.collect{|k| "user_#{k.id}"}}
   let(:offer) {create :offer}
   let(:item)  {create :item}
   let(:subscription)  {create :subscription}
@@ -74,21 +74,13 @@ describe Message, :type => :model do
   end
 
   describe "#subscribe_users_to_message" do
-    let(:offer_sub) {offer.subscriptions}
+    let(:public_sub) {offer.subscriptions}
     let(:sender) {create :user}
 
     it "donor can send public message only" do
-      allow(offer_sub).to receive(:subscribed_users).with(sender.id)
-      expect(offer_sub).to receive(:subscribed_users).with(sender.id)
+      allow(public_sub).to receive(:subscribed_users).with(sender.id)
+      expect(public_sub).to receive(:subscribed_users).with(sender.id)
       offer.subscriptions.subscribed_users(sender.id)
-    end
-    it "privilaged users can send private message as well" do
-
-    end
-  end
-
-  describe '#list_of_listeners' do
-    it do
     end
   end
 end

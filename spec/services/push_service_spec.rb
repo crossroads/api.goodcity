@@ -33,12 +33,10 @@ describe PushService do
    end
 
     it "multiple receipent through pusher" do
-      allow(Pusher).to receive(:trigger).with(multiple_channels, event, message).and_return({})
+      allow(Pusher).to receive(:trigger).twice
       channel = multiple_channels.in_groups_of(10, false)
       expect(multiple_channels).to  be_kind_of(Array)
       expect(multiple_channels.length).to be > 10
-      expect(Pusher).to receive(:trigger).with(channel[0], event, message).and_return({})
-      expect(Pusher).to receive(:trigger).with(channel[1], event, message).and_return({})
       PushService.new({channel: multiple_channels, event: event,data: message}).notify
     end
 

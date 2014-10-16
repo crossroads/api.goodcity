@@ -4,8 +4,8 @@ describe PushMessage do
 
   let(:message) { create :message}
   let(:serialized_message) {Api::V1::MessageSerializer.new(message)}
-  let(:lsit_of_users) {create_list(:user,2)}
-  let(:channel) {lsit_of_users.collect{|k| "user_#{k.id}"}}
+  let(:list_of_users) {create_list(:user,2)}
+  let(:channel) {list_of_users.collect{|k| "user_#{k.id}"}}
   let(:push_message) { PushMessage.new({message: serialized_message, channel: channel})}
   let(:event) { 'update_store'}
   let(:data) {serialize(message)}
@@ -25,7 +25,8 @@ describe PushMessage do
     end
 
     it "event needs to be set " do
-      expect(event).to eq("update_store")
+      push_message.event = "update_store"
+      expect(push_message.event).to eq(event)
     end
 
     it "should call notify" do
