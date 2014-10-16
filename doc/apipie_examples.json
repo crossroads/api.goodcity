@@ -655,6 +655,83 @@
       "recorded" : true
     }
   ],
+  "offers#destroy" : [
+    {
+      "verb" : "DELETE",
+      "path" : "/api/v1/offers/667",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "offers#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/offers",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [],
+        "deliveries" : [],
+        "offers" : [
+          {
+            "id" : 663,
+            "language" : "en",
+            "state" : "draft",
+            "origin" : "web",
+            "stairs" : false,
+            "parking" : false,
+            "estimated_size" : "3",
+            "notes" : "Laborum similique fugiat et natus ut necessitatibus saepe. Est assumenda aut non vel possimus blanditiis ea. Aut voluptatem dignissimos ipsam minima exercitationem.",
+            "created_by_id" : null,
+            "created_at" : "2014-10-16T17:06:42.373+08:00",
+            "updated_at" : "2014-10-16T17:06:42.373+08:00",
+            "submitted_at" : null,
+            "user_id" : null,
+            "delivery_id" : null,
+            "reviewed_by_id" : null,
+            "reviewed_at" : null,
+            "item_ids" : [],
+            "message_ids" : []
+          },
+          {
+            "id" : 664,
+            "language" : "en",
+            "state" : "draft",
+            "origin" : "web",
+            "stairs" : false,
+            "parking" : true,
+            "estimated_size" : "1",
+            "notes" : "Similique distinctio qui atque aspernatur sit. Ab esse aliquid aut delectus. Non exercitationem nesciunt assumenda adipisci. Aut a perferendis corrupti eum sed ex rerum itaque.",
+            "created_by_id" : null,
+            "created_at" : "2014-10-16T17:06:42.390+08:00",
+            "updated_at" : "2014-10-16T17:06:42.390+08:00",
+            "submitted_at" : null,
+            "user_id" : null,
+            "delivery_id" : null,
+            "reviewed_by_id" : null,
+            "reviewed_at" : null,
+            "item_ids" : [],
+            "message_ids" : []
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "offers#show" : [
     {
       "verb" : "GET",

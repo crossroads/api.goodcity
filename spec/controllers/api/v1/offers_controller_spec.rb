@@ -10,7 +10,21 @@ RSpec.describe Api::V1::OffersController, :type => :controller do
   let(:allowed_params) { [:language, :origin, :stairs, :parking, :estimated_size, :notes] }
   let(:offer_params) { FactoryGirl.attributes_for(:offer).tap{|attrs| (attrs.keys - allowed_params).each{|a| attrs.delete(a)} } }
 
-  describe "GET offer" do
+  describe "GET offers" do
+    before { generate_and_set_token(reviewer) }
+    it "returns 200" do
+      get :index
+      expect(response.status).to eq(200)
+    end
+    it "return serialized offers", :show_in_doc do
+      2.times{ create :offer }
+      get :index
+      body = JSON.parse(response.body)
+      expect( body['offers'].length ).to eq(2)
+    end
+  end
+
+  describe "GET offer/1" do
     before { generate_and_set_token(user) }
     it "returns 200" do
       get :show, id: offer.id
@@ -32,7 +46,6 @@ RSpec.describe Api::V1::OffersController, :type => :controller do
   end
 
   describe "PUT offer/1" do
-
     context "owner" do
       before { generate_and_set_token(user) }
       it "owner can submit", :show_in_doc do
@@ -43,7 +56,16 @@ RSpec.describe Api::V1::OffersController, :type => :controller do
         expect(offer.reload).to be_submitted
       end
     end
+  end
 
+  describe "DELETE offer/1" do
+    before { generate_and_set_token(user) }
+    it "returns 200", :show_in_doc do
+      delete :destroy, id: offer.id
+      expect(response.status).to eq(200)
+      body = JSON.parse(response.body)
+      expect(body).to eq( {} )
+    end
   end
 
 end
