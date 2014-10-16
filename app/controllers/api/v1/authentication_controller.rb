@@ -5,9 +5,22 @@ module Api::V1
     resource_description do
       short "Handle user login and registration"
       description <<-EOS
+
+      ==The login process (in brief):
+
+      * User sends mobile number to <code>/auth/send_pin</code>
+      * If the user exists, the server sends a 4-digit pin (<code>OTP code</code>) via SMS to the mobile number
+      * Server responds with <code>otp_auth_key</code>
+      * User calls <code>/auth/verify</code> with <code>OTP code</code> AND <code>otp_auth_key</code>
+      * Server successfully authenticates and returns <code>jwt_token</code>
+      * <code>jwt_token</code> is sent with all API requests requiring authorization
+
       ==Diagrams
-      * {Login flowchart}[link:/doc/login_flowchart.pdf]
-      * {Registration flowchart}[link:/doc/registration_flowchart.pdf]
+      A fuller explanation of the user login / registration process is detailed in the following flowchart diagrams.
+
+      * {Login flowchart}[link:/doc/login_flowchart.svg]
+      * {Registration flowchart}[link:/doc/registration_flowchart.svg]
+
       EOS
       formats ['json']
     end
@@ -59,6 +72,9 @@ module Api::V1
     description <<-EOS
     Create a new user and send an OTP token to the user's mobile.
 
+    If the mobile number already exists, do not create a new user. Send an OTP
+    code to the existing user's mobile and disregard any other signup params.
+
     ===If successful:
     * an OTP code will be sent via SMS to the user's mobile
     * an +otp_auth_key+ will be returned to the client
@@ -80,7 +96,7 @@ module Api::V1
     * +852523456789 - too long
 
     To understand the registration process in detail please refer to the
-    {attached Registration flowcharts}[/doc/registration_flowchart.pdf]
+    {attached Registration flowcharts}[/doc/registration_flowchart.svg]
     EOS
     param_group :user_auth
     error 422, "Validation Error"
@@ -97,12 +113,12 @@ module Api::V1
     api :POST, '/v1/auth/verify', "Verify OTP code"
     description <<-EOS
     Verify the OTP code (sent via SMS)
-    * If verified, generate and send back an authenticated +jwt_token+ and +user_id+
+    * If verified, generate and send back an authenticated +jwt_token+ and +user+ object
     * If verification fails, return 401 (Unauthorized)
 
     ===If successful
     * a +jwt_token+ will be returned. This should be included in all subsequent requests as part of the AUTHORIZATION header to authenticate the API calls.
-    * the +user_id+ is returned. This is useful for a subsequent request to get the currently logged in user's properties.
+    * the +user+ object is returned.
 
     To understand the registration process in detail refer {attached Login flowchart}[/doc/login_flowchart.pdf]
     EOS

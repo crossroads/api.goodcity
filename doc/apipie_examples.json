@@ -174,8 +174,36 @@
         "pin" : "1234"
       },
       "response_data" : {
-        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTMwMDEzNTcsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMzAwMzE1N30.iaYkKuAtKWsHMtDYPza_PCRnrdlkeY852F7c4rCSNLc",
-        "user_id" : 4539
+        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTM0NDk4NzcsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMzQ1MTY3N30.kdi6Qcawl1xI1q1EP1tLiVyOVyDLald9SHM3nJ2AsBM",
+        "user" : {
+          "addresses" : [
+            {
+              "id" : 1887,
+              "street" : "Beier River",
+              "flat" : "Suite 470",
+              "building" : "760",
+              "district_id" : 2058,
+              "addressable_id" : 1435,
+              "addressable_type" : "User"
+            }
+          ],
+          "districts" : [
+            {
+              "id" : 2058,
+              "name" : "Wonderland Villas",
+              "territory_id" : 1689
+            }
+          ],
+          "permissions" : [],
+          "user" : {
+            "id" : 1435,
+            "first_name" : "Haylie",
+            "last_name" : "McClure",
+            "mobile" : "50435160",
+            "address_id" : 1887,
+            "permission_id" : null
+          }
+        }
       },
       "code" : "200",
       "show_in_doc" : 1,
