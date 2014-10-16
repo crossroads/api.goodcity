@@ -34,7 +34,7 @@ module Api::V1
       if @offer.save
         render json: @offer, serializer: serializer, status: 201
       else
-        render json: @offer.errors.to_json, status: 500
+        render json: @offer.errors.to_json, status: 422
       end
     end
 

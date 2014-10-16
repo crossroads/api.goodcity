@@ -26,7 +26,7 @@ module Api::V1
       if @contact.save
         render json: @contact, serializer: serializer, status: 201
       else
-        render json: @contact.errors.to_json, status: 500
+        render json: @contact.errors.to_json, status: 422
       end
     end
 

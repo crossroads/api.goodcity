@@ -21,6 +21,6 @@ class UnauthorizedController < ActionController::Metal
   def respond
     self.status = warden_options.fetch(:status, 401)
     self.content_type = request.format.to_s
-    self.response_body = { :error => warden_message }.to_json
+    self.response_body = { error: warden_message, status: self.status.to_s }.to_json
   end
 end

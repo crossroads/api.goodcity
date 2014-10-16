@@ -9,7 +9,7 @@ module Api::V1
       if @delivery.save
         render json: @delivery, serializer: serializer, status: 201
       else
-        render json: @delivery.errors.to_json, status: 500
+        render json: @delivery.errors.to_json, status: 422
       end
     end
 

@@ -31,7 +31,7 @@ module Api::V1
       if @address.save
         render json: @address, serializer: serializer, status: 201
       else
-        render json: @address.errors.to_json, status: 500
+        render json: @address.errors.to_json, status: 422
       end
     end
 

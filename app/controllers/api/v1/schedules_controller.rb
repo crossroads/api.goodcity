@@ -18,7 +18,7 @@ module Api::V1
       if @schedule.save
         render json: @schedule, serializer: serializer, status: 201
       else
-        render json: @schedule.errors.to_json, status: 500
+        render json: @schedule.errors.to_json, status: 422
       end
     end
 

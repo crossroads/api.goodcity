@@ -34,7 +34,7 @@ module Api::V1
         store_images
         render json: @item, serializer: serializer, status: 201
       else
-        render json: @item.errors.to_json, status: 500
+        render json: @item.errors.to_json, status: 422
       end
     end
 

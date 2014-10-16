@@ -12,7 +12,7 @@ Apipie.configure do |config|
        #~ username == "test" && password == "supersecretpassword"
     #~ end
   #~ end
-  config.app_info                = "
+  config.app_info                = <<-EOS
   == Getting Started
 
   All links below should be prefixed with http://api.goodcity.hk
@@ -53,9 +53,41 @@ Apipie.configure do |config|
 
   The API will only provide access to objects the user has permission to see.
   For example: when a donor lists all offers, only offers they have created are returned.
-  When a 'Reviewer' views all offers, they will see everything.
+  When a Reviewer views all offers, they will see everything.
 
   == Validation Error Handling
+
+  Validation errors return status <code>422 Unprocessable Entity</code> and often include a json errors hash. For example:
+
+    {
+      errors:
+        {
+          mobile: "is invalid"
+        }
+    }
+
+  == Server responses (non 2XX)
+
+  If you send a request to the server without the correct parameters, the response will be <code>400 Bad Request</code>
+
+    {
+      status: "400"
+      error: "Bad Request"
+    }
+
+  <code>401 Unauthorized</code> errors return the following format:
+
+    {
+      status: "401"
+      error: "Invalid token"
+    }
+
+  If there is a <code>500 Server Error</code>, it will be returned in the following format:
+
+    {
+      status: "500"
+      error: "Internal Server Error"
+    }
 
   == Serialization
 
@@ -65,6 +97,6 @@ Apipie.configure do |config|
 
   Currently no pagination is implemented.
 
-  "
+  EOS
 
 end
