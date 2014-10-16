@@ -8,7 +8,7 @@ class PushOffer < PushService
 
   def notify_review
     @channel = listener_channels
-    @event = 'update_store'
+    @event = "update_store"
     @data = serialize(@offer)
     notify if @channel.any?
   end

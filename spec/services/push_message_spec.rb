@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe PushMessage do
 
@@ -7,7 +7,7 @@ describe PushMessage do
   let(:list_of_users) {create_list(:user,2)}
   let(:channel) {list_of_users.collect{|k| "user_#{k.id}"}}
   let(:push_message) { PushMessage.new({message: serialized_message, channel: channel})}
-  let(:event) { 'update_store'}
+  let(:event) { "update_store"}
   let(:data) {serialize(message)}
 
   context "initialize" do

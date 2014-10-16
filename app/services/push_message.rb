@@ -10,7 +10,7 @@
 
   def notify
     @message.state = "unread"
-    @event = 'update_store'
+    @event = "update_store"
     @data = serialize(@message)
     super
   end

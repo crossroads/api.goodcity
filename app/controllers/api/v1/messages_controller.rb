@@ -4,8 +4,8 @@ module Api::V1
     load_and_authorize_resource :message, parent: false
 
     resource_description do
-      short 'List, show, create and mark_read a message.'
-      formats ['json']
+      short "List, show, create and mark_read a message."
+      formats ["json"]
       error 401, "Unauthorized"
       error 404, "Not Found"
       error 422, "Validation Error"
@@ -24,7 +24,7 @@ module Api::V1
       end
     end
 
-    api :GET, '/v1/messages', "List all messages"
+    api :GET, "/v1/messages", "List all messages"
     param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
     def index
       @messages = Message.current_user_messages(current_user.id)
@@ -34,12 +34,12 @@ module Api::V1
       render json: @messages, each_serializer: serializer
     end
 
-    api :GET, '/v1/messages/1', "List a message"
+    api :GET, "/v1/messages/1", "List a message"
     def show
       render json: @message, serializer: serializer
     end
 
-    api :POST, '/v1/messages', "Create an message"
+    api :POST, "/v1/messages", "Create an message"
     param_group :message
     def create
       @message.attributes = message_params.merge(sender_id: current_user.id)
@@ -51,10 +51,10 @@ module Api::V1
       end
     end
 
-    api :PUT, '/v1/messages/:id/mark_read', 'Mark message as read'
+    api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
     def mark_read
       subscription = @message.subscriptions.find_by_user_id(current_user.id)
-      subscription.update_attribute('state', 'read') if subscription
+      subscription.update_attribute("state", "read") if subscription
       render json: @message, serializer: serializer
     end
 
