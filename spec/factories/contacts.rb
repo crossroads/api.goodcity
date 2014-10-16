@@ -3,6 +3,6 @@
 FactoryGirl.define do
   factory :contact do
     name { Faker::Name.name }
-    mobile { Faker::PhoneNumber.phone_number }
+    mobile { generate(:mobile) }
   end
 end
