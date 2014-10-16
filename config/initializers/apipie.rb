@@ -17,7 +17,16 @@ Apipie.configure do |config|
 
   All links below should be prefixed with http://api.goodcity.hk
 
+  == Architecture / Diagrams (incomplete)
+
+  * {Controllers (brief)}[/doc/controllers_brief.svg]
+  * {Controllers (complete)}[/doc/controllers_complete.svg]
+  * {Models (brief)}[/doc/models_brief.svg]
+  * {Models (complete)}[/doc/models_complete.svg]
+
   == Authentication
+
+  See {/api/docs/v1/authentication.html}[/api/docs/v1/authentication.html]
 
   == Language
 
