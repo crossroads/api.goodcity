@@ -15,6 +15,16 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   subject { JSON.parse(response.body) }
 
+  describe "GET offers" do
+    before { generate_and_set_token(user) }
+    it "return serialized items", :show_in_doc do
+      2.times{ create(:item, offer: offer) }
+      get :index
+      expect(response.status).to eq(200)
+      expect( subject['items'].length ).to eq(2)
+    end
+  end
+
   describe "GET item" do
     before { generate_and_set_token(user) }
     it "return serialized item", :show_in_doc do
@@ -26,10 +36,12 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   describe "DELETE item/1" do
     before { generate_and_set_token(user) }
-    it "should delete draft item" do
+    it "should delete draft item", :show_in_doc do
       delete :destroy, id: item.id
       expect(response.status).to eq(200)
       expect(Item.only_deleted.count).to be_zero
+      body = JSON.parse(response.body)
+      expect(body).to eq( {} )
     end
   end
 

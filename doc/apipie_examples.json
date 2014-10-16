@@ -445,6 +445,110 @@
       "recorded" : true
     }
   ],
+  "items#destroy" : [
+    {
+      "verb" : "DELETE",
+      "path" : "/api/v1/items/775",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "items#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/items",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "packages" : [],
+        "messages" : [],
+        "images" : [],
+        "rejection_reasons" : [
+          {
+            "id" : 742,
+            "name" : "Quality"
+          },
+          {
+            "id" : 743,
+            "name" : "Other"
+          }
+        ],
+        "item_types" : [
+          {
+            "id" : 943,
+            "name" : "Fruit juicer",
+            "code" : "EKJ"
+          },
+          {
+            "id" : 944,
+            "name" : "Anaesthetics",
+            "code" : "MSA"
+          }
+        ],
+        "donor_conditions" : [
+          {
+            "id" : 825,
+            "name" : "Lightly Used"
+          },
+          {
+            "id" : 826,
+            "name" : "Heavily Used"
+          }
+        ],
+        "items" : [
+          {
+            "id" : 780,
+            "donor_description" : "Numquam et quia blanditiis rem.",
+            "donor_condition_id" : 825,
+            "state" : "draft",
+            "offer_id" : 674,
+            "item_type_id" : 943,
+            "rejection_reason_id" : 742,
+            "rejection_other_reason" : "Aliquam quidem voluptatem quasi provident quia explicabo.",
+            "saleable" : false,
+            "created_at" : "2014-10-16T17:14:57.597+08:00",
+            "updated_at" : "2014-10-16T17:14:57.597+08:00",
+            "image_identifiers" : "",
+            "favourite_image" : null,
+            "package_ids" : [],
+            "message_ids" : [],
+            "image_ids" : []
+          },
+          {
+            "id" : 781,
+            "donor_description" : "Eaque quae distinctio sit omnis.",
+            "donor_condition_id" : 826,
+            "state" : "draft",
+            "offer_id" : 674,
+            "item_type_id" : 944,
+            "rejection_reason_id" : 743,
+            "rejection_other_reason" : "Modi sed dolores sunt sit.",
+            "saleable" : false,
+            "created_at" : "2014-10-16T17:14:57.613+08:00",
+            "updated_at" : "2014-10-16T17:14:57.613+08:00",
+            "image_identifiers" : "",
+            "favourite_image" : null,
+            "package_ids" : [],
+            "message_ids" : [],
+            "image_ids" : []
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "items#show" : [
     {
       "verb" : "GET",
