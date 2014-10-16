@@ -17,12 +17,11 @@ Apipie.configure do |config|
 
   All links below should be prefixed with http://api.goodcity.hk
 
-  == Architecture / Diagrams (incomplete)
+  == Architecture / Diagrams
 
-  * {Controllers (brief)}[/doc/controllers_brief.svg]
-  * {Controllers (complete)}[/doc/controllers_complete.svg]
-  * {Models (brief)}[/doc/models_brief.svg]
-  * {Models (complete)}[/doc/models_complete.svg]
+  * {API Controllers and Actions}[/doc/controllers_complete.svg]
+  * {Database Models (overview of relationships)}[/doc/models_brief.svg]
+  * {Database Models (full schema)}[/doc/models_complete.svg]
 
   == Authentication
 
@@ -31,15 +30,16 @@ Apipie.configure do |config|
   == Language
 
   Some taxonomy lists such as ItemTypes, Districts and Territories have Traditional Chinese 中文 translations.
-  When sending an API request, include the following header to set the language. This will return responses
-  that include applicable translations. If no language header is set or the language requested is not available,
-  the API will default to English (en).
+  When sending an API request, include the following header to set the language. This will return translated
+  data (where applicable). If no language header is set or the language requested is not available,
+  the API will default to English.
 
+  The Accept-Language headers allows the following options:
+
+      Accept-Language: en
       Accept-Language: zh-tw
 
-  === Example responses:
-
-  *English*
+  ===English
 
     {
       territory: {
@@ -48,7 +48,7 @@ Apipie.configure do |config|
       }
     }
 
-  *Traditional Chinese*
+  ===Traditional Chinese
 
     {
       territory: {
@@ -60,13 +60,13 @@ Apipie.configure do |config|
 
   == Permissions
 
-  The API will only provide access to objects the user has permission to see.
+  The API will only provide access to objects the authenticated user has permission to see.
   For example: when a donor lists all offers, only offers they have created are returned.
   When a Reviewer views all offers, they will see everything.
 
   == Validation Error Handling
 
-  Validation errors return status <code>422 Unprocessable Entity</code> and often include a json errors hash. For example:
+  Validation errors return status <code>422 Unprocessable Entity</code> and will generally include a json errors attributes hash. For example:
 
     {
       errors:
@@ -100,7 +100,53 @@ Apipie.configure do |config|
 
   == Serialization
 
+  All responses are serialized in JSON format. Objects are serialized using {ActiveModelSerializer}[https://github.com/rails-api/active_model_serializers].
+
+  Partial example:
+
+    {
+      "offer" : {
+        "id" : 1731,
+        "language" : "en",
+        "state" : "draft",
+        "origin" : "web",
+        "stairs" : false,
+        "parking" : false,
+        "estimated_size" : "4"
+      }
+    }
+
+  Please refer to a specific controller for more detailed examples.
+
   == Side-loading
+
+  Objects that contain related data may also include those relationships to reduce the number of API requests required.
+
+  In the following example, an API call has been made to <code>/api/v1/territories/306</code>.
+  The response payload includes both the territory attributes and the related districts.
+
+    {
+      "districts" : [
+        {
+          "id" : 118,
+          "name" : "Shek Kong",
+          "territory_id" : 306
+        },
+        {
+          "id" : 119,
+          "name" : "Tsz Wan Shan",
+          "territory_id" : 306
+        },
+      ],
+      "territory" : {
+        "id" : 306,
+        "name" : "New Territories",
+        "district_ids" : [
+          118,
+          119,
+        ]
+      }
+    }
 
   == Paginiation
 
