@@ -2,7 +2,7 @@ module Api::V1
   class ImagesController < Api::V1::ApiController
 
     resource_description do
-      short 'Generate image signature for Cloudinary service.'
+      short 'Generate image signature for Cloudinary service. You must collect a signature from here and send it to cloudinary during your image upload.'
       formats ['json']
       error 401, "Unauthorized"
       error 500, "Internal Server Error"
@@ -19,6 +19,7 @@ module Api::V1
     end
 
     api :GET, '/v1/images/generate_signature', "Generate image signature for Cloudinary service."
+    description "The signature param returned below should be sent to Cloudinary with each image upload."
     def generate_signature
       unix_timestamp    = Time.now.to_i
       serialized_params = "callback=#{callback}&timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
