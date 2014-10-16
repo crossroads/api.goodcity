@@ -862,57 +862,57 @@
       "response_data" : {
         "addresses" : [
           {
-            "id" : 3170,
-            "street" : "Jan Forges",
-            "flat" : "Apt. 476",
-            "building" : "053",
-            "district_id" : 1730,
-            "addressable_id" : 6198,
+            "id" : 1885,
+            "street" : "Erik Burgs",
+            "flat" : "Apt. 752",
+            "building" : "3329",
+            "district_id" : 2056,
+            "addressable_id" : 1433,
             "addressable_type" : "User"
           },
           {
-            "id" : 3171,
-            "street" : "Joanny Mills",
-            "flat" : "Apt. 319",
-            "building" : "089",
-            "district_id" : 1731,
-            "addressable_id" : 6199,
+            "id" : 1886,
+            "street" : "Schmitt Branch",
+            "flat" : "Suite 949",
+            "building" : "64681",
+            "district_id" : 2057,
+            "addressable_id" : 1434,
             "addressable_type" : "User"
           }
         ],
         "districts" : [
           {
-            "id" : 1730,
-            "name" : "Shau Kei Wan",
-            "territory_id" : 1659
+            "id" : 2056,
+            "name" : "Cyberport",
+            "territory_id" : 1687
           },
           {
-            "id" : 1731,
-            "name" : "Tai Mong Tsai",
-            "territory_id" : 1660
+            "id" : 2057,
+            "name" : "Lohas Park",
+            "territory_id" : 1688
           }
         ],
         "permissions" : [
           {
-            "id" : 1395,
+            "id" : 511,
             "name" : "Reviewer"
           }
         ],
         "users" : [
           {
-            "id" : 6198,
-            "first_name" : "Josie",
-            "last_name" : "Maggio",
-            "mobile" : "11111111",
-            "address_id" : 3170,
-            "permission_id" : 1395
+            "id" : 1433,
+            "first_name" : "Alfredo",
+            "last_name" : "Conroy",
+            "mobile" : "58435538",
+            "address_id" : 1885,
+            "permission_id" : 511
           },
           {
-            "id" : 6199,
-            "first_name" : "Coralie",
-            "last_name" : "Purdy",
-            "mobile" : "9-176-5839 x014",
-            "address_id" : 3171,
+            "id" : 1434,
+            "first_name" : "Sim",
+            "last_name" : "Rau",
+            "mobile" : "56243086",
+            "address_id" : 1886,
             "permission_id" : null
           }
         ]
@@ -925,7 +925,7 @@
   "users#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/users/6196",
+      "path" : "/api/v1/users/1431",
       "versions" : [
         "v1"
       ],
@@ -934,35 +934,35 @@
       "response_data" : {
         "addresses" : [
           {
-            "id" : 3168,
-            "street" : "Haley Corners",
-            "flat" : "Suite 958",
-            "building" : "9064",
-            "district_id" : 1728,
-            "addressable_id" : 6196,
+            "id" : 1883,
+            "street" : "Jeffery Overpass",
+            "flat" : "Apt. 860",
+            "building" : "7531",
+            "district_id" : 2054,
+            "addressable_id" : 1431,
             "addressable_type" : "User"
           }
         ],
         "districts" : [
           {
-            "id" : 1728,
-            "name" : "Chai Wan",
-            "territory_id" : 1658
+            "id" : 2054,
+            "name" : "Lok Ma Chau",
+            "territory_id" : 1686
           }
         ],
         "permissions" : [
           {
-            "id" : 1394,
+            "id" : 510,
             "name" : "Reviewer"
           }
         ],
         "user" : {
-          "id" : 6196,
-          "first_name" : "Aurelia",
-          "last_name" : "Windler",
-          "mobile" : "11111111",
-          "address_id" : 3168,
-          "permission_id" : 1394
+          "id" : 1431,
+          "first_name" : "Guillermo",
+          "last_name" : "Kohler",
+          "mobile" : "90865267",
+          "address_id" : 1883,
+          "permission_id" : 510
         }
       },
       "code" : "200",

@@ -3,7 +3,7 @@ module Api::V1
     load_and_authorize_resource :user, parent: false
 
     resource_description do
-      short 'List Users.'
+      short 'List Users'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
@@ -13,6 +13,10 @@ module Api::V1
 
     api :GET, '/v1/users', "List all users"
     param :ids, Array, of: Integer, desc: "Filter by user ids e.g. ids = [1,2,3,4]"
+    description <<-EOS
+      Note: in accordance with permissions, users will only be able to list users they are allowed to see.
+      For a donor, this will be just themselves. For administrators, this will be all users.
+    EOS
     def index
       @users = @users.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @users, each_serializer: serializer
