@@ -708,6 +708,235 @@
       "recorded" : true
     }
   ],
+  "messages#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/messages",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "message" : {
+          "body" : "Aliquid saepe repellat sunt et porro ut et. Architecto reprehenderit magni autem quia optio quaerat tempora similique. Est rerum ut amet voluptatum.",
+          "recipient" : "9875",
+          "sender" : "9873",
+          "is_private" : false,
+          "state" : "unread",
+          "offer_id" : "3102"
+        }
+      },
+      "response_data" : {
+        "user" : [
+          {
+            "id" : 9873,
+            "first_name" : "Prudence",
+            "last_name" : "Stehr",
+            "mobile" : "11111111",
+            "address_id" : 11986,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 11986,
+            "street" : "Huel Walks",
+            "flat" : "Suite 210",
+            "building" : "222",
+            "district_id" : 1428,
+            "addressable_id" : 9873,
+            "addressable_type" : "User"
+          }
+        ],
+        "districts" : [
+          {
+            "id" : 1428,
+            "name" : "Sham Shui Po",
+            "territory_id" : 1364
+          }
+        ],
+        "permissions" : [],
+        "message" : {
+          "id" : 1063,
+          "body" : "Aliquid saepe repellat sunt et porro ut et. Architecto reprehenderit magni autem quia optio quaerat tempora similique. Est rerum ut amet voluptatum.",
+          "state" : "unread",
+          "recipient_id" : 9873,
+          "sender_id" : 9873,
+          "is_private" : false,
+          "created_at" : "2014-10-10T15:12:49.125Z",
+          "updated_at" : "2014-10-10T15:12:49.125Z",
+          "offer_id" : 3102,
+          "item_id" : null
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "messages#mark_read" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/messages/890/mark_read",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {},
+      "response_data" : {
+        "user" : [
+          {
+            "id" : 8913,
+            "first_name" : "Frederik",
+            "last_name" : "Prohaska",
+            "mobile" : "11111111",
+            "address_id" : 10774,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 10774,
+            "street" : "MyString",
+            "flat" : "MyString",
+            "building" : "MyString",
+            "district_id" : null,
+            "addressable_id" : 8913,
+            "addressable_type" : "User"
+          }
+        ],
+        "districts" : [],
+        "permissions" : [],
+        "message" : {
+          "id" : 890,
+          "body" : "Quia repellat molestiae qui incidunt velit. Consequatur aut ea ipsam vero voluptas. Fugiat enim et numquam iste vel ut iusto.",
+          "state" : "read",
+          "recipient_id" : null,
+          "sender_id" : 8913,
+          "is_private" : false,
+          "created_at" : "2014-10-10T12:49:19.876Z",
+          "updated_at" : "2014-10-10T12:49:19.876Z",
+          "offer_id" : 2752,
+          "item_id" : 3172
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "messages#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/messages/1060",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "user" : [
+          {
+            "id" : 9865,
+            "first_name" : "Alena",
+            "last_name" : "Willms",
+            "mobile" : "11111111",
+            "address_id" : 11974,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 11974,
+            "street" : "Jonas Mews",
+            "flat" : "Apt. 313",
+            "building" : "985",
+            "district_id" : 1416,
+            "addressable_id" : 9865,
+            "addressable_type" : "User"
+          }
+        ],
+        "districts" : [
+          {
+            "id" : 1416,
+            "name" : "To Kwa Wan",
+            "territory_id" : 1358
+          }
+        ],
+        "permissions" : [],
+        "message" : {
+          "id" : 1060,
+          "body" : "Dignissimos unde sit nisi vel repudiandae. Nisi vel quis minus qui ut et omnis eos. Maiores quidem non beatae aperiam porro ut odit.",
+          "state" : null,
+          "recipient_id" : null,
+          "sender_id" : 9865,
+          "is_private" : false,
+          "created_at" : "2014-10-10T15:12:46.244Z",
+          "updated_at" : "2014-10-10T15:12:46.244Z",
+          "offer_id" : 3098,
+          "item_id" : 3441
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/messages/1061",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "user" : [
+          {
+            "id" : 9869,
+            "first_name" : "Alexis",
+            "last_name" : "Ryan",
+            "mobile" : "11111111",
+            "address_id" : 11980,
+            "permission_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 11980,
+            "street" : "Emely Drives",
+            "flat" : "Apt. 015",
+            "building" : "1086",
+            "district_id" : 1422,
+            "addressable_id" : 9869,
+            "addressable_type" : "User"
+          }
+        ],
+        "districts" : [
+          {
+            "id" : 1422,
+            "name" : "To Kwa Wan",
+            "territory_id" : 1361
+          }
+        ],
+        "permissions" : [],
+        "message" : {
+          "id" : 1061,
+          "body" : "Aliquid quis eligendi consequatur quia omnis quae voluptatem. Autem dignissimos rerum necessitatibus ratione modi quae error consectetur. Nostrum sequi non porro voluptates eaque quia aut et.",
+          "state" : null,
+          "recipient_id" : null,
+          "sender_id" : 9869,
+          "is_private" : false,
+          "created_at" : "2014-10-10T15:12:46.987Z",
+          "updated_at" : "2014-10-10T15:12:46.987Z",
+          "offer_id" : 3100,
+          "item_id" : 3442
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 0,
+      "recorded" : true
+    }
+  ],
   "offers#create" : [
     {
       "verb" : "POST",

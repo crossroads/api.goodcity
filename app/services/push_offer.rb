@@ -8,7 +8,7 @@ class PushOffer < PushService
 
   def notify_review
     @channel = listener_channels
-    @event = 'update_store'
+    @event = "update_store"
     @data = serialize(@offer)
     notify if @channel.any?
   end
@@ -22,5 +22,4 @@ class PushOffer < PushService
   def listener_channels
     User.reviewers.map{ |user| "user_#{user.id}" }
   end
-
 end

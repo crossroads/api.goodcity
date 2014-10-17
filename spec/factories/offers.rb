@@ -36,7 +36,6 @@ FactoryGirl.define do
       state      "submitted"
       items      { [create(:item)] }
     end
-
   end
 
 end
