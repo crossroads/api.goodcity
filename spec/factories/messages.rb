@@ -7,7 +7,7 @@ FactoryGirl.define do
     recipient   { |m| m.association(:user) }
     sender      { |m| m.association(:user) }
     is_private  false
-    state       'unread'
+    state       { "unread" }
     offer
     item
 

@@ -2,13 +2,13 @@ require "rails_helper"
 
 describe PushMessage do
 
-  let(:message) { create :message}
-  let(:serialized_message) {Api::V1::MessageSerializer.new(message)}
-  let(:list_of_users) {create_list(:user,2)}
-  let(:channel) {list_of_users.collect{|k| "user_#{k.id}"}}
-  let(:push_message) { PushMessage.new({message: serialized_message, channel: channel})}
+  let(:message) { create :message }
+  let(:serialized_message) { Api::V1::MessageSerializer.new(message) }
+  let(:list_of_users) { create_list(:user,2) }
+  let(:channel) { list_of_users.collect{ |k| "user_#{k.id}"} }
+  let(:push_message) { PushMessage.new(message: serialized_message, channel: channel) }
   let(:event) { "update_store"}
-  let(:data) {serialize(message)}
+  let(:data) { serialize(message) }
 
   context "initialize" do
     it do
