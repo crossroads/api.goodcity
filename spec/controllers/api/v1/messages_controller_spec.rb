@@ -23,10 +23,10 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   end
   let(:event) { "update_store" }
   let(:channel) { "user_#{user.id}" }
-  let(:push_offer) { PushOffer.new({ channel: channel, data: serialized_offer }) }
-  let(:push_message) { PushMessage.new({ message: serialized_message, channel: channel }) }
+  let(:push_offer) { PushOffer.new(channel: channel, data: serialized_offer) }
+  let(:push_message) { PushMessage.new(message: serialized_message, channel: channel) }
   let(:push_service) do
-    PushService.new(channel:channel, event: "update_store", data: serialized_offer)
+    PushService.new(channel: channel, event: "update_store", data: serialized_offer)
   end
 
   describe "GET message" do

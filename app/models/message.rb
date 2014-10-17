@@ -23,9 +23,10 @@ class Message < ActiveRecord::Base
   def self.current_user_messages(current_user, message_id=nil)
     messages_with_state = Message.joins("LEFT OUTER JOIN subscriptions
     ON subscriptions.message_id = messages.id and
-    subscriptions.offer_id = messages.offer_id")
-    .where("subscriptions.user_id=? or subscriptions.user_id is NULL", current_user)
-    .select("messages.*, COALESCE(subscriptions.state, 'never-subscribed') as state")
+    subscriptions.offer_id = messages.offer_id").
+    where("subscriptions.user_id=? or subscriptions.user_id is NULL", current_user).
+    select("messages.*, COALESCE(subscriptions.state, 'never-subscribed') as state")
+
     message_id.blank? ? messages_with_state : (messages_with_state.where("messages.id =?", message_id).first)
   end
 
@@ -95,7 +96,7 @@ class Message < ActiveRecord::Base
   def list_of_reviewer_or_supervisor(sender_permission)
     subscribed_users = offer.subscriptions.subscribed_privileged_users(sender_id)
     # if sender is Reviewer then get data for supervisor and vice-versa
-    admins = sender_permission == "Reviewer"? User.supervisors : User.reviewers
+    admins = sender_permission == "Reviewer" ? User.supervisors : User.reviewers
     if subscribed_users.length === 0
       admins.pluck(:id).map{ |id| "user_#{id}" }
     else
