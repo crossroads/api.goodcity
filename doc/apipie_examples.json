@@ -73,20 +73,29 @@
       "recorded" : true
     }
   ],
-  "authentication#is_unique_mobile_number" : [
+  "api#index" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/auth/check_mobile",
-      "versions" : [
-        "v1"
-      ],
-      "query" : "mobile=%2B85211111111",
+      "path" : "/api/v1/api",
+      "versions" : [],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {},
+      "code" : "404",
+      "show_in_doc" : 0,
+      "recorded" : true
+    },
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/api",
+      "versions" : [],
+      "query" : "",
       "request_data" : null,
       "response_data" : {
-        "is_unique_mobile" : false
+        "error" : "Invalid parameter 'language' value \"test\": Must be one of: en, zh-tw."
       },
-      "code" : "200",
-      "show_in_doc" : 1,
+      "code" : "422",
+      "show_in_doc" : 0,
       "recorded" : true
     }
   ],

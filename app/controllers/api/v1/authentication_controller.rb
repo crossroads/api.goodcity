@@ -134,7 +134,7 @@ module Api::V1
       if warden.authenticated?
         render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserSerializer.new(@user) }
       else
-        throw(:warden, {status: :unauthorized, jwt_token: ""})
+        throw(:warden, { status: 401 })
       end
     end
 
