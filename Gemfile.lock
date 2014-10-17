@@ -6,14 +6,6 @@ GIT
     paranoia (2.0.2)
       activerecord (~> 4.0)
 
-GIT
-  remote: git://github.com/shivanibhanwal/active_model_otp.git
-  revision: aab48b3f1498c82973e3b96bdc9d86400c799981
-  specs:
-    active_model_otp (1.0.0)
-      activemodel
-      rotp
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -30,6 +22,9 @@ GEM
       activesupport (= 4.1.6)
       builder (~> 3.1)
       erubis (~> 2.7.0)
+    active_model_otp (1.1.0)
+      activemodel
+      rotp
     active_model_serializers (0.8.2)
       activemodel (>= 3.0)
     activemodel (4.1.6)
@@ -268,7 +263,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_otp!
+  active_model_otp (~> 1.1.0)
   active_model_serializers (~> 0.8.0)
   airbrake
   annotate
