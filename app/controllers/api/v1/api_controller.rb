@@ -6,6 +6,7 @@ module Api::V1
     rescue_from ActiveRecord::RecordNotFound, with: :not_found
     rescue_from CanCan::AccessDenied, with: :access_denied
     rescue_from Apipie::ParamInvalid, with: :invalid_params
+    rescue_from Apipie::ParamMissing, with: :invalid_params
 
     private
 
