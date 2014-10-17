@@ -52,7 +52,7 @@ describe Message, type: :model do
     it "make a Pusher request to send the message" do
       expect(PushMessage).to receive(:new).with(message: message, channel: channel).and_return(push_message)
       expect(push_message).to receive(:notify).and_return({})
-      PushMessage.new({ message: message, channel: channel }).notify
+      PushMessage.new(message: message, channel: channel).notify
     end
   end
 
@@ -72,7 +72,7 @@ describe Message, type: :model do
     let(:subscription_attributes) { attributes_for(:subscription) }
     let(:subscription) { build :subscription, subscription_attributes }
     it "to message with specified state" do
-      allow(subscription).to receive(:create).with({ state: "read" }).and_return(subscription)
+      allow(subscription).to receive(:create).with(state: "read").and_return(subscription)
       allow(message).to receive(:add_subscription).with("read").and_return(subscription)
       expect(message).to receive(:add_subscription).with("read").and_return(subscription)
       message.add_subscription("read")
