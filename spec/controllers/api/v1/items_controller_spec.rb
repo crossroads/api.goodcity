@@ -25,6 +25,24 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     end
   end
 
+  describe "GET offers" do
+    before { generate_and_set_token(user) }
+    it "return items from offer", :show_in_doc do
+      2.times { create(:item, offer: offer) }
+      create(:offer, :with_items, items_count: 2, created_by: user)
+      get :index, offer_id: offer.id
+      expect(response.status).to eq(200)
+      expect( subject['items'].length ).to eq(2)
+    end
+
+    it "fails to get items from an unauthorized offer", :show_in_doc do
+      2.times { create(:item, offer: offer) }
+      unauthorized_offer = create(:offer, :with_items, items_count: 2)
+      get :index, offer_id: unauthorized_offer.id
+      expect(response).not_to be_success
+    end
+  end
+
   describe "GET item" do
     before { generate_and_set_token(user) }
     it "return serialized item", :show_in_doc do

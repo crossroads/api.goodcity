@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       post "offers" => "offers#create"
       put  "offers/:id" => "offers#update"
       delete "offers/:id" => "offers#destroy"
+      get  "offers/:offer_id/items" => "items#index_by_offer"
       get  "packages" => "packages#index"
       get  "packages/:id" => "packages#show"
       get  "rejection_reasons" => "rejection_reasons#index"

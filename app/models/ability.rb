@@ -9,7 +9,6 @@ class Ability
   def initialize(user)
 
     if user.present?
-
       # Cache repeated queries
       user_id = user.id
       admin = user.admin?
@@ -28,7 +27,7 @@ class Ability
       can [:create, :show, :update], Delivery
 
       # Item
-      can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
+      can [:index, :show, :create, :update, :index_by_offer], Item, offer: { created_by_id: user_id }
       can [:index, :show, :create, :update], Item if reviewer or supervisor
       can :destroy, Item, offer: { created_by_id: user_id }, state: 'draft'
       can :destroy, Item, state: 'draft' if reviewer
