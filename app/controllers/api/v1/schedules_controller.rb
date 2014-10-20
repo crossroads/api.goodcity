@@ -4,6 +4,26 @@ module Api::V1
     skip_before_action :validate_token, only: [:availableTimeSlots]
     load_and_authorize_resource :schedule, parent: false
 
+    resource_description do
+      short "Schedule will help donors to plan their donation pick up."
+      formats ["json"]
+      error 401, "Unauthorized"
+      error 404, "Not Found"
+      error 422, "Validation Error"
+      error 500, "Internal Server Error"
+    end
+
+    def_param_group :schedule do
+      param :schedule, Hash, required: true do
+        param :resource, String, desc: "Transport Type"
+        param :slot, String, desc: "Time slot for the pick up e.g. slot 1 or slot2 etc"
+        param :scheduled_at, String, desc: "Date and time of the pick up e.g Tuesday 23 October 2014, 10:30 am."
+        param :slot_name, String, desc: "Slot timing details e.g. Morning,11am-1pm or Afternoon,2pm-4pmetc"
+        param :zone, String, desc: "zone for selection e.g. East, West, North etc"
+      end
+    end
+
+    api :GET, "/v1/schedules", "List of available schedules for current week"
     def availableTimeSlots
       result_hash = HashWithIndifferentAccess.new(AVAILABLESLOTS).map {|k,v| v}
       @schedules  = result_hash.each_with_index{|k,i|
@@ -13,6 +33,8 @@ module Api::V1
       render json: @schedules
     end
 
+    api :POST, "/v1/schedules", "Make a booking for the pick up"
+    param_group :schedule
     def create
       @schedule.attributes = schedule_params
       if @schedule.save
