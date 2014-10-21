@@ -1,7 +1,8 @@
 module Api::V1
   class ItemsController < Api::V1::ApiController
 
-    load_and_authorize_resource :item, parent: false
+    load_and_authorize_resource :offer
+    load_and_authorize_resource :item, through: :offer, shallow: true
 
     resource_description do
       short 'List, create, update and delete items.'
@@ -43,6 +44,13 @@ module Api::V1
     def index
       @items = @items.with_eager_load # this maintains security
       @items = @items.find(params[:ids].split(",")) if params[:ids].present?
+      render json: @items, each_serializer: serializer
+    end
+
+    api :GET, '/v1/offers/:offer_id/items', "List all the items of an offer"
+    def index_by_offer
+      @offer = Offer.find(params[:offer_id])
+      @items = @items.where(offer: @offer).with_eager_load
       render json: @items, each_serializer: serializer
     end
 
