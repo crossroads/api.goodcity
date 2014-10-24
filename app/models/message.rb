@@ -30,89 +30,63 @@ class Message < ActiveRecord::Base
     message_id.blank? ? messages_with_state : (messages_with_state.where("messages.id =?", message_id).first)
   end
 
-  def notify_message
-    channel_listeners = list_of_listeners
-    if channel_listeners.any?
-      PushMessage.new({message: self, channel: channel_listeners}).notify
-    end
-  end
-
-  def save_with_subscriptions(subscriptions_details={})
+  def save_with_subscriptions()
     save
-    # added sender as subscriber
-    add_subscription(subscriptions_details[:state])
     subscribe_users_to_message
-    notify_message
+    update_ember_store
+    send_new_message_notification
     Message.current_user_messages(sender_id, self.id)
-  end
-
-  def subscribe_users_to_message
-    if (sender_permission.blank? || !is_private?)
-      list_of_users = offer.subscriptions.subscribed_users(sender_id).pluck(:user_id)
-    else
-      list_of_users = offer.subscriptions.subscribed_privileged_users(sender_id).pluck(:user_id)
-    end
-    list_of_users.each do |user_id|
-      add_subscription("unread", user_id)
-    end
-  end
-
-  def self.on_offer_submittion(message_details)
-    message = Message.create(message_details)
-    message.add_subscription("read")
-  end
-
-  def add_subscription(state, user_id=nil)
-    subscriptions.create(state: state,
-      message_id: id,
-      offer_id: offer_id,
-      user_id: user_id || sender_id)
   end
 
   private
 
-  def sender_permission
-    User.find(sender_id).try(:permission).try(:name)
+  def subscribe_users_to_message
+    users_ids = self.offer.subscribed_users(self.is_private).pluck(:id) - [sender_id]
+    users_ids.each do |user_id|
+      subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: user_id)
+    end
+    subscriptions.create(state: self.state, message_id: id, offer_id: offer_id, user_id: sender_id)
+
+    #subscribe donor if not already subscribed
+    if self.is_private && subscriptions.where(user_id: self.offer.created_by_id).empty?
+      subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.created_by_id)
+    end
+  end
+
+  def subscribed_user_channels
+    Channel.users(self.offer.subscribed_users(self.is_private))
+  end
+
+  def send_new_message_notification
+    subscribed_user_channels = subscribed_user_channels()
+    text = self.body.truncate(150, separator: ' ')
+
+    #notify subscribed users except sender
+    channels = subscribed_user_channels - Channel.user(self.sender)
+    if !channels.empty?
+      PushService.send_notification(text, "message", self, channels)
+    end
+
+    #notify all supervisors if no supervisor is subscribed in private thread
+    if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
+      PushService.send_notification(text, "message", self, Channel.supervisor)
+    end
+  end
+
+  def update_ember_store
+    sender_channel = Channel.user(self.sender) #remove sender channel to prevent duplicates
+    subscribed_user_channels = subscribed_user_channels() - sender_channel
+    unsubscribed_user_channels = Channel.users(User.staff) - subscribed_user_channels - sender_channel
+
+    orig_state = self.state
+    self.state = "unread"
+    PushService.update_store(self, nil, subscribed_user_channels)
+    self.state = "never-subscribed"
+    PushService.update_store(self, nil, unsubscribed_user_channels)
+    self.state = orig_state
   end
 
   def set_recipient
     self.recipient_id = offer.created_by_id if offer_id
-  end
-
-  def list_of_listeners
-    case [sender_permission.present?, is_private?]
-    when[true, true]
-      list_of_reviewer_or_supervisor(sender_permission)
-    else
-       subscribed_users = offer.subscriptions.subscribed_users(sender_id)
-      if subscribed_users.length === 0
-        User.reviewers.pluck(:id).map{ |id| "user_#{id}" }
-      else
-        channel_for_subscribed_all_users
-      end
-    end
-  end
-
-  def list_of_reviewer_or_supervisor(sender_permission)
-    subscribed_users = offer.subscriptions.subscribed_privileged_users(sender_id)
-    # if sender is Reviewer then get data for supervisor and vice-versa
-    admins = sender_permission == "Reviewer" ? User.supervisors : User.reviewers
-    if subscribed_users.length === 0
-      admins.pluck(:id).map{ |id| "user_#{id}" }
-    else
-      channel_for_subscribed_privilaged_users()
-    end
-  end
-
-  def channel_for_subscribed_all_users
-    offer.subscriptions.subscribed_users(sender_id).map do |subscriber|
-      "user_#{subscriber.user_id}"
-    end
-  end
-
-  def channel_for_subscribed_privilaged_users
-    offer.subscriptions.subscribed_privileged_users(sender_id).map do |subscriber|
-      "user_#{subscriber.user_id}"
-    end
   end
 end

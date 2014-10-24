@@ -43,7 +43,7 @@ module Api::V1
     param_group :message
     def create
       @message.attributes = message_params.merge(sender_id: current_user.id)
-      @message = @message.save_with_subscriptions({state: params[:message][:state]})
+      @message = @message.save_with_subscriptions()
       if @message
         render json: @message, serializer: serializer, status: 201
       else
@@ -66,7 +66,7 @@ module Api::V1
 
     def message_params
       params.require(:message).permit(:body, :is_private, :recipient_id,
-        :offer_id, :item_id)
+        :offer_id, :item_id, :state)
     end
   end
 end

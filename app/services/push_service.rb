@@ -21,4 +21,29 @@ class PushService
       Pusher.trigger(subarray_of_channels, event, data)
     end
   end
+
+  def self.update_store(data, donor_channel, channel = Channel.staff)
+    pusher = PushService.new({
+      channel: channel,
+      event: "update_store",
+      data: "Api::V1::#{data.class}Serializer".constantize.new(data)
+    })
+    if donor_channel
+      pusher.channel += donor_channel
+    end
+    pusher.notify()
+  end
+
+  #new offer to reviewers
+  #first reviewer message to supervisors
+  #new message to subscribed users
+  #offer status change to donor
+  #item rejected/accepted to donor
+  def self.send_notification(text, entity_type, entity, channel)
+    PushService.new({
+      channel: channel,
+      event: "notification",
+      data: {text: text, entity_type: entity_type, entity: entity, date: Time.now}.to_json
+    }).notify()
+  end
 end
