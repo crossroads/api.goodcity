@@ -28,9 +28,7 @@ class PushService
       event: "update_store",
       data: "Api::V1::#{data.class}Serializer".constantize.new(data)
     })
-    if donor_channel
-      pusher.channel += donor_channel
-    end
+    pusher.channel += donor_channel if donor_channel.present?
     pusher.notify()
   end
 

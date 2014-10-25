@@ -70,9 +70,7 @@ class Offer < ActiveRecord::Base
   private
 
   def update_ember_store
-    if self.state != "draft"
-      PushService.update_store(self, Channel.user(self.created_by))
-    end
+    PushService.update_store(self, Channel.user(self.created_by)) unless state == "draft"
   end
 
   def send_new_offer_notification

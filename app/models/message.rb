@@ -48,7 +48,7 @@ class Message < ActiveRecord::Base
     subscriptions.create(state: self.state, message_id: id, offer_id: offer_id, user_id: sender_id)
 
     #subscribe donor if not already subscribed
-    if self.is_private && subscriptions.where(user_id: self.offer.created_by_id).empty?
+    if !self.is_private && subscriptions.where(user_id: self.offer.created_by_id).empty?
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.created_by_id)
     end
   end
@@ -63,9 +63,7 @@ class Message < ActiveRecord::Base
 
     #notify subscribed users except sender
     channels = subscribed_user_channels - Channel.user(self.sender)
-    if !channels.empty?
-      PushService.send_notification(text, "message", self, channels)
-    end
+    PushService.send_notification(text, "message", self, channels) unless channels.empty?
 
     #notify all supervisors if no supervisor is subscribed in private thread
     if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
@@ -80,9 +78,9 @@ class Message < ActiveRecord::Base
 
     orig_state = self.state
     self.state = "unread"
-    PushService.update_store(self, nil, subscribed_user_channels)
+    PushService.update_store(self, nil, subscribed_user_channels) unless subscribed_user_channels.empty?
     self.state = "never-subscribed"
-    PushService.update_store(self, nil, unsubscribed_user_channels)
+    PushService.update_store(self, nil, unsubscribed_user_channels) unless unsubscribed_user_channels.empty?
     self.state = orig_state
   end
 
