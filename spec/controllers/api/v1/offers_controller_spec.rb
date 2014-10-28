@@ -5,6 +5,7 @@ RSpec.describe Api::V1::OffersController, :type => :controller do
   let(:user) { create(:user_with_token) }
   let(:reviewer) { create(:user, :reviewer) }
   let(:offer) { create(:offer, created_by: user) }
+  let(:submitted_offer) { create(:offer, created_by: user, state: 'submitted') }
   let(:serialized_offer) { Api::V1::OfferSerializer.new(offer) }
   let(:serialized_offer_json) { JSON.parse( serialized_offer.to_json ) }
   let(:allowed_params) { [:language, :origin, :stairs, :parking, :estimated_size, :notes] }
@@ -54,6 +55,18 @@ RSpec.describe Api::V1::OffersController, :type => :controller do
         put :update, id: offer.id, offer: offer_params.merge(extra_params)
         expect(response.status).to eq(200)
         expect(offer.reload).to be_submitted
+      end
+    end
+  end
+
+  describe "PUT offer/1/review" do
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+      it "can review", :show_in_doc do
+        expect(submitted_offer).to be_submitted
+        put :review, id: submitted_offer.id
+        expect(response.status).to eq(200)
+        expect(submitted_offer.reload).to be_under_review
       end
     end
   end

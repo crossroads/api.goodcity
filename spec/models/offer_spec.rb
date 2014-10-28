@@ -54,4 +54,15 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe '.start_review' do
+    it 'should assign reviewer to offer' do
+      reviewer = create(:user, :reviewer)
+      offer = create :offer, state: 'submitted'
+      expect{
+        offer.start_review(reviewer)
+      }.to change(offer, :reviewed_at)
+      expect(offer.reviewed_by).to eq(reviewer)
+    end
+  end
+
 end

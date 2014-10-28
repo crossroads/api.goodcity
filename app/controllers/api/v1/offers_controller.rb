@@ -69,6 +69,20 @@ module Api::V1
       render json: {}
     end
 
+    api :PUT, '/v1/offers/1/review', "Assign reviewer to offer"
+    def review
+      begin
+        raise unless @offer.submitted?
+        Offer.transaction do
+          @offer.lock!
+          @offer.start_review(current_user)
+          render json: @offer, serializer: serializer
+        end
+      rescue
+        render json: @offer, serializer: serializer
+      end
+    end
+
     private
 
     def eager_load_offer
@@ -77,7 +91,6 @@ module Api::V1
 
     def offer_params
       attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event]
-      attributes << :reviewed_by_id if can?(:review, @offer)
       params.require(:offer).permit(attributes)
     end
 

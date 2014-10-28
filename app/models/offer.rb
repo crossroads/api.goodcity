@@ -69,6 +69,12 @@ class Offer < ActiveRecord::Base
     items.update_saleable
   end
 
+  def start_review(reviewer)
+    update_attributes(
+      reviewed_by_id: reviewer.id,
+      state_event: 'start_review')
+  end
+
   private
 
   # Set a default offer language if it hasn't been set already
