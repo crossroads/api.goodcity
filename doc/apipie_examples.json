@@ -1074,6 +1074,101 @@
       "recorded" : true
     }
   ],
+  "offers#review" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/offers/455/review",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {},
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [
+          {
+            "id" : 1084,
+            "first_name" : "Delmer",
+            "last_name" : "Lesch",
+            "mobile" : "54403700",
+            "address_id" : 1438,
+            "permission_id" : null
+          },
+          {
+            "id" : 1083,
+            "first_name" : "Adolph",
+            "last_name" : "Schmitt",
+            "mobile" : "91340346",
+            "address_id" : 1437,
+            "permission_id" : 386
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 1438,
+            "street" : "Batz Villages",
+            "flat" : "Apt. 452",
+            "building" : "080",
+            "district_id" : 1555,
+            "addressable_id" : 1084,
+            "addressable_type" : "User"
+          },
+          {
+            "id" : 1437,
+            "street" : "Grady Villages",
+            "flat" : "Apt. 710",
+            "building" : "83526",
+            "district_id" : 1554,
+            "addressable_id" : 1083,
+            "addressable_type" : "User"
+          }
+        ],
+        "districts" : [
+          {
+            "id" : 1555,
+            "name" : "Jordan",
+            "territory_id" : 1266
+          },
+          {
+            "id" : 1554,
+            "name" : "Sham Tseng",
+            "territory_id" : 1265
+          }
+        ],
+        "permissions" : [
+          {
+            "id" : 386,
+            "name" : "Reviewer"
+          }
+        ],
+        "deliveries" : [],
+        "offer" : {
+          "id" : 455,
+          "language" : "en",
+          "state" : "under_review",
+          "origin" : "web",
+          "stairs" : false,
+          "parking" : true,
+          "estimated_size" : "1",
+          "notes" : "Explicabo voluptatum cumque ad voluptatibus et. Dolores quod velit quia quisquam dolorum pariatur voluptates accusamus. Amet nulla et aut totam. Optio et nesciunt autem reiciendis ut consectetur est voluptatibus. Ut molestias qui dolorum consequatur eum dignissimos.",
+          "created_by_id" : 1084,
+          "created_at" : "2014-10-28T20:39:59.960+08:00",
+          "updated_at" : "2014-10-28T20:40:00.126+08:00",
+          "submitted_at" : null,
+          "user_id" : 1084,
+          "delivery_id" : null,
+          "reviewed_by_id" : 1083,
+          "reviewed_at" : "2014-10-28T20:40:00.125+08:00",
+          "item_ids" : [],
+          "message_ids" : []
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "offers#show" : [
     {
       "verb" : "GET",

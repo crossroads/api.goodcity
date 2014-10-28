@@ -69,7 +69,7 @@ module Api::V1
       render json: {}
     end
 
-    api :PUT, '/v1/offers/1/review', "Assign reviewer to offer"
+    api :PUT, '/v1/offers/1/review', "Assign current_user as reviewer to offer"
     def review
       begin
         raise unless @offer.submitted?
