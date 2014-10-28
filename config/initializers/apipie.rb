@@ -80,21 +80,18 @@ Apipie.configure do |config|
   If you send a request to the server without the correct parameters, the response will be <code>400 Bad Request</code>
 
     {
-      status: "400"
       error: "Bad Request"
     }
 
   <code>401 Unauthorized</code> errors return the following format:
 
     {
-      status: "401"
       error: "Invalid token"
     }
 
   If there is a <code>500 Server Error</code>, it will be returned in the following format:
 
     {
-      status: "500"
       error: "Internal Server Error"
     }
 
