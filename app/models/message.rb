@@ -2,8 +2,6 @@ class Message < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
 
-  attr_accessor :state
-
   belongs_to :recipient, class_name: "User", inverse_of: :messages
   belongs_to :sender, class_name: "User", inverse_of: :sent_messages
   belongs_to :offer, inverse_of: :messages
@@ -15,6 +13,23 @@ class Message < ActiveRecord::Base
   scope :with_eager_load, ->{ eager_load( [:sender] ) }
 
   before_save :set_recipient, unless: "is_private"
+  after_create :after_create
+  after_initialize :init_state
+
+  #state can be accessed on objects returned from current_user_messages but not on new objects
+  #can't use attr_accessor because db retrieved values are stored in @attributes
+  #init_state is used to ensure "state" exists on @attributes for json serialization
+  def init_state
+    self.state = nil unless @attributes.key?("state")
+  end
+
+  def state
+    @attributes["state"]
+  end
+
+  def state=(value)
+    @attributes["state"] = value
+  end
 
   def state_for(current_user)
     Subscription.where("user_id=? and message_id=?", current_user.id, id).first.try(:state)
@@ -30,12 +45,10 @@ class Message < ActiveRecord::Base
     message_id.blank? ? messages_with_state : (messages_with_state.where("messages.id =?", message_id).first)
   end
 
-  def save_with_subscriptions()
-    save
+  def after_create
     subscribe_users_to_message
     update_ember_store
     send_new_message_notification
-    Message.current_user_messages(sender_id, self.id)
   end
 
   private
@@ -63,11 +76,11 @@ class Message < ActiveRecord::Base
 
     #notify subscribed users except sender
     channels = subscribed_user_channels - Channel.user(self.sender)
-    PushService.send_notification(text, "message", self, channels) unless channels.empty?
+    service.send_notification(text: text, entity_type: "message", entity: self, channel: channels) unless channels.empty?
 
     #notify all supervisors if no supervisor is subscribed in private thread
     if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
-      PushService.send_notification(text, "message", self, Channel.supervisor)
+      service.send_notification(text: text, entity_type: "message", entity: self, channel: Channel.supervisor)
     end
   end
 
@@ -78,13 +91,19 @@ class Message < ActiveRecord::Base
 
     orig_state = self.state
     self.state = "unread"
-    PushService.update_store(self, nil, subscribed_user_channels) unless subscribed_user_channels.empty?
+    service.update_store(data: self, channel: subscribed_user_channels) unless subscribed_user_channels.empty?
     self.state = "never-subscribed"
-    PushService.update_store(self, nil, unsubscribed_user_channels) unless unsubscribed_user_channels.empty?
+    service.update_store(data: self, channel: unsubscribed_user_channels) unless unsubscribed_user_channels.empty?
     self.state = orig_state
   end
 
   def set_recipient
     self.recipient_id = offer.created_by_id if offer_id
   end
+
+  private
+  def service
+    PushService.new
+  end
+
 end

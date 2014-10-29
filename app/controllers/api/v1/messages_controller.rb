@@ -42,10 +42,10 @@ module Api::V1
     api :POST, "/v1/messages", "Create an message"
     param_group :message
     def create
-      @message.attributes = message_params.merge(sender_id: current_user.id)
-      @message = @message.save_with_subscriptions()
-      if @message
-        render json: @message, serializer: serializer, status: 201
+      @message.sender_id = current_user.id
+      if @message.save
+        data = Message.current_user_messages(@message.sender_id, @message.id)
+        render json: data, serializer: serializer, status: 201
       else
         render json: @message.errors.to_json, status: 422
       end

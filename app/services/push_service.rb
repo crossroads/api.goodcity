@@ -1,4 +1,4 @@
-# require 'pusher'
+require 'pusher'
 
 class PushService
 
@@ -22,14 +22,12 @@ class PushService
     end
   end
 
-  def self.update_store(data, donor_channel, channel = Channel.staff)
-    pusher = PushService.new({
-      channel: channel,
-      event: "update_store",
-      data: "Api::V1::#{data.class}Serializer".constantize.new(data)
-    })
-    pusher.channel += donor_channel if donor_channel.present?
-    pusher.notify()
+  def update_store(data, donor_channel = nil, channel = Channel.staff)
+    channel += donor_channel if donor_channel.present?
+    @channel = channel
+    @event = "update_store"
+    @data = "Api::V1::#{data.class}Serializer".constantize.new(data)
+    notify
   end
 
   #new offer to reviewers
@@ -37,11 +35,10 @@ class PushService
   #new message to subscribed users
   #offer status change to donor
   #item rejected/accepted to donor
-  def self.send_notification(text, entity_type, entity, channel)
-    PushService.new({
-      channel: channel,
-      event: "notification",
-      data: {text: text, entity_type: entity_type, entity: entity, date: Time.now}.to_json
-    }).notify()
+  def send_notification(text, entity_type, entity, channel)
+    @channel = channel
+    @event = "notification"
+    @data = {text: text, entity_type: entity_type, entity: entity, date: Time.now}.to_json
+    notify
   end
 end

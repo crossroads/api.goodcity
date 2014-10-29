@@ -2,6 +2,8 @@ require "rails_helper"
 
 RSpec.describe Offer, type: :model do
 
+  before { allow_any_instance_of(PushService).to receive(:update_store) }
+  before { allow_any_instance_of(PushService).to receive(:send_notification) }
   let(:offer) { create :offer }
 
   it_behaves_like "paranoid"
@@ -33,8 +35,6 @@ RSpec.describe Offer, type: :model do
   end
 
   it "should set submitted_at when submitted" do
-    create(:user, :reviewer) # needed for message sending
-    expect(Pusher).to receive(:trigger)
     expect( offer.submitted_at ).to be_nil
     offer.update_attributes(state_event: "submit")
     expect( offer.submitted_at ).to_not be_nil

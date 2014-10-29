@@ -3,6 +3,8 @@ require 'cancan/matchers'
 
 describe "Message abilities" do
 
+  before { allow_any_instance_of(PushService).to receive(:update_store) }
+  before { allow_any_instance_of(PushService).to receive(:send_notification) }
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:sender)      { create :user }

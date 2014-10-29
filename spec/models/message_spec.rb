@@ -1,14 +1,23 @@
 require "rails_helper"
 
 describe Message, type: :model do
-  let(:user) { create :user }
-  let(:message) { create :message }
-  let(:list_of_users) { create_list(:user,2) }
-  let(:channel) { list_of_users.collect{ |k| "user_#{ k.id }" } }
-  let(:offer) { create :offer }
-  let(:item)  { create :item }
-  let(:subscription)  { create :subscription }
-  let(:serialized_message) { Api::V1::MessageSerializer.new(message) }
+
+  before { allow_any_instance_of(PushService).to receive(:update_store) }
+  before { allow_any_instance_of(PushService).to receive(:send_notification) }
+  let(:donor) { create :user }
+  let(:reviewer) { create :user, :reviewer }
+  let(:offer) { create :offer, created_by_id: donor.id }
+  let(:item)  { create :item, offer_id: offer.id }
+
+  def create_message(options = {})
+    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
+    create :message, options
+  end
+
+  def build_message(options = {})
+    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
+    build :message, options
+  end
 
   describe "Associations" do
     it { should belong_to :recipient }
@@ -19,74 +28,101 @@ describe Message, type: :model do
     it { should have_many :offers_subscription }
   end
 
-  describe ".current_user_messages" do
+  describe "current_user_messages" do
     it "returns message object with current user message state" do
-      message
-      expect(message.state).not_to be_nil
+      ["read", "unread"].each do |state|
+        message = create_message(state: state)
+        returned_message = Message.current_user_messages(donor.id, message.id)
+        expect(returned_message.state).to eq(message.state)
+      end
     end
   end
 
-  describe ".on_offer_submittion" do
-    let(:message_details) do
-      { body: "I have made an offer.", sender_id: user.id, is_private: false,
-      offer_id: offer.id }
-    end
-    let(:update_message) { build(:message, message_details) }
-    let(:subscription) do
-      create :subscription, { state: "read", offer_id: offer.id, user_id: user.id,
-      message_id: update_message.id }
+  describe "subscribe_users_to_message" do
+    it "sender subscription state matches message state" do
+      ["read", "unread"].each do |state|
+        message = create_message(sender_id: donor.id, state: state)
+        expect(message.subscriptions.count).to eq(1)
+        expect(message.subscriptions).to include(have_attributes(user_id: donor.id, state: state))
+      end
     end
 
-    it "make sender  subscription state as read" do
-      allow(update_message).to receive(:create).with(message_details).and_return(update_message)
-      allow(update_message).to receive(:add_subscription).with("read").and_return(subscription)
-      expect(update_message).to receive(:add_subscription).with("read")
-      res = update_message.add_subscription("read")
-      expect(res).to eq(subscription)
+    it "subscribe donor if not already subscribed to reviewer sent message" do
+      expect(offer.subscriptions.count).to eq(0)
+      message = create_message(sender_id: reviewer.id)
+      expect(message.subscriptions.count).to eq(2)
+      expect(message.subscriptions).to include(have_attributes(user_id: donor.id))
     end
-  end
 
-  describe "#notify_message"do
-    let(:push_message) { PushMessage.new(message: message, channel: channel) }
-
-    it "make a Pusher request to send the message" do
-      expect(PushMessage).to receive(:new).with(message: message, channel: channel).and_return(push_message)
-      expect(push_message).to receive(:notify).and_return({})
-      PushMessage.new(message: message, channel: channel).notify
+    it "subscribes users to message in unread state" do
+      message1 = create_message(sender_id: donor.id)
+      message2 = create_message(sender_id: reviewer.id)
+      expect(message2.subscriptions.count).to eq(2)
+      expect(message2.subscriptions).to include(have_attributes(user_id: donor.id, state: "unread"))
     end
   end
 
-  describe "#save_with_subscriptions" do
-    let(:new_message) { build(:message) }
-    let(:subscriptions_details) { { state: "unread" } }
-    it "create new message with state unread" do
-      allow(new_message).to receive(:add_subscription).with("unread")
-      allow(new_message).to receive(:subscribe_users_to_message)
-      allow(new_message).to receive(:notify_message)
-      expect(new_message).to receive(:save_with_subscriptions).with(subscriptions_details).and_return(new_message)
-      new_message.save_with_subscriptions(subscriptions_details)
+  describe "send_new_message_notification" do
+    it "notify subscribed users except sender" do
+      message1 = create_message(sender_id: donor.id)
+      message2 = build_message(sender_id: reviewer.id, body: "Sample message")
+      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, args|
+        expect(args[:text]).to eq("Sample message")
+        expect(args[:entity_type]).to eq("message")
+        expect(args[:entity]).to eq(message2)
+        expect(args[:channel]).to eq(["user_#{donor.id}"])
+      end
+      message2.save
+    end
+
+    it "donor is not notified for private messages" do
+      supervisor = create :user, :supervisor
+      message1 = create_message(sender_id: donor.id)
+      message2 = create_message(sender_id: supervisor.id, is_private: true)
+      message3 = build_message(sender_id: reviewer.id, is_private: true)
+      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, args|
+        expect(args[:entity]).to eq(message3)
+        expect(args[:channel]).to_not include(["user_#{donor.id}"])
+      end
+      message3.save
+    end
+
+    it "notify all supervisors if no supervisor is subscribed in private thread" do
+      message = build_message(sender_id: reviewer.id, body: "Sample message", is_private: true)
+      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, args|
+        expect(args[:channel]).to eq(["supervisor"])
+      end
+      message.save
     end
   end
 
-  describe "#add_subscription" do
-    let(:subscription_attributes) { attributes_for(:subscription) }
-    let(:subscription) { build :subscription, subscription_attributes }
-    it "to message with specified state" do
-      allow(subscription).to receive(:create).with(state: "read").and_return(subscription)
-      allow(message).to receive(:add_subscription).with("read").and_return(subscription)
-      expect(message).to receive(:add_subscription).with("read").and_return(subscription)
-      message.add_subscription("read")
-    end
-  end
+  describe "update_ember_store" do
+    let(:pusher) {
+      pusher = PushService.new
+      allow(pusher).to receive(:update_store)
+      allow(pusher).to receive(:send_notification)
+      pusher
+    }
+    it do
+      unsubscribed_user = create :user, :reviewer
+      subscribed_user = create :user, :reviewer
+      create_message(sender_id: subscribed_user.id)
 
-  describe "#subscribe_users_to_message" do
-    let(:public_sub) { offer.subscriptions }
-    let(:sender) { create :user }
+      message = build_message(sender_id: donor.id)
+      allow(message).to receive(:service).and_return(pusher)
 
-    it "donor can send public message only" do
-      allow(public_sub).to receive(:subscribed_users).with(sender.id)
-      expect(public_sub).to receive(:subscribed_users).with(sender.id)
-      offer.subscriptions.subscribed_users(sender.id)
+      #note unfortunately expect :update_store is working here based on the order it's called in code
+      expect(pusher).to receive(:update_store) do |args|
+        expect(args[:channel]).to eq(["user_#{subscribed_user.id}"])
+        expect(args[:data][:state]).to eq("unread")
+      end
+
+      expect(pusher).to receive(:update_store) do |args|
+        expect(args[:channel]).to eq(["user_#{unsubscribed_user.id}"])
+        expect(args[:data][:state]).to eq("never-subscribed")
+      end
+
+      message.save
     end
   end
 end

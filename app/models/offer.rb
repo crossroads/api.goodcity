@@ -70,12 +70,12 @@ class Offer < ActiveRecord::Base
   private
 
   def update_ember_store
-    PushService.update_store(self, Channel.user(self.created_by)) unless state == "draft"
+    PushService.new.update_store(data: self, donor_channel: Channel.user(self.created_by)) unless state == "draft"
   end
 
   def send_new_offer_notification
     text = I18n.t("notification.new_offer", name: self.created_by.full_name)
-    PushService.send_notification(text, "offer", self, Channel.reviewer)
+    PushService.new.send_notification(text: text, entity_type: "offer", entity: self, channel: Channel.reviewer)
   end
 
   # Set a default offer language if it hasn't been set already
