@@ -52,7 +52,7 @@ describe PushService do
     it do
       expect(service).to receive(:notify)
 
-      service.update_store(offer, [one_channel])
+      service.update_store(data: offer, donor_channel: [one_channel])
 
       expect(service.data.as_json).to eq(data.as_json)
       expect(service.channel).to eq(Channel.staff + [one_channel])
@@ -68,7 +68,7 @@ describe PushService do
 
       expect(service).to receive(:notify)
 
-      service.send_notification(text, entity_type, entity, [one_channel])
+      service.send_notification(text: text, entity_type: entity_type, entity: entity, channel: [one_channel])
 
       data = JSON.parse(service.data)
       expect(data["text"]).to eq(text)
