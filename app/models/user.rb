@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
   scope :donors,      -> { where( permission_id: nil ) }
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
+  scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin

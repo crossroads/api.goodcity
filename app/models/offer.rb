@@ -1,7 +1,6 @@
 class Offer < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
-  MESSAGE_FROM_DONOR = "I have made an offer."
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
 
@@ -52,30 +51,39 @@ class Offer < ActiveRecord::Base
       offer.reviewed_at = Time.now
     end
 
-    after_transition :on => :submit, :do => :review_message
+    after_transition :on => :submit, :do => :send_new_offer_notification
   end
 
-  def review_message
-    PushOffer.new( offer: self ).notify_review
-    Message.on_offer_submittion({
-           body: MESSAGE_FROM_DONOR,
-           sender_id: self.created_by_id,
-           is_private: false,
-           offer_id: self.id
-      })
-  end
+  after_save :update_ember_store
 
   def update_saleable_items
     items.update_saleable
   end
 
+  def subscribed_users(is_private)
+    User
+      .joins(subscriptions: [:offer, :message])
+      .where(offers: {id: self.id}, messages: {is_private: is_private})
+      .distinct
+  end
+  
   def start_review(reviewer)
     update_attributes(
       reviewed_by_id: reviewer.id,
       state_event: 'start_review')
   end
 
+
   private
+
+  def update_ember_store
+    PushService.new.update_store(data: self, donor_channel: Channel.user(self.created_by)) unless state == "draft"
+  end
+
+  def send_new_offer_notification
+    text = I18n.t("notification.new_offer", name: self.created_by.full_name)
+    PushService.new.send_notification(text: text, entity_type: "offer", entity: self, channel: Channel.reviewer)
+  end
 
   # Set a default offer language if it hasn't been set already
   def set_language
