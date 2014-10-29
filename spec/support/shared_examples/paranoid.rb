@@ -1,6 +1,6 @@
 shared_examples 'paranoid' do
   describe "#recover" do
-    let!(:record) { create ("paranoid_#{described_class.to_s.downcase}").to_sym }
+    let!(:record) { create("#{described_class.to_s.downcase}", :paranoid) }
 
     it "recovery of records" do
       record.destroy

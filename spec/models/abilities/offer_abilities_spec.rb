@@ -3,6 +3,8 @@ require 'cancan/matchers'
 
 describe "Offer abilities" do
 
+  before { allow_any_instance_of(PushService).to receive(:update_store) }
+  before { allow_any_instance_of(PushService).to receive(:send_notification) }
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
@@ -43,7 +45,7 @@ describe "Offer abilities" do
     end
 
     context "and offer is submitted" do
-      let(:offer)     { create :offer, state: 'submitted' }
+      let(:offer)     { create :offer, state: 'submitted', created_by: create(:user) }
       let(:can)       { [:index, :show, :create, :update] }
       let(:cannot)    { [:destroy, :manage] }
       it{ can.each do |do_action|

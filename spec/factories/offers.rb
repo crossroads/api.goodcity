@@ -10,7 +10,7 @@ FactoryGirl.define do
     parking        { [false, true].sample }
     estimated_size { [1,2,3,4].sample.to_s }
     notes          { Faker::Lorem.paragraph }
-    created_by_id  { build(:user).id }
+    created_by     {|m| m.association(:user) }
     reviewed_by_id nil
     reviewed_at    nil
 
@@ -32,7 +32,7 @@ FactoryGirl.define do
       end
     end
 
-    factory :paranoid_offer do
+    trait :paranoid do
       state      "submitted"
       items      { [create(:item)] }
     end

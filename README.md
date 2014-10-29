@@ -36,6 +36,7 @@ Simply run
 For individual specs, use rspec
 
     rspec spec/serializers
+    rspec spec/serializers/district_serializer_spec.rb:9
 
 ## Deployment
 
