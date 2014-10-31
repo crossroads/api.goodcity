@@ -12,10 +12,6 @@ module Api::V1
     has_one  :created_by, serializer: UserSerializer, root: :user
     has_one  :reviewed_by, serializer: UserSerializer, root: :user
     has_one  :delivery, serializer: DeliverySerializer
-
-    def messages
-      Message.current_user_messages(current_user.id).where(offer_id: object.id).with_eager_load
-    end
   end
 
 end

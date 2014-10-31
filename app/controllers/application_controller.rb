@@ -21,6 +21,7 @@ class ApplicationController < ActionController::API
         user_id = token.data['user_id']
         user = User.find_by_id(user_id) if user_id.present?
       end
+      User.current = user
       user
     end
   end

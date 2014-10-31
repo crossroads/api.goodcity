@@ -72,6 +72,14 @@ class User < ActiveRecord::Base
     TwilioService.new(self).sms_verification_pin
   end
 
+  def self.current
+    Thread.current[:user]
+  end
+
+  def self.current=(user)
+    Thread.current[:user] = user
+  end
+
   private
 
   def generate_auth_token

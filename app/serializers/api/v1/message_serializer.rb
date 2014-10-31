@@ -9,9 +9,5 @@ module Api::V1
 
     has_one :sender, serializer: UserSerializer, root: :user
 
-    def state
-      object.state || object.state_for(current_user)
-    end
-
   end
 end
