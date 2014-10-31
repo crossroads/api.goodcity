@@ -7,16 +7,12 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:user) { create(:user_with_token) }
   let(:reviewer) { create(:user, :reviewer) }
   let(:offer) { create(:offer, created_by: user) }
-  let(:message) { create(:message_donor_to_reviewer, sender: user, state: "") }
-  let(:subscription) do
-    create(:offer_subscription, user_id: user.id, offer_id: offer.id,
-    message_id: message.id)
-  end
+  let(:message) { create :message, sender: user, offer: offer }
+  let(:subscription) { message.subscriptions.where(user_id: user.id).first }
   let(:serialized_message) { Api::V1::MessageSerializer.new(message) }
   let(:serialized_message_json) { JSON.parse(serialized_message.to_json) }
   let(:message_params) do
-    FactoryGirl.attributes_for(:message_donor_to_reviewer, sender: user.id,
-    recipient: reviewer.id, offer_id: offer.id )
+    FactoryGirl.attributes_for(:message, sender: user.id, offer_id: offer.id )
   end
 
   describe "GET message" do

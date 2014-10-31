@@ -4,11 +4,10 @@ module Api::V1
 
     embed :ids, include: true
 
-    attributes :id, :body, :state, :recipient_id, :sender_id,
+    attributes :id, :body, :state, :sender_id,
       :is_private, :created_at, :updated_at, :offer_id, :item_id
 
     has_one :sender, serializer: UserSerializer, root: :user
-    has_one :recipient, serializer: UserSerializer, root: :user
 
     def state
       current_user = scope || object.sender

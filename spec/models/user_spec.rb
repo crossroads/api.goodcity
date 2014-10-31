@@ -14,7 +14,6 @@ describe User, :type => :model do
     it { should have_many :auth_tokens }
     it { should have_many :offers }
     it { should have_many :messages }
-    it { should have_many :sent_messages }
     it { should belong_to :permission }
     it { should have_one  :address }
   end

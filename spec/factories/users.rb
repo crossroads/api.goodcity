@@ -1,7 +1,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :user, aliases: [:sender, :recipient] do
+  factory :user, aliases: [:sender] do
     association :address
 
     first_name { Faker::Name.first_name }
