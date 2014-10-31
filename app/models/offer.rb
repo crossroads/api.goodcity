@@ -16,7 +16,7 @@ class Offer < ActiveRecord::Base
   accepts_nested_attributes_for :subscriptions
 
   scope :with_eager_load, -> {
-    eager_load( [:created_by, { messages: :sender },
+    includes ( [:created_by, :reviewed_by, { delivery: :schedule }, { messages: :sender },
       { items: [:item_type, :rejection_reason, :donor_condition, :images,
                { messages: :sender }, { packages: :package_type }] }
     ])
@@ -66,7 +66,7 @@ class Offer < ActiveRecord::Base
       .where(offers: {id: self.id}, messages: {is_private: is_private})
       .distinct
   end
-  
+
   def start_review(reviewer)
     update_attributes(
       reviewed_by_id: reviewer.id,

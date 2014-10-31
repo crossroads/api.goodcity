@@ -9,7 +9,15 @@ class Message < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
-  scope :with_eager_load, ->{ eager_load( [:sender] ) }
+  scope :with_eager_load, ->{ includes( [:sender] ) }
+
+  #select messages with current user state
+  default_scope {
+    raise "Message default_scope User.current is nil" if User.current.nil?
+
+    joins("left join subscriptions s on s.message_id = messages.id and s.user_id = #{User.current.id}")
+      .select("messages.*, coalesce(s.state, 'never-subscribed') as state")
+  }
 
   after_create do
     subscribe_users_to_message
@@ -19,7 +27,7 @@ class Message < ActiveRecord::Base
 
   after_initialize :init_state
 
-  #state can be accessed on objects returned from current_user_messages but not on new objects
+  #state can be accessed on objects returned from db due to default_scope but not on new objects
   #can't use attr_accessor because db retrieved values are stored in @attributes
   #init_state is used to ensure "state" exists on @attributes for json serialization
   def init_state
@@ -32,20 +40,6 @@ class Message < ActiveRecord::Base
 
   def state=(value)
     @attributes["state"] = value
-  end
-
-  def state_for(current_user)
-    Subscription.where("user_id=? and message_id=?", current_user.id, id).first.try(:state)
-  end
-
-  def self.current_user_messages(current_user, message_id=nil)
-    messages_with_state = Message.joins("LEFT OUTER JOIN subscriptions
-    ON subscriptions.message_id = messages.id and
-    subscriptions.offer_id = messages.offer_id").
-    where("subscriptions.user_id=? or subscriptions.user_id is NULL", current_user).
-    select("messages.*, COALESCE(subscriptions.state, 'never-subscribed') as state")
-
-    message_id.blank? ? messages_with_state : (messages_with_state.where("messages.id =?", message_id).first)
   end
 
   private
