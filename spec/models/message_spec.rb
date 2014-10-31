@@ -27,11 +27,12 @@ describe Message, type: :model do
     it { should have_many :offers_subscription }
   end
 
-  describe "current_user_messages" do
+  describe "default_scope" do
     it "returns message object with current user message state" do
+      User.current = donor
       ["read", "unread"].each do |state|
         message = create_message(state: state)
-        returned_message = Message.current_user_messages(donor.id, message.id)
+        returned_message = Message.find(message.id)
         expect(returned_message.state).to eq(message.state)
       end
     end
