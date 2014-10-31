@@ -7,6 +7,7 @@ class ApplicationController < ActionController::API
 
   before_action :set_locale
   helper_method :current_user
+  before_filter :current_user #User.current is required to be set for OffersController.before_filter
 
   private
 
@@ -21,6 +22,7 @@ class ApplicationController < ActionController::API
         user_id = token.data['user_id']
         user = User.find_by_id(user_id) if user_id.present?
       end
+      User.current = user
       user
     end
   end

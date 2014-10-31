@@ -3,8 +3,8 @@ module Api::V1
   class ItemSerializer < ActiveModel::Serializer
     embed :ids, include: true
 
-    attributes :id, :donor_description, :donor_condition_id, :state, :offer_id,
-      :item_type_id, :rejection_reason_id, :rejection_other_reason, :saleable,
+    attributes :id, :donor_description, :state, :offer_id,
+      :rejection_other_reason, :saleable,
       :created_at, :updated_at, :image_identifiers, :favourite_image
 
     has_many :packages, serializer: PackageSerializer
@@ -15,15 +15,11 @@ module Api::V1
     has_one  :donor_condition, serializer: DonorConditionSerializer
 
     def image_identifiers
-      # This can take advantage of eager loaded images but sacrifices 'separation of concerns'
-      # object.images.map(&:image_id).join(',')
-      object.images.image_identifiers.join(',')
+      object.images.map(&:image_id).join(',')
     end
 
     def favourite_image
-      # This can take advantage of eager loaded images but sacrifices 'separation of concerns'
-      # object.images.select(&:favourite).first.try(:image_id)
-      object.images.favourites.image_identifiers.first
+      object.images.select(&:favourite).first.try(:image_id)
     end
   end
 

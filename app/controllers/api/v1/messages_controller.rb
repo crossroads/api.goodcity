@@ -26,8 +26,7 @@ module Api::V1
     api :GET, "/v1/messages", "List all messages"
     param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
     def index
-      @messages = Message.current_user_messages(current_user.id)
-      @messages = @messages.where( id: params[:ids].split(",") ) if params[:ids].present?
+      @messages = Message.where( id: params[:ids].split(",") ) if params[:ids].present?
       @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
       @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
       render json: @messages, each_serializer: serializer
@@ -43,7 +42,7 @@ module Api::V1
     def create
       @message.sender_id = current_user.id
       if @message.save
-        data = Message.current_user_messages(@message.sender_id, @message.id)
+        data = Message.find(@message.id)
         render json: data, serializer: serializer, status: 201
       else
         render json: @message.errors.to_json, status: 422

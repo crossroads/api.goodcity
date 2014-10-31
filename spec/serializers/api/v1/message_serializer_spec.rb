@@ -13,13 +13,4 @@ describe Api::V1::MessageSerializer do
     expect(json["message"]["is_private"]).to eql(message.is_private)
     expect(json["message"]["sender_id"]).to eql(message.sender_id)
   end
-
-  context "state" do
-    let(:user) { create(:user) }
-    it do
-      current_user = user || message.sender
-      expect(current_user).to eql(user)
-      expect(json["message"]["state"]).to eql(message.state_for(current_user) || message.state)
-    end
-  end
 end
