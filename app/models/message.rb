@@ -11,9 +11,10 @@ class Message < ActiveRecord::Base
 
   scope :with_eager_load, ->{ includes( [:sender] ) }
 
+  #select messages with current user state
   default_scope {
-    joins("LEFT OUTER JOIN subscriptions ON subscriptions.message_id = messages.id and subscriptions.user_id = #{User.current.id}")
-      .select("messages.*, COALESCE(subscriptions.state, 'never-subscribed') as state")
+    joins("left join subscriptions s on s.message_id = messages.id and s.user_id = #{User.current.id}")
+      .select("messages.*, coalesce(s.state, 'never-subscribed') as state")
   }
 
   after_create do
