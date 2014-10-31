@@ -7,7 +7,7 @@ class ApplicationController < ActionController::API
 
   before_action :set_locale
   helper_method :current_user
-  before_filter :current_user #User.current is required to be set for OffersController.before_filter
+  before_filter :current_user # User.current is required to be set for OffersController.before_filter
 
   private
 
