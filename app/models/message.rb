@@ -11,7 +11,12 @@ class Message < ActiveRecord::Base
 
   scope :with_eager_load, ->{ eager_load( [:sender] ) }
 
-  after_create :after_create
+  after_create do
+    subscribe_users_to_message
+    update_ember_store
+    send_new_message_notification
+  end
+
   after_initialize :init_state
 
   #state can be accessed on objects returned from current_user_messages but not on new objects
@@ -41,12 +46,6 @@ class Message < ActiveRecord::Base
     select("messages.*, COALESCE(subscriptions.state, 'never-subscribed') as state")
 
     message_id.blank? ? messages_with_state : (messages_with_state.where("messages.id =?", message_id).first)
-  end
-
-  def after_create
-    subscribe_users_to_message
-    update_ember_store
-    send_new_message_notification
   end
 
   private
