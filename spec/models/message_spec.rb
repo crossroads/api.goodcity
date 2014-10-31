@@ -20,7 +20,6 @@ describe Message, type: :model do
   end
 
   describe "Associations" do
-    it { should belong_to :recipient }
     it { should belong_to :sender }
     it { should belong_to :offer }
     it { should belong_to :item }

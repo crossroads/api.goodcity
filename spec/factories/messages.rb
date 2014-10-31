@@ -4,7 +4,6 @@ FactoryGirl.define do
 
   factory :message do
     body        { Faker::Lorem.paragraph }
-    recipient   { |m| m.association(:user) }
     sender      { |m| m.association(:user) }
     is_private  false
     state       { "unread" }
@@ -29,43 +28,4 @@ FactoryGirl.define do
     end
   end
 
-  factory :message_donor_to_reviewer, parent: :message do
-    is_private false
-    recipient   { |m| m.association(:user, :reviewer) }
-    subscribe_to_message
-  end
-
-  factory :message_donor_to_supervisor, parent: :message do
-    is_private false
-    recipient   { |m| m.association(:user, :supervisor) }
-    subscribe_to_message
-  end
-
-  factory :message_reviewer_to_donor, parent: :message do
-    is_private false
-    reviewer_message
-    subscribe_to_message
-  end
-
-  factory :message_supervisor_to_donor, parent: :message do
-    is_private false
-    supervisor_message
-    subscribe_to_message
-  end
-
-  factory :message_reviewer_to_supervisor, parent: :message do
-    is_private true
-    recipient   { |m| m.association(:supervisor) }
-    reviewer_message
-    subscribe_to_message
-  end
-
-  factory :message_supervisor_to_reviewer, parent: :message do
-    is_private true
-    recipient   { |m| m.association(:reviewer) }
-    supervisor_message
-    subscribe_to_message
-  end
-
 end
-

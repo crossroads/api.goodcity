@@ -28,7 +28,7 @@ FactoryGirl.define do
         messages_count 1
       end
       after(:create) do |offer, evaluator|
-        create_list(:message, evaluator.messages_count, sender: offer.created_by, recipient: offer.created_by, offer: offer)
+        create_list(:message, evaluator.messages_count, sender: offer.created_by, offer: offer)
       end
     end
 

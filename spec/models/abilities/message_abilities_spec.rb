@@ -8,9 +8,8 @@ describe "Message abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:sender)      { create :user }
-  let(:recipient)   { create :user }
   let(:is_private)     { false }
-  let(:message)     { create :message, sender: sender, recipient: recipient, is_private: is_private }
+  let(:message)     { create :message, is_private: is_private }
 
   #~ before { expect(Pusher).to receive(:trigger) }
 
@@ -76,24 +75,9 @@ describe "Message abilities" do
   end
 
   context "when Owner" do
+    let(:offer) { create :offer, created_by: sender}
+    let(:message)     { create :message, is_private: is_private, offer: offer }
     context "is sender" do
-      let(:user)   { sender }
-      context "and message is not is_private" do
-        let(:can)    { [:index, :show, :create] }
-        let(:cannot) { [:update, :destroy, :manage] }
-        it{ can.each do |do_action|
-          should be_able_to(do_action, message)
-        end}
-        it{ cannot.each do |do_action|
-          should_not be_able_to(do_action, message)
-        end}
-      end
-      context "and message is is_private" do
-        let(:is_private) { true }
-        it{ all_actions.each { |do_action| should_not be_able_to(do_action, message) } }
-      end
-    end
-    context "is recipient" do
       let(:user)   { sender }
       context "and message is not is_private" do
         let(:can)    { [:index, :show, :create] }

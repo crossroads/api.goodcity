@@ -2,8 +2,7 @@ class Message < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
 
-  belongs_to :recipient, class_name: "User", inverse_of: :messages
-  belongs_to :sender, class_name: "User", inverse_of: :sent_messages
+  belongs_to :sender, class_name: "User", inverse_of: :messages
   belongs_to :offer, inverse_of: :messages
   belongs_to :item, inverse_of: :messages
 
@@ -12,7 +11,6 @@ class Message < ActiveRecord::Base
 
   scope :with_eager_load, ->{ eager_load( [:sender] ) }
 
-  before_save :set_recipient, unless: "is_private"
   after_create :after_create
   after_initialize :init_state
 
@@ -95,10 +93,6 @@ class Message < ActiveRecord::Base
     self.state = "never-subscribed"
     service.update_store(data: self, channel: unsubscribed_user_channels) unless unsubscribed_user_channels.empty?
     self.state = orig_state
-  end
-
-  def set_recipient
-    self.recipient_id = offer.created_by_id if offer_id
   end
 
   private

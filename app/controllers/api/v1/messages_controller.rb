@@ -15,8 +15,7 @@ module Api::V1
     def_param_group :message do
       param :message, Hash, require: true do
         param :body,String, desc: "Message body", allow_nil: true
-        param :recipient, String, desc: "Message received by",  allow_nil: true
-        param :sender,String, desc: "Message sent by"
+        param :sender, String, desc: "Message sent by"
         param :is_private, [true, false], desc: "Message Type e.g. [public, private]"
         param :offer_id, String, desc: "Offer for which message has been posted",  allow_nil: true
         param :item_id, String, desc: "Item for which message has been posted", allow_nil: true
@@ -65,7 +64,7 @@ module Api::V1
     end
 
     def message_params
-      params.require(:message).permit(:body, :is_private, :recipient_id,
+      params.require(:message).permit(:body, :is_private,
         :offer_id, :item_id, :state)
     end
   end

@@ -34,7 +34,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:10:44 GMT
 - request:
     method: post
@@ -70,7 +70,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:11:42 GMT
 - request:
     method: post
@@ -105,7 +105,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:14:26 GMT
 - request:
     method: post
@@ -116,7 +116,7 @@ http_interactions:
         id dolore ut totam at exercitationem veritatis quia. Nihil numquam qui fuga
         ipsam iste aut. Optio delectus tenetur aperiam ad modi. Distinctio exercitationem
         ut omnis eius suscipit itaque atque quae. Consectetur quidem rerum eos similique
-        est.\",\"state\":\"unread\",\"recipient_id\":8397,\"sender_id\":8397,\"is_private\":false,\"created_at\":\"2014-10-10T08:14:26.532Z\",\"updated_at\":\"2014-10-10T08:14:26.532Z\",\"offer_id\":2537,\"item_id\":null}}"}'
+        est.\",\"state\":\"unread\",\"sender_id\":8397,\"is_private\":false,\"created_at\":\"2014-10-10T08:14:26.532Z\",\"updated_at\":\"2014-10-10T08:14:26.532Z\",\"offer_id\":2537,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -142,7 +142,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:14:37 GMT
 - request:
     method: post
@@ -177,7 +177,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:15:45 GMT
 - request:
     method: post
@@ -187,7 +187,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8408"],"data":"{\"user\":[{\"id\":8406,\"first_name\":\"Holden\",\"last_name\":\"Price\",\"mobile\":\"11111111\",\"address_id\":10098,\"permission_id\":null}],\"addresses\":[{\"id\":10098,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8406,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":709,\"body\":\"Voluptatem
         maiores eos laborum impedit suscipit quo voluptatem. Explicabo saepe veniam
         vel delectus adipisci possimus. Sed harum aspernatur asperiores architecto
-        ab ut.\",\"state\":\"unread\",\"recipient_id\":8406,\"sender_id\":8406,\"is_private\":false,\"created_at\":\"2014-10-10T08:15:45.695Z\",\"updated_at\":\"2014-10-10T08:15:45.695Z\",\"offer_id\":2540,\"item_id\":null}}"}'
+        ab ut.\",\"state\":\"unread\",\"sender_id\":8406,\"is_private\":false,\"created_at\":\"2014-10-10T08:15:45.695Z\",\"updated_at\":\"2014-10-10T08:15:45.695Z\",\"offer_id\":2540,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -213,7 +213,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:15:48 GMT
 - request:
     method: post
@@ -250,7 +250,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:16:56 GMT
 - request:
     method: post
@@ -260,7 +260,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8417"],"data":"{\"user\":[{\"id\":8415,\"first_name\":\"Gene\",\"last_name\":\"Kozey\",\"mobile\":\"11111111\",\"address_id\":10109,\"permission_id\":null}],\"addresses\":[{\"id\":10109,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8415,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":713,\"body\":\"Non
         dolor consequatur odit a excepturi nesciunt. Eum recusandae voluptas incidunt
         atque qui assumenda est cumque. Ab saepe possimus id quia facilis ipsam. Consectetur
-        cumque dolorem qui optio.\",\"state\":\"unread\",\"recipient_id\":8415,\"sender_id\":8415,\"is_private\":false,\"created_at\":\"2014-10-10T08:16:56.970Z\",\"updated_at\":\"2014-10-10T08:16:56.970Z\",\"offer_id\":2543,\"item_id\":null}}"}'
+        cumque dolorem qui optio.\",\"state\":\"unread\",\"sender_id\":8415,\"is_private\":false,\"created_at\":\"2014-10-10T08:16:56.970Z\",\"updated_at\":\"2014-10-10T08:16:56.970Z\",\"offer_id\":2543,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -286,7 +286,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:17:54 GMT
 - request:
     method: post
@@ -322,7 +322,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:23:05 GMT
 - request:
     method: post
@@ -331,7 +331,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8428"],"data":"{\"user\":[{\"id\":8426,\"first_name\":\"Roy\",\"last_name\":\"Abbott\",\"mobile\":\"11111111\",\"address_id\":10123,\"permission_id\":null}],\"addresses\":[{\"id\":10123,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8426,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":717,\"body\":\"Sed
         provident facere dolore deserunt eum. Rerum culpa ut at commodi quaerat. Ea
-        explicabo omnis eum labore. Minima ratione quia quia maxime.\",\"state\":\"unread\",\"recipient_id\":8426,\"sender_id\":8426,\"is_private\":false,\"created_at\":\"2014-10-10T08:23:05.955Z\",\"updated_at\":\"2014-10-10T08:23:05.955Z\",\"offer_id\":2547,\"item_id\":null}}"}'
+        explicabo omnis eum labore. Minima ratione quia quia maxime.\",\"state\":\"unread\",\"sender_id\":8426,\"is_private\":false,\"created_at\":\"2014-10-10T08:23:05.955Z\",\"updated_at\":\"2014-10-10T08:23:05.955Z\",\"offer_id\":2547,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -357,7 +357,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 08:23:09 GMT
 - request:
     method: post
@@ -393,7 +393,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:08:08 GMT
 - request:
     method: post
@@ -403,7 +403,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8496"],"data":"{\"user\":[{\"id\":8494,\"first_name\":\"Leonardo\",\"last_name\":\"Howe\",\"mobile\":\"11111111\",\"address_id\":10217,\"permission_id\":null}],\"addresses\":[{\"id\":10217,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8494,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":721,\"body\":\"Sequi
         est sed voluptas in doloremque et. Vitae vero qui sapiente voluptate velit
         aut adipisci. Nulla consequatur nobis distinctio quae hic. Veritatis officiis
-        reiciendis possimus iste consequatur fuga ipsa.\",\"state\":\"unread\",\"recipient_id\":8494,\"sender_id\":8494,\"is_private\":false,\"created_at\":\"2014-10-10T09:08:08.072Z\",\"updated_at\":\"2014-10-10T09:08:08.072Z\",\"offer_id\":2574,\"item_id\":null}}"}'
+        reiciendis possimus iste consequatur fuga ipsa.\",\"state\":\"unread\",\"sender_id\":8494,\"is_private\":false,\"created_at\":\"2014-10-10T09:08:08.072Z\",\"updated_at\":\"2014-10-10T09:08:08.072Z\",\"offer_id\":2574,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -429,7 +429,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:08:20 GMT
 - request:
     method: post
@@ -464,7 +464,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:12:15 GMT
 - request:
     method: post
@@ -474,7 +474,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8505"],"data":"{\"user\":[{\"id\":8503,\"first_name\":\"Shemar\",\"last_name\":\"Barton\",\"mobile\":\"11111111\",\"address_id\":10228,\"permission_id\":null}],\"addresses\":[{\"id\":10228,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8503,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":725,\"body\":\"Rerum
         voluptatum voluptatem ut molestiae non. Fugit dolores quaerat nemo sit. Iste
         harum autem ut quidem expedita repudiandae. Distinctio expedita mollitia iusto
-        molestiae.\",\"state\":\"unread\",\"recipient_id\":8503,\"sender_id\":8503,\"is_private\":false,\"created_at\":\"2014-10-10T09:12:16.024Z\",\"updated_at\":\"2014-10-10T09:12:16.024Z\",\"offer_id\":2577,\"item_id\":null}}"}'
+        molestiae.\",\"state\":\"unread\",\"sender_id\":8503,\"is_private\":false,\"created_at\":\"2014-10-10T09:12:16.024Z\",\"updated_at\":\"2014-10-10T09:12:16.024Z\",\"offer_id\":2577,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -500,7 +500,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:12:18 GMT
 - request:
     method: post
@@ -535,7 +535,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:13:02 GMT
 - request:
     method: post
@@ -544,7 +544,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8514"],"data":"{\"user\":[{\"id\":8512,\"first_name\":\"Janie\",\"last_name\":\"Steuber\",\"mobile\":\"11111111\",\"address_id\":10239,\"permission_id\":null}],\"addresses\":[{\"id\":10239,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8512,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":729,\"body\":\"Est
         nihil vel nemo qui incidunt. Necessitatibus itaque praesentium harum dolorem
-        est. Id autem sint ea dolores sed ex.\",\"state\":\"unread\",\"recipient_id\":8512,\"sender_id\":8512,\"is_private\":false,\"created_at\":\"2014-10-10T09:13:02.085Z\",\"updated_at\":\"2014-10-10T09:13:02.085Z\",\"offer_id\":2580,\"item_id\":null}}"}'
+        est. Id autem sint ea dolores sed ex.\",\"state\":\"unread\",\"sender_id\":8512,\"is_private\":false,\"created_at\":\"2014-10-10T09:13:02.085Z\",\"updated_at\":\"2014-10-10T09:13:02.085Z\",\"offer_id\":2580,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -570,7 +570,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:13:04 GMT
 - request:
     method: post
@@ -605,7 +605,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:13:55 GMT
 - request:
     method: post
@@ -614,7 +614,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8523"],"data":"{\"user\":[{\"id\":8521,\"first_name\":\"Beulah\",\"last_name\":\"Berge\",\"mobile\":\"11111111\",\"address_id\":10250,\"permission_id\":null}],\"addresses\":[{\"id\":10250,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8521,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":733,\"body\":\"Rerum
         ut et consequatur ut vel dolorem nesciunt. Ullam inventore quas commodi et
-        voluptatem. Alias blanditiis excepturi ut dolore odit nesciunt qui.\",\"state\":\"unread\",\"recipient_id\":8521,\"sender_id\":8521,\"is_private\":false,\"created_at\":\"2014-10-10T09:13:55.822Z\",\"updated_at\":\"2014-10-10T09:13:55.822Z\",\"offer_id\":2583,\"item_id\":null}}"}'
+        voluptatem. Alias blanditiis excepturi ut dolore odit nesciunt qui.\",\"state\":\"unread\",\"sender_id\":8521,\"is_private\":false,\"created_at\":\"2014-10-10T09:13:55.822Z\",\"updated_at\":\"2014-10-10T09:13:55.822Z\",\"offer_id\":2583,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -640,7 +640,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:14:12 GMT
 - request:
     method: post
@@ -675,7 +675,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:16:09 GMT
 - request:
     method: post
@@ -685,7 +685,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8533"],"data":"{\"user\":[{\"id\":8530,\"first_name\":\"Jaeden\",\"last_name\":\"Gusikowski\",\"mobile\":\"11111111\",\"address_id\":10261,\"permission_id\":null}],\"addresses\":[{\"id\":10261,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8530,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":738,\"body\":\"Fuga
         culpa maiores dolorem laboriosam et reprehenderit sit aliquam. Suscipit rerum
         animi excepturi ipsam nihil. Saepe voluptas autem nemo corporis. Fugiat laudantium
-        quia et aspernatur ut a est dolores.\",\"state\":\"unread\",\"recipient_id\":8530,\"sender_id\":8530,\"is_private\":false,\"created_at\":\"2014-10-10T09:16:09.367Z\",\"updated_at\":\"2014-10-10T09:16:09.367Z\",\"offer_id\":2587,\"item_id\":null}}"}'
+        quia et aspernatur ut a est dolores.\",\"state\":\"unread\",\"sender_id\":8530,\"is_private\":false,\"created_at\":\"2014-10-10T09:16:09.367Z\",\"updated_at\":\"2014-10-10T09:16:09.367Z\",\"offer_id\":2587,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -711,7 +711,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:16:12 GMT
 - request:
     method: post
@@ -747,7 +747,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:18:36 GMT
 - request:
     method: post
@@ -756,7 +756,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8543"],"data":"{\"user\":[{\"id\":8540,\"first_name\":\"Forest\",\"last_name\":\"Bauch\",\"mobile\":\"11111111\",\"address_id\":10274,\"permission_id\":null}],\"addresses\":[{\"id\":10274,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8540,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":743,\"body\":\"Fugit
         consequatur itaque sit architecto. Eveniet eum voluptas voluptas consequatur.
-        Adipisci ex repellat et et ipsam autem a.\",\"state\":\"unread\",\"recipient_id\":8540,\"sender_id\":8540,\"is_private\":false,\"created_at\":\"2014-10-10T09:18:36.845Z\",\"updated_at\":\"2014-10-10T09:18:36.845Z\",\"offer_id\":2591,\"item_id\":null}}"}'
+        Adipisci ex repellat et et ipsam autem a.\",\"state\":\"unread\",\"sender_id\":8540,\"is_private\":false,\"created_at\":\"2014-10-10T09:18:36.845Z\",\"updated_at\":\"2014-10-10T09:18:36.845Z\",\"offer_id\":2591,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -782,7 +782,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:18:40 GMT
 - request:
     method: post
@@ -817,7 +817,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:21:02 GMT
 - request:
     method: post
@@ -826,7 +826,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8553"],"data":"{\"user\":[{\"id\":8550,\"first_name\":\"Filiberto\",\"last_name\":\"Dicki\",\"mobile\":\"11111111\",\"address_id\":10287,\"permission_id\":null}],\"addresses\":[{\"id\":10287,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8550,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":748,\"body\":\"Et
         minima quis aut voluptatem. Quod est ut et eveniet rem culpa. Illo neque ut
-        odit deleniti esse facilis optio qui.\",\"state\":\"unread\",\"recipient_id\":8550,\"sender_id\":8550,\"is_private\":false,\"created_at\":\"2014-10-10T09:21:02.839Z\",\"updated_at\":\"2014-10-10T09:21:02.839Z\",\"offer_id\":2595,\"item_id\":null}}"}'
+        odit deleniti esse facilis optio qui.\",\"state\":\"unread\",\"sender_id\":8550,\"is_private\":false,\"created_at\":\"2014-10-10T09:21:02.839Z\",\"updated_at\":\"2014-10-10T09:21:02.839Z\",\"offer_id\":2595,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -852,7 +852,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:21:04 GMT
 - request:
     method: post
@@ -888,7 +888,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:23:43 GMT
 - request:
     method: post
@@ -898,7 +898,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8571"],"data":"{\"user\":[{\"id\":8560,\"first_name\":\"Rebekah\",\"last_name\":\"Howell\",\"mobile\":\"11111111\",\"address_id\":10300,\"permission_id\":null}],\"addresses\":[{\"id\":10300,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8560,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":757,\"body\":\"Reiciendis
         labore ipsa sit itaque qui consequuntur. Autem perferendis harum odio vel
         expedita. Molestiae laboriosam magni qui molestiae autem. Ut et temporibus
-        ex quibusdam sit aut. Repudiandae quia nobis molestiae officiis eligendi.\",\"state\":\"unread\",\"recipient_id\":8560,\"sender_id\":8560,\"is_private\":false,\"created_at\":\"2014-10-10T09:23:43.250Z\",\"updated_at\":\"2014-10-10T09:23:43.250Z\",\"offer_id\":2603,\"item_id\":null}}"}'
+        ex quibusdam sit aut. Repudiandae quia nobis molestiae officiis eligendi.\",\"state\":\"unread\",\"sender_id\":8560,\"is_private\":false,\"created_at\":\"2014-10-10T09:23:43.250Z\",\"updated_at\":\"2014-10-10T09:23:43.250Z\",\"offer_id\":2603,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -924,7 +924,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:23:59 GMT
 - request:
     method: post
@@ -959,7 +959,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:28:59 GMT
 - request:
     method: post
@@ -968,7 +968,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8581"],"data":"{\"user\":[{\"id\":8578,\"first_name\":\"Eileen\",\"last_name\":\"Sanford\",\"mobile\":\"11111111\",\"address_id\":10325,\"permission_id\":null}],\"addresses\":[{\"id\":10325,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8578,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":762,\"body\":\"Dicta
         consectetur corrupti atque illo omnis mollitia. Et sit iste velit et occaecati.
-        Rerum veritatis delectus dolorem ab. Ut similique in omnis quia.\",\"state\":\"unread\",\"recipient_id\":8578,\"sender_id\":8578,\"is_private\":false,\"created_at\":\"2014-10-10T09:28:59.801Z\",\"updated_at\":\"2014-10-10T09:28:59.801Z\",\"offer_id\":2607,\"item_id\":null}}"}'
+        Rerum veritatis delectus dolorem ab. Ut similique in omnis quia.\",\"state\":\"unread\",\"sender_id\":8578,\"is_private\":false,\"created_at\":\"2014-10-10T09:28:59.801Z\",\"updated_at\":\"2014-10-10T09:28:59.801Z\",\"offer_id\":2607,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -994,7 +994,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:29:02 GMT
 - request:
     method: post
@@ -1031,7 +1031,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:34:56 GMT
 - request:
     method: post
@@ -1041,7 +1041,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8589"],"data":"{\"user\":[{\"id\":8586,\"first_name\":\"Karianne\",\"last_name\":\"Littel\",\"mobile\":\"11111111\",\"address_id\":10334,\"permission_id\":null}],\"addresses\":[{\"id\":10334,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8586,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":765,\"body\":\"Vel
         laborum sit tenetur nihil. Delectus et sit accusantium dolorem quam aperiam.
         Neque quo labore porro est et deleniti molestiae. Ut ullam possimus vel veniam
-        delectus aut. Praesentium est ipsam unde quidem et inventore.\",\"state\":\"unread\",\"recipient_id\":8586,\"sender_id\":8586,\"is_private\":false,\"created_at\":\"2014-10-10T09:34:56.945Z\",\"updated_at\":\"2014-10-10T09:34:56.945Z\",\"offer_id\":2609,\"item_id\":null}}"}'
+        delectus aut. Praesentium est ipsam unde quidem et inventore.\",\"state\":\"unread\",\"sender_id\":8586,\"is_private\":false,\"created_at\":\"2014-10-10T09:34:56.945Z\",\"updated_at\":\"2014-10-10T09:34:56.945Z\",\"offer_id\":2609,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1067,7 +1067,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:35:02 GMT
 - request:
     method: post
@@ -1103,7 +1103,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:43:15 GMT
 - request:
     method: post
@@ -1112,7 +1112,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8598"],"data":"{\"user\":[{\"id\":8596,\"first_name\":\"Benton\",\"last_name\":\"Schmitt\",\"mobile\":\"11111111\",\"address_id\":10347,\"permission_id\":null}],\"addresses\":[{\"id\":10347,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8596,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":769,\"body\":\"Doloribus
         repellendus unde occaecati aut. Esse aut rem rerum quia sapiente dolores porro
-        in. Laborum eaque eos vero nemo.\",\"state\":\"unread\",\"recipient_id\":8596,\"sender_id\":8596,\"is_private\":false,\"created_at\":\"2014-10-10T09:43:15.658Z\",\"updated_at\":\"2014-10-10T09:43:15.658Z\",\"offer_id\":2612,\"item_id\":null}}"}'
+        in. Laborum eaque eos vero nemo.\",\"state\":\"unread\",\"sender_id\":8596,\"is_private\":false,\"created_at\":\"2014-10-10T09:43:15.658Z\",\"updated_at\":\"2014-10-10T09:43:15.658Z\",\"offer_id\":2612,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1138,7 +1138,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:43:17 GMT
 - request:
     method: post
@@ -1174,7 +1174,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:48:52 GMT
 - request:
     method: post
@@ -1183,7 +1183,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8607"],"data":"{\"user\":[{\"id\":8605,\"first_name\":\"Americo\",\"last_name\":\"Kilback\",\"mobile\":\"11111111\",\"address_id\":10358,\"permission_id\":null}],\"addresses\":[{\"id\":10358,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8605,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":773,\"body\":\"Amet
         ut omnis atque voluptas. Cum sunt tempore voluptas qui explicabo assumenda
-        minus enim. Et excepturi non blanditiis aut eius sint corporis veritatis.\",\"state\":\"unread\",\"recipient_id\":8605,\"sender_id\":8605,\"is_private\":false,\"created_at\":\"2014-10-10T09:48:52.889Z\",\"updated_at\":\"2014-10-10T09:48:52.889Z\",\"offer_id\":2615,\"item_id\":null}}"}'
+        minus enim. Et excepturi non blanditiis aut eius sint corporis veritatis.\",\"state\":\"unread\",\"sender_id\":8605,\"is_private\":false,\"created_at\":\"2014-10-10T09:48:52.889Z\",\"updated_at\":\"2014-10-10T09:48:52.889Z\",\"offer_id\":2615,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1209,7 +1209,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:48:54 GMT
 - request:
     method: post
@@ -1244,7 +1244,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:54:23 GMT
 - request:
     method: post
@@ -1253,7 +1253,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8616"],"data":"{\"user\":[{\"id\":8614,\"first_name\":\"Daron\",\"last_name\":\"Bogisich\",\"mobile\":\"11111111\",\"address_id\":10369,\"permission_id\":null}],\"addresses\":[{\"id\":10369,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8614,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":777,\"body\":\"Commodi
         voluptas ipsum quia veniam error aut. Provident veniam accusantium cum molestiae.
-        Enim nobis ab neque harum omnis iusto quia amet.\",\"state\":\"unread\",\"recipient_id\":8614,\"sender_id\":8614,\"is_private\":false,\"created_at\":\"2014-10-10T09:54:23.850Z\",\"updated_at\":\"2014-10-10T09:54:23.850Z\",\"offer_id\":2618,\"item_id\":null}}"}'
+        Enim nobis ab neque harum omnis iusto quia amet.\",\"state\":\"unread\",\"sender_id\":8614,\"is_private\":false,\"created_at\":\"2014-10-10T09:54:23.850Z\",\"updated_at\":\"2014-10-10T09:54:23.850Z\",\"offer_id\":2618,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1279,7 +1279,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 09:54:25 GMT
 - request:
     method: post
@@ -1316,7 +1316,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:02:35 GMT
 - request:
     method: post
@@ -1326,7 +1326,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8626"],"data":"{\"user\":[{\"id\":8623,\"first_name\":\"Emilie\",\"last_name\":\"Hoeger\",\"mobile\":\"11111111\",\"address_id\":10380,\"permission_id\":null}],\"addresses\":[{\"id\":10380,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8623,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":782,\"body\":\"Ut
         dolores enim iure pariatur modi rerum tenetur ducimus. Possimus omnis odio
         deserunt qui est. Sed impedit iure aut vel maxime dolorem. Mollitia voluptatibus
-        dolorem cum aperiam.\",\"state\":\"unread\",\"recipient_id\":8623,\"sender_id\":8623,\"is_private\":false,\"created_at\":\"2014-10-10T10:02:35.135Z\",\"updated_at\":\"2014-10-10T10:02:35.135Z\",\"offer_id\":2622,\"item_id\":null}}"}'
+        dolorem cum aperiam.\",\"state\":\"unread\",\"sender_id\":8623,\"is_private\":false,\"created_at\":\"2014-10-10T10:02:35.135Z\",\"updated_at\":\"2014-10-10T10:02:35.135Z\",\"offer_id\":2622,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1352,7 +1352,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:02:36 GMT
 - request:
     method: post
@@ -1388,7 +1388,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:10:07 GMT
 - request:
     method: post
@@ -1398,7 +1398,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8636"],"data":"{\"user\":[{\"id\":8633,\"first_name\":\"Jedidiah\",\"last_name\":\"Dooley\",\"mobile\":\"11111111\",\"address_id\":10393,\"permission_id\":null}],\"addresses\":[{\"id\":10393,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8633,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":787,\"body\":\"Aspernatur
         culpa voluptas similique qui voluptatem amet fugiat. Placeat quidem quod quisquam
         et deleniti. Praesentium aut at nihil pariatur hic. Facilis eveniet ea provident
-        quis. Rerum qui quae et amet molestias commodi sequi cum.\",\"state\":\"unread\",\"recipient_id\":8633,\"sender_id\":8633,\"is_private\":false,\"created_at\":\"2014-10-10T10:10:07.196Z\",\"updated_at\":\"2014-10-10T10:10:07.196Z\",\"offer_id\":2626,\"item_id\":null}}"}'
+        quis. Rerum qui quae et amet molestias commodi sequi cum.\",\"state\":\"unread\",\"sender_id\":8633,\"is_private\":false,\"created_at\":\"2014-10-10T10:10:07.196Z\",\"updated_at\":\"2014-10-10T10:10:07.196Z\",\"offer_id\":2626,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1424,7 +1424,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:10:08 GMT
 - request:
     method: post
@@ -1459,7 +1459,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:14:24 GMT
 - request:
     method: post
@@ -1468,7 +1468,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8646"],"data":"{\"user\":[{\"id\":8643,\"first_name\":\"Nigel\",\"last_name\":\"Stark\",\"mobile\":\"11111111\",\"address_id\":10406,\"permission_id\":null}],\"addresses\":[{\"id\":10406,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8643,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":792,\"body\":\"Nam
         facere pariatur minus excepturi nisi molestias omnis dolore. Atque saepe reprehenderit
-        qui debitis. Dolorum et dolore adipisci quis et.\",\"state\":\"unread\",\"recipient_id\":8643,\"sender_id\":8643,\"is_private\":false,\"created_at\":\"2014-10-10T10:14:24.960Z\",\"updated_at\":\"2014-10-10T10:14:24.960Z\",\"offer_id\":2630,\"item_id\":null}}"}'
+        qui debitis. Dolorum et dolore adipisci quis et.\",\"state\":\"unread\",\"sender_id\":8643,\"is_private\":false,\"created_at\":\"2014-10-10T10:14:24.960Z\",\"updated_at\":\"2014-10-10T10:14:24.960Z\",\"offer_id\":2630,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1494,7 +1494,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:14:26 GMT
 - request:
     method: post
@@ -1530,7 +1530,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:19:18 GMT
 - request:
     method: post
@@ -1539,7 +1539,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8656"],"data":"{\"user\":[{\"id\":8653,\"first_name\":\"Cierra\",\"last_name\":\"Brakus\",\"mobile\":\"11111111\",\"address_id\":10419,\"permission_id\":null}],\"addresses\":[{\"id\":10419,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8653,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":797,\"body\":\"Consequatur
         est harum illum dolor sed. Quidem et voluptates similique eum velit et. Voluptate
-        qui assumenda facere quia quae sit nulla.\",\"state\":\"unread\",\"recipient_id\":8653,\"sender_id\":8653,\"is_private\":false,\"created_at\":\"2014-10-10T10:19:18.671Z\",\"updated_at\":\"2014-10-10T10:19:18.671Z\",\"offer_id\":2634,\"item_id\":null}}"}'
+        qui assumenda facere quia quae sit nulla.\",\"state\":\"unread\",\"sender_id\":8653,\"is_private\":false,\"created_at\":\"2014-10-10T10:19:18.671Z\",\"updated_at\":\"2014-10-10T10:19:18.671Z\",\"offer_id\":2634,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1565,7 +1565,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:19:20 GMT
 - request:
     method: post
@@ -1601,7 +1601,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:25:24 GMT
 - request:
     method: post
@@ -1612,7 +1612,7 @@ http_interactions:
         deleniti provident voluptas dolor eos praesentium hic sed. Non fuga iusto
         non vel dolores consequuntur architecto corrupti. Minus sapiente at aliquam
         sint dolor. Qui perferendis vitae nihil ut mollitia ut velit. Illum eos dolorum
-        qui necessitatibus qui enim qui provident.\",\"state\":\"unread\",\"recipient_id\":8663,\"sender_id\":8663,\"is_private\":false,\"created_at\":\"2014-10-10T10:25:24.491Z\",\"updated_at\":\"2014-10-10T10:25:24.491Z\",\"offer_id\":2638,\"item_id\":null}}"}'
+        qui necessitatibus qui enim qui provident.\",\"state\":\"unread\",\"sender_id\":8663,\"is_private\":false,\"created_at\":\"2014-10-10T10:25:24.491Z\",\"updated_at\":\"2014-10-10T10:25:24.491Z\",\"offer_id\":2638,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1638,7 +1638,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:25:26 GMT
 - request:
     method: post
@@ -1674,7 +1674,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:26:04 GMT
 - request:
     method: post
@@ -1683,7 +1683,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8676"],"data":"{\"user\":[{\"id\":8673,\"first_name\":\"Shawna\",\"last_name\":\"Maggio\",\"mobile\":\"11111111\",\"address_id\":10445,\"permission_id\":null}],\"addresses\":[{\"id\":10445,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8673,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":807,\"body\":\"Sed
         ut quis et ad neque quae. Voluptate deleniti facilis qui facere cum vitae
-        inventore est. Deleniti repudiandae molestiae voluptatem hic.\",\"state\":\"unread\",\"recipient_id\":8673,\"sender_id\":8673,\"is_private\":false,\"created_at\":\"2014-10-10T10:26:04.432Z\",\"updated_at\":\"2014-10-10T10:26:04.432Z\",\"offer_id\":2642,\"item_id\":null}}"}'
+        inventore est. Deleniti repudiandae molestiae voluptatem hic.\",\"state\":\"unread\",\"sender_id\":8673,\"is_private\":false,\"created_at\":\"2014-10-10T10:26:04.432Z\",\"updated_at\":\"2014-10-10T10:26:04.432Z\",\"offer_id\":2642,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1709,7 +1709,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:26:05 GMT
 - request:
     method: post
@@ -1744,7 +1744,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:36:52 GMT
 - request:
     method: post
@@ -1754,7 +1754,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8685"],"data":"{\"user\":[{\"id\":8683,\"first_name\":\"Adrienne\",\"last_name\":\"Wisozk\",\"mobile\":\"11111111\",\"address_id\":10458,\"permission_id\":null}],\"addresses\":[{\"id\":10458,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8683,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":811,\"body\":\"Corporis
         nesciunt quia laborum illum aliquid. Officiis non optio odit est inventore
         neque sed et. Minima ducimus architecto qui ipsa consectetur. Et ut vel natus
-        illo sit cum voluptates.\",\"state\":\"unread\",\"recipient_id\":8683,\"sender_id\":8683,\"is_private\":false,\"created_at\":\"2014-10-10T10:36:53.004Z\",\"updated_at\":\"2014-10-10T10:36:53.004Z\",\"offer_id\":2645,\"item_id\":null}}"}'
+        illo sit cum voluptates.\",\"state\":\"unread\",\"sender_id\":8683,\"is_private\":false,\"created_at\":\"2014-10-10T10:36:53.004Z\",\"updated_at\":\"2014-10-10T10:36:53.004Z\",\"offer_id\":2645,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1780,7 +1780,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:36:54 GMT
 - request:
     method: post
@@ -1816,7 +1816,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:40:56 GMT
 - request:
     method: post
@@ -1826,7 +1826,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8696"],"data":"{\"user\":[{\"id\":8694,\"first_name\":\"Grayson\",\"last_name\":\"Rogahn\",\"mobile\":\"11111111\",\"address_id\":10473,\"permission_id\":null}],\"addresses\":[{\"id\":10473,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8694,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":815,\"body\":\"Maiores
         eos enim id est. Ducimus cupiditate enim atque omnis officiis nemo sunt in.
         Occaecati velit inventore accusantium qui ut voluptatibus. Eveniet voluptate
-        occaecati perferendis magnam consequuntur.\",\"state\":\"unread\",\"recipient_id\":8694,\"sender_id\":8694,\"is_private\":false,\"created_at\":\"2014-10-10T10:40:56.713Z\",\"updated_at\":\"2014-10-10T10:40:56.713Z\",\"offer_id\":2650,\"item_id\":null}}"}'
+        occaecati perferendis magnam consequuntur.\",\"state\":\"unread\",\"sender_id\":8694,\"is_private\":false,\"created_at\":\"2014-10-10T10:40:56.713Z\",\"updated_at\":\"2014-10-10T10:40:56.713Z\",\"offer_id\":2650,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1852,7 +1852,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:40:58 GMT
 - request:
     method: post
@@ -1887,7 +1887,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:45:43 GMT
 - request:
     method: post
@@ -1897,7 +1897,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8707"],"data":"{\"user\":[{\"id\":8705,\"first_name\":\"Brent\",\"last_name\":\"Sipes\",\"mobile\":\"11111111\",\"address_id\":10488,\"permission_id\":null}],\"addresses\":[{\"id\":10488,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8705,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":819,\"body\":\"Et
         inventore voluptas at ex tempore unde qui. Veritatis dolores fugiat ab nisi
         aut beatae consequuntur enim. Est enim ea et laborum nulla. Fugit cupiditate
-        laborum ullam et pariatur.\",\"state\":\"unread\",\"recipient_id\":8705,\"sender_id\":8705,\"is_private\":false,\"created_at\":\"2014-10-10T10:45:43.801Z\",\"updated_at\":\"2014-10-10T10:45:43.801Z\",\"offer_id\":2655,\"item_id\":null}}"}'
+        laborum ullam et pariatur.\",\"state\":\"unread\",\"sender_id\":8705,\"is_private\":false,\"created_at\":\"2014-10-10T10:45:43.801Z\",\"updated_at\":\"2014-10-10T10:45:43.801Z\",\"offer_id\":2655,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1923,7 +1923,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:45:45 GMT
 - request:
     method: post
@@ -1958,7 +1958,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:46:03 GMT
 - request:
     method: post
@@ -1967,7 +1967,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8718"],"data":"{\"user\":[{\"id\":8716,\"first_name\":\"Taya\",\"last_name\":\"Abernathy\",\"mobile\":\"11111111\",\"address_id\":10503,\"permission_id\":null}],\"addresses\":[{\"id\":10503,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8716,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":823,\"body\":\"Quaerat
         quidem facilis aut quo enim exercitationem autem. Officiis et magnam dolorum
-        velit et ea consequatur. Recusandae nobis nam aut quisquam et.\",\"state\":\"unread\",\"recipient_id\":8716,\"sender_id\":8716,\"is_private\":false,\"created_at\":\"2014-10-10T10:46:03.659Z\",\"updated_at\":\"2014-10-10T10:46:03.659Z\",\"offer_id\":2660,\"item_id\":null}}"}'
+        velit et ea consequatur. Recusandae nobis nam aut quisquam et.\",\"state\":\"unread\",\"sender_id\":8716,\"is_private\":false,\"created_at\":\"2014-10-10T10:46:03.659Z\",\"updated_at\":\"2014-10-10T10:46:03.659Z\",\"offer_id\":2660,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -1993,7 +1993,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:46:05 GMT
 - request:
     method: post
@@ -2030,7 +2030,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:46:23 GMT
 - request:
     method: post
@@ -2040,7 +2040,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8729"],"data":"{\"user\":[{\"id\":8727,\"first_name\":\"Sophia\",\"last_name\":\"Rogahn\",\"mobile\":\"11111111\",\"address_id\":10518,\"permission_id\":null}],\"addresses\":[{\"id\":10518,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8727,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":827,\"body\":\"Aliquid
         libero itaque sit harum modi aut saepe sit. Eos aspernatur molestias perferendis
         eveniet quis blanditiis voluptas est. Nobis placeat molestiae inventore exercitationem
-        sed.\",\"state\":\"unread\",\"recipient_id\":8727,\"sender_id\":8727,\"is_private\":false,\"created_at\":\"2014-10-10T10:46:23.521Z\",\"updated_at\":\"2014-10-10T10:46:23.521Z\",\"offer_id\":2665,\"item_id\":null}}"}'
+        sed.\",\"state\":\"unread\",\"sender_id\":8727,\"is_private\":false,\"created_at\":\"2014-10-10T10:46:23.521Z\",\"updated_at\":\"2014-10-10T10:46:23.521Z\",\"offer_id\":2665,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2066,7 +2066,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:46:24 GMT
 - request:
     method: post
@@ -2101,7 +2101,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:47:51 GMT
 - request:
     method: post
@@ -2111,7 +2111,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8740"],"data":"{\"user\":[{\"id\":8738,\"first_name\":\"Joany\",\"last_name\":\"Simonis\",\"mobile\":\"11111111\",\"address_id\":10533,\"permission_id\":null}],\"addresses\":[{\"id\":10533,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8738,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":831,\"body\":\"Provident
         et ut itaque qui consequatur officiis est. Et non dolores voluptatem magni
         laboriosam. Vel voluptatem tempora dolor ea ab. Hic et magnam excepturi nihil
-        alias.\",\"state\":\"unread\",\"recipient_id\":8738,\"sender_id\":8738,\"is_private\":false,\"created_at\":\"2014-10-10T10:47:51.388Z\",\"updated_at\":\"2014-10-10T10:47:51.388Z\",\"offer_id\":2670,\"item_id\":null}}"}'
+        alias.\",\"state\":\"unread\",\"sender_id\":8738,\"is_private\":false,\"created_at\":\"2014-10-10T10:47:51.388Z\",\"updated_at\":\"2014-10-10T10:47:51.388Z\",\"offer_id\":2670,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2137,7 +2137,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:47:53 GMT
 - request:
     method: post
@@ -2172,7 +2172,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:48:49 GMT
 - request:
     method: post
@@ -2182,7 +2182,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8751"],"data":"{\"user\":[{\"id\":8749,\"first_name\":\"Lupe\",\"last_name\":\"Swaniawski\",\"mobile\":\"11111111\",\"address_id\":10548,\"permission_id\":null}],\"addresses\":[{\"id\":10548,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8749,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":835,\"body\":\"Vitae
         dolor modi doloremque accusamus ut. Quia laborum omnis debitis vero placeat
         totam. Est alias veniam qui autem et velit. Illo eos vitae deserunt nemo atque
-        ut.\",\"state\":\"unread\",\"recipient_id\":8749,\"sender_id\":8749,\"is_private\":false,\"created_at\":\"2014-10-10T10:48:49.150Z\",\"updated_at\":\"2014-10-10T10:48:49.150Z\",\"offer_id\":2675,\"item_id\":null}}"}'
+        ut.\",\"state\":\"unread\",\"sender_id\":8749,\"is_private\":false,\"created_at\":\"2014-10-10T10:48:49.150Z\",\"updated_at\":\"2014-10-10T10:48:49.150Z\",\"offer_id\":2675,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2208,7 +2208,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 10:48:50 GMT
 - request:
     method: post
@@ -2244,7 +2244,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 11:48:27 GMT
 - request:
     method: post
@@ -2255,7 +2255,7 @@ http_interactions:
         ut in quae id odit sed eos sint. Nostrum quae sed delectus provident vero
         ipsam ea. Nisi aut ipsa temporibus voluptas sit hic tempora. Et quae repudiandae
         sunt labore possimus. Ipsa quia minima dolores omnis voluptatem enim molestiae
-        a.\",\"state\":\"unread\",\"recipient_id\":8760,\"sender_id\":8760,\"is_private\":false,\"created_at\":\"2014-10-10T11:48:27.508Z\",\"updated_at\":\"2014-10-10T11:48:27.508Z\",\"offer_id\":2680,\"item_id\":null}}"}'
+        a.\",\"state\":\"unread\",\"sender_id\":8760,\"is_private\":false,\"created_at\":\"2014-10-10T11:48:27.508Z\",\"updated_at\":\"2014-10-10T11:48:27.508Z\",\"offer_id\":2680,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2281,7 +2281,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 11:48:28 GMT
 - request:
     method: post
@@ -2318,7 +2318,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 11:57:49 GMT
 - request:
     method: post
@@ -2328,7 +2328,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8778"],"data":"{\"user\":[{\"id\":8776,\"first_name\":\"Emiliano\",\"last_name\":\"Anderson\",\"mobile\":\"11111111\",\"address_id\":10585,\"permission_id\":null}],\"addresses\":[{\"id\":10585,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8776,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":844,\"body\":\"Explicabo
         ad ut officia voluptate et aut. Dolorem rerum amet illum quod perferendis
         aut excepturi commodi. Dolores ipsam velit dicta optio eaque natus. Consequuntur
-        eos molestiae commodi sed. Quia cum ipsam quia consequuntur eius corrupti.\",\"state\":\"unread\",\"recipient_id\":8776,\"sender_id\":8776,\"is_private\":false,\"created_at\":\"2014-10-10T11:57:49.245Z\",\"updated_at\":\"2014-10-10T11:57:49.245Z\",\"offer_id\":2687,\"item_id\":null}}"}'
+        eos molestiae commodi sed. Quia cum ipsam quia consequuntur eius corrupti.\",\"state\":\"unread\",\"sender_id\":8776,\"is_private\":false,\"created_at\":\"2014-10-10T11:57:49.245Z\",\"updated_at\":\"2014-10-10T11:57:49.245Z\",\"offer_id\":2687,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2354,7 +2354,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 11:57:50 GMT
 - request:
     method: post
@@ -2389,7 +2389,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:11:29 GMT
 - request:
     method: post
@@ -2399,7 +2399,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8809"],"data":"{\"user\":[{\"id\":8807,\"first_name\":\"Hugh\",\"last_name\":\"Donnelly\",\"mobile\":\"11111111\",\"address_id\":10628,\"permission_id\":null}],\"addresses\":[{\"id\":10628,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8807,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":852,\"body\":\"Facere
         sed quo distinctio consequatur non. Recusandae quos rerum non eius aperiam
         aut repudiandae ut. Accusantium dolorem distinctio est et. Ullam ut nemo dolorem
-        excepturi nobis cupiditate sint.\",\"state\":\"unread\",\"recipient_id\":8807,\"sender_id\":8807,\"is_private\":false,\"created_at\":\"2014-10-10T12:11:29.333Z\",\"updated_at\":\"2014-10-10T12:11:29.333Z\",\"offer_id\":2701,\"item_id\":null}}"}'
+        excepturi nobis cupiditate sint.\",\"state\":\"unread\",\"sender_id\":8807,\"is_private\":false,\"created_at\":\"2014-10-10T12:11:29.333Z\",\"updated_at\":\"2014-10-10T12:11:29.333Z\",\"offer_id\":2701,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2425,7 +2425,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:11:30 GMT
 - request:
     method: post
@@ -2462,7 +2462,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:13:07 GMT
 - request:
     method: post
@@ -2472,7 +2472,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8824"],"data":"{\"user\":[{\"id\":8822,\"first_name\":\"Kelton\",\"last_name\":\"Feil\",\"mobile\":\"11111111\",\"address_id\":10649,\"permission_id\":null}],\"addresses\":[{\"id\":10649,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8822,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":857,\"body\":\"Minima
         eos dolores a occaecati. Sint aut ut beatae fuga consequuntur. Reprehenderit
         voluptatem quos velit et a quo earum. Amet dolor quae veniam similique eum
-        nam quaerat. Ad non animi perferendis sunt ipsam.\",\"state\":\"unread\",\"recipient_id\":8822,\"sender_id\":8822,\"is_private\":false,\"created_at\":\"2014-10-10T12:13:07.290Z\",\"updated_at\":\"2014-10-10T12:13:07.290Z\",\"offer_id\":2708,\"item_id\":null}}"}'
+        nam quaerat. Ad non animi perferendis sunt ipsam.\",\"state\":\"unread\",\"sender_id\":8822,\"is_private\":false,\"created_at\":\"2014-10-10T12:13:07.290Z\",\"updated_at\":\"2014-10-10T12:13:07.290Z\",\"offer_id\":2708,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2498,7 +2498,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:13:08 GMT
 - request:
     method: post
@@ -2535,7 +2535,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:15:15 GMT
 - request:
     method: post
@@ -2546,7 +2546,7 @@ http_interactions:
         quo dolores impedit et quod facere. Autem et nisi possimus aut. Aut voluptatum
         vitae eaque excepturi minima et quo ut. Cum perspiciatis doloremque voluptatem
         architecto atque suscipit voluptatem. Est aut repudiandae minus neque consequatur
-        voluptatem.\",\"state\":\"unread\",\"recipient_id\":8837,\"sender_id\":8837,\"is_private\":false,\"created_at\":\"2014-10-10T12:15:15.234Z\",\"updated_at\":\"2014-10-10T12:15:15.234Z\",\"offer_id\":2715,\"item_id\":null}}"}'
+        voluptatem.\",\"state\":\"unread\",\"sender_id\":8837,\"is_private\":false,\"created_at\":\"2014-10-10T12:15:15.234Z\",\"updated_at\":\"2014-10-10T12:15:15.234Z\",\"offer_id\":2715,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2572,7 +2572,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:15:16 GMT
 - request:
     method: post
@@ -2607,7 +2607,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:18:14 GMT
 - request:
     method: post
@@ -2617,7 +2617,7 @@ http_interactions:
       string: '{"name":"update_store","channels":["user_8854"],"data":"{\"user\":[{\"id\":8852,\"first_name\":\"Walton\",\"last_name\":\"Bradtke\",\"mobile\":\"11111111\",\"address_id\":10691,\"permission_id\":null}],\"addresses\":[{\"id\":10691,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8852,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":867,\"body\":\"Et
         explicabo incidunt maiores id est. Alias eos fugit quibusdam incidunt. Quia
         id voluptatem nisi minima tenetur aut necessitatibus. Aut fuga ea a rerum
-        veniam rerum nemo. Illum magnam autem occaecati voluptatibus est illo.\",\"state\":\"unread\",\"recipient_id\":8852,\"sender_id\":8852,\"is_private\":false,\"created_at\":\"2014-10-10T12:18:14.693Z\",\"updated_at\":\"2014-10-10T12:18:14.693Z\",\"offer_id\":2722,\"item_id\":null}}"}'
+        veniam rerum nemo. Illum magnam autem occaecati voluptatibus est illo.\",\"state\":\"unread\",\"sender_id\":8852,\"is_private\":false,\"created_at\":\"2014-10-10T12:18:14.693Z\",\"updated_at\":\"2014-10-10T12:18:14.693Z\",\"offer_id\":2722,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2643,7 +2643,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:18:16 GMT
 - request:
     method: post
@@ -2680,7 +2680,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:43:39 GMT
 - request:
     method: post
@@ -2689,7 +2689,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8867"],"data":"{\"user\":[{\"id\":8865,\"first_name\":\"Sadye\",\"last_name\":\"Hoppe\",\"mobile\":\"11111111\",\"address_id\":10708,\"permission_id\":null}],\"addresses\":[{\"id\":10708,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8865,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":871,\"body\":\"Soluta
         veritatis et eius architecto ea omnis. Cumque et sed sit optio nam rerum repudiandae
-        aperiam. Corrupti qui est dolores mollitia enim et sit.\",\"state\":\"unread\",\"recipient_id\":8865,\"sender_id\":8865,\"is_private\":false,\"created_at\":\"2014-10-10T12:43:39.947Z\",\"updated_at\":\"2014-10-10T12:43:39.947Z\",\"offer_id\":2727,\"item_id\":null}}"}'
+        aperiam. Corrupti qui est dolores mollitia enim et sit.\",\"state\":\"unread\",\"sender_id\":8865,\"is_private\":false,\"created_at\":\"2014-10-10T12:43:39.947Z\",\"updated_at\":\"2014-10-10T12:43:39.947Z\",\"offer_id\":2727,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2715,7 +2715,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:43:41 GMT
 - request:
     method: post
@@ -2751,7 +2751,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:47:30 GMT
 - request:
     method: post
@@ -2760,7 +2760,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8882"],"data":"{\"user\":[{\"id\":8880,\"first_name\":\"Anastasia\",\"last_name\":\"Dickinson\",\"mobile\":\"11111111\",\"address_id\":10729,\"permission_id\":null}],\"addresses\":[{\"id\":10729,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8880,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":876,\"body\":\"Dolorem
         a maxime architecto est. Rerum aut quia esse optio omnis quis nemo amet. Labore
-        ut rerum maxime a reiciendis temporibus.\",\"state\":\"unread\",\"recipient_id\":8880,\"sender_id\":8880,\"is_private\":false,\"created_at\":\"2014-10-10T12:47:30.947Z\",\"updated_at\":\"2014-10-10T12:47:30.947Z\",\"offer_id\":2734,\"item_id\":null}}"}'
+        ut rerum maxime a reiciendis temporibus.\",\"state\":\"unread\",\"sender_id\":8880,\"is_private\":false,\"created_at\":\"2014-10-10T12:47:30.947Z\",\"updated_at\":\"2014-10-10T12:47:30.947Z\",\"offer_id\":2734,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2786,7 +2786,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:47:32 GMT
 - request:
     method: post
@@ -2823,7 +2823,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:48:42 GMT
 - request:
     method: post
@@ -2834,7 +2834,7 @@ http_interactions:
         amet minus et non nulla atque. Architecto sed recusandae minus impedit et.
         Aut excepturi enim enim saepe. Perspiciatis et ut ratione incidunt odio dolores
         officia ipsum. Minima quo fuga eligendi impedit nihil necessitatibus reprehenderit
-        omnis.\",\"state\":\"unread\",\"recipient_id\":8895,\"sender_id\":8895,\"is_private\":false,\"created_at\":\"2014-10-10T12:48:42.241Z\",\"updated_at\":\"2014-10-10T12:48:42.241Z\",\"offer_id\":2742,\"item_id\":null}}"}'
+        omnis.\",\"state\":\"unread\",\"sender_id\":8895,\"is_private\":false,\"created_at\":\"2014-10-10T12:48:42.241Z\",\"updated_at\":\"2014-10-10T12:48:42.241Z\",\"offer_id\":2742,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2860,7 +2860,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:48:43 GMT
 - request:
     method: post
@@ -2895,7 +2895,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:49:18 GMT
 - request:
     method: post
@@ -2904,7 +2904,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"name":"update_store","channels":["user_8912"],"data":"{\"user\":[{\"id\":8910,\"first_name\":\"Erika\",\"last_name\":\"Mohr\",\"mobile\":\"11111111\",\"address_id\":10771,\"permission_id\":null}],\"addresses\":[{\"id\":10771,\"street\":\"MyString\",\"flat\":\"MyString\",\"building\":\"MyString\",\"district_id\":null,\"addressable_id\":8910,\"addressable_type\":\"User\"}],\"districts\":[],\"permissions\":[],\"message\":{\"id\":888,\"body\":\"Provident
         delectus ut velit illum atque exercitationem. Explicabo nisi sint et assumenda
-        et velit quod. Et quia quos architecto consectetur quidem.\",\"state\":\"unread\",\"recipient_id\":8910,\"sender_id\":8910,\"is_private\":false,\"created_at\":\"2014-10-10T12:49:18.163Z\",\"updated_at\":\"2014-10-10T12:49:18.163Z\",\"offer_id\":2750,\"item_id\":null}}"}'
+        et velit quod. Et quia quos architecto consectetur quidem.\",\"state\":\"unread\",\"sender_id\":8910,\"is_private\":false,\"created_at\":\"2014-10-10T12:49:18.163Z\",\"updated_at\":\"2014-10-10T12:49:18.163Z\",\"offer_id\":2750,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -2930,7 +2930,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 12:49:19 GMT
 - request:
     method: post
@@ -2967,7 +2967,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:33:37 GMT
 - request:
     method: post
@@ -2979,7 +2979,7 @@ http_interactions:
         Point\",\"territory_id\":573}],\"permissions\":[],\"message\":{\"id\":892,\"body\":\"At
         ipsum veritatis in eos. Neque nam omnis quidem quos porro unde totam. Aut
         nam repellendus laborum ex vitae magni. Culpa et voluptas laudantium maiores
-        eaque. Quasi ad possimus dicta dignissimos amet sint minus nesciunt.\",\"state\":\"unread\",\"recipient_id\":8965,\"sender_id\":8965,\"is_private\":false,\"created_at\":\"2014-10-10T13:33:38.360Z\",\"updated_at\":\"2014-10-10T13:33:38.360Z\",\"offer_id\":2758,\"item_id\":null}}"}'
+        eaque. Quasi ad possimus dicta dignissimos amet sint minus nesciunt.\",\"state\":\"unread\",\"sender_id\":8965,\"is_private\":false,\"created_at\":\"2014-10-10T13:33:38.360Z\",\"updated_at\":\"2014-10-10T13:33:38.360Z\",\"offer_id\":2758,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3005,7 +3005,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:33:40 GMT
 - request:
     method: post
@@ -3042,7 +3042,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:46:38 GMT
 - request:
     method: post
@@ -3081,7 +3081,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:46:40 GMT
 - request:
     method: post
@@ -3120,7 +3120,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:52:50 GMT
 - request:
     method: post
@@ -3159,7 +3159,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:52:52 GMT
 - request:
     method: post
@@ -3197,7 +3197,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:56:50 GMT
 - request:
     method: post
@@ -3236,7 +3236,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:56:52 GMT
 - request:
     method: post
@@ -3275,7 +3275,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:57:57 GMT
 - request:
     method: post
@@ -3286,7 +3286,7 @@ http_interactions:
         Ways\",\"flat\":\"Apt. 211\",\"building\":\"928\",\"district_id\":617,\"addressable_id\":9245,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":617,\"name\":\"Lau
         Fau Shan\",\"territory_id\":847}],\"permissions\":[],\"message\":{\"id\":928,\"body\":\"Iste
         velit rerum nemo praesentium quia ipsam. Cum omnis deleniti suscipit possimus.
-        Possimus molestiae quia eveniet distinctio est.\",\"state\":\"unread\",\"recipient_id\":9245,\"sender_id\":9245,\"is_private\":false,\"created_at\":\"2014-10-10T13:57:57.337Z\",\"updated_at\":\"2014-10-10T13:57:57.337Z\",\"offer_id\":2856,\"item_id\":null}}"}'
+        Possimus molestiae quia eveniet distinctio est.\",\"state\":\"unread\",\"sender_id\":9245,\"is_private\":false,\"created_at\":\"2014-10-10T13:57:57.337Z\",\"updated_at\":\"2014-10-10T13:57:57.337Z\",\"offer_id\":2856,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3312,7 +3312,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:57:58 GMT
 - request:
     method: post
@@ -3349,7 +3349,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:59:03 GMT
 - request:
     method: post
@@ -3360,7 +3360,7 @@ http_interactions:
         Walk\",\"flat\":\"Apt. 134\",\"building\":\"75063\",\"district_id\":635,\"addressable_id\":9259,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":635,\"name\":\"Mong
         Kok\",\"territory_id\":857}],\"permissions\":[],\"message\":{\"id\":932,\"body\":\"Dolor
         dolorum magni impedit assumenda est. Aliquid adipisci facilis ipsam maxime.
-        Sint modi atque facilis dolores magni dolore pariatur.\",\"state\":\"unread\",\"recipient_id\":9259,\"sender_id\":9259,\"is_private\":false,\"created_at\":\"2014-10-10T13:59:03.195Z\",\"updated_at\":\"2014-10-10T13:59:03.195Z\",\"offer_id\":2862,\"item_id\":null}}"}'
+        Sint modi atque facilis dolores magni dolore pariatur.\",\"state\":\"unread\",\"sender_id\":9259,\"is_private\":false,\"created_at\":\"2014-10-10T13:59:03.195Z\",\"updated_at\":\"2014-10-10T13:59:03.195Z\",\"offer_id\":2862,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3386,7 +3386,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:59:04 GMT
 - request:
     method: post
@@ -3424,7 +3424,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 13:59:06 GMT
 - request:
     method: post
@@ -3461,7 +3461,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:00:10 GMT
 - request:
     method: post
@@ -3473,7 +3473,7 @@ http_interactions:
         Sai Wan\",\"territory_id\":868}],\"permissions\":[],\"message\":{\"id\":938,\"body\":\"Voluptatem
         rerum sit in qui exercitationem. Consectetur voluptatum qui atque ut sed libero
         tempora. Officia voluptatem minus voluptatem quae qui dolorum tenetur et.
-        Esse aut blanditiis repudiandae magni.\",\"state\":\"unread\",\"recipient_id\":9275,\"sender_id\":9275,\"is_private\":false,\"created_at\":\"2014-10-10T14:00:10.573Z\",\"updated_at\":\"2014-10-10T14:00:10.573Z\",\"offer_id\":2870,\"item_id\":null}}"}'
+        Esse aut blanditiis repudiandae magni.\",\"state\":\"unread\",\"sender_id\":9275,\"is_private\":false,\"created_at\":\"2014-10-10T14:00:10.573Z\",\"updated_at\":\"2014-10-10T14:00:10.573Z\",\"offer_id\":2870,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3499,7 +3499,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:00:11 GMT
 - request:
     method: post
@@ -3536,7 +3536,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:00:19 GMT
 - request:
     method: post
@@ -3575,7 +3575,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:04:14 GMT
 - request:
     method: post
@@ -3587,7 +3587,7 @@ http_interactions:
         Chai\",\"territory_id\":879}],\"permissions\":[],\"message\":{\"id\":944,\"body\":\"Porro
         magni aliquid nostrum illum ut et. Voluptates nobis excepturi in aut. Rem
         consequatur iure magnam sint sint autem. Qui nisi voluptas magni quasi quaerat
-        vero.\",\"state\":\"unread\",\"recipient_id\":9291,\"sender_id\":9291,\"is_private\":false,\"created_at\":\"2014-10-10T14:04:14.616Z\",\"updated_at\":\"2014-10-10T14:04:14.616Z\",\"offer_id\":2878,\"item_id\":null}}"}'
+        vero.\",\"state\":\"unread\",\"sender_id\":9291,\"is_private\":false,\"created_at\":\"2014-10-10T14:04:14.616Z\",\"updated_at\":\"2014-10-10T14:04:14.616Z\",\"offer_id\":2878,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3613,7 +3613,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:04:16 GMT
 - request:
     method: post
@@ -3650,7 +3650,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:05:56 GMT
 - request:
     method: post
@@ -3663,7 +3663,7 @@ http_interactions:
         non nihil iusto rerum. Enim dolore saepe suscipit est et et voluptatem alias.
         Saepe recusandae labore id cum accusamus incidunt dolore. Autem similique
         ipsam fugit temporibus dolore fuga. Et veniam aut odio qui sequi aspernatur
-        deserunt tenetur.\",\"state\":\"unread\",\"recipient_id\":9305,\"sender_id\":9305,\"is_private\":false,\"created_at\":\"2014-10-10T14:05:56.108Z\",\"updated_at\":\"2014-10-10T14:05:56.108Z\",\"offer_id\":2883,\"item_id\":null}}"}'
+        deserunt tenetur.\",\"state\":\"unread\",\"sender_id\":9305,\"is_private\":false,\"created_at\":\"2014-10-10T14:05:56.108Z\",\"updated_at\":\"2014-10-10T14:05:56.108Z\",\"offer_id\":2883,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3689,7 +3689,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:05:57 GMT
 - request:
     method: post
@@ -3728,7 +3728,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:08:32 GMT
 - request:
     method: post
@@ -3766,7 +3766,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:09:35 GMT
 - request:
     method: post
@@ -3777,7 +3777,7 @@ http_interactions:
         Meadows\",\"flat\":\"Suite 363\",\"building\":\"178\",\"district_id\":718,\"addressable_id\":9321,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":718,\"name\":\"Choi
         Hung\",\"territory_id\":897}],\"permissions\":[],\"message\":{\"id\":954,\"body\":\"Sed
         explicabo similique quaerat vero et ratione sit ea. Quo sequi quas omnis voluptatibus
-        accusamus. Quaerat aut quas aliquam et. Soluta porro odio sapiente eos aliquid.\",\"state\":\"unread\",\"recipient_id\":9321,\"sender_id\":9321,\"is_private\":false,\"created_at\":\"2014-10-10T14:09:35.060Z\",\"updated_at\":\"2014-10-10T14:09:35.060Z\",\"offer_id\":2891,\"item_id\":null}}"}'
+        accusamus. Quaerat aut quas aliquam et. Soluta porro odio sapiente eos aliquid.\",\"state\":\"unread\",\"sender_id\":9321,\"is_private\":false,\"created_at\":\"2014-10-10T14:09:35.060Z\",\"updated_at\":\"2014-10-10T14:09:35.060Z\",\"offer_id\":2891,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3803,7 +3803,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:09:36 GMT
 - request:
     method: post
@@ -3841,7 +3841,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:10:39 GMT
 - request:
     method: post
@@ -3854,7 +3854,7 @@ http_interactions:
         voluptatem facilis ea eligendi minima sequi accusamus voluptatem. Eligendi
         illo qui dicta nihil repellat eaque nesciunt quia. Neque dolorem ipsum laborum
         distinctio exercitationem et tempore dolores. Corrupti natus blanditiis sequi
-        reprehenderit deleniti voluptatum.\",\"state\":\"unread\",\"recipient_id\":9337,\"sender_id\":9337,\"is_private\":false,\"created_at\":\"2014-10-10T14:10:39.681Z\",\"updated_at\":\"2014-10-10T14:10:39.681Z\",\"offer_id\":2899,\"item_id\":null}}"}'
+        reprehenderit deleniti voluptatum.\",\"state\":\"unread\",\"sender_id\":9337,\"is_private\":false,\"created_at\":\"2014-10-10T14:10:39.681Z\",\"updated_at\":\"2014-10-10T14:10:39.681Z\",\"offer_id\":2899,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3880,7 +3880,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:10:40 GMT
 - request:
     method: post
@@ -3918,7 +3918,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:14:16 GMT
 - request:
     method: post
@@ -3930,7 +3930,7 @@ http_interactions:
         Water Bay\",\"territory_id\":916}],\"permissions\":[],\"message\":{\"id\":965,\"body\":\"Ut
         debitis et quam maxime corporis explicabo voluptatibus. Iste tenetur aut non
         cupiditate voluptates voluptate et autem. Qui eos odio animi et error ea.
-        Ut rerum quia eligendi culpa ea incidunt.\",\"state\":\"unread\",\"recipient_id\":9353,\"sender_id\":9353,\"is_private\":false,\"created_at\":\"2014-10-10T14:14:16.997Z\",\"updated_at\":\"2014-10-10T14:14:16.997Z\",\"offer_id\":2907,\"item_id\":null}}"}'
+        Ut rerum quia eligendi culpa ea incidunt.\",\"state\":\"unread\",\"sender_id\":9353,\"is_private\":false,\"created_at\":\"2014-10-10T14:14:16.997Z\",\"updated_at\":\"2014-10-10T14:14:16.997Z\",\"offer_id\":2907,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -3956,7 +3956,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:14:18 GMT
 - request:
     method: post
@@ -3995,7 +3995,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:16:43 GMT
 - request:
     method: post
@@ -4007,7 +4007,7 @@ http_interactions:
         Tan\",\"territory_id\":926}],\"permissions\":[],\"message\":{\"id\":969,\"body\":\"Eligendi
         consequuntur deserunt dolor quae. Et facere dolorum est sunt suscipit corporis.
         Repellat minima omnis ea id tempore mollitia. Quos soluta tempora dolores
-        magnam.\",\"state\":\"unread\",\"recipient_id\":9367,\"sender_id\":9367,\"is_private\":false,\"created_at\":\"2014-10-10T14:16:43.347Z\",\"updated_at\":\"2014-10-10T14:16:43.347Z\",\"offer_id\":2913,\"item_id\":null}}"}'
+        magnam.\",\"state\":\"unread\",\"sender_id\":9367,\"is_private\":false,\"created_at\":\"2014-10-10T14:16:43.347Z\",\"updated_at\":\"2014-10-10T14:16:43.347Z\",\"offer_id\":2913,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4033,7 +4033,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:16:45 GMT
 - request:
     method: post
@@ -4070,7 +4070,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:30:50 GMT
 - request:
     method: post
@@ -4083,7 +4083,7 @@ http_interactions:
         qui debitis explicabo eos sapiente est expedita deleniti. Ipsum hic excepturi
         laboriosam consequatur consectetur quia magnam non. Debitis nostrum sunt et
         qui dolorem quod. Atque tempora ducimus qui minus nobis blanditiis tenetur
-        eveniet.\",\"state\":\"unread\",\"recipient_id\":9422,\"sender_id\":9422,\"is_private\":false,\"created_at\":\"2014-10-10T14:30:50.078Z\",\"updated_at\":\"2014-10-10T14:30:50.078Z\",\"offer_id\":2936,\"item_id\":null}}"}'
+        eveniet.\",\"state\":\"unread\",\"sender_id\":9422,\"is_private\":false,\"created_at\":\"2014-10-10T14:30:50.078Z\",\"updated_at\":\"2014-10-10T14:30:50.078Z\",\"offer_id\":2936,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4109,7 +4109,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:30:51 GMT
 - request:
     method: post
@@ -4148,7 +4148,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:35:11 GMT
 - request:
     method: post
@@ -4160,7 +4160,7 @@ http_interactions:
         Tam\",\"territory_id\":973}],\"permissions\":[],\"message\":{\"id\":986,\"body\":\"Repellat
         quasi id eligendi ipsa aut. Reprehenderit sapiente et omnis eveniet. Et fuga
         magni cumque sed dolor porro excepturi. Nam voluptatibus eos et sed. Corporis
-        repellat placeat sit eos asperiores veniam repudiandae.\",\"state\":\"unread\",\"recipient_id\":9438,\"sender_id\":9438,\"is_private\":false,\"created_at\":\"2014-10-10T14:35:11.325Z\",\"updated_at\":\"2014-10-10T14:35:11.325Z\",\"offer_id\":2943,\"item_id\":null}}"}'
+        repellat placeat sit eos asperiores veniam repudiandae.\",\"state\":\"unread\",\"sender_id\":9438,\"is_private\":false,\"created_at\":\"2014-10-10T14:35:11.325Z\",\"updated_at\":\"2014-10-10T14:35:11.325Z\",\"offer_id\":2943,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4186,7 +4186,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:35:12 GMT
 - request:
     method: post
@@ -4224,7 +4224,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:37:14 GMT
 - request:
     method: post
@@ -4236,7 +4236,7 @@ http_interactions:
         Koo\",\"territory_id\":984}],\"permissions\":[],\"message\":{\"id\":991,\"body\":\"Eos
         explicabo nemo maiores animi quis dicta et. Et mollitia sit labore officiis
         quidem officia eum eius. Magni explicabo ullam eius aut et sed aut optio.
-        Qui ut quia officiis harum. Dolore quis sequi voluptas qui ipsum saepe.\",\"state\":\"unread\",\"recipient_id\":9452,\"sender_id\":9452,\"is_private\":false,\"created_at\":\"2014-10-10T14:37:14.307Z\",\"updated_at\":\"2014-10-10T14:37:14.307Z\",\"offer_id\":2949,\"item_id\":null}}"}'
+        Qui ut quia officiis harum. Dolore quis sequi voluptas qui ipsum saepe.\",\"state\":\"unread\",\"sender_id\":9452,\"is_private\":false,\"created_at\":\"2014-10-10T14:37:14.307Z\",\"updated_at\":\"2014-10-10T14:37:14.307Z\",\"offer_id\":2949,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4262,7 +4262,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:37:15 GMT
 - request:
     method: post
@@ -4300,7 +4300,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:39:55 GMT
 - request:
     method: post
@@ -4313,7 +4313,7 @@ http_interactions:
         voluptatem et quam sed dicta non tempore provident. Aut voluptates voluptas
         porro dolor cum sit rerum. Facilis sit aut deleniti repudiandae reiciendis
         omnis voluptatem. Ea vero non commodi facilis distinctio quis. Voluptatem
-        ut quam ex dolores voluptatem.\",\"state\":\"unread\",\"recipient_id\":9480,\"sender_id\":9480,\"is_private\":false,\"created_at\":\"2014-10-10T14:39:55.663Z\",\"updated_at\":\"2014-10-10T14:39:55.663Z\",\"offer_id\":2961,\"item_id\":null}}"}'
+        ut quam ex dolores voluptatem.\",\"state\":\"unread\",\"sender_id\":9480,\"is_private\":false,\"created_at\":\"2014-10-10T14:39:55.663Z\",\"updated_at\":\"2014-10-10T14:39:55.663Z\",\"offer_id\":2961,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4339,7 +4339,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:39:57 GMT
 - request:
     method: post
@@ -4377,7 +4377,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:41:15 GMT
 - request:
     method: post
@@ -4390,7 +4390,7 @@ http_interactions:
         eos aperiam id aspernatur consequatur voluptatem. Voluptate consequatur praesentium
         repudiandae harum vero. Perspiciatis ea cumque dolores explicabo dolorem omnis
         voluptatem aut. Vitae libero quia molestiae deserunt consequatur magni vel
-        nulla.\",\"state\":\"unread\",\"recipient_id\":9494,\"sender_id\":9494,\"is_private\":false,\"created_at\":\"2014-10-10T14:41:15.705Z\",\"updated_at\":\"2014-10-10T14:41:15.705Z\",\"offer_id\":2967,\"item_id\":null}}"}'
+        nulla.\",\"state\":\"unread\",\"sender_id\":9494,\"is_private\":false,\"created_at\":\"2014-10-10T14:41:15.705Z\",\"updated_at\":\"2014-10-10T14:41:15.705Z\",\"offer_id\":2967,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4416,7 +4416,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:41:17 GMT
 - request:
     method: post
@@ -4454,7 +4454,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:41:39 GMT
 - request:
     method: post
@@ -4466,7 +4466,7 @@ http_interactions:
         Mun Tsai\",\"territory_id\":1023}],\"permissions\":[],\"message\":{\"id\":1010,\"body\":\"Rerum
         distinctio vel libero rem. Soluta temporibus dolor sed consequatur culpa doloribus
         harum. Sapiente blanditiis qui consequatur sunt voluptatem optio exercitationem
-        impedit. Saepe modi aut culpa aut esse.\",\"state\":\"unread\",\"recipient_id\":9510,\"sender_id\":9510,\"is_private\":false,\"created_at\":\"2014-10-10T14:41:39.502Z\",\"updated_at\":\"2014-10-10T14:41:39.502Z\",\"offer_id\":2975,\"item_id\":null}}"}'
+        impedit. Saepe modi aut culpa aut esse.\",\"state\":\"unread\",\"sender_id\":9510,\"is_private\":false,\"created_at\":\"2014-10-10T14:41:39.502Z\",\"updated_at\":\"2014-10-10T14:41:39.502Z\",\"offer_id\":2975,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4492,7 +4492,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:41:40 GMT
 - request:
     method: post
@@ -4529,7 +4529,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:47:17 GMT
 - request:
     method: post
@@ -4541,7 +4541,7 @@ http_interactions:
         Mun Tsai\",\"territory_id\":1033}],\"permissions\":[],\"message\":{\"id\":1016,\"body\":\"Explicabo
         tempora libero qui excepturi rerum est. Beatae aut enim nemo et mollitia corporis.
         Et temporibus error et nesciunt omnis nam. Aut ex rerum consequuntur omnis
-        dignissimos enim recusandae non. Illo unde minima quia cum nam ullam.\",\"state\":\"unread\",\"recipient_id\":9526,\"sender_id\":9526,\"is_private\":false,\"created_at\":\"2014-10-10T14:47:17.319Z\",\"updated_at\":\"2014-10-10T14:47:17.319Z\",\"offer_id\":2983,\"item_id\":null}}"}'
+        dignissimos enim recusandae non. Illo unde minima quia cum nam ullam.\",\"state\":\"unread\",\"sender_id\":9526,\"is_private\":false,\"created_at\":\"2014-10-10T14:47:17.319Z\",\"updated_at\":\"2014-10-10T14:47:17.319Z\",\"offer_id\":2983,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4567,7 +4567,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:47:18 GMT
 - request:
     method: post
@@ -4606,7 +4606,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:54:09 GMT
 - request:
     method: post
@@ -4618,7 +4618,7 @@ http_interactions:
         Hom Kok\",\"territory_id\":1043}],\"permissions\":[],\"message\":{\"id\":1021,\"body\":\"Rerum
         nemo sapiente sint sit maiores tempora veniam. Id commodi et quos quis minima
         in voluptatem modi. Quas soluta esse voluptas est officia optio repudiandae
-        hic. Ratione quo vero eveniet minima perferendis.\",\"state\":\"unread\",\"recipient_id\":9540,\"sender_id\":9540,\"is_private\":false,\"created_at\":\"2014-10-10T14:54:09.726Z\",\"updated_at\":\"2014-10-10T14:54:09.726Z\",\"offer_id\":2989,\"item_id\":null}}"}'
+        hic. Ratione quo vero eveniet minima perferendis.\",\"state\":\"unread\",\"sender_id\":9540,\"is_private\":false,\"created_at\":\"2014-10-10T14:54:09.726Z\",\"updated_at\":\"2014-10-10T14:54:09.726Z\",\"offer_id\":2989,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4644,7 +4644,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 14:54:11 GMT
 - request:
     method: post
@@ -4682,7 +4682,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:05:31 GMT
 - request:
     method: post
@@ -4694,7 +4694,7 @@ http_interactions:
         Bay\",\"territory_id\":1054}],\"permissions\":[],\"message\":{\"id\":1027,\"body\":\"Dolorum
         dolor temporibus tenetur necessitatibus rerum quo voluptatem. Ducimus autem
         iste placeat iusto magnam et et. Sapiente consequatur sint praesentium deleniti
-        pariatur.\",\"state\":\"unread\",\"recipient_id\":9558,\"sender_id\":9558,\"is_private\":false,\"created_at\":\"2014-10-10T15:05:31.988Z\",\"updated_at\":\"2014-10-10T15:05:31.988Z\",\"offer_id\":2997,\"item_id\":null}}"}'
+        pariatur.\",\"state\":\"unread\",\"sender_id\":9558,\"is_private\":false,\"created_at\":\"2014-10-10T15:05:31.988Z\",\"updated_at\":\"2014-10-10T15:05:31.988Z\",\"offer_id\":2997,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4720,7 +4720,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:05:33 GMT
 - request:
     method: post
@@ -4758,7 +4758,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:06:13 GMT
 - request:
     method: post
@@ -4769,7 +4769,7 @@ http_interactions:
         Forges\",\"flat\":\"Apt. 142\",\"building\":\"776\",\"district_id\":1045,\"addressable_id\":9569,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":1045,\"name\":\"Tsz
         Wan Shan\",\"territory_id\":1062}],\"permissions\":[],\"message\":{\"id\":1031,\"body\":\"Et
         ipsum dignissimos et non aut. Qui qui aperiam aut vel mollitia quam pariatur
-        non. Earum quo vel sit ut consequatur voluptatem cumque.\",\"state\":\"unread\",\"recipient_id\":9569,\"sender_id\":9569,\"is_private\":false,\"created_at\":\"2014-10-10T15:06:13.438Z\",\"updated_at\":\"2014-10-10T15:06:13.438Z\",\"offer_id\":3002,\"item_id\":null}}"}'
+        non. Earum quo vel sit ut consequatur voluptatem cumque.\",\"state\":\"unread\",\"sender_id\":9569,\"is_private\":false,\"created_at\":\"2014-10-10T15:06:13.438Z\",\"updated_at\":\"2014-10-10T15:06:13.438Z\",\"offer_id\":3002,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4795,7 +4795,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:06:14 GMT
 - request:
     method: post
@@ -4832,7 +4832,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:08:21 GMT
 - request:
     method: post
@@ -4843,7 +4843,7 @@ http_interactions:
         Creek\",\"flat\":\"Apt. 655\",\"building\":\"557\",\"district_id\":1112,\"addressable_id\":9628,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":1112,\"name\":\"Olympic\",\"territory_id\":1110}],\"permissions\":[],\"message\":{\"id\":1037,\"body\":\"Tenetur
         ut voluptas suscipit eos voluptates eaque ut. Eos et qui tempora tenetur corporis
         laboriosam. Provident aut maxime sit qui. Ipsa sapiente assumenda architecto
-        dolores laboriosam repellat quasi.\",\"state\":\"unread\",\"recipient_id\":9628,\"sender_id\":9628,\"is_private\":false,\"created_at\":\"2014-10-10T15:08:21.686Z\",\"updated_at\":\"2014-10-10T15:08:21.686Z\",\"offer_id\":3014,\"item_id\":null}}"}'
+        dolores laboriosam repellat quasi.\",\"state\":\"unread\",\"sender_id\":9628,\"is_private\":false,\"created_at\":\"2014-10-10T15:08:21.686Z\",\"updated_at\":\"2014-10-10T15:08:21.686Z\",\"offer_id\":3014,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4869,7 +4869,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:08:23 GMT
 - request:
     method: post
@@ -4907,7 +4907,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:12:49 GMT
 - request:
     method: post
@@ -4918,7 +4918,7 @@ http_interactions:
         Walks\",\"flat\":\"Suite 210\",\"building\":\"222\",\"district_id\":1428,\"addressable_id\":9873,\"addressable_type\":\"User\"}],\"districts\":[{\"id\":1428,\"name\":\"Sham
         Shui Po\",\"territory_id\":1364}],\"permissions\":[],\"message\":{\"id\":1063,\"body\":\"Aliquid
         saepe repellat sunt et porro ut et. Architecto reprehenderit magni autem quia
-        optio quaerat tempora similique. Est rerum ut amet voluptatum.\",\"state\":\"unread\",\"recipient_id\":9873,\"sender_id\":9873,\"is_private\":false,\"created_at\":\"2014-10-10T15:12:49.125Z\",\"updated_at\":\"2014-10-10T15:12:49.125Z\",\"offer_id\":3102,\"item_id\":null}}"}'
+        optio quaerat tempora similique. Est rerum ut amet voluptatum.\",\"state\":\"unread\",\"sender_id\":9873,\"is_private\":false,\"created_at\":\"2014-10-10T15:12:49.125Z\",\"updated_at\":\"2014-10-10T15:12:49.125Z\",\"offer_id\":3102,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -4944,7 +4944,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:12:50 GMT
 - request:
     method: post
@@ -4983,7 +4983,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:14:05 GMT
 - request:
     method: post
@@ -4995,7 +4995,7 @@ http_interactions:
         Chai\",\"territory_id\":1410}],\"permissions\":[],\"message\":{\"id\":1067,\"body\":\"Sed
         laudantium eaque voluptatum rerum eum. Ut sed sunt a dolorem dignissimos sit.
         Sunt doloribus nisi provident beatae doloremque tempore. Eius deserunt consequatur
-        voluptas ut et nisi. Qui consequuntur temporibus eveniet fugiat dicta reprehenderit.\",\"state\":\"unread\",\"recipient_id\":9928,\"sender_id\":9928,\"is_private\":false,\"created_at\":\"2014-10-10T15:14:05.927Z\",\"updated_at\":\"2014-10-10T15:14:05.927Z\",\"offer_id\":3111,\"item_id\":null}}"}'
+        voluptas ut et nisi. Qui consequuntur temporibus eveniet fugiat dicta reprehenderit.\",\"state\":\"unread\",\"sender_id\":9928,\"is_private\":false,\"created_at\":\"2014-10-10T15:14:05.927Z\",\"updated_at\":\"2014-10-10T15:14:05.927Z\",\"offer_id\":3111,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -5021,7 +5021,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 15:14:07 GMT
 - request:
     method: post
@@ -5059,7 +5059,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 16:02:28 GMT
 - request:
     method: post
@@ -5071,7 +5071,7 @@ http_interactions:
         Tau Kok\",\"territory_id\":1712}],\"permissions\":[],\"message\":{\"id\":1093,\"body\":\"Distinctio
         beatae reiciendis illo nam velit expedita. Quidem quos ut est eveniet quia
         occaecati totam architecto. Delectus illum omnis debitis vel. Sed dolores
-        ab quaerat pariatur qui id. Quis mollitia eligendi ea ex.\",\"state\":\"unread\",\"recipient_id\":10225,\"sender_id\":10225,\"is_private\":false,\"created_at\":\"2014-10-10T16:02:28.151Z\",\"updated_at\":\"2014-10-10T16:02:28.151Z\",\"offer_id\":3203,\"item_id\":null}}"}'
+        ab quaerat pariatur qui id. Quis mollitia eligendi ea ex.\",\"state\":\"unread\",\"sender_id\":10225,\"is_private\":false,\"created_at\":\"2014-10-10T16:02:28.151Z\",\"updated_at\":\"2014-10-10T16:02:28.151Z\",\"offer_id\":3203,\"item_id\":null}}"}'
     headers:
       User-Agent:
       - HTTPClient/1.0 (2.4.0, ruby 2.1.1 (2014-02-24))
@@ -5097,6 +5097,6 @@ http_interactions:
     body:
       encoding: UTF-8
       string: "{}"
-    http_version: 
+    http_version:
   recorded_at: Fri, 10 Oct 2014 16:02:29 GMT
 recorded_with: VCR 2.9.3

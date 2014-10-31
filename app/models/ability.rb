@@ -41,11 +41,10 @@ class Ability
       can :destroy, Image, parent: { state: 'draft' } if reviewer
       can :destroy, Image if supervisor
 
-      # Message (recipient and sender and admins, not user if private is true)
+      # Message (sender and admins, not user if private is true)
       can [:index, :show, :create, :update, :destroy], Message if supervisor
       can [:index, :show, :create], Message if reviewer
-      can [:index, :show, :create], Message, sender_id: user_id, is_private: false
-      can [:index, :show, :create], Message, recipient_id: user_id, is_private: false
+      can [:index, :show, :create], Message, offer: { created_by_id: user_id }, is_private: false
       can [:mark_read], Message, id: user.subscriptions.pluck(:message_id)
 
       # Offer
