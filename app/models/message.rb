@@ -9,7 +9,7 @@ class Message < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
-  scope :with_eager_load, ->{ eager_load( [:sender] ) }
+  scope :with_eager_load, ->{ includes( [:sender] ) }
 
   after_create do
     subscribe_users_to_message
@@ -35,7 +35,7 @@ class Message < ActiveRecord::Base
   end
 
   def state_for(current_user)
-    Subscription.where("user_id=? and message_id=?", current_user.id, id).first.try(:state)
+    Subscription.where("user_id=? and message_id=?", current_user.id, id).pluck(:state).first
   end
 
   def self.current_user_messages(current_user, message_id=nil)
