@@ -22,6 +22,8 @@ class Offer < ActiveRecord::Base
     ])
   }
 
+  scope :review_by, -> (reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
+
   before_create :set_language
 
   state_machine :state, initial: :draft do
@@ -72,7 +74,6 @@ class Offer < ActiveRecord::Base
       reviewed_by_id: reviewer.id,
       state_event: 'start_review')
   end
-
 
   private
 

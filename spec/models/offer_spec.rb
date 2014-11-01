@@ -26,12 +26,10 @@ RSpec.describe Offer, type: :model do
   end
 
   describe "validations" do
-
     it do
       should validate_inclusion_of(:language).
         in_array( I18n.available_locales.map(&:to_s) )
     end
-
   end
 
   it "should set submitted_at when submitted" do
@@ -40,21 +38,31 @@ RSpec.describe Offer, type: :model do
     expect( offer.submitted_at ).to_not be_nil
   end
 
-  describe "valid_state?" do
-    it "should verify state valid or not" do
-      expect(Offer.valid_state?("submitted")).to be true
-      expect(Offer.valid_state?("submit")).to be false
+  describe "Class Methods" do
+    describe "valid_state?" do
+      it "should verify state valid or not" do
+        expect(Offer.valid_state?("submitted")).to be true
+        expect(Offer.valid_state?("submit")).to be false
+      end
+    end
+
+    describe "valid_states" do
+      it "should return list of valid states" do
+        expect(Offer.valid_states).to include("draft")
+        expect(Offer.valid_states).to include("submitted")
+      end
+    end
+
+    describe "review_by" do
+      it "should return offers reviewed by current reviewer" do
+        reviewer = create :user, :reviewer
+        offer = create :offer, reviewed_by: reviewer
+        expect(Offer.review_by(reviewer.id)).to include(offer)
+      end
     end
   end
 
-  describe "valid_states" do
-    it "should return list of valid states" do
-      expect(Offer.valid_states).to include("draft")
-      expect(Offer.valid_states).to include("submitted")
-    end
-  end
-
-  describe '.start_review' do
+  describe 'start_review' do
     it 'should assign reviewer to offer' do
       reviewer = create(:user, :reviewer)
       offer = create :offer, state: 'submitted'
