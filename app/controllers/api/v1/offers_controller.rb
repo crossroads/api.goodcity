@@ -41,10 +41,12 @@ module Api::V1
     api :GET, '/v1/offers', "List all offers"
     param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
+    param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
     def index
       @offers = @offers.with_eager_load # this maintains security
       @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
       @offers = @offers.by_state(params['state']) if params['state']
+      @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
       render json: @offers, each_serializer: serializer
     end
 
