@@ -1355,7 +1355,7 @@
         "schedule" : {
           "id" : "6",
           "resource" : "Truck B",
-          "slot" : "4",
+          "slot" : 4,
           "slot_name" : "Evening,4pm-6pm",
           "zone" : "North",
           "scheduled_at" : "2014-10-30 13:59:23 +0530"

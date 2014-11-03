@@ -16,7 +16,7 @@ module Api::V1
     def_param_group :schedule do
       param :schedule, Hash, required: true do
         param :resource, String, desc: "Transport Type"
-        param :slot, String, desc: "Time slot for the pick up e.g. slot 1 or slot2 etc"
+        param :slot, Integer, desc: "Time slot for the pick up e.g. slot 1 or slot2 etc"
         param :scheduled_at, String, desc: "Date and time of the pick up e.g Tuesday 23 October 2014, 10:30 am."
         param :slot_name, String, desc: "Slot timing details e.g. Morning,11am-1pm or Afternoon,2pm-4pmetc"
         param :zone, String, desc: "zone for selection e.g. East, West, North etc"

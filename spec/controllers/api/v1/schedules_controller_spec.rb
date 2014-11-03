@@ -14,7 +14,7 @@ RSpec.describe Api::V1::SchedulesController, type: :controller do
     end
 
     it "return serialized schedules", show_in_doc: true do
-      post :create, schedule: schedule_params
+      post :create, schedule: schedule_params, format: :json
       body = JSON.parse(response.body)
       expect(response.status).to eq(201)
     end

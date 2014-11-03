@@ -7,6 +7,6 @@ FactoryGirl.define do
     slot { generate(:schedules)[id][:slot] }
     slot_name { generate(:schedules)[id][:slot_name] }
     zone { generate(:schedules)[id][:zone] }
-    scheduled_at {Time.now + 1.weeks + generate(:schedules)[id][:scheduled_at].day}
+    scheduled_at { (Time.now + 1.weeks + generate(:schedules)[id][:scheduled_at].day).to_s }
   end
 end
