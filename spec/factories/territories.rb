@@ -6,7 +6,7 @@ FactoryGirl.define do
     name_zh_tw      { generate(:territories)[name_en][:name_zh_tw] }
     initialize_with { Territory.find_or_initialize_by(name_en: name_en) }
     factory :territory_districts do
-      ignore do
+      transient do
         districts_count 5
       end
 

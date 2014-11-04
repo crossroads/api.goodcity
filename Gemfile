@@ -45,6 +45,7 @@ group :development do
     gem 'capistrano-rails'
     gem 'capistrano-bundler'
     gem 'capistrano-rvm'
+    #~ gem 'capistrano-flowdock', require: false
     gem 'annotate'
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
