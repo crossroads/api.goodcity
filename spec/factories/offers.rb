@@ -15,7 +15,7 @@ FactoryGirl.define do
     reviewed_at    nil
 
     trait :with_items do
-      ignore do
+      transient do
         items_count 1
       end
       after(:create) do |offer, evaluator|
@@ -24,7 +24,7 @@ FactoryGirl.define do
     end
 
     trait :with_messages do
-      ignore do
+      transient do
         messages_count 1
       end
       after(:create) do |offer, evaluator|

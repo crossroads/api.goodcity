@@ -19,7 +19,7 @@ FactoryGirl.define do
     end
 
     trait :subscribe_to_message do
-      ignore do
+      transient do
         offer_subscription_count 1
       end
       after(:create) do |message, evaluator|
