@@ -74,9 +74,9 @@ module Api::V1
     api :PUT, '/v1/offers/1/review', "Assign current_user as reviewer to offer"
     def review
       begin
-        raise unless @offer.submitted?
         Offer.transaction do
           @offer.lock!
+          raise unless @offer.submitted?
           @offer.start_review(current_user)
           render json: @offer, serializer: serializer
         end
