@@ -14,6 +14,7 @@ gem 'active_model_serializers', '~> 0.8.0'
 # "Hard-destroy of Parent record should destroy child records"
 gem 'paranoia', github: 'radar/paranoia', ref: 'fe70628'
 
+gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
 gem 'cancancan'
 gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
@@ -31,7 +32,6 @@ gem 'newrelic_rpm' unless ENV["CI"]
 gem 'traco'
 gem 'rails-i18n'
 gem 'http_accept_language'
-gem 'dotenv-rails'
 gem 'oj', '2.10.2' # 2.10.3 causes a 'too deeply nested' error
 gem 'oj_mimic_json'
 gem 'redis'
