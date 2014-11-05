@@ -71,7 +71,7 @@ module Api::V1
       render json: {}
     end
 
-    api :PUT, '/v1/offers/1/review', "Assign current_user as reviewer to offer"
+    api :PUT, '/v1/offers/1/review', "Assign current_user as Offer reviewer. If two or more reviewers start review at the same time, assign offer to the first reviewer and return offer with reviewer details to other reviewer(s)"
     def review
       begin
         Offer.transaction do
