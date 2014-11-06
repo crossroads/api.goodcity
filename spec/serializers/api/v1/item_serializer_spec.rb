@@ -15,6 +15,7 @@ describe Api::V1::ItemSerializer do
     expect(json['item']['item_type_id']).to eql(item.item_type_id)
     expect(json['item']['rejection_reason_id']).to eql(item.rejection_reason_id)
     expect(json['item']['reject_reason']).to eql(item.reject_reason)
+    expect(json['item']['rejection_comments']).to eql(item.rejection_comments)
     expect(json['item']['created_at']).to eql(item.created_at)
     expect(json['item']['updated_at']).to eql(item.updated_at)
   end
