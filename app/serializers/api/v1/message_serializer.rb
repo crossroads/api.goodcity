@@ -5,9 +5,12 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
-               :updated_at, :offer_id, :item_id
+      :updated_at, :offer_id, :item_id, :for_new_offer
 
     has_one :sender, serializer: UserSerializer, root: :user
 
+    def for_new_offer
+      object.offer.submitted?
+    end
   end
 end
