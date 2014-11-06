@@ -9,13 +9,5 @@ module Api::V1
 
     has_one :sender, serializer: UserSerializer, root: :user
 
-    def state
-      if object.state.blank?
-        Message.find(object.id).state
-      else
-        object.state
-      end
-    end
-
   end
 end
