@@ -3,8 +3,9 @@ module Api::V1
   class ItemSerializer < ActiveModel::Serializer
     embed :ids, include: true
 
-    attributes :id, :donor_description, :state, :offer_id, :rejection_other_reason, :saleable,
-               :created_at, :updated_at, :image_identifiers, :favourite_image
+    attributes :id, :donor_description, :state, :offer_id, :reject_reason,
+      :saleable, :created_at, :updated_at, :image_identifiers,
+      :favourite_image, :rejection_comments
 
     has_many :packages, serializer: PackageSerializer
     has_many :messages, serializer: MessageSerializer
