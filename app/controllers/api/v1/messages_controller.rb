@@ -27,7 +27,7 @@ module Api::V1
     param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
     def index
       @messages = Message.all
-      @messages = Message.where( id: params[:ids].split(",") ) if params[:ids].present?
+      @messages = @messages.where( id: params[:ids].split(",") ) if params[:ids].present?
       @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
       @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
       render json: @messages, each_serializer: serializer
