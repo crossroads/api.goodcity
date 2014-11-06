@@ -10,7 +10,7 @@ module Api::V1
     has_one :sender, serializer: UserSerializer, root: :user
 
     def for_new_offer
-      object.offer.submitted?
+      object.try(:offer).try(:submitted?) || false
     end
   end
 end
