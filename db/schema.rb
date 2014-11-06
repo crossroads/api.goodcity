@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141030065028) do
+ActiveRecord::Schema.define(version: 20141106114218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -96,12 +96,13 @@ ActiveRecord::Schema.define(version: 20141030065028) do
     t.integer  "offer_id"
     t.integer  "item_type_id"
     t.integer  "rejection_reason_id"
-    t.string   "rejection_other_reason"
+    t.string   "reject_reason"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "saleable",               default: false
+    t.boolean  "saleable",            default: false
     t.integer  "donor_condition_id"
     t.datetime "deleted_at"
+    t.string   "rejection_comments"
   end
 
   create_table "messages", force: true do |t|
