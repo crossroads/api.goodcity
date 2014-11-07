@@ -66,6 +66,10 @@ class User < ActiveRecord::Base
     permission.try(:name) == 'Administrator'
   end
 
+  def donor?
+    permission.try(:name) == nil
+  end
+
   def send_verification_pin
     most_recent_token.cycle_otp_auth_key!
     EmailFlowdockService.new(self).send_otp
