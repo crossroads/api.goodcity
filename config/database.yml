@@ -81,5 +81,6 @@ test:
 production:
   <<: *default
   database: goodcity_server_development
+  pool: <%= ENV['MAX_THREADS'] || 25 %>
   #username: goodcity_server
   #password: <%= ENV['GOODCITY_SERVER_DATABASE_PASSWORD'] %>
