@@ -82,6 +82,18 @@ describe "Offer abilities" do
         should_not be_able_to(do_action, offer)
       end}
     end
+
+    context "and offer is scheduled" do
+      let(:offer)     { create :offer, state: 'scheduled', created_by: user }
+      let(:can)       { [:index, :show, :update, :destroy] }
+      let(:cannot)    { [:manage] }
+      it{ can.each do |do_action|
+        should be_able_to(do_action, offer)
+      end}
+      it{ cannot.each do |do_action|
+        should_not be_able_to(do_action, offer)
+      end}
+    end
   end
 
   context "when not Owner" do
