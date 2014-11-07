@@ -72,7 +72,7 @@ GEM
       sshkit (~> 1.2)
     celluloid (0.15.2)
       timers (~> 1.1.0)
-    cloudinary (1.0.77)
+    cloudinary (1.0.78)
       aws_cf_signer
       rest-client
     coderay (1.1.0)
@@ -97,7 +97,7 @@ GEM
     ffaker (1.25.0)
     ffi (1.9.6)
     formatador (0.2.5)
-    guard (2.8.0)
+    guard (2.8.1)
       formatador (>= 0.2.4)
       listen (~> 2.7)
       lumberjack (~> 1.0)
@@ -108,7 +108,7 @@ GEM
       rspec (>= 2.14, < 4.0)
     hike (1.2.3)
     http_accept_language (2.0.2)
-    httpclient (2.5.2)
+    httpclient (2.5.3.2)
     i18n (0.6.11)
     json (1.8.1)
     jwt (0.1.13)
@@ -255,7 +255,7 @@ GEM
     vcr (2.9.3)
     warden (1.2.3)
       rack (>= 1.0)
-    webmock (1.20.2)
+    webmock (1.20.3)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
 

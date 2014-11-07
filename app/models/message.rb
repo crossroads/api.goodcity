@@ -45,6 +45,11 @@ class Message < ActiveRecord::Base
     @attributes["state"] = value
   end
 
+  def mark_read!(user_id)
+    subscription = self.subscriptions.find_by_user_id(user_id)
+    subscription.update_attribute("state", "read") if subscription
+  end
+
   private
 
   def subscribe_users_to_message
