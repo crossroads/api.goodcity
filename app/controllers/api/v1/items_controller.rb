@@ -16,7 +16,7 @@ module Api::V1
       param :item, Hash, required: true do
         param :donor_description, String, desc: "Description/Details of item given by Item-Donor"
         param :donor_condition_id, String, desc: "Describes the item's condition "<< DonorCondition.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; ")
-        param :state_event, Item.valid_events, desc: "Fires the state transition (if allowed) for this item."
+        param :state_event, Item.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this item."
         param :offer_id, String, desc: "Id of Offer to which item belongs."
         param :item_type_id, String, allow_nil: true, desc: "Not yet used"
         param :rejection_reason_id, String, desc: "A categorisation describing the reason the item was rejected "<< RejectionReason.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; "), allow_nil: true
