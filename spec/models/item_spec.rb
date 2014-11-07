@@ -20,7 +20,8 @@ RSpec.describe Item, type: :model do
     it { should have_db_column(:offer_id).of_type(:integer) }
     it { should have_db_column(:item_type_id).of_type(:integer) }
     it { should have_db_column(:rejection_reason_id).of_type(:integer) }
-    it { should have_db_column(:rejection_other_reason).of_type(:string) }
+    it { should have_db_column(:reject_reason).of_type(:string) }
+    it { should have_db_column(:rejection_comments).of_type(:string) }
     it { should have_db_column(:saleable).of_type(:boolean) }
   end
 

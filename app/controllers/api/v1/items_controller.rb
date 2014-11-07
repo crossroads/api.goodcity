@@ -20,7 +20,8 @@ module Api::V1
         param :offer_id, String, desc: "Id of Offer to which item belongs."
         param :item_type_id, String, allow_nil: true, desc: "Not yet used"
         param :rejection_reason_id, String, desc: "A categorisation describing the reason the item was rejected "<< RejectionReason.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; "), allow_nil: true
-        param :rejection_other_reason, String, allow_nil: true, desc: "Reviewer description of why the item was rejected"
+        param :reject_reason, String, allow_nil: true, desc: "Reviewer description of why the item was rejected"
+        param :rejection_comments, String, allow_nil: true, desc: "Reviewer description of why the item was rejected given to Donor."
         param :image_identifiers, String, desc: "Comma seperated list of image-ids uploaded to Cloudinary"
         param :favourite_image, String, desc: "An existing image-id that will become the default image for this item"
       end
@@ -71,7 +72,7 @@ module Api::V1
     def item_params
       params.require(:item).permit(:donor_description, :donor_condition_id,
         :state_event, :offer_id, :item_type_id, :rejection_reason_id,
-        :rejection_other_reason)
+        :reject_reason, :rejection_comments)
     end
 
     def serializer
