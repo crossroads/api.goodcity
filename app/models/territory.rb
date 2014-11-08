@@ -1,6 +1,6 @@
 class Territory < ActiveRecord::Base
 
-  include CacheableJson
+  include I18nCacheKey
 
   has_many :districts, inverse_of: :territory
   validates :name_en, presence: true
