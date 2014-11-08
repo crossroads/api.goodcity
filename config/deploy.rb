@@ -36,6 +36,8 @@ set :bundle_binstubs, nil
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+set :rvm_ruby_version, '2.1.4'
+
 namespace :deploy do
 
   desc 'Restart application'
