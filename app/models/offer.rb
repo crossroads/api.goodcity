@@ -16,7 +16,7 @@ class Offer < ActiveRecord::Base
   accepts_nested_attributes_for :subscriptions
 
   scope :with_eager_load, -> {
-    includes ( [:created_by, :reviewed_by, { delivery: :schedule }, { messages: :sender },
+    includes ( [:created_by, :reviewed_by, { delivery: [:schedule, :contact] }, { messages: :sender },
       { items: [:item_type, :rejection_reason, :donor_condition, :images,
                { messages: :sender }, { packages: :package_type }] }
     ])
