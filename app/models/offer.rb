@@ -75,11 +75,11 @@ class Offer < ActiveRecord::Base
       state_event: 'start_review')
   end
 
-  private
-
   def update_ember_store
     PushService.new.update_store(data: self, donor_channel: Channel.user(self.created_by)) unless state == "draft"
   end
+
+  private
 
   def send_new_offer_notification
     text = I18n.t("notification.new_offer", name: self.created_by.full_name)

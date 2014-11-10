@@ -34,6 +34,8 @@ class Item < ActiveRecord::Base
     event :question do
       transition :draft => :pending
     end
+
+    after_transition on: [:reject, :accept], do: :update_ember_store
   end
 
   def self.update_saleable
@@ -43,6 +45,10 @@ class Item < ActiveRecord::Base
   def set_favourite_image(image_id)
     images.favourites.map(&:remove_favourite)
     images.find_by_image_id(image_id).try(:set_favourite)
+  end
+
+  def update_ember_store
+    self.try(:offer).try(:update_ember_store)
   end
 
 end
