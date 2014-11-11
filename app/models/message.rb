@@ -59,9 +59,14 @@ class Message < ActiveRecord::Base
     end
     subscriptions.create(state: self.state, message_id: id, offer_id: offer_id, user_id: sender_id)
 
-    #subscribe donor if not already subscribed
+    # subscribe donor if not already subscribed
     if !self.is_private && subscriptions.where(user_id: self.offer.created_by_id).empty?
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.created_by_id)
+    end
+
+    # subscribe assigned reviewer if not already subscribed
+    if !self.offer.reviewed_by_id.nil? && subscriptions.where(user_id: self.offer.reviewed_by_id).empty?
+      subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.reviewed_by_id)
     end
   end
 
@@ -73,11 +78,11 @@ class Message < ActiveRecord::Base
     subscribed_user_channels = subscribed_user_channels()
     text = self.body.truncate(150, separator: ' ')
 
-    #notify subscribed users except sender
+    # notify subscribed users except sender
     channels = subscribed_user_channels - Channel.user(self.sender)
     service.send_notification(text: text, entity_type: "message", entity: self, channel: channels) unless channels.empty?
 
-    #notify all supervisors if no supervisor is subscribed in private thread
+    # notify all supervisors if no supervisor is subscribed in private thread
     if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
       service.send_notification(text: text, entity_type: "message", entity: self, channel: Channel.supervisor)
     end
