@@ -60,12 +60,12 @@ class Message < ActiveRecord::Base
     subscriptions.create(state: self.state, message_id: id, offer_id: offer_id, user_id: sender_id)
 
     # subscribe donor if not already subscribed
-    if !self.is_private && subscriptions.where(user_id: self.offer.created_by_id).empty?
+    unless self.is_private || subscriptions.find_by_user_id(user_id: self.offer.created_by_id).present?
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.created_by_id)
     end
 
     # subscribe assigned reviewer if not already subscribed
-    if !self.offer.reviewed_by_id.nil? && subscriptions.where(user_id: self.offer.reviewed_by_id).empty?
+    unless subscriptions.find_by_user_id(self.offer.reviewed_by_id).present?
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.reviewed_by_id)
     end
   end
