@@ -76,12 +76,12 @@ class User < ActiveRecord::Base
     TwilioService.new(self).sms_verification_pin
   end
 
-  def self.current
-    Thread.current[:user]
+  def self.current_user_id
+    Thread.current[:current_user_id]
   end
 
-  def self.current=(user)
-    Thread.current[:user] = user
+  def self.current_user_id=(user_id)
+    Thread.current[:current_user_id] = user_id
   end
 
   private

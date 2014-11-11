@@ -18,11 +18,12 @@ class ApplicationController < ActionController::API
   def current_user
     @current_user ||= begin
       user = nil
+      User.current_user_id = nil
       if token.valid?
         user_id = token.data['user_id']
         user = User.find_by_id(user_id) if user_id.present?
+        User.current_user_id = user_id
       end
-      User.current = user
       user
     end
   end

@@ -4,6 +4,7 @@ describe Message, type: :model do
 
   before { allow_any_instance_of(PushService).to receive(:update_store) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
+  before { User.current_user_id = donor.id }
   let(:donor) { create :user }
   let(:reviewer) { create :user, :reviewer }
   let(:offer) { create :offer, created_by_id: donor.id }
@@ -29,7 +30,6 @@ describe Message, type: :model do
 
   describe "default_scope" do
     it "returns message object with current user message state" do
-      User.current = donor
       ["read", "unread"].each do |state|
         message = create_message(state: state)
         returned_message = Message.find(message.id)

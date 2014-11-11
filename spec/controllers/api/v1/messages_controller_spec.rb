@@ -22,7 +22,6 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       expect(response.status).to eq(200)
     end
     it "return serialized message", :show_in_doc do
-      User.current = user
       get :show, id: message.id
       body = JSON.parse(response.body)
       expect(body).to eq(serialized_message_json)

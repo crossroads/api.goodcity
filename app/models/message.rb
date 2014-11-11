@@ -13,11 +13,11 @@ class Message < ActiveRecord::Base
 
   # select messages with current user state
   default_scope do
-    if User.current.nil?
-      logger.warn("Warning: User.current is nil in Message.default_scope")
+    if User.current_user_id.nil?
+      logger.warn("Warning: User.current_user_id is nil in Message.default_scope")
       nil
     else
-      joins("left join subscriptions s on s.message_id = messages.id and s.user_id = #{User.current.id}").
+      joins("left join subscriptions s on s.message_id = messages.id and s.user_id = #{User.current_user_id}").
         select("messages.*, coalesce(s.state, 'never-subscribed') as state")
     end
   end
