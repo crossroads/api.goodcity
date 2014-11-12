@@ -17,8 +17,7 @@ class Offer < ActiveRecord::Base
 
   scope :with_eager_load, -> {
     includes ( [:created_by, :reviewed_by, { delivery: [:schedule, :contact] }, { messages: :sender },
-      { items: [:item_type, :rejection_reason, :donor_condition, :images,
-               { messages: :sender }, { packages: :package_type }] }
+      { items: [:images, :packages, { messages: :sender }] }
     ])
   }
 
