@@ -50,6 +50,10 @@ class Message < ActiveRecord::Base
     subscription.update_attribute("state", "read") if subscription
   end
 
+  def user_subscribed?(user_id)
+    subscriptions.where(user_id: user_id).present?
+  end
+
   private
 
   def subscribe_users_to_message
@@ -60,12 +64,12 @@ class Message < ActiveRecord::Base
     subscriptions.create(state: self.state, message_id: id, offer_id: offer_id, user_id: sender_id)
 
     # subscribe donor if not already subscribed
-    unless self.is_private || subscriptions.where(user_id: self.offer.created_by_id).present?
+    unless self.is_private || self.user_subscribed?(self.offer.created_by_id)
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.created_by_id)
     end
 
     # subscribe assigned reviewer if not already subscribed
-    unless self.offer.reviewed_by_id.nil? || subscriptions.where(user_id: self.offer.reviewed_by_id).present?
+    unless self.offer.reviewed_by_id.nil? || self.user_subscribed?(self.offer.reviewed_by_id)
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.reviewed_by_id)
     end
   end
