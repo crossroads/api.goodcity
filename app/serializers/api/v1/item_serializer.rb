@@ -4,15 +4,12 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :donor_description, :state, :offer_id, :reject_reason,
-      :saleable, :created_at, :updated_at, :image_identifiers,
-      :favourite_image, :rejection_comments
+      :saleable, :created_at, :updated_at, :image_identifiers, :item_type_id,
+      :favourite_image, :rejection_comments, :donor_condition_id, :rejection_reason_id
 
     has_many :packages, serializer: PackageSerializer
     has_many :messages, serializer: MessageSerializer
     has_many :images,   serializer: ImageSerializer
-    has_one  :rejection_reason, serializer: RejectionReasonSerializer
-    has_one  :item_type, serializer: ItemTypeSerializer
-    has_one  :donor_condition, serializer: DonorConditionSerializer
 
     def image_identifiers
       object.images.map(&:image_id).join(",")
