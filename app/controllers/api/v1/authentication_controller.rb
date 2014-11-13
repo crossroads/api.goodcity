@@ -1,7 +1,7 @@
 module Api::V1
   class AuthenticationController < Api::V1::ApiController
     skip_before_action :validate_token, only: [:signup, :verify, :send_pin]
-    skip_authorization_check only: [:signup, :verify, :send_pin]
+    skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_profile]
 
     resource_description do
       short "Handle user login and registration"
@@ -132,10 +132,18 @@ module Api::V1
     def verify
       @user = warden.authenticate!(:pin)
       if warden.authenticated?
-        render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserSerializer.new(@user) }
+        render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user) }
       else
         throw(:warden, { status: 401 })
       end
+    end
+
+    api :GET, '/v1/auth/current_user_profile', "Retrieve current authenticated user profile details"
+    error 401, "Unauthorized"
+    error 500, "Internal Server Error"
+    def current_user_profile
+      @user = User.find(User.current_user_id)
+      render json: @user, serializer: Api::V1::UserProfileSerializer
     end
 
     private
