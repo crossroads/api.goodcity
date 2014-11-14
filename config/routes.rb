@@ -16,6 +16,8 @@ Rails.application.routes.draw do
       get  "districts/:id" => "districts#show"
       get  "item_types" => "item_types#index"
       get  "item_types/:id" => "item_types#show"
+      get  "permissions" => "permissions#index"
+      get  "permissions/:id" => "permissions#show"
       get  "images/generate_signature" => "images#generate_signature"
       get  "messages" => "messages#index"
       get  "messages/:id" => "messages#show"
