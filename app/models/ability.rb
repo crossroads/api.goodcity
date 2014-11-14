@@ -74,6 +74,7 @@ class Ability
       can [:index, :show], DonorCondition
       can [:index, :show], ItemType
       can [:index, :show], RejectionReason
+      can [:index, :show], Permission
 
     end
 
