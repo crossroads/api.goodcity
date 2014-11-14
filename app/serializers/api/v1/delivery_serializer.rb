@@ -1,6 +1,6 @@
 module Api::V1
 
-  class DeliverySerializer < ActiveModel::Serializer
+  class DeliverySerializer < CachingSerializer
     embed :ids, include: true
     attributes :id, :start, :finish, :offer_id, :delivery_type
 

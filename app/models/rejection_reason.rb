@@ -1,6 +1,6 @@
 class RejectionReason < ActiveRecord::Base
 
-  include CacheableJson
+  include I18nCacheKey
 
   has_many :items
   translates :name

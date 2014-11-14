@@ -1,6 +1,6 @@
 module Api::V1
 
-  class ItemSerializer < ActiveModel::Serializer
+  class ItemSerializer < CachingSerializer
     embed :ids, include: true
 
     attributes :id, :donor_description, :state, :offer_id, :reject_reason,

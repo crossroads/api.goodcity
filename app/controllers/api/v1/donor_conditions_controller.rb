@@ -15,10 +15,6 @@ module Api::V1
     api :GET, '/v1/donor_conditions', "List all donor conditions."
     param :ids, Array, of: Integer, desc: "Filter by donor condition ids e.g. ids = [1,2,3,4]"
     def index
-      if params[:ids].blank?
-        render json: DonorCondition.cached_json
-        return
-      end
       @donor_conditions = @donor_conditions.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @donor_conditions, each_serializer: serializer
     end

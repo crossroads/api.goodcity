@@ -1,6 +1,6 @@
 module Api::V1
 
-  class RejectionReasonSerializer < ActiveModel::Serializer
+  class RejectionReasonSerializer < CachingSerializer
     embed :ids, include: true
     attributes :id, :name
   end

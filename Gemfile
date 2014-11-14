@@ -8,7 +8,7 @@ gem 'pg'
 # gem 'bcrypt-ruby', '~> 3.1.2'
 # gem 'active_model_otp'
 gem 'active_model_otp', '~> 1.1.0'
-gem 'active_model_serializers', '~> 0.8.0'
+gem 'active_model_serializers', github: 'crossroads/active_model_serializers', branch: '0-8-stable'
 
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"

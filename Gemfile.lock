@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/crossroads/active_model_serializers.git
+  revision: 1862f72c6de9d641a0b96d9deb59fc9532399240
+  branch: 0-8-stable
+  specs:
+    active_model_serializers (0.8.2)
+      activemodel (>= 3.0)
+
+GIT
   remote: git://github.com/radar/paranoia.git
   revision: fe706284ff0cc805ffef4a65bf9bf4f52b9f1ed5
   ref: fe70628
@@ -25,8 +33,6 @@ GEM
     active_model_otp (1.1.0)
       activemodel
       rotp
-    active_model_serializers (0.8.2)
-      activemodel (>= 3.0)
     activemodel (4.1.7)
       activesupport (= 4.1.7)
       builder (~> 3.1)
@@ -264,7 +270,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_otp (~> 1.1.0)
-  active_model_serializers (~> 0.8.0)
+  active_model_serializers!
   airbrake
   annotate
   apipie-rails

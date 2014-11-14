@@ -1,6 +1,6 @@
 module Api::V1
 
-  class ImageSerializer < ActiveModel::Serializer
+  class ImageSerializer < CachingSerializer
     embed :ids, include: true
 
     attributes :id, :image_url, :thumb_image_url, :favourite, :order, :image_id

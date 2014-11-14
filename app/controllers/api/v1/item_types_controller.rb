@@ -4,10 +4,6 @@ module Api::V1
     load_and_authorize_resource :item_type, parent: false
 
     def index
-      if params[:ids].blank?
-        render json: ItemType.cached_json
-        return
-      end
       @item_types = @item_types.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @item_types, each_serializer: serializer
     end

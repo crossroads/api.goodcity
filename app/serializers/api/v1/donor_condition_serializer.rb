@@ -1,6 +1,6 @@
 module Api::V1
 
-  class DonorConditionSerializer < ActiveModel::Serializer
+  class DonorConditionSerializer < CachingSerializer
     attributes :id, :name
   end
 

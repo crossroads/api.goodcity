@@ -2,7 +2,7 @@ class District < ActiveRecord::Base
 
   include I18nCacheKey
 
-  belongs_to :territory, inverse_of: :districts#, touch: true
+  belongs_to :territory, inverse_of: :districts
   has_many :addresses
 
   validates :name_en, presence: true
