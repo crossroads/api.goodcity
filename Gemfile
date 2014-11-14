@@ -2,7 +2,8 @@ source 'https://rubygems.org'
 
 gem 'rails'
 gem 'rails-api'
-gem 'pg'
+gem 'pg', platform: :ruby
+gem 'activerecord-jdbcpostgresql-adapter', platform: :jruby
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
@@ -32,8 +33,8 @@ gem 'newrelic_rpm' unless ENV["CI"]
 gem 'traco'
 gem 'rails-i18n'
 gem 'http_accept_language'
-gem 'oj', '2.10.2' # 2.10.3 causes a 'too deeply nested' error
-gem 'oj_mimic_json'
+gem 'oj', '2.10.2', platform: :ruby # 2.10.3 causes a 'too deeply nested' error
+gem 'oj_mimic_json', platform: :ruby
 gem 'redis'
 gem 'redis-rails'
 gem 'pusher'

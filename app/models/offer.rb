@@ -21,7 +21,7 @@ class Offer < ActiveRecord::Base
     ])
   }
 
-  scope :review_by, -> (reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
+  scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
 
   before_create :set_language
 

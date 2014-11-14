@@ -1,3 +1,4 @@
+# encoding: utf-8
 Apipie.configure do |config|
   config.app_name                = "GoodCity API"
   config.copyright               = "&copy; Crossroads Foundation Limited"

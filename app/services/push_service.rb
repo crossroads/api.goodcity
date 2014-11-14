@@ -22,7 +22,10 @@ class PushService
     end
   end
 
-  def update_store(data:, donor_channel: nil, channel: Channel.staff)
+  def update_store(options)
+    data = options[:data]
+    donor_channel = options[:donor_channel]
+    channel = (options[:channel] || Channel.staff)
     channel += donor_channel if donor_channel.present?
     @channel = channel
     @event = "update_store"
@@ -35,10 +38,11 @@ class PushService
   #new message to subscribed users
   #offer status change to donor
   #item rejected/accepted to donor
-  def send_notification(text:, entity_type:, entity:, channel:)
-    @channel = channel
+  # expected options: text, entity_type, entity
+  def send_notification(options)
+    @channel = options.delete(:channel)
     @event = "notification"
-    @data = {text: text, entity_type: entity_type, entity: entity, date: Time.now}.to_json
+    @data = options.merge(date: Time.now).to_json
     notify
   end
 end
