@@ -1,5 +1,4 @@
 module Api::V1
-
   class UserProfileSerializer < ActiveModel::Serializer
     embed :ids, include: true
 
@@ -11,7 +10,5 @@ module Api::V1
     def mobile
       object.try(:mobile) && object.mobile.slice(4..-1)
     end
-
   end
-
 end
