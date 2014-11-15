@@ -138,7 +138,7 @@ module Api::V1
       end
     end
 
-    api :GET, '/v1/auth/current_user_profile', "Retrieve current authenticated user profile details"
+    api :GET, "/v1/auth/current_user_profile", "Retrieve current authenticated user profile details"
     error 401, "Unauthorized"
     error 500, "Internal Server Error"
     def current_user_profile

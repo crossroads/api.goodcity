@@ -1,6 +1,5 @@
 module Api::V1
   class PermissionsController < Api::V1::ApiController
-
     load_and_authorize_resource :permission, parent: false
 
     def index
@@ -16,6 +15,5 @@ module Api::V1
     def serializer
       Api::V1::PermissionSerializer
     end
-
   end
 end
