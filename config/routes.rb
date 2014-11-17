@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       get  "districts/:id" => "districts#show"
       get  "item_types" => "item_types#index"
       get  "item_types/:id" => "item_types#show"
+      post "item_types" => "item_types#create"
       get  "permissions" => "permissions#index"
       get  "permissions/:id" => "permissions#show"
       get  "images/generate_signature" => "images#generate_signature"
@@ -34,6 +35,8 @@ Rails.application.routes.draw do
 
       get  "packages" => "packages#index"
       get  "packages/:id" => "packages#show"
+      post "packages" => "packages#create"
+
       get  "rejection_reasons" => "rejection_reasons#index"
       get  "rejection_reasons/:id" => "rejection_reasons#show"
       get  "territories" => "territories#index"
