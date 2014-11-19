@@ -96,7 +96,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(body['errors']).to eql( "Mobile must begin with +852" )
       end
     end
-
   end
 
   context 'verify warden' do
