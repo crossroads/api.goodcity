@@ -69,6 +69,7 @@ class Ability
       # User
       can [:show, :update], User, id: user_id
       can [:index, :show, :update], User if reviewer or supervisor
+      can :current_user_profile, User
 
       # Taxonomies
       can [:index, :show], DonorCondition
