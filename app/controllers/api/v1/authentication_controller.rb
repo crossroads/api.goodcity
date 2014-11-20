@@ -1,7 +1,7 @@
 module Api::V1
   class AuthenticationController < Api::V1::ApiController
     skip_before_action :validate_token, only: [:signup, :verify, :send_pin]
-    skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_profile]
+    skip_authorization_check only: [:signup, :verify, :send_pin]
 
     resource_description do
       short "Handle user login and registration"
@@ -142,6 +142,7 @@ module Api::V1
     error 401, "Unauthorized"
     error 500, "Internal Server Error"
     def current_user_profile
+      authorize!(:current_user_profile, User)
       @user = User.find(User.current_user_id)
       render json: @user, serializer: Api::V1::UserProfileSerializer
     end
