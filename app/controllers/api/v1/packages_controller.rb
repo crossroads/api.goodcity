@@ -19,7 +19,7 @@ module Api::V1
         param :width, Integer, desc: "Package width", allow_nil: true
         param :height, Integer, desc: "Package height", allow_nil: true
         param :notes, String, desc: "Comment mentioned by customer", allow_nil: true
-        param :item_id, Integer, desc: "Item for which package is created", allow_nil: true
+        param :item_id, String, desc: "Item for which package is created", allow_nil: true
         param :state, String, desc: "State", allow_nil: true
         param :received_at, String, desc: "Date on which package is received", allow_nil: true
         param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
@@ -42,6 +42,7 @@ module Api::V1
     param_group :package
     def create
       @package = Package.new(package_params)
+
       if @package.save
         render json: @package, serializer: serializer, status: 201
       else
