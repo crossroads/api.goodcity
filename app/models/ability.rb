@@ -73,7 +73,7 @@ class Ability
 
       # Taxonomies
       can [:index, :show], DonorCondition
-      can [:index, :show, :create], ItemType
+      can [:index, :show], ItemType
       can [:index, :show], RejectionReason
       can [:index, :show], Permission
 
