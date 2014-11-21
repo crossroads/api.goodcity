@@ -42,7 +42,6 @@ module Api::V1
     param_group :package
     def create
       @package = Package.new(package_params)
-
       if @package.save
         render json: @package, serializer: serializer, status: 201
       else

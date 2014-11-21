@@ -10,6 +10,7 @@ module Api::V1
     has_many :packages, serializer: PackageSerializer
     has_many :messages, serializer: MessageSerializer
     has_many :images,   serializer: ImageSerializer
+    has_one :item_type, serializer: ItemTypeSerializer
 
     def image_identifiers
       object.images.map(&:image_id).join(",")
