@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141106114218) do
+ActiveRecord::Schema.define(version: 20141121115630) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 20141106114218) do
     t.datetime "finish"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "gogovan_order_id"
   end
 
   create_table "districts", force: true do |t|
@@ -66,6 +67,13 @@ ActiveRecord::Schema.define(version: 20141106114218) do
   create_table "donor_conditions", force: true do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "gogovan_orders", force: true do |t|
+    t.integer  "booking_id"
+    t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

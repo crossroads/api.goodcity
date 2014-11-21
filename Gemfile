@@ -38,6 +38,7 @@ gem 'redis'
 gem 'redis-rails'
 gem 'pusher'
 gem 'apipie-rails'
+gem "go_go_van_api", path: "/home/swat/EMBER/GOODCITY-HK/go_go_van_api"
 
 group :development do
   unless ENV["CI"]

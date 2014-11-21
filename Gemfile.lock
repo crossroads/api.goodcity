@@ -6,6 +6,12 @@ GIT
     paranoia (2.0.2)
       activerecord (~> 4.0)
 
+PATH
+  remote: /home/swat/EMBER/GOODCITY-HK/go_go_van_api
+  specs:
+    go_go_van_api (0.0.1)
+      nestful (~> 1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -124,6 +130,7 @@ GEM
     mime-types (2.4.3)
     minitest (5.4.2)
     multi_json (1.10.1)
+    nestful (1.0.7)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
@@ -278,6 +285,7 @@ DEPENDENCIES
   execjs
   factory_girl_rails
   ffaker
+  go_go_van_api!
   guard-rspec
   http_accept_language
   jwt (~> 0.1.13)
