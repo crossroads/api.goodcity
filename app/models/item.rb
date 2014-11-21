@@ -7,7 +7,7 @@ class Item < ActiveRecord::Base
   belongs_to :rejection_reason
   belongs_to :donor_condition
   has_many   :messages
-  has_many   :images,    as: :parent, dependent: :destroy
+  has_many   :images
   has_many   :packages, dependent: :destroy
 
   validates :donor_condition_id, presence: true
@@ -40,11 +40,6 @@ class Item < ActiveRecord::Base
 
   def self.update_saleable
     update_all(saleable: true)
-  end
-
-  def set_favourite_image(image_id)
-    images.favourites.map(&:remove_favourite)
-    images.find_by_image_id(image_id).try(:set_favourite)
   end
 
   def update_ember_store
