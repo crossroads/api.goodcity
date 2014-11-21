@@ -29,12 +29,15 @@ BDS:
 BSB:
   :name_en: Single bed base
   :name_zh_tw:
+  :parent_code: BS
 BSF:
   :name_en: Single bed (folding)
   :name_zh_tw:
+  :parent_code: BS
 BSM:
   :name_en: Bed - Single bed mattress only
   :name_zh_tw:
+  :parent_code: BS
 BSS:
   :name_en: Bed - Single bed with mattress
   :name_zh_tw:
@@ -57,7 +60,7 @@ CHF:
   :name_en: Fabric/ Craft
   :name_zh_tw:
 CHP:
-  :name_en: 'Carpet/rug '
+  :name_en: Carpet/rug
   :name_zh_tw:
 BCX:
   :name_en: Bed - child's others
@@ -77,6 +80,7 @@ BKX:
 BSX:
   :name_en: Single bed others
   :name_zh_tw:
+  :parent_code: BS
 CBX:
   :name_en: Other bedding items
   :name_zh_tw:
@@ -198,7 +202,7 @@ EKP:
   :name_en: Pot/Urn
   :name_zh_tw:
 EOM:
-  :name_en: 'Mass duplicator '
+  :name_en: Mass duplicator
   :name_zh_tw:
 EOP:
   :name_en: Photocopier
@@ -216,7 +220,7 @@ EUD:
   :name_en: CD player
   :name_zh_tw:
 EUH:
-  :name_en: 'Hi-Fi System '
+  :name_en: Hi-Fi System
   :name_zh_tw:
 EUM:
   :name_en: Amplifier – home
@@ -480,7 +484,7 @@ HXB:
   :name_en: Bags/ Backpacks
   :name_zh_tw:
 MDD:
-  :name_en: 'Dental Devices '
+  :name_en: Dental Devices
   :name_zh_tw:
 MDL:
   :name_en: Laboratory devices
@@ -654,7 +658,7 @@ REW:
   :name_en: Weights
   :name_zh_tw:
 RM:
-  :name_en: 'Music '
+  :name_en: Music
   :name_zh_tw:
 RP:
   :name_en: Playground+Sports equipment
@@ -678,10 +682,10 @@ T:
   :name_en: Toys
   :name_zh_tw:
 TB:
-  :name_en: 'Baby & Toddler toys '
+  :name_en: Baby & Toddler toys
   :name_zh_tw:
 TD:
-  :name_en: 'Dolls '
+  :name_en: Dolls
   :name_zh_tw:
 TE:
   :name_en: Educational toys
@@ -747,7 +751,7 @@ VP:
   :name_en: Printer
   :name_zh_tw:
 VZ:
-  :name_en: 'Computer equipment, untested '
+  :name_en: Computer equipment, untested
   :name_zh_tw:
 XBX:
   :name_en: Other Building fittings
@@ -1000,7 +1004,7 @@ MW:
   :name_en: Women's Health
   :name_zh_tw:
 MEH:
-  :name_en: 'Eyeglasses - Plano '
+  :name_en: Eyeglasses - Plano
   :name_zh_tw:
 BLS:
   :name_en: Bed - Loft bed with mattress
@@ -1144,7 +1148,7 @@ CLZM:
   :name_en: PALLET OF Mens summer clothing, NEW, unsorted,
   :name_zh_tw:
 CLZV:
-  :name_en: 'Pallet of Womens summer clothing, NEW, unsorted, '
+  :name_en: Pallet of Womens summer clothing, NEW, unsorted
   :name_zh_tw:
 CLZC:
   :name_en: PALLET OF Childrens clothing, NEW, unsorted
@@ -1225,7 +1229,7 @@ RPA:
   :name_en: Bicycles - Adult
   :name_zh_tw:
 HXT:
-  :name_en: 'Rubbish bin, '
+  :name_en: Rubbish bin
   :name_zh_tw:
 MEW:
   :name_en: Assorted/Mixed Box of Eyeglasses
@@ -1234,13 +1238,13 @@ MVW:
   :name_en: Medical Literature
   :name_zh_tw:
 CLZN:
-  :name_en: 'PALLET OF Mens winter clothing , NEW, unsorted '
+  :name_en: PALLET OF Mens winter clothing , NEW, unsorted
   :name_zh_tw:
 CLZW:
-  :name_en: 'PALLET OF Womens winter clothing, NEW, unsorted '
+  :name_en: PALLET OF Womens winter clothing, NEW, unsorted
   :name_zh_tw:
 CLZB:
-  :name_en: 'PALLET OF Babies clothing, NEW, unsorted '
+  :name_en: PALLET OF Babies clothing, NEW, unsorted
   :name_zh_tw:
 PF:
   :name_en: Teaching Materials
@@ -1354,7 +1358,7 @@ CLZA:
   :name_en: Underwear (undergarments) ALL AGES
   :name_zh_tw:
 EHA:
-  :name_en: 'Air conditioner '
+  :name_en: Air conditioner
   :name_zh_tw:
 EHD:
   :name_en: Dehumidifier
@@ -1396,7 +1400,7 @@ EUX:
   :name_en: Other audio items
   :name_zh_tw:
 EVT:
-  :name_en: 'TV set '
+  :name_en: TV set
   :name_zh_tw:
 EKS:
   :name_en: Stove/ oven
