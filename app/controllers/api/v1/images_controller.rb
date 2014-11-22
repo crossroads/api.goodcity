@@ -63,10 +63,10 @@ module Api::V1
     api :PUT, '/v1/images/1', "Update an image"
     param_group :image
     def update
-      if @image.favourite
-        @image.item.images.update_all(favourite: false)
-      end
       @image.update_attributes(image_params)
+      if @image.favourite
+        @image.item.images.where.not(id: @image.id).update_all(favourite: false)
+      end
       render json: @image, serializer: serializer, status: 200
     end
 
