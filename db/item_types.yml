@@ -534,13 +534,7 @@ HY:
 MG:
   :name_en: Medical general supplies
   :name_zh_tw:
-NOA:
-  :name_en: Accessories
-  :name_zh_tw:
 NOP:
-  :name_en: Paper
-  :name_zh_tw:
-NQP:
   :name_en: Paper
   :name_zh_tw:
 NX:
@@ -987,9 +981,6 @@ MSO:
   :name_zh_tw:
 MST:
   :name_en: Thoracic
-  :name_zh_tw:
-MSU:
-  :name_en: Urology
   :name_zh_tw:
 MSX:
   :name_en: OTHER emergency room items
