@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :delivery, parent: false
 
     def create
-      @delivery = Delivery.find_by_offer_id(params[:offer_id]) || @delivery
+      @delivery = Delivery.where(offer_id: params[:delivery][:offer_id]).last || @delivery
       @delivery.attributes = delivery_params
       if @delivery.save
         render json: @delivery, serializer: serializer, status: 201
