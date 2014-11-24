@@ -1,5 +1,5 @@
 require 'rails_helper'
 
-RSpec.describe GogovanOrdersController, type: :controller do
+RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
 
 end
