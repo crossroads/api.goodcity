@@ -30,7 +30,7 @@ module Api::V1
 
     def delivery_params
       params.require(:delivery).permit(:start, :finish, :offer_id,
-        :contact_id, :schedule_id, :delivery_type)
+        :contact_id, :schedule_id, :delivery_type, :gogovan_order_id)
     end
 
   end

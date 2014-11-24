@@ -55,7 +55,9 @@ Rails.application.routes.draw do
       get  "schedules" => "schedules#availableTimeSlots"
       post "schedules" => "schedules#create"
 
+      post "gogovan_orders" => "gogovan_orders#confirm_order"
       post "gogovan_orders/calculate_price" => "gogovan_orders#calculate_price"
+
     end
   end
 end
