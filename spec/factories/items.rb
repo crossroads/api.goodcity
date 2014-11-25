@@ -15,7 +15,7 @@ FactoryGirl.define do
     end
 
     trait :with_images do
-      images               { create_list(:image, 2) }
+      images               { create_list(:image, 1) << create(:image, favourite: true) }
     end
 
     trait :with_offer do
