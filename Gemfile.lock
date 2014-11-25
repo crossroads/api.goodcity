@@ -7,7 +7,7 @@ GIT
       activerecord (~> 4.0)
 
 PATH
-  remote: /home/swat/EMBER/GOODCITY-HK/go_go_van_api
+  remote: git://github.com/crossroads/go_go_van_api.git
   specs:
     go_go_van_api (0.0.1)
       nestful (~> 1)
