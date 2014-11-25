@@ -66,6 +66,8 @@ class Ability
       # Schedule
       can :create, Schedule
 
+      can [:calculate_price, :confirm_order], GogovanOrder
+
       # User
       can [:show, :update], User, id: user_id
       can [:index, :show, :update], User if reviewer or supervisor
