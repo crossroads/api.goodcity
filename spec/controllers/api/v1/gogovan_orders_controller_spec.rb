@@ -8,7 +8,6 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
   let(:order_attributes) {
     {
       "pickupTime" => "Wed Nov 26 2014 21:30:00 GMT+0530 (IST)",
-      "slot" => "4:00 PM",
       "districtId" => "55",
       "needEnglish" => "true",
       "needCart" => "true",
@@ -36,12 +35,10 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
         "name" => "John K",
         "mobile" => "+85260001111",
         "pickup_time" => "2014-11-26T16:30:00.000Z",
-        "slot" => "4:30 PM",
         "district_id" => "55",
         "need_english" => true,
         "need_cart" => true,
-        "need_carry" => true,
-        "base_fee" => "120" }
+        "need_carry" => true }
     }
   }
 
