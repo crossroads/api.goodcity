@@ -6,8 +6,10 @@ GIT
     paranoia (2.0.2)
       activerecord (~> 4.0)
 
-PATH
-  remote: git://github.com/crossroads/go_go_van_api.git
+GIT
+  remote: git@github.com:crossroads/go_go_van_api.git
+  revision: ce96c5c86aca3d0250ce0896ab5fd82ce6c3029e
+  branch: master
   specs:
     go_go_van_api (0.0.1)
       nestful (~> 1)

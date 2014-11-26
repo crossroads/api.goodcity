@@ -38,7 +38,7 @@ gem 'redis'
 gem 'redis-rails'
 gem 'pusher'
 gem 'apipie-rails'
-gem "go_go_van_api", github: "crossroads/go_go_van_api"
+gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 
 group :development do
   unless ENV["CI"]
