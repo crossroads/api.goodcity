@@ -36,7 +36,7 @@ set :bundle_binstubs, nil
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-set :rvm_ruby_version, '2.1.4'
+set :rvm_ruby_version, '2.1.5'
 
 namespace :deploy do
 
@@ -51,6 +51,8 @@ namespace :deploy do
 
 end
 
+# cap production invoke[db:migrate]
+# cap production invoke[db:reset]
 desc "Invoke a rake command on the remote server: cap production invoke[db:migrate]"
 task :invoke, [:command] => 'deploy:set_rails_env' do |task, args|
   on primary(:app) do
