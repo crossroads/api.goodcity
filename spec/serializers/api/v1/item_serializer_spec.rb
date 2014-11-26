@@ -57,7 +57,7 @@ describe Api::V1::ItemSerializer do
       end
 
       it "one favourite" do
-        item.images << create(:favourite_image)
+        item.images << create(:image, favourite: true)
         expect(json['item']['favourite_image']).to eql(item.images.favourites.image_identifiers.first)
       end
     end

@@ -45,7 +45,7 @@ RSpec.describe Item, type: :model do
 
   describe 'Instance Methods' do
     let!(:item)  { create :item }
-    let!(:image1) { create :favourite_image, parent: item }
+    let!(:image1) { create :image, parent: item, favourite: true }
     let!(:image2) { create :image, parent: item  }
 
     describe 'set_favourite_image' do
