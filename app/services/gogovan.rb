@@ -1,5 +1,8 @@
 class Gogovan
 
+  attr_accessor :user, :name, :mobile, :time, :need_english,
+    :need_cart, :need_carry, :district_id
+
   def initialize(user, options = {})
     @user         = user
     @name         = options['name']
