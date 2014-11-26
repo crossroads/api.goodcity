@@ -61,7 +61,7 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
   describe "POST gogovan_orders/confirm_order" do
     context "donor" do
       before { generate_and_set_token(user) }
-      it "can initiate gogovan order and get price", :show_in_doc do
+      it "can book gogovan order", :show_in_doc do
         allow(GogovanOrder).to receive(:book_order).with(user, order_details_hash).and_return(gogovan_order)
         post :confirm_order, order_details, format: 'json'
         expect(response.status).to eq(200)
