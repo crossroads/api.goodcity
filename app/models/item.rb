@@ -20,19 +20,19 @@ class Item < ActiveRecord::Base
 
   state_machine :state, initial: :draft do
     state :rejected
-    state :pending
+    state :submitted
     state :accepted
 
     event :accept do
-      transition [:draft, :pending] => :accepted
+      transition [:draft, :submitted] => :accepted
     end
 
     event :reject do
-      transition [:draft, :pending] => :rejected
+      transition [:draft, :submitted] => :rejected
     end
 
-    event :question do
-      transition :draft => :pending
+    event :submit do
+      transition :draft => :submitted
     end
 
     after_transition on: [:reject, :accept], do: :update_ember_store
