@@ -15,7 +15,7 @@ class Gogovan
   end
 
   def initiate_order
-    GoGoVanApi::Order.new(params: order_attributes)
+    GoGoVanApi::Order.new(nil, order_attributes)
   end
 
   def confirm_order
