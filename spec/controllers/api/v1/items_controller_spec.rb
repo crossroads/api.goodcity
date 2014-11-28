@@ -4,7 +4,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   let(:user)  { create :user_with_token }
   let(:offer) { create :offer, created_by: user }
-  let(:image) { create :favourite_image }
+  let(:image) { create :image, favourite: true }
   let(:item)  { create(:item, offer: offer, images: [image]) }
   let(:serialized_item) { Api::V1::ItemSerializer.new(item) }
   let(:serialized_item_json) { JSON.parse( serialized_item.to_json ) }
