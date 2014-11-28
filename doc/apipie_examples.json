@@ -342,6 +342,70 @@
       "recorded" : true
     }
   ],
+  "gogovan_orders#calculate_price" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/gogovan_orders/calculate_price",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "pickupTime" : "Wed Nov 26 2014 21:30:00 GMT+0530 (IST)",
+        "districtId" : "11",
+        "needEnglish" : "true",
+        "needCart" : "true",
+        "needCarry" : "true"
+      },
+      "response_data" : {
+        "breakdown" : {
+          "fee" : {
+            "title" : "Fee",
+            "value" : 120
+          },
+          "night_extra_charge" : {
+            "title" : "Night Charge",
+            "value" : 100
+          }
+        },
+        "base" : 120
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "gogovan_orders#confirm_order" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/gogovan_orders",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "gogovan_order" : {
+          "name" : "John K",
+          "mobile" : "+85260001111",
+          "pickup_time" : "2014-11-26T16:30:00.000Z",
+          "district_id" : 55,
+          "need_english" : true,
+          "need_cart" : true,
+          "need_carry" : true
+        }
+      },
+      "response_data" : {
+        "gogovan_order" : {
+          "id" : 66,
+          "booking_id" : 5757296,
+          "status" : "Pending"
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "images#generate_signature" : [
     {
       "verb" : "GET",

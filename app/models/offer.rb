@@ -4,8 +4,7 @@ class Offer < ActiveRecord::Base
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
 
-  has_one :delivery
-  has_many :items, inverse_of: :offer, dependent: :destroy
+  has_one  :delivery, dependent: :destroy
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :messages
