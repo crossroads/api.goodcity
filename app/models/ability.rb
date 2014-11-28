@@ -31,7 +31,8 @@ class Ability
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
       can [:index, :show, :create, :update], Item if reviewer or supervisor
       can :destroy, Item, offer: { created_by_id: user_id }, state: 'draft'
-      can :destroy, Item, state: 'draft'
+      can :destroy, Item, state: 'draft', offer: { created_by_id: user_id }
+      can :destroy, Item, state: 'draft' if reviewer
       can :destroy, Item if supervisor
 
       # Image (same as item permissions)

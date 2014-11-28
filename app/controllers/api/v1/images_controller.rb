@@ -82,7 +82,7 @@ module Api::V1
     end
 
     def image_params
-      params.require(:image).permit(:favourite,:order,:cloudinary_id,:item_id)
+      params.require(:image).permit(:favourite,:cloudinary_id,:item_id)
     end
 
     def serializer
