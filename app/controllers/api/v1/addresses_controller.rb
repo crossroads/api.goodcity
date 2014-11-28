@@ -14,9 +14,9 @@ module Api::V1
 
     def_param_group :address do
       param :address, Hash, required: true do
-        param :street, String, desc: "Street name"
-        param :flat, String, desc: "Flat name"
-        param :building, String, desc: "Building name"
+        param :street, String, desc: "Street name", allow_nil: true
+        param :flat, String, desc: "Flat name", allow_nil: true
+        param :building, String, desc: "Building name", allow_nil: true
         param :district_id, String, desc: "Hong Kong district"
         param :address_type, String, desc: "Type of address, usually 'Collection' or 'Profile'"
         param :addressable_type, String, desc: "Object the address belongs to: 'Contact' or 'User' (Polymorphic)"

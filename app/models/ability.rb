@@ -22,10 +22,10 @@ class Ability
       can [:create, :show], Address
 
       # Contact
-      can :create, Contact
+      can [:create, :destroy], Contact
 
       # Delivery
-      can [:create, :show, :update], Delivery
+      can [:create, :show, :update, :destroy], Delivery
 
       # Item
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
@@ -65,6 +65,9 @@ class Ability
 
       # Schedule
       can :create, Schedule
+
+      # GogovanOrder
+      can [:calculate_price, :confirm_order, :destroy], GogovanOrder
 
       # User
       can [:show, :update], User, id: user_id
