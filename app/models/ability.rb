@@ -31,14 +31,15 @@ class Ability
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
       can [:index, :show, :create, :update], Item if reviewer or supervisor
       can :destroy, Item, offer: { created_by_id: user_id }, state: 'draft'
+      can :destroy, Item, state: 'draft', offer: { created_by_id: user_id }
       can :destroy, Item, state: 'draft' if reviewer
       can :destroy, Item if supervisor
 
       # Image (same as item permissions)
-      can [:index, :show, :create, :update], Image, parent: { offer: { created_by_id: user_id } }
+      can [:index, :show, :create, :update], Image, item: { offer: { created_by_id: user_id } }
       can [:index, :show, :create, :update], Image if reviewer or supervisor
-      can :destroy, Image, parent: { offer: { created_by_id: user_id }, state: 'draft' }
-      can :destroy, Image, parent: { state: 'draft' } if reviewer
+      can :destroy, Image, item: { offer: { created_by_id: user_id }, state: ['draft', 'submitted', 'scheduled'] }
+      can :destroy, Image, item: { state: ['draft', 'submitted', 'scheduled'] } if reviewer
       can :destroy, Image if supervisor
 
       # Message (sender and admins, not user if private is true)

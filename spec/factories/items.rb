@@ -23,7 +23,7 @@ FactoryGirl.define do
     end
 
     trait :paranoid do
-      state  { ["pending", "accepted", "rejected"].sample }
+      state  { ["submitted", "accepted", "rejected"].sample }
       images { create_list(:image, 2) }
     end
 

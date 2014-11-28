@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141127143205) do
+ActiveRecord::Schema.define(version: 20141128085941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,11 +83,9 @@ ActiveRecord::Schema.define(version: 20141127143205) do
   end
 
   create_table "images", force: true do |t|
-    t.integer  "order"
-    t.string   "image_id"
-    t.boolean  "favourite",   default: false
-    t.string   "parent_type"
-    t.integer  "parent_id"
+    t.string   "cloudinary_id"
+    t.boolean  "favourite",     default: false
+    t.integer  "item_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
