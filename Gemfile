@@ -62,6 +62,7 @@ group :test do
   gem 'vcr'
   gem 'webmock'
   gem 'shoulda-matchers', require: false
+  gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
 end
 

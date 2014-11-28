@@ -24,7 +24,7 @@ class GogovanOrder < ActiveRecord::Base
   private
 
   def cancel_order
-    # GoGoVanApi::Order.cancel(booking_id)
+    Gogovan.cancel_order(booking_id)
     update_status('cancelled')
   end
 end

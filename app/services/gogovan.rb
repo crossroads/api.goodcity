@@ -26,6 +26,10 @@ class Gogovan
     initiate_order.price
   end
 
+  def self.cancel_order(booking_id)
+    GoGoVanApi::Order.cancel(booking_id)
+  end
+
   private
 
   def order_attributes
