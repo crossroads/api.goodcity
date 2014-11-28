@@ -8,10 +8,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   let(:item)  { create(:item, offer: offer, images: [image]) }
   let(:serialized_item) { Api::V1::ItemSerializer.new(item) }
   let(:serialized_item_json) { JSON.parse( serialized_item.to_json ) }
-  let(:image_identifier1)  { Faker::Lorem.characters(10) }
-  let(:image_identifier2)  { Faker::Lorem.characters(10) }
-  let(:image_identifiers) { image_identifier1 << ',' << image_identifier2 }
-  let(:item_params) { item.attributes.except("id").merge("image_identifiers" => image_identifiers, "favourite_image" => image_identifier2) }
+  let(:item_params) { item.attributes.except("id") }
 
   subject { JSON.parse(response.body) }
 
@@ -56,11 +53,10 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   describe "PUT item/1" do
     before { generate_and_set_token(user) }
     it "owner can update", :show_in_doc do
-      extra_params = { image_identifiers: Faker::Lorem.characters(10), donor_description: "Test item" }
+      extra_params = { donor_description: "Test item" }
       put :update, id: item.id, item: item_params.merge(extra_params)
       expect(response.status).to eq(200)
       expect(item.reload.donor_description).to eq("Test item")
-      expect(item.reload.images.count).to eq(1)
     end
   end
 

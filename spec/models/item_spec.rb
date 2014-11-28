@@ -42,21 +42,4 @@ RSpec.describe Item, type: :model do
       end
     end
   end
-
-  describe 'Instance Methods' do
-    let!(:item)  { create :item }
-    let!(:image1) { create :favourite_image, parent: item }
-    let!(:image2) { create :image, parent: item  }
-
-    describe 'set_favourite_image' do
-      it 'should set given image as favourite image' do
-        expect{
-          item.set_favourite_image(image2.image_id)
-        }.to change {
-          item.images.favourites.to_a
-        }.from( [image1] ).to( [image2] )
-      end
-
-    end
-  end
 end

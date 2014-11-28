@@ -2,10 +2,9 @@
 
 FactoryGirl.define do
   factory :image do
-    order 1
-    image_id { Faker::Lorem.characters(10) }
+    cloudinary_id { Faker::Lorem.characters(10) }
     favourite false
-    association :parent, factory: :item
+    association :item
 
     factory :favourite_image do
       favourite true

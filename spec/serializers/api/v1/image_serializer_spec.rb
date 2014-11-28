@@ -8,11 +8,9 @@ describe Api::V1::ImageSerializer do
 
   it "creates JSON" do
     expect(json['image']['id']).to eql(image.id)
-    expect(json['image']['order']).to eql(image.order)
-    expect(json['image']['image_id']).to eql(image.image_id)
+    expect(json['image']['cloudinary_id']).to eql(image.cloudinary_id)
     expect(json['image']['favourite']).to eql(image.favourite)
-    expect(json['image']['image_url']).to eql(image.image_url)
-    expect(json['image']['thumb_image_url']).to eql(image.thumb_image_url)
+    expect(json['image']['item_id']).to eql(image.item_id)
   end
 
 end
