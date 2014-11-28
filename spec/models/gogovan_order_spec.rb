@@ -19,4 +19,17 @@ RSpec.describe GogovanOrder, type: :model do
       expect(GogovanOrder.last.booking_id).to eq(booking_id)
     end
   end
+
+  describe '#update_status' do
+    it 'should update status of order' do
+      order = create :gogovan_order
+      expect{
+        order.update_status("cancelled")
+      }.to change(order, :status).from('pending').to('cancelled')
+    end
+  end
+
+  describe 'callback' do
+    it { should callback(:cancel_order).before(:destroy) }
+  end
 end
