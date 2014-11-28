@@ -6,6 +6,14 @@ GIT
     paranoia (2.0.2)
       activerecord (~> 4.0)
 
+GIT
+  remote: git@github.com:crossroads/go_go_van_api.git
+  revision: 0d35eac035dff7f72ba48e8d644d4ef9b2fe0a16
+  branch: master
+  specs:
+    go_go_van_api (0.0.1)
+      nestful (~> 1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -124,6 +132,7 @@ GEM
     mime-types (2.4.3)
     minitest (5.4.2)
     multi_json (1.10.1)
+    nestful (1.0.7)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
@@ -217,6 +226,8 @@ GEM
       rspec-support (~> 3.1.0)
     rspec-support (3.1.2)
     safe_yaml (1.0.4)
+    shoulda-callback-matchers (1.1.1)
+      activesupport (>= 3)
     shoulda-matchers (2.7.0)
       activesupport (>= 3.0.0)
     signature (0.1.7)
@@ -278,6 +289,7 @@ DEPENDENCIES
   execjs
   factory_girl_rails
   ffaker
+  go_go_van_api!
   guard-rspec
   http_accept_language
   jwt (~> 0.1.13)
@@ -298,6 +310,7 @@ DEPENDENCIES
   redis
   redis-rails
   rspec-rails
+  shoulda-callback-matchers
   shoulda-matchers
   spring
   spring-commands-rspec

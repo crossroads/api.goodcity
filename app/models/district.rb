@@ -10,4 +10,12 @@ class District < ActiveRecord::Base
 
   translates :name
 
+  def self.location_json(district_id)
+    district = where(id: district_id).try(:first) || first
+    [
+      [22.312516,114.217874, district.name],
+      [22.3741183,113.9927744, "Crossroads Foundation"]
+    ].to_json
+  end
+
 end
