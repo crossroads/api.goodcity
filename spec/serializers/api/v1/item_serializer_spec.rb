@@ -29,39 +29,6 @@ describe Api::V1::ItemSerializer do
       expect(json['item']['image_ids'].sort).to eql(item.images.pluck(:id).sort)
     end
 
-    context "image_identifiers" do
-
-      context "no images" do
-        let(:item) { create(:item) }
-        it do
-          expect(item.images.count).to eql(0)
-          expect(json['item']['image_identifiers']).to eql('')
-        end
-      end
-
-      it "handles several images" do
-        expect(item.images.count).to eql(2)
-        expect(json['item']['image_identifiers']).to eql(item.images.order(:id).pluck(:image_id).join(','))
-      end
-
-    end
-
-    context "favourite image" do
-
-      context "no images" do
-        let(:item) { create(:item) }
-        it do
-          expect(item.images.count).to eql(0)
-          expect(json['item']['favourite_image']).to eql(nil)
-        end
-      end
-
-      it "one favourite" do
-        item.images << create(:image, favourite: true)
-        expect(json['item']['favourite_image']).to eql(item.images.favourites.image_identifiers.first)
-      end
-    end
-
   end
 
 end

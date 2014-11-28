@@ -14,16 +14,14 @@ module Api::V1
 
     def_param_group :item do
       param :item, Hash, required: true do
-        param :donor_description, String, desc: "Description/Details of item given by Item-Donor"
+        param :donor_description, String, allow_nil: true, desc: "Description/Details of item given by Item-Donor"
         param :donor_condition_id, String, desc: "Describes the item's condition "<< DonorCondition.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; ")
-        param :state_event, Item.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this item."
+        param :state_event, Item.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this item. 'submit' is for when the donor has completed creating the item and will change the state from draft to submitted. Items in draft state should be hidden from offer view and if donor clicks to add an item the draft item should be loaded allowing them to continue creating the item."
         param :offer_id, String, desc: "Id of Offer to which item belongs."
         param :item_type_id, String, allow_nil: true, desc: "Not yet used"
         param :rejection_reason_id, String, desc: "A categorisation describing the reason the item was rejected "<< RejectionReason.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; "), allow_nil: true
         param :reject_reason, String, allow_nil: true, desc: "Reviewer description of why the item was rejected"
         param :rejection_comments, String, allow_nil: true, desc: "Reviewer description of why the item was rejected given to Donor."
-        param :image_identifiers, String, desc: "Comma seperated list of image-ids uploaded to Cloudinary"
-        param :favourite_image, String, desc: "An existing image-id that will become the default image for this item"
       end
     end
 
@@ -32,7 +30,6 @@ module Api::V1
     def create
       @item.attributes = item_params
       if @item.save
-        store_images
         render json: @item, serializer: serializer, status: 201
       else
         render json: @item.errors.to_json, status: 422
@@ -63,7 +60,6 @@ module Api::V1
     param_group :item
     def update
       @item.update_attributes(item_params)
-      store_images
       render json: @item, serializer: serializer, status: 200
     end
 
@@ -78,22 +74,5 @@ module Api::V1
     def serializer
       Api::V1::ItemSerializer
     end
-
-    def store_images
-      image_ids = params[:item][:image_identifiers].split(',')
-      # assign newly added images
-      image_ids.each do |img|
-        @item.images.where(image_id: img).first_or_create
-      end
-
-      # remove deleted image records
-      (@item.images.image_identifiers - image_ids).each do |img|
-        @item.images.where(image_id: img).first.try(:destroy)
-      end
-
-      # set favourite image
-      @item.set_favourite_image(params[:item][:favourite_image])
-    end
-
   end
 end

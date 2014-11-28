@@ -2,9 +2,8 @@
 
 FactoryGirl.define do
   factory :image do
-    order 1
-    image_id { FactoryGirl.generate(:cloudinary_image_id) }
+    cloudinary_id { FactoryGirl.generate(:cloudinary_image_id) }
     favourite false
-    association :parent, factory: :item
+    association :item
   end
 end
