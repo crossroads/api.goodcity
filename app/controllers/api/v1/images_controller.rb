@@ -67,9 +67,9 @@ module Api::V1
         if @image.favourite
           @image.item.images.where.not(id: @image.id).update_all(favourite: false)
         end
-        render json: @item, serializer: serializer
+        render json: @image, serializer: serializer
       else
-        render json: @offer.errors.to_json, status: 422
+        render json: @image.errors.to_json, status: 422
       end
     end
 
