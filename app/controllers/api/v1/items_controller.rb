@@ -59,8 +59,11 @@ module Api::V1
     api :PUT, '/v1/items/1', "Update an item"
     param_group :item
     def update
-      @item.update_attributes(item_params)
-      render json: @item, serializer: serializer, status: 200
+      if @item.update_attributes(item_params)
+        render json: @item, serializer: serializer
+      else
+        render json: @offer.errors.to_json, status: 422
+      end
     end
 
     private

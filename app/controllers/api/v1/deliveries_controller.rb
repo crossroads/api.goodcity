@@ -18,8 +18,11 @@ module Api::V1
     end
 
     def update
-      @delivery.update_attributes(delivery_params)
-      render json: @delivery, serializer: serializer
+      if @delivery.update_attributes(delivery_params)
+        render json: @delivery, serializer: serializer
+      else
+        render json: @delivery.errors.to_json, status: 422
+      end
     end
 
     private
