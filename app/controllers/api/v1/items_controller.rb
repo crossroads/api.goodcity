@@ -62,7 +62,7 @@ module Api::V1
       if @item.update_attributes(item_params)
         render json: @item, serializer: serializer
       else
-        render json: @offer.errors.to_json, status: 422
+        render json: @item.errors.to_json, status: 422
       end
     end
 
