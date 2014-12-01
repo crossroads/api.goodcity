@@ -24,11 +24,11 @@ class Item < ActiveRecord::Base
     state :accepted
 
     event :accept do
-      transition [:draft, :submitted] => :accepted
+      transition [:draft, :submitted, :accepted, :rejected] => :accepted
     end
 
     event :reject do
-      transition [:draft, :submitted] => :rejected
+      transition [:draft, :submitted, :accepted, :rejected] => :rejected
     end
 
     event :submit do
