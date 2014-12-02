@@ -1,7 +1,7 @@
 module Api::V1
   class ImagesController < Api::V1::ApiController
-    load_and_authorize_resource :image, parent: false, :except => :generate_signature
-    skip_authorization_check only: [:generate_signature]
+    load_and_authorize_resource :image, parent: false, :except => [:generate_signature, :destroy]
+    skip_authorization_check only: [:generate_signature, :destroy]
 
     resource_description do
       short 'Generate an image signature for Cloudinary service'
@@ -56,7 +56,11 @@ module Api::V1
 
     api :DELETE, '/v1/images/1', "Delete an image"
     def destroy
-      @image.destroy
+      @image = Image.find_by_id(params[:id])
+      if @image
+        authorize! :destroy, @image
+        @image.destroy
+      end
       render json: {}
     end
 
