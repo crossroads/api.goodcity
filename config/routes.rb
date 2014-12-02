@@ -41,6 +41,7 @@ Rails.application.routes.draw do
       get  "packages" => "packages#index"
       get  "packages/:id" => "packages#show"
       post "packages" => "packages#create"
+      put  "packages/:id" => "packages#update"
 
       get  "rejection_reasons" => "rejection_reasons#index"
       get  "rejection_reasons/:id" => "rejection_reasons#show"
