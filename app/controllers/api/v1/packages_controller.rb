@@ -49,6 +49,16 @@ module Api::V1
       end
     end
 
+    api :PUT, '/v1/packages/1', "Update a package"
+    param_group :package
+    def update
+      if @package.update_attributes(package_params)
+        render json: @package, serializer: serializer
+      else
+        render json: @package.errors.to_json, status: 422
+      end
+    end
+
     private
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
