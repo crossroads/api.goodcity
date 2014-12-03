@@ -6,6 +6,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   let(:mobile) { generate(:mobile) }
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
   let(:jwt_token)    { Token.new.generate }
+  let(:serialized_user) { Api::V1::UserProfileSerializer.new(user).to_json }
 
   context "signup" do
     it 'new user successfully', :show_in_doc do
@@ -101,6 +102,20 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   context 'verify warden' do
     it 'warden object' do
       expect(controller.send(:warden)).to eq(request.env["warden"])
+    end
+  end
+
+  describe "GET current_user_profile" do
+    before { generate_and_set_token(user) }
+
+    it "returns 200" do
+      get :current_user_profile
+      expect(response.status).to eq(200)
+    end
+
+    it "returns serialized user", :show_in_doc do
+      get :current_user_profile
+      expect(response.body).to eq(serialized_user)
     end
   end
 
