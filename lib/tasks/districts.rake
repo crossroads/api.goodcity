@@ -5,7 +5,7 @@ namespace :goodcity do
   task update_lat_long_for_districts: :environment do
     districts = YAML.load_file("#{Rails.root}/db/districts.yml")
     districts.each do |name_en, value|
-      district = District.where(name_en: name_en).first_or_create
+      district = District.unscoped.where(name_en: name_en).first_or_create
       district.update_attributes(
         latitude:  value[:latitude],
         longitude: value[:longitude]
