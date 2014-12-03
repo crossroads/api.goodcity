@@ -10,7 +10,7 @@ class District < ActiveRecord::Base
 
   translates :name
 
-  CROSSROADS_ADDRESS = [22.3741183,113.9927744, "Crossroads Foundation"]
+  CROSSROADS_ADDRESS = [22.3748365, 113.9931416, "Crossroads Foundation"]
 
   default_scope do
     where("latitude IS NOT NULL AND longitude IS NOT NULL")
