@@ -38,6 +38,7 @@ gem 'redis'
 gem 'redis-rails'
 gem 'pusher'
 gem 'apipie-rails'
+gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 
 group :development do
   unless ENV["CI"]
@@ -61,6 +62,7 @@ group :test do
   gem 'vcr'
   gem 'webmock'
   gem 'shoulda-matchers', require: false
+  gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
 end
 

@@ -18,5 +18,11 @@ RSpec.describe Api::V1::ImagesController, type: :controller do
       expect( body.keys ).to eq(["api_key", "callback", "signature", "timestamp"])
     end
 
+    # don't want client apps displaying error if app is simply out of data and image
+    # has already been deleted
+    it "returns 200 for deleting missing image" do
+      delete :destroy, id: -1
+      expect(response.status).to eq(200)
+    end
   end
 end

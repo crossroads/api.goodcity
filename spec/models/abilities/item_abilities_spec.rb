@@ -41,8 +41,8 @@ describe "Item abilities" do
       end}
     end
 
-    context "and item is pending" do
-      let(:state)  { 'pending' }
+    context "and item is submitted" do
+      let(:state)  { 'submitted' }
       let(:can)    { [:index, :show, :create, :update] }
       let(:cannot) { [:destroy, :manage] }
       it{ can.each do |do_action|
@@ -69,8 +69,8 @@ describe "Item abilities" do
       end}
     end
 
-    context "and item is pending" do
-      let(:item)   { create :item, :with_offer, state: 'pending', offer: offer }
+    context "and item is submitted" do
+      let(:item)   { create :item, :with_offer, state: 'submitted', offer: offer }
       let(:can)    { [:index, :show, :create, :update] }
       let(:cannot) { [:destroy, :manage] }
       it{ can.each do |do_action|
