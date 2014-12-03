@@ -19,7 +19,7 @@ end
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
   # FactoryGirl creates the correct territory for us
-  FactoryGirl.create :district, name_en: name_en
+  FactoryGirl.create :district, name_en: name_en, latitude: value[:latitude], longitude: value[:longitude]
 end
 
 # Don't run the following setup on the live server.
