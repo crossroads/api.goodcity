@@ -10,11 +10,17 @@ class District < ActiveRecord::Base
 
   translates :name
 
+  CROSSROADS_ADDRESS = [22.3748365, 113.9931416, "Crossroads Foundation"]
+
+  default_scope do
+    where("latitude IS NOT NULL AND longitude IS NOT NULL")
+  end
+
   def self.location_json(district_id)
     district = where(id: district_id).try(:first) || first
     [
-      [22.312516,114.217874, district.name],
-      [22.3741183,113.9927744, "Crossroads Foundation"]
+      [district.latitude, district.longitude, district.name],
+      CROSSROADS_ADDRESS
     ].to_json
   end
 
