@@ -7,7 +7,7 @@ describe "Image abilities" do
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:state)       { 'draft' }
   let(:item)        { create :item, :with_offer, state: state }
-  let(:image)       { create :image, parent: item }
+  let(:image)       { create :image, item: item }
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
@@ -41,10 +41,10 @@ describe "Image abilities" do
       end}
     end
 
-    context "and image belongs to pending item" do
-      let(:state)   { 'pending' }
-      let(:can)     { [:index, :show, :create, :update] }
-      let(:cannot)  { [:destroy, :manage] }
+    context "and image belongs to submitted item" do
+      let(:state)   { 'submitted' }
+      let(:can)     { [:index, :show, :create, :update, :destroy] }
+      let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, image)
       end}
@@ -70,10 +70,10 @@ describe "Image abilities" do
       end}
     end
 
-    context "and image belongs to pending item" do
-      let(:state)   { 'pending' }
-      let(:can)     { [:index, :show, :create, :update] }
-      let(:cannot)  { [:destroy, :manage] }
+    context "and image belongs to submitted item" do
+      let(:state)   { 'submitted' }
+      let(:can)     { [:index, :show, :create, :update, :destroy] }
+      let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, image)
       end}

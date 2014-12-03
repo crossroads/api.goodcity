@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :delivery, parent: false
 
     def create
-      @delivery = Delivery.find_by_offer_id(params[:offer_id]) || @delivery
+      @delivery = Delivery.where(offer_id: params[:delivery][:offer_id]).last || @delivery
       @delivery.attributes = delivery_params
       if @delivery.save
         render json: @delivery, serializer: serializer, status: 201
@@ -18,8 +18,11 @@ module Api::V1
     end
 
     def update
-      @delivery.update_attributes(delivery_params)
-      render json: @delivery, serializer: serializer
+      if @delivery.update_attributes(delivery_params)
+        render json: @delivery, serializer: serializer
+      else
+        render json: @delivery.errors.to_json, status: 422
+      end
     end
 
     private
@@ -30,7 +33,7 @@ module Api::V1
 
     def delivery_params
       params.require(:delivery).permit(:start, :finish, :offer_id,
-        :contact_id, :schedule_id, :delivery_type)
+        :contact_id, :schedule_id, :delivery_type, :gogovan_order_id)
     end
 
   end

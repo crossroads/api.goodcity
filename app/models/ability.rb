@@ -22,23 +22,24 @@ class Ability
       can [:create, :show], Address
 
       # Contact
-      can :create, Contact
+      can [:create, :destroy], Contact
 
       # Delivery
-      can [:create, :show, :update], Delivery
+      can [:create, :show, :update, :destroy], Delivery
 
       # Item
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
       can [:index, :show, :create, :update], Item if reviewer or supervisor
       can :destroy, Item, offer: { created_by_id: user_id }, state: 'draft'
+      can :destroy, Item, state: 'draft', offer: { created_by_id: user_id }
       can :destroy, Item, state: 'draft' if reviewer
       can :destroy, Item if supervisor
 
       # Image (same as item permissions)
-      can [:index, :show, :create, :update], Image, parent: { offer: { created_by_id: user_id } }
+      can [:index, :show, :create, :update], Image, item: { offer: { created_by_id: user_id } }
       can [:index, :show, :create, :update], Image if reviewer or supervisor
-      can :destroy, Image, parent: { offer: { created_by_id: user_id }, state: 'draft' }
-      can :destroy, Image, parent: { state: 'draft' } if reviewer
+      can :destroy, Image, item: { offer: { created_by_id: user_id }, state: ['draft', 'submitted', 'scheduled'] }
+      can :destroy, Image, item: { state: ['draft', 'submitted', 'scheduled'] } if reviewer
       can :destroy, Image if supervisor
 
       # Message (sender and admins, not user if private is true)
@@ -65,6 +66,9 @@ class Ability
 
       # Schedule
       can :create, Schedule
+
+      # GogovanOrder
+      can [:calculate_price, :confirm_order, :destroy], GogovanOrder
 
       # User
       can [:show, :update], User, id: user_id

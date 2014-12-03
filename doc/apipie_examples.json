@@ -9,30 +9,23 @@
       "query" : null,
       "request_data" : {
         "address" : {
-          "flat" : "Suite 444",
-          "building" : "3368",
-          "street" : "Powlowski Knoll",
+          "flat" : "Apt. 180",
+          "building" : "2858",
+          "street" : "Flatley Villages",
           "address_type" : "Collection",
-          "addressable_id" : "39",
+          "addressable_id" : "1850",
           "addressable_type" : "Contact",
-          "district_id" : "188"
+          "district_id" : "2032"
         }
       },
       "response_data" : {
-        "districts" : [
-          {
-            "id" : 188,
-            "name" : "Shun Lee",
-            "territory_id" : 366
-          }
-        ],
         "address" : {
-          "id" : 1671,
-          "street" : "Powlowski Knoll",
-          "flat" : "Suite 444",
-          "building" : "3368",
-          "district_id" : 188,
-          "addressable_id" : 39,
+          "id" : 1850,
+          "street" : "Flatley Villages",
+          "flat" : "Apt. 180",
+          "building" : "2858",
+          "district_id" : 2032,
+          "addressable_id" : 1850,
           "addressable_type" : "Contact"
         }
       },
@@ -44,27 +37,20 @@
   "addresses#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/addresses/1674",
+      "path" : "/api/v1/addresses/1853",
       "versions" : [
         "v1"
       ],
       "query" : "",
       "request_data" : null,
       "response_data" : {
-        "districts" : [
-          {
-            "id" : 189,
-            "name" : "Tai Wo",
-            "territory_id" : 367
-          }
-        ],
         "address" : {
-          "id" : 1674,
-          "street" : "Ledner Summit",
-          "flat" : "Suite 652",
-          "building" : "817",
-          "district_id" : 189,
-          "addressable_id" : 42,
+          "id" : 1853,
+          "street" : "Westley Drives",
+          "flat" : "Suite 034",
+          "building" : "45120",
+          "district_id" : 2035,
+          "addressable_id" : 1853,
           "addressable_type" : "Contact"
         }
       },
@@ -99,6 +85,42 @@
       "recorded" : true
     }
   ],
+  "authentication#current_user_profile" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/auth/current_user_profile",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "addresses" : [
+          {
+            "id" : 1861,
+            "street" : "Sydnie Trail",
+            "flat" : "Suite 258",
+            "building" : "8903",
+            "district_id" : 2042,
+            "addressable_id" : 1835,
+            "addressable_type" : "User"
+          }
+        ],
+        "permissions" : [],
+        "user_profile" : {
+          "id" : 1835,
+          "first_name" : "Brendon",
+          "last_name" : "Kerluke",
+          "mobile" : "60521718",
+          "address_id" : 1861,
+          "permission_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "authentication#send_pin" : [
     {
       "verb" : "POST",
@@ -108,7 +130,7 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+85253807188"
+        "mobile" : "+85263102550"
       },
       "response_data" : {
         "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
@@ -128,7 +150,7 @@
       "query" : null,
       "request_data" : {
         "user_auth" : {
-          "mobile" : "+85254245708",
+          "mobile" : "+85251224538",
           "first_name" : "Jake",
           "last_name" : "Deamon",
           "address_attributes" : {
@@ -153,7 +175,7 @@
       "query" : null,
       "request_data" : {
         "user_auth" : {
-          "mobile" : "+85268700357",
+          "mobile" : "+85253260260",
           "first_name" : "Jake",
           "last_name" : "Deamon",
           "address_attributes" : {
@@ -163,7 +185,7 @@
         }
       },
       "response_data" : {
-        "otp_auth_key" : "P8VXBFztuGgLDtrBzVpi4A=="
+        "otp_auth_key" : "0OQJsEshqkxsmUwXTD53aw=="
       },
       "code" : "200",
       "show_in_doc" : 0,
@@ -183,33 +205,26 @@
         "pin" : "1234"
       },
       "response_data" : {
-        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTM0NDk4NzcsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxMzQ1MTY3N30.kdi6Qcawl1xI1q1EP1tLiVyOVyDLald9SHM3nJ2AsBM",
+        "jwt_token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTc1NzkwMTQsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxNzU4MDgxNH0.x-N_aUb3S5wcNy5i2w2WUZjEA2ud_81u8yQV0JfsT6A",
         "user" : {
           "addresses" : [
             {
-              "id" : 1887,
-              "street" : "Beier River",
-              "flat" : "Suite 470",
-              "building" : "760",
-              "district_id" : 2058,
-              "addressable_id" : 1435,
+              "id" : 1857,
+              "street" : "Schmeler Parks",
+              "flat" : "Suite 609",
+              "building" : "58752",
+              "district_id" : 2038,
+              "addressable_id" : 1831,
               "addressable_type" : "User"
             }
           ],
-          "districts" : [
-            {
-              "id" : 2058,
-              "name" : "Wonderland Villas",
-              "territory_id" : 1689
-            }
-          ],
           "permissions" : [],
-          "user" : {
-            "id" : 1435,
-            "first_name" : "Haylie",
-            "last_name" : "McClure",
-            "mobile" : "50435160",
-            "address_id" : 1887,
+          "user_profile" : {
+            "id" : 1831,
+            "first_name" : "Reynold",
+            "last_name" : "Lakin",
+            "mobile" : "98353103",
+            "address_id" : 1857,
             "permission_id" : null
           }
         }
@@ -229,16 +244,16 @@
       "query" : null,
       "request_data" : {
         "contact" : {
-          "name" : "Eldred Osinski",
-          "mobile" : "+85291752585"
+          "name" : "Kay Maggio",
+          "mobile" : "+85263651714"
         }
       },
       "response_data" : {
         "addresses" : [],
         "contact" : {
-          "id" : 825,
-          "name" : "Eldred Osinski",
-          "mobile" : "+85291752585",
+          "id" : 1864,
+          "name" : "Kay Maggio",
+          "mobile" : "+85263651714",
           "address_id" : null
         }
       },
@@ -259,14 +274,14 @@
       "response_data" : {
         "districts" : [
           {
-            "id" : 898,
-            "name" : "Lam Tei",
-            "territory_id" : 731
+            "id" : 2047,
+            "name" : "Disneyland",
+            "territory_id" : 1669
           },
           {
-            "id" : 899,
-            "name" : "Causeway Bay",
-            "territory_id" : 732
+            "id" : 2048,
+            "name" : "Tung Chung",
+            "territory_id" : 1669
           }
         ]
       },
@@ -278,7 +293,7 @@
   "districts#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/districts/158",
+      "path" : "/api/v1/districts/2046",
       "versions" : [
         "v1"
       ],
@@ -286,9 +301,9 @@
       "request_data" : null,
       "response_data" : {
         "district" : {
-          "id" : 158,
-          "name" : "Kwu Tung",
-          "territory_id" : 337
+          "id" : 2046,
+          "name" : "Disneyland",
+          "territory_id" : 1668
         }
       },
       "code" : "200",
@@ -308,12 +323,16 @@
       "response_data" : {
         "donor_conditions" : [
           {
-            "id" : 2536,
+            "id" : 547,
             "name" : "Broken"
           },
           {
-            "id" : 2537,
-            "name" : "Lightly Used"
+            "id" : 548,
+            "name" : "New"
+          },
+          {
+            "id" : 549,
+            "name" : "Heavily Used"
           }
         ]
       },
@@ -325,7 +344,7 @@
   "donor_conditions#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/donor_conditions/2535",
+      "path" : "/api/v1/donor_conditions/546",
       "versions" : [
         "v1"
       ],
@@ -333,8 +352,72 @@
       "request_data" : null,
       "response_data" : {
         "donor_condition" : {
-          "id" : 2535,
-          "name" : "Lightly Used"
+          "id" : 546,
+          "name" : "New"
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "gogovan_orders#calculate_price" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/gogovan_orders/calculate_price",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "pickupTime" : "Wed Nov 26 2014 21:30:00 GMT+0530 (IST)",
+        "districtId" : "11",
+        "needEnglish" : "true",
+        "needCart" : "true",
+        "needCarry" : "true"
+      },
+      "response_data" : {
+        "breakdown" : {
+          "fee" : {
+            "title" : "Fee",
+            "value" : 120
+          },
+          "night_extra_charge" : {
+            "title" : "Night Charge",
+            "value" : 100
+          }
+        },
+        "base" : 120
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "gogovan_orders#confirm_order" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/gogovan_orders",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "gogovan_order" : {
+          "name" : "John K",
+          "mobile" : "+85260001111",
+          "pickup_time" : "2014-11-26T16:30:00.000Z",
+          "district_id" : 55,
+          "need_english" : true,
+          "need_cart" : true,
+          "need_carry" : true
+        }
+      },
+      "response_data" : {
+        "gogovan_order" : {
+          "id" : 18,
+          "booking_id" : 1896232,
+          "status" : "pending"
         }
       },
       "code" : "200",
@@ -354,8 +437,8 @@
       "response_data" : {
         "api_key" : 1234567890,
         "callback" : "http://test.host/cloudinary_cors.html",
-        "signature" : "335f4d4c9a4690e6ebb2514a3dbd2ea0cba0350b",
-        "timestamp" : 1412595083
+        "signature" : "67b6c22d71b9b47004c7909822ae3a069ece229b",
+        "timestamp" : 1417579014
       },
       "code" : "200",
       "show_in_doc" : 1,
@@ -372,81 +455,47 @@
       "query" : null,
       "request_data" : {
         "item" : {
-          "donor_description" : "Velit in tenetur quo ratione pariatur eum.",
+          "donor_description" : "Et voluptatem quasi iusto suscipit veritatis est voluptatem similique.",
           "state" : "draft",
-          "offer_id" : "2",
-          "item_type_id" : "4",
-          "rejection_reason_id" : "3",
-          "reject_reason" : "Porro id est ut voluptatem rerum suscipit perspiciatis.",
-          "created_at" : "2014-10-15 14:41:43 +0800",
-          "updated_at" : "2014-10-15 14:41:43 +0800",
+          "offer_id" : "569",
+          "item_type_id" : "621",
+          "rejection_reason_id" : "503",
+          "reject_reason" : "Ipsa consectetur dolor tenetur recusandae harum qui.",
+          "created_at" : "2014-12-03 11:56:55 +0800",
+          "updated_at" : "2014-12-03 11:56:55 +0800",
           "saleable" : false,
-          "donor_condition_id" : "4",
+          "donor_condition_id" : "556",
           "deleted_at" : null,
-          "image_identifiers" : "ppztxxwuki,86zkcwq1yt",
-          "favourite_image" : "86zkcwq1yt"
+          "rejection_comments" : null
         }
       },
       "response_data" : {
         "packages" : [],
         "messages" : [],
-        "images" : [
-          {
-            "id" : 3,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vppztxxwuki",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vppztxxwuki",
-            "favourite" : false,
-            "order" : null,
-            "image_id" : "ppztxxwuki"
-          },
-          {
-            "id" : 4,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/v86zkcwq1yt",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/v86zkcwq1yt",
-            "favourite" : true,
-            "order" : null,
-            "image_id" : "86zkcwq1yt"
-          }
-        ],
-        "rejection_reasons" : [
-          {
-            "id" : 3,
-            "name" : "Size"
-          }
-        ],
+        "images" : [],
         "item_types" : [
           {
-            "id" : 4,
-            "name" : "Cassette recorder",
-            "code" : "EUC"
-          }
-        ],
-        "donor_conditions" : [
-          {
-            "id" : 4,
-            "name" : "Broken"
+            "id" : 621,
+            "name" : "School chair",
+            "code" : "FCQ"
           }
         ],
         "item" : {
-          "id" : 5,
-          "donor_description" : "Velit in tenetur quo ratione pariatur eum.",
-          "donor_condition_id" : 4,
+          "id" : 515,
+          "donor_description" : "Et voluptatem quasi iusto suscipit veritatis est voluptatem similique.",
           "state" : "draft",
-          "offer_id" : 2,
-          "item_type_id" : 4,
-          "rejection_reason_id" : 3,
-          "reject_reason" : "Porro id est ut voluptatem rerum suscipit perspiciatis.",
+          "offer_id" : 569,
+          "reject_reason" : "Ipsa consectetur dolor tenetur recusandae harum qui.",
           "saleable" : false,
-          "created_at" : "2014-10-15T14:41:43.788+08:00",
-          "updated_at" : "2014-10-15T14:41:43.788+08:00",
-          "image_identifiers" : "ppztxxwuki,86zkcwq1yt",
-          "favourite_image" : "86zkcwq1yt",
+          "created_at" : "2014-12-03T11:56:55.217+08:00",
+          "updated_at" : "2014-12-03T11:56:55.217+08:00",
+          "item_type_id" : 621,
+          "rejection_comments" : null,
+          "donor_condition_id" : 556,
+          "rejection_reason_id" : 503,
           "package_ids" : [],
           "message_ids" : [],
-          "image_ids" : [
-            3,
-            4
-          ]
+          "image_ids" : []
         }
       },
       "code" : "201",
@@ -457,7 +506,7 @@
   "items#destroy" : [
     {
       "verb" : "DELETE",
-      "path" : "/api/v1/items/775",
+      "path" : "/api/v1/items/512",
       "versions" : [
         "v1"
       ],
@@ -482,71 +531,49 @@
         "packages" : [],
         "messages" : [],
         "images" : [],
-        "rejection_reasons" : [
-          {
-            "id" : 742,
-            "name" : "Quality"
-          },
-          {
-            "id" : 743,
-            "name" : "Other"
-          }
-        ],
         "item_types" : [
           {
-            "id" : 943,
-            "name" : "Fruit juicer",
-            "code" : "EKJ"
+            "id" : 614,
+            "name" : "PALLET OF Household Kitchen, Unsorted",
+            "code" : "HZK"
           },
           {
-            "id" : 944,
-            "name" : "Anaesthetics",
-            "code" : "MSA"
-          }
-        ],
-        "donor_conditions" : [
-          {
-            "id" : 825,
-            "name" : "Lightly Used"
-          },
-          {
-            "id" : 826,
-            "name" : "Heavily Used"
+            "id" : 615,
+            "name" : "Slide projector",
+            "code" : "EVS"
           }
         ],
         "items" : [
           {
-            "id" : 780,
-            "donor_description" : "Numquam et quia blanditiis rem.",
-            "donor_condition_id" : 825,
+            "id" : 507,
+            "donor_description" : "Dolorem quae exercitationem aliquid et adipisci dolores rerum aspernatur.",
             "state" : "draft",
-            "offer_id" : 674,
-            "item_type_id" : 943,
-            "rejection_reason_id" : 742,
-            "reject_reason" : "Aliquam quidem voluptatem quasi provident quia explicabo.",
+            "offer_id" : 566,
+            "reject_reason" : "Quia rem voluptatem eaque soluta.",
             "saleable" : false,
-            "created_at" : "2014-10-16T17:14:57.597+08:00",
-            "updated_at" : "2014-10-16T17:14:57.597+08:00",
-            "image_identifiers" : "",
-            "favourite_image" : null,
+            "created_at" : "2014-12-03T11:56:54.790+08:00",
+            "updated_at" : "2014-12-03T11:56:54.790+08:00",
+            "item_type_id" : 614,
+            "rejection_comments" : null,
+            "donor_condition_id" : 550,
+            "rejection_reason_id" : 498,
             "package_ids" : [],
             "message_ids" : [],
             "image_ids" : []
           },
           {
-            "id" : 781,
-            "donor_description" : "Eaque quae distinctio sit omnis.",
-            "donor_condition_id" : 826,
+            "id" : 508,
+            "donor_description" : "Non exercitationem provident esse voluptatem rerum accusantium voluptas labore.",
             "state" : "draft",
-            "offer_id" : 674,
-            "item_type_id" : 944,
-            "rejection_reason_id" : 743,
-            "reject_reason" : "Modi sed dolores sunt sit.",
+            "offer_id" : 566,
+            "reject_reason" : "Ut et delectus accusantium mollitia.",
             "saleable" : false,
-            "created_at" : "2014-10-16T17:14:57.613+08:00",
-            "updated_at" : "2014-10-16T17:14:57.613+08:00",
-            "image_identifiers" : "",
-            "favourite_image" : null,
+            "created_at" : "2014-12-03T11:56:54.828+08:00",
+            "updated_at" : "2014-12-03T11:56:54.828+08:00",
+            "item_type_id" : 615,
+            "rejection_comments" : null,
+            "donor_condition_id" : 551,
+            "rejection_reason_id" : 498,
             "package_ids" : [],
             "message_ids" : [],
             "image_ids" : []
@@ -561,7 +588,7 @@
   "items#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/items/2",
+      "path" : "/api/v1/items/510",
       "versions" : [
         "v1"
       ],
@@ -572,51 +599,36 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 1,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/va5zw64okhf",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/va5zw64okhf",
+            "id" : 124,
             "favourite" : true,
-            "order" : 1,
-            "image_id" : "a5zw64okhf"
-          }
-        ],
-        "rejection_reasons" : [
-          {
-            "id" : 2,
-            "name" : "Quality"
+            "cloudinary_id" : "1416902230/mmguhm3zdkonc2nynjue.jpg",
+            "item_id" : 510
           }
         ],
         "item_types" : [
           {
-            "id" : 2,
-            "name" : "PALLET OF Household Orphanage Unsorted",
-            "code" : "HZR"
-          }
-        ],
-        "donor_conditions" : [
-          {
-            "id" : 2,
-            "name" : "New"
+            "id" : 617,
+            "name" : "Computer equipment",
+            "code" : "V"
           }
         ],
         "item" : {
-          "id" : 2,
-          "donor_description" : "Est id magni ea numquam minima asperiores ipsam.",
-          "donor_condition_id" : 2,
+          "id" : 510,
+          "donor_description" : "Dolorem itaque vel ut qui voluptatem.",
           "state" : "draft",
-          "offer_id" : 1,
-          "item_type_id" : 2,
-          "rejection_reason_id" : 2,
-          "reject_reason" : "Quidem voluptatem dolore cum sed.",
+          "offer_id" : 567,
+          "reject_reason" : "Incidunt fuga numquam iste eos aut.",
           "saleable" : false,
-          "created_at" : "2014-10-15T14:41:43.587+08:00",
-          "updated_at" : "2014-10-15T14:41:43.587+08:00",
-          "image_identifiers" : "a5zw64okhf",
-          "favourite_image" : "a5zw64okhf",
+          "created_at" : "2014-12-03T11:56:54.975+08:00",
+          "updated_at" : "2014-12-03T11:56:54.975+08:00",
+          "item_type_id" : 617,
+          "rejection_comments" : null,
+          "donor_condition_id" : 553,
+          "rejection_reason_id" : 499,
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            1
+            124
           ]
         }
       },
@@ -628,7 +640,7 @@
   "items#update" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/items/7",
+      "path" : "/api/v1/items/517",
       "versions" : [
         "v1"
       ],
@@ -637,17 +649,16 @@
         "item" : {
           "donor_description" : "Test item",
           "state" : "draft",
-          "offer_id" : "3",
-          "item_type_id" : "6",
-          "rejection_reason_id" : "5",
-          "reject_reason" : "Iste nemo vitae et qui omnis qui.",
-          "created_at" : "2014-10-15 14:41:43 +0800",
-          "updated_at" : "2014-10-15 14:41:43 +0800",
+          "offer_id" : "570",
+          "item_type_id" : "623",
+          "rejection_reason_id" : "504",
+          "reject_reason" : "Nihil qui corrupti perspiciatis dolorum explicabo excepturi.",
+          "created_at" : "2014-12-03 11:56:55 +0800",
+          "updated_at" : "2014-12-03 11:56:55 +0800",
           "saleable" : false,
-          "donor_condition_id" : "6",
+          "donor_condition_id" : "558",
           "deleted_at" : null,
-          "image_identifiers" : "qe07q1ma5c",
-          "favourite_image" : "jlw5nui0b4"
+          "rejection_comments" : null
         }
       },
       "response_data" : {
@@ -655,51 +666,36 @@
         "messages" : [],
         "images" : [
           {
-            "id" : 6,
-            "image_url" : "http://res.cloudinary.com/test/image/upload/vqe07q1ma5c",
-            "thumb_image_url" : "http://res.cloudinary.com/test/image/upload/c_fill,h_50,w_50/vqe07q1ma5c",
-            "favourite" : false,
-            "order" : null,
-            "image_id" : "qe07q1ma5c"
-          }
-        ],
-        "rejection_reasons" : [
-          {
-            "id" : 5,
-            "name" : "Size"
+            "id" : 127,
+            "favourite" : true,
+            "cloudinary_id" : "1416375331/zppxdm5fljlyv3tcfo3p.jpg",
+            "item_id" : 517
           }
         ],
         "item_types" : [
           {
-            "id" : 6,
-            "name" : "Other visual appliances",
-            "code" : "EVX"
-          }
-        ],
-        "donor_conditions" : [
-          {
-            "id" : 6,
-            "name" : "Broken"
+            "id" : 623,
+            "name" : "Bunk bed base",
+            "code" : "BKB"
           }
         ],
         "item" : {
-          "id" : 7,
+          "id" : 517,
           "donor_description" : "Test item",
-          "donor_condition_id" : 6,
           "state" : "draft",
-          "offer_id" : 3,
-          "item_type_id" : 6,
-          "rejection_reason_id" : 5,
-          "reject_reason" : "Iste nemo vitae et qui omnis qui.",
+          "offer_id" : 570,
+          "reject_reason" : "Nihil qui corrupti perspiciatis dolorum explicabo excepturi.",
           "saleable" : false,
-          "created_at" : "2014-10-15T14:41:43.897+08:00",
-          "updated_at" : "2014-10-15T14:41:43.914+08:00",
-          "image_identifiers" : "qe07q1ma5c",
-          "favourite_image" : null,
+          "created_at" : "2014-12-03T11:56:55.312+08:00",
+          "updated_at" : "2014-12-03T11:56:55.328+08:00",
+          "item_type_id" : 623,
+          "rejection_comments" : null,
+          "donor_condition_id" : 558,
+          "rejection_reason_id" : 504,
           "package_ids" : [],
           "message_ids" : [],
           "image_ids" : [
-            6
+            127
           ]
         }
       },
@@ -718,53 +714,32 @@
       "query" : null,
       "request_data" : {
         "message" : {
-          "body" : "Aliquid saepe repellat sunt et porro ut et. Architecto reprehenderit magni autem quia optio quaerat tempora similique. Est rerum ut amet voluptatum.",
-          "sender" : "9873",
+          "body" : "Aut sit porro aliquam veritatis. Voluptas non amet consequuntur consequatur tenetur et rem. Impedit minus veniam dolorem nam dicta tenetur. Delectus repellat expedita molestiae laudantium eveniet minima dolores. Aliquid perferendis at corrupti aperiam inventore sunt ullam.",
+          "sender" : "1863",
           "is_private" : false,
           "state" : "unread",
-          "offer_id" : "3102"
+          "offer_id" : "573"
         }
       },
       "response_data" : {
         "user" : [
           {
-            "id" : 9873,
-            "first_name" : "Prudence",
-            "last_name" : "Stehr",
-            "mobile" : "11111111",
-            "address_id" : 11986,
+            "id" : 1863,
+            "first_name" : "Danika",
+            "last_name" : "Rogahn",
             "permission_id" : null
           }
         ],
-        "addresses" : [
-          {
-            "id" : 11986,
-            "street" : "Huel Walks",
-            "flat" : "Suite 210",
-            "building" : "222",
-            "district_id" : 1428,
-            "addressable_id" : 9873,
-            "addressable_type" : "User"
-          }
-        ],
-        "districts" : [
-          {
-            "id" : 1428,
-            "name" : "Sham Shui Po",
-            "territory_id" : 1364
-          }
-        ],
-        "permissions" : [],
         "message" : {
-          "id" : 1063,
-          "body" : "Aliquid saepe repellat sunt et porro ut et. Architecto reprehenderit magni autem quia optio quaerat tempora similique. Est rerum ut amet voluptatum.",
-          "state" : "unread",
-          "sender_id" : 9873,
+          "id" : 179,
+          "body" : "Aut sit porro aliquam veritatis. Voluptas non amet consequuntur consequatur tenetur et rem. Impedit minus veniam dolorem nam dicta tenetur. Delectus repellat expedita molestiae laudantium eveniet minima dolores. Aliquid perferendis at corrupti aperiam inventore sunt ullam.",
+          "state" : "read",
           "is_private" : false,
-          "created_at" : "2014-10-10T15:12:49.125Z",
-          "updated_at" : "2014-10-10T15:12:49.125Z",
-          "offer_id" : 3102,
-          "item_id" : null
+          "created_at" : "2014-12-03T11:56:55.653+08:00",
+          "updated_at" : "2014-12-03T11:56:55.653+08:00",
+          "offer_id" : 573,
+          "item_id" : null,
+          "sender_id" : 1863
         }
       },
       "code" : "201",
@@ -825,7 +800,7 @@
   "messages#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/messages/1060",
+      "path" : "/api/v1/messages/177",
       "versions" : [
         "v1"
       ],
@@ -834,43 +809,22 @@
       "response_data" : {
         "user" : [
           {
-            "id" : 9865,
-            "first_name" : "Alena",
-            "last_name" : "Willms",
-            "mobile" : "11111111",
-            "address_id" : 11974,
+            "id" : 1859,
+            "first_name" : "Deanna",
+            "last_name" : "Moore",
             "permission_id" : null
           }
         ],
-        "addresses" : [
-          {
-            "id" : 11974,
-            "street" : "Jonas Mews",
-            "flat" : "Apt. 313",
-            "building" : "985",
-            "district_id" : 1416,
-            "addressable_id" : 9865,
-            "addressable_type" : "User"
-          }
-        ],
-        "districts" : [
-          {
-            "id" : 1416,
-            "name" : "To Kwa Wan",
-            "territory_id" : 1358
-          }
-        ],
-        "permissions" : [],
         "message" : {
-          "id" : 1060,
-          "body" : "Dignissimos unde sit nisi vel repudiandae. Nisi vel quis minus qui ut et omnis eos. Maiores quidem non beatae aperiam porro ut odit.",
-          "state" : null,
-          "sender_id" : 9865,
+          "id" : 177,
+          "body" : "Optio cupiditate reprehenderit sunt impedit. Atque suscipit sed maiores non facere id recusandae officia. Velit eius et veniam nisi iusto.",
+          "state" : "unread",
           "is_private" : false,
-          "created_at" : "2014-10-10T15:12:46.244Z",
-          "updated_at" : "2014-10-10T15:12:46.244Z",
-          "offer_id" : 3098,
-          "item_id" : 3441
+          "created_at" : "2014-12-03T11:56:55.413+08:00",
+          "updated_at" : "2014-12-03T11:56:55.413+08:00",
+          "offer_id" : 571,
+          "item_id" : 518,
+          "sender_id" : 1859
         }
       },
       "code" : "200",
@@ -879,7 +833,7 @@
     },
     {
       "verb" : "GET",
-      "path" : "/api/v1/messages/1061",
+      "path" : "/api/v1/messages/178",
       "versions" : [
         "v1"
       ],
@@ -888,43 +842,22 @@
       "response_data" : {
         "user" : [
           {
-            "id" : 9869,
-            "first_name" : "Alexis",
-            "last_name" : "Ryan",
-            "mobile" : "11111111",
-            "address_id" : 11980,
+            "id" : 1861,
+            "first_name" : "Howell",
+            "last_name" : "Flatley",
             "permission_id" : null
           }
         ],
-        "addresses" : [
-          {
-            "id" : 11980,
-            "street" : "Emely Drives",
-            "flat" : "Apt. 015",
-            "building" : "1086",
-            "district_id" : 1422,
-            "addressable_id" : 9869,
-            "addressable_type" : "User"
-          }
-        ],
-        "districts" : [
-          {
-            "id" : 1422,
-            "name" : "To Kwa Wan",
-            "territory_id" : 1361
-          }
-        ],
-        "permissions" : [],
         "message" : {
-          "id" : 1061,
-          "body" : "Aliquid quis eligendi consequatur quia omnis quae voluptatem. Autem dignissimos rerum necessitatibus ratione modi quae error consectetur. Nostrum sequi non porro voluptates eaque quia aut et.",
-          "state" : null,
-          "sender_id" : 9869,
+          "id" : 178,
+          "body" : "Est in perspiciatis dolorum et ut possimus reprehenderit esse. Ut rem pariatur rerum libero voluptatum ex maxime. Ea hic maiores deserunt impedit dolorum vero dolores recusandae. Laboriosam voluptatibus molestias fuga dicta maxime ullam laborum nisi. Soluta officiis beatae aut iusto repellat veritatis laborum ipsam.",
+          "state" : "unread",
           "is_private" : false,
-          "created_at" : "2014-10-10T15:12:46.987Z",
-          "updated_at" : "2014-10-10T15:12:46.987Z",
-          "offer_id" : 3100,
-          "item_id" : 3442
+          "created_at" : "2014-12-03T11:56:55.554+08:00",
+          "updated_at" : "2014-12-03T11:56:55.554+08:00",
+          "offer_id" : 572,
+          "item_id" : 519,
+          "sender_id" : 1861
         }
       },
       "code" : "200",
@@ -944,10 +877,10 @@
         "offer" : {
           "language" : "en",
           "origin" : "web",
-          "stairs" : false,
+          "stairs" : true,
           "parking" : true,
           "estimated_size" : "4",
-          "notes" : "Qui veniam laudantium quae numquam ut doloremque. Consequuntur beatae maxime sed perferendis sit et eum. Repellat quia quasi earum nihil. Ducimus quidem temporibus itaque ut. Cupiditate ratione impedit qui enim quo vero voluptas."
+          "notes" : "Blanditiis recusandae aut dicta dolor velit. Ratione minus magnam sed aut. Architecto eos eos et accusamus amet. Et omnis animi aperiam placeat libero cum."
         }
       },
       "response_data" : {
@@ -955,36 +888,31 @@
         "messages" : [],
         "user" : [
           {
-            "id" : 7240,
-            "first_name" : "Evie",
-            "last_name" : "Beer",
-            "mobile" : "11111111",
-            "address_id" : null,
+            "id" : 1870,
+            "first_name" : "Devyn",
+            "last_name" : "Windler",
             "permission_id" : null
           }
         ],
-        "addresses" : [],
-        "permissions" : [],
         "deliveries" : [],
         "offer" : {
-          "id" : 1892,
+          "id" : 577,
           "language" : "en",
           "state" : "draft",
           "origin" : "web",
-          "stairs" : false,
+          "stairs" : true,
           "parking" : true,
           "estimated_size" : "4",
-          "notes" : "Qui veniam laudantium quae numquam ut doloremque. Consequuntur beatae maxime sed perferendis sit et eum. Repellat quia quasi earum nihil. Ducimus quidem temporibus itaque ut. Cupiditate ratione impedit qui enim quo vero voluptas.",
-          "created_by_id" : 7240,
-          "created_at" : "2014-10-04T09:12:00.358Z",
-          "updated_at" : "2014-10-04T09:12:00.358Z",
+          "notes" : "Blanditiis recusandae aut dicta dolor velit. Ratione minus magnam sed aut. Architecto eos eos et accusamus amet. Et omnis animi aperiam placeat libero cum.",
+          "created_by_id" : 1870,
+          "created_at" : "2014-12-03T11:56:55.916+08:00",
+          "updated_at" : "2014-12-03T11:56:55.916+08:00",
           "submitted_at" : null,
-          "user_id" : 7240,
-          "delivery_id" : null,
-          "reviewed_by_id" : null,
           "reviewed_at" : null,
           "item_ids" : [],
-          "message_ids" : []
+          "message_ids" : [],
+          "reviewed_by_id" : null,
+          "delivery_id" : null
         }
       },
       "code" : "201",
@@ -995,7 +923,7 @@
   "offers#destroy" : [
     {
       "verb" : "DELETE",
-      "path" : "/api/v1/offers/667",
+      "path" : "/api/v1/offers/580",
       "versions" : [
         "v1"
       ],
@@ -1019,48 +947,59 @@
       "response_data" : {
         "items" : [],
         "messages" : [],
-        "user" : [],
+        "user" : [
+          {
+            "id" : 1866,
+            "first_name" : "Vincenza",
+            "last_name" : "Schumm",
+            "permission_id" : null
+          },
+          {
+            "id" : 1867,
+            "first_name" : "Lavada",
+            "last_name" : "Leffler",
+            "permission_id" : null
+          }
+        ],
         "deliveries" : [],
         "offers" : [
           {
-            "id" : 663,
+            "id" : 574,
             "language" : "en",
             "state" : "draft",
             "origin" : "web",
-            "stairs" : false,
-            "parking" : false,
+            "stairs" : true,
+            "parking" : true,
             "estimated_size" : "3",
-            "notes" : "Laborum similique fugiat et natus ut necessitatibus saepe. Est assumenda aut non vel possimus blanditiis ea. Aut voluptatem dignissimos ipsam minima exercitationem.",
-            "created_by_id" : null,
-            "created_at" : "2014-10-16T17:06:42.373+08:00",
-            "updated_at" : "2014-10-16T17:06:42.373+08:00",
+            "notes" : "Debitis animi possimus et id accusantium qui. Voluptatem voluptatibus repellendus nostrum et aliquam ad quisquam. Quis accusamus quas nostrum ducimus. Ipsa est consequatur ducimus non eos.",
+            "created_by_id" : 1866,
+            "created_at" : "2014-12-03T11:56:55.722+08:00",
+            "updated_at" : "2014-12-03T11:56:55.722+08:00",
             "submitted_at" : null,
-            "user_id" : null,
-            "delivery_id" : null,
-            "reviewed_by_id" : null,
             "reviewed_at" : null,
             "item_ids" : [],
-            "message_ids" : []
+            "message_ids" : [],
+            "reviewed_by_id" : null,
+            "delivery_id" : null
           },
           {
-            "id" : 664,
+            "id" : 575,
             "language" : "en",
             "state" : "draft",
             "origin" : "web",
-            "stairs" : false,
-            "parking" : true,
-            "estimated_size" : "1",
-            "notes" : "Similique distinctio qui atque aspernatur sit. Ab esse aliquid aut delectus. Non exercitationem nesciunt assumenda adipisci. Aut a perferendis corrupti eum sed ex rerum itaque.",
-            "created_by_id" : null,
-            "created_at" : "2014-10-16T17:06:42.390+08:00",
-            "updated_at" : "2014-10-16T17:06:42.390+08:00",
+            "stairs" : true,
+            "parking" : false,
+            "estimated_size" : "3",
+            "notes" : "Libero eaque nisi accusantium odio quidem. Est dignissimos itaque ex molestiae voluptas et. Quia nesciunt architecto rem explicabo error mollitia placeat sint. Ut sed sint doloremque totam est est.",
+            "created_by_id" : 1867,
+            "created_at" : "2014-12-03T11:56:55.745+08:00",
+            "updated_at" : "2014-12-03T11:56:55.745+08:00",
             "submitted_at" : null,
-            "user_id" : null,
-            "delivery_id" : null,
-            "reviewed_by_id" : null,
             "reviewed_at" : null,
             "item_ids" : [],
-            "message_ids" : []
+            "message_ids" : [],
+            "reviewed_by_id" : null,
+            "delivery_id" : null
           }
         ]
       },
@@ -1072,7 +1011,7 @@
   "offers#review" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/offers/455/review",
+      "path" : "/api/v1/offers/579/review",
       "versions" : [
         "v1"
       ],
@@ -1083,80 +1022,37 @@
         "messages" : [],
         "user" : [
           {
-            "id" : 1084,
-            "first_name" : "Delmer",
-            "last_name" : "Lesch",
-            "mobile" : "54403700",
-            "address_id" : 1438,
+            "id" : 1875,
+            "first_name" : "Kathryn",
+            "last_name" : "Medhurst",
             "permission_id" : null
           },
           {
-            "id" : 1083,
-            "first_name" : "Adolph",
-            "last_name" : "Schmitt",
-            "mobile" : "91340346",
-            "address_id" : 1437,
-            "permission_id" : 386
-          }
-        ],
-        "addresses" : [
-          {
-            "id" : 1438,
-            "street" : "Batz Villages",
-            "flat" : "Apt. 452",
-            "building" : "080",
-            "district_id" : 1555,
-            "addressable_id" : 1084,
-            "addressable_type" : "User"
-          },
-          {
-            "id" : 1437,
-            "street" : "Grady Villages",
-            "flat" : "Apt. 710",
-            "building" : "83526",
-            "district_id" : 1554,
-            "addressable_id" : 1083,
-            "addressable_type" : "User"
-          }
-        ],
-        "districts" : [
-          {
-            "id" : 1555,
-            "name" : "Jordan",
-            "territory_id" : 1266
-          },
-          {
-            "id" : 1554,
-            "name" : "Sham Tseng",
-            "territory_id" : 1265
-          }
-        ],
-        "permissions" : [
-          {
-            "id" : 386,
-            "name" : "Reviewer"
+            "id" : 1874,
+            "first_name" : "Wallace",
+            "last_name" : "Murazik",
+            "permission_id" : 430
           }
         ],
         "deliveries" : [],
         "offer" : {
-          "id" : 455,
+          "id" : 579,
           "language" : "en",
           "state" : "under_review",
           "origin" : "web",
           "stairs" : false,
           "parking" : true,
-          "estimated_size" : "1",
-          "notes" : "Explicabo voluptatum cumque ad voluptatibus et. Dolores quod velit quia quisquam dolorum pariatur voluptates accusamus. Amet nulla et aut totam. Optio et nesciunt autem reiciendis ut consectetur est voluptatibus. Ut molestias qui dolorum consequatur eum dignissimos.",
-          "created_by_id" : 1084,
-          "created_at" : "2014-10-28T20:39:59.960+08:00",
-          "updated_at" : "2014-10-28T20:40:00.126+08:00",
+          "estimated_size" : "2",
+          "notes" : "Delectus tenetur labore soluta qui quidem molestiae placeat. Nisi sunt cum tempora doloremque esse provident fuga quis. Magni omnis laboriosam quasi repellendus nemo et.",
+          "created_by_id" : 1875,
+          "created_at" : "2014-12-03T11:56:56.085+08:00",
+          "updated_at" : "2014-12-03T11:56:56.105+08:00",
           "submitted_at" : null,
-          "user_id" : 1084,
-          "delivery_id" : null,
-          "reviewed_by_id" : 1083,
-          "reviewed_at" : "2014-10-28T20:40:00.125+08:00",
+          "reviewed_at" : "2014-12-03T11:56:56.105+08:00",
           "item_ids" : [],
-          "message_ids" : []
+          "message_ids" : [],
+          "reviewed_by_id" : 1874,
+          "delivery_id" : null
         }
       },
       "code" : "200",
@@ -1167,7 +1063,7 @@
   "offers#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/offers/1731",
+      "path" : "/api/v1/offers/576",
       "versions" : [
         "v1"
       ],
@@ -1178,36 +1074,31 @@
         "messages" : [],
         "user" : [
           {
-            "id" : 6667,
-            "first_name" : "Alberta",
-            "last_name" : "Goodwin",
-            "mobile" : "11111111",
-            "address_id" : null,
+            "id" : 1868,
+            "first_name" : "Owen",
+            "last_name" : "Ratke",
             "permission_id" : null
           }
         ],
-        "addresses" : [],
-        "permissions" : [],
         "deliveries" : [],
         "offer" : {
-          "id" : 1731,
+          "id" : 576,
           "language" : "en",
           "state" : "draft",
           "origin" : "web",
-          "stairs" : false,
+          "stairs" : true,
           "parking" : false,
-          "estimated_size" : "4",
-          "notes" : "Officia ullam ut deserunt esse et. Possimus est aspernatur perferendis in omnis. Consectetur ea quas optio non sed. Et ullam sequi sint optio enim molestias. Et voluptates corporis ipsum assumenda placeat est ea.",
-          "created_by_id" : 6667,
-          "created_at" : "2014-10-04T07:59:46.233Z",
-          "updated_at" : "2014-10-04T07:59:46.233Z",
+          "estimated_size" : "2",
+          "notes" : "Veniam tenetur soluta vero in non. Quis et repellendus voluptatem tempore debitis. Animi at dolores quia repellat a doloremque. Eum iure nobis temporibus aliquid enim eos saepe. Distinctio quasi ut et quia.",
+          "created_by_id" : 1868,
+          "created_at" : "2014-12-03T11:56:55.833+08:00",
+          "updated_at" : "2014-12-03T11:56:55.833+08:00",
           "submitted_at" : null,
-          "user_id" : 6667,
-          "delivery_id" : null,
-          "reviewed_by_id" : null,
           "reviewed_at" : null,
           "item_ids" : [],
-          "message_ids" : []
+          "message_ids" : [],
+          "reviewed_by_id" : null,
+          "delivery_id" : null
         }
       },
       "code" : "200",
@@ -1218,7 +1109,7 @@
   "offers#update" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/offers/1910",
+      "path" : "/api/v1/offers/578",
       "versions" : [
         "v1"
       ],
@@ -1227,10 +1118,10 @@
         "offer" : {
           "language" : "en",
           "origin" : "web",
-          "stairs" : false,
-          "parking" : true,
-          "estimated_size" : "4",
-          "notes" : "Labore incidunt eos aut tenetur et omnis numquam laborum. Numquam reprehenderit dicta laudantium aut cumque perferendis rerum. Aut ut labore possimus et.",
+          "stairs" : true,
+          "parking" : false,
+          "estimated_size" : "3",
+          "notes" : "Qui doloremque nemo aliquid voluptatem. Omnis tempore id officiis tempora voluptas labore veritatis vitae. Repellendus ab est aliquam architecto ut. Ipsum inventore quam similique ut error maiores tempore et.",
           "state_event" : "submit",
           "saleable" : true
         }
@@ -1240,36 +1131,31 @@
         "messages" : [],
         "user" : [
           {
-            "id" : 7282,
-            "first_name" : "Michelle",
-            "last_name" : "Reinger",
-            "mobile" : "11111111",
-            "address_id" : null,
+            "id" : 1872,
+            "first_name" : "Victoria",
+            "last_name" : "Nolan",
             "permission_id" : null
           }
         ],
-        "addresses" : [],
-        "permissions" : [],
         "deliveries" : [],
         "offer" : {
-          "id" : 1910,
+          "id" : 578,
           "language" : "en",
           "state" : "submitted",
           "origin" : "web",
-          "stairs" : false,
-          "parking" : true,
-          "estimated_size" : "4",
-          "notes" : "Labore incidunt eos aut tenetur et omnis numquam laborum. Numquam reprehenderit dicta laudantium aut cumque perferendis rerum. Aut ut labore possimus et.",
-          "created_by_id" : 7282,
-          "created_at" : "2014-10-04T12:02:48.876Z",
-          "updated_at" : "2014-10-04T12:02:49.010Z",
-          "submitted_at" : "2014-10-04T12:02:49.009Z",
-          "user_id" : 7282,
-          "delivery_id" : null,
-          "reviewed_by_id" : null,
+          "stairs" : true,
+          "parking" : false,
+          "estimated_size" : "3",
+          "notes" : "Qui doloremque nemo aliquid voluptatem. Omnis tempore id officiis tempora voluptas labore veritatis vitae. Repellendus ab est aliquam architecto ut. Ipsum inventore quam similique ut error maiores tempore et.",
+          "created_by_id" : 1872,
+          "created_at" : "2014-12-03T11:56:55.976+08:00",
+          "updated_at" : "2014-12-03T11:56:55.997+08:00",
+          "submitted_at" : "2014-12-03T11:56:55.997+08:00",
           "reviewed_at" : null,
           "item_ids" : [],
-          "message_ids" : []
+          "message_ids" : [],
+          "reviewed_by_id" : null,
+          "delivery_id" : null
         }
       },
       "code" : "200",
@@ -1290,7 +1176,7 @@
         "schedules" : [
           {
             "resource" : "Truck A",
-            "scheduled_at" : "2014-10-28 13:59:23 +0530",
+            "scheduled_at" : "2014-12-11 11:56:56 +0800",
             "slot" : 2,
             "slot_name" : "Morning,11am-1pm",
             "zone" : "East",
@@ -1298,7 +1184,7 @@
           },
           {
             "resource" : "Truck B",
-            "scheduled_at" : "2014-10-28 13:59:23 +0530",
+            "scheduled_at" : "2014-12-11 11:56:56 +0800",
             "slot" : 3,
             "slot_name" : "Afternoon,2pm-4pm",
             "zone" : "West",
@@ -1306,7 +1192,7 @@
           },
           {
             "resource" : "Truck C",
-            "scheduled_at" : "2014-10-29 13:59:23 +0530",
+            "scheduled_at" : "2014-12-12 11:56:56 +0800",
             "slot" : 4,
             "slot_name" : "Evening,4pm-6pm",
             "zone" : "South",
@@ -1314,7 +1200,7 @@
           },
           {
             "resource" : "Truck A",
-            "scheduled_at" : "2014-10-29 13:59:23 +0530",
+            "scheduled_at" : "2014-12-12 11:56:56 +0800",
             "slot" : 1,
             "slot_name" : "Morning,9am-11am",
             "zone" : "West",
@@ -1322,7 +1208,7 @@
           },
           {
             "resource" : "Truck D",
-            "scheduled_at" : "2014-10-30 13:59:23 +0530",
+            "scheduled_at" : "2014-12-13 11:56:56 +0800",
             "slot" : 3,
             "slot_name" : "Afternoon,2pm-4pm",
             "zone" : "West",
@@ -1330,7 +1216,7 @@
           },
           {
             "resource" : "Truck B",
-            "scheduled_at" : "2014-10-30 13:59:23 +0530",
+            "scheduled_at" : "2014-12-13 11:56:56 +0800",
             "slot" : 4,
             "slot_name" : "Evening,4pm-6pm",
             "zone" : "North",
@@ -1353,22 +1239,22 @@
       "query" : null,
       "request_data" : {
         "schedule" : {
-          "id" : "6",
-          "resource" : "Truck B",
-          "slot" : 4,
-          "slot_name" : "Evening,4pm-6pm",
-          "zone" : "North",
-          "scheduled_at" : "2014-10-30 13:59:23 +0530"
+          "id" : 1,
+          "resource" : "Truck A",
+          "slot" : 2,
+          "slot_name" : "Morning,11am-1pm",
+          "zone" : "East",
+          "scheduled_at" : "2014-12-11 11:56:56 +0800"
         }
       },
       "response_data" : {
         "schedule" : {
-          "id" : 3,
-          "resource" : "Truck B",
-          "scheduled_at" : "2014-10-30T16:29:23.000+08:00",
-          "slot" : 4,
-          "slot_name" : "Evening,4pm-6pm",
-          "zone" : "North"
+          "id" : 8,
+          "resource" : "Truck A",
+          "scheduled_at" : "2014-12-11T11:56:56.000+08:00",
+          "slot" : 2,
+          "slot_name" : "Morning,11am-1pm",
+          "zone" : "East"
         }
       },
       "code" : "201",
@@ -1388,41 +1274,41 @@
       "response_data" : {
         "districts" : [
           {
-            "id" : 602,
-            "name" : "Sham Shui Po",
-            "territory_id" : 489
+            "id" : 2097,
+            "name" : "Jardines Lookout",
+            "territory_id" : 1705
           },
           {
-            "id" : 603,
-            "name" : "Wang Tau Hom",
-            "territory_id" : 489
+            "id" : 2098,
+            "name" : "Kwai Chung",
+            "territory_id" : 1705
           },
           {
-            "id" : 604,
-            "name" : "Kowloon Tong",
-            "territory_id" : 490
+            "id" : 2099,
+            "name" : "The Chinese University of Hong Kong CUHK",
+            "territory_id" : 1706
           },
           {
-            "id" : 605,
-            "name" : "Sheung Wan",
-            "territory_id" : 490
+            "id" : 2100,
+            "name" : "The University of Hong Kong HKU",
+            "territory_id" : 1706
           }
         ],
         "territories" : [
           {
-            "id" : 489,
-            "name" : "Kowloon",
+            "id" : 1705,
+            "name" : "New Territories",
             "district_ids" : [
-              602,
-              603
+              2097,
+              2098
             ]
           },
           {
-            "id" : 490,
+            "id" : 1706,
             "name" : "Hong Kong Island",
             "district_ids" : [
-              604,
-              605
+              2099,
+              2100
             ]
           }
         ]
@@ -1435,7 +1321,7 @@
   "territories#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/territories/306",
+      "path" : "/api/v1/territories/1704",
       "versions" : [
         "v1"
       ],
@@ -1444,40 +1330,40 @@
       "response_data" : {
         "districts" : [
           {
-            "id" : 118,
-            "name" : "Shek Kong",
-            "territory_id" : 306
+            "id" : 2092,
+            "name" : "Lai Chi Kok",
+            "territory_id" : 1704
           },
           {
-            "id" : 119,
-            "name" : "Tsz Wan Shan",
-            "territory_id" : 306
+            "id" : 2093,
+            "name" : "Ho Chung",
+            "territory_id" : 1704
           },
           {
-            "id" : 120,
-            "name" : "Hung Hom",
-            "territory_id" : 306
+            "id" : 2094,
+            "name" : "Airport",
+            "territory_id" : 1704
           },
           {
-            "id" : 121,
-            "name" : "Mount Davis",
-            "territory_id" : 306
+            "id" : 2095,
+            "name" : "Tseng Lan Shue",
+            "territory_id" : 1704
           },
           {
-            "id" : 122,
-            "name" : "Hong Kong Baptist University HKBU",
-            "territory_id" : 306
+            "id" : 2096,
+            "name" : "Tate's Cairn",
+            "territory_id" : 1704
           }
         ],
         "territory" : {
-          "id" : 306,
+          "id" : 1704,
           "name" : "New Territories",
           "district_ids" : [
-            118,
-            119,
-            120,
-            121,
-            122
+            2092,
+            2093,
+            2094,
+            2095,
+            2096
           ]
         }
       },
@@ -1496,59 +1382,17 @@
       "query" : "",
       "request_data" : null,
       "response_data" : {
-        "addresses" : [
+        "users" : [
           {
             "id" : 1885,
-            "street" : "Erik Burgs",
-            "flat" : "Apt. 752",
-            "building" : "3329",
-            "district_id" : 2056,
-            "addressable_id" : 1433,
-            "addressable_type" : "User"
+            "first_name" : "Jerrod",
+            "last_name" : "Runolfsson",
+            "permission_id" : 432
           },
           {
             "id" : 1886,
-            "street" : "Schmitt Branch",
-            "flat" : "Suite 949",
-            "building" : "64681",
-            "district_id" : 2057,
-            "addressable_id" : 1434,
-            "addressable_type" : "User"
-          }
-        ],
-        "districts" : [
-          {
-            "id" : 2056,
-            "name" : "Cyberport",
-            "territory_id" : 1687
-          },
-          {
-            "id" : 2057,
-            "name" : "Lohas Park",
-            "territory_id" : 1688
-          }
-        ],
-        "permissions" : [
-          {
-            "id" : 511,
-            "name" : "Reviewer"
-          }
-        ],
-        "users" : [
-          {
-            "id" : 1433,
-            "first_name" : "Alfredo",
-            "last_name" : "Conroy",
-            "mobile" : "58435538",
-            "address_id" : 1885,
-            "permission_id" : 511
-          },
-          {
-            "id" : 1434,
-            "first_name" : "Sim",
-            "last_name" : "Rau",
-            "mobile" : "56243086",
-            "address_id" : 1886,
+            "first_name" : "Moses",
+            "last_name" : "Simonis",
             "permission_id" : null
           }
         ]
@@ -1561,44 +1405,18 @@
   "users#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/users/1431",
+      "path" : "/api/v1/users/1883",
       "versions" : [
         "v1"
       ],
       "query" : "",
       "request_data" : null,
       "response_data" : {
-        "addresses" : [
-          {
-            "id" : 1883,
-            "street" : "Jeffery Overpass",
-            "flat" : "Apt. 860",
-            "building" : "7531",
-            "district_id" : 2054,
-            "addressable_id" : 1431,
-            "addressable_type" : "User"
-          }
-        ],
-        "districts" : [
-          {
-            "id" : 2054,
-            "name" : "Lok Ma Chau",
-            "territory_id" : 1686
-          }
-        ],
-        "permissions" : [
-          {
-            "id" : 510,
-            "name" : "Reviewer"
-          }
-        ],
         "user" : {
-          "id" : 1431,
-          "first_name" : "Guillermo",
-          "last_name" : "Kohler",
-          "mobile" : "90865267",
-          "address_id" : 1883,
-          "permission_id" : 510
+          "id" : 1883,
+          "first_name" : "Wanda",
+          "last_name" : "Larkin",
+          "permission_id" : 431
         }
       },
       "code" : "200",

@@ -1,6 +1,7 @@
 module Api::V1
   class ImagesController < Api::V1::ApiController
-    skip_authorization_check only: [:generate_signature]
+    load_and_authorize_resource :image, parent: false, :except => [:generate_signature, :destroy]
+    skip_authorization_check only: [:generate_signature, :destroy]
 
     resource_description do
       short 'Generate an image signature for Cloudinary service'
@@ -11,11 +12,9 @@ module Api::V1
 
     def_param_group :image do
       param :image, Hash do
-        param :order, Integer, desc: "Not yet used"
-        param :image_id, String, desc: "id of image uploaded to cloudinary"
-        param :favourite, [true, false], desc: "This image will be used as default image for item."
-        param :parent_type, String, desc: "Image belongs to? (polymorphic relationship like 'Item' or 'User')"
-        param :parent_id, Integer
+        param :cloudinary_id, String, desc: "The cloudinary image id for the image"
+        param :favourite, [true, false], desc: "This image will be used as default image for item"
+        param :item_id, String, desc: "The offer item the image belongs to"
       end
     end
 
@@ -32,6 +31,52 @@ module Api::V1
         timestamp: unix_timestamp }.to_json
     end
 
+    api :POST, '/v1/images', "Create an image"
+    param_group :image
+    def create
+      @image.attributes = image_params
+      if @image.save
+        render json: @image, serializer: serializer, status: 201
+      else
+        render json: @image.errors.to_json, status: 422
+      end
+    end
+
+    api :GET, '/v1/images', "List all images"
+    param :ids, Array, of: Integer, desc: "Filter by images ids e.g. ids = [1,2,3,4]"
+    def index
+      @images = @images.find(params[:ids].split(",")) if params[:ids].present?
+      render json: @images, each_serializer: serializer
+    end
+
+    api :GET, '/v1/images/1', "List an image"
+    def show
+      render json: @image, serializer: serializer
+    end
+
+    api :DELETE, '/v1/images/1', "Delete an image"
+    def destroy
+      @image = Image.find_by_id(params[:id])
+      if @image
+        authorize! :destroy, @image
+        @image.destroy
+      end
+      render json: {}
+    end
+
+    api :PUT, '/v1/images/1', "Update an image"
+    param_group :image
+    def update
+      if @image.update_attributes(image_params)
+        if @image.favourite
+          @image.item.images.where.not(id: @image.id).update_all(favourite: false)
+        end
+        render json: @image, serializer: serializer
+      else
+        render json: @image.errors.to_json, status: 422
+      end
+    end
+
     private
 
     def cloudinary_config
@@ -43,5 +88,12 @@ module Api::V1
       "#{host}/cloudinary_cors.html"
     end
 
+    def image_params
+      params.require(:image).permit(:favourite,:cloudinary_id,:item_id)
+    end
+
+    def serializer
+      Api::V1::ImageSerializer
+    end
   end
 end

@@ -20,6 +20,11 @@ Rails.application.routes.draw do
       get  "permissions" => "permissions#index"
       get  "permissions/:id" => "permissions#show"
       get  "images/generate_signature" => "images#generate_signature"
+      get  "images" => "images#index"
+      get  "images/:id" => "images#show"
+      post "images" => "images#create"
+      put  "images/:id" => "images#update"
+      delete "images/:id" => "images#destroy"
       get  "messages" => "messages#index"
       get  "messages/:id" => "messages#show"
       post "messages" => "messages#create"
@@ -36,6 +41,7 @@ Rails.application.routes.draw do
       get  "packages" => "packages#index"
       get  "packages/:id" => "packages#show"
       post "packages" => "packages#create"
+      put  "packages/:id" => "packages#update"
 
       get  "rejection_reasons" => "rejection_reasons#index"
       get  "rejection_reasons/:id" => "rejection_reasons#show"
@@ -54,6 +60,10 @@ Rails.application.routes.draw do
       put  "deliveries/:id" => "deliveries#update"
       get  "schedules" => "schedules#availableTimeSlots"
       post "schedules" => "schedules#create"
+
+      post "gogovan_orders" => "gogovan_orders#confirm_order"
+      post "gogovan_orders/calculate_price" => "gogovan_orders#calculate_price"
+
     end
   end
 end

@@ -6,6 +6,7 @@ module Api::V1
 
     has_one :contact, serializer: ContactSerializer
     has_one :schedule, serializer: ScheduleSerializer
+    has_one :gogovan_order, serializer: GogovanOrderSerializer
   end
 
 end

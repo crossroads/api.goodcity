@@ -41,8 +41,8 @@ describe "Package abilities" do
       end}
     end
 
-    context "and package belongs to pending item" do
-      let(:state)   { 'pending' }
+    context "and package belongs to submitted item" do
+      let(:state)   { 'submitted' }
       let(:can)     { [:index, :show, :create, :update] }
       let(:cannot)  { [:destroy, :manage] }
       it{ can.each do |do_action|
@@ -70,8 +70,8 @@ describe "Package abilities" do
       end}
     end
 
-    context "and package belongs to pending item" do
-      let(:state)   { 'pending' }
+    context "and package belongs to submitted item" do
+      let(:state)   { 'submitted' }
       let(:can)     { [:index, :show, :create, :update] }
       let(:cannot)  { [:destroy, :manage] }
       it{ can.each do |do_action|
