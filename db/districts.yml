@@ -2,153 +2,153 @@
 Sheung Shui:
   :name_zh_tw: "上水"
   :territory_name_en: New Territories
-  :latitude: 22.5029632
-  :longitude: 114.1277213
+  :latitude: 22.5112008
+  :longitude: 114.1260991
 Sheung Wan:
   :name_zh_tw: "上環"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2863943
+  :longitude: 114.1491375
 Central:
   :name_zh_tw: "中環"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.281035
-  :longitude: 114.15885
+  :latitude: 22.2799907
+  :longitude: 114.1587983
 Jordan:
   :name_zh_tw: "佐敦"
   :territory_name_en: Kowloon
-  :latitude: 22.305178
-  :longitude: 114.171638
+  :latitude: 22.3048612
+  :longitude: 114.1692021
 Yuen Long:
   :name_zh_tw: "元朗"
   :territory_name_en: New Territories
-  :latitude: 22.440741
-  :longitude: 114.015899
+  :latitude: 22.4445376
+  :longitude: 114.0222076
 North Point:
   :name_zh_tw: "北角"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.2914
-  :longitude: 114.200735
+  :latitude: 22.2884683
+  :longitude: 114.192803
 Mid-Levels:
   :name_zh_tw: "半山`"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.280519
-  :longitude: 114.14825
+  :latitude: 22.2811673
+  :longitude: 114.142449
 Nam Cheong:
   :name_zh_tw: "南昌"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.326734
+  :longitude: 114.153599
 Kwu Tung:
   :name_zh_tw: "古洞"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.5038012
+  :longitude: 114.1023164
 Kai Tak:
   :name_zh_tw: "啟德"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3246084
+  :longitude: 114.1990482
 Tai Wai:
   :name_zh_tw: "大圍"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3697293
+  :longitude: 114.1736608
 Tai Hau:
   :name_zh_tw: "大坑"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2047596
+  :longitude: 114.0259451
 Taipo:
   :name_zh_tw: "大埔"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.4423218
+  :longitude: 114.1655064
 Tai Tong:
   :name_zh_tw: "大棠"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.420457
+  :longitude: 114.0203572
 Tai Lam:
   :name_zh_tw: "大欖"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.399637
+  :longitude: 114.0547472
 Tai Tam:
   :name_zh_tw: "大潭"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2567774
+  :longitude: 114.2106427
 Tin Hau:
   :name_zh_tw: "天后"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.282174
+  :longitude: 114.191802
 Tai Koo:
   :name_zh_tw: "太古"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.284649
+  :longitude: 114.216359
 Tai Wo:
   :name_zh_tw: "太和"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3697293
+  :longitude: 114.1736608
 Prince Edward:
   :name_zh_tw: "太子"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3243935
+  :longitude: 114.1692021
 Olympic:
   :name_zh_tw: "奧運"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.317771
+  :longitude: 114.16022
 Siu Lam:
   :name_zh_tw: "小欖"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3687091
+  :longitude: 114.0116334
 Tuen Mun:
   :name_zh_tw: "屯門"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3908295
+  :longitude: 113.9725126
 The Peak:
   :name_zh_tw: "山頂"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2632478
+  :longitude: 114.1587983
 Choi Hung:
   :name_zh_tw: "彩虹"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.334969
+  :longitude: 114.20905
 Mong Kok:
   :name_zh_tw: "旺角"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3203648
+  :longitude: 114.169773
 Tung Chung:
   :name_zh_tw: "東涌"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.2873743
+  :longitude: 113.9425086
 Chai Wan:
   :name_zh_tw: "柴灣"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.264625
+  :longitude: 114.237139
 Lok Fu:
   :name_zh_tw: "樂富"
   :territory_name_en: Kowloon
-  :latitude: 22.338128
-  :longitude: 114.18756
+  :latitude: 22.3377402
+  :longitude: 114.1862935
 Airport:
   :name_zh_tw: "機場"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.316058
+  :longitude: 113.936503
 Ting Kau:
   :name_zh_tw: "汀九"
   :territory_name_en: New Territories
@@ -157,33 +157,33 @@ Ting Kau:
 Sha Tin:
   :name_zh_tw: "沙田"
   :territory_name_en: New Territories
-  :latitude: 22.38166661423707
-  :longitude: 114.18914794921875
+  :latitude: 22.3771304
+  :longitude: 114.1974398
 Yau Tong:
   :name_zh_tw: "油塘"
   :territory_name_en: New Territories
-  :latitude: 22.296462
-  :longitude: 114.237556
+  :latitude: 22.2940736
+  :longitude: 114.2375638
 Sham Tseng:
   :name_zh_tw: "深井"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3685873
+  :longitude: 114.0599175
 The University of Hong Kong HKU:
   :name_zh_tw: "香港大學"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2829989
+  :longitude: 114.1370848
 Wan Chai:
   :name_zh_tw: "灣仔"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.277759
-  :longitude: 114.173076
+  :latitude: 22.276022
+  :longitude: 114.1751471
 Fo Tan:
   :name_zh_tw: "火炭"
   :territory_name_en: New Territories
-  :latitude: 22.3952373474545
-  :longitude: 114.198160171508
+  :latitude: 22.3985709
+  :longitude: 114.1929428
 Shek Kong:
   :name_zh_tw: "石崗"
   :territory_name_en: New Territories
@@ -192,28 +192,28 @@ Shek Kong:
 Shek O:
   :name_zh_tw: "石澳"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2334016
+  :longitude: 114.2420218
 Fanling:
   :name_zh_tw: "粉嶺"
   :territory_name_en: New Territories
-  :latitude: 22.493209
-  :longitude: 114.139366
+  :latitude: 22.4917369
+  :longitude: 114.1384766
 Hung Hom:
   :name_zh_tw: "紅磡"
   :territory_name_en: Kowloon
-  :latitude: 22.304741
-  :longitude: 114.187946
+  :latitude: 22.3055658
+  :longitude: 114.1887233
 Mei Foo:
   :name_zh_tw: "美孚"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3366356
+  :longitude: 114.1402195
 Tsuen Wan:
   :name_zh_tw: "荃灣"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3713227
+  :longitude: 114.1141601
 Lai King:
   :name_zh_tw: "荔景"
   :territory_name_en: New Territories
@@ -222,18 +222,18 @@ Lai King:
 Kwai Chung:
   :name_zh_tw: "葵涌"
   :territory_name_en: New Territories
-  :latitude: 22.3645318
-  :longitude: 114.1301826
+  :latitude: 22.3668502
+  :longitude: 114.1302591
 Lam Tei:
   :name_zh_tw: "藍地"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.4252755
+  :longitude: 113.9804106
 Lam Tin:
   :name_zh_tw: "藍田"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.306855
+  :longitude: 114.232733
 Ho Chung:
   :name_zh_tw: "蠔涌"
   :territory_name_en: New Territories
@@ -242,63 +242,63 @@ Ho Chung:
 Sai Wan:
   :name_zh_tw: "西環"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2876838
+  :longitude: 114.1365037
 Sai Kung:
   :name_zh_tw: "西貢"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.383689
+  :longitude: 114.2707867
 Kwun Tong:
   :name_zh_tw: "觀塘"
   :territory_name_en: Kowloon
-  :latitude: 22.312801
-  :longitude: 114.225798
+  :latitude: 22.3103686
+  :longitude: 114.2227035
 Stanley:
   :name_zh_tw: "赤柱"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.219668
-  :longitude: 114.209146
+  :latitude: 22.220422
+  :longitude: 114.2126685
 Kwan Tei:
   :name_zh_tw: "軍地"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.505546
+  :longitude: 114.1617709
 Kam Shan:
   :name_zh_tw: "金山"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3646433
+  :longitude: 114.1528532
 Admiralty:
   :name_zh_tw: "金鐘"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.279248
-  :longitude: 114.164944
+  :latitude: 22.2796357
+  :longitude: 114.1654865
 Kam Tin:
   :name_zh_tw: "錦田"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.440058
+  :longitude: 114.0650077
 Fairview Park:
   :name_zh_tw: "錦繡"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.4780591
+  :longitude: 114.0443408
 Tsing Yi:
   :name_zh_tw: "青衣"
   :territory_name_en: New Territories
-  :latitude: 22.350552
-  :longitude: 114.101686
+  :latitude: 22.358487
+  :longitude: 114.107261
 Ma Wan:
   :name_zh_tw: "馬灣"
   :territory_name_en: New Territories
-  :latitude: 22.348171
-  :longitude: 114.059029
+  :latitude: 22.3500753
+  :longitude: 114.059207
 Sam Mun Tsai:
   :name_zh_tw: "三門仔"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.456865
+  :longitude: 114.213647
 Kau To Shan:
   :name_zh_tw: "九肚山"
   :territory_name_en: New Territories
@@ -307,18 +307,18 @@ Kau To Shan:
 Kowloon City:
   :name_zh_tw: "九龍城"
   :territory_name_en: Kowloon
-  :latitude: 22.330308
-  :longitude: 114.193182
+  :latitude: 22.3306602
+  :longitude: 114.1920172
 Kowloon Tong:
   :name_zh_tw: "九龍塘"
   :territory_name_en: Kowloon
-  :latitude: 22.337533
-  :longitude: 114.178548
+  :latitude: 22.3369319
+  :longitude: 114.1763367
 Kowloon Bay:
   :name_zh_tw: "九龍灣"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3266646
+  :longitude: 114.2078426
 Tseng Lan Shue:
   :name_zh_tw: "井欗樹"
   :territory_name_en: Kowloon
@@ -327,23 +327,23 @@ Tseng Lan Shue:
 Ho Man Tin:
   :name_zh_tw: "何文田"
   :territory_name_en: Kowloon
-  :latitude: 22.313356
-  :longitude: 114.179835
+  :latitude: 22.318507
+  :longitude: 114.1755339
 Shap Sze Heung:
   :name_zh_tw: "十四鄉"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.41808
+  :longitude: 114.261653
 Asia World-Expo:
   :name_zh_tw: "博覽館"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3218126
+  :longitude: 113.9411831
 To Kwa Wan:
   :name_zh_tw: "土瓜灣"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3173373
+  :longitude: 114.1879691
 Tai Au Mun:
   :name_zh_tw: "大坳門"
   :territory_name_en: New Territories
@@ -352,38 +352,38 @@ Tai Au Mun:
 Tai Mei Tuk:
   :name_zh_tw: "大尾篤"
   :territory_name_en: New Territories
-  :latitude: 22.4669437
-  :longitude: 114.2360518
+  :latitude: 22.4691031
+  :longitude: 114.2335084
 Tai Mo Shan:
   :name_zh_tw: "大帽山"
   :territory_name_en: New Territories
-  :latitude: 22.4166667
-  :longitude: 114.1166667
+  :latitude: 22.4088496
+  :longitude: 114.13799
 Tai Mong Tsai:
   :name_zh_tw: "大網仔"
   :territory_name_en: New Territories
-  :latitude: 22.3918219
-  :longitude: 114.2976533
+  :latitude: 22.393774
+  :longitude: 114.300469
 Tai Kok Tsui:
   :name_zh_tw: "大角咀"
   :territory_name_en: Kowloon
-  :latitude: 22.321535
-  :longitude: 114.16266900000005
+  :latitude: 22.31975
+  :longitude: 114.1632571
 Tin Shui Wai:
   :name_zh_tw: "天水圍"
   :territory_name_en: New Territories
-  :latitude: 22.462397
-  :longitude: 114.001436
+  :latitude: 22.4606419
+  :longitude: 114.0041996
 Braemar Hill:
   :name_zh_tw: "寶馬山"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.286328
+  :longitude: 114.200192
 Tseung Kwan O:
   :name_zh_tw: "將軍澳"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3119357
+  :longitude: 114.2568776
 Siu Sai Wan:
   :name_zh_tw: "小西灣"
   :territory_name_en: Hong Kong Island
@@ -392,28 +392,28 @@ Siu Sai Wan:
 Tsim Sha Tsui:
   :name_zh_tw: "尖沙咀"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.2988123
+  :longitude: 114.1721746
 Po Toi O:
   :name_zh_tw: "布袋澳"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.1692324
+  :longitude: 114.2598533
 Hong Lok Yuen:
   :name_zh_tw: "康樂園"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.4606817
+  :longitude: 114.1543395
 Discovery Bay:
   :name_zh_tw: "愉景灣"
   :territory_name_en: New Territories
-  :latitude: 22.29545
-  :longitude: 114.016242
+  :latitude: 22.2921406
+  :longitude: 114.0101467
 Tsz Wan Shan:
   :name_zh_tw: "慈雲山"
   :territory_name_en: Kowloon
-  :latitude: 22.348806
-  :longitude: 114.196744
+  :latitude: 22.3515518
+  :longitude: 114.200412
 Mount Davis:
   :name_zh_tw: "摩星嶺"
   :territory_name_en: Hong Kong Island
@@ -422,23 +422,23 @@ Mount Davis:
 Cyberport:
   :name_zh_tw: "數碼港"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.2584994
-  :longitude: 114.1313015
+  :latitude: 22.2608312
+  :longitude: 114.1308131
 San Po Kong:
   :name_zh_tw: "新蒲崗"
   :territory_name_en: Kowloon
-  :latitude: 22.337215
-  :longitude: 114.195457
+  :latitude: 22.3364426
+  :longitude: 114.1989259
 Stonecutters Island:
   :name_zh_tw: "昂船洲"
   :territory_name_en: Kowloon
-  :latitude: 22.3166667
-  :longitude: 114.1333333
+  :latitude: 22.3228031
+  :longitude: 114.1350173
 Lei Muk Shue:
   :name_zh_tw: "梨木樹"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3792004
+  :longitude: 114.1357605
 Wang Tau Hom:
   :name_zh_tw: "橫頭磡"
   :territory_name_en: Kowloon
@@ -447,13 +447,13 @@ Wang Tau Hom:
 Sha Tau Kok:
   :name_zh_tw: "沙頭角"
   :territory_name_en: New Territories
-  :latitude: 22.5333608
-  :longitude: 114.1974398
+  :latitude: 22.531577
+  :longitude: 114.20324
 Yau Ma Tei:
   :name_zh_tw: "油麻地"
   :territory_name_en: Kowloon
-  :latitude: 22.313277
-  :longitude: 114.170566
+  :latitude: 22.312828
+  :longitude: 114.170682
 Hung Shui Kiu:
   :name_zh_tw: "洪水橋"
   :territory_name_en: New Territories
@@ -462,58 +462,58 @@ Hung Shui Kiu:
 Lau Fau Shan:
   :name_zh_tw: "流浮山"
   :territory_name_en: New Territories
-  :latitude: 22.4675128926014
-  :longitude: 113.984484672546
+  :latitude: 22.4369198
+  :longitude: 113.9595943
 Sham Shui Po:
   :name_zh_tw: "深水埗"
   :territory_name_en: Kowloon
-  :latitude: 22.330983
-  :longitude: 114.16224
+  :latitude: 22.3285899
+  :longitude: 114.1602846
 Deep Water Bay:
   :name_zh_tw: "深水灣"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.2463478
-  :longitude: 114.1847918
+  :latitude: 22.2495068
+  :longitude: 114.1840643
 Repulse Bay:
   :name_zh_tw: "淺水灣"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.236909
-  :longitude: 114.198332
+  :latitude: 22.2371597
+  :longitude: 114.1971229
 Jardines Lookout:
   :name_zh_tw: "渣甸山"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.2705798
-  :longitude: 114.1914048
+  :latitude: 22.2666667
+  :longitude: 114.2
 Fortress Hill:
   :name_zh_tw: "炮台山"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.2892231
-  :longitude: 114.1950696
+  :latitude: 22.28858
+  :longitude: 114.19417
 Ngau Tau Kok:
   :name_zh_tw: "牛頭角"
   :territory_name_en: Kowloon
-  :latitude: 22.317565
-  :longitude: 114.217601
+  :latitude: 22.322466
+  :longitude: 114.2167592
 Beacon Hill:
   :name_zh_tw: "畢架山"
   :territory_name_en: Kowloon
-  :latitude: 22.342168
-  :longitude: 114.177936
+  :latitude: 22.3425183
+  :longitude: 114.1781195
 Shek Kip Mei:
   :name_zh_tw: "石硤尾"
   :territory_name_en: Kowloon
-  :latitude: 22.333662
-  :longitude: 114.167819
+  :latitude: 22.3337786
+  :longitude: 114.1674019
 Sau Mau Ping:
   :name_zh_tw: "秀茂坪"
   :territory_name_en: Kowloon
-  :latitude: 22.3196469
-  :longitude: 114.2345917
+  :latitude: 22.3186108
+  :longitude: 114.2348969
 Shau Kei Wan:
   :name_zh_tw: "筲箕灣"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.277302
-  :longitude: 114.231806
+  :latitude: 22.279189
+  :longitude: 114.228921
 Chung Hom Kok:
   :name_zh_tw: "舂坎角"
   :territory_name_en: Hong Kong Island
@@ -522,78 +522,78 @@ Chung Hom Kok:
 Lai Chi Kok:
   :name_zh_tw: "荔枝角"
   :territory_name_en: Kowloon
-  :latitude: 22.336937
-  :longitude: 114.145246
+  :latitude: 22.337265
+  :longitude: 114.148033
 Lok Ma Chau:
   :name_zh_tw: "落馬洲"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.5098835
+  :longitude: 114.0815055
 Pok Fu Lam:
   :name_zh_tw: "薄扶林"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.268843
-  :longitude: 114.131513
+  :latitude: 22.2679201
+  :longitude: 114.1290719
 Sai Wan Ho:
   :name_zh_tw: "西灣河"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.281909
-  :longitude: 114.222922
+  :latitude: 22.282096
+  :longitude: 114.221905
 Sai Ying Pun:
   :name_zh_tw: "西營盤"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.285957
-  :longitude: 114.139804
+  :latitude: 22.2867488
+  :longitude: 114.142449
 Happy Valley:
   :name_zh_tw: "跑馬地"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.268526
-  :longitude: 114.186444
+  :latitude: 22.268352
+  :longitude: 114.1865135
 Disneyland:
   :name_zh_tw: "迪士尼"
   :territory_name_en: New Territories
-  :latitude: 22.317698
-  :longitude: 114.043269
+  :latitude: 22.316994
+  :longitude: 114.045306
 Silverstrand:
   :name_zh_tw: "銀線灣"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.322516
+  :longitude: 114.269569
 Causeway Bay:
   :name_zh_tw: "銅鑼灣"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.28027086116154
-  :longitude: 114.18396592140198
+  :latitude: 22.2859787
+  :longitude: 114.1914919
 Diamond Hill:
   :name_zh_tw: "鑽石山"
   :territory_name_en: Kowloon
-  :latitude: 22.342018
-  :longitude: 114.201207
+  :latitude: 22.3438727
+  :longitude: 114.2048704
 Cheung Sha Wan:
   :name_zh_tw: "長沙灣"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3358055
+  :longitude: 114.1494892
 Hong Kong Parkview:
   :name_zh_tw: "陽明山"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2475463
+  :longitude: 114.1559295
 Shun Lee:
   :name_zh_tw: "順利村"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.327885
+  :longitude: 114.224573
 Fei Ngo Shan:
   :name_zh_tw: "飛鵝山"
   :territory_name_en: Kowloon
-  :latitude: 22.3348487
-  :longitude: 114.2259447
+  :latitude: 22.3333333
+  :longitude: 114.2166667
 Aberdeen:
   :name_zh_tw: "香港仔"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.250653
-  :longitude: 114.148464
+  :latitude: 22.2483068
+  :longitude: 114.1524398
 Ma Liu Shui:
   :name_zh_tw: "馬料水"
   :territory_name_en: New Territories
@@ -607,108 +607,108 @@ Ma Yau Tong:
 Ma On Shan:
   :name_zh_tw: "馬鞍山"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.4276756
+  :longitude: 114.2402751
 Quarry Bay:
   :name_zh_tw: "鰂魚涌"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.288739
-  :longitude: 114.21037
+  :latitude: 22.2827206
+  :longitude: 114.2123009
 Ap Lei Chau:
   :name_zh_tw: "鴨利洲"
   :territory_name_en: Hong Kong Island
-  :latitude:
-  :longitude:
+  :latitude: 22.2418581
+  :longitude: 114.1528532
 Wong Tai Sin:
   :name_zh_tw: "黃大仙"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 22.3548115
+  :longitude: 114.1974398
 Wong Chuk Hang:
   :name_zh_tw: "黃竹坑"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.239055
-  :longitude: 114.1706884
+  :latitude: 22.2459198
+  :longitude: 114.1664957
 Lung Kwu Tan:
   :name_zh_tw: "龍鼓灘"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.3904334
+  :longitude: 113.9198946
 Tate's Cairn:
   :name_zh_tw: "大老山"
   :territory_name_en: New Territories
-  :latitude: 22.3666667
-  :longitude: 114.2166667
+  :latitude: 22.3579155
+  :longitude: 114.2175022
 Kwun Yam Shan:
   :name_zh_tw: "觀音山"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.23966
+  :longitude: 113.8897043
 The Chinese University of Hong Kong CUHK:
   :name_zh_tw: "中文大學"
   :territory_name_en: New Territories
-  :latitude: 22.4201533
-  :longitude: 114.2070866
+  :latitude: 22.41899
+  :longitude: 114.2103051
 Palm Springs:
   :name_zh_tw: "加洲花園"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.4850291
+  :longitude: 114.0532606
 City University of Hong Kong:
   :name_zh_tw: "城市大學"
   :territory_name_en: Kowloon
-  :latitude: 22.337155
-  :longitude: 114.172807
+  :latitude: 22.3374868
+  :longitude: 114.1720025
 Kennedy Town:
   :name_zh_tw: "堅尼地城"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.283811
-  :longitude: 114.128085
+  :latitude: 22.2822235
+  :longitude: 114.1292619
 Lingnan University:
   :name_zh_tw: "嶺南大學"
   :territory_name_en: New Territories
-  :latitude: 22.4100565
-  :longitude: 113.9823174
+  :latitude: 22.4098644
+  :longitude: 113.9835724
 The Hong Kong Institute of Education:
   :name_zh_tw: "教育學院"
   :territory_name_en: New Territories
-  :latitude:
-  :longitude:
+  :latitude: 22.4690426
+  :longitude: 114.1943533
 Lohas Park:
   :name_zh_tw: "日出康城"
   :territory_name_en: New Territories
-  :latitude: 22.296057
-  :longitude: 114.271948
+  :latitude: 22.295398
+  :longitude: 114.2686
 Hong Kong Shue Yan University:
   :name_zh_tw: "樹仁大學"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.286251
-  :longitude: 114.197933
+  :latitude: 22.2859278
+  :longitude: 114.1977108
 The Ocean Park:
   :name_zh_tw: "海洋公園"
   :territory_name_en: Hong Kong Island
-  :latitude: 22.2344265
-  :longitude: 114.1698414
+  :latitude: 22.2466607
+  :longitude: 114.1757239
 Hong Kong Baptist University HKBU:
   :name_zh_tw: "浸會大學"
   :territory_name_en: Kowloon
-  :latitude: 22.334123
-  :longitude: 114.1826156
+  :latitude: 22.3381771
+  :longitude: 114.1827124
 The Hong Kong Polytechnic University HKPU:
   :name_zh_tw: "理工大學"
   :territory_name_en: Kowloon
-  :latitude:
-  :longitude:
+  :latitude: 
+  :longitude: 
 The Hong Kong University of Science and Technology HKUST:
   :name_zh_tw: "科技大學"
   :territory_name_en: New Territories
-  :latitude: 22.3364
-  :longitude: 114.265465
+  :latitude: 22.338138
+  :longitude: 114.264035
 Wonderland Villas:
   :name_zh_tw: "華景山莊"
   :territory_name_en: New Territories
-  :latitude: 22.353803
-  :longitude: 114.135413
+  :latitude: 22.3537927
+  :longitude: 114.1353889
 Tseung Kwan O Industrial Estate:
   :name_zh_tw: "將軍澳工業邨"
   :territory_name_en: New Territories
