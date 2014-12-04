@@ -33,6 +33,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   describe "DELETE item/1" do
     before { generate_and_set_token(user) }
+    let(:item)  { create :item, offer: offer, state: "draft" }
     it "should delete draft item", :show_in_doc do
       delete :destroy, id: item.id
       expect(response.status).to eq(200)
