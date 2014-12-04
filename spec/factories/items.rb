@@ -3,7 +3,7 @@
 FactoryGirl.define do
   factory :item do
     donor_description      { Faker::Lorem.sentence }
-    state                  'draft'
+    state                  'submitted'
     reject_reason { Faker::Lorem.sentence }
 
     association :donor_condition
