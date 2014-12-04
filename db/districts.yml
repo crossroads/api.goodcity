@@ -697,8 +697,8 @@ Hong Kong Baptist University HKBU:
 The Hong Kong Polytechnic University HKPU:
   :name_zh_tw: "理工大學"
   :territory_name_en: Kowloon
-  :latitude: 
-  :longitude: 
+  :latitude: 22.30455
+  :longitude: 114.1797
 The Hong Kong University of Science and Technology HKUST:
   :name_zh_tw: "科技大學"
   :territory_name_en: New Territories
