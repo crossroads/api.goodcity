@@ -115,7 +115,7 @@ module Api::V1
     description <<-EOS
     Verify the OTP code (sent via SMS)
     * If verified, generate and send back an authenticated +jwt_token+ and +user+ object
-    * If verification fails, return <code>401 (Unauthorized)</code>
+    * If verification fails, return <code>422 (Unprocessable Entity)</code>
 
     ===If successful
     * a +jwt_token+ will be returned. This should be included in all subsequent requests as part of the AUTHORIZATION header to authenticate the API calls.
