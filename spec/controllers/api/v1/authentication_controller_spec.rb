@@ -48,7 +48,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     context "with unsucessful authentication" do
-      it 'should return unauthorized' do
+      it 'should return unprocessable entity' do
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(nil)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'

@@ -42,7 +42,7 @@ For individual specs, use rspec
 
 Using capistrano, commit all changes to master branch and push to github. Then type:
 
-    cap production deploy
+    bundle exec cap production deploy
 
 This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure your ssh keys are loaded)
 
@@ -53,6 +53,11 @@ This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure
 
     gem install railroady
     rake diagram:all
+
+To update documentation examples ensure test has `:show_in_doc` and then run:
+
+    APIPIE_RECORD=examples rspec                                *for all tests*
+    APIPIE_RECORD=examples rspec spec/models/offer_spec.rb:29   *for specific test*
 
 ## License
 
