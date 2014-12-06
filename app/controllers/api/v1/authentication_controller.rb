@@ -130,11 +130,11 @@ module Api::V1
     error 422, "Validation Error"
     error 500, "Internal Server Error"
     def verify
-      @user = warden.authenticate!(:pin)
-      if warden.authenticated?
+      @user = warden.authenticate(:pin)
+      if @user && warden.authenticated?
         render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user) }
       else
-        throw(:warden, { status: 401 })
+        render json: { errors: { pin: I18n.t('auth.invalid_pin') } }, status: 422
       end
     end
 

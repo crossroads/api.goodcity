@@ -54,9 +54,8 @@ describe Warden::Strategies::PinStrategy, type: :controller do
 
         context "and user not found" do
           before { expect(auth_token).to receive(:user).and_return(nil) }
-          it "should fail!" do
-            expect(strategy).to receive(:fail!)
-            strategy.authenticate!
+          it "should return failure" do
+            expect(strategy.authenticate!).to equal(:failure)
           end
         end
 
@@ -64,9 +63,8 @@ describe Warden::Strategies::PinStrategy, type: :controller do
 
       context "and unsuccessful otp authentication" do
         before { expect(auth_token).to receive(:authenticate_otp).and_return(false) }
-        it "should fail!" do
-          expect(strategy).to receive(:fail!)
-          strategy.authenticate!
+        it "should return failure" do
+          expect(strategy.authenticate!).to equal(:failure)
         end
       end
 
@@ -74,9 +72,8 @@ describe Warden::Strategies::PinStrategy, type: :controller do
 
     context "with invalid auth_token" do
       before { expect(AuthToken).to receive(:find_by_otp_auth_key).and_return(nil) }
-      it "should fail!" do
-        expect(strategy).to receive(:fail!)
-        strategy.authenticate!
+      it "should return failure" do
+        expect(strategy.authenticate!).to equal(:failure)
       end
 
     end
