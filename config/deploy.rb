@@ -63,3 +63,23 @@ task :invoke, [:command] => 'deploy:set_rails_env' do |task, args|
     end
   end
 end
+
+namespace :redis do
+  desc "Report Redis status"
+  task :status do
+    on primary(:app) do
+      execute 'redis-cli info'
+    end
+  end
+end
+
+namespace :passenger do
+  desc "Report passenger status"
+  task :status do
+    on roles(:app) do
+      within current_path do
+        execute "passenger-memory-stats"
+      end
+    end
+  end
+end

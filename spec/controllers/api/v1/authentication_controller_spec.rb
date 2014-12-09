@@ -38,7 +38,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   context "verify" do
     context "with successful authentication" do
       it 'should allow access to user after signed-in', :show_in_doc do
-        allow(controller.send(:warden)).to receive(:authenticate!).with(:pin).and_return(user)
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(controller).to receive(:generate_token).with(user_id: user.id).and_return(jwt_token)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
@@ -48,12 +48,12 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     context "with unsucessful authentication" do
-      it 'should return unauthorized' do
-        allow(controller.send(:warden)).to receive(:authenticate!).with(:pin).and_return(nil)
+      it 'should return unprocessable entity' do
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(nil)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
-        expect(response.message).to eq("Unauthorized")
-        expect(response.status).to eq(401)
+        expect(JSON.parse(response.body)["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(response.status).to eq(422)
       end
     end
   end

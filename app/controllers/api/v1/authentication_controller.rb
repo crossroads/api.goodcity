@@ -115,7 +115,7 @@ module Api::V1
     description <<-EOS
     Verify the OTP code (sent via SMS)
     * If verified, generate and send back an authenticated +jwt_token+ and +user+ object
-    * If verification fails, return <code>401 (Unauthorized)</code>
+    * If verification fails, return <code>422 (Unprocessable Entity)</code>
 
     ===If successful
     * a +jwt_token+ will be returned. This should be included in all subsequent requests as part of the AUTHORIZATION header to authenticate the API calls.
@@ -130,11 +130,11 @@ module Api::V1
     error 422, "Validation Error"
     error 500, "Internal Server Error"
     def verify
-      @user = warden.authenticate!(:pin)
-      if warden.authenticated?
+      @user = warden.authenticate(:pin)
+      if @user && warden.authenticated?
         render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user) }
       else
-        throw(:warden, { status: 401 })
+        render json: { errors: { pin: I18n.t('auth.invalid_pin') } }, status: 422
       end
     end
 

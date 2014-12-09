@@ -11,6 +11,7 @@ zh-tw:
     mobile_required: Please provide a mobile number.
     mobile_exists: Mobile number already exists.
     invalid_mobile: Sorry, your mobile must begin with +852.
+    invalid_pin: Invalid SMS code.
   token:
     invalid: Invalid token
     expired: Expired token

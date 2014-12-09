@@ -14,10 +14,10 @@ module Warden
           if (user = auth_token.user)
             success!(user)
           else
-            fail!
+            fail
           end
         else
-          fail!
+          fail
         end
       end
 
