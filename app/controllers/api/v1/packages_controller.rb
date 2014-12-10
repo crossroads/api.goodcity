@@ -59,6 +59,13 @@ module Api::V1
       end
     end
 
+    api :DELETE, '/v1/packages/1', "Delete an package"
+    description "Deletion of the Package item in review mode"
+    def destroy
+      @package.destroy
+      render json: {}
+    end
+
     private
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,

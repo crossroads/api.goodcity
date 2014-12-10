@@ -15,6 +15,8 @@ module Api::V1
       param :item_type, Hash, required: true do
         param :name, String, desc: "itemType name"
         param :code, String, desc: "itemType code", allow_nil: true
+        param :parent_id, Integer, desc: "Parent ItemType", allow_nil: true
+        param :is_item_type_node,  [true, false], desc: "Default child ItemType", allow_nil: false
       end
     end
 
@@ -44,7 +46,7 @@ module Api::V1
     private
 
     def item_type_params
-      attributes = [:name, :code]
+      attributes = [:name, :code, :parent_id, :is_item_type_node]
       params.require(:item_type).permit(attributes)
     end
 
