@@ -59,10 +59,10 @@ class Ability
 
       # Package (same as item permissions)
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user_id } }
-      can [:index, :show, :create, :update], Package if reviewer or supervisor
+      can [:index, :show, :create, :update, :destroy], Package if reviewer or supervisor
       can :destroy, Package, item: { offer: { created_by_id: user_id }, state: 'draft' }
       can :destroy, Package, item: { state: 'draft' } if reviewer
-      can :destroy, Package if supervisor
+
 
       # Schedule
       can :create, Schedule

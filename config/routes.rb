@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       get  "packages/:id" => "packages#show"
       post "packages" => "packages#create"
       put  "packages/:id" => "packages#update"
+      delete "packages/:id" => "packages#destroy"
 
       get  "rejection_reasons" => "rejection_reasons#index"
       get  "rejection_reasons/:id" => "rejection_reasons#show"
