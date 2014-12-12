@@ -64,6 +64,7 @@ Rails.application.routes.draw do
       post "gogovan_orders" => "gogovan_orders#confirm_order"
       post "gogovan_orders/calculate_price" => "gogovan_orders#calculate_price"
 
+      get "holidays_list" => "holidays#holidays_list"
     end
   end
 end

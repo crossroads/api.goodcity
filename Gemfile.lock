@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/radar/by_star
+  revision: 3c6e657178846f2bbc1c056f036ad04a3ae96857
+  specs:
+    by_star (2.2.1)
+      activesupport
+
+GIT
   remote: git://github.com/radar/paranoia.git
   revision: fe706284ff0cc805ffef4a65bf9bf4f52b9f1ed5
   ref: fe70628
@@ -293,6 +300,7 @@ DEPENDENCIES
   airbrake
   annotate
   apipie-rails
+  by_star!
   byebug
   cancancan
   capistrano-bundler
