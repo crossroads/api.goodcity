@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: 3d63f7e327a0e8b7b9db58e2161b5bbb720c471a
+  revision: a9cb0dea0a737f3dc59a83b3a02926cbd8870b58
   branch: generate-sql-fixes
   specs:
     postgres_ext-serializers (0.0.3)
