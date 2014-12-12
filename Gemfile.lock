@@ -14,6 +14,15 @@ GIT
     go_go_van_api (0.0.1)
       nestful (~> 1)
 
+GIT
+  remote: https://github.com/crossroads/postgres_ext-serializers.git
+  revision: 9126cbfd05fbe2b03aacb4e41072fa24e1613e8c
+  branch: generate-sql-fixes
+  specs:
+    postgres_ext-serializers (0.0.3)
+      active_model_serializers (~> 0.8.0)
+      postgres_ext (~> 2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -85,7 +94,7 @@ GEM
       rest-client
     coderay (1.1.0)
     colorize (0.7.3)
-    columnize (0.8.9)
+    columnize (0.9.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     debugger-linecache (1.2.0)
@@ -141,6 +150,11 @@ GEM
     oj (2.10.2)
     oj_mimic_json (1.0.1)
     pg (0.17.1)
+    pg_array_parser (0.0.9)
+    postgres_ext (2.3.0)
+      activerecord (>= 4.0.0)
+      arel (>= 4.0.1)
+      pg_array_parser (~> 0.0.9)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -298,6 +312,7 @@ DEPENDENCIES
   oj_mimic_json
   paranoia!
   pg
+  postgres_ext-serializers!
   puma
   pusher
   rack-cors
