@@ -21,7 +21,7 @@ module Api::V1
 
     def state__sql
       if object.state_value.present?
-        object.state_value
+        "'#{object.state_value}'"
       elsif current_user.nil?
         "'never-subscribed'"
       else
