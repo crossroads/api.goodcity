@@ -4,7 +4,6 @@ describe Message, type: :model do
 
   before { allow_any_instance_of(PushService).to receive(:update_store) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
-  before { User.current_user_id = donor.id }
   let(:donor) { create :user }
   let(:reviewer) { create :user, :reviewer }
   let(:offer) { create :offer, created_by_id: donor.id }
@@ -28,23 +27,11 @@ describe Message, type: :model do
     it { should have_many :offers_subscription }
   end
 
-  describe "default_scope" do
-    it "returns message object with current user message state" do
-      ["read", "unread"].each do |state|
-        message = create_message(state: state)
-        returned_message = Message.find(message.id)
-        expect(returned_message.state).to eq(message.state)
-      end
-    end
-  end
-
   describe "subscribe_users_to_message" do
-    it "sender subscription state matches message state" do
-      ["read", "unread"].each do |state|
-        message = create_message(sender_id: donor.id, state: state)
-        expect(message.subscriptions.count).to eq(1)
-        expect(message.subscriptions).to include(have_attributes(user_id: donor.id, state: state))
-      end
+    it "sender subscription state is unread" do
+      message = create_message(sender_id: donor.id)
+      expect(message.subscriptions.count).to eq(1)
+      expect(message.subscriptions).to include(have_attributes(user_id: donor.id, state: "read"))
     end
 
     it "subscribe donor if not already subscribed to reviewer sent message" do
@@ -114,12 +101,12 @@ describe Message, type: :model do
       #note unfortunately expect :update_store is working here based on the order it's called in code
       expect(pusher).to receive(:update_store) do |args|
         expect(args[:channel]).to eq(["user_#{subscribed_user.id}"])
-        expect(args[:data][:state]).to eq("unread")
+        expect(args[:data].state_value).to eq("unread")
       end
 
       expect(pusher).to receive(:update_store) do |args|
         expect(args[:channel]).to eq(["user_#{unsubscribed_user.id}"])
-        expect(args[:data][:state]).to eq("never-subscribed")
+        expect(args[:data].state_value).to eq("never-subscribed")
       end
 
       message.save
