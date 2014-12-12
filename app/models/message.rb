@@ -11,16 +11,8 @@ class Message < ActiveRecord::Base
 
   scope :with_eager_load, -> { includes( [:sender] ) }
 
-  # select messages with current user state
-  default_scope do
-    if User.current_user_id.nil?
-      logger.warn("Warning: User.current_user_id is nil in Message.default_scope")
-      nil
-    else
-      joins("left join subscriptions s on s.message_id = messages.id and s.user_id = #{User.current_user_id}").
-        select("messages.*, coalesce(s.state, 'never-subscribed') as state")
-    end
-  end
+  # used to override the state value during serialization
+  attr_accessor :state_value
 
   after_create do
     subscribe_users_to_message
@@ -28,26 +20,8 @@ class Message < ActiveRecord::Base
     send_new_message_notification
   end
 
-  after_initialize :init_state
-
-  # state can be accessed on objects returned from db due to default_scope but not on new objects
-  # can't use attr_accessor because db retrieved values are stored in @attributes
-  # init_state is used to ensure "state" exists on @attributes for json serialization
-  def init_state
-    self.state = nil unless @attributes.key?("state")
-  end
-
-  def state
-    @attributes["state"]
-  end
-
-  def state=(value)
-    @attributes["state"] = value
-  end
-
   def mark_read!(user_id)
-    subscription = self.subscriptions.find_by_user_id(user_id)
-    subscription.update_attribute("state", "read") if subscription
+    self.subscriptions.where(user_id: user_id).update_all(state: 'read')
   end
 
   def user_subscribed?(user_id)
@@ -61,7 +35,7 @@ class Message < ActiveRecord::Base
     users_ids.each do |user_id|
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: user_id)
     end
-    subscriptions.create(state: self.state, message_id: id, offer_id: offer_id, user_id: sender_id)
+    subscriptions.create(state: "read", message_id: id, offer_id: offer_id, user_id: sender_id)
 
     # subscribe donor if not already subscribed
     unless self.is_private || self.user_subscribed?(self.offer.created_by_id)
@@ -97,17 +71,16 @@ class Message < ActiveRecord::Base
     subscribed_user_channels = subscribed_user_channels() - sender_channel
     unsubscribed_user_channels = Channel.users(User.staff) - subscribed_user_channels - sender_channel
 
-    orig_state = self.state
-    self.state = "unread"
+    self.state_value = "unread"
     service.update_store(data: self, channel: subscribed_user_channels) unless subscribed_user_channels.empty?
-    self.state = "never-subscribed"
+    self.state_value = "never-subscribed"
     service.update_store(data: self, channel: unsubscribed_user_channels) unless unsubscribed_user_channels.empty?
-    self.state = orig_state
+    self.state_value = nil
   end
 
   private
+
   def service
     PushService.new
   end
-
 end
