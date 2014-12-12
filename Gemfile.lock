@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: 9126cbfd05fbe2b03aacb4e41072fa24e1613e8c
+  revision: 3d63f7e327a0e8b7b9db58e2161b5bbb720c471a
   branch: generate-sql-fixes
   specs:
     postgres_ext-serializers (0.0.3)
@@ -42,7 +42,7 @@ GEM
     active_model_otp (1.1.0)
       activemodel
       rotp
-    active_model_serializers (0.8.2)
+    active_model_serializers (0.8.3)
       activemodel (>= 3.0)
     activemodel (4.1.7)
       activesupport (= 4.1.7)
@@ -139,7 +139,7 @@ GEM
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
     mime-types (2.4.3)
-    minitest (5.4.2)
+    minitest (5.4.3)
     multi_json (1.10.1)
     nestful (1.0.7)
     net-scp (1.2.1)
