@@ -55,7 +55,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'byebug', platform: 'mri' unless ENV["CI"]
+  gem 'byebug', platform: 'mri' unless ENV["CI"] or ENV["RM_INFO"]
   gem 'rspec-rails'
 end
 
