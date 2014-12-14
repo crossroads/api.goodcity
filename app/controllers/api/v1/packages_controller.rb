@@ -62,7 +62,7 @@ module Api::V1
     api :DELETE, '/v1/packages/1', "Delete an package"
     description "Deletion of the Package item in review mode"
     def destroy
-      @package.destroy
+      @package.really_destroy!
       render json: {}
     end
 
