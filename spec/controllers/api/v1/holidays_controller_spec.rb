@@ -1,5 +1,5 @@
 require 'rails_helper'
 
-RSpec.describe HolidaysController, :type => :controller do
+RSpec.describe Api::V1::HolidaysController, type: :controller do
 
 end
