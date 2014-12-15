@@ -27,7 +27,7 @@ module GoodCityServer
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    config.autoload_paths += %W(#{config.root}/serializers)
+    config.autoload_paths += %W(#{config.root}/serializers #{config.root}/lib/classes)
 
     config.i18n.available_locales = ['en', 'zh-tw']
 
