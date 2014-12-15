@@ -10,7 +10,7 @@ module Api::V1
     end
 
     def available_dates
-      render json: DateSet.available_dates(10).to_json
+      render json: DateSet.new(10).available_dates.to_json
     end
   end
 end
