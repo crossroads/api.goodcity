@@ -1,9 +1,9 @@
 class DateSet
 
-  def initialize(period_in_days)
-    @days         = period_in_days
+  def initialize(period_in_days = 10)
+    @days         = period_in_days.to_i
     @current_time = Time.zone.now
-    @offset       = (period_in_days*2).days
+    @offset       = (@days*2).days
     @start        = @current_time
     @last         = @current_time + @offset
     @dates        = []
