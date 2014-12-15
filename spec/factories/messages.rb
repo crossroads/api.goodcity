@@ -6,7 +6,6 @@ FactoryGirl.define do
     body        { Faker::Lorem.paragraph }
     sender      { |m| m.association(:user) }
     is_private  false
-    state       { "unread" }
     offer
     item
 

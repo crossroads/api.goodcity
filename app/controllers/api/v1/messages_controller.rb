@@ -23,17 +23,9 @@ module Api::V1
       end
     end
 
-    def messages
-      # Workaround cancan hash condition which explicitly selects columns meaning state
-      # from default_scope is not included
-      cancan_scope = Message.accessible_by(current_ability).only(:where)
-      @messages = Message.joins(:offer).merge( cancan_scope )
-    end
-
     api :GET, "/v1/messages", "List all messages"
     param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
     def index
-      @messages = messages()
       @messages = @messages.where( id: params[:ids].split(",") ) if params[:ids].present?
       @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
       @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
@@ -42,7 +34,6 @@ module Api::V1
 
     api :GET, "/v1/messages/1", "List a message"
     def show
-      @message = messages().where(id: params[:id]).first
       render json: @message, serializer: serializer
     end
 
@@ -51,7 +42,6 @@ module Api::V1
     def create
       @message.sender_id = current_user.id
       if @message.save
-        @message.state = 'read'
         render json: @message, serializer: serializer, status: 201
       else
         render json: @message.errors.to_json, status: 422
