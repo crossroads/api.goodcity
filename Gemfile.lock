@@ -15,9 +15,8 @@ GIT
       nestful (~> 1)
 
 GIT
-  remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: 5fec1c8550afb5fa67b51a6c6bccf00c1a5f5128
-  branch: generate-sql-fixes
+  remote: https://github.com/dockyard/postgres_ext-serializers.git
+  revision: 95a6ee2f719c2dd346d66f9b897c5f29b55bc2cf
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
