@@ -143,8 +143,7 @@ module Api::V1
     error 500, "Internal Server Error"
     def current_user_profile
       authorize!(:current_user_profile, User)
-      @user = User.find(User.current_user_id)
-      render json: @user, serializer: Api::V1::UserProfileSerializer
+      render json: current_user, serializer: Api::V1::UserProfileSerializer
     end
 
     private

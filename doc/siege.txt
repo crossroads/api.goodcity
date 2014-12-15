@@ -1,8 +1,8 @@
 Benchmarks from running siege on localhost.
 
-Will run 50 users concurrently (up to 10 seconds delay) for 1 minute.
+Params -c50 -d10 will simulate 50 users hitting the site every 10 seconds
 
-    timeout -sHUP 1m siege -c50 -d10 -i -f docs/site.txt
+    timeout -sHUP 1m siege -c50 -d10 -i -f doc/site.txt -H "Authorization: Bearer <jwt token>"
 
 
 (All in development mode. A better test would be production)
