@@ -22,7 +22,7 @@ class DateSet
   private
 
   def get_dates_list
-    while (@start < @last)
+    while @start < @last
       if [0, 1].exclude?(@start.wday) # exclude all sundays and mondays
         start_time = beginning_of_day(@start)
         @dates << @start if @holidays.exclude?(start_time)
