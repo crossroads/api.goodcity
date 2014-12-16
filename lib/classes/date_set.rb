@@ -1,6 +1,6 @@
 class DateSet
 
-  def initialize(period_in_days=10)
+  def initialize(period_in_days = NEXT_AVAILABLE_DAYS_COUNT)
     @days         = period_in_days.to_i
     @current_time = Time.zone.now
     @offset       = (@days*2).days
@@ -15,7 +15,7 @@ class DateSet
       get_dates_list
       break if @dates.count >= @days
       @last = @start + @offset
-      @holidays = Holiday.within_days(@offset + (@days*n).days)
+      @holidays = Holiday.within_days(@offset + @days.days)
     end
     @dates[0..@days - 1]
   end
