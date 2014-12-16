@@ -5,7 +5,8 @@ module Api::V1
     skip_before_action :validate_token, only: :available_dates
 
     def available_dates
-      render json: DateSet.new(params[:schedule_days] || 10).available_dates.to_json
+      days_count = params[:schedule_days] || NEXT_AVAILABLE_DAYS_COUNT
+      render json: DateSet.new(days_count).available_dates.to_json
     end
   end
 end
