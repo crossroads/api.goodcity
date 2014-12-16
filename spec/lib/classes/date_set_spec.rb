@@ -6,7 +6,7 @@ describe DateSet do
   let!(:holiday_2) { create(:holiday, holiday: Time.zone.now + 15.days) }
 
   let!(:date_set) { DateSet.new }
-  let!(:date_set_5) { DateSet.new(5) }
+  let!(:date_set_5) { DateSet.new(5, 2) }
 
   context "initialization" do
     it "days" do

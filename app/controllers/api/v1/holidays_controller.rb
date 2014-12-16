@@ -14,10 +14,13 @@ module Api::V1
 
     api :GET, "/v1/holidays/available_dates", "List all available dates"
     param :schedule_days, String, allow_nil: true,
-      desc: "List next available dates excluding holidays, sundays and mondays"
+      desc: "Number of next available days"
+    param :start_from, String, allow_nil: true,
+      desc: "Interval in number of days from when schedule start from current day"
     def available_dates
       days_count = params[:schedule_days] || NEXT_AVAILABLE_DAYS_COUNT
-      render json: DateSet.new(days_count).available_dates.to_json
+      start_from = params[:start_from] || START_DAYS_COUNT
+      render json: DateSet.new(days_count, start_from).available_dates.to_json
     end
   end
 end
