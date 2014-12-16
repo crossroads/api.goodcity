@@ -20,6 +20,8 @@ class DateSet
     @dates[0..@days - 1]
   end
 
+  private
+
   def get_dates_list
     while(@start < @last) do
       if [0,1].exclude?(@start.wday) # exclude all sundays and mondays
