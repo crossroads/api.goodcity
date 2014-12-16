@@ -1,6 +1,6 @@
 class DateSet
 
-  def initialize(period_in_days = 10)
+  def initialize(period_in_days=10)
     @days         = period_in_days.to_i
     @current_time = Time.zone.now
     @offset       = (@days*2).days
