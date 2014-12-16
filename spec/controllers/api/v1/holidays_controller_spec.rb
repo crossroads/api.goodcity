@@ -15,13 +15,13 @@ RSpec.describe Api::V1::HolidaysController, type: :controller do
     it "return serialized available_dates", :show_in_doc do
       get :available_dates
       body = JSON.parse(response.body)
-      expect( body.length ).to eq(10)
+      expect(body.length).to eq(10)
     end
 
     it "return serialized available_dates within given range", :show_in_doc do
       get :available_dates, schedule_days: 6
       body = JSON.parse(response.body)
-      expect( body.length ).to eq(6)
+      expect(body.length).to eq(6)
       expect(body).to_not include(JSON.parse(holiday_1.holiday.to_json))
     end
   end

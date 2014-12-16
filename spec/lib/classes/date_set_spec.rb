@@ -10,7 +10,9 @@ describe DateSet do
 
   context "initialization" do
     it "days" do
-      expect(date_set.instance_variable_get(:@days)).to eql(NEXT_AVAILABLE_DAYS_COUNT)
+      expect(
+        date_set.instance_variable_get(:@days)
+      ).to eql(NEXT_AVAILABLE_DAYS_COUNT)
     end
 
     it "holidays" do
@@ -31,7 +33,9 @@ describe DateSet do
       expect(next_dates.length).to eq(10)
       expect(next_dates.map(&:wday)).to_not include(0) # no sunday
       expect(next_dates.map(&:wday)).to_not include(1) # no monday
-      expect(next_dates.map(&:to_date)).to_not include(holiday_1.holiday.to_date) # no holidays
+      expect(
+        next_dates.map(&:to_date)
+      ).to_not include(holiday_1.holiday.to_date) # no holidays
 
       expect(date_set_5.available_dates.length).to eq(5)
     end
