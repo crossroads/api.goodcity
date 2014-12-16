@@ -1,11 +1,11 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe DateSet do
 
   let!(:holiday_1) { create(:holiday) }
   let!(:holiday_2) { create(:holiday, holiday: Time.zone.now + 15.days) }
 
-  let!(:date_set) { DateSet.new() }
+  let!(:date_set) { DateSet.new }
   let!(:date_set_5) { DateSet.new(5) }
 
   context "initialization" do
@@ -27,8 +27,8 @@ describe DateSet do
     end
   end
 
-  context 'available_dates' do
-    it 'should return next available dates' do
+  context "available_dates" do
+    it "should return next available dates" do
       next_dates = date_set.available_dates
       expect(next_dates.length).to eq(10)
       expect(next_dates.map(&:wday)).to_not include(0) # no sunday
