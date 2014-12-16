@@ -1,7 +1,8 @@
 class DateSet
-  def initialize(period_in_days = NEXT_AVAILABLE_DAYS_COUNT)
+  def initialize(period_in_days = NEXT_AVAILABLE_DAYS_COUNT, start_from = START_DAYS_COUNT)
     @days         = period_in_days.to_i
-    @current_time = Time.zone.now
+    @start_from   = start_from.to_i
+    @current_time = beginning_of_day(Time.zone.now + @start_from.days)
     @offset       = (@days * 2).days
     @start        = @current_time
     @last         = @current_time + @offset

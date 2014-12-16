@@ -19,7 +19,7 @@ RSpec.describe Api::V1::HolidaysController, type: :controller do
     end
 
     it "return serialized available_dates within given range", :show_in_doc do
-      get :available_dates, schedule_days: 6
+      get :available_dates, schedule_days: 6, start_from: 2
       body = JSON.parse(response.body)
       expect(body.length).to eq(6)
       expect(body).to_not include(JSON.parse(holiday_1.holiday.to_json))
