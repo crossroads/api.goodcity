@@ -1422,31 +1422,33 @@
     {
       "verb" : "GET",
       "path" : "/api/v1/timeslots",
-      "versions" : [],
+      "versions" : [
+        "v1"
+      ],
       "query" : "",
       "request_data" : null,
       "response_data" : {
         "timeslots" : [
           {
-            "id" : 21,
+            "id" : 41,
             "name" : "9AM-11AM"
           },
           {
-            "id" : 22,
-            "name" : "2PM-4PM"
+            "id" : 42,
+            "name" : "11AM-1PM"
           },
           {
-            "id" : 23,
+            "id" : 43,
             "name" : "4PM-6PM"
           },
           {
-            "id" : 24,
+            "id" : 44,
             "name" : "11AM-1PM"
           }
         ]
       },
       "code" : "200",
-      "show_in_doc" : 0,
+      "show_in_doc" : 1,
       "recorded" : true
     }
   ],
