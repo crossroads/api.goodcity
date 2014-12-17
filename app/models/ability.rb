@@ -88,5 +88,6 @@ class Ability
     can [:index, :show], Territory
     can [:index, :show, :availableTimeSlots], Schedule
     can :available_dates, Holiday
+    can :index, Timeslot
   end
 end
