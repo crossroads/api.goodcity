@@ -3,6 +3,7 @@ class CreateHolidays < ActiveRecord::Migration
     create_table :holidays do |t|
       t.datetime :holiday
       t.integer :year
+      t.string :name
 
       t.timestamps
     end

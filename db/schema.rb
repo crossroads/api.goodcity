@@ -87,6 +87,7 @@ ActiveRecord::Schema.define(version: 20141212100406) do
   create_table "holidays", force: true do |t|
     t.datetime "holiday"
     t.integer  "year"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
