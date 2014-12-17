@@ -9,7 +9,8 @@ class Delivery < ActiveRecord::Base
   before_save :update_offer_state
 
   def update_offer_state
-    offer.schedule  if contact_id_changed? && contact.present?
+    self.delivery_type = self.delivery_type.titleize
+    offer.schedule if contact_id_changed? && contact.present?
     true
   end
 end
