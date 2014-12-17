@@ -22,6 +22,12 @@ module Api::V1
       * {Login flowchart}[link:/doc/login_flowchart.svg]
       * {Registration flowchart}[link:/doc/registration_flowchart.svg]
 
+      ==JWT Token
+      When sending the JWT token to authenticate each request, place it in
+      the request header using the "Authorization Bearer" scheme. Example:
+
+      <code>Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTc1NzkwMTQsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxNzU4MDgxNH0.x-N_aUb3S5wcNy5i2w2WUZjEA2ud_81u8yQV0JfsT6A</code>
+
       EOS
       formats ['json']
     end
