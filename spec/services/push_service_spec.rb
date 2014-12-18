@@ -48,18 +48,6 @@ describe PushService do
     end
   end
 
-  describe "update_store" do
-    it do
-      expect(service).to receive(:notify)
-
-      service.update_store(data: offer, donor_channel: [one_channel])
-
-      expect(service.data.as_json).to eq(data.as_json)
-      expect(service.channel).to eq(Channel.staff + [one_channel])
-      expect(service.event).to eq("update_store")
-    end
-  end
-
   describe "send_notification" do
     it do
       text = "A notification text string"

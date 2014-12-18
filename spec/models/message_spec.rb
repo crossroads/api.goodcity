@@ -2,8 +2,7 @@ require "rails_helper"
 
 describe Message, type: :model do
 
-  before { allow_any_instance_of(PushService).to receive(:update_store) }
-  before { allow_any_instance_of(PushService).to receive(:send_notification) }
+  before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:donor) { create :user }
   let(:reviewer) { create :user, :reviewer }
   let(:offer) { create :offer, created_by_id: donor.id }
@@ -83,13 +82,8 @@ describe Message, type: :model do
     end
   end
 
-  describe "update_ember_store" do
-    let(:pusher) {
-      pusher = PushService.new
-      allow(pusher).to receive(:update_store)
-      allow(pusher).to receive(:send_notification)
-      pusher
-    }
+  describe "update_client_store" do
+    let(:pusher) { PushService.new }
     it do
       unsubscribed_user = create :user, :reviewer
       subscribed_user = create :user, :reviewer
@@ -99,14 +93,14 @@ describe Message, type: :model do
       allow(message).to receive(:service).and_return(pusher)
 
       #note unfortunately expect :update_store is working here based on the order it's called in code
-      expect(pusher).to receive(:update_store) do |args|
-        expect(args[:channel]).to eq(["user_#{subscribed_user.id}"])
-        expect(args[:data].state_value).to eq("unread")
+      expect(message).to receive(:send_update) do |item, user, state, channel|
+        expect(channel).to eq(["user_#{subscribed_user.id}"])
+        expect(state).to eq("unread")
       end
 
-      expect(pusher).to receive(:update_store) do |args|
-        expect(args[:channel]).to eq(["user_#{unsubscribed_user.id}"])
-        expect(args[:data].state_value).to eq("never-subscribed")
+      expect(message).to receive(:send_update) do |item, user, state, channel|
+        expect(channel).to eq(["user_#{unsubscribed_user.id}"])
+        expect(state).to eq("never-subscribed")
       end
 
       message.save

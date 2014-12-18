@@ -1,5 +1,6 @@
 class GogovanOrder < ActiveRecord::Base
   include Paranoid
+  include PushUpdates
 
   has_one :delivery
   before_destroy :cancel_order
@@ -26,5 +27,10 @@ class GogovanOrder < ActiveRecord::Base
   def cancel_order
     Gogovan.cancel_order(booking_id)
     update_status('cancelled')
+  end
+
+  #required by PusherUpdates module
+  def donor_user_id
+    delivery.offer.created_by_id
   end
 end
