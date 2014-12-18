@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
-      resources :items
+      resources :items, except: [:index]
       post "auth/signup" => "authentication#signup"
       post "auth/verify" => "authentication#verify"
       post "auth/send_pin" => "authentication#send_pin"
