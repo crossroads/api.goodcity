@@ -1,5 +1,6 @@
 class Delivery < ActiveRecord::Base
   include Paranoid
+  include PushUpdates
 
   belongs_to :offer
   belongs_to :contact, dependent: :destroy
@@ -12,5 +13,12 @@ class Delivery < ActiveRecord::Base
     self.delivery_type = self.delivery_type.titleize
     offer.schedule if contact_id_changed? && contact.present?
     true
+  end
+
+  private
+
+  #required by PusherUpdates module
+  def donor_user_id
+    offer.created_by_id
   end
 end

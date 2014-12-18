@@ -1,6 +1,7 @@
 class Item < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
+  include PushUpdates
 
   belongs_to :offer,     inverse_of: :items
   belongs_to :item_type, inverse_of: :items
@@ -34,16 +35,16 @@ class Item < ActiveRecord::Base
     event :submit do
       transition :draft => :submitted
     end
-
-    after_transition on: [:reject, :accept], do: :update_ember_store
   end
 
   def self.update_saleable
     update_all(saleable: true)
   end
 
-  def update_ember_store
-    self.try(:offer).try(:update_ember_store)
-  end
+  private
 
+  #required by PusherUpdates module
+  def donor_user_id
+    offer.created_by_id
+  end
 end
