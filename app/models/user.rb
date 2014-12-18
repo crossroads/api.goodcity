@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+  include PushUpdates
+
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
@@ -76,10 +78,22 @@ class User < ActiveRecord::Base
     TwilioService.new(self).sms_verification_pin
   end
 
+  def self.current_user
+    Thread.current[:current_user]
+  end
+
+  def self.current_user=(user)
+    Thread.current[:current_user] = user
+  end
+
   private
 
   def generate_auth_token
     auth_tokens.create( user_id:  self.id )
   end
 
+  #required by PusherUpdates module
+  def donor_user_id
+    address.user_id
+  end
 end
