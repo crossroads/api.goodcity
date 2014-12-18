@@ -20,8 +20,6 @@ Rails.application.routes.draw do
       get  "permissions" => "permissions#index"
       get  "permissions/:id" => "permissions#show"
       get  "images/generate_signature" => "images#generate_signature"
-      get  "images" => "images#index"
-      get  "images/:id" => "images#show"
       post "images" => "images#create"
       put  "images/:id" => "images#update"
       delete "images/:id" => "images#destroy"
