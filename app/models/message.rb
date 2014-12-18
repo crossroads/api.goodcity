@@ -16,7 +16,7 @@ class Message < ActiveRecord::Base
 
   after_create do
     subscribe_users_to_message
-    update_ember_store
+    update_client_store
     send_new_message_notification
   end
 
@@ -66,19 +66,25 @@ class Message < ActiveRecord::Base
     end
   end
 
-  def update_ember_store
+  def update_client_store
     sender_channel = Channel.user(self.sender) #remove sender channel to prevent duplicates
     subscribed_user_channels = subscribed_user_channels() - sender_channel
     unsubscribed_user_channels = Channel.users(User.staff) - subscribed_user_channels - sender_channel
 
-    self.state_value = "unread"
-    service.update_store(data: self, channel: subscribed_user_channels) unless subscribed_user_channels.empty?
-    self.state_value = "never-subscribed"
-    service.update_store(data: self, channel: unsubscribed_user_channels) unless unsubscribed_user_channels.empty?
-    self.state_value = nil
+    user = Api::V1::UserSerializer.new(self.sender)
+
+    send_update self, user, 'unread', subscribed_user_channels
+    send_update self, user, 'never-subscribed', unsubscribed_user_channels
   end
 
-  private
+  def send_update(object, user, state, channel)
+    self.state_value = state
+    object = Api::V1::MessageSerializer.new(object, {exclude:Message.reflections.keys})
+    PushService
+      .new(channel: channel, event: 'update_store', data: {item:object, sender:user, operation: :create})
+      .notify unless channel.empty?
+    self.state_value = nil
+  end
 
   def service
     PushService.new
