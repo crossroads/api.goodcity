@@ -23,7 +23,7 @@ districts.each do |name_en, value|
 end
 
 timeslots = [["9AM-11AM", "上午9時至上午11時"], ["11AM-1PM", "上午11時至下午1時"],
-  ["2PM-4PM", "下午2時至下午4時"], ["4PM-6PM", "下午4時至下午6時"]]
+  ["2PM-4PM", "下午2時至下午4時"]]
 timeslots.each do |name|
   FactoryGirl.create :timeslot, name_en: name.first, name_zh_tw: name.last
 end
