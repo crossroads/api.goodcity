@@ -62,7 +62,7 @@ module Api::V1
 
     def message_params
       params.require(:message).permit(:body, :is_private,
-        :offer_id, :item_id, :state)
+        :offer_id, :item_id)
     end
   end
 end
