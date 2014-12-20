@@ -8,6 +8,9 @@ module PushUpdates
   end
 
   def update_client_store(operation)
+    # current_user can be nil if accessed from rails console, tests or db seed
+    return if User.current_user.nil?
+
     serializer = "Api::V1::#{self.class}Serializer".constantize.new(self, {exclude: self.class.reflections.keys})
     user = Api::V1::UserSerializer.new(User.current_user)
     type = self.class.name
