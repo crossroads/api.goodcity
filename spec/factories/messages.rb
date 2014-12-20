@@ -7,7 +7,6 @@ FactoryGirl.define do
     sender      { |m| m.association(:user) }
     is_private  false
     offer
-    item
 
     trait :reviewer_message do
       sender   { |m| m.association(:user, :reviewer) }
@@ -24,6 +23,10 @@ FactoryGirl.define do
       after(:create) do |message, evaluator|
         create_list(:offer_subscription, evaluator.offer_subscription_count, message: message)
       end
+    end
+
+    trait :with_item do
+      association :item
     end
   end
 
