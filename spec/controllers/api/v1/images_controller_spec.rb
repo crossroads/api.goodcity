@@ -9,17 +9,6 @@ RSpec.describe Api::V1::ImagesController, type: :controller do
 
   subject { JSON.parse(response.body) }
 
-  describe "GET images" do
-    before { generate_and_set_token(user) }
-    it "return serialized images", :show_in_doc do
-      pending "error in postgres_ext-serializers but not currently used"
-      2.times { create :image, item: item }
-      get :index
-      expect(response.status).to eq(200)
-      expect(subject['images'].length ).to eq(2)
-    end
-  end
-
   describe "GET generate_signature" do
     before { generate_and_set_token(user) }
 
