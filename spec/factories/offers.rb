@@ -13,6 +13,8 @@ FactoryGirl.define do
     created_by     {|m| m.association(:user) }
     reviewed_by_id nil
     reviewed_at    nil
+    gogovan_transport "Van"
+    crossroads_transport "5/8 Truck"
 
     trait :with_items do
       transient do
