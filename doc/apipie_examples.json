@@ -262,6 +262,56 @@
       "recorded" : true
     }
   ],
+  "crossroads_transport_types#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/crossroads_transport_types",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "crossroads_transport_types" : [
+          {
+            "id" : 1,
+            "name" : "1/8 Truck"
+          },
+          {
+            "id" : 2,
+            "name" : "2/8 Truck"
+          },
+          {
+            "id" : 3,
+            "name" : "3/8 Truck"
+          },
+          {
+            "id" : 4,
+            "name" : "4/8 Truck"
+          },
+          {
+            "id" : 5,
+            "name" : "5/8 Truck"
+          },
+          {
+            "id" : 6,
+            "name" : "6/8 Truck"
+          },
+          {
+            "id" : 7,
+            "name" : "7/8 Truck"
+          },
+          {
+            "id" : 8,
+            "name" : "8/8 Truck"
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "districts#index" : [
     {
       "verb" : "GET",
@@ -419,6 +469,36 @@
           "booking_id" : 1896232,
           "status" : "pending"
         }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "gogovan_transport_types#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/gogovan_transport_types",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "gogovan_transport_types" : [
+          {
+            "id" : 1,
+            "name" : "Van"
+          },
+          {
+            "id" : 2,
+            "name" : "5.5t Truck"
+          },
+          {
+            "id" : 3,
+            "name" : "Disable"
+          }
+        ]
       },
       "code" : "200",
       "show_in_doc" : 1,
