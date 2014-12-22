@@ -63,8 +63,8 @@ Rails.application.routes.draw do
       post "gogovan_orders/calculate_price" => "gogovan_orders#calculate_price"
 
       get "available_dates" => "holidays#available_dates"
-
-      get  "timeslots" => "timeslots#index"
+      get "timeslots" => "timeslots#index"
+      get "gogovan_transport_types" => "gogovan_transport_types#index"
     end
   end
 end
