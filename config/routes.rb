@@ -65,6 +65,7 @@ Rails.application.routes.draw do
       get "available_dates" => "holidays#available_dates"
       get "timeslots" => "timeslots#index"
       get "gogovan_transport_types" => "gogovan_transport_types#index"
+      get "crossroads_transport_types" => "crossroads_transport_types#index"
     end
   end
 end

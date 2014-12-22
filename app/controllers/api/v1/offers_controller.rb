@@ -91,8 +91,7 @@ module Api::V1
     param :offer, Hash, required: true do
       param :state_event, String, "State transition event ex: 'finish_review'"
       param :gogovan_transport, ['Van','5.5t Truck', 'Disable'], allow_nil: true
-      param :crossroads_transport,
-        ['1/8', '2/8', '3/8', '4/8', '5/8', '6/8', '7/8', '1'], allow_nil: true
+      param :crossroads_transport, String, allow_nil: true
     end
     def complete_review
       @offer.update_attributes(review_offer_params)
