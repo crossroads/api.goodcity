@@ -89,7 +89,7 @@ module Api::V1
 
     api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
     param :offer, Hash, required: true do
-      param :state_event, String, "State transition event ex: 'finish_review'"
+      param :state_event, String, "State transition event ex: 'finish_review'", required: true
       param :gogovan_transport, ['Van','5.5t Truck', 'Disable'], allow_nil: true
       param :crossroads_transport, String, allow_nil: true
     end
