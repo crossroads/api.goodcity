@@ -87,6 +87,17 @@ module Api::V1
       end
     end
 
+    api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
+    param :offer, Hash, required: true do
+      param :state_event, String, "State transition event ex: 'finish_review'", required: true
+      param :gogovan_transport, ['Van','5.5t Truck', 'Disable'], allow_nil: true
+      param :crossroads_transport, String, allow_nil: true
+    end
+    def complete_review
+      @offer.update_attributes(review_offer_params)
+      render json: @offer, serializer: serializer
+    end
+
     private
 
     def eager_load_offer
@@ -95,6 +106,11 @@ module Api::V1
 
     def offer_params
       attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event]
+      params.require(:offer).permit(attributes)
+    end
+
+    def review_offer_params
+      attributes = [:state_event, :gogovan_transport, :crossroads_transport]
       params.require(:offer).permit(attributes)
     end
 
