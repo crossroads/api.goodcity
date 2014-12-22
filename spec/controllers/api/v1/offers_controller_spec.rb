@@ -1,12 +1,13 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::OffersController, :type => :controller do
+RSpec.describe Api::V1::OffersController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:user) { create(:user_with_token) }
   let(:reviewer) { create(:user, :reviewer) }
   let(:offer) { create(:offer, created_by: user) }
   let(:submitted_offer) { create(:offer, created_by: user, state: 'submitted') }
+  let(:in_review_offer) { create(:offer, created_by: user, state: 'under_review') }
   let(:serialized_offer) { Api::V1::OfferSerializer.new(offer) }
   let(:serialized_offer_json) { JSON.parse( serialized_offer.to_json ) }
   let(:allowed_params) { [:language, :origin, :stairs, :parking, :estimated_size, :notes] }
@@ -68,6 +69,26 @@ RSpec.describe Api::V1::OffersController, :type => :controller do
         put :review, id: submitted_offer.id
         expect(response.status).to eq(200)
         expect(submitted_offer.reload).to be_under_review
+      end
+    end
+  end
+
+  describe "PUT offer/1/complete_review" do
+
+    let(:offer_attributes) {
+      { state_event: "finish_review",
+        gogovan_transport: "Van",
+        crossroads_transport: "3/8 Truck" }
+    }
+
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+      it "can complete review", :show_in_doc do
+        expect(in_review_offer).to be_under_review
+        put :complete_review, id: in_review_offer.id, offer: offer_attributes
+        expect(response.status).to eq(200)
+        expect(in_review_offer.reload).to be_reviewed
+        expect(in_review_offer.crossroads_transport).to eq("3/8 Truck")
       end
     end
   end

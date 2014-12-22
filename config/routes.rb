@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       put  "offers/:id" => "offers#update"
       delete "offers/:id" => "offers#destroy"
       put  "offers/:id/review" => "offers#review"
+      put  "offers/:id/complete_review" => "offers#complete_review"
 
       get  "packages/:id" => "packages#show"
       post "packages" => "packages#create"
@@ -62,8 +63,9 @@ Rails.application.routes.draw do
       post "gogovan_orders/calculate_price" => "gogovan_orders#calculate_price"
 
       get "available_dates" => "holidays#available_dates"
-
-      get  "timeslots" => "timeslots#index"
+      get "timeslots" => "timeslots#index"
+      get "gogovan_transport_types" => "gogovan_transport_types#index"
+      get "crossroads_transport_types" => "crossroads_transport_types#index"
     end
   end
 end
