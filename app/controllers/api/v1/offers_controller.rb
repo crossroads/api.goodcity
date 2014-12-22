@@ -87,6 +87,13 @@ module Api::V1
       end
     end
 
+    api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
+    # param_group :offer
+    def complete_review
+      @offer.update_attributes(review_offer_params)
+      render json: @offer, serializer: serializer
+    end
+
     private
 
     def eager_load_offer
@@ -95,6 +102,11 @@ module Api::V1
 
     def offer_params
       attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event]
+      params.require(:offer).permit(attributes)
+    end
+
+    def review_offer_params
+      attributes = [:state_event, :gogovan_transport, :crossroads_transport]
       params.require(:offer).permit(attributes)
     end
 

@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       put  "offers/:id" => "offers#update"
       delete "offers/:id" => "offers#destroy"
       put  "offers/:id/review" => "offers#review"
+      put  "offers/:id/complete_review" => "offers#complete_review"
 
       get  "packages/:id" => "packages#show"
       post "packages" => "packages#create"
