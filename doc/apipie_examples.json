@@ -262,6 +262,56 @@
       "recorded" : true
     }
   ],
+  "crossroads_transport_types#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/crossroads_transport_types",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "crossroads_transport_types" : [
+          {
+            "id" : 1,
+            "name" : "1/8 Truck"
+          },
+          {
+            "id" : 2,
+            "name" : "2/8 Truck"
+          },
+          {
+            "id" : 3,
+            "name" : "3/8 Truck"
+          },
+          {
+            "id" : 4,
+            "name" : "4/8 Truck"
+          },
+          {
+            "id" : 5,
+            "name" : "5/8 Truck"
+          },
+          {
+            "id" : 6,
+            "name" : "6/8 Truck"
+          },
+          {
+            "id" : 7,
+            "name" : "7/8 Truck"
+          },
+          {
+            "id" : 8,
+            "name" : "8/8 Truck"
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "districts#index" : [
     {
       "verb" : "GET",
@@ -422,6 +472,82 @@
       },
       "code" : "200",
       "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "gogovan_transport_types#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/gogovan_transport_types",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "gogovan_transport_types" : [
+          {
+            "id" : 1,
+            "name" : "Van"
+          },
+          {
+            "id" : 2,
+            "name" : "5.5t Truck"
+          },
+          {
+            "id" : 3,
+            "name" : "Disable"
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "holidays#available_dates" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/available_dates",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : [
+        "2014-12-16T17:43:26.282+08:00",
+        "2014-12-17T17:43:26.282+08:00",
+        "2014-12-18T17:43:26.282+08:00",
+        "2014-12-19T17:43:26.282+08:00",
+        "2014-12-20T17:43:26.282+08:00",
+        "2014-12-23T17:43:26.282+08:00",
+        "2014-12-24T17:43:26.282+08:00",
+        "2014-12-25T17:43:26.282+08:00",
+        "2014-12-26T17:43:26.282+08:00",
+        "2014-12-27T17:43:26.282+08:00"
+      ],
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/available_dates",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "schedule_days=6",
+      "request_data" : null,
+      "response_data" : [
+        "2014-12-16T17:43:26.305+08:00",
+        "2014-12-17T17:43:26.305+08:00",
+        "2014-12-18T17:43:26.305+08:00",
+        "2014-12-19T17:43:26.305+08:00",
+        "2014-12-20T17:43:26.305+08:00",
+        "2014-12-23T17:43:26.305+08:00"
+      ],
+      "code" : "200",
+      "show_in_doc" : 0,
       "recorded" : true
     }
   ],
@@ -862,6 +988,60 @@
       },
       "code" : "200",
       "show_in_doc" : 0,
+      "recorded" : true
+    }
+  ],
+  "offers#complete_review" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/offers/58/complete_review",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "offer" : {
+          "state_event" : "finish_review",
+          "gogovan_transport" : "Van",
+          "crossroads_transport" : "3/8 Truck"
+        }
+      },
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [
+          {
+            "id" : 128,
+            "first_name" : "Adell",
+            "last_name" : "Rempel",
+            "permission_id" : null
+          }
+        ],
+        "deliveries" : [],
+        "offer" : {
+          "id" : 58,
+          "language" : "en",
+          "state" : "reviewed",
+          "origin" : "web",
+          "stairs" : false,
+          "parking" : false,
+          "estimated_size" : "1",
+          "notes" : "Rerum ut provident omnis perferendis tenetur et neque. Natus non voluptatem odit aut. Ullam consequuntur voluptatibus soluta amet reprehenderit dicta minus. Illum officiis esse nostrum dolores qui ut. Ad reprehenderit laborum consequatur delectus.",
+          "created_by_id" : 128,
+          "created_at" : "2014-12-22T18:50:39.051+08:00",
+          "updated_at" : "2014-12-22T18:50:39.177+08:00",
+          "submitted_at" : null,
+          "reviewed_at" : null,
+          "gogovan_transport" : "Van",
+          "crossroads_transport" : "3/8 Truck",
+          "item_ids" : [],
+          "message_ids" : [],
+          "reviewed_by_id" : null,
+          "delivery_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
       "recorded" : true
     }
   ],
@@ -1366,6 +1546,40 @@
             2096
           ]
         }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "timeslots#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/timeslots",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "timeslots" : [
+          {
+            "id" : 41,
+            "name" : "9AM-11AM"
+          },
+          {
+            "id" : 42,
+            "name" : "11AM-1PM"
+          },
+          {
+            "id" : 43,
+            "name" : "4PM-6PM"
+          },
+          {
+            "id" : 44,
+            "name" : "11AM-1PM"
+          }
+        ]
       },
       "code" : "200",
       "show_in_doc" : 1,

@@ -1,6 +1,8 @@
 class Offer < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
+  include PushUpdates
+
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
 
@@ -54,8 +56,6 @@ class Offer < ActiveRecord::Base
     after_transition :on => :submit, :do => :send_new_offer_notification
   end
 
-  after_save :update_ember_store
-
   def update_saleable_items
     items.update_saleable
   end
@@ -73,10 +73,6 @@ class Offer < ActiveRecord::Base
       state_event: 'start_review')
   end
 
-  def update_ember_store
-    PushService.new.update_store(data: self, donor_channel: Channel.user(self.created_by)) unless state == "draft"
-  end
-
   private
 
   def send_new_offer_notification
@@ -89,4 +85,8 @@ class Offer < ActiveRecord::Base
     self.language = I18n.locale.to_s unless self.language.present?
   end
 
+  #required by PusherUpdates module
+  def donor_user_id
+    created_by_id
+  end
 end

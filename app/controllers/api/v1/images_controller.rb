@@ -4,7 +4,7 @@ module Api::V1
     skip_authorization_check only: [:generate_signature, :destroy]
 
     resource_description do
-      short 'Generate an image signature for Cloudinary service'
+      short 'Manage images for items in an offer.'
       formats ['json']
       error 401, "Unauthorized"
       error 500, "Internal Server Error"
@@ -40,18 +40,6 @@ module Api::V1
       else
         render json: @image.errors.to_json, status: 422
       end
-    end
-
-    api :GET, '/v1/images', "List all images"
-    param :ids, Array, of: Integer, desc: "Filter by images ids e.g. ids = [1,2,3,4]"
-    def index
-      @images = @images.find(params[:ids].split(",")) if params[:ids].present?
-      render json: @images, each_serializer: serializer
-    end
-
-    api :GET, '/v1/images/1', "List an image"
-    def show
-      render json: @image, serializer: serializer
     end
 
     api :DELETE, '/v1/images/1', "Delete an image"

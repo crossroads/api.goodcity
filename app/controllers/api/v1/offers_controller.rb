@@ -5,7 +5,9 @@ module Api::V1
     load_and_authorize_resource :offer, parent: false
 
     resource_description do
-      short 'List, create, update and delete offers.'
+      short "List, create, update and delete offers. Only offers that are
+        visible to the current user are returned. Donors will only see their
+        offers. Reviewers will see offers from all users."
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
@@ -85,6 +87,17 @@ module Api::V1
       end
     end
 
+    api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
+    param :offer, Hash, required: true do
+      param :state_event, String, "State transition event ex: 'finish_review'", required: true
+      param :gogovan_transport, String, allow_nil: true
+      param :crossroads_transport, String, allow_nil: true
+    end
+    def complete_review
+      @offer.update_attributes(review_offer_params)
+      render json: @offer, serializer: serializer
+    end
+
     private
 
     def eager_load_offer
@@ -93,6 +106,11 @@ module Api::V1
 
     def offer_params
       attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event]
+      params.require(:offer).permit(attributes)
+    end
+
+    def review_offer_params
+      attributes = [:state_event, :gogovan_transport, :crossroads_transport]
       params.require(:offer).permit(attributes)
     end
 

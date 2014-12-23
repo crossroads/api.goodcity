@@ -2,8 +2,7 @@ require "rails_helper"
 
 RSpec.describe Offer, type: :model do
 
-  before { allow_any_instance_of(PushService).to receive(:update_store) }
-  before { allow_any_instance_of(PushService).to receive(:send_notification) }
+  before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:offer) { create :offer }
 
   it_behaves_like "paranoid"

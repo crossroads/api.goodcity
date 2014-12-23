@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :package, parent: false
 
     resource_description do
-      short 'List, create and show  package.'
+      short 'Create, update and delete a package.'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
@@ -25,17 +25,6 @@ module Api::V1
         param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
         param :package_type_id, String, desc: "Category of the package", allow_nil: true
       end
-    end
-
-    api :GET, '/v1/packages', "List all packages"
-    def index
-      @packages = @packages.find( params[:ids].split(",") ) if params[:ids].present?
-      render json: @packages, each_serializer: serializer
-    end
-
-    api :GET, '/v1/packages/1', "Details of a package"
-    def show
-      render json: @package, serializer: serializer
     end
 
     api :POST, '/v1/packages', "Create a package"
@@ -76,7 +65,6 @@ module Api::V1
     def serializer
       Api::V1::PackageSerializer
     end
-
 
   end
 end

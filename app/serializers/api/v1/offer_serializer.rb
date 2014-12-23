@@ -5,7 +5,8 @@ module Api::V1
 
     attributes :id, :language, :state, :origin, :stairs, :parking,
       :estimated_size, :notes, :created_by_id, :created_at,
-      :updated_at, :submitted_at, :reviewed_at
+      :updated_at, :submitted_at, :reviewed_at, :gogovan_transport,
+      :crossroads_transport
 
     has_many :items, serializer: ItemSerializer
     has_many :messages, serializer: MessageSerializer

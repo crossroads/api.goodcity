@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
-      resources :items
+      resources :items, except: [:index]
       post "auth/signup" => "authentication#signup"
       post "auth/verify" => "authentication#verify"
       post "auth/send_pin" => "authentication#send_pin"
@@ -20,8 +20,6 @@ Rails.application.routes.draw do
       get  "permissions" => "permissions#index"
       get  "permissions/:id" => "permissions#show"
       get  "images/generate_signature" => "images#generate_signature"
-      get  "images" => "images#index"
-      get  "images/:id" => "images#show"
       post "images" => "images#create"
       put  "images/:id" => "images#update"
       delete "images/:id" => "images#destroy"
@@ -37,8 +35,8 @@ Rails.application.routes.draw do
       put  "offers/:id" => "offers#update"
       delete "offers/:id" => "offers#destroy"
       put  "offers/:id/review" => "offers#review"
+      put  "offers/:id/complete_review" => "offers#complete_review"
 
-      get  "packages" => "packages#index"
       get  "packages/:id" => "packages#show"
       post "packages" => "packages#create"
       put  "packages/:id" => "packages#update"
@@ -65,6 +63,10 @@ Rails.application.routes.draw do
       post "gogovan_orders" => "gogovan_orders#confirm_order"
       post "gogovan_orders/calculate_price" => "gogovan_orders#calculate_price"
 
+      get "available_dates" => "holidays#available_dates"
+      get "timeslots" => "timeslots#index"
+      get "gogovan_transport_types" => "gogovan_transport_types#index"
+      get "crossroads_transport_types" => "crossroads_transport_types#index"
     end
   end
 end

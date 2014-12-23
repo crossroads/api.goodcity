@@ -6,7 +6,7 @@ describe "Item abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:state)       { 'draft' }
-  let(:item)        { create :item, :with_offer, state: state }
+  let(:item)        { create :item, state: state }
 
   context "when Administrator" do
     let(:user) { create(:user, :administrator) }
@@ -58,7 +58,7 @@ describe "Item abilities" do
     let(:user)     { create :user }
     let(:offer)    { create :offer, created_by: user }
     context "and item is draft" do
-      let(:item)   { create :item, :with_offer, state: 'draft', offer: offer }
+      let(:item)   { create :item, state: 'draft', offer: offer }
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
@@ -70,7 +70,7 @@ describe "Item abilities" do
     end
 
     context "and item is submitted" do
-      let(:item)   { create :item, :with_offer, state: 'submitted', offer: offer }
+      let(:item)   { create :item, state: 'submitted', offer: offer }
       let(:can)    { [:index, :show, :create, :update] }
       let(:cannot) { [:destroy, :manage] }
       it{ can.each do |do_action|

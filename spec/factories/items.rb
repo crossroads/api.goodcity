@@ -9,6 +9,7 @@ FactoryGirl.define do
     association :donor_condition
     association :item_type
     association :rejection_reason
+    association :offer
 
     trait :with_packages do
       packages             { create_list(:package, 2) }
@@ -16,10 +17,6 @@ FactoryGirl.define do
 
     trait :with_images do
       images               { create_list(:image, 1) << create(:image, favourite: true) }
-    end
-
-    trait :with_offer do
-      association :offer
     end
 
     trait :paranoid do
