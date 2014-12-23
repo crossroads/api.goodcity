@@ -90,5 +90,7 @@ class Ability
     can [:index, :show, :availableTimeSlots], Schedule
     can :available_dates, Holiday
     can :index, Timeslot
+    can :index, GogovanTransport
+    can :index, CrossroadsTransport
   end
 end

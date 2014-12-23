@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141221110116) do
+ActiveRecord::Schema.define(version: 20141223055519) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,13 @@ ActiveRecord::Schema.define(version: 20141221110116) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "crossroads_transports", force: true do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "deliveries", force: true do |t|
@@ -82,6 +89,13 @@ ActiveRecord::Schema.define(version: 20141221110116) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "gogovan_transports", force: true do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "holidays", force: true do |t|
@@ -152,8 +166,8 @@ ActiveRecord::Schema.define(version: 20141221110116) do
     t.datetime "submitted_at"
     t.integer  "reviewed_by_id"
     t.datetime "reviewed_at"
-    t.string   "gogovan_transport"
-    t.string   "crossroads_transport"
+    t.integer  "gogovan_transport_id"
+    t.integer  "crossroads_transport_id"
   end
 
   create_table "packages", force: true do |t|
