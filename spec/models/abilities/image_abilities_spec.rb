@@ -6,7 +6,7 @@ describe "Image abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:state)       { 'draft' }
-  let(:item)        { create :item, :with_offer, state: state }
+  let(:item)        { create :item, state: state }
   let(:image)       { create :image, item: item }
 
   context "when Administrator" do

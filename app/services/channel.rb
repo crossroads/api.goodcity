@@ -17,6 +17,10 @@ class Channel
       ["user_#{user.id}"]
     end
 
+    def user_id(user_id)
+      ["user_#{user_id}"]
+    end
+
     def users(users)
       users.pluck(:id).map {|id| "user_#{id}"}
     end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141204025155) do
+ActiveRecord::Schema.define(version: 20141221110116) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,6 +84,14 @@ ActiveRecord::Schema.define(version: 20141204025155) do
     t.datetime "deleted_at"
   end
 
+  create_table "holidays", force: true do |t|
+    t.datetime "holiday"
+    t.integer  "year"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "images", force: true do |t|
     t.string   "cloudinary_id"
     t.boolean  "favourite",     default: false
@@ -106,7 +114,7 @@ ActiveRecord::Schema.define(version: 20141204025155) do
   create_table "items", force: true do |t|
     t.text     "donor_description"
     t.string   "state"
-    t.integer  "offer_id"
+    t.integer  "offer_id",                            null: false
     t.integer  "item_type_id"
     t.integer  "rejection_reason_id"
     t.string   "reject_reason"
@@ -144,6 +152,8 @@ ActiveRecord::Schema.define(version: 20141204025155) do
     t.datetime "submitted_at"
     t.integer  "reviewed_by_id"
     t.datetime "reviewed_at"
+    t.string   "gogovan_transport"
+    t.string   "crossroads_transport"
   end
 
   create_table "packages", force: true do |t|
@@ -195,6 +205,13 @@ ActiveRecord::Schema.define(version: 20141204025155) do
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
 
   create_table "territories", force: true do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "timeslots", force: true do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
     t.datetime "created_at"

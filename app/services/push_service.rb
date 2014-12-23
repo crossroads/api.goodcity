@@ -22,14 +22,6 @@ class PushService
     end
   end
 
-  def update_store(data:, donor_channel: nil, channel: Channel.staff)
-    channel += donor_channel if donor_channel.present?
-    @channel = channel
-    @event = "update_store"
-    @data = "Api::V1::#{data.class}Serializer".constantize.new(data)
-    notify
-  end
-
   #new offer to reviewers
   #first reviewer message to supervisors
   #new message to subscribed users

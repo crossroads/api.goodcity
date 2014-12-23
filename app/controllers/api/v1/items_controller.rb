@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :item, parent: false
 
     resource_description do
-      short 'List, create, update and delete items.'
+      short 'Get, create, update and delete items.'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
@@ -36,15 +36,7 @@ module Api::V1
       end
     end
 
-    api :GET, '/v1/items', "List all items"
-    param :ids, Array, of: Integer, desc: "Filter by item ids e.g. ids = [1,2,3,4]"
-    def index
-      @items = @items.with_eager_load # this maintains security
-      @items = @items.find(params[:ids].split(",")) if params[:ids].present?
-      render json: @items, each_serializer: serializer
-    end
-
-    api :GET, '/v1/item/1', "List an item"
+    api :GET, '/v1/item/1', "Get an item"
     def show
       render json: @item, serializer: serializer
     end
