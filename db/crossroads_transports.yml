@@ -1,24 +1,27 @@
 1:
-  :id: 1
-  :name: 1/8 Truck
+  :name_en: 1/8 Truck
+  :name_zh_tw: 1/8卡車
 2:
-  :id: 2
-  :name: 2/8 Truck
+  :name_en: 2/8 Truck
+  :name_zh_tw: 1/8卡車
 3:
-  :id: 3
-  :name: 3/8 Truck
+  :name_en: 3/8 Truck
+  :name_zh_tw: 3/8卡車
 4:
-  :id: 4
-  :name: 4/8 Truck
+  :name_en: 4/8 Truck
+  :name_zh_tw: 4/8卡車
 5:
-  :id: 5
-  :name: 5/8 Truck
+  :name_en: 5/8 Truck
+  :name_zh_tw: 5/8卡車
 6:
-  :id: 6
-  :name: 6/8 Truck
+  :name_en: 6/8 Truck
+  :name_zh_tw: 6/8卡車
 7:
-  :id: 7
-  :name: 7/8 Truck
+  :name_en: 7/8 Truck
+  :name_zh_tw: 7/8卡車
 8:
-  :id: 8
-  :name: 8/8 Truck
+  :name_en: 8/8 Truck
+  :name_zh_tw: 8/8卡車
+9:
+  :name_en: Disable
+  :name_zh_tw: 關閉

@@ -1,9 +1,9 @@
 1:
-  :id: 1
-  :name: Van
+  :name_en: Van
+  :name_zh_tw: 麵包車
 2:
-  :id: 2
-  :name: 5.5t Truck
+  :name_en: 5.5t Truck
+  :name_zh_tw: 5.5噸卡車
 3:
-  :id: 3
-  :name: Disable
+  :name_en: Disable
+  :name_zh_tw: 關閉

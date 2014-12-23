@@ -262,17 +262,17 @@
       "recorded" : true
     }
   ],
-  "crossroads_transport_types#index" : [
+  "crossroads_transports#index" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/crossroads_transport_types",
+      "path" : "/api/v1/crossroads_transports",
       "versions" : [
         "v1"
       ],
       "query" : "",
       "request_data" : null,
       "response_data" : {
-        "crossroads_transport_types" : [
+        "crossroads_transports" : [
           {
             "id" : 1,
             "name" : "1/8 Truck"
@@ -304,6 +304,10 @@
           {
             "id" : 8,
             "name" : "8/8 Truck"
+          },
+          {
+            "id" : 9,
+            "name" : "Disable"
           }
         ]
       },
@@ -475,17 +479,17 @@
       "recorded" : true
     }
   ],
-  "gogovan_transport_types#index" : [
+  "gogovan_transports#index" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/gogovan_transport_types",
+      "path" : "/api/v1/gogovan_transports",
       "versions" : [
         "v1"
       ],
       "query" : "",
       "request_data" : null,
       "response_data" : {
-        "gogovan_transport_types" : [
+        "gogovan_transports" : [
           {
             "id" : 1,
             "name" : "Van"
@@ -994,7 +998,7 @@
   "offers#complete_review" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/offers/58/complete_review",
+      "path" : "/api/v1/offers/349/complete_review",
       "versions" : [
         "v1"
       ],
@@ -1002,8 +1006,8 @@
       "request_data" : {
         "offer" : {
           "state_event" : "finish_review",
-          "gogovan_transport" : "Van",
-          "crossroads_transport" : "3/8 Truck"
+          "gogovan_transport_id" : "385",
+          "crossroads_transport_id" : "415"
         }
       },
       "response_data" : {
@@ -1011,29 +1015,41 @@
         "messages" : [],
         "user" : [
           {
-            "id" : 128,
-            "first_name" : "Adell",
-            "last_name" : "Rempel",
+            "id" : 1108,
+            "first_name" : "Flavie",
+            "last_name" : "Rowe",
             "permission_id" : null
           }
         ],
         "deliveries" : [],
+        "gogovan_transports" : [
+          {
+            "id" : 385,
+            "name" : "5.5t Truck"
+          }
+        ],
+        "crossroads_transports" : [
+          {
+            "id" : 415,
+            "name" : "7/8 Truck"
+          }
+        ],
         "offer" : {
-          "id" : 58,
+          "id" : 349,
           "language" : "en",
           "state" : "reviewed",
           "origin" : "web",
-          "stairs" : false,
-          "parking" : false,
-          "estimated_size" : "1",
-          "notes" : "Rerum ut provident omnis perferendis tenetur et neque. Natus non voluptatem odit aut. Ullam consequuntur voluptatibus soluta amet reprehenderit dicta minus. Illum officiis esse nostrum dolores qui ut. Ad reprehenderit laborum consequatur delectus.",
-          "created_by_id" : 128,
-          "created_at" : "2014-12-22T18:50:39.051+08:00",
-          "updated_at" : "2014-12-22T18:50:39.177+08:00",
+          "stairs" : true,
+          "parking" : true,
+          "estimated_size" : "4",
+          "notes" : "Velit consequatur est non enim. Suscipit totam atque molestias et est dolor unde. Eum molestiae quia ut dolores repudiandae cupiditate. Non vel dicta illo dolor quia praesentium aut.",
+          "created_by_id" : 1108,
+          "created_at" : "2014-12-23T19:12:51.913+08:00",
+          "updated_at" : "2014-12-23T19:12:52.052+08:00",
           "submitted_at" : null,
           "reviewed_at" : null,
-          "gogovan_transport" : "Van",
-          "crossroads_transport" : "3/8 Truck",
+          "gogovan_transport_id" : 385,
+          "crossroads_transport_id" : 415,
           "item_ids" : [],
           "message_ids" : [],
           "reviewed_by_id" : null,
