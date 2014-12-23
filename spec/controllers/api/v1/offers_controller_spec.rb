@@ -74,11 +74,13 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   end
 
   describe "PUT offer/1/complete_review" do
+    let(:gogovan_transport) { create :gogovan_transport }
+    let(:crossroads_transport) { create :crossroads_transport }
 
     let(:offer_attributes) {
       { state_event: "finish_review",
-        gogovan_transport: "Van",
-        crossroads_transport: "3/8 Truck" }
+        gogovan_transport_id: gogovan_transport.id,
+        crossroads_transport_id: crossroads_transport.id }
     }
 
     context "reviewer" do
@@ -88,7 +90,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         put :complete_review, id: in_review_offer.id, offer: offer_attributes
         expect(response.status).to eq(200)
         expect(in_review_offer.reload).to be_reviewed
-        expect(in_review_offer.crossroads_transport).to eq("3/8 Truck")
+        expect(in_review_offer.crossroads_transport).to eq(crossroads_transport)
       end
     end
   end

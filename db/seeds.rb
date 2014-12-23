@@ -28,6 +28,17 @@ timeslots.each do |name|
   FactoryGirl.create :timeslot, name_en: name.first, name_zh_tw: name.last
 end
 
+gogovan_transports = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
+gogovan_transports.each do |key, value|
+  FactoryGirl.create :gogovan_transport, name_en: value[:name_en], name_zh_tw: value[:name_zh_tw]
+end
+
+crossroads_transports = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
+crossroads_transports.each do |key, value|
+  FactoryGirl.create :crossroads_transport, name_en: value[:name_en], name_zh_tw: value[:name_zh_tw]
+end
+
+
 # Don't run the following setup on the live server.
 # This is for dummy data
 unless ENV['LIVE'] == "true"

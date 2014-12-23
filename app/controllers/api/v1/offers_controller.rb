@@ -110,7 +110,8 @@ module Api::V1
     end
 
     def review_offer_params
-      attributes = [:state_event, :gogovan_transport, :crossroads_transport]
+      attributes = [:gogovan_transport_id, :crossroads_transport_id,
+        :state_event]
       params.require(:offer).permit(attributes)
     end
 
