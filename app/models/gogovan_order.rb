@@ -31,6 +31,6 @@ class GogovanOrder < ActiveRecord::Base
 
   #required by PusherUpdates module
   def donor_user_id
-    delivery.offer.created_by_id
+    delivery.try(:offer).try(:created_by_id)
   end
 end
