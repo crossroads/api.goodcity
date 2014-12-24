@@ -27,6 +27,12 @@ module Api::V1
       end
     end
 
+    api :GET, '/v1/packages', "get all packages for the item"
+    def index
+      @packages = @packages.find( params[:ids].split(",") ) if params[:ids].present?
+      render json: @packages, each_serializer: serializer
+    end
+
     api :POST, '/v1/packages', "Create a package"
     param_group :package
     def create

@@ -7,6 +7,7 @@ FactoryGirl.define do
     width       { rand(199) + 1 }
     height      { rand(199) + 1 }
     notes       { Faker::Lorem.paragraph }
+
     received_at nil
     rejected_at nil
 
