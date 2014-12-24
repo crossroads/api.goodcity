@@ -322,6 +322,7 @@ DEPENDENCIES
   guard-rspec
   http_accept_language
   jwt (~> 0.1.13)
+  nestful
   newrelic_rpm
   oj (= 2.10.2)
   oj_mimic_json
