@@ -4,14 +4,14 @@ module Api::V1
     load_and_authorize_resource :item_type, parent: false
 
     resource_description do
-      short 'Get item types.'
-      formats ['json']
+      short "Get item types."
+      formats ["json"]
       error 401, "Unauthorized"
       error 404, "Not Found"
       error 500, "Internal Server Error"
     end
 
-    api :GET, '/v1/item_types', "get all item_types"
+    api :GET, "/v1/item_types", "get all item_types"
     def index
       if params[:ids].blank?
         render json: ItemType.cached_json
