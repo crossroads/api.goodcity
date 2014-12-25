@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
 
@@ -27,7 +27,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       3.times{ create :package }
       get :index
       body = JSON.parse(response.body)
-      expect( body['packages'].length ).to eq(3)
+      expect( body["packages"].length ).to eq(3)
     end
   end
 
