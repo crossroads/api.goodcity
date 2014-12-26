@@ -12,6 +12,8 @@ FactoryGirl.define do
         create(:item_type, code: parent_code).id
       end
     }
+    is_item_type_node false
+
     initialize_with { ItemType.find_or_initialize_by(code: code) }
   end
 end
