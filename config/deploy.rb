@@ -36,6 +36,9 @@ set :bundle_binstubs, nil
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+# How many processes do we want? Each one has 20 threads in production.
+set :sidekiq_processes, 2
+
 set :rvm_ruby_version, '2.1.5'
 
 namespace :deploy do
