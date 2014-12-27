@@ -9,11 +9,9 @@ class TwilioService
 
   def sms_verification_pin
     return unless allowed_to_send?
-    token = user.most_recent_token
-    code = token.otp_code
-    expiry = token.otp_code_expiry.strftime("%A %b %e %H:%M")
-    body = I18n.t('twilio.sms_verification_pin', pin: code, expiry: expiry)
-    options = { to: @user.mobile, body: body}
+    pin = user.most_recent_token.otp_code
+    body = I18n.t('twilio.sms_verification_pin', pin: pin)
+    options = {to: @user.mobile, body: body}
     TwilioJob.perform_later(options)
   end
 
