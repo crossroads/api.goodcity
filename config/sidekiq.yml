@@ -1,0 +1,13 @@
+---
+:concurrency: 5
+:pidfile: tmp/pids/sidekiq.pid
+staging:
+  :concurrency: 10
+production:
+  :concurrency: 20
+
+#  A queue with a weight of 2 will be checked twice as often as a queue with a weight of 1
+:queues:
+  - default
+  - airbrake
+  - [high, 2]
