@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails'
+gem 'rails', '~> 4.1.0'
+gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
 gem 'rails-api'
 gem 'pg'
 
@@ -40,6 +41,9 @@ gem 'pusher'
 gem 'apipie-rails'
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "git://github.com/radar/by_star"
+gem 'sidekiq'
+gem 'sinatra', :require => nil # for sidekiq reporting console
+gem 'airbrake'
 
 group :development do
   unless ENV["CI"]
@@ -47,6 +51,7 @@ group :development do
     gem 'capistrano-rails'
     gem 'capistrano-bundler'
     gem 'capistrano-rvm'
+    gem 'capistrano-sidekiq'
     gem 'annotate'
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
@@ -65,9 +70,4 @@ group :test do
   gem 'shoulda-matchers', require: false
   gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
-end
-
-group :production do
-  gem 'airbrake'
-  gem 'sucker_punch'
 end
