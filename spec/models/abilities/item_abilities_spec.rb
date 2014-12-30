@@ -43,8 +43,8 @@ describe "Item abilities" do
 
     context "and item is submitted" do
       let(:state)  { 'submitted' }
-      let(:can)    { [:index, :show, :create, :update] }
-      let(:cannot) { [:destroy, :manage] }
+      let(:can)    { [:index, :show, :create, :update, :destroy] }
+      let(:cannot) { [:manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, item)
       end}
@@ -71,8 +71,8 @@ describe "Item abilities" do
 
     context "and item is submitted" do
       let(:item)   { create :item, state: 'submitted', offer: offer }
-      let(:can)    { [:index, :show, :create, :update] }
-      let(:cannot) { [:destroy, :manage] }
+      let(:can)    { [:index, :show, :create, :update, :destroy] }
+      let(:cannot) { [:manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, item)
       end}
