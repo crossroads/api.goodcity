@@ -8,6 +8,8 @@ FactoryGirl.define do
     last_name  { Faker::Name.last_name }
     mobile     { generate(:mobile) }
 
+    association :image
+
     trait :reviewer do
       association :permission, factory: :reviewer_permission
     end

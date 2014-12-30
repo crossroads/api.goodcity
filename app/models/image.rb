@@ -4,6 +4,7 @@ class Image < ActiveRecord::Base
   include Paranoid
   include PushUpdates
 
+  has_one :user, inverse_of: :image
   belongs_to :item, inverse_of: :images
   before_destroy :delete_image_from_cloudinary, unless: "Rails.env.test?"
 

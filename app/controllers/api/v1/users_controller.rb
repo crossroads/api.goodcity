@@ -22,7 +22,8 @@ module Api::V1
       render json: @users, each_serializer: serializer
     end
 
-    api :GET, '/v1/users/1', "List an user"
+    api :GET, '/v1/users/1', "List a user"
+    description "Returns information about a user. Note image may be empty if user is not a reviewer."
     def show
       render json: @user, serializer: serializer
     end
