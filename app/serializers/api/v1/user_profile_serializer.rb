@@ -5,6 +5,7 @@ module Api::V1
     attributes :id, :first_name, :last_name, :mobile
 
     has_one :address, serializer: AddressSerializer
+    has_one :image, serializer: ImageSerializer
     has_one :permission, serializer: PermissionSerializer
 
     def mobile

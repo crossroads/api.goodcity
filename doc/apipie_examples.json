@@ -1817,16 +1817,32 @@
       "response_data" : {
         "users" : [
           {
-            "id" : 1885,
-            "first_name" : "Jerrod",
-            "last_name" : "Runolfsson",
-            "permission_id" : 432
+            "id" : 23,
+            "first_name" : "Derick",
+            "last_name" : "Cronin",
+            "permission_id" : 12,
+            "avatar_id" : 23
           },
           {
-            "id" : 1886,
-            "first_name" : "Moses",
-            "last_name" : "Simonis",
-            "permission_id" : null
+            "id" : 24,
+            "first_name" : "Kendall",
+            "last_name" : "Ziemann",
+            "permission_id" : null,
+            "avatar_id" : 24
+          }
+        ],
+        "images" : [
+          {
+            "id" : 23,
+            "favourite" : false,
+            "cloudinary_id" : "1416817641/auyhxsvppoohnubhtdvp.jpg",
+            "item_id" : null
+          },
+          {
+            "id" : 24,
+            "favourite" : false,
+            "cloudinary_id" : "1416375331/zppxdm5fljlyv3tcfo3p.jpg",
+            "item_id" : null
           }
         ]
       },
@@ -1838,18 +1854,27 @@
   "users#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/users/1883",
+      "path" : "/api/v1/users/21",
       "versions" : [
         "v1"
       ],
       "query" : "",
       "request_data" : null,
       "response_data" : {
+        "images" : [
+          {
+            "id" : 21,
+            "favourite" : false,
+            "cloudinary_id" : "1416902230/mmguhm3zdkonc2nynjue.jpg",
+            "item_id" : null
+          }
+        ],
         "user" : {
-          "id" : 1883,
-          "first_name" : "Wanda",
-          "last_name" : "Larkin",
-          "permission_id" : 431
+          "id" : 21,
+          "first_name" : "Scot",
+          "last_name" : "Kohler",
+          "permission_id" : 11,
+          "avatar_id" : 21
         }
       },
       "code" : "200",

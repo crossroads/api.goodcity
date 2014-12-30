@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
   belongs_to :permission, inverse_of: :users
+  belongs_to :image, dependent: :destroy
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
