@@ -46,7 +46,7 @@ describe 'Token', :type => :model do
     let(:now) { Time.now }
     let(:iat) { now.to_i }
     let(:exp) { (now + 14.days).to_i }
-    let(:token_hash) { {'iat' => iat, 'exp' => exp} }
+    let(:token_hash) { [{'iat' => iat, 'exp' => exp}] }
     before{ allow(token).to receive(:token).and_return(token_hash) }
 
     context "with valid token" do

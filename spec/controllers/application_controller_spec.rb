@@ -26,7 +26,7 @@ RSpec.describe ApplicationController, type: :controller do
 
     context "current_user" do
 
-      let(:data)  { {'user_id' => '1'} }
+      let(:data)  { [{'user_id' => '1'}] }
       let(:token) { double(data: data) }
       let(:user) { build :user }
       before { allow(controller).to receive(:token).and_return(token) }
@@ -39,7 +39,7 @@ RSpec.describe ApplicationController, type: :controller do
           expect( controller.send(:current_user) ).to eql(user)
         end
         it "should not find the user_id" do
-          expect(token).to receive('data').and_return({})
+          expect(token).to receive('data').and_return([{}])
           expect(User).to_not receive(:find_by_id)
           expect( controller.send(:current_user) ).to eql(nil)
         end
