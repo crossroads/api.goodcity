@@ -14,8 +14,8 @@ GIT
       nestful (~> 1)
 
 GIT
-  remote: https://github.com/dockyard/postgres_ext-serializers.git
-  revision: 95a6ee2f719c2dd346d66f9b897c5f29b55bc2cf
+  remote: https://github.com/crossroads/postgres_ext-serializers.git
+  revision: d53569e442eec60511857a9be14250956280c9b5
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
@@ -177,7 +177,7 @@ GEM
       activerecord (~> 4.0)
     pg (0.17.1)
     pg_array_parser (0.0.9)
-    postgres_ext (2.3.0)
+    postgres_ext (2.4.0.beta.1)
       activerecord (>= 4.0.0)
       arel (>= 4.0.1)
       pg_array_parser (~> 0.0.9)
@@ -359,6 +359,7 @@ DEPENDENCIES
   oj_mimic_json
   paranoia (~> 2.0.4)
   pg
+  postgres_ext (~> 2.4.0.beta.1)
   postgres_ext-serializers!
   puma
   pusher

@@ -40,10 +40,6 @@ RSpec.configure do |config|
     Warden.test_reset!
   end
 
-  config.before(:each) do
-    allow_any_instance_of(PushUpdates).to receive(:update_client_store)
-  end
-
   config.use_transactional_fixtures = true
 
   config.infer_spec_type_from_file_location!
