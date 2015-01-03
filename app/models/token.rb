@@ -51,8 +51,8 @@ class Token
   def token_validation
     if !jwt_string.blank? && !(token.all? &:blank?)
       cur_time = Time.now
-      iat_time = Time.at(token["iat"])
-      exp_time = Time.at(token["exp"])
+      iat_time = Time.at(token[0]["iat"])
+      exp_time = Time.at(token[0]["exp"])
       if exp_time < cur_time
         errors.add(:base, I18n.t('token.expired'))
       elsif !(iat_time < cur_time && iat_time < exp_time)
