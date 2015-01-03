@@ -9,6 +9,6 @@ class Contact < ActiveRecord::Base
 
   #required by PusherUpdates module
   def donor_user_id
-    delivery.offer.user_id
+    delivery.try(:offer).try(:user_id)
   end
 end
