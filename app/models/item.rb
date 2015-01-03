@@ -19,6 +19,15 @@ class Item < ActiveRecord::Base
     ] )
   }
 
+  # Workaround to set initial state fror the state_machine
+  # StateMachine has Issue with rails 4.2, it does not set initial state by default
+  # refer - https://github.com/pluginaweek/state_machine/issues/334
+  after_initialize :set_initial_state
+
+  def set_initial_state
+    self.state ||= :draft
+  end
+
   state_machine :state, initial: :draft do
     state :rejected
     state :submitted

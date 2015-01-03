@@ -32,7 +32,5 @@ module CacheableJson
     def cached_json
       Rails.cache.fetch(cache_key) || cache_json
     end
-
   end
-
 end
