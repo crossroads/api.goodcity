@@ -7,11 +7,14 @@ class Image < ActiveRecord::Base
   belongs_to :item, inverse_of: :images
   before_destroy :delete_image_from_cloudinary, unless: "Rails.env.test?"
 
+  def public_image_id
+    cloudinary_id.split('/').last.split('.').first rescue nil
+  end
+
   private
 
   def delete_image_from_cloudinary
-    public_id = cloudinary_id.split('/').last.split('.').first rescue nil
-    Cloudinary::Api.delete_resources([public_id]) if public_id
+    CloudinaryImageCleanupJob.perform_later(self)
     true
   end
 
