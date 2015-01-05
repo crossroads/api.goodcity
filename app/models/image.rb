@@ -8,7 +8,7 @@ class Image < ActiveRecord::Base
   before_destroy :delete_image_from_cloudinary, unless: "Rails.env.test?"
 
   def public_image_id
-    cloudinary_id.split('/').last.split('.').first rescue nil
+    cloudinary_id.split("/").last.split(".").first rescue nil
   end
 
   private
