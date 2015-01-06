@@ -1,7 +1,7 @@
 module Api::V1
   class OffersController < Api::V1::ApiController
 
-    before_filter :eager_load_offer, except: [:index, :create]
+    before_action :eager_load_offer, except: [:index, :create]
     load_and_authorize_resource :offer, parent: false
 
     resource_description do

@@ -5,9 +5,8 @@ class ApplicationController < ActionController::API
 
   check_authorization
 
-  before_action :set_locale
+  before_action :set_locale, :current_user # User.current is required to be set for OffersController.before_filter
   helper_method :current_user
-  before_filter :current_user # User.current is required to be set for OffersController.before_filter
 
   private
 
