@@ -15,7 +15,8 @@ GIT
 
 GIT
   remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: d53569e442eec60511857a9be14250956280c9b5
+  revision: a96be85b00d8f7a398714fc4eb1c964085ade2a6
+  branch: arel6
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
@@ -101,7 +102,7 @@ GEM
     capistrano-stats (1.1.1)
     celluloid (0.16.0)
       timers (~> 4.0.0)
-    cloudinary (1.0.79)
+    cloudinary (1.0.80)
       aws_cf_signer
       rest-client
     coderay (1.1.0)
@@ -144,7 +145,7 @@ GEM
     hike (1.2.3)
     hitimes (1.2.2)
     http_accept_language (2.0.2)
-    httpclient (2.5.3.3)
+    httpclient (2.6.0.1)
     i18n (0.7.0)
     json (1.8.1)
     jwt (1.2.0)
