@@ -1,6 +1,5 @@
 class AzureNotificationsService
-
-  def notify(registration_id, platform, tags, data, collapse_key: nil)
+  def notify(platform, tags, data, collapse_key: nil)
     tags = tags.join(' || ') if tags.instance_of?(Array)
     headers = {
       'ServiceBusNotification-Format' => platform,
@@ -12,29 +11,27 @@ class AzureNotificationsService
   end
 
   def register_device(handle, platform, tags)
-    res = send :get, 'registrations', params: { '$filter' => "GcmRegistrationId eq '#{handle}'" }
+    res = send :get, "registrations?$filter=GcmRegistrationId eq '#{handle}'"
     res.decoded.each {|r| send :delete, 'registrations/#{r.id}'}
     res = send :post, 'registrationIDs'
-    send :put, 'registrations/#{res.id}', body: {Handle: handle, Platform: platform, Tags: tags}
+    # Content-Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>
+    regId = res[:headers]['Content-Location'].split('/').last
+    send :put, 'registrations/#{regId}', body: {Handle: handle, Platform: platform, Tags: tags}
   end
 
-  private
-
   def send(method, resource, options = {})
-    url = "#{settings['endpoint']}/#{resource}"
-    puts url
-    headers = {
-      'Content-Type' => 'application/json;charset=utf-8',
-      'Authorization' => sas_token(url),
-      'x-ms-version' => '2014-09'
-    }
-    options[:headers] = headers.merge(options[:headers] || {})
+    sep = resource.include?('?') ? '&' : '?'
+    url = "#{settings['endpoint']}/#{resource}#{sep}api-version=2014-09"
     options[:method] = method
     options[:format] = :json
+    options[:headers] ||= {}
+    options[:headers]['Authorization'] = sas_token(url)
     response = Nestful::Request.new(url, options).execute
     # todo add error handling - response.status != 200
     # response.decoded
   end
+
+  private
 
   def sas_token(url, lifetime: 10)
     target_uri = CGI.escape(url.downcase).gsub('+', '%20').downcase
