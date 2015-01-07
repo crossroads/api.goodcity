@@ -10,5 +10,5 @@ production:
 :queues:
   - default
   - airbrake
-  - cloudinary
+  - low
   - [high, 2]
