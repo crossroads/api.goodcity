@@ -25,5 +25,9 @@ class Channel
       users.pluck(:id).map {|id| "user_#{id}"}
     end
 
+    def user_channel?(channel_name)
+      channel_name.include?('user_')
+    end
+
   end
 end

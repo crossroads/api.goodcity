@@ -28,9 +28,15 @@ class PushService
   #offer status change to donor
   #item rejected/accepted to donor
   def send_notification(text:, entity_type:, entity:, channel:)
+    data = {text: text, entity_type: entity_type, entity: entity, date: Time.now}
+
     @channel = channel
     @event = "notification"
-    @data = {text: text, entity_type: entity_type, entity: entity, date: Time.now}.to_json
+    @data = data.to_json
     notify
+
+    if Channel.user_channel?(channel)
+      AzureNotificationsService.new.notify 'gcm', channel, {data: data}
+    end
   end
 end
