@@ -14,7 +14,8 @@ class Image < ActiveRecord::Base
   private
 
   def delete_image_from_cloudinary
-    CloudinaryImageCleanupJob.perform_later(self)
+    image_id = public_image_id
+    CloudinaryImageCleanupJob.perform_later(image_id) if image_id
     true
   end
 
