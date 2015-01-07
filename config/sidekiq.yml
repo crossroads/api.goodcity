@@ -10,4 +10,5 @@ production:
 :queues:
   - default
   - airbrake
+  - low
   - [high, 2]
