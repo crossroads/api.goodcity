@@ -15,8 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: a96be85b00d8f7a398714fc4eb1c964085ade2a6
-  branch: arel6
+  revision: 4938fc65b96f320b501741538ac0e5e7d80c3350
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
