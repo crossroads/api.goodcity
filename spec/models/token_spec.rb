@@ -36,7 +36,7 @@ describe 'Token', :type => :model do
 
   context "token" do
     it "should call JWT.decode" do
-      expect(JWT).to receive(:decode).with(token.send(:jwt_string), token.send(:secret_key), token.send(:hmac_sha_algo))
+      expect(JWT).to receive(:decode).with(token.send(:jwt_string), token.send(:secret_key), true, {:verify_expiration=>false})
       token.send(:token)
     end
   end
