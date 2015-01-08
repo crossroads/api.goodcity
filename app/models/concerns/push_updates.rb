@@ -17,7 +17,7 @@ module PushUpdates
     object = {}
 
     if operation == :create
-      object = serializer
+      object[type] = serializer
     elsif operation == :update
       object[type] = {id:self.id}
       self.changed
