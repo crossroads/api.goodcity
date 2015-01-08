@@ -30,7 +30,7 @@ class PushService
   def send_notification(text:, entity_type:, entity:, channel:)
     @channel = channel
     @event = "notification"
-    @data = {text: text, entity_type: entity_type, entity: entity, date: Time.now}.to_json
+    @data = {text: text, entity_type: entity_type, entity: entity, date: Time.now}
     notify
   end
 end
