@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: d53569e442eec60511857a9be14250956280c9b5
+  revision: 84dad0e4b21717bab4c5a8de56e44ca028bcfedb
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
@@ -145,7 +145,7 @@ GEM
     http_accept_language (2.0.2)
     httpclient (2.6.0.1)
     i18n (0.7.0)
-    json (1.8.1)
+    json (1.8.2)
     jwt (0.1.13)
       multi_json (>= 1.5)
     listen (2.8.4)
