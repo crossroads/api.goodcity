@@ -86,3 +86,14 @@ namespace :passenger do
     end
   end
 end
+
+namespace :pg do
+  desc "Bundle config setup for install 'pg' gem"
+  task :config do
+    on roles(:app) do
+      within current_path do
+        execute :bundle, "config build.pg --with-pg-config=/usr/pgsql-9.4/bin/pg_config"
+      end
+    end
+  end
+end

@@ -1,8 +1,7 @@
 class CloudinaryImageCleanupJob < ActiveJob::Base
-  queue_as :cloudinary
+  queue_as :low
 
-  def perform(image)
-    public_id = image.public_image_id
-    Cloudinary::Api.delete_resources([public_id]) if public_id
+  def perform(cloudinary_image_id)
+    Cloudinary::Api.delete_resources([cloudinary_image_id])
   end
 end
