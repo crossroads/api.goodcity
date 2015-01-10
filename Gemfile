@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails'
+gem 'rails', '~> 4.1.0'
+gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
 gem 'rails-api'
 gem 'pg'
 
@@ -9,7 +10,8 @@ gem 'pg'
 # gem 'active_model_otp'
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
-gem 'postgres_ext-serializers', git: 'https://github.com/dockyard/postgres_ext-serializers.git'
+gem 'postgres_ext', '~> 2.4.0.beta.1'
+gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
 gem 'paranoia', github: 'radar/paranoia', ref: 'fe70628'
@@ -42,6 +44,9 @@ gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch:
 gem 'by_star', git: "git://github.com/radar/by_star"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
 gem 'nokogiri'
+gem 'sidekiq'
+gem 'sinatra', :require => nil # for sidekiq reporting console
+gem 'airbrake'
 
 group :development do
   unless ENV["CI"]
@@ -49,6 +54,7 @@ group :development do
     gem 'capistrano-rails'
     gem 'capistrano-bundler'
     gem 'capistrano-rvm'
+    gem 'capistrano-sidekiq'
     gem 'annotate'
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
@@ -62,14 +68,8 @@ group :development, :test do
 end
 
 group :test do
-  gem 'vcr'
   gem 'webmock'
   gem 'shoulda-matchers', require: false
   gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
-end
-
-group :production do
-  gem 'airbrake'
-  gem 'sucker_punch'
 end

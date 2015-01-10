@@ -4,8 +4,8 @@ module Api::V1
     load_and_authorize_resource :package, parent: false
 
     resource_description do
-      short 'Create, update and delete a package.'
-      formats ['json']
+      short "Create, update and delete a package."
+      formats ["json"]
       error 401, "Unauthorized"
       error 404, "Not Found"
       error 422, "Validation Error"
@@ -27,7 +27,13 @@ module Api::V1
       end
     end
 
-    api :POST, '/v1/packages', "Create a package"
+    api :GET, "/v1/packages", "get all packages for the item"
+    def index
+      @packages = @packages.find( params[:ids].split(",") ) if params[:ids].present?
+      render json: @packages, each_serializer: serializer
+    end
+
+    api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
       @package = Package.new(package_params)
@@ -38,7 +44,7 @@ module Api::V1
       end
     end
 
-    api :PUT, '/v1/packages/1', "Update a package"
+    api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
       if @package.update_attributes(package_params)
@@ -46,6 +52,13 @@ module Api::V1
       else
         render json: @package.errors.to_json, status: 422
       end
+    end
+
+    api :DELETE, "/v1/packages/1", "Delete an package"
+    description "Deletion of the Package item in review mode"
+    def destroy
+      @package.really_destroy!
+      render json: {}
     end
 
     private

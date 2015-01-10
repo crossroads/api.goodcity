@@ -43,8 +43,8 @@ describe "Package abilities" do
 
     context "and package belongs to submitted item" do
       let(:state)   { 'submitted' }
-      let(:can)     { [:index, :show, :create, :update] }
-      let(:cannot)  { [:destroy, :manage] }
+      let(:can)     { [:index, :show, :create, :update, :destroy] }
+      let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
         should be_able_to(do_action, package)
       end}

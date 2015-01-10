@@ -38,6 +38,24 @@ For individual specs, use rspec
     rspec spec/serializers
     rspec spec/serializers/district_serializer_spec.rb:9
 
+## Background Jobs
+
+Using the ActiveJob gem, some jobs are queued in Redis and then run later using Sidekiq workers.
+For example, Twilio SMS, exception notification (airbrake) and email delivery.
+
+In development mode, use
+
+    bundle exec sidekiq
+
+to start the sidekiq worker. Configuration is set in ```config/sidekiq.yml```
+
+You can also view the sidekiq jobs dashboard at ```/sidekiq``` but must first set
+
+    SIDEKIQ_USERNAME
+    SIDEKIQ_PASSWORD
+
+in the ```.env``` file. To prevent accidental data leakage, blank usernames and passwords are not accepted.
+
 ## Deployment
 
 Using capistrano, commit all changes to master branch and push to github. Then type:

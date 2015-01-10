@@ -7,8 +7,8 @@ class Item < ActiveRecord::Base
   belongs_to :item_type, inverse_of: :items
   belongs_to :rejection_reason
   belongs_to :donor_condition
-  has_many   :messages
-  has_many   :images
+  has_many   :messages, dependent: :destroy
+  has_many   :images, dependent: :destroy
   has_many   :packages, dependent: :destroy
 
   validates :donor_condition_id, presence: true

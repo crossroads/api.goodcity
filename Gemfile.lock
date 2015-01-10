@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/radar/by_star
-  revision: 3c6e657178846f2bbc1c056f036ad04a3ae96857
+  revision: 670451fbc66bbf1e149ac20173cbe0ecb95d4fba
   specs:
     by_star (2.2.1)
       activesupport
@@ -22,8 +22,8 @@ GIT
       nestful (~> 1)
 
 GIT
-  remote: https://github.com/dockyard/postgres_ext-serializers.git
-  revision: 95a6ee2f719c2dd346d66f9b897c5f29b55bc2cf
+  remote: https://github.com/crossroads/postgres_ext-serializers.git
+  revision: 84dad0e4b21717bab4c5a8de56e44ca028bcfedb
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
@@ -56,6 +56,8 @@ GEM
       rotp
     active_model_serializers (0.8.3)
       activemodel (>= 3.0)
+    activejob_backport (0.0.3)
+      activesupport (>= 4.0.0)
     activemodel (4.1.8)
       activesupport (= 4.1.8)
       builder (~> 3.1)
@@ -100,15 +102,19 @@ GEM
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
+    capistrano-sidekiq (0.4.0)
+      capistrano
+      sidekiq
     capistrano-stats (1.1.1)
     celluloid (0.16.0)
       timers (~> 4.0.0)
-    cloudinary (1.0.79)
+    cloudinary (1.0.80)
       aws_cf_signer
       rest-client
     coderay (1.1.0)
     colorize (0.7.5)
     columnize (0.9.0)
+    connection_pool (2.1.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     debugger-linecache (1.2.0)
@@ -128,14 +134,14 @@ GEM
     ffaker (1.25.0)
     ffi (1.9.6)
     formatador (0.2.5)
-    guard (2.10.4)
+    guard (2.10.5)
       formatador (>= 0.2.4)
       listen (~> 2.7)
       lumberjack (~> 1.0)
       nenv (~> 0.1)
       pry (>= 0.9.12)
       thor (>= 0.18.1)
-    guard-compat (1.1.0)
+    guard-compat (1.2.0)
     guard-rspec (4.5.0)
       guard (~> 2.1)
       guard-compat (~> 1.1)
@@ -143,12 +149,12 @@ GEM
     hike (1.2.3)
     hitimes (1.2.2)
     http_accept_language (2.0.2)
-    httpclient (2.5.3.3)
-    i18n (0.6.11)
-    json (1.8.1)
+    httpclient (2.6.0.1)
+    i18n (0.7.0)
+    json (1.8.2)
     jwt (0.1.13)
       multi_json (>= 1.5)
-    listen (2.8.3)
+    listen (2.8.4)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
@@ -164,15 +170,15 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
-    netrc (0.10.1)
-    newrelic_rpm (3.9.8.273)
+    netrc (0.10.2)
+    newrelic_rpm (3.9.9.275)
     nokogiri (1.6.5)
       mini_portile (~> 0.6.0)
     oj (2.10.2)
     oj_mimic_json (1.0.1)
-    pg (0.17.1)
+    pg (0.18.1)
     pg_array_parser (0.0.9)
-    postgres_ext (2.3.0)
+    postgres_ext (2.4.0.beta.1)
       activerecord (>= 4.0.0)
       arel (>= 4.0.1)
       pg_array_parser (~> 0.0.9)
@@ -187,13 +193,13 @@ GEM
       multi_json (~> 1.0)
       signature (~> 0.1.6)
     rack (1.5.2)
-    rack-cors (0.2.9)
+    rack-cors (0.3.1)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
     rack-timeout (0.1.1)
-    railroady (1.2.0)
+    railroady (1.3.0)
     rails (4.1.8)
       actionmailer (= 4.1.8)
       actionpack (= 4.1.8)
@@ -227,6 +233,8 @@ GEM
     redis-activesupport (4.0.0)
       activesupport (~> 4)
       redis-store (~> 1.1.0)
+    redis-namespace (1.5.1)
+      redis (~> 3.0, >= 3.0.4)
     redis-rack (1.5.0)
       rack (~> 1.5)
       redis-store (~> 1.1.0)
@@ -265,7 +273,17 @@ GEM
       activesupport (>= 3)
     shoulda-matchers (2.7.0)
       activesupport (>= 3.0.0)
+    sidekiq (3.3.0)
+      celluloid (>= 0.16.0)
+      connection_pool (>= 2.0.0)
+      json
+      redis (>= 3.0.6)
+      redis-namespace (>= 1.3.1)
     signature (0.1.7)
+    sinatra (1.4.5)
+      rack (~> 1.4)
+      rack-protection (~> 1.4)
+      tilt (~> 1.3, >= 1.3.4)
     slop (3.6.0)
     spring (1.2.0)
     spring-commands-rspec (1.0.4)
@@ -284,8 +302,6 @@ GEM
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     state_machine (1.2.0)
-    sucker_punch (1.3.1)
-      celluloid (~> 0.16.0)
     thor (0.19.1)
     thread_safe (0.3.4)
     tilt (1.4.1)
@@ -299,7 +315,6 @@ GEM
       multi_json (>= 1.3.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    vcr (2.9.3)
     warden (1.2.3)
       rack (>= 1.0)
     webmock (1.20.4)
@@ -312,6 +327,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_otp (~> 1.1.0)
   active_model_serializers (~> 0.8.0)
+  activejob_backport
   airbrake
   annotate
   apipie-rails
@@ -321,6 +337,7 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-rails
   capistrano-rvm
+  capistrano-sidekiq
   cloudinary
   dotenv-rails (= 0.11.1)
   execjs
@@ -337,6 +354,7 @@ DEPENDENCIES
   oj_mimic_json
   paranoia!
   pg
+  postgres_ext (~> 2.4.0.beta.1)
   postgres_ext-serializers!
   puma
   pusher
@@ -344,7 +362,7 @@ DEPENDENCIES
   rack-protection
   rack-timeout
   railroady
-  rails
+  rails (~> 4.1.0)
   rails-api
   rails-i18n
   redis
@@ -352,12 +370,12 @@ DEPENDENCIES
   rspec-rails
   shoulda-callback-matchers
   shoulda-matchers
+  sidekiq
+  sinatra
   spring
   spring-commands-rspec
   state_machine
-  sucker_punch
   traco
   twilio-ruby
-  vcr
   warden
   webmock

@@ -575,6 +575,45 @@
       "recorded" : true
     }
   ],
+  "item_types#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/item_types",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "item_types" : [
+          {
+            "id" : 535,
+            "name" : "School stationery",
+            "code" : "NQ",
+            "parent_id" : null,
+            "is_item_type_node" : false
+          },
+          {
+            "id" : 536,
+            "name" : "Carpet/rug",
+            "code" : "CHP",
+            "parent_id" : null,
+            "is_item_type_node" : false
+          },
+          {
+            "id" : 537,
+            "name" : "Bicycles - Adult",
+            "code" : "RPA",
+            "parent_id" : null,
+            "is_item_type_node" : false
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "items#create" : [
     {
       "verb" : "POST",
@@ -1352,6 +1391,170 @@
           "message_ids" : [],
           "reviewed_by_id" : null,
           "delivery_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "packages#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/packages",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "package" : {
+          "quantity" : 1,
+          "length" : 73,
+          "width" : 30,
+          "height" : 125,
+          "notes" : "Ex ut aliquam ipsa consequuntur illo nostrum exercitationem. Magni itaque facilis aut quo. Ut sed dolorum rerum possimus sint suscipit vero laborum.",
+          "received_at" : null,
+          "rejected_at" : null,
+          "item_id" : "258",
+          "package_type_id" : "542"
+        }
+      },
+      "response_data" : {
+        "package" : {
+          "id" : 196,
+          "quantity" : 1,
+          "length" : 73,
+          "width" : 30,
+          "height" : 125,
+          "notes" : "Ex ut aliquam ipsa consequuntur illo nostrum exercitationem. Magni itaque facilis aut quo. Ut sed dolorum rerum possimus sint suscipit vero laborum.",
+          "item_id" : 258,
+          "state" : null,
+          "received_at" : null,
+          "rejected_at" : null,
+          "created_at" : "2014-12-25T20:41:31.666+08:00",
+          "updated_at" : "2014-12-25T20:41:31.666+08:00",
+          "package_type_id" : 542
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "packages#destroy" : [
+    {
+      "verb" : "DELETE",
+      "path" : "/api/v1/packages/198",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "packages#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/packages",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "packages" : [
+          {
+            "id" : 193,
+            "quantity" : 1,
+            "length" : 54,
+            "width" : 50,
+            "height" : 84,
+            "notes" : "Nesciunt veniam facere sequi et repellendus blanditiis velit. Quis fugiat et provident similique dolor. Quos alias eius ipsa et maiores et omnis perspiciatis.",
+            "item_id" : null,
+            "state" : null,
+            "received_at" : null,
+            "rejected_at" : null,
+            "created_at" : "2014-12-25T12:41:31.314379",
+            "updated_at" : "2014-12-25T12:41:31.314379",
+            "package_type_id" : 538
+          },
+          {
+            "id" : 194,
+            "quantity" : 1,
+            "length" : 142,
+            "width" : 188,
+            "height" : 69,
+            "notes" : "Iste fugiat et eos aut in provident alias. Veniam non eum et inventore a praesentium qui. Id animi ratione dignissimos ea nobis voluptatem a necessitatibus. Sapiente suscipit earum molestiae harum incidunt.",
+            "item_id" : null,
+            "state" : null,
+            "received_at" : null,
+            "rejected_at" : null,
+            "created_at" : "2014-12-25T12:41:31.323929",
+            "updated_at" : "2014-12-25T12:41:31.323929",
+            "package_type_id" : 539
+          },
+          {
+            "id" : 195,
+            "quantity" : 1,
+            "length" : 55,
+            "width" : 177,
+            "height" : 120,
+            "notes" : "Neque dolorum sunt quia ut officiis nobis sunt. Ut nesciunt et doloremque velit sit vero molestiae officia. Occaecati eos atque possimus ex id. Et consequatur cumque sint sed nisi consequatur mollitia quia.",
+            "item_id" : null,
+            "state" : null,
+            "received_at" : null,
+            "rejected_at" : null,
+            "created_at" : "2014-12-25T12:41:31.333082",
+            "updated_at" : "2014-12-25T12:41:31.333082",
+            "package_type_id" : 540
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "packages#update" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/packages/197",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "package" : {
+          "quantity" : 30,
+          "length" : 48,
+          "width" : 100,
+          "height" : 3,
+          "notes" : "Consequatur impedit voluptas sunt cum natus enim. Deleniti eveniet neque quis distinctio eaque recusandae. Id dolores reprehenderit in quo eligendi.",
+          "received_at" : null,
+          "rejected_at" : null,
+          "item_id" : "259",
+          "package_type_id" : "545"
+        }
+      },
+      "response_data" : {
+        "package" : {
+          "id" : 197,
+          "quantity" : 30,
+          "length" : 48,
+          "width" : 100,
+          "height" : 3,
+          "notes" : "Consequatur impedit voluptas sunt cum natus enim. Deleniti eveniet neque quis distinctio eaque recusandae. Id dolores reprehenderit in quo eligendi.",
+          "item_id" : 259,
+          "state" : null,
+          "received_at" : null,
+          "rejected_at" : null,
+          "created_at" : "2014-12-25T20:41:31.810+08:00",
+          "updated_at" : "2014-12-25T20:41:31.831+08:00",
+          "package_type_id" : 545
         }
       },
       "code" : "200",

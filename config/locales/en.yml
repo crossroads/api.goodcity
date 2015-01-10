@@ -16,7 +16,9 @@ en:
     invalid: Invalid token
     expired: Expired token
   twilio:
-    sms_verification_pin: Your pin is %{pin} and will expire by %{expiry}.
+    sms_verification_pin: |
+      Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy donating
+      your quality goods. (If you didn't request this message, please ignore)
   activerecord:
     attributes:
       user:

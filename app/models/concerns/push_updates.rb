@@ -2,9 +2,9 @@ module PushUpdates
   extend ActiveSupport::Concern
 
   included do
-    after_create {update_client_store :create }
-    after_update {update_client_store :update }
-    after_destroy {update_client_store :delete }
+    after_create {update_client_store :create unless Rails.env.test? }
+    after_update {update_client_store :update unless Rails.env.test? }
+    after_destroy {update_client_store :delete unless Rails.env.test? }
   end
 
   def update_client_store(operation)
@@ -17,12 +17,12 @@ module PushUpdates
     object = {}
 
     if operation == :create
-      object = serializer
+      object[type] = serializer
     elsif operation == :update
       object[type] = {id:self.id}
       self.changed
+        .find_all{|i| serializer.respond_to?(i) || serializer.respond_to?(i.sub('_id', ''))}
         .map{|i| i.to_sym}
-        .find_all{|i| serializer.respond_to?(i)}
         .each{|i| object[type][i] = self[i]}
       return if object.length == 0
     else # delete

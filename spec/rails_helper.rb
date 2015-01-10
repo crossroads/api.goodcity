@@ -12,7 +12,6 @@ require 'rspec/rails'
 require 'ffaker'
 require 'shoulda/matchers'
 require 'webmock/rspec'
-require 'vcr'
 
 WebMock.disable_net_connect!
 
@@ -39,10 +38,6 @@ RSpec.configure do |config|
 
   config.after(:each) do
     Warden.test_reset!
-  end
-
-  config.before(:each) do
-    allow_any_instance_of(PushUpdates).to receive(:update_client_store)
   end
 
   config.use_transactional_fixtures = true

@@ -11,7 +11,7 @@ class Delivery < ActiveRecord::Base
 
   def update_offer_state
     self.delivery_type = self.delivery_type.titleize
-    offer.schedule if contact_id_changed? && contact.present?
+    offer.schedule if process_completed?
     true
   end
 
@@ -20,5 +20,10 @@ class Delivery < ActiveRecord::Base
   #required by PusherUpdates module
   def donor_user_id
     offer.created_by_id
+  end
+
+  def process_completed?
+    (contact_id_changed? && contact.present?) ||
+    (delivery_type == 'Drop Off' && schedule_id_changed? && schedule.present?)
   end
 end

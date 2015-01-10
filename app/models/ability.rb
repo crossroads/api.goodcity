@@ -29,41 +29,45 @@ class Ability
 
       # Item
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
-      can [:index, :show, :create, :update], Item if reviewer or supervisor
-      can :destroy, Item, offer: { created_by_id: user_id }, state: 'draft'
-      can :destroy, Item, state: 'draft', offer: { created_by_id: user_id }
-      can :destroy, Item, state: 'draft' if reviewer
-      can :destroy, Item if supervisor
+      can [:index, :show, :create, :update], Item if reviewer || supervisor
+      can :destroy, Item, offer: { created_by_id: user_id }
+      can :destroy, Item if reviewer || supervisor
 
       # Image (same as item permissions)
-      can [:index, :show, :create, :update], Image, item: { offer: { created_by_id: user_id } }
-      can [:index, :show, :create, :update], Image if reviewer or supervisor
-      can :destroy, Image, item: { offer: { created_by_id: user_id }, state: ['draft', 'submitted', 'scheduled'] }
-      can :destroy, Image, item: { state: ['draft', 'submitted', 'scheduled'] } if reviewer
+      can [:index, :show, :create, :update], Image, item: { offer:
+        { created_by_id: user_id } }
+      can [:index, :show, :create, :update], Image if reviewer || supervisor
+      can :destroy, Image, item: { offer: { created_by_id: user_id },
+        state: ['draft', 'submitted', 'scheduled'] }
+      can :destroy, Image, item: {
+        state: ['draft', 'submitted', 'scheduled'] } if reviewer
       can :destroy, Image if supervisor
 
       # Message (sender and admins, not user if private is true)
       can [:index, :show, :create, :update, :destroy], Message if supervisor
       can [:index, :show, :create], Message if reviewer
-      can [:index, :show, :create], Message, offer: { created_by_id: user_id }, is_private: false
+      can [:index, :show, :create], Message, offer: {
+        created_by_id: user_id }, is_private: false
       can [:mark_read], Message, id: user.subscriptions.pluck(:message_id)
 
       # Offer
       can :create, Offer
       can [:index, :show, :update], Offer, created_by_id: user_id
-      can [:index, :show, :update], Offer if reviewer or supervisor
-      can :destroy, Offer, created_by_id: user_id, state: ['draft', 'submitted', 'scheduled']
+      can [:index, :show, :update], Offer if reviewer || supervisor
+      can :destroy, Offer, created_by_id: user_id, state: ['draft',
+        'submitted', 'scheduled']
       can :destroy, Offer, state: 'draft' if reviewer
       can :destroy, Offer if supervisor
-      can :review, Offer if reviewer or supervisor
-      can :complete_review, Offer if reviewer or supervisor
+      can :review, Offer if reviewer || supervisor
+      can :complete_review, Offer if reviewer || supervisor
 
       # Package (same as item permissions)
-      can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: user_id } }
-      can [:index, :show, :create, :update], Package if reviewer or supervisor
+      can [:index, :show, :create, :update], Package, item: { offer:
+        { created_by_id: user_id } }
+      can [:index, :show, :create, :update, :destroy], Package if reviewer || supervisor
       can :destroy, Package, item: { offer: { created_by_id: user_id }, state: 'draft' }
       can :destroy, Package, item: { state: 'draft' } if reviewer
-      can :destroy, Package if supervisor
+
 
       # Schedule
       can :create, Schedule
@@ -73,7 +77,7 @@ class Ability
 
       # User
       can [:show, :update], User, id: user_id
-      can [:index, :show, :update], User if reviewer or supervisor
+      can [:index, :show, :update], User if reviewer || supervisor
       can :current_user_profile, User
 
       # Auth
