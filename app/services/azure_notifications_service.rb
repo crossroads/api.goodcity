@@ -32,12 +32,9 @@ class AzureNotificationsService
     sep = resource.include?('?') ? '&' : '?'
     url = "#{settings['endpoint']}/#{resource}#{sep}api-version=2014-09"
     options[:method] = method
-    options[:format] = :json
     options[:headers] ||= {}
     options[:headers]['Authorization'] = sas_token(url)
-    response = Nestful::Request.new(url, options).execute
-    # todo add error handling - response.status != 200
-    # response.decoded
+    Nestful::Request.new(url, options).execute
   end
 
   private
