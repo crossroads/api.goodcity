@@ -22,11 +22,10 @@ class PushService
     end
   end
 
-  #new offer to reviewers
-  #first reviewer message to supervisors
-  #new message to subscribed users
-  #offer status change to donor
-  #item rejected/accepted to donor
+  # new offer to reviewers
+  # first reviewer message to supervisors
+  # new message to subscribed users
+  # todo: offer accepted
   def send_notification(text:, entity_type:, entity:, channel:)
     data = {text: text, entity_type: entity_type, entity: entity, date: Time.now}
 

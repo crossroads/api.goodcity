@@ -26,7 +26,11 @@ class Channel
     end
 
     def user_channel?(channel_name)
-      channel_name.include?('user_')
+      if channel_name.kind_of?(Array)
+        channel_name.any? {|n| n.include?('user_')}
+      else
+        channel_name.include?('user_')
+      end
     end
 
   end
