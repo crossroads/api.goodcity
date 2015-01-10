@@ -55,7 +55,7 @@ describe PushService do
       entity = { dummy: "entity", entity: "dummy"}
 
       expect(service).to receive(:notify)
-      expect_any_instance_of(AzureNotificationsService).to receive(:notify)
+      expect(AzureNotifyJob).to receive(:perform_later)
 
       service.send_notification(text: text, entity_type: entity_type, entity: entity, channel: [one_channel])
 

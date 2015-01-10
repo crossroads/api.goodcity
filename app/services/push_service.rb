@@ -35,7 +35,7 @@ class PushService
     notify
 
     if Channel.user_channel?(channel)
-      AzureNotificationsService.new.notify channel, {data: data}
+      AzureNotifyJob.perform_later(channel, {data: data})
     end
   end
 end
