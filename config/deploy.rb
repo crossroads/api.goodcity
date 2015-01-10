@@ -36,6 +36,9 @@ set :bundle_binstubs, nil
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+# How many processes do we want? Each one has 20 threads in production.
+set :sidekiq_processes, 2
+
 set :rvm_ruby_version, '2.1.5'
 
 namespace :deploy do
@@ -79,6 +82,17 @@ namespace :passenger do
     on roles(:app) do
       within current_path do
         execute "passenger-memory-stats"
+      end
+    end
+  end
+end
+
+namespace :pg do
+  desc "Bundle config setup for install 'pg' gem"
+  task :config do
+    on roles(:app) do
+      within current_path do
+        execute :bundle, "config build.pg --with-pg-config=/usr/pgsql-9.4/bin/pg_config"
       end
     end
   end

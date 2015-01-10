@@ -5,11 +5,11 @@ module TokenValidatable
   included do
     before_action :validate_token
   end
-  
+
   def generate_token(options={})
     Token.new.generate(options)
   end
-  
+
   private
 
   def validate_token

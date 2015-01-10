@@ -122,6 +122,7 @@ ActiveRecord::Schema.define(version: 20141223055519) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name_zh_tw"
+    t.boolean  "is_item_type_node", default: false, null: false
   end
 
   create_table "items", force: true do |t|

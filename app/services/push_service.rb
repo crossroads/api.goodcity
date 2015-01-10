@@ -18,7 +18,7 @@ class PushService
     end
 
     [channel].flatten.in_groups_of(10, false) do |subarray_of_channels|
-      Pusher.trigger(subarray_of_channels, event, data)
+      PusherJob.perform_later(subarray_of_channels, event, data.to_json)
     end
   end
 
