@@ -3,11 +3,12 @@ class AzureNotificationsService
     tags = tags.join(' || ') if tags.instance_of?(Array)
     headers = {
       'ServiceBusNotification-Format' => 'gcm',
-      'ServiceBusNotification-Tags' => tags
+      'ServiceBusNotification-Tags' => tags,
+      'Content-Type' => 'application/json;charset=utf-8'
     }
     body = { data: data }
     body[:collapse_key] = collapse_key unless collapse_key.nil?
-    send :post, 'messages', body: body, headers: headers
+    send :post, 'messages', body: body.to_json, headers: headers
   end
 
   def register_device(handle, tags)
