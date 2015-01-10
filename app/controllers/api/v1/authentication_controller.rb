@@ -158,7 +158,7 @@ module Api::V1
     def register_device
       authorize!(:register, :device)
       render text: "Only 'gcm' platform is supported at this stage", status: 400 if params[:platform] != 'gcm'
-      AzureNotificationsService.new.register_device params[:handle], Channel.user(current_user)
+      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user))
     end
 
     private
