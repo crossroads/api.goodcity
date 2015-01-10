@@ -1,8 +1,8 @@
 class AzureNotificationsService
-  def notify(platform, tags, data, collapse_key: nil)
+  def notify(tags, data, collapse_key: nil)
     tags = tags.join(' || ') if tags.instance_of?(Array)
     headers = {
-      'ServiceBusNotification-Format' => platform,
+      'ServiceBusNotification-Format' => 'gcm',
       'ServiceBusNotification-Tags' => tags
     }
     body = { data: data }
@@ -10,13 +10,22 @@ class AzureNotificationsService
     send :post, 'messages', body: body, headers: headers
   end
 
-  def register_device(handle, platform, tags)
-    res = send :get, "registrations?$filter=GcmRegistrationId eq '#{handle}'"
-    res.decoded.each {|r| send :delete, 'registrations/#{r.id}'}
-    res = send :post, 'registrationIDs'
-    # Content-Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>
-    regId = res[:headers]['Content-Location'].split('/').last
-    send :put, 'registrations/#{regId}', body: {Handle: handle, Platform: platform, Tags: tags}
+  def register_device(handle, tags)
+    res = send :get, "registrations?$filter=#{URI::encode("GcmRegistrationId eq '#{handle}'")}"
+    Nokogiri::XML(res.decoded).css('entry title').each {|n| send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}}
+    # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
+    regId = res.headers['location'].split('/').last.split('?').first
+    body =
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+      <entry xmlns=\"http://www.w3.org/2005/Atom\">
+          <content type=\"application/xml\">
+              <GcmRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
+                  <Tags>#{tags.join(', ')}</Tags>
+                  <GcmRegistrationId>#{handle}</GcmRegistrationId>
+              </GcmRegistrationDescription>
+          </content>
+      </entry>"
+    send :put, "registrations/#{regId}", body: body
   end
 
   def send(method, resource, options = {})

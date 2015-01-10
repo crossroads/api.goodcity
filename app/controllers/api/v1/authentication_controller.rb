@@ -155,8 +155,10 @@ module Api::V1
     api :POST, "/v1/auth/register_device", "Register a mobile device to receive notifications"
     param :handle, String, desc: "The registration id for the push messaging service for the platform i.e. gcm registration id for android"
     param :platform, String, desc: "The azure notification platform name, this should be `gcm` for android"
-    def register_device(handle, platform)
-      AzureNotificationsService.new.register_device handle, platform, Channel.user(current_user)
+    def register_device
+      authorize!(:register, :device)
+      render text: "Only 'gcm' platform is supported at this stage", status: 400 if params[:platform] != 'gcm'
+      AzureNotificationsService.new.register_device params[:handle], Channel.user(current_user)
     end
 
     private

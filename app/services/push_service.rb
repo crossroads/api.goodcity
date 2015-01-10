@@ -32,11 +32,11 @@ class PushService
 
     @channel = channel
     @event = "notification"
-    @data = data.to_json
+    @data = data
     notify
 
     if Channel.user_channel?(channel)
-      AzureNotificationsService.new.notify 'gcm', channel, {data: data}
+      AzureNotificationsService.new.notify channel, {data: data}
     end
   end
 end
