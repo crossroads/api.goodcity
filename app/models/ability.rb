@@ -76,6 +76,9 @@ class Ability
       can [:index, :show, :update], User if reviewer or supervisor
       can :current_user_profile, User
 
+      # Auth
+      can :register, :device
+
       # Taxonomies
       can [:index, :show], DonorCondition
       can [:index, :show], ItemType

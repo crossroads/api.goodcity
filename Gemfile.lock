@@ -29,6 +29,12 @@ GIT
       active_model_serializers (~> 0.8.0)
       postgres_ext (~> 2.1)
 
+GIT
+  remote: https://github.com/maccman/nestful.git
+  revision: c901ed0be51049250bce16642a48095cb778f37c
+  specs:
+    nestful (1.0.9)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -151,15 +157,17 @@ GEM
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
     mime-types (2.4.3)
+    mini_portile (0.6.2)
     minitest (5.5.0)
     multi_json (1.10.1)
     nenv (0.1.1)
-    nestful (1.0.7)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
     netrc (0.10.1)
     newrelic_rpm (3.9.8.273)
+    nokogiri (1.6.5)
+      mini_portile (~> 0.6.0)
     oj (2.10.2)
     oj_mimic_json (1.0.1)
     pg (0.17.1)
@@ -322,8 +330,9 @@ DEPENDENCIES
   guard-rspec
   http_accept_language
   jwt (~> 0.1.13)
-  nestful
+  nestful!
   newrelic_rpm
+  nokogiri
   oj (= 2.10.2)
   oj_mimic_json
   paranoia!
