@@ -11,7 +11,7 @@ class Offer < ActiveRecord::Base
   has_one  :delivery, dependent: :destroy
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
-  has_many :messages
+  has_many :messages, dependent: :destroy
   has_many :users, through: :subscriptions
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
