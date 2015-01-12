@@ -94,9 +94,10 @@ describe "Token", :type => :model do
   end
 
   context "configuration" do
-    before{ allow(token).to receive(:jwt_config).
-      and_return({ "secret_key" => "123456", "hmac_sha_algo" => "SECURE", "issuer" => "ME" })
-    }
+    before do
+      allow(token).to receive(:jwt_config).
+      and_return( { "secret_key" => "123456", "hmac_sha_algo" => "SECURE", "issuer" => "ME" } )
+    end
     it{ expect(token.send(:secret_key)).to eql("123456") }
     it{ expect(token.send(:hmac_sha_algo)).to eql("SECURE") }
     it{ expect(token.send(:issuer)).to eql("ME") }
