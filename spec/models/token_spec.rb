@@ -14,9 +14,9 @@ describe "Token", :type => :model do
   context "generate" do
     it "with no extra parameters" do
       expect(JWT).to receive(:encode) do |args, secret_key, hmac_sha_algo|
-        expect( args["iss"] ).to eql( Rails.application.secrets.jwt["issuer"] )
-        expect( secret_key ).to eql( Rails.application.secrets.jwt["secret_key"] )
-        expect( hmac_sha_algo  ).to eql( Rails.application.secrets.jwt["hmac_sha_algo"] )
+        expect(args["iss"]).to eql(Rails.application.secrets.jwt["issuer"])
+        expect(secret_key).to eql(Rails.application.secrets.jwt["secret_key"])
+        expect(hmac_sha_algo ).to eql(Rails.application.secrets.jwt["hmac_sha_algo"])
       end
       token.generate
     end
@@ -36,8 +36,10 @@ describe "Token", :type => :model do
 
   context "token" do
     it "should call JWT.decode" do
-      expect(JWT).to receive(:decode).with(token.send(:jwt_string),
-        token.send(:secret_key), true, verify_expiration: false)
+      expect(JWT).to receive(:decode).with(
+        token.send(:jwt_string),
+        token.send(:secret_key),
+        true, verify_expiration: false)
       token.send(:token)
     end
   end
@@ -95,10 +97,11 @@ describe "Token", :type => :model do
     before{ allow(token).to receive(:jwt_config).and_return({
       "secret_key" => "123456",
       "hmac_sha_algo" => "SECURE",
-      "issuer" => "ME" }) }
-    it{ expect( token.send(:secret_key) ).to eql( "123456" ) }
-    it{ expect( token.send(:hmac_sha_algo) ).to eql( "SECURE" ) }
-    it{ expect( token.send(:issuer) ).to eql( "ME" ) }
+      "issuer" => "ME" })
+    }
+    it{ expect(token.send(:secret_key)).to eql("123456") }
+    it{ expect(token.send(:hmac_sha_algo)).to eql("SECURE") }
+    it{ expect(token.send(:issuer)).to eql( "ME") }
   end
 
 end
