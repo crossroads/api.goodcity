@@ -5,13 +5,14 @@ class ApplicationController < ActionController::API
 
   check_authorization
 
-  before_action :set_locale, :current_user # User.current is required to be set for OffersController.before_filter
+  # User.current is required to be set for OffersController.before_filter
+  before_action :set_locale, :current_user
   helper_method :current_user
 
   private
 
   def set_locale
-    I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales) || 'en'
+    I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales) || "en"
   end
 
   def current_user
@@ -19,7 +20,7 @@ class ApplicationController < ActionController::API
       user = nil
       User.current_user = nil
       if token.valid?
-        user_id = token.data[0]['user_id']
+        user_id = token.data[0]["user_id"]
         user = User.find_by_id(user_id) if user_id.present?
         User.current_user = user
       end

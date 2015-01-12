@@ -42,7 +42,8 @@ class Token
 
   # Decode the json web token when we receive it from the client
   def token
-    @token ||= JWT.decode(jwt_string, secret_key, true, verify_expiration: false)
+    @token ||= JWT.decode(jwt_string, secret_key, true,
+      verify_expiration: false)
   end
 
   # Is the JWT token authentic?

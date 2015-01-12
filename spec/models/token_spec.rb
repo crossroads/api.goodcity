@@ -16,21 +16,21 @@ describe "Token", :type => :model do
       expect(JWT).to receive(:encode) do |args, secret_key, hmac_sha_algo|
         expect(args["iss"]).to eql(Rails.application.secrets.jwt["issuer"])
         expect(secret_key).to eql(Rails.application.secrets.jwt["secret_key"])
-        expect(hmac_sha_algo ).to eql(Rails.application.secrets.jwt["hmac_sha_algo"])
+        expect(hmac_sha_algo).to eql(Rails.application.secrets.jwt["hmac_sha_algo"])
       end
       token.generate
     end
     it "with extra parameters to encode" do
       expect(JWT).to receive(:encode) do |args, secret_key, hmac_sha_algo|
-        expect( args["user_id"] ).to eql( "123" )
+        expect(args["user_id"]).to eql("123")
       end
-      token.generate( user_id: "123" )
+      token.generate(user_id: "123")
     end
   end
 
   context "jwt_string" do
     it "should truncate 'Bearer '" do
-      expect(token.send(:jwt_string)).to eql( bearer.sub('Bearer ', '') )
+      expect(token.send(:jwt_string)).to eql(bearer.sub('Bearer ', ''))
     end
   end
 
@@ -94,14 +94,12 @@ describe "Token", :type => :model do
   end
 
   context "configuration" do
-    before{ allow(token).to receive(:jwt_config).and_return({
-      "secret_key" => "123456",
-      "hmac_sha_algo" => "SECURE",
-      "issuer" => "ME" })
+    before{ allow(token).to receive(:jwt_config).
+      and_return({ "secret_key" => "123456", "hmac_sha_algo" => "SECURE", "issuer" => "ME" })
     }
     it{ expect(token.send(:secret_key)).to eql("123456") }
     it{ expect(token.send(:hmac_sha_algo)).to eql("SECURE") }
-    it{ expect(token.send(:issuer)).to eql( "ME") }
+    it{ expect(token.send(:issuer)).to eql("ME") }
   end
 
 end
