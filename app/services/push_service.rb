@@ -16,7 +16,6 @@ class PushService
     %w(channel event data).each do |opt|
       raise PushServiceError, "'#{opt}' has not been set" if send(opt).blank?
     end
-
     [channel].flatten.in_groups_of(10, false) do |subarray_of_channels|
       PusherJob.perform_later(subarray_of_channels, event, data.to_json)
     end

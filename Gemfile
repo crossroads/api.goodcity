@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 4.1.0'
-gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
+gem 'rails', '~> 4.2.0'
+# gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
 gem 'rails-api'
 gem 'pg'
 
@@ -14,15 +14,18 @@ gem 'postgres_ext', '~> 2.4.0.beta.1'
 gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
-gem 'paranoia', github: 'radar/paranoia', ref: 'fe70628'
-
+gem 'paranoia', '~> 2.0.4'
+# , github: 'radar/paranoia', ref: 'fe70628'
+# Shivani - Should try config_for to load the .env
 gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
+
 gem 'cancancan'
 gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
 gem 'ffaker'
 gem 'execjs'
-gem 'jwt', '~> 0.1.13'
+# shivani - changed from jwt 0.1.13 to 1.2.0
+gem 'jwt', '~> 1.2.0'
 gem 'rack-cors'
 gem 'rack-protection'
 gem 'state_machine'
