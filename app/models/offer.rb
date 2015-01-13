@@ -42,7 +42,7 @@ class Offer < ActiveRecord::Base
   end
 
   state_machine :state, initial: :draft do
-    state :submitted, :under_review, :reviewed, :scheduled
+    state :submitted, :under_review, :reviewed, :scheduled, :closed
 
     event :submit do
       transition :draft => :submitted
