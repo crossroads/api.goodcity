@@ -20,7 +20,7 @@ describe TwilioService do
     it "should send the SMS via Twilio" do
       allow(twilio).to receive(:allowed_to_send?).and_return(true)
       allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
-      body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy donating\nyour quality goods. (If you didn’t request this message, please ignore)\n"
+      body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy donating\nyour quality goods. (If you didn't request this message, please ignore)\n"
       expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
       twilio.sms_verification_pin
     end
