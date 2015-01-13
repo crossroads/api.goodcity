@@ -14,6 +14,7 @@ class AzureNotificationsService
   def register_device(handle, tags)
     res = send :get, "registrations?$filter=#{URI::encode("GcmRegistrationId eq '#{handle}'")}"
     Nokogiri::XML(res.decoded).css('entry title').each {|n| send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}}
+    res = send :post, 'registrationIDs'
     # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
     regId = res.headers['location'].split('/').last.split('?').first
     body =
@@ -44,7 +45,7 @@ class AzureNotificationsService
     target_uri = CGI.escape(url.downcase).gsub('+', '%20').downcase
     expires = Time.now.to_i + lifetime
     to_sign = "#{target_uri}\n#{expires}"
-    signature = CGI.escape(Base64.strict_encode64(Digest::HMAC.digest(to_sign, settings['key'], Digest::SHA256))).gsub('+', '%20')
+    signature = CGI.escape(Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', settings['key'], to_sign))).gsub('+', '%20')
     "SharedAccessSignature sr=#{target_uri}&sig=#{signature}&se=#{expires}&skn=#{settings['key_name']}"
   end
 
