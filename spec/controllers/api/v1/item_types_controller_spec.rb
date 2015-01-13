@@ -14,7 +14,7 @@ RSpec.describe Api::V1::ItemTypesController, type: :controller do
 
       get :index
       expect(response.status).to eq(200)
-      expect(subject["item_types"].length).to eq(3)
+      expect(subject["item_types"].size).to eq(3)
     end
   end
 end
