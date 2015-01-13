@@ -8,7 +8,7 @@ class EmailFlowdockService
 
   def send_otp
     token = @user.most_recent_token
-    FlowdockNotificationJob.perform_later(token)
+    FlowdockNotification.otp(token).deliver_later
   end
 
 end
