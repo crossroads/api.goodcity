@@ -55,9 +55,7 @@ describe PushService do
       entity = { dummy: "entity", entity: "dummy"}
 
       expect(service).to receive(:notify)
-
       service.send_notification(text: text, entity_type: entity_type, entity: entity, channel: [one_channel])
-
       expect(service.data[:text]).to eq(text)
       expect(service.data[:entity_type]).to eq(entity_type)
       expect(service.data[:entity].as_json).to eq(entity.as_json)

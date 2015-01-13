@@ -19,14 +19,27 @@ class Offer < ActiveRecord::Base
   accepts_nested_attributes_for :subscriptions
 
   scope :with_eager_load, -> {
-    includes ( [:created_by, :reviewed_by, { delivery: [:schedule, :contact] }, { messages: :sender },
-      { items: [:images, :packages, { messages: :sender }] }
-    ])
+    includes (
+      [
+        :created_by, :reviewed_by,
+        { delivery: [:schedule, :contact] },
+        { messages: :sender },
+        { items: [:images, :packages, { messages: :sender } ] }
+      ]
+    )
   }
 
   scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
 
   before_create :set_language
+  after_initialize :set_initial_state
+
+  # Workaround to set initial state fror the state_machine
+  # StateMachine has Issue with rails 4.2, it does not set initial state by default
+  # refer - https://github.com/pluginaweek/state_machine/issues/334
+  def set_initial_state
+    self.state ||= :draft
+  end
 
   state_machine :state, initial: :draft do
     state :submitted, :under_review, :reviewed, :scheduled
