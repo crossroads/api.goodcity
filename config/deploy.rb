@@ -39,7 +39,7 @@ set :bundle_binstubs, nil
 # How many processes do we want? Each one has 20 threads in production.
 set :sidekiq_processes, 2
 
-set :rvm_ruby_version, '2.1.5'
+set :rvm_ruby_version, '2.2'
 
 namespace :deploy do
 
