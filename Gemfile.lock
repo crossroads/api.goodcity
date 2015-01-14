@@ -21,6 +21,12 @@ GIT
       active_model_serializers (~> 0.8.0)
       postgres_ext (~> 2.1)
 
+GIT
+  remote: https://github.com/maccman/nestful.git
+  revision: c901ed0be51049250bce16642a48095cb778f37c
+  specs:
+    nestful (1.0.9)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -163,7 +169,6 @@ GEM
     minitest (5.5.0)
     multi_json (1.10.1)
     nenv (0.1.1)
-    nestful (1.0.7)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
@@ -354,7 +359,9 @@ DEPENDENCIES
   guard-rspec
   http_accept_language
   jwt (~> 1.2.0)
+  nestful!
   newrelic_rpm
+  nokogiri
   oj (= 2.10.2)
   oj_mimic_json
   paranoia (~> 2.0.4)

@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
+  before { allow_any_instance_of(PushService).to receive(:send_notification) }
   let(:user) { create(:user_with_token) }
   let(:reviewer) { create(:user, :reviewer) }
   let(:offer) { create(:offer, created_by: user) }
