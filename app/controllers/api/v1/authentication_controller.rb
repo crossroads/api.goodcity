@@ -152,6 +152,15 @@ module Api::V1
       render json: current_user, serializer: Api::V1::UserProfileSerializer
     end
 
+    api :POST, "/v1/auth/register_device", "Register a mobile device to receive notifications"
+    param :handle, String, desc: "The registration id for the push messaging service for the platform i.e. gcm registration id for android"
+    param :platform, String, desc: "The azure notification platform name, this should be `gcm` for android"
+    def register_device
+      authorize!(:register, :device)
+      render text: "Only 'gcm' platform is supported at this stage", status: 400 if params[:platform] != 'gcm'
+      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user))
+    end
+
     private
 
     # Generate a token that contains the otp_auth_key.

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       post "auth/signup" => "authentication#signup"
       post "auth/verify" => "authentication#verify"
       post "auth/send_pin" => "authentication#send_pin"
+      post "auth/register_device" => "authentication#register_device"
       get "auth/current_user_profile" => "authentication#current_user_profile"
 
       get  "districts" => "districts#index"
