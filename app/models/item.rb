@@ -45,10 +45,16 @@ class Item < ActiveRecord::Base
     event :submit do
       transition :draft => :submitted
     end
+
+    after_transition on: [:accept, :reject], do: :assign_reviewer
   end
 
   def self.update_saleable
     update_all(saleable: true)
+  end
+
+  def assign_reviewer
+    offer.reviewed_by || offer.start_review(User.current_user)
   end
 
   private
