@@ -11,7 +11,8 @@ module PushUpdates
     # current_user can be nil if accessed from rails console, tests or db seed
     return if User.current_user.nil?
 
-    serializer = "Api::V1::#{self.class}Serializer".constantize.new(self, {exclude: self.class.reflections.keys})
+    exclude_relationships = {exclude: self.class.reflections.keys.map(&:to_sym)}
+    serializer = "Api::V1::#{self.class}Serializer".constantize.new(self, exclude_relationships)
     user = Api::V1::UserSerializer.new(User.current_user)
     type = self.class.name
     object = {}
