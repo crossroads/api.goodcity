@@ -21,6 +21,7 @@ module Api::V1
 
       * {Login flowchart}[link:/doc/login_flowchart.svg]
       * {Registration flowchart}[link:/doc/registration_flowchart.svg]
+      * {Device registration}[link:/doc/azure_notification_hub.png]
 
       ==JWT Token
       When sending the JWT token to authenticate each request, place it in
