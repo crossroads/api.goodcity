@@ -33,6 +33,11 @@ module Api::V1
       render json: @packages, each_serializer: serializer
     end
 
+    api :GET, '/v1/packages/1', "Details of a package"
+    def show
+      render json: @package, serializer: serializer
+    end
+
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
