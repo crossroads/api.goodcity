@@ -43,18 +43,29 @@ end
 # This is for dummy data
 unless ENV['LIVE'] == "true"
 
-  # A hardcoded list of donors
-  donor_mobiles = %w( +85251111111 +85251111112 +85251111113 +85251111114 )
+  donor_attributes = [
+    { mobile: "+85251111111", first_name: "David", last_name: "Dara51" },
+    { mobile: "+85251111112", first_name: "Daniel", last_name: "Dell52" },
+    { mobile: "+85251111113", first_name: "Dakota", last_name: "Deryn53" },
+    { mobile: "+85251111114", first_name: "Delia", last_name: "Devon54" },
+  ]
+  donor_attributes.each {|attr| FactoryGirl.create(:user, attr) }
 
-  # A hardcoded list of reviewers
-  reviewer_mobiles = %w( +85261111111 +85261111112 +85261111113 +85261111114 )
+  reviewer_attributes = [
+    { mobile: "+85261111111", first_name: "Rachel", last_name: "Riley61" },
+    { mobile: "+85261111112", first_name: "Robyn", last_name: "Raina62" },
+    { mobile: "+85261111113", first_name: "Rafael", last_name: "Ras63" },
+    { mobile: "+85261111114", first_name: "Raj", last_name: "Rakim64" },
+  ]
+  reviewer_attributes.each {|attr| FactoryGirl.create(:user, :reviewer, attr) }
 
-  # A hardcoded list of supervisors
-  supervisor_mobiles = %w( +85291111111 +85291111112 +85291111113 +85291111114 )
-
-  donor_mobiles.each {|mobile| FactoryGirl.create(:user, mobile: mobile) }
-  reviewer_mobiles.each {|mobile| FactoryGirl.create(:user, :reviewer, mobile: mobile) }
-  supervisor_mobiles.each {|mobile| FactoryGirl.create(:user, :supervisor, mobile: mobile) }
+  supervisor_attributes = [
+    { mobile: "+85291111111", first_name: "Sarah", last_name: "Sahn91" },
+    { mobile: "+85291111112", first_name: "Sally", last_name: "Salwa92" },
+    { mobile: "+85291111113", first_name: "Saad", last_name: "Safa93" },
+    { mobile: "+85291111114", first_name: "Scott", last_name: "Sandro94" },
+  ]
+  supervisor_attributes.each {|attr| FactoryGirl.create(:user, :supervisor, attr) }
 
   10.times { FactoryGirl.create :offer, :with_items, :with_messages, created_by: User.donors.sample }
 
