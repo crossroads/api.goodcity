@@ -17,11 +17,9 @@ module PushUpdates
     type = self.class.name
     object = {}
 
-    if operation == :create
-      object[type] = serializer
-    elsif operation == :update
+    if operation == :create || operation == :update
       object[type] = {id:self.id}
-      self.changed
+      self.attributes.keys
         .find_all{|i| serializer.respond_to?(i) || serializer.respond_to?(i.sub('_id', ''))}
         .map{|i| i.to_sym}
         .each{|i| object[type][i] = self[i]}
