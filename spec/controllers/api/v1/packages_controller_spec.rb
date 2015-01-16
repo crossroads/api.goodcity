@@ -23,11 +23,20 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :index
       expect(response.status).to eq(200)
     end
-    it "return serialized offers", :show_in_doc do
+    it "return serialized packages", :show_in_doc do
       3.times{ create :package }
       get :index
       body = JSON.parse(response.body)
-      expect( body["packages"].length ).to eq(3)
+      expect( body["packages"].size ).to eq(3)
+    end
+  end
+
+  describe "GET package" do
+    before { generate_and_set_token(user) }
+    it "return serialized package", :show_in_doc do
+      get :show, id: package.id
+      expect(response.status).to eq(200)
+      expect(subject).to eq(serialized_package_json)
     end
   end
 
