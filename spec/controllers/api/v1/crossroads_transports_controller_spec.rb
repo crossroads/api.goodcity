@@ -4,7 +4,8 @@ RSpec.describe Api::V1::CrossroadsTransportsController, type: :controller do
   let(:reviewer) { create(:user, :reviewer) }
 
   describe "GET crossroads_transport" do
-    let!(:crossroads_transports) { create_list(:crossroads_transport, 3) }
+    let!(:crossroads_transport1) { create(:crossroads_transport, name_en: "1/8 Truck") }
+    let!(:crossroads_transport2) { create(:crossroads_transport, name_en: "7/8 Truck") }
     before { generate_and_set_token(reviewer) }
 
     it "returns 200", :show_in_doc do
@@ -15,7 +16,7 @@ RSpec.describe Api::V1::CrossroadsTransportsController, type: :controller do
     it "return serialized crossroads_transport" do
       get :index
       body = JSON.parse(response.body)
-      expect(body['crossroads_transports'].length).to eq(3)
+      expect(body['crossroads_transports'].length).to eq(2)
     end
   end
 end
