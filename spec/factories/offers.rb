@@ -14,6 +14,11 @@ FactoryGirl.define do
     reviewed_by_id nil
     reviewed_at    nil
 
+    trait :submitted do
+      submitted_at    { Time.now }
+      state           'submitted'
+    end
+
     trait :with_items do
       transient do
         items_count 1
