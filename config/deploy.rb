@@ -55,7 +55,7 @@ namespace :deploy do
 end
 
 # cap production invoke[db:migrate]
-# cap production invoke[db:reset]
+# cap production invoke[db:reset] to load schema and seed data
 desc "Invoke a rake command on the remote server: cap production invoke[db:migrate]"
 task :invoke, [:command] => 'deploy:set_rails_env' do |task, args|
   on primary(:app) do
