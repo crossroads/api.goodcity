@@ -26,13 +26,11 @@ FactoryGirl.define do
   end
 
   sequence :gogovan_transports do |n|
-    gogovan_options = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
-    gogovan_options[rand(1..gogovan_options.size)]
+    @gogovan_options = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
   end
 
   sequence :crossroads_transports do |n|
-    crossroads_options = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
-    crossroads_options[rand(1..crossroads_options.size)]
+    @crossroads_options = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
   end
 
   sequence :random_chinese_string do |n|

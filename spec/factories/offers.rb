@@ -14,9 +14,6 @@ FactoryGirl.define do
     reviewed_by_id nil
     reviewed_at    nil
 
-    association    :gogovan_transport
-    association    :crossroads_transport
-
     trait :with_items do
       transient do
         items_count 1
@@ -38,6 +35,11 @@ FactoryGirl.define do
     trait :paranoid do
       state      "submitted"
       items      { [create(:item)] }
+    end
+
+    trait :with_transport do
+      association    :gogovan_transport
+      association    :crossroads_transport
     end
   end
 
