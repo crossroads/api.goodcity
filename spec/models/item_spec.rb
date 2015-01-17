@@ -42,4 +42,20 @@ RSpec.describe Item, type: :model do
       end
     end
   end
+
+  describe "Instance Methods" do
+    let!(:offer) { create :offer, state: "submitted" }
+    let!(:item)  { create :item, offer: offer }
+    let!(:reviewer) { create :user, :reviewer }
+    before { User.current_user = reviewer }
+
+    describe "assign_reviewer" do
+      it "should update all items of offer" do
+        expect{
+          item.accept
+        }.to change(offer, :reviewed_by).to(reviewer)
+        expect(offer.state).to eq("under_review")
+      end
+    end
+  end
 end
