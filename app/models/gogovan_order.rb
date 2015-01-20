@@ -10,6 +10,7 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def self.place_order(user, attributes)
+    attributes = set_vehicle_type(attributes) if attributes['offerId']
     Gogovan.new(user, attributes).get_order_price
   end
 
@@ -23,6 +24,12 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   private
+
+  def self.set_vehicle_type(attributes)
+    offer = Offer.find(attributes['offerId'])
+    attributes['vehicle'] = offer.gogovan_transport.vehical_tag
+    attributes
+  end
 
   def cancel_order
     Gogovan.cancel_order(booking_id)

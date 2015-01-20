@@ -13,7 +13,7 @@ module Api::V1
     end
 
     api :POST, '/v1/gogovan_orders/calculate_price', "Calculate Price"
-    param :pickupTime, String, desc: "Scheduled time for delivery", required: true
+    param :pickupTime, String, desc: "Scheduled time for delivery"
     param :districtId, String, desc: "Id of the district", required: true
     param :needEnglish, ['true', 'false'], desc: "Speak English?"
     param :needCart, ['true', 'false'], desc: "Borrow Trolley(s)?"
@@ -42,7 +42,8 @@ module Api::V1
     private
 
     def order_params
-      params.permit(["pickupTime", "districtId", "needEnglish", "needCart", "needCarry"])
+      params.permit(["pickupTime", "districtId", "needEnglish", "needCart",
+        "needCarry", "offerId"])
     end
 
     # hash with keys in lower-camelcase form
