@@ -13,11 +13,12 @@ module Api::V1
     end
 
     api :POST, '/v1/gogovan_orders/calculate_price', "Calculate Price"
-    param :pickupTime, String, desc: "Scheduled time for delivery", required: true
+    param :pickupTime, String, desc: "Scheduled time for delivery"
     param :districtId, String, desc: "Id of the district", required: true
     param :needEnglish, ['true', 'false'], desc: "Speak English?"
     param :needCart, ['true', 'false'], desc: "Borrow Trolley(s)?"
     param :needCarry, ['true', 'false'], desc: "Porterage?"
+    param :offerId, String, desc: "Id of the offer", required: true
     def calculate_price
       order_price = GogovanOrder.place_order(current_user, order_params)
       render json: order_price.to_json
@@ -32,6 +33,7 @@ module Api::V1
       param :need_english, [true, false], desc: "Speak English?"
       param :need_cart, [true, false], desc: "Borrow Trolley(s)?"
       param :need_carry, [true, false], desc: "Porterage?"
+      param :offer_id, Integer, desc: "Id of the offer", required: true
     end
     def confirm_order
       attributes = params_hash(params["gogovan_order"])
@@ -42,7 +44,8 @@ module Api::V1
     private
 
     def order_params
-      params.permit(["pickupTime", "districtId", "needEnglish", "needCart", "needCarry"])
+      params.permit(["pickupTime", "districtId", "needEnglish", "needCart",
+        "needCarry", "offerId"])
     end
 
     # hash with keys in lower-camelcase form
