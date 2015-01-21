@@ -79,6 +79,13 @@ class User < ActiveRecord::Base
     TwilioService.new(self).sms_verification_pin
   end
 
+  def channels
+    channels = Channel.user(self)
+    channels += Channel.reviewer if reviewer?
+    channels += Channel.supervisor if supervisor?
+    channels
+  end
+
   def self.current_user
     Thread.current[:current_user]
   end
