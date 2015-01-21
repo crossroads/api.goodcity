@@ -10,6 +10,7 @@ describe Gogovan do
   let(:needCart)    { "true" }
   let(:needCarry)   { "true" }
   let(:districtId)  { (create :district).id }
+  let(:vehicle)     { "van" }
 
   let(:attributes) {
     {
@@ -19,7 +20,8 @@ describe Gogovan do
       'needEnglish' => needEnglish,
       'needCarry' => needCarry,
       'needCart' => needCart,
-      'districtId' => districtId
+      'districtId' => districtId,
+      'vehicle' => vehicle
     }
   }
 
@@ -50,6 +52,9 @@ describe Gogovan do
     end
     it "districtId" do
       expect(gogovan_order.district_id).to eql(districtId)
+    end
+    it "vehicle" do
+      expect(gogovan_order.vehicle).to eql(vehicle)
     end
   end
 

@@ -5,13 +5,15 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
   let(:user) { create(:user_with_token) }
   let(:gogovan_order) { create(:gogovan_order) }
   let(:serialized_order) { Api::V1::GogovanOrderSerializer.new(gogovan_order) }
+  let(:offer) { create(:offer, :with_transport) }
   let(:order_attributes) {
     {
       "pickupTime" => "Wed Nov 26 2014 21:30:00 GMT+0530 (IST)",
       "districtId" => "11",
       "needEnglish" => "true",
       "needCart" => "true",
-      "needCarry" => "true"
+      "needCarry" => "true",
+      "offerId" => "#{offer.id}"
     }
   }
 
@@ -38,7 +40,8 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
         "district_id" => 55,
         "need_english" => true,
         "need_cart" => true,
-        "need_carry" => true }
+        "need_carry" => true,
+        "offer_id" => offer.id }
     }
   }
 

@@ -1,17 +1,18 @@
 class Gogovan
 
   attr_accessor :user, :name, :mobile, :time, :need_english,
-    :need_cart, :need_carry, :district_id
+    :need_cart, :need_carry, :district_id, :vehicle
 
   def initialize(user, options = {})
     @user         = user
     @name         = options['name']
     @mobile       = options['mobile']
-    @time         = options['pickupTime']
+    @time         = options['pickupTime'] || get_pickup_date
     @need_english = options['needEnglish']
     @need_cart    = options['needCart']
     @need_carry   = options['needCarry']
     @district_id  = options['districtId']
+    @vehicle      = options['vehicle']
   end
 
   def initiate_order
@@ -38,7 +39,7 @@ class Gogovan
         name:           @name || @user.full_name,
         phone_number:   @mobile || @user.mobile,
         pickup_time:    @time,
-        vehicle:        'van',
+        vehicle:        @vehicle,
         locations:      District.location_json(@district_id),
         extra_requirements: {
           need_english: @need_english,
@@ -47,5 +48,10 @@ class Gogovan
         }
       }
     }
+  end
+
+  def get_pickup_date
+    next_available_date = DateSet.new().available_dates.first
+    next_available_date.beginning_of_day + 12.hours
   end
 end
