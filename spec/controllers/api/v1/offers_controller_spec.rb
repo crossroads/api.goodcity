@@ -5,7 +5,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:user) { create(:user_with_token) }
   let(:reviewer) { create(:user, :reviewer) }
-  let(:offer) { create(:offer, created_by: user) }
+  let(:offer) { create(:offer, :with_transport, created_by: user) }
   let(:submitted_offer) { create(:offer, created_by: user, state: 'submitted') }
   let(:in_review_offer) { create(:offer, created_by: user, state: 'under_review') }
   let(:serialized_offer) { Api::V1::OfferSerializer.new(offer) }
