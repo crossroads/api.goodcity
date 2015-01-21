@@ -18,6 +18,7 @@ module Api::V1
     param :needEnglish, ['true', 'false'], desc: "Speak English?"
     param :needCart, ['true', 'false'], desc: "Borrow Trolley(s)?"
     param :needCarry, ['true', 'false'], desc: "Porterage?"
+    param :offerId, String, desc: "Id of the offer", required: true
     def calculate_price
       order_price = GogovanOrder.place_order(current_user, order_params)
       render json: order_price.to_json
@@ -32,6 +33,7 @@ module Api::V1
       param :need_english, [true, false], desc: "Speak English?"
       param :need_cart, [true, false], desc: "Borrow Trolley(s)?"
       param :need_carry, [true, false], desc: "Porterage?"
+      param :offer_id, Integer, desc: "Id of the offer", required: true
     end
     def confirm_order
       attributes = params_hash(params["gogovan_order"])

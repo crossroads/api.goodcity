@@ -15,6 +15,7 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def self.book_order(user, attributes)
+    attributes = set_vehicle_type(attributes) if attributes['offerId']
     book_order = Gogovan.new(user, attributes).confirm_order
     save_booking(book_order['id'])
   end
