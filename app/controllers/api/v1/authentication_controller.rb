@@ -162,6 +162,14 @@ module Api::V1
       AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user))
     end
 
+    api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socket.io rooms the user can listen to"
+    error 401, "Unauthorized"
+    error 500, "Internal Server Error"
+    def current_user_rooms
+      authorize!(:current_user_profile, User)
+      render json: current_user.channels, root: false
+    end
+
     private
 
     # Generate a token that contains the otp_auth_key.
