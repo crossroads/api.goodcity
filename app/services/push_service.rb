@@ -17,7 +17,7 @@ class PushService
       raise PushServiceError, "'#{opt}' has not been set" if send(opt).blank?
     end
 
-    PusherJob.perform_later(channel, event, data.to_json)
+    PusherJob.perform_later([channel].flatten, event, data.to_json)
   end
 
   # new offer to reviewers
