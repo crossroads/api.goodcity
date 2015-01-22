@@ -62,6 +62,7 @@ group :development do
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
     gem 'guard-rspec', require: false
+    gem 'foreman', require: false
   end
 end
 
