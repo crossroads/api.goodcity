@@ -1,5 +1,5 @@
 # GoodCity API
-[![Travis](https://travis-ci.org/crossroads/api.goodcity.svg?branch=master)](https://travis-ci.org/crossroads/api.goodcity)
+[![Circle CI](https://circleci.com/gh/crossroads/api.goodcity.svg?style=svg)](https://circleci.com/gh/crossroads/api.goodcity)
 [![Code Climate](https://codeclimate.com/github/crossroads/api.goodcity/badges/gpa.svg)](https://codeclimate.com/github/crossroads/api.goodcity)
 [![Test Coverage](https://codeclimate.com/github/crossroads/api.goodcity/badges/coverage.svg)](https://codeclimate.com/github/crossroads/api.goodcity)
 
@@ -9,8 +9,10 @@ It provides a set of database models, validations, relationships, tests and JSON
 
 ## Prerequisties
 
-* ruby 2.1.4 ([rvm](http://rvm.io/) can make this easy)
-* [postgresql](http://www.postgresql.org/) (v9.2 or greater)
+* ruby 2.2 ([rvm](http://rvm.io/) can make this easy)
+* [postgresql](http://www.postgresql.org/) (v9.4 or greater)
+* [socket.io-webservice](https://github.com/crossroads/socket.io-webservice)
+* redis
 
 ## Installation
 
@@ -55,6 +57,14 @@ You can also view the sidekiq jobs dashboard at ```/sidekiq``` but must first se
     SIDEKIQ_PASSWORD
 
 in the ```.env``` file. To prevent accidental data leakage, blank usernames and passwords are not accepted.
+
+## Foreman
+
+You can run each component individually (useful for debugging) or use ```foreman``` to get everything up and running at once.
+The following command will start the ```rails server```, ```sidekiq workers``` and the ```socket.io-webservice``` (assuming it is located in ../socket.io-webservice folder)
+
+    foreman start
+
 
 ## Deployment
 
