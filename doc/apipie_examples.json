@@ -1298,7 +1298,7 @@
   "offers#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/offers/1493",
+      "path" : "/api/v1/offers/247",
       "versions" : [
         "v1"
       ],
@@ -1309,16 +1309,16 @@
         "messages" : [],
         "user" : [
           {
-            "id" : 4620,
-            "first_name" : "Gilberto",
-            "last_name" : "Sporer",
+            "id" : 769,
+            "first_name" : "Jules",
+            "last_name" : "Vandervort",
             "permission_id" : null,
-            "image_id" : 4920
+            "image_id" : 817
           }
         ],
         "images" : [
           {
-            "id" : 4920,
+            "id" : 817,
             "favourite" : false,
             "cloudinary_id" : "1416902230/mmguhm3zdkonc2nynjue.jpg",
             "item_id" : null
@@ -1327,33 +1327,33 @@
         "deliveries" : [],
         "gogovan_transports" : [
           {
-            "id" : 585,
-            "name" : "Disable"
+            "id" : 23,
+            "name" : "5.5t Truck"
           }
         ],
         "crossroads_transports" : [
           {
-            "id" : 585,
-            "name" : "5/8 Truck"
+            "id" : 23,
+            "name" : "6/8 Truck",
+            "cost" : 450
           }
         ],
         "offer" : {
-          "id" : 1493,
+          "id" : 247,
           "language" : "en",
           "state" : "draft",
           "origin" : "web",
           "stairs" : false,
-          "parking" : false,
+          "parking" : true,
           "estimated_size" : "2",
-          "notes" : "A nesciunt amet ut odit quo molestiae tenetur. Voluptatem ad architecto vitae quis. Inventore perferendis cumque possimus veniam est cum tempore sint. Provident voluptas odio perspiciatis dicta iusto iure autem. Recusandae qui qui hic quia eos officiis voluptas vel.",
-          "created_by_id" : 4620,
-          "created_at" : "2015-01-21T19:27:04.540+08:00",
-          "updated_at" : "2015-01-21T19:27:04.540+08:00",
+          "notes" : "Officia sapiente sunt ea dolorum sint blanditiis voluptates. Ut et omnis sed provident iure error molestiae. Alias quae magni id et odit vel. Voluptatem nemo possimus saepe voluptatem consequatur adipisci.",
+          "created_by_id" : 769,
+          "created_at" : "2015-01-23T22:24:25.454+08:00",
+          "updated_at" : "2015-01-23T22:24:25.454+08:00",
           "submitted_at" : null,
           "reviewed_at" : null,
-          "gogovan_transport_id" : 585,
-          "crossroads_transport_id" : 585,
-          "crossroads_truck_cost" : 375,
+          "gogovan_transport_id" : 23,
+          "crossroads_transport_id" : 23,
           "item_ids" : [],
           "message_ids" : [],
           "reviewed_by_id" : null,
@@ -1362,74 +1362,6 @@
       },
       "code" : "200",
       "show_in_doc" : 1,
-      "recorded" : true
-    },
-    {
-      "verb" : "GET",
-      "path" : "/api/v1/offers/1494",
-      "versions" : [
-        "v1"
-      ],
-      "query" : "",
-      "request_data" : null,
-      "response_data" : {
-        "items" : [],
-        "messages" : [],
-        "user" : [
-          {
-            "id" : 4622,
-            "first_name" : "Keith",
-            "last_name" : "Haley",
-            "permission_id" : null,
-            "image_id" : 4922
-          }
-        ],
-        "images" : [
-          {
-            "id" : 4922,
-            "favourite" : false,
-            "cloudinary_id" : "1416817641/auyhxsvppoohnubhtdvp.jpg",
-            "item_id" : null
-          }
-        ],
-        "deliveries" : [],
-        "gogovan_transports" : [
-          {
-            "id" : 586,
-            "name" : "5.5t Truck"
-          }
-        ],
-        "crossroads_transports" : [
-          {
-            "id" : 586,
-            "name" : "5/8 Truck"
-          }
-        ],
-        "offer" : {
-          "id" : 1494,
-          "language" : "en",
-          "state" : "draft",
-          "origin" : "web",
-          "stairs" : false,
-          "parking" : true,
-          "estimated_size" : "1",
-          "notes" : "Magni culpa velit corporis consectetur voluptatem quam odit iusto. Autem corporis aut nihil optio facere sunt amet. Omnis facilis excepturi deleniti aspernatur sit. Magnam dolores ut ea molestiae.",
-          "created_by_id" : 4622,
-          "created_at" : "2015-01-21T19:27:04.796+08:00",
-          "updated_at" : "2015-01-21T19:27:04.796+08:00",
-          "submitted_at" : null,
-          "reviewed_at" : null,
-          "gogovan_transport_id" : 586,
-          "crossroads_transport_id" : 586,
-          "crossroads_truck_cost" : 375,
-          "item_ids" : [],
-          "message_ids" : [],
-          "reviewed_by_id" : null,
-          "delivery_id" : null
-        }
-      },
-      "code" : "200",
-      "show_in_doc" : 0,
       "recorded" : true
     }
   ],
