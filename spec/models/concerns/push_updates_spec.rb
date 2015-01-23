@@ -1,26 +1,31 @@
 require 'rails_helper'
 
 describe Offer do
-  let(:fake_service) {o = {}; o.define_singleton_method(:notify) {}; o}
   let(:user) {create :user}
   before {User.current_user = user}
-  subject {create :offer}
+  let(:offer) {create :offer}
 
   it 'update - only changed properties are included' do
-    expect(PushService).to receive(:new) do |args|
-      expect(args[:data][:item]['Offer'].to_json).to eq("{\"id\":#{subject.id},\"notes\":\"New test note\"}")
-      fake_service
+    expect_any_instance_of(PushService).to receive(:send_update_store) do |service, channel, data, collapse_key|
+      expect(data[:item]['Offer'].to_json).to eq("{\"id\":#{offer.id},\"notes\":\"New test note\"}")
     end
-    subject.notes = 'New test note'
-    subject.update_client_store(:update)
+    offer.notes = 'New test note'
+    offer.update_client_store(:update)
   end
 
   it 'update - foreign key property changes are handled' do
-    expect(PushService).to receive(:new) do |args|
-      expect(args[:data][:item]['Offer'].to_json).to eq("{\"id\":#{subject.id},\"reviewed_by_id\":#{user.id}}")
-      fake_service
+    expect_any_instance_of(PushService).to receive(:send_update_store) do |service, channel, data, collapse_key|
+      expect(data[:item]['Offer'].to_json).to eq("{\"id\":#{offer.id},\"reviewed_by_id\":#{user.id}}")
     end
-    subject.reviewed_by_id = user.id
-    subject.update_client_store(:update)
+    offer.reviewed_by_id = user.id
+    offer.update_client_store(:update)
+  end
+
+  it 'all classes that include PushUpdates should have offer property' do
+    Rails.application.eager_load!
+    include_private = true
+    ActiveRecord::Base.descendants.find_all{|m| m.ancestors.include?(PushUpdates)}.each do |m|
+      expect(m.new.respond_to?(:offer, include_private)).to be(true), "#{m.name} is missing offer property"
+    end
   end
 end

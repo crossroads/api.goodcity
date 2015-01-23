@@ -56,11 +56,4 @@ class Item < ActiveRecord::Base
   def assign_reviewer
     offer.reviewed_by || offer.start_review(User.current_user)
   end
-
-  private
-
-  #required by PusherUpdates module
-  def donor_user_id
-    offer.created_by_id
-  end
 end

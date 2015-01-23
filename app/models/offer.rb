@@ -102,8 +102,8 @@ class Offer < ActiveRecord::Base
   end
 
   #required by PusherUpdates module
-  def donor_user_id
-    created_by_id
+  def offer
+    self
   end
 
   # to update about calculated crossroads truck cost
@@ -111,11 +111,8 @@ class Offer < ActiveRecord::Base
     user = Api::V1::UserSerializer.new(User.current_user)
     object = Api::V1::OfferSerializer.new(self,
       { exclude: Offer.reflections.keys.map(&:to_sym) })
-    PushService.new(
-      channel: "user_#{self.created_by_id}",
-      event: 'update_store',
-      data: { item: object, sender: user, operation: :update }
-    ).notify
+    channel = "user_#{self.created_by_id}"
+    PushService.new.send_update_store(channel, {item: object, sender: user, operation: :update}, "offer#{id}", true)
     true
   end
 end

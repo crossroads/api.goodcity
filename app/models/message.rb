@@ -80,9 +80,7 @@ class Message < ActiveRecord::Base
   def send_update(object, user, state, channel)
     self.state_value = state
     object = Api::V1::MessageSerializer.new(object, {exclude:Message.reflections.keys.map(&:to_sym)})
-    PushService
-      .new(channel: channel, event: 'update_store', data: {item:object, sender:user, operation: :create})
-      .notify unless channel.empty?
+    PushService.new.send_update_store(channel, {item:object, sender:user, operation: :create}) unless channel.empty?
     self.state_value = nil
   end
 
