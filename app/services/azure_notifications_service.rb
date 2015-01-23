@@ -9,7 +9,6 @@ class AzureNotificationsService
     body = { data: data }
     body[:collapse_key] = collapse_key unless collapse_key.nil?
     body[:delay_while_idle] = delay_while_idle
-    byebug
     send :post, 'messages', body: body.to_json, headers: headers
   end
 
