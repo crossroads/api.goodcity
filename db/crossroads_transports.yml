@@ -1,27 +1,44 @@
-
 1/8 Truck:
   :name_zh_tw: 1/8卡車
+  :truck_size: 0.125
+  :cost: 75
 
 2/8 Truck:
-  :name_zh_tw: 1/8卡車
+  :name_zh_tw: 2/8卡車
+  :truck_size: 0.25
+  :cost: 150
 
 3/8 Truck:
   :name_zh_tw: 3/8卡車
+  :truck_size: 0.375
+  :cost: 225
 
 4/8 Truck:
   :name_zh_tw: 4/8卡車
+  :truck_size: 0.5
+  :cost: 300
 
 5/8 Truck:
   :name_zh_tw: 5/8卡車
+  :truck_size: 0.625
+  :cost: 375
 
 6/8 Truck:
   :name_zh_tw: 6/8卡車
+  :truck_size: 0.75
+  :cost: 450
 
 7/8 Truck:
   :name_zh_tw: 7/8卡車
+  :truck_size: 0.875
+  :cost: 525
 
 8/8 Truck:
   :name_zh_tw: 8/8卡車
+  :truck_size: 1
+  :cost: 600
 
 Disable:
   :name_zh_tw: 關閉
+  :truck_size: 0
+  :cost: 0
