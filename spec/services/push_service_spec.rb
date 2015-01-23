@@ -51,7 +51,7 @@ describe PushService do
     it do
       text = "A notification text string"
       entity_type = "message"
-      entity = { dummy: "entity", entity: "dummy"}
+      entity = OpenStruct.new(id:1, dummy: "entity", prop2: "dummy")
 
       expect(service).to receive(:notify)
       expect(AzureNotifyJob).to receive(:perform_later)

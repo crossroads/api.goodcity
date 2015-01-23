@@ -37,7 +37,8 @@ class PushService
         entity_id = collapse_key.scan(/\d+/).first.to_i
         entity_type = collapse_key.sub(collapse_key.to_s, "")
       end
-      data = {entity_type:entity_type, entity_id:entity_id, date:Time.now.to_json.tr('"','')}
+      operation = data[:operation].to_s
+      data = {event:'update_store', entity_type:entity_type, entity_id:entity_id, operation:operation, date:Time.now.to_json.tr('"','')}
       AzureNotifyJob.perform_later(channel, {data: data}, collapse_key, true)
     end
   end
@@ -48,14 +49,15 @@ class PushService
   # todo: offer accepted
   def send_notification(text:, entity_type:, entity:, channel:)
     # ActiveJob::Serializer doesn't support Time so convert to string
-    data = {text: text, entity_type: entity_type, entity: entity, date: Time.now.to_json.tr('"','')}
+    data = {text: text, entity_type: entity_type, date: Time.now.to_json.tr('"','')}
 
     @channel = channel
     @event = "notification"
-    @data = data
+    @data = data.merge({entity: entity})
     notify
 
     if Channel.user_channel?(channel)
+      data = data.merge({event:'notification', entity_id: entity.id})
       AzureNotifyJob.perform_later(channel, {data: data})
     end
   end
