@@ -112,7 +112,7 @@ class Offer < ActiveRecord::Base
     object = Api::V1::OfferSerializer.new(self,
       { exclude: Offer.reflections.keys.map(&:to_sym) })
     channel = "user_#{self.created_by_id}"
-    PushService.new.send_update_store(channel, {item: object, sender: user, operation: :update}, "offer#{id}", true)
+    PushService.new.send_update_store(channel, {item: object, sender: user, operation: :update}, "offer#{id}")
     true
   end
 end
