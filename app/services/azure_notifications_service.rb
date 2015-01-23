@@ -1,5 +1,5 @@
 class AzureNotificationsService
-  def notify(tags, data, collapse_key: nil)
+  def notify(tags, data, collapse_key = nil, delay_while_idle = false)
     tags = tags.join(' || ') if tags.instance_of?(Array)
     headers = {
       'ServiceBusNotification-Format' => 'gcm',
@@ -8,6 +8,7 @@ class AzureNotificationsService
     }
     body = { data: data }
     body[:collapse_key] = collapse_key unless collapse_key.nil?
+    body[:delay_while_idle] = delay_while_idle
     send :post, 'messages', body: body.to_json, headers: headers
   end
 

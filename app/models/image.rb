@@ -21,7 +21,7 @@ class Image < ActiveRecord::Base
   end
 
   #required by PusherUpdates module
-  def donor_user_id
-    item.offer.created_by_id
+  def offer
+    item.offer
   end
 end
