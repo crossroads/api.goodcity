@@ -17,11 +17,6 @@ class Delivery < ActiveRecord::Base
 
   private
 
-  #required by PusherUpdates module
-  def donor_user_id
-    offer.created_by_id
-  end
-
   def process_completed?
     (contact_id_changed? && contact.present?) ||
     (delivery_type == 'Drop Off' && schedule_id_changed? && schedule.present?)
