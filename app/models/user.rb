@@ -101,7 +101,7 @@ class User < ActiveRecord::Base
   end
 
   #required by PusherUpdates module
-  def donor_user_id
-    address.user_id
+  def offer
+    nil
   end
 end

@@ -30,14 +30,10 @@ module PushUpdates
       object[type] = {id:self.id}
     end
 
-    channel = Channel.staff + Channel.user_id(donor_user_id)
-    PushService
-      .new(channel: channel, event: 'update_store',
-           data: {item:object, sender:user, operation:operation})
-      .notify
-  end
-
-  def donor_user_id
-    raise 'not yet implemented'
+    offer = send(:offer)
+    channel = Channel.staff + (offer.nil? ? [] : Channel.user_id(offer.created_by_id))
+    data = {item:object, sender:user, operation:operation}
+    collapse_key = offer.nil? ? nil : "offer" + offer.id.to_s
+    PushService.new.send_update_store(channel, data, collapse_key)
   end
 end
