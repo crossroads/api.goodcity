@@ -49,12 +49,12 @@ module Api::V1
       @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
       @offers = @offers.by_state(params['state']) if params['state']
       @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
-      render json: @offers, each_serializer: serializer
+      render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
     api :GET, '/v1/offers/1', "List an offer"
     def show
-      render json: @offer, serializer: serializer
+      render json: @offer, serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
     api :PUT, '/v1/offers/1', "Update an offer"

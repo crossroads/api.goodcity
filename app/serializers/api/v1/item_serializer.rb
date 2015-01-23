@@ -19,6 +19,8 @@ module Api::V1
       "coalesce((select array_agg(messages.id) from messages where item_id = items.id), '{}'::int[])"
     end
 
+    def include_message_ids?
+      @options[:exclude_messages] != true
+    end
   end
-
 end
