@@ -44,5 +44,9 @@ module Api::V1
          ELSE '0'
        END"
     end
+
+    def include_messages?
+      @options[:exclude_messages] != true
+    end
   end
 end
