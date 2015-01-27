@@ -1034,6 +1034,70 @@
       "recorded" : true
     }
   ],
+  "offers#close_offer" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/offers/268/close_offer",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "offer" : {
+          "state_event" : "close"
+        }
+      },
+      "response_data" : {
+        "items" : [],
+        "messages" : [],
+        "user" : [
+          {
+            "id" : 818,
+            "first_name" : "Julia",
+            "last_name" : "Wiza",
+            "permission_id" : null,
+            "image_id" : 866
+          }
+        ],
+        "images" : [
+          {
+            "id" : 866,
+            "favourite" : false,
+            "cloudinary_id" : "1416229451/jgpyo4oxrnfnjriofdjd.jpg",
+            "item_id" : null
+          }
+        ],
+        "deliveries" : [],
+        "gogovan_transports" : [],
+        "crossroads_transports" : [],
+        "offer" : {
+          "id" : 268,
+          "language" : "en",
+          "state" : "closed",
+          "origin" : "web",
+          "stairs" : true,
+          "parking" : true,
+          "estimated_size" : "3",
+          "notes" : "Laboriosam aliquid nesciunt iste ut quaerat. Repudiandae id quia quia consequatur amet debitis. Odit quia autem aut eos id natus. Nisi molestiae ut maiores aut quo.",
+          "created_by_id" : 818,
+          "created_at" : "2015-01-27T16:25:36.731+08:00",
+          "updated_at" : "2015-01-27T16:25:36.852+08:00",
+          "submitted_at" : null,
+          "reviewed_at" : null,
+          "gogovan_transport_id" : null,
+          "crossroads_transport_id" : null,
+          "crossroads_truck_cost" : 0,
+          "item_ids" : [],
+          "message_ids" : [],
+          "reviewed_by_id" : null,
+          "delivery_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "offers#complete_review" : [
     {
       "verb" : "PUT",

@@ -98,6 +98,15 @@ module Api::V1
       render json: @offer, serializer: serializer
     end
 
+    api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
+    param :offer, Hash, required: true do
+      param :state_event, String, "State transition event ex: 'close'", required: true
+    end
+    def close_offer
+      @offer.update_attributes(review_offer_params)
+      render json: @offer, serializer: serializer
+    end
+
     private
 
     def eager_load_offer
