@@ -77,7 +77,7 @@ class Offer < ActiveRecord::Base
   end
 
   def update_saleable_items
-    items.update_saleable
+    items.map(&:update_saleable)
   end
 
   def subscribed_users(is_private)
