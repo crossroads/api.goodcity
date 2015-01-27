@@ -30,13 +30,13 @@ RSpec.describe Item, type: :model do
   end
 
   describe 'Scope Methods' do
-    let!(:offer)   { create :offer, :with_items }
+    let!(:item)    { create :item }
     let!(:an_item) { create :item } # this item should not be changed
 
     describe 'update_saleable' do
       it 'should update all items of offer' do
         expect{
-          offer.items.update_saleable
+          item.update_saleable
         }.to change(Item.where(saleable: true), :count).by(1)
         expect(an_item).to_not be_saleable
       end
