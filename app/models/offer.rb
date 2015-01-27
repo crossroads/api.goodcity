@@ -61,6 +61,10 @@ class Offer < ActiveRecord::Base
       transition [:submitted, :reviewed] => :scheduled
     end
 
+    event :close do
+      transition :under_review => :closed
+    end
+
     before_transition :on => :submit do |offer, transition|
       offer.submitted_at = Time.now
     end
