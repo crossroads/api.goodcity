@@ -89,9 +89,9 @@ module Api::V1
 
     api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
     param :offer, Hash, required: true do
-      param :state_event, String, "State transition event ex: 'finish_review'", required: true
-      param :gogovan_transport, String, allow_nil: true
-      param :crossroads_transport, String, allow_nil: true
+      param :state_event, String, "State transition event ex: 'finish_review'"
+      param :gogovan_transport_id, String, allow_nil: true
+      param :crossroads_transport_id, String, allow_nil: true
     end
     def complete_review
       @offer.update_attributes(review_offer_params)
@@ -99,11 +99,8 @@ module Api::V1
     end
 
     api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
-    param :offer, Hash, required: true do
-      param :state_event, String, "State transition event ex: 'close'", required: true
-    end
     def close_offer
-      @offer.update_attributes(review_offer_params)
+      @offer.update_attributes({ state_event: 'close' })
       render json: @offer, serializer: serializer
     end
 
@@ -119,6 +116,7 @@ module Api::V1
     end
 
     def review_offer_params
+      params[:offer][:state_event] = 'finish_review'
       attributes = [:gogovan_transport_id, :crossroads_transport_id,
         :state_event]
       params.require(:offer).permit(attributes)
