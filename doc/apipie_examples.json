@@ -1037,31 +1037,27 @@
   "offers#close_offer" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/offers/268/close_offer",
+      "path" : "/api/v1/offers/774/close_offer",
       "versions" : [
         "v1"
       ],
       "query" : null,
-      "request_data" : {
-        "offer" : {
-          "state_event" : "close"
-        }
-      },
+      "request_data" : {},
       "response_data" : {
         "items" : [],
         "messages" : [],
         "user" : [
           {
-            "id" : 818,
-            "first_name" : "Julia",
-            "last_name" : "Wiza",
+            "id" : 2382,
+            "first_name" : "Sedrick",
+            "last_name" : "Hodkiewicz",
             "permission_id" : null,
-            "image_id" : 866
+            "image_id" : 2526
           }
         ],
         "images" : [
           {
-            "id" : 866,
+            "id" : 2526,
             "favourite" : false,
             "cloudinary_id" : "1416229451/jgpyo4oxrnfnjriofdjd.jpg",
             "item_id" : null
@@ -1071,17 +1067,17 @@
         "gogovan_transports" : [],
         "crossroads_transports" : [],
         "offer" : {
-          "id" : 268,
+          "id" : 774,
           "language" : "en",
           "state" : "closed",
           "origin" : "web",
           "stairs" : true,
           "parking" : true,
-          "estimated_size" : "3",
-          "notes" : "Laboriosam aliquid nesciunt iste ut quaerat. Repudiandae id quia quia consequatur amet debitis. Odit quia autem aut eos id natus. Nisi molestiae ut maiores aut quo.",
-          "created_by_id" : 818,
-          "created_at" : "2015-01-27T16:25:36.731+08:00",
-          "updated_at" : "2015-01-27T16:25:36.852+08:00",
+          "estimated_size" : "1",
+          "notes" : "Expedita temporibus minus ut aut. Soluta quo commodi nostrum facere qui eius molestiae. Et quae quasi vel aliquam perferendis dolores voluptatem est.",
+          "created_by_id" : 2382,
+          "created_at" : "2015-01-28T15:21:43.788+08:00",
+          "updated_at" : "2015-01-28T15:21:43.913+08:00",
           "submitted_at" : null,
           "reviewed_at" : null,
           "gogovan_transport_id" : null,

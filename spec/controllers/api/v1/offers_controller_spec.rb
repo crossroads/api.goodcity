@@ -96,13 +96,11 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   end
 
   describe "PUT offer/1/close_offer" do
-    let(:offer_attributes) { { state_event: "close" } }
-
     context "reviewer" do
       before { generate_and_set_token(reviewer) }
       it "can close offer", :show_in_doc do
         expect(in_review_offer).to be_under_review
-        put :close_offer, id: in_review_offer.id, offer: offer_attributes
+        put :close_offer, id: in_review_offer.id
         expect(response.status).to eq(200)
         expect(in_review_offer.reload).to be_closed
       end
