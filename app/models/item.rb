@@ -49,8 +49,8 @@ class Item < ActiveRecord::Base
     after_transition on: [:accept, :reject], do: :assign_reviewer
   end
 
-  def self.update_saleable
-    update_all(saleable: true)
+  def update_saleable
+    update(saleable: true)
   end
 
   def assign_reviewer

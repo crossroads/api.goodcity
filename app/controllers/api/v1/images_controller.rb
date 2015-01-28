@@ -22,11 +22,10 @@ module Api::V1
     description " This API server does not accept direct image uploads. Instead, they should be sent directly to the Cloudinary service. Please refer to the {Cloudinary jQuery integration documentation}[http://cloudinary.com/documentation/jquery_integration] for further information."
     def generate_signature
       unix_timestamp    = Time.now.to_i
-      serialized_params = "callback=#{callback}&timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
+      serialized_params = "timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
       signature         = Digest::SHA1.hexdigest(serialized_params)
       render json: {
         api_key:   cloudinary_config['api_key'],
-        callback:  callback,
         signature: signature,
         timestamp: unix_timestamp }.to_json
     end
@@ -69,11 +68,6 @@ module Api::V1
 
     def cloudinary_config
       Rails.application.secrets.cloudinary
-    end
-
-    def callback
-      host = request.original_url.gsub(request.fullpath, '')
-      "#{host}/cloudinary_cors.html"
     end
 
     def image_params

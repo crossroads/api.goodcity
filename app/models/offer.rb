@@ -61,6 +61,10 @@ class Offer < ActiveRecord::Base
       transition [:submitted, :reviewed] => :scheduled
     end
 
+    event :close do
+      transition :under_review => :closed
+    end
+
     before_transition :on => :submit do |offer, transition|
       offer.submitted_at = Time.now
     end
@@ -73,7 +77,7 @@ class Offer < ActiveRecord::Base
   end
 
   def update_saleable_items
-    items.update_saleable
+    items.map(&:update_saleable)
   end
 
   def subscribed_users(is_private)
