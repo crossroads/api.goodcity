@@ -13,10 +13,29 @@ FactoryGirl.define do
     created_by     {|m| m.association(:user) }
     reviewed_by_id nil
     reviewed_at    nil
+    received_at    nil
+    review_completed_at nil
 
     trait :submitted do
-      submitted_at    { Time.now }
-      state           'submitted'
+      submitted_at { Time.now }
+      state        'submitted'
+    end
+
+    trait :reviewed do
+      reviewed_at { Time.now }
+      state       'reviewed'
+      association :reviewed_by, factory: :user
+      review_completed_at { Time.now }
+    end
+
+    trait :under_review do
+      reviewed_at { Time.now }
+      state       'under_review'
+      association :reviewed_by, factory: :user
+    end
+
+    trait :scheduled do
+      state 'scheduled'
     end
 
     trait :with_items do
