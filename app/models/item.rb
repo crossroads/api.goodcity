@@ -54,6 +54,6 @@ class Item < ActiveRecord::Base
   end
 
   def assign_reviewer
-    offer.reviewed_by || offer.start_review(User.current_user)
+    offer.reviewed_by || offer.assign_reviewer(User.current_user)
   end
 end
