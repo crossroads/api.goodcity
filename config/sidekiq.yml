@@ -9,6 +9,7 @@ production:
 #  A queue with a weight of 2 will be checked twice as often as a queue with a weight of 1
 :queues:
   - default
+  - mailers
   - airbrake
   - low
   - [high, 2]
