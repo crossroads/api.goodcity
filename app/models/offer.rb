@@ -43,7 +43,7 @@ class Offer < ActiveRecord::Base
   end
 
   state_machine :state, initial: :draft do
-    state :submitted, :under_review, :reviewed, :scheduled, :closed
+    state :submitted, :under_review, :reviewed, :scheduled, :closed, :received
 
     event :submit do
       transition :draft => :submitted
@@ -65,12 +65,24 @@ class Offer < ActiveRecord::Base
       transition :under_review => :closed
     end
 
+    event :receive do
+      transition :scheduled => :received
+    end
+
     before_transition :on => :submit do |offer, transition|
       offer.submitted_at = Time.now
     end
 
     before_transition :on => :start_review do |offer, transition|
       offer.reviewed_at = Time.now
+    end
+
+    before_transition :on => [:finish_review, :close] do |offer, transition|
+      offer.review_completed_at = Time.now
+    end
+
+    before_transition :on => :receive do |offer, transition|
+      offer.received_at = Time.now
     end
 
     after_transition :on => :submit, :do => :send_new_offer_notification
@@ -87,7 +99,7 @@ class Offer < ActiveRecord::Base
       .distinct
   end
 
-  def start_review(reviewer)
+  def assign_reviewer(reviewer)
     update_attributes(
       reviewed_by_id: reviewer.id,
       state_event: 'start_review')
