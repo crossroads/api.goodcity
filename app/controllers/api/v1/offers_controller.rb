@@ -79,7 +79,7 @@ module Api::V1
         Offer.transaction do
           @offer.lock!
           raise unless @offer.submitted?
-          @offer.start_review(current_user)
+          @offer.assign_reviewer(current_user)
           render json: @offer, serializer: serializer
         end
       rescue
