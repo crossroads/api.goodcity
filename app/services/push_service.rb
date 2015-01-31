@@ -4,12 +4,13 @@ class PushService
 
   class PushServiceError < StandardError; end
 
-  attr_accessor :channel, :event, :data
+  attr_accessor :channel, :event, :data, :resync
 
   def initialize(options = {})
     @channel = options[:channel]
     @event = options[:event]
     @data = options[:data]
+    @resync = options[:resync] || false
   end
 
   def notify
@@ -17,13 +18,14 @@ class PushService
       raise PushServiceError, "'#{opt}' has not been set" if send(opt).blank?
     end
 
-    PusherJob.perform_later([channel].flatten, event, data.to_json)
+    PusherJob.perform_later([channel].flatten, event, data.to_json, resync)
   end
 
   def send_update_store(channel, data, collapse_key = nil)
     @channel = channel
     @event = "update_store"
     @data = data
+    @resync = true
     notify
 
     channel = [channel].flatten.find_all{|c| Channel.user_channel?(c)}
