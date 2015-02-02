@@ -56,4 +56,12 @@ class Item < ActiveRecord::Base
   def assign_reviewer
     offer.reviewed_by || offer.assign_reviewer(User.current_user)
   end
+
+  def remove
+    need_to_persist? ? self.destroy : self.really_destroy!
+  end
+
+  def need_to_persist?
+    accepted? || rejected? || messages.present?
+  end
 end

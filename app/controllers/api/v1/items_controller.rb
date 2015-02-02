@@ -44,7 +44,7 @@ module Api::V1
     api :DELETE, '/v1/items/1', "Delete an item"
     description "If this item's offer is in draft state it will be destroyed. Any other state and it will be marked as deleted but remain recoverable."
     def destroy
-      @item.offer.draft? ? @item.really_destroy! : @item.destroy
+      @item.remove
       render json: {}
     end
 
