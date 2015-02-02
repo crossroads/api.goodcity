@@ -58,4 +58,44 @@ RSpec.describe Item, type: :model do
       end
     end
   end
+
+  describe "#need_to_persist?" do
+    it "should return true for item with messages" do
+      item = create :item, :with_messages
+      expect(item.need_to_persist?).to eq(true)
+    end
+
+    it "should return true for accepted item" do
+      item = create :item, state: "accepted"
+      expect(item.need_to_persist?).to eq(true)
+    end
+
+    it "should return true for rejected item" do
+      item = create :item, state: "rejected"
+      expect(item.need_to_persist?).to eq(true)
+    end
+  end
+
+  describe "#remove" do
+    it "should soft-delete item with messages" do
+      item = create :item, :with_messages
+      expect{
+        item.remove
+      }.to change(Item.only_deleted, :count).by(1)
+    end
+
+    it "should soft-delete accepted item" do
+      item = create :item, state: "accepted"
+      expect{
+        item.remove
+      }.to change(Item.only_deleted, :count).by(1)
+    end
+
+    it "should hard-delete submitted item" do
+      item = create :item
+      expect{
+        item.remove
+      }.to change(Item, :count).by(-1)
+    end
+  end
 end
