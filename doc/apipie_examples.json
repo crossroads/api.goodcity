@@ -377,16 +377,20 @@
       "response_data" : {
         "donor_conditions" : [
           {
-            "id" : 547,
-            "name" : "Broken"
-          },
-          {
-            "id" : 548,
+            "id" : 40,
             "name" : "New"
           },
           {
-            "id" : 549,
+            "id" : 41,
+            "name" : "Lightly Used"
+          },
+          {
+            "id" : 42,
             "name" : "Heavily Used"
+          },
+          {
+            "id" : 43,
+            "name" : "Broken"
           }
         ]
       },
@@ -398,7 +402,7 @@
   "donor_conditions#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/donor_conditions/546",
+      "path" : "/api/v1/donor_conditions/39",
       "versions" : [
         "v1"
       ],
@@ -406,8 +410,8 @@
       "request_data" : null,
       "response_data" : {
         "donor_condition" : {
-          "id" : 546,
-          "name" : "New"
+          "id" : 39,
+          "name" : "Heavily Used"
         }
       },
       "code" : "200",
