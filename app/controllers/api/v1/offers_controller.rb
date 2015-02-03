@@ -5,9 +5,14 @@ module Api::V1
     load_and_authorize_resource :offer, parent: false
 
     resource_description do
-      short "List, create, update and delete offers. Only offers that are
-        visible to the current user are returned. Donors will only see their
-        offers. Reviewers will see offers from all users."
+      short "List, create, update and delete offers."
+      description <<-EOS
+        Only offers that are visible to the current user are returned.
+        Donors will only see their offers. Reviewers will see offers from
+        all users.
+        == Offer states
+        [link:/doc/offer_state.png]
+      EOS
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"

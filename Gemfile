@@ -63,6 +63,7 @@ group :development do
     gem "spring-commands-rspec", group: :development
     gem 'guard-rspec', require: false
     gem 'foreman', require: false
+    #gem 'ruby-graphviz' # only enable when needed for workflow diagram generation
   end
 end
 

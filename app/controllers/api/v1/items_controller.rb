@@ -5,6 +5,10 @@ module Api::V1
 
     resource_description do
       short 'Get, create, update and delete items.'
+      description <<-EOS
+        == Item states
+        [link:/doc/item_state.png]
+      EOS
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
