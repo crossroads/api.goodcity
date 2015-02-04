@@ -37,12 +37,12 @@ describe PushService do
     end
 
     it "multiple receipent through pusher" do
-      expect(PusherJob).to receive(:perform_later).with(multiple_channels, event, offer.to_json)
+      expect(PusherJob).to receive(:perform_later).with(multiple_channels, event, offer.to_json, false)
       PushService.new(channel: multiple_channels, event: event, data: offer).notify
     end
 
     it "single receipent through pusher" do
-      expect(PusherJob).to receive(:perform_later).with([one_channel], event, offer.to_json)
+      expect(PusherJob).to receive(:perform_later).with([one_channel], event, offer.to_json, false)
       PushService.new(channel: one_channel, event: event, data: offer).notify
     end
   end
