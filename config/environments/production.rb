@@ -40,7 +40,9 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   # config.cache_store = :dalli_store, 'localhost', { :pool_size => 5 } # this is threadsafe
-  config.cache_store = :redis_store, { namespace: 'goodcity' }
+  redis_options = { namespace: 'goodcity' }
+  redis_options.merge!(password: ENV['REDIS_PASSWORD']) if ENV['REDIS_PASSWORD'].present?
+  config.cache_store = :redis_store, ENV['REDIS_URL'], redis_options
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = "http://assets.example.com"
