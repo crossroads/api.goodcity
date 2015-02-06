@@ -47,6 +47,18 @@ class Item < ActiveRecord::Base
     end
 
     after_transition on: [:accept, :reject], do: :assign_reviewer
+    after_transition on: :reject, do: :send_reject_message
+  end
+
+  def send_reject_message
+    if rejection_comments.present?
+      message = messages.where(
+        is_private: false,
+        body: rejection_comments,
+        offer: offer,
+        sender: User.current_user
+      ).first_or_create
+    end
   end
 
   def update_saleable
