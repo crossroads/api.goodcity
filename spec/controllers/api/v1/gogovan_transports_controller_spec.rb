@@ -17,10 +17,11 @@ RSpec.describe Api::V1::GogovanTransportsController, type: :controller do
     end
 
     it "return serialized gogovan_transport" do
+      gogovan_transport
       get :index
       body = JSON.parse(response.body)
       expect(body['gogovan_transports'].length).to eq(1)
-      expect(body['gogovan_transports']['name']).to eq(gogovan_transport.name)
+      expect(body['gogovan_transports'][0]['name']).to eq(gogovan_transport.name)
     end
   end
 end
