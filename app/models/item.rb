@@ -52,7 +52,7 @@ class Item < ActiveRecord::Base
 
   def send_reject_message
     if rejection_comments.present?
-      message = messages.where(
+      messages.where(
         is_private: false,
         body: rejection_comments,
         offer: offer,
