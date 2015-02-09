@@ -95,7 +95,12 @@ describe Message, type: :model do
 
       #note unfortunately expect :update_store is working here based on the order it's called in code
       expect(message).to receive(:send_update) do |item, user, state, channel|
-        expect(channel).to match_array(["user_#{donor.id}","user_#{subscribed_user.id}"])
+        expect(channel).to match_array(["user_#{donor.id}"])
+        expect(state).to eq("read")
+      end
+
+      expect(message).to receive(:send_update) do |item, user, state, channel|
+        expect(channel).to eq(["user_#{subscribed_user.id}"])
         expect(state).to eq("unread")
       end
 

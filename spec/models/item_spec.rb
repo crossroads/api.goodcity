@@ -98,4 +98,17 @@ RSpec.describe Item, type: :model do
       }.to change(Item, :count).by(-1)
     end
   end
+
+  describe "#send_reject_message" do
+    it "should send message to donor with rejection comments" do
+      expect_any_instance_of(Message).to receive(:update_client_store)
+      expect_any_instance_of(Message).to receive(:send_new_message_notification)
+
+      item = create(:item, :rejected, state: "submitted") # with reject attrs
+      expect{
+        item.reject
+      }.to change(item.messages, :count).by(1)
+      expect(item.messages.last.body).to eq(item.rejection_comments)
+    end
+  end
 end

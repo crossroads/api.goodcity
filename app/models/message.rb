@@ -67,11 +67,14 @@ class Message < ActiveRecord::Base
   end
 
   def update_client_store
-    subscribed_user_channels = subscribed_user_channels()
-    unsubscribed_user_channels = Channel.users(User.staff) - subscribed_user_channels
+    sender_channel = Channel.user(sender)
+    subscribed_user_channels = subscribed_user_channels() - sender_channel
+    unsubscribed_user_channels = Channel.users(User.staff) -
+      subscribed_user_channels - sender_channel
 
-    user = Api::V1::UserSerializer.new(self.sender)
+    user = Api::V1::UserSerializer.new(sender)
 
+    send_update self, user, "read", sender_channel
     send_update self, user, 'unread', subscribed_user_channels
     send_update self, user, 'never-subscribed', unsubscribed_user_channels
   end
