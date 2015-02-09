@@ -4,11 +4,9 @@ FactoryGirl.define do
   factory :item do
     donor_description { Faker::Lorem.sentence }
     state             'submitted'
-    reject_reason     { Faker::Lorem.sentence }
 
     association :donor_condition
     association :item_type
-    association :rejection_reason
     association :offer
 
     trait :with_packages do
@@ -37,5 +35,12 @@ FactoryGirl.define do
       end
     end
 
+    trait :rejected do
+      state              'rejected'
+      association        :rejection_reason
+      association        :offer, :under_review
+      reject_reason      { Faker::Lorem.sentence }
+      rejection_comments { Faker::Lorem.sentence }
+    end
   end
 end
