@@ -507,14 +507,14 @@
   "deliveries#update" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/deliveries/131",
+      "path" : "/api/v1/deliveries/132",
       "versions" : [
         "v1"
       ],
       "query" : null,
       "request_data" : {
         "delivery" : {
-          "delivery_type" : "Alternate",
+          "delivery_type" : "Gogovan",
           "gogovan_order_id" : "1000001"
         }
       },
@@ -523,11 +523,11 @@
         "schedules" : [],
         "gogovan_orders" : [],
         "delivery" : {
-          "id" : 131,
+          "id" : 132,
           "start" : null,
           "finish" : null,
-          "offer_id" : 1889,
-          "delivery_type" : "Alternate",
+          "offer_id" : 1890,
+          "delivery_type" : "Gogovan",
           "contact_id" : null,
           "schedule_id" : null,
           "gogovan_order_id" : null
