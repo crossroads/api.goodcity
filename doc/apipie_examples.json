@@ -316,6 +316,145 @@
       "recorded" : true
     }
   ],
+  "deliveries#create" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/deliveries",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "id" : null,
+          "offer_id" : "178",
+          "contact_id" : "556",
+          "schedule_id" : null,
+          "delivery_type" : "Gogovan",
+          "start" : null,
+          "finish" : null,
+          "created_at" : null,
+          "updated_at" : null,
+          "gogovan_order_id" : null,
+          "deleted_at" : null
+        }
+      },
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 556,
+            "name" : "Caitlyn Lesch",
+            "mobile" : "+85250678557",
+            "address_id" : null
+          }
+        ],
+        "addresses" : [],
+        "schedules" : [],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 84,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 178,
+          "delivery_type" : "Gogovan",
+          "contact_id" : 556,
+          "schedule_id" : null,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "deliveries#show" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/deliveries/83",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 552,
+            "name" : "Logan Kertzmann",
+            "mobile" : "+85291504563",
+            "address_id" : null
+          }
+        ],
+        "addresses" : [],
+        "schedules" : [],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 83,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 177,
+          "delivery_type" : "Drop Off",
+          "contact_id" : 552,
+          "schedule_id" : null,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "deliveries#update" : [
+    {
+      "verb" : "PUT",
+      "path" : "/api/v1/deliveries/85",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "id" : null,
+          "offer_id" : "180",
+          "contact_id" : "562",
+          "schedule_id" : null,
+          "delivery_type" : "Drop Off",
+          "start" : null,
+          "finish" : null,
+          "created_at" : null,
+          "updated_at" : null,
+          "gogovan_order_id" : "1000001",
+          "deleted_at" : null
+        }
+      },
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 562,
+            "name" : "Winston Wolf",
+            "mobile" : "+85262856535",
+            "address_id" : null
+          }
+        ],
+        "addresses" : [],
+        "schedules" : [],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 85,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 180,
+          "delivery_type" : "Drop Off",
+          "contact_id" : 562,
+          "schedule_id" : null,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "districts#index" : [
     {
       "verb" : "GET",

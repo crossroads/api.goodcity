@@ -5,10 +5,6 @@ module Api::V1
 
     resource_description do
       short 'Get, create, and update delivery.'
-      description <<-EOS
-        == Item states
-        [link:/doc/delivery_state.png]
-      EOS
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
@@ -17,17 +13,17 @@ module Api::V1
     end
 
     def_param_group :delivery do
-      param :delivery, Hash, required: true do
-        param :start, Time.now
-        param :finish, Time.now
-        param :offer_id, String, allow_nil: true, desc: "Id of Offer to which delivery belongs."
+      param :delivery,  Hash, required: true do
+        param :offer_id, String, desc: "Id of Offer to which delivery belongs."
         param :contact_id, String, allow_nil: true, desc: "Id of Offer to which delivery belongs."
         param :schedule_id, String, allow_nil: true, desc: "Id of Offer to which delivery belongs."
-        param :delivery_type, [ "Alternate", "Drop Off", "Gogovan"], allow_nil: false, desc: "Delivery type."
+        param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type."
+        param :start, String, allow_nil: true, desc: "Still not in use"
+        param :finish, String, allow_nil: true, desc: "Still not in use"
       end
     end
 
-    api :POST, '/v1/deliveries', "Create an delivery"
+    api :POST, '/v1/deliveries', "Create a delivery"
     param_group :delivery
     def create
       @delivery = Delivery.where(offer_id: params[:delivery][:offer_id]).last || @delivery
@@ -39,13 +35,12 @@ module Api::V1
       end
     end
 
-    api :GET, '/v1/deliveries/1', "Get an delivery"
-    param_group :delivery
+    api :GET, '/v1/deliveries/1', "Get a delivery"
     def show
       render json: @delivery, serializer: serializer
     end
 
-    api :PUT, '/v1/deliveries/1', "Update an delivery"
+    api :PUT, '/v1/deliveries/1', "Update a delivery"
     param_group :delivery
     def update
       if @delivery.update_attributes(delivery_params)

@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
-  let(:user)  { create :user_with_token }
+  let(:user) { create :user_with_token }
   let(:delivery) { create :delivery }
   let(:serialized_delivery) { Api::V1::DeliverySerializer.new(delivery) }
   let(:serialized_delivery_json) { JSON.parse( serialized_delivery.to_json ) }
-  let(:delivery_params) { delivery.attributes.except("id") }
+  let(:delivery_params) { build(:delivery).attributes }
 
   subject { JSON.parse(response.body) }
 
@@ -22,7 +22,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   describe "POST delivery/1" do
     before { generate_and_set_token(user) }
     it "returns 201", :show_in_doc do
-      post :create, delivery: delivery_params
+      post :create, delivery: delivery_params.merge(delivery_type: "Gogovan")
       expect(response.status).to eq(201)
     end
   end
