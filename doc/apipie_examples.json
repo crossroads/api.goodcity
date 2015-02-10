@@ -500,7 +500,7 @@
         }
       },
       "code" : "200",
-      "show_in_doc" : 0,
+      "show_in_doc" : 1,
       "recorded" : true
     }
   ],
