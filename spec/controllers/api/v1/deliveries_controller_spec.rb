@@ -56,7 +56,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     let(:delivery) { create :delivery }
     before { generate_and_set_token(user) }
     it "owner can update", :show_in_doc do
-      params = attributes_for(:delivery).merge({ gogovan_order_id: 1000001 })
+      params = attributes_for(:gogovan_delivery).merge({ gogovan_order_id: 1000001 })
       put :update, id: delivery.id, delivery: params
       expect(response.status).to eq(200)
       expect(delivery.reload.gogovan_order_id).to eq(1000001)
