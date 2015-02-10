@@ -53,13 +53,14 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   end
 
   describe "PUT delivery/1" do
-    let(:delivery) { create :delivery }
+    let!(:delivery) { create :gogovan_delivery }
+    let!(:gogovan_order) { create(:gogovan_order) }
     before { generate_and_set_token(user) }
     it "owner can update", :show_in_doc do
-      params = attributes_for(:gogovan_delivery).merge({ gogovan_order_id: 1000001 })
+      params = { gogovan_order_id: gogovan_order.id }
       put :update, id: delivery.id, delivery: params
       expect(response.status).to eq(200)
-      expect(delivery.reload.gogovan_order_id).to eq(1000001)
+      expect(delivery.reload.gogovan_order_id).to eq(gogovan_order.id)
     end
   end
 

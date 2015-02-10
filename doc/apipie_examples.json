@@ -507,30 +507,62 @@
   "deliveries#update" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/deliveries/132",
+      "path" : "/api/v1/deliveries/137",
       "versions" : [
         "v1"
       ],
       "query" : null,
       "request_data" : {
         "delivery" : {
-          "delivery_type" : "Gogovan",
-          "gogovan_order_id" : "1000001"
+          "gogovan_order_id" : "68"
         }
       },
       "response_data" : {
-        "contacts" : [],
-        "schedules" : [],
-        "gogovan_orders" : [],
+        "contacts" : [
+          {
+            "id" : 5250,
+            "name" : "Easter Marquardt",
+            "mobile" : "+85256563801",
+            "address_id" : 5231
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 5231,
+            "street" : null,
+            "flat" : null,
+            "building" : null,
+            "district_id" : 5572,
+            "addressable_id" : 5250,
+            "addressable_type" : "Contact"
+          }
+        ],
+        "schedules" : [
+          {
+            "id" : 4,
+            "resource" : null,
+            "scheduled_at" : "2015-02-20T02:38:11.000+08:00",
+            "slot" : null,
+            "slot_name" : "1:00 PM",
+            "zone" : null
+          }
+        ],
+        "gogovan_orders" : [
+          {
+            "id" : 68,
+            "booking_id" : 5082905,
+            "status" : "pending"
+          }
+        ],
         "delivery" : {
-          "id" : 132,
+          "id" : 137,
           "start" : null,
           "finish" : null,
-          "offer_id" : 1890,
+          "offer_id" : 1895,
           "delivery_type" : "Gogovan",
-          "contact_id" : null,
-          "schedule_id" : null,
-          "gogovan_order_id" : null
+          "contact_id" : 5250,
+          "schedule_id" : 4,
+          "gogovan_order_id" : 68
         }
       },
       "code" : "200",
