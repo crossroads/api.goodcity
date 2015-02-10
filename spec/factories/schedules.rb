@@ -8,5 +8,19 @@ FactoryGirl.define do
     slot_name { generate(:schedules)[id][:slot_name] }
     zone { generate(:schedules)[id][:zone] }
     scheduled_at { (Time.now + 1.weeks + generate(:schedules)[id][:scheduled_at].day).to_s }
+
+    factory :gogovan_schedule, parent: :schedule do
+      resource nil
+      slot nil
+      slot_name "1:00 PM"
+      zone nil
+    end
+
+    factory :drop_off_schedule, parent: :schedule do
+      resource nil
+      slot nil
+      slot_name "2PM-4PM"
+      zone nil
+    end
   end
 end
