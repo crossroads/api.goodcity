@@ -3,6 +3,28 @@ module Api::V1
 
     load_and_authorize_resource :delivery, parent: false
 
+    resource_description do
+      short 'Get, create, and update delivery.'
+      formats ['json']
+      error 401, "Unauthorized"
+      error 404, "Not Found"
+      error 422, "Validation Error"
+      error 500, "Internal Server Error"
+    end
+
+    def_param_group :delivery do
+      param :delivery,  Hash, required: true do
+        param :offer_id, String, desc: "Id of Offer to which delivery belongs."
+        param :contact_id, String, allow_nil: true, desc: "Id of Offer to which delivery belongs."
+        param :schedule_id, String, allow_nil: true, desc: "Id of Offer to which delivery belongs."
+        param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type."
+        param :start, String, allow_nil: true, desc: "Not yet used"
+        param :finish, String, allow_nil: true, desc: "Not yet used"
+      end
+    end
+
+    api :POST, '/v1/deliveries', "Create a delivery"
+    param_group :delivery
     def create
       @delivery = Delivery.where(offer_id: params[:delivery][:offer_id]).last || @delivery
       @delivery.attributes = delivery_params
@@ -13,10 +35,13 @@ module Api::V1
       end
     end
 
+    api :GET, '/v1/deliveries/1', "Get a delivery"
     def show
       render json: @delivery, serializer: serializer
     end
 
+    api :PUT, '/v1/deliveries/1', "Update a delivery"
+    param_group :delivery
     def update
       if @delivery.update_attributes(delivery_params)
         render json: @delivery, serializer: serializer
