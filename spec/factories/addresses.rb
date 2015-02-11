@@ -7,13 +7,19 @@ FactoryGirl.define do
     street       { Faker::Address.street_name }
     association  :district
     address_type "Collection"
-    addressable_id   { create(:contact).id }
+    addressable   { create(:contact) }
     addressable_type 'Contact'
-
   end
 
   factory :profile_address, parent: :address do
     address_type "profile"
     district_id "1"
+  end
+
+  factory :gogovan_collection_address, class: Address do
+    association  :district
+    address_type "Collection"
+    addressable   { create(:contact) }
+    addressable_type 'Contact'
   end
 end

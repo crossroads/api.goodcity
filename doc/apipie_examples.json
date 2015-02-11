@@ -316,6 +316,380 @@
       "recorded" : true
     }
   ],
+  "deliveries#create" : [
+    {
+      "title" : "This is an example of creating delivery. TO create delivery of specific type values should be from ['Alternate', 'Drop Off', 'Gogovan']",
+      "verb" : "POST",
+      "path" : "/api/v1/deliveries",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "delivery_type" : "Gogovan"
+        }
+      },
+      "response_data" : {
+        "contacts" : [],
+        "schedules" : [],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 178,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : null,
+          "delivery_type" : "Gogovan",
+          "contact_id" : null,
+          "schedule_id" : null,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "201",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "deliveries#show" : [
+    {
+      "title" : "This is an example of 'Gogovan Delivery'",
+      "verb" : "GET",
+      "path" : "/api/v1/deliveries/175",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 5398,
+            "name" : "Daisha Dibbert I",
+            "mobile" : "+85251618576",
+            "address_id" : 5379
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 5379,
+            "street" : null,
+            "flat" : null,
+            "building" : null,
+            "district_id" : 5719,
+            "addressable_id" : 5398,
+            "addressable_type" : "Contact"
+          }
+        ],
+        "schedules" : [
+          {
+            "id" : 3,
+            "resource" : null,
+            "scheduled_at" : "2015-02-20T15:24:16.000+08:00",
+            "slot" : null,
+            "slot_name" : "1:00 PM",
+            "zone" : null
+          }
+        ],
+        "gogovan_orders" : [
+          {
+            "id" : 77,
+            "booking_id" : 4247278,
+            "status" : "pending"
+          }
+        ],
+        "delivery" : {
+          "id" : 175,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 1946,
+          "delivery_type" : "Gogovan",
+          "contact_id" : 5398,
+          "schedule_id" : 3,
+          "gogovan_order_id" : 77
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example of 'Drop Off Delivery'",
+      "verb" : "GET",
+      "path" : "/api/v1/deliveries/176",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "contacts" : [],
+        "schedules" : [
+          {
+            "id" : 4,
+            "resource" : null,
+            "scheduled_at" : "2015-02-20T15:24:16.000+08:00",
+            "slot" : null,
+            "slot_name" : "2PM-4PM",
+            "zone" : null
+          }
+        ],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 176,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 1947,
+          "delivery_type" : "Drop Off",
+          "contact_id" : null,
+          "schedule_id" : 4,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example of 'Crossroads Delivery'",
+      "verb" : "GET",
+      "path" : "/api/v1/deliveries/177",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 5405,
+            "name" : "Gregoria Spinka",
+            "mobile" : "+85261781285",
+            "address_id" : 5386
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 5386,
+            "street" : "Omari Forges",
+            "flat" : "Suite 716",
+            "building" : "5682",
+            "district_id" : 5726,
+            "addressable_id" : 5405,
+            "addressable_type" : "Contact"
+          }
+        ],
+        "schedules" : [
+          {
+            "id" : 3,
+            "resource" : "Truck C",
+            "scheduled_at" : "2015-02-20T15:24:16.000+08:00",
+            "slot" : 4,
+            "slot_name" : "Evening,4pm-6pm",
+            "zone" : "South"
+          }
+        ],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 177,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 1948,
+          "delivery_type" : "Alternate",
+          "contact_id" : 5405,
+          "schedule_id" : 3,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "deliveries#update" : [
+    {
+      "title" : "This is an example updating 'Gogovan Delivery'",
+      "verb" : "PUT",
+      "path" : "/api/v1/deliveries/179",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "gogovan_order_id" : "78"
+        }
+      },
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 5411,
+            "name" : "Mariah Ferry",
+            "mobile" : "+85294461536",
+            "address_id" : 5392
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 5392,
+            "street" : null,
+            "flat" : null,
+            "building" : null,
+            "district_id" : 5732,
+            "addressable_id" : 5411,
+            "addressable_type" : "Contact"
+          }
+        ],
+        "schedules" : [
+          {
+            "id" : 4,
+            "resource" : null,
+            "scheduled_at" : "2015-02-20T15:24:17.000+08:00",
+            "slot" : null,
+            "slot_name" : "1:00 PM",
+            "zone" : null
+          }
+        ],
+        "gogovan_orders" : [
+          {
+            "id" : 78,
+            "booking_id" : 9671280,
+            "status" : "pending"
+          }
+        ],
+        "delivery" : {
+          "id" : 179,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 1949,
+          "delivery_type" : "Gogovan",
+          "contact_id" : 5411,
+          "schedule_id" : 4,
+          "gogovan_order_id" : 78
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example updating 'Crossroads Delivery'",
+      "verb" : "PUT",
+      "path" : "/api/v1/deliveries/180",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "offer_id" : "1951",
+          "contact_id" : "5416",
+          "schedule_id" : "3",
+          "delivery_type" : "Alternate",
+          "start" : null,
+          "finish" : null,
+          "created_at" : null,
+          "updated_at" : null,
+          "gogovan_order_id" : null,
+          "deleted_at" : null
+        }
+      },
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 5416,
+            "name" : "Glennie O'Reilly",
+            "mobile" : "+85266473317",
+            "address_id" : 5397
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 5397,
+            "street" : "Feil Ramp",
+            "flat" : "Suite 822",
+            "building" : "453",
+            "district_id" : 5737,
+            "addressable_id" : 5416,
+            "addressable_type" : "Contact"
+          }
+        ],
+        "schedules" : [
+          {
+            "id" : 3,
+            "resource" : "Truck C",
+            "scheduled_at" : "2015-02-20T15:24:17.000+08:00",
+            "slot" : 4,
+            "slot_name" : "Evening,4pm-6pm",
+            "zone" : "South"
+          }
+        ],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 180,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 1951,
+          "delivery_type" : "Alternate",
+          "contact_id" : 5416,
+          "schedule_id" : 3,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example updating 'Drop Off Delivery'",
+      "verb" : "PUT",
+      "path" : "/api/v1/deliveries/181",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "offer_id" : "1953",
+          "contact_id" : null,
+          "schedule_id" : "3",
+          "delivery_type" : "Drop Off",
+          "start" : null,
+          "finish" : null,
+          "created_at" : null,
+          "updated_at" : null,
+          "gogovan_order_id" : null,
+          "deleted_at" : null
+        }
+      },
+      "response_data" : {
+        "contacts" : [],
+        "schedules" : [
+          {
+            "id" : 3,
+            "resource" : null,
+            "scheduled_at" : "2015-02-20T15:24:17.000+08:00",
+            "slot" : null,
+            "slot_name" : "2PM-4PM",
+            "zone" : null
+          }
+        ],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 181,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 1953,
+          "delivery_type" : "Drop Off",
+          "contact_id" : null,
+          "schedule_id" : 3,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "districts#index" : [
     {
       "verb" : "GET",
