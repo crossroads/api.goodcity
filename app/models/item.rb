@@ -51,14 +51,18 @@ class Item < ActiveRecord::Base
   end
 
   def send_reject_message
-    if rejection_comments.present?
-      messages.where(
+    if rejection_comments.present? && !is_recently_messaged_reason?
+      messages.create(
         is_private: false,
         body: rejection_comments,
         offer: offer,
         sender: User.current_user
-      ).first_or_create
+      )
     end
+  end
+
+  def is_recently_messaged_reason?
+    messages.last.try(:body) == rejection_comments
   end
 
   def update_saleable
