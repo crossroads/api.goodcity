@@ -1,10 +1,10 @@
 module Api::V1
 
-  class CrossroadsTransportSerializer < ActiveModel::Serializer
+  class CrossroadsTransportSerializer < ApplicationSerializer
     attributes :id, :name, :cost
 
     def name__sql
-      "name_#{I18n.locale}"
+      "name_#{current_language}"
     end
   end
 

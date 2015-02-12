@@ -1,6 +1,6 @@
 module Api::V1
 
-  class PermissionSerializer < ActiveModel::Serializer
+  class PermissionSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :name
   end

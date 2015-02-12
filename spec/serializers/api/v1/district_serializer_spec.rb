@@ -6,6 +6,8 @@ describe Api::V1::DistrictSerializer do
   let(:serializer) { Api::V1::DistrictSerializer.new(district) }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
+  it_behaves_like 'name_with_language'
+
   it "creates JSON" do
     expect(json['district']['id']).to eql(district.id)
     expect(json['district']['name']).to eql(district.name)

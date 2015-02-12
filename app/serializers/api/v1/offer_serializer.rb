@@ -1,6 +1,6 @@
 module Api::V1
 
-  class OfferSerializer < ActiveModel::Serializer
+  class OfferSerializer < ApplicationSerializer
     embed :ids, include: true
 
     attributes :id, :language, :state, :origin, :stairs, :parking,
