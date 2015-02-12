@@ -4,19 +4,26 @@ module Api::V1
     load_and_authorize_resource :delivery, parent: false
 
     resource_description do
-      short 'Get, create, and update delivery.'
+      short 'Get, create, and update deliveries.'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
       error 422, "Validation Error"
       error 500, "Internal Server Error"
+      description <<-EOS
+        == Delivery relationships
+        [link:/doc/deliveries_relationship.png]
+        Generated using
+          gem install railroady
+          railroady -s app/models/delivery.rb,app/models/gogovan_order.rb,app/models/schedule.rb,app/models/address.rb,app/models/offer.rb,app/models/contact.rb -M | dot -Tpng > deliveries.png
+      EOS
     end
 
     def_param_group :delivery do
       param :delivery,  Hash, required: true do
-        param :offer_id, String, desc: "Id of Offer to which delivery belongs."
-        param :contact_id, String, allow_nil: true, desc: "Id of Offer to which delivery belongs."
-        param :schedule_id, String, allow_nil: true, desc: "Id of Offer to which delivery belongs."
+        param :offer_id, String, desc: "Id of offer to which delivery belongs."
+        param :contact_id, String, allow_nil: true, desc: "Id of contact to which delivery belongs."
+        param :schedule_id, String, allow_nil: true, desc: "Id of schedule to which delivery belongs."
         param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type."
         param :start, String, allow_nil: true, desc: "Not yet used"
         param :finish, String, allow_nil: true, desc: "Not yet used"
