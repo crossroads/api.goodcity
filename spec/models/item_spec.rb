@@ -60,7 +60,7 @@ RSpec.describe Item, type: :model do
   end
 
   describe "#need_to_persist?" do
-    it "should return true for item with messages" do
+    it "should return true for draft item with messages" do
       item = create :item, :with_messages
       expect(item.need_to_persist?).to eq(true)
     end
@@ -74,14 +74,20 @@ RSpec.describe Item, type: :model do
       item = create :item, state: "rejected"
       expect(item.need_to_persist?).to eq(true)
     end
+
+    it "should return false for draft item with no messages" do
+      item = create :item, state: "draft"
+      expect(item.need_to_persist?).to eq(false)
+    end
   end
 
   describe "#remove" do
-    it "should soft-delete item with messages" do
-      item = create :item, :with_messages
-      expect{
-        item.remove
-      }.to change(Item.only_deleted, :count).by(1)
+    it "should soft-delete item and it's messages" do
+      item = create :item, :with_messages, :with_packages
+      item.remove
+      expect(Item.only_deleted.count).to eql(1)
+      expect(Message.only_deleted.count).to eql(1)
+      expect(Package.only_deleted.count).to eql(2)
     end
 
     it "should soft-delete accepted item" do
