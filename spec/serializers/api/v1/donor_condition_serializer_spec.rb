@@ -6,6 +6,8 @@ describe Api::V1::DonorConditionSerializer do
   let(:serializer)      { Api::V1::DonorConditionSerializer.new(donor_condition) }
   let(:json)            { JSON.parse( serializer.to_json ) }
 
+  it_behaves_like 'name_with_language'
+
   it "creates JSON" do
     expect(json['donor_condition']['id']).to eql(donor_condition.id)
     expect(json['donor_condition']['name']).to eql(donor_condition.name)

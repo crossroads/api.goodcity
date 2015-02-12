@@ -1,6 +1,6 @@
 module Api::V1
 
-  class GogovanOrderSerializer < ActiveModel::Serializer
+  class GogovanOrderSerializer < ApplicationSerializer
 
     attributes :id, :booking_id, :status
 

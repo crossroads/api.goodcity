@@ -1,6 +1,6 @@
 module Api::V1
 
-  class MessageSerializer < ActiveModel::Serializer
+  class MessageSerializer < ApplicationSerializer
 
     embed :ids, include: true
 

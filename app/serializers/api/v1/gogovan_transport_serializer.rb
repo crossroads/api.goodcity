@@ -1,10 +1,10 @@
 module Api::V1
 
-  class GogovanTransportSerializer < ActiveModel::Serializer
+  class GogovanTransportSerializer < ApplicationSerializer
     attributes :id, :name
 
     def name__sql
-      "name_#{I18n.locale}"
+      "name_#{current_language}"
     end
   end
 
