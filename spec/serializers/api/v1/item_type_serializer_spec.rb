@@ -6,6 +6,8 @@ describe Api::V1::ItemTypeSerializer do
   let(:serializer) { Api::V1::ItemTypeSerializer.new(item_type) }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
+  it_behaves_like 'name_with_language'
+
   it "creates JSON" do
     expect(json['item_type']['id']).to eql(item_type.id)
     expect(json['item_type']['name']).to eql(item_type.name)

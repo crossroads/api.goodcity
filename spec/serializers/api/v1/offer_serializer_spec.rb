@@ -11,5 +11,4 @@ describe Api::V1::OfferSerializer do
     expect(json['offer']['language']).to eql(offer.language)
     expect(json['offer']['state']).to eql(offer.state)
   end
-
 end
