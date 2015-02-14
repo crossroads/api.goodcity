@@ -9,7 +9,7 @@ describe "District abilities" do
   context "when Administrator" do
     let(:user)     { create(:user, :administrator) }
     let(:district) { create :district }
-    it{ all_actions.each { |do_action| should be_able_to(do_action, district) } }
+    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, district) } }
   end
 
   context "when Supervisor" do
@@ -18,10 +18,10 @@ describe "District abilities" do
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, district)
+      is_expected.to be_able_to(do_action, district)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, district)
+      is_expected.to_not be_able_to(do_action, district)
     end}
   end
 
@@ -31,10 +31,10 @@ describe "District abilities" do
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, district)
+      is_expected.to be_able_to(do_action, district)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, district)
+      is_expected.to_not be_able_to(do_action, district)
     end}
   end
 
@@ -44,10 +44,10 @@ describe "District abilities" do
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, district)
+      is_expected.to be_able_to(do_action, district)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, district)
+      is_expected.to_not be_able_to(do_action, district)
     end}
   end
 

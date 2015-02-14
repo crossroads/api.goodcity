@@ -10,7 +10,7 @@ describe "Item abilities" do
 
   context "when Administrator" do
     let(:user) { create(:user, :administrator) }
-    it{ all_actions.each { |do_action| should be_able_to(do_action, item) } }
+    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, item) } }
   end
 
   context "when Supervisor" do
@@ -19,10 +19,10 @@ describe "Item abilities" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, item)
+        is_expected.to be_able_to(do_action, item)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, item)
+        is_expected.to_not be_able_to(do_action, item)
       end}
     end
   end
@@ -34,10 +34,10 @@ describe "Item abilities" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, item)
+        is_expected.to be_able_to(do_action, item)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, item)
+        is_expected.to_not be_able_to(do_action, item)
       end}
     end
 
@@ -46,10 +46,10 @@ describe "Item abilities" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, item)
+        is_expected.to be_able_to(do_action, item)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, item)
+        is_expected.to_not be_able_to(do_action, item)
       end}
     end
   end
@@ -62,10 +62,10 @@ describe "Item abilities" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, item)
+        is_expected.to be_able_to(do_action, item)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, item)
+        is_expected.to_not be_able_to(do_action, item)
       end}
     end
 
@@ -74,22 +74,22 @@ describe "Item abilities" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, item)
+        is_expected.to be_able_to(do_action, item)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, item)
+        is_expected.to_not be_able_to(do_action, item)
       end}
     end
   end
 
   context "when not Owner" do
     let(:user)   { create :user }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, item) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, item) } }
   end
 
   context "when Anonymous" do
     let(:user)  { nil }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, item) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, item) } }
   end
 
 end

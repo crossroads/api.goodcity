@@ -11,31 +11,31 @@ describe User, :type => :model do
   let(:user) { create :user }
 
   describe 'Associations' do
-    it { should have_many :auth_tokens }
-    it { should have_many :offers }
-    it { should have_many :messages }
-    it { should belong_to :permission }
-    it { should have_one  :address }
+    it { is_expected.to have_many :auth_tokens }
+    it { is_expected.to have_many :offers }
+    it { is_expected.to have_many :messages }
+    it { is_expected.to belong_to :permission }
+    it { is_expected.to have_one  :address }
   end
 
   describe 'Database columns' do
-    it{ should  have_db_column(:first_name).of_type(:string)}
-    it{ should  have_db_column(:last_name).of_type(:string)}
-    it{ should  have_db_column(:mobile).of_type(:string)}
+    it{ is_expected.to  have_db_column(:first_name).of_type(:string)}
+    it{ is_expected.to  have_db_column(:last_name).of_type(:string)}
+    it{ is_expected.to  have_db_column(:mobile).of_type(:string)}
   end
 
   describe "Validations" do
 
     context "mobile" do
-      it { should validate_presence_of(:mobile) }
-      it { should validate_uniqueness_of(:mobile) }
-      it { should allow_value('+85251234567').for(:mobile) }
-      it { should allow_value('+85261234567').for(:mobile) }
-      it { should allow_value('+85291234567').for(:mobile) }
-      it { should_not allow_value('+85211234567').for(:mobile) }
-      it { should_not allow_value('+44123456675').for(:mobile) }
-      it { should_not allow_value('4412345').for(:mobile) }
-      it { should_not allow_value('invalid').for(:mobile) }
+      it { is_expected.to validate_presence_of(:mobile) }
+      it { is_expected.to validate_uniqueness_of(:mobile) }
+      it { is_expected.to allow_value('+85251234567').for(:mobile) }
+      it { is_expected.to allow_value('+85261234567').for(:mobile) }
+      it { is_expected.to allow_value('+85291234567').for(:mobile) }
+      it { is_expected.to_not allow_value('+85211234567').for(:mobile) }
+      it { is_expected.to_not allow_value('+44123456675').for(:mobile) }
+      it { is_expected.to_not allow_value('4412345').for(:mobile) }
+      it { is_expected.to_not allow_value('invalid').for(:mobile) }
     end
 
   end

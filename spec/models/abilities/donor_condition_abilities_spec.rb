@@ -9,7 +9,7 @@ describe "DonorCondition abilities" do
   context "when Administrator" do
     let(:user)     { create(:user, :administrator) }
     let(:donor_condition) { create :donor_condition }
-    it{ all_actions.each { |do_action| should be_able_to(do_action, donor_condition) } }
+    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, donor_condition) } }
   end
 
   context "when Supervisor" do
@@ -18,10 +18,10 @@ describe "DonorCondition abilities" do
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, donor_condition)
+      is_expected.to be_able_to(do_action, donor_condition)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, donor_condition)
+      is_expected.to_not be_able_to(do_action, donor_condition)
     end}
   end
 
@@ -31,17 +31,17 @@ describe "DonorCondition abilities" do
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, donor_condition)
+      is_expected.to be_able_to(do_action, donor_condition)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, donor_condition)
+      is_expected.to_not be_able_to(do_action, donor_condition)
     end}
   end
 
   context "when Anonymous" do
     let(:user)     { nil }
     let(:donor_condition) { create :donor_condition }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, donor_condition) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, donor_condition) } }
   end
 
 end

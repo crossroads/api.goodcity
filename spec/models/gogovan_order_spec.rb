@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe GogovanOrder, type: :model do
   describe 'Association' do
-    it { should have_one :delivery }
+    it { is_expected.to have_one :delivery }
   end
 
   describe 'Database columns' do
-    it{ should have_db_column(:booking_id).of_type(:integer)}
-    it{ should have_db_column(:status).of_type(:string)}
+    it{ is_expected.to have_db_column(:booking_id).of_type(:integer)}
+    it{ is_expected.to have_db_column(:status).of_type(:string)}
   end
 
   describe 'save_booking' do
@@ -30,6 +30,6 @@ RSpec.describe GogovanOrder, type: :model do
   end
 
   describe 'callback' do
-    it { should callback(:cancel_order).before(:destroy) }
+    it { is_expected.to callback(:cancel_order).before(:destroy) }
   end
 end
