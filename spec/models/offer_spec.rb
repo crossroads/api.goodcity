@@ -8,30 +8,30 @@ RSpec.describe Offer, type: :model do
   it_behaves_like "paranoid"
 
   describe "Associations" do
-    it { should belong_to :created_by }
-    it { should have_many :messages }
-    it { should have_many :items }
+    it { is_expected.to belong_to :created_by }
+    it { is_expected.to have_many :messages }
+    it { is_expected.to have_many :items }
   end
 
   describe "Database Columns" do
-    it { should have_db_column(:language).of_type(:string) }
-    it { should have_db_column(:state).of_type(:string) }
-    it { should have_db_column(:origin).of_type(:string) }
-    it { should have_db_column(:stairs).of_type(:boolean) }
-    it { should have_db_column(:parking).of_type(:boolean) }
-    it { should have_db_column(:estimated_size).of_type(:string) }
-    it { should have_db_column(:notes).of_type(:text) }
-    it { should have_db_column(:created_by_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:language).of_type(:string) }
+    it { is_expected.to have_db_column(:state).of_type(:string) }
+    it { is_expected.to have_db_column(:origin).of_type(:string) }
+    it { is_expected.to have_db_column(:stairs).of_type(:boolean) }
+    it { is_expected.to have_db_column(:parking).of_type(:boolean) }
+    it { is_expected.to have_db_column(:estimated_size).of_type(:string) }
+    it { is_expected.to have_db_column(:notes).of_type(:text) }
+    it { is_expected.to have_db_column(:created_by_id).of_type(:integer) }
 
-    it { should have_db_column(:submitted_at).of_type(:datetime) }
-    it { should have_db_column(:reviewed_at).of_type(:datetime) }
-    it { should have_db_column(:review_completed_at).of_type(:datetime) }
-    it { should have_db_column(:received_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:submitted_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:reviewed_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:review_completed_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:received_at).of_type(:datetime) }
   end
 
   describe "validations" do
     it do
-      should validate_inclusion_of(:language).
+      is_expected.to validate_inclusion_of(:language).
         in_array( I18n.available_locales.map(&:to_s) )
     end
   end

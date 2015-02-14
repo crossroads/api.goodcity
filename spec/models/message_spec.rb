@@ -20,11 +20,11 @@ describe Message, type: :model do
   end
 
   describe "Associations" do
-    it { should belong_to :sender }
-    it { should belong_to :offer }
-    it { should belong_to :item }
-    it { should have_many :subscriptions }
-    it { should have_many :offers_subscription }
+    it { is_expected.to belong_to :sender }
+    it { is_expected.to belong_to :offer }
+    it { is_expected.to belong_to :item }
+    it { is_expected.to have_many :subscriptions }
+    it { is_expected.to have_many :offers_subscription }
   end
 
   describe "subscribe_users_to_message" do
