@@ -10,7 +10,7 @@ describe "Offer abilities" do
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
     let(:offer)     { create :offer }
-    it{ all_actions.each { |do_action| should be_able_to(do_action, offer) } }
+    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, offer) } }
   end
 
   context "when Supervisor" do
@@ -20,10 +20,10 @@ describe "Offer abilities" do
       let(:can)       { [:index, :show, :create, :update, :destroy] }
       let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, offer)
+        is_expected.to be_able_to(do_action, offer)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, offer)
+        is_expected.to_not be_able_to(do_action, offer)
       end}
     end
   end
@@ -36,10 +36,10 @@ describe "Offer abilities" do
       let(:can)       { [:index, :show, :create, :update, :destroy] }
       let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, offer)
+        is_expected.to be_able_to(do_action, offer)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, offer)
+        is_expected.to_not be_able_to(do_action, offer)
       end}
     end
 
@@ -48,10 +48,10 @@ describe "Offer abilities" do
       let(:can)       { [:index, :show, :create, :update] }
       let(:cannot)    { [:destroy, :manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, offer)
+        is_expected.to be_able_to(do_action, offer)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, offer)
+        is_expected.to_not be_able_to(do_action, offer)
       end}
     end
   end
@@ -63,10 +63,10 @@ describe "Offer abilities" do
       let(:can)       { [:index, :show, :create, :update, :destroy] }
       let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, offer)
+        is_expected.to be_able_to(do_action, offer)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, offer)
+        is_expected.to_not be_able_to(do_action, offer)
       end}
     end
 
@@ -75,10 +75,10 @@ describe "Offer abilities" do
       let(:can)       { [:index, :show, :create, :update, :destroy] }
       let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, offer)
+        is_expected.to be_able_to(do_action, offer)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, offer)
+        is_expected.to_not be_able_to(do_action, offer)
       end}
     end
 
@@ -87,10 +87,10 @@ describe "Offer abilities" do
       let(:can)       { [:index, :show, :update, :destroy] }
       let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, offer)
+        is_expected.to be_able_to(do_action, offer)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, offer)
+        is_expected.to_not be_able_to(do_action, offer)
       end}
     end
   end
@@ -101,17 +101,17 @@ describe "Offer abilities" do
     let(:can)    { [:create] }
     let(:cannot) { [:index, :show, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, offer)
+      is_expected.to be_able_to(do_action, offer)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, offer)
+      is_expected.to_not be_able_to(do_action, offer)
     end}
   end
 
   context "when Anonymous" do
     let(:user)  { nil }
     let(:offer) { create :offer }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, offer) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, offer) } }
   end
 
 end
