@@ -11,7 +11,7 @@ describe "Package abilities" do
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
-    it{ all_actions.each { |do_action| should be_able_to(do_action, package) } }
+    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, package) } }
   end
 
   context "when Supervisor" do
@@ -20,10 +20,10 @@ describe "Package abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, package)
+        is_expected.to be_able_to(do_action, package)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, package)
+        is_expected.to_not be_able_to(do_action, package)
       end}
     end
   end
@@ -34,10 +34,10 @@ describe "Package abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, package)
+        is_expected.to be_able_to(do_action, package)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, package)
+        is_expected.to_not be_able_to(do_action, package)
       end}
     end
 
@@ -46,10 +46,10 @@ describe "Package abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, package)
+        is_expected.to be_able_to(do_action, package)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, package)
+        is_expected.to_not be_able_to(do_action, package)
       end}
     end
   end
@@ -63,10 +63,10 @@ describe "Package abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, package)
+        is_expected.to be_able_to(do_action, package)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, package)
+        is_expected.to_not be_able_to(do_action, package)
       end}
     end
 
@@ -75,22 +75,22 @@ describe "Package abilities" do
       let(:can)     { [:index, :show, :create, :update] }
       let(:cannot)  { [:destroy, :manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, package)
+        is_expected.to be_able_to(do_action, package)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, package)
+        is_expected.to_not be_able_to(do_action, package)
       end}
     end
   end
 
   context "when not Owner" do
     let(:user)    { create :user }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, package) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
   end
 
   context "when Anonymous" do
     let(:user)    { nil }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, package) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
   end
 
 end

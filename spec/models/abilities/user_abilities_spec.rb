@@ -9,7 +9,7 @@ describe "User abilities" do
   context "when Administrator" do
     let(:user)   { create(:user, :administrator) }
     let(:person) { create :user }
-    it{ all_actions.each { |do_action| should be_able_to(do_action, person) } }
+    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, person) } }
   end
 
   context "when Supervisor" do
@@ -18,10 +18,10 @@ describe "User abilities" do
     let(:can)    { [:index, :show, :update, :current_user_profile] }
     let(:cannot) { [:create, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, person)
+      is_expected.to be_able_to(do_action, person)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, person)
+      is_expected.to_not be_able_to(do_action, person)
     end}
   end
 
@@ -31,10 +31,10 @@ describe "User abilities" do
     let(:can)    { [:index, :show, :update, :current_user_profile] }
     let(:cannot) { [:create, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, person)
+      is_expected.to be_able_to(do_action, person)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, person)
+      is_expected.to_not be_able_to(do_action, person)
     end}
   end
 
@@ -44,10 +44,10 @@ describe "User abilities" do
     let(:can)    { [:show, :update, :current_user_profile] }
     let(:cannot) { [:index, :create, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, person)
+      is_expected.to be_able_to(do_action, person)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, person)
+      is_expected.to_not be_able_to(do_action, person)
     end}
   end
 
@@ -57,17 +57,17 @@ describe "User abilities" do
     let(:can)    { [:current_user_profile] }
     let(:cannot) { [:show, :update, :index, :create, :destroy, :manage] }
     it{ can.each do |do_action|
-      should be_able_to(do_action, person)
+      is_expected.to be_able_to(do_action, person)
     end}
     it{ cannot.each do |do_action|
-      should_not be_able_to(do_action, person)
+      is_expected.to_not be_able_to(do_action, person)
     end}
   end
 
   context "when Anonymous" do
     let(:user)   { nil }
     let(:person) { create :user }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, person) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, person) } }
   end
 
 end

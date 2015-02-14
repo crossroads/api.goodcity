@@ -11,7 +11,7 @@ describe "Image abilities" do
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
-    it{ all_actions.each { |do_action| should be_able_to(do_action, image) } }
+    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, image) } }
   end
 
   context "when Supervisor" do
@@ -20,10 +20,10 @@ describe "Image abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, image)
+        is_expected.to be_able_to(do_action, image)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, image)
+        is_expected.to_not be_able_to(do_action, image)
       end}
     end
   end
@@ -34,10 +34,10 @@ describe "Image abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, image)
+        is_expected.to be_able_to(do_action, image)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, image)
+        is_expected.to_not be_able_to(do_action, image)
       end}
     end
 
@@ -46,10 +46,10 @@ describe "Image abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, image)
+        is_expected.to be_able_to(do_action, image)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, image)
+        is_expected.to_not be_able_to(do_action, image)
       end}
     end
   end
@@ -63,10 +63,10 @@ describe "Image abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, image)
+        is_expected.to be_able_to(do_action, image)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, image)
+        is_expected.to_not be_able_to(do_action, image)
       end}
     end
 
@@ -75,22 +75,22 @@ describe "Image abilities" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
       it{ can.each do |do_action|
-        should be_able_to(do_action, image)
+        is_expected.to be_able_to(do_action, image)
       end}
       it{ cannot.each do |do_action|
-        should_not be_able_to(do_action, image)
+        is_expected.to_not be_able_to(do_action, image)
       end}
     end
   end
 
   context "when not Owner" do
     let(:user)    { create :user }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, image) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, image) } }
   end
 
   context "when Anonymous" do
     let(:user)    { nil }
-    it{ all_actions.each { |do_action| should_not be_able_to(do_action, image) } }
+    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, image) } }
   end
 
 end
