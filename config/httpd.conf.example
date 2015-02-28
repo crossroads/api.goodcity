@@ -1,10 +1,11 @@
 <VirtualHost *:80>
 
-    ServerName PUBLIC SERVER URL
-    ServerAdmin EMAIL
+    ServerName api.goodcity.hk
+    ServerName goodcity-production.cloudapp.net
+    ServerAdmin itdept@crossroads.org.hk
 
-    DocumentRoot RAILS_ROOT/public
-    <Directory RAILS_ROOT/public>
+    DocumentRoot /opt/rails/goodcity_server/current/public
+    <Directory /opt/rails/goodcity_server/current/public>
        # This relaxes Apache security settings.
        AllowOverride all
        # MultiViews must be turned off.
