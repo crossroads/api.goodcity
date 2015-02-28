@@ -1,4 +1,4 @@
-redis_options = {}
+redis_options = { namespace: 'goodcity' }
 redis_options.merge!(namespace: ENV['REDIS_NAMESPACE']) if ENV['REDIS_NAMESPACE'].present?
 redis_options.merge!(password: ENV['REDIS_PASSWORD']) if ENV['REDIS_PASSWORD'].present?
 redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379'
