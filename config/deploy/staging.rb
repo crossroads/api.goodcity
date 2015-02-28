@@ -1,1 +1,1 @@
-server 'api-staging.goodcity.hk', user: 'deployer', roles: %w{web app}
+server 'api-staging.goodcity.hk', user: 'deployer', roles: %w{web app db}
