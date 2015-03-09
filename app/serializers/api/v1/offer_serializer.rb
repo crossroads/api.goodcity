@@ -4,7 +4,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :language, :state, :origin, :stairs, :parking,
-      :estimated_size, :notes, :created_by_id, :created_at,
+      :estimated_size, :notes, :created_by_id, :created_at, :deleted_at,
       :updated_at, :submitted_at, :reviewed_at, :gogovan_transport_id,
       :crossroads_transport_id, :review_completed_at, :received_at
 
