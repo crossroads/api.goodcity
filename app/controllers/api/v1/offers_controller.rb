@@ -50,16 +50,21 @@ module Api::V1
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
     param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
     def index
-      return finished if params["query"] == "finished"
-      @offers = @offers.active.with_eager_load # this maintains security
+      return finished if params["category"] == "finished"
+      @offers = params['state'] ?
+        @offers.by_state(params['state']).with_eager_load :
+        @offers.active.with_eager_load # this maintains security
       @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
-      @offers = @offers.by_state(params['state']) if params['state']
       @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
     def finished
-      @offers = Offer.with_deleted.paranoid.with_eager_load
+      @offers = if params["reviewer"]
+        Offer.with_deleted.paranoid.review_by(User.current_user).with_eager_load
+      else
+        Offer.with_deleted.paranoid.with_eager_load
+      end
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
