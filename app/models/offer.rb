@@ -9,7 +9,7 @@ class Offer < ActiveRecord::Base
   belongs_to :crossroads_transport
 
   has_one  :delivery, dependent: :destroy
-  has_many :items, inverse_of: :offer, dependent: :destroy
+  has_many :items, -> { with_deleted }, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_many :users, through: :subscriptions
