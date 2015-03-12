@@ -49,6 +49,7 @@ module Api::V1
     param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
     param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
+    param :category, ["finished"], desc: "To get finished(received and closed) offers"
     def index
       return finished if params["category"] == "finished"
       @offers = params['state'] ?
