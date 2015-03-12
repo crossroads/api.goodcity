@@ -99,4 +99,28 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe 'scope' do
+    let!(:closed_offer) { create :offer, :closed }
+    let!(:received_offer) { create :offer, :received }
+    let!(:submitted_offer) { create :offer, :submitted }
+
+    it 'active' do
+      active_offers = Offer.active
+      expect(active_offers).to include(submitted_offer)
+      expect(active_offers).to_not include(closed_offer)
+      expect(active_offers).to_not include(received_offer)
+      expect(scrub(Offer.active.to_sql)).to include(
+        "state NOT IN ('received','closed')")
+    end
+
+    it 'inactive' do
+      inactive_offers = Offer.inactive
+      expect(inactive_offers).to_not include(submitted_offer)
+      expect(inactive_offers).to include(closed_offer)
+      expect(inactive_offers).to include(received_offer)
+      expect(scrub(Offer.inactive.to_sql)).to include(
+        "deleted_at IS NOT NULL OR state IN ('received','closed')")
+    end
+  end
+
 end
