@@ -1,7 +1,7 @@
 module Api::V1
   class OffersController < Api::V1::ApiController
 
-    before_action :eager_load_offer, except: [:index, :create]
+    before_action :eager_load_offer, except: [:index, :create, :finished]
     load_and_authorize_resource :offer, parent: false
 
     resource_description do
@@ -49,11 +49,23 @@ module Api::V1
     param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
     param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
+    param :category, ["finished"], desc: "To get finished(received and closed) offers"
     def index
-      @offers = @offers.with_eager_load # this maintains security
+      return finished if params["category"] == "finished"
+      @offers = params['state'] ?
+        @offers.by_state(params['state']).with_eager_load :
+        @offers.active.with_eager_load # this maintains security
       @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
-      @offers = @offers.by_state(params['state']) if params['state']
       @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
+      render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
+    end
+
+    def finished
+      @offers = if params["reviewer"]
+        Offer.inactive.review_by(User.current_user).with_eager_load
+      else
+        Offer.inactive.with_eager_load
+      end
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 

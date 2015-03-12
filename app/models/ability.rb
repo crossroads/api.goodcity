@@ -59,7 +59,7 @@ class Ability
       can :destroy, Offer, state: 'draft' if reviewer
       can :destroy, Offer if supervisor
       can :review, Offer if reviewer || supervisor
-      can [:complete_review, :close_offer], Offer if reviewer || supervisor
+      can [:complete_review, :close_offer, :finished], Offer if reviewer || supervisor
 
       # Package (same as item permissions)
       can [:index, :show, :create, :update], Package, item: { offer:
