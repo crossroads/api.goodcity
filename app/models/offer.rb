@@ -32,7 +32,7 @@ class Offer < ActiveRecord::Base
   scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
   scope :active, -> { where("state NOT IN (?)", ["received", "closed"]) }
 
-  scope :paranoid, -> { where("deleted_at IS NOT NULL OR state IN (?)", ["received", "closed"]) }
+  scope :inactive, -> { where("deleted_at IS NOT NULL OR state IN (?)", ["received", "closed"]) }
 
   before_create :set_language
   after_initialize :set_initial_state

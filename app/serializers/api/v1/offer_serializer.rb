@@ -6,7 +6,8 @@ module Api::V1
     attributes :id, :language, :state, :origin, :stairs, :parking,
       :estimated_size, :notes, :created_by_id, :created_at, :deleted_at,
       :updated_at, :submitted_at, :reviewed_at, :gogovan_transport_id,
-      :crossroads_transport_id, :review_completed_at, :received_at, :removed_at
+      :crossroads_transport_id, :review_completed_at, #:removed_at,
+      :received_at
 
     has_many :items, serializer: ItemSerializer
     has_many :messages, serializer: MessageSerializer
@@ -20,12 +21,13 @@ module Api::V1
       @options[:exclude_messages] != true
     end
 
-    def removed_at__sql
-      "deleted_at"
-    end
+    # Use it to send soft-deleted offers
+    # def removed_at__sql
+    #   "deleted_at"
+    # end
 
-    def removed_at
-      object.deleted_at
-    end
+    # def removed_at
+    #   object.deleted_at
+    # end
   end
 end
