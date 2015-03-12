@@ -61,9 +61,9 @@ module Api::V1
 
     def finished
       @offers = if params["reviewer"]
-        Offer.with_deleted.paranoid.review_by(User.current_user).with_eager_load
+        Offer.inactive.review_by(User.current_user).with_eager_load
       else
-        Offer.with_deleted.paranoid.with_eager_load
+        Offer.inactive.with_eager_load
       end
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
