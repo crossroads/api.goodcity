@@ -65,14 +65,13 @@ module Api::V1
       mobile = params[:mobile]
       if (User::HongKongMobileRegExp === mobile)
         @user = User.find_by_mobile(params[:mobile])
+        if !valid_host?
+          return render_error("Wrong URL", 403)
+        end
         @user.send_verification_pin if @user.present?
         render json: { otp_auth_key: otp_auth_key_for(@user) }
       else
-        attr = I18n.t('activerecord.attributes.user.mobile')
-        reason = mobile.blank? ? 'blank' : 'invalid'
-        err = I18n.t("activerecord.errors.models.user.attributes.mobile.#{reason}")
-        message = I18n.t('errors.format', attribute: attr, message: err)
-        render json: { errors: message }, status: 422
+        invalid_mobile(mobile)
       end
     end
 
@@ -188,6 +187,23 @@ module Api::V1
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
       params.require(:user_auth).permit(attributes)
+    end
+
+    def invalid_mobile(mobile)
+      attr = I18n.t('activerecord.attributes.user.mobile')
+      reason = mobile.blank? ? 'blank' : 'invalid'
+      err = I18n.t("activerecord.errors.models.user.attributes.mobile.#{reason}")
+      message = I18n.t('errors.format', attribute: attr, message: err)
+      render_error(message, 422)
+    end
+
+    def render_error(message, status)
+      render json: { errors: message }, status: status
+    end
+
+    def valid_host?
+      (@user.donor? && params[:app] == "donor") ||
+      (@user.reviewer? && params[:app] == "reviewer")
     end
 
     def warden
