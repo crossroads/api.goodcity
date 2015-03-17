@@ -202,8 +202,8 @@ module Api::V1
     end
 
     def valid_host?
-      (@user.donor? && params[:app] == "donor") ||
-      (@user.reviewer? && params[:app] == "reviewer")
+      (@user.donor? && app_name == "donor") ||
+      (@user.reviewer? && app_name == "reviewer")
     end
 
     def warden
