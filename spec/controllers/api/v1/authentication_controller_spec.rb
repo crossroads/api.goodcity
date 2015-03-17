@@ -59,22 +59,23 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   end
 
   context "send_pin" do
-    it 'should find user by mobile', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      expect(user).to receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
-      post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
-      expect(body['otp_auth_key']).to eql( otp_auth_key )
-    end
+    context "with valid host" do
+      it 'should find user by mobile', :show_in_doc do
+        expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+        expect(user).to receive(:send_verification_pin)
+        expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
+        expect(controller).to receive(:app_name).and_return("donor")
+        post :send_pin, mobile: mobile
+        body = JSON.parse(response.body)
+        expect(body['otp_auth_key']).to eql( otp_auth_key )
+      end
 
-    it "where user does not exist" do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).with(nil).and_return( otp_auth_key )
-      post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
-      expect(body['otp_auth_key']).to eql( otp_auth_key )
+      it "where user does not exist" do
+        expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
+        expect(user).to_not receive(:send_verification_pin)
+        post :send_pin, mobile: mobile
+        expect(response.status).to eql(422)
+      end
     end
 
     context "where mobile is" do

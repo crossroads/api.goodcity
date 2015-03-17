@@ -63,12 +63,11 @@ module Api::V1
     # Lookup user based on mobile. Validate mobile format first.
     def send_pin
       mobile = params[:mobile]
-      if (User::HongKongMobileRegExp === mobile)
-        @user = User.find_by_mobile(params[:mobile])
+      if(@user = valid_user(mobile))
         if !valid_host?
           return render_error("Wrong URL", 403)
         end
-        @user.send_verification_pin if @user.present?
+        @user.send_verification_pin
         render json: { otp_auth_key: otp_auth_key_for(@user) }
       else
         invalid_mobile(mobile)
@@ -187,6 +186,11 @@ module Api::V1
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
       params.require(:user_auth).permit(attributes)
+    end
+
+    def valid_user(mobile)
+      (User::HongKongMobileRegExp === mobile) &&
+      User.find_by_mobile(mobile)
     end
 
     def invalid_mobile(mobile)
