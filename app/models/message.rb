@@ -16,6 +16,7 @@ class Message < ActiveRecord::Base
   end
 
   scope :with_eager_load, -> { includes( [:sender] ) }
+  scope :non_private, -> { where(is_private: false) }
 
   # used to override the state value during serialization
   attr_accessor :state_value
