@@ -9,8 +9,13 @@ class Message < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
+  default_scope do
+    unless User.current_user.try(:staff?)
+      Message.where(is_private: false)
+    end
+  end
+
   scope :with_eager_load, -> { includes( [:sender] ) }
-  scope :non_private, -> { where(is_private: false) }
 
   # used to override the state value during serialization
   attr_accessor :state_value
