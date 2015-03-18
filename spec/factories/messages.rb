@@ -28,6 +28,10 @@ FactoryGirl.define do
     trait :with_item do
       association :item
     end
+
+    trait :private do
+      is_private  true
+    end
   end
 
 end
