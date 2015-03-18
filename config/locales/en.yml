@@ -32,3 +32,5 @@ en:
               blank: "can't be blank"
   notification:
     new_offer: New offer submitted by %{name}
+  host:
+    invalid: Invalid host
