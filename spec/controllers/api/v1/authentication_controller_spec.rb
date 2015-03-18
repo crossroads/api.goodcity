@@ -78,6 +78,15 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       end
     end
 
+    context "with invalid host" do
+      it 'should return 403', :show_in_doc do
+        expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+        expect(controller).to receive(:app_name).and_return("reviewer")
+        post :send_pin, mobile: mobile
+        expect(response.status).to eql(403)
+      end
+    end
+
     context "where mobile is" do
       it 'empty' do
         expect(User).to_not receive(:find_by_mobile)
