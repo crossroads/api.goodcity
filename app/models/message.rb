@@ -42,7 +42,7 @@ class Message < ActiveRecord::Base
     users_ids.each do |user_id|
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: user_id)
     end
-    subscriptions.create(state: "read", message_id: id, offer_id: offer_id, user_id: sender_id)
+    subscriptions.create(state: "read", message_id: id, offer_id: offer_id, user_id: sender_id) unless sender.try(:default?)
 
     # subscribe donor if not already subscribed
     unless self.is_private || self.user_subscribed?(self.offer.created_by_id)
@@ -81,7 +81,7 @@ class Message < ActiveRecord::Base
 
     user = Api::V1::UserSerializer.new(sender)
 
-    send_update self, user, "read", sender_channel
+    send_update self, user, "read", sender_channel unless sender.default?
     send_update self, user, 'unread', subscribed_user_channels
     send_update self, user, 'never-subscribed', unsubscribed_user_channels
   end
