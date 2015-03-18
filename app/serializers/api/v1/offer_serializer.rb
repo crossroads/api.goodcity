@@ -3,6 +3,8 @@ module Api::V1
   class OfferSerializer < ApplicationSerializer
     embed :ids, include: true
 
+    OFFER_TIME_ATTRIBUTES = Offer.columns_hash.select{|k,v| v.type == :datetime}.keys
+
     attributes :id, :language, :state, :origin, :stairs, :parking,
       :estimated_size, :notes, :created_by_id, :created_at, :deleted_at,
       :updated_at, :submitted_at, :reviewed_at, :gogovan_transport_id,
@@ -19,6 +21,12 @@ module Api::V1
 
     def include_messages?
       @options[:exclude_messages] != true
+    end
+
+    OFFER_TIME_ATTRIBUTES.each do |k|
+      define_method "#{k}__sql" do
+        " offers.#{k}#{time_zone_query} "
+      end
     end
 
     # Use it to send soft-deleted offers
