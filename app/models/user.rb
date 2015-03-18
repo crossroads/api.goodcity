@@ -53,6 +53,10 @@ class User < ActiveRecord::Base
     [first_name, last_name].reject(&:blank?).map(&:downcase).map(&:capitalize).join(' ')
   end
 
+  def staff?
+    reviewer? || supervisor? || administrator?
+  end
+
   def reviewer?
     permission.try(:name) == 'Reviewer'
   end
