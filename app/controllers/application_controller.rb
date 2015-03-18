@@ -9,6 +9,20 @@ class ApplicationController < ActionController::API
   before_action :set_locale, :current_user
   helper_method :current_user
 
+  protected
+
+  def app_name
+    request.headers['X-GOODCITY-APP-NAME']
+  end
+
+  def app_version
+    request.headers['X-GOODCITY-APP-VERSION']
+  end
+
+  def app_sha
+    request.headers['X-GOODCITY-APP-SHA']
+  end
+
   private
 
   def set_locale
