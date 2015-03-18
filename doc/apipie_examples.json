@@ -123,6 +123,7 @@
   ],
   "authentication#send_pin" : [
     {
+      "title" : "This is an example of send pin with valid host and valid mobile number",
       "verb" : "POST",
       "path" : "/api/v1/auth/send_pin",
       "versions" : [
@@ -130,12 +131,84 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+85263102550"
+        "mobile" : "+85253232702"
       },
       "response_data" : {
         "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
       },
       "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example of send pin with unregisterd mobile",
+      "verb" : "POST",
+      "path" : "/api/v1/auth/send_pin",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "mobile" : "+85256167460"
+      },
+      "response_data" : {
+        "errors" : "Mobile does not exist"
+      },
+      "code" : "422",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example of send pin with invalid host",
+      "verb" : "POST",
+      "path" : "/api/v1/auth/send_pin",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "mobile" : "+85296732540"
+      },
+      "response_data" : {
+        "errors" : "Invalid host"
+      },
+      "code" : "403",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example of send pin with empty mobile",
+      "verb" : "POST",
+      "path" : "/api/v1/auth/send_pin",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "mobile" : ""
+      },
+      "response_data" : {
+        "errors" : "Mobile can't be blank"
+      },
+      "code" : "422",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "This is an example of send pin with invalid mobile number",
+      "verb" : "POST",
+      "path" : "/api/v1/auth/send_pin",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "mobile" : "+9101234567"
+      },
+      "response_data" : {
+        "errors" : "Mobile must begin with +852"
+      },
+      "code" : "422",
       "show_in_doc" : 1,
       "recorded" : true
     }
