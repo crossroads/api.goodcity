@@ -36,7 +36,6 @@ class Offer < ActiveRecord::Base
 
   before_create :set_language
   after_initialize :set_initial_state
-  before_save :send_update, if: :crossroads_transport_id_changed?
 
   # Workaround to set initial state fror the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
@@ -123,15 +122,5 @@ class Offer < ActiveRecord::Base
   #required by PusherUpdates module
   def offer
     self
-  end
-
-  # to update about calculated crossroads truck cost
-  def send_update
-    user = Api::V1::UserSerializer.new(User.current_user)
-    object = Api::V1::OfferSerializer.new(self,
-      { exclude: Offer.reflections.keys.map(&:to_sym) })
-    channel = "user_#{self.created_by_id}"
-    PushService.new.send_update_store(channel, {item: object, sender: user, operation: :update}, "offer#{id}")
-    true
   end
 end

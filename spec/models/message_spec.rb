@@ -112,4 +112,21 @@ describe Message, type: :model do
       message.save
     end
   end
+
+  describe 'default scope' do
+    let!(:private_message) { create :message, :private }
+
+    it "should not allow donor to access private messages" do
+      User.current_user = donor
+      expect(Message.all).to_not include(private_message)
+      expect{
+        Message.find(private_message.id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should not allow donor to access private messages" do
+      User.current_user = reviewer
+      expect(Message.all).to include(private_message)
+    end
+  end
 end
