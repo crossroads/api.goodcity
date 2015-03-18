@@ -12,11 +12,12 @@ module Api::V1
     has_one :item_type, serializer: ItemTypeSerializer
 
     def message_ids
-      object.messages.pluck(:id)
+      current_user.try(:donor?) ? object.messages.non_private.pluck(:id) : object.messages.pluck(:id)
     end
 
     def message_ids__sql
-      "coalesce((select array_agg(messages.id) from messages where item_id = items.id), '{}'::int[])"
+      need_private = current_user.try(:donor?) ? "AND messages.is_private = 'f'" : ""
+      "coalesce((select array_agg(messages.id) from messages where item_id = items.id #{need_private}), '{}'::int[])"
     end
 
     def include_message_ids?
