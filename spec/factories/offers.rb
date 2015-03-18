@@ -21,6 +21,16 @@ FactoryGirl.define do
       state        'submitted'
     end
 
+    trait :received do
+      state "received"
+      received_at { Time.now }
+    end
+
+    trait :closed do
+      reviewed_at { Time.now }
+      state "closed"
+    end
+
     trait :reviewed do
       reviewed_at { Time.now }
       state       'reviewed'
