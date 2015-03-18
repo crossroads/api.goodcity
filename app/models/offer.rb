@@ -73,6 +73,7 @@ class Offer < ActiveRecord::Base
 
     before_transition :on => :submit do |offer, transition|
       offer.submitted_at = Time.now
+      offer.send_thank_you_message
     end
 
     before_transition :on => :start_review do |offer, transition|
@@ -88,6 +89,10 @@ class Offer < ActiveRecord::Base
     end
 
     after_transition :on => :submit, :do => :send_new_offer_notification
+  end
+
+  def send_thank_you_message
+    messages.create(body: OFFER_THANK_YOU_MESSAGE, sender: User.default)
   end
 
   def update_saleable_items
