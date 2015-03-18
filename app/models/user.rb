@@ -98,6 +98,14 @@ class User < ActiveRecord::Base
     Thread.current[:current_user] = user
   end
 
+  def self.default
+    find_by(first_name: "GoodCity Team")
+  end
+
+  def default?
+    first_name == "GoodCity Team"
+  end
+
   private
 
   def generate_auth_token
