@@ -73,7 +73,6 @@ class Offer < ActiveRecord::Base
 
     before_transition :on => :submit do |offer, transition|
       offer.submitted_at = Time.now
-      offer.send_thank_you_message
     end
 
     before_transition :on => :start_review do |offer, transition|
@@ -88,7 +87,10 @@ class Offer < ActiveRecord::Base
       offer.received_at = Time.now
     end
 
-    after_transition :on => :submit, :do => :send_new_offer_notification
+    after_transition :on => :submit do |offer, transition|
+      offer.send_thank_you_message
+      offer.send_new_offer_notification
+    end
   end
 
   def send_thank_you_message
@@ -112,12 +114,12 @@ class Offer < ActiveRecord::Base
       state_event: 'start_review')
   end
 
-  private
-
   def send_new_offer_notification
     text = I18n.t("notification.new_offer", name: self.created_by.full_name)
     PushService.new.send_notification(text: text, entity_type: "offer", entity: self, channel: Channel.reviewer)
   end
+
+  private
 
   # Set a default offer language if it hasn't been set already
   def set_language
