@@ -38,6 +38,9 @@ crossroads_transports.each do |name, value|
   FactoryGirl.create :crossroads_transport, name_en: name, name_zh_tw: value[:name_zh_tw], cost: value[:cost], truck_size: value[:truck_size]
 end
 
+# Create Default User called "GoodCity Team"
+default_user = User.where(first_name: "GoodCity Team").first_or_initialize
+default_user.save(validate: false)
 
 # Don't run the following setup on the live server.
 # This is for dummy data
