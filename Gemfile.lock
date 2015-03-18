@@ -190,7 +190,7 @@ GEM
       activerecord (~> 4.0)
     pg (0.18.1)
     pg_array_parser (0.0.9)
-    postgres_ext (2.4.0)
+    postgres_ext (2.4.1)
       activerecord (>= 4.0.0)
       arel (>= 4.0.1)
       pg_array_parser (~> 0.0.9)
