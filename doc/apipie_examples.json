@@ -131,7 +131,7 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+85253232702"
+        "mobile" : "+85261677528"
       },
       "response_data" : {
         "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
@@ -141,7 +141,7 @@
       "recorded" : true
     },
     {
-      "title" : "This is an example of send pin with unregisterd mobile",
+      "title" : "This is an example of send pin unregistered mobile number",
       "verb" : "POST",
       "path" : "/api/v1/auth/send_pin",
       "versions" : [
@@ -149,12 +149,12 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+85256167460"
+        "mobile" : "+85251641822"
       },
       "response_data" : {
-        "errors" : "Mobile does not exist"
+        "otp_auth_key" : "/JqONEgEjrZefDV3ZIQsNA=="
       },
-      "code" : "422",
+      "code" : "200",
       "show_in_doc" : 1,
       "recorded" : true
     },
@@ -167,7 +167,7 @@
       ],
       "query" : null,
       "request_data" : {
-        "mobile" : "+85296732540"
+        "mobile" : "+85260274677"
       },
       "response_data" : {
         "errors" : "Invalid host"
@@ -177,7 +177,7 @@
       "recorded" : true
     },
     {
-      "title" : "This is an example of send pin with empty mobile",
+      "title" : "This is an example of send pin with empty mobile number",
       "verb" : "POST",
       "path" : "/api/v1/auth/send_pin",
       "versions" : [

@@ -30,7 +30,6 @@ en:
             mobile:
               invalid: "must begin with +852"
               blank: "can't be blank"
-              not_registerd: "does not exist"
   notification:
     new_offer: New offer submitted by %{name}
   host:

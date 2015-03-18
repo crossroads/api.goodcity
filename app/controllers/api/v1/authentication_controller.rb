@@ -55,17 +55,20 @@ module Api::V1
 
     ===Response status codes
     * 200 - returned regardless of whether mobile number exists or not
+    * 403 - returned if the host is invalid
     * 422 - returned if the mobile number is invalid
     EOS
     param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85262345678"
     error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
+    error 403, "Invalid host"
     error 500, "Internal Server Error"
     # Lookup user based on mobile. Validate mobile format first.
     def send_pin
       @mobile = params[:mobile]
-      if(@user = valid_user)
+      if(User::HongKongMobileRegExp === @mobile)
+        @user = User.find_by_mobile(@mobile)
         return render_error(I18n.t('host.invalid'), 403) if !valid_host?
-        @user.send_verification_pin
+        @user.send_verification_pin if @user
         render json: { otp_auth_key: otp_auth_key_for(@user) }
       else
         render_invalid_mobile
@@ -186,17 +189,9 @@ module Api::V1
       params.require(:user_auth).permit(attributes)
     end
 
-    def valid_user
-      valid_mobile? && User.find_by_mobile(@mobile)
-    end
-
-    def valid_mobile?
-      User::HongKongMobileRegExp === @mobile
-    end
-
     def render_invalid_mobile
       attr = I18n.t('activerecord.attributes.user.mobile')
-      reason = @mobile.blank? ? 'blank' : (valid_mobile? ? 'not_registerd' : 'invalid')
+      reason = @mobile.blank? ? 'blank' : 'invalid'
       err = I18n.t("activerecord.errors.models.user.attributes.mobile.#{reason}")
       message = I18n.t('errors.format', attribute: attr, message: err)
       render_error(message, 422)
@@ -207,6 +202,7 @@ module Api::V1
     end
 
     def valid_host?
+      return true if @user.blank? #for spam
       (@user.donor? && app_name == "donor") ||
       (@user.reviewer? && app_name == "reviewer")
     end
