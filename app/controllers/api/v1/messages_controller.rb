@@ -3,6 +3,8 @@ module Api::V1
 
     load_and_authorize_resource :message, parent: false
 
+    include TokenValidatable
+
     resource_description do
       short "List, show, create and mark_read a message."
       formats ["json"]
