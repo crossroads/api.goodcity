@@ -203,8 +203,8 @@ module Api::V1
 
     def valid_host?
       return true if @user.blank? #for spam
-      (@user.donor? && app_name == "donor") ||
-      (@user.reviewer? && app_name == "reviewer")
+      (@user.donor? && app_name == DONOR_APP) ||
+      (@user.reviewer? && app_name == ADMIN_APP)
     end
 
     def warden
