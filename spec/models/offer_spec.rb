@@ -123,4 +123,13 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "#send_thank_you_message" do
+    it 'should send thank you message to donor on offer submit' do
+      offer = create :offer
+      offer.submit
+      expect(offer.messages.count).to eq(1)
+      expect(offer.messages.last.sender).to eq(User.default)
+    end
+  end
+
 end
