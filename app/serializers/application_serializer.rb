@@ -2,8 +2,7 @@ class ApplicationSerializer < ActiveModel::Serializer
 
   protected
     def time_zone_query
-      "::timestamp with time zone AT TIME ZONE
-        '#{Time.zone.tzinfo.identifier}' "
+      "::timestamp without time zone AT TIME ZONE 'UTC' "
     end
 
     def current_language
