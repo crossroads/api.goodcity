@@ -50,6 +50,7 @@ gem 'nokogiri'
 gem 'sidekiq'
 gem 'sinatra', :require => nil # for sidekiq reporting console
 gem 'airbrake'
+gem 'lograge'
 
 group :development do
   unless ENV["CI"]
