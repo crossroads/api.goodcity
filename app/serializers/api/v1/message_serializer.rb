@@ -1,6 +1,7 @@
 module Api::V1
 
   class MessageSerializer < ApplicationSerializer
+    include SerializeTimeValue
 
     embed :ids, include: true
 
@@ -36,10 +37,6 @@ module Api::V1
            ELSE 'never-subscribed'
          END"
       end
-    end
-
-    def created_at__sql
-      " messages.created_at#{time_zone_query} "
     end
 
   end
