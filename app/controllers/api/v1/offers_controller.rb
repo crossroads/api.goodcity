@@ -92,16 +92,10 @@ module Api::V1
 
     api :PUT, '/v1/offers/1/review', "Assign current_user as Offer reviewer. If two or more reviewers start review at the same time, assign offer to the first reviewer and return offer with reviewer details to other reviewer(s)"
     def review
-      begin
-        Offer.transaction do
-          @offer.lock!
-          raise unless @offer.submitted?
-          @offer.assign_reviewer(current_user)
-          render json: @offer, serializer: serializer
-        end
-      rescue
-        render json: @offer, serializer: serializer
+      @offer.with_lock do
+        @offer.assign_reviewer(current_user) if @offer.submitted?
       end
+      render json: @offer, serializer: serializer
     end
 
     api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
