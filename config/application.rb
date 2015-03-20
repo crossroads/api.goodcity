@@ -36,5 +36,11 @@ module GoodCityServer
 
     config.active_job.queue_adapter = :sidekiq
 
+    config.lograge.enabled = true
+    config.lograge.enabled = Lograge::Formatters::Json.new
+    config.log_formatter = proc do |severity, datetime, progname, msg|
+      "time=\"#{datetime.iso8601(3)}\" level=\"#{severity}\" pid=\"#{Process.pid}\" #{msg.to_s.gsub('"', "'")}\n"
+    end
+
   end
 end
