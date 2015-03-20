@@ -15,12 +15,13 @@ module Api::V1
       base.class_eval do
         self.time_attributes.each do |attribute|
           define_method "#{attribute}__sql" do
-            " #{self.class.model_name.table_name}.#{attribute}#{time_zone_query} "
+            " to_char(#{self.class.model_name.table_name}.#{attribute}#{time_zone_query}) "
           end
         end
 
         def time_zone_query
-          "::timestamp without time zone AT TIME ZONE 'UTC' "
+          "::timestamp without time zone AT TIME ZONE 'UTC',
+          'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'"
         end
       end
     end
