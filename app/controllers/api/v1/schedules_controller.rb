@@ -26,10 +26,11 @@ module Api::V1
     api :GET, "/v1/schedules", "List of available schedules for current week"
     def availableTimeSlots
       result_hash = HashWithIndifferentAccess.new(AVAILABLESLOTS).map {|k,v| v}
-      @schedules  = result_hash.each_with_index{|k,i|
-                      k[:scheduled_at] = "#{Time.now + 1.weeks + k["scheduled_at"].day}"
-                      k.store("id", i+1)
-                    }
+      last_id = Schedule.last.try(:id) || 1
+      @schedules  = result_hash.each_with_index do |k,i|
+        k[:scheduled_at] = Time.now.utc + 1.weeks + k["scheduled_at"].day
+        k.store("id", last_id + i + 1)
+      end
       render json: @schedules
     end
 
