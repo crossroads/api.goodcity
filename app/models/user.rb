@@ -25,7 +25,6 @@ class User < ActiveRecord::Base
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
   scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
-  scope :without_mobile, -> { where("mobile = '' OR mobile IS NULL") }
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
@@ -99,16 +98,12 @@ class User < ActiveRecord::Base
     Thread.current[:current_user] = user
   end
 
-  def self.default
-    without_mobile.find_by(first_name: "GoodCity Team")
+  def self.system_user
+    User.where(mobile: SYSTEM_USER_MOBILE).order(:id).first
   end
 
-  def self.without_mobile
-    where("mobile = '' OR mobile IS NULL")
-  end
-
-  def default?
-    first_name == "GoodCity Team" && mobile.blank?
+  def system_user?
+    self == User.system_user
   end
 
   private

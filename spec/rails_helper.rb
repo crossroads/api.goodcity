@@ -49,10 +49,6 @@ RSpec.configure do |config|
   # Apipie can record examples using "APIPIE_RECORD=examples rake"
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 
-  # Create Default User called "GoodCity Team"
-  config.before(:all) do
-    default_user = User.where(first_name: "GoodCity Team").first_or_initialize
-    default_user.save(validate: false)
-  end
+  FactoryGirl.create :system_user
 
 end
