@@ -34,6 +34,7 @@ FactoryGirl.define do
     first_name "GoodCity"
     last_name  "Team"
     mobile     SYSTEM_USER_MOBILE
+    association :permission, factory: :reviewer_permission
     initialize_with { User.find_or_initialize_by(mobile: SYSTEM_USER_MOBILE) } # only create one system user
   end
 
