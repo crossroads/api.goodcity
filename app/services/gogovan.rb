@@ -3,7 +3,7 @@ class Gogovan
   attr_accessor :user, :name, :mobile, :time, :need_english,
     :need_cart, :need_carry, :district_id, :vehicle
 
-  def initialize(user, options = {})
+  def initialize(user = nil, options = {})
     @user         = user
     @name         = options['name']
     @mobile       = options['mobile']
@@ -25,6 +25,10 @@ class Gogovan
 
   def get_order_price
     initiate_order.price
+  end
+
+  def get_status(id)
+    GoGoVanApi::Order.new(id, {}).status
   end
 
   def self.cancel_order(booking_id)

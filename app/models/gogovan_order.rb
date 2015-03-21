@@ -3,7 +3,8 @@ class GogovanOrder < ActiveRecord::Base
   include PushUpdates
 
   has_one :delivery
-  before_destroy :cancel_order
+
+  after_commit :start_polling_status, on: [:create]
 
   def self.save_booking(booking_id)
     create(status: 'pending', booking_id: booking_id)
@@ -24,17 +25,20 @@ class GogovanOrder < ActiveRecord::Base
     update_column(:status, status)
   end
 
+  def need_polling?
+    state == "active" || state == "pending"
+  end
+
   private
+
+  def start_polling_status
+    PollGogovanOrderStatusJob.set(wait: 5.seconds).perform_later(self)
+  end
 
   def self.set_vehicle_type(attributes)
     offer = Offer.find(attributes['offerId'])
     attributes['vehicle'] = offer.gogovan_transport.vehical_tag
     attributes
-  end
-
-  def cancel_order
-    Gogovan.cancel_order(booking_id)
-    update_status('cancelled')
   end
 
   #required by PusherUpdates module
