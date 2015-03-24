@@ -27,7 +27,7 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def need_polling?
-    state == "active" || state == "pending"
+    status == "active" || status == "pending"
   end
 
   def is_cancelled?
@@ -43,10 +43,21 @@ class GogovanOrder < ActiveRecord::Base
     delivery.offer.cancel_schedule
   end
 
+  def assign_details(order_details)
+    self.status = order_details["status"]
+    self.price = order_details["price"]
+    if (driver_details = order_details["driver"])
+      self.driver_name = driver_details["name"]
+      self.driver_mobile = driver_details["phone_number"]
+      self.driver_license = driver_details["license_plate"]
+    end
+    self
+  end
+
   private
 
   def start_polling_status
-    PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(self)
+    PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(self.id)
   end
 
   def self.set_vehicle_type(attributes)
