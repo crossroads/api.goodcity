@@ -46,7 +46,7 @@ class GogovanOrder < ActiveRecord::Base
   private
 
   def start_polling_status
-    PollGogovanOrderStatusJob.set(wait: 5.seconds).perform_later(self)
+    PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(self)
   end
 
   def self.set_vehicle_type(attributes)

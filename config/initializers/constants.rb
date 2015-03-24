@@ -3,3 +3,4 @@ START_DAYS_COUNT = 1
 CROSSROADS_TRUCK_COST = 600
 DONOR_APP = "app.goodcity"
 ADMIN_APP = "admin.goodcity"
+GGV_POLL_JOB_WAIT_TIME = 5.seconds
