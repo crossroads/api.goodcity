@@ -1,21 +1,19 @@
 class PollGogovanOrderStatusJob < ActiveJob::Base
   queue_as :gogovan_orders
 
-  def perform(order)
-    order_details = Gogovan.new().get_status(order.booking_id)
+  def perform(order_id)
+    order = GogovanOrder.find_by(id: order_id)
+    if order
+      order_details = Gogovan.new().get_status(order.booking_id)
 
-    unless order_details[:error]
-      order.status = order_details["status"]
-      order.price = order_details["price"]
-      if (driver_details = order_details["driver"])
-        order.driver_name = driver_details["name"]
-        order.driver_mobile = driver_details["phone_number"]
-        order.driver_license = driver_details["license_plate"]
+      unless order_details[:error]
+        order = order.assign_details(order_details)
+        order.save if order.changed? # to avoid un-necessary push-updates to api
       end
 
-      order.save if order.changed? # to avoid un-necessary push-updates to api
-    end
+      puts "GGV Order #{order.id} updated."
 
-    self.class.perform_later(wait: GGV_POLL_JOB_WAIT_TIME) if order.reload.need_polling?
+      self.class.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(order_id) if order.reload.need_polling?
+    end
   end
 end
