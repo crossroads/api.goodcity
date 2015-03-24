@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :delivery do
-    offer
+    association :offer, :scheduled
     delivery_type { ["Alternate", "Drop Off", "Gogovan"].sample }
 
     factory :crossroads_delivery do

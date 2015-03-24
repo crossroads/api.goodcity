@@ -8,6 +8,7 @@ class Delivery < ActiveRecord::Base
   belongs_to :gogovan_order, dependent: :destroy
 
   before_save :update_offer_state
+  before_destroy :push_back_offer_state
 
   def update_offer_state
     self.delivery_type = self.delivery_type.titleize
@@ -16,6 +17,10 @@ class Delivery < ActiveRecord::Base
   end
 
   private
+
+  def push_back_offer_state
+    offer.cancel_schedule
+  end
 
   def process_completed?
     (contact_id_changed? && contact.present?) ||
