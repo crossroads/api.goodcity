@@ -128,7 +128,7 @@ RSpec.describe Offer, type: :model do
       offer = create :offer
       offer.submit
       expect(offer.messages.count).to eq(1)
-      expect(offer.messages.last.sender).to eq(User.default)
+      expect(offer.messages.last.sender).to eq(User.system_user)
     end
   end
 

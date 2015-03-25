@@ -94,7 +94,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_thank_you_message
-    messages.create(body: I18n.t("offer.thank_message"), sender: User.default)
+    messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
   end
 
   def update_saleable_items
