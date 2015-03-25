@@ -24,6 +24,7 @@ class User < ActiveRecord::Base
   scope :donors,      -> { where( permission_id: nil ) }
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
+  scope :system,      -> { where( permissions: { name: 'System' } ).joins(:permission) }
   scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
 
   # If user exists, ignore data and just send_verification_pin
@@ -65,6 +66,10 @@ class User < ActiveRecord::Base
     permission.try(:name) == 'Supervisor'
   end
 
+  def system?
+    permission.try(:name) == 'System'
+  end
+
   def admin?
     administrator?
   end
@@ -99,11 +104,11 @@ class User < ActiveRecord::Base
   end
 
   def self.system_user
-    User.where(mobile: SYSTEM_USER_MOBILE).order(:id).first
+    User.system.order(:id).first
   end
 
   def system_user?
-    self == User.system_user
+    User.system.pluck(:id).include?(self.id)
   end
 
   private
