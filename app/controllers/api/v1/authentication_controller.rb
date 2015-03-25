@@ -67,8 +67,10 @@ module Api::V1
       @mobile = params[:mobile]
       if(User::HongKongMobileRegExp === @mobile)
         @user = User.find_by_mobile(@mobile)
-        return render_error(I18n.t('host.invalid'), 403) if !valid_host?
-        @user.send_verification_pin if @user
+        if @user.present?
+          return render_error(I18n.t('host.invalid'), 403) if !valid_host?
+          @user.send_verification_pin
+        end
         render json: { otp_auth_key: otp_auth_key_for(@user) }
       else
         render_invalid_mobile
@@ -202,7 +204,6 @@ module Api::V1
     end
 
     def valid_host?
-      return true if @user.blank? #for spam
       (@user.donor? && app_name == DONOR_APP) ||
       (@user.reviewer? && app_name == ADMIN_APP)
     end
