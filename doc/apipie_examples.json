@@ -423,6 +423,21 @@
       "recorded" : true
     }
   ],
+  "deliveries#destroy" : [
+    {
+      "verb" : "DELETE",
+      "path" : "/api/v1/deliveries/118",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "deliveries#show" : [
     {
       "title" : "This is an example of 'Gogovan Delivery'",
