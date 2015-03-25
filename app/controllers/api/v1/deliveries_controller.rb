@@ -57,6 +57,12 @@ module Api::V1
       end
     end
 
+    api :DELETE, '/v1/deliveries/1', "Delete delivery"
+    def destroy
+      @delivery.destroy
+      render json: {}
+    end
+
     private
 
     def serializer
