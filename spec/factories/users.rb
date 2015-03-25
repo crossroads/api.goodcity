@@ -21,6 +21,14 @@ FactoryGirl.define do
     trait :administrator do
       association :permission, factory: :administrator_permission
     end
+
+    trait :system do
+      first_name "GoodCity"
+      last_name  "Team"
+      mobile     SYSTEM_USER_MOBILE
+      association :permission, factory: :system_permission
+      initialize_with { User.find_or_initialize_by(mobile: SYSTEM_USER_MOBILE) } # only create one system user
+    end
   end
 
   factory :user_with_token, parent: :user do
@@ -28,14 +36,6 @@ FactoryGirl.define do
     after(:create) do |user|
       user.auth_tokens << create(:scenario_before_auth_token)
     end
-  end
-
-  factory :system_user, parent: :user do
-    first_name "GoodCity"
-    last_name  "Team"
-    mobile     SYSTEM_USER_MOBILE
-    association :permission, factory: :reviewer_permission
-    initialize_with { User.find_or_initialize_by(mobile: SYSTEM_USER_MOBILE) } # only create one system user
   end
 
 end

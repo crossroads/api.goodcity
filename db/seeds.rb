@@ -39,7 +39,7 @@ crossroads_transports.each do |name, value|
 end
 
 # Create System User
-FactoryGirl.create(:user, :reviewer, first_name: "GoodCity", last_name: "Team", mobile: SYSTEM_USER_MOBILE)
+FactoryGirl.create(:user, :system)
 
 # Don't run the following setup on the live server.
 # This is for dummy data
