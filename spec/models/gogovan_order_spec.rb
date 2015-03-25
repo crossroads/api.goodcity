@@ -45,17 +45,17 @@ RSpec.describe GogovanOrder, type: :model do
     end
   end
 
-  describe '#is_cancelled?' do
+  describe '#cancelled?' do
     let(:order) { build :gogovan_order }
 
     it 'should return true if status changed to cancelled' do
       order.status = 'cancelled'
-      expect(order.is_cancelled?).to eq(true)
+      expect(order.cancelled?).to eq(true)
     end
 
     it 'should return false if status changed to other than cancelled' do
       order.status = 'active'
-      expect(order.is_cancelled?).to eq(false)
+      expect(order.cancelled?).to eq(false)
     end
   end
 

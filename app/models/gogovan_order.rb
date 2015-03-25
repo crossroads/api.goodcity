@@ -5,7 +5,7 @@ class GogovanOrder < ActiveRecord::Base
   has_one :delivery
 
   after_commit :start_polling_status, on: [:create]
-  before_save :push_back_offer_state, if: :is_cancelled?
+  before_save :push_back_offer_state, if: :cancelled?
 
   def self.save_booking(booking_id)
     create(status: 'pending', booking_id: booking_id)
@@ -30,7 +30,7 @@ class GogovanOrder < ActiveRecord::Base
     status == "active" || status == "pending"
   end
 
-  def is_cancelled?
+  def cancelled?
     status_changed?(to: "cancelled")
   end
 
@@ -57,12 +57,13 @@ class GogovanOrder < ActiveRecord::Base
   private
 
   def start_polling_status
-    PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(self.id)
+    PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).
+      perform_later(id)
   end
 
   def self.set_vehicle_type(attributes)
-    offer = Offer.find(attributes['offerId'])
-    attributes['vehicle'] = offer.gogovan_transport.vehical_tag
+    offer = Offer.find(attributes["offerId"])
+    attributes["vehicle"] = offer.gogovan_transport.vehical_tag
     attributes
   end
 
