@@ -60,7 +60,11 @@ class Offer < ActiveRecord::Base
     end
 
     event :schedule do
-      transition [:submitted, :reviewed] => :scheduled
+      transition :reviewed => :scheduled
+    end
+
+    event :cancel_schedule do
+      transition :scheduled => :reviewed
     end
 
     event :close do

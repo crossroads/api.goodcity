@@ -12,4 +12,5 @@ production:
   - mailers
   - airbrake
   - low
+  - gogovan_orders
   - [high, 2]

@@ -42,5 +42,6 @@ module GoodCityServer
       "time=\"#{datetime.iso8601(3)}\" level=\"#{severity}\" pid=\"#{Process.pid}\" #{msg.to_s.gsub('"', "'")}\n"
     end
 
+    config.active_record.raise_in_transactional_callbacks = true
   end
 end
