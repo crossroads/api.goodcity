@@ -58,9 +58,12 @@ Rails.application.routes.draw do
       post "addresses" => "addresses#create"
       get  "addresses/:id" => "addresses#show"
       post "contacts" => "contacts#create"
+
       post "deliveries" => "deliveries#create"
       get  "deliveries/:id" => "deliveries#show"
       put  "deliveries/:id" => "deliveries#update"
+      delete "deliveries/:id" => "deliveries#destroy"
+
       get  "schedules" => "schedules#availableTimeSlots"
       post "schedules" => "schedules#create"
 
