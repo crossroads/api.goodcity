@@ -89,4 +89,16 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     end
   end
 
+  describe "DELETE delivery/1" do
+    before { generate_and_set_token(user) }
+    let(:delivery) { create :gogovan_delivery }
+
+    it "returns 200", :show_in_doc do
+      delete :destroy, id: delivery.id
+      expect(response.status).to eq(200)
+      body = JSON.parse(response.body)
+      expect(body).to eq( {} )
+    end
+  end
+
 end
