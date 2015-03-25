@@ -95,18 +95,19 @@ describe User, :type => :model do
     end
   end
 
-  describe "#default" do
+  describe "#system_user" do
     it "should return default user" do
-      expect(User.default.first_name).to eq("GoodCity Team")
+      expect(User.system_user.first_name).to eq("GoodCity")
+      expect(User.system_user.last_name).to eq("Team")
     end
   end
 
-  describe "::default?" do
-    it "should return default user" do
-      default_user = User.default
-      other_user = build :user
-      expect(other_user.default?).to be_falsy
-      expect(default_user.default?).to be_truthy
+  describe "#system_user?" do
+    it "should be false" do
+      expect(build(:user).system_user?).to eql(false)
+    end
+    it "should be true" do
+      expect(User.system_user.system_user?).to eql(true)
     end
   end
 

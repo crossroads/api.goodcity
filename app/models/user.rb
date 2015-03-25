@@ -24,8 +24,8 @@ class User < ActiveRecord::Base
   scope :donors,      -> { where( permission_id: nil ) }
   scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
+  scope :system,      -> { where( permissions: { name: 'System' } ).joins(:permission) }
   scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
-  scope :without_mobile, -> { where("mobile = '' OR mobile IS NULL") }
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
@@ -66,6 +66,10 @@ class User < ActiveRecord::Base
     permission.try(:name) == 'Supervisor'
   end
 
+  def system?
+    permission.try(:name) == 'System'
+  end
+
   def admin?
     administrator?
   end
@@ -99,16 +103,12 @@ class User < ActiveRecord::Base
     Thread.current[:current_user] = user
   end
 
-  def self.default
-    without_mobile.find_by(first_name: "GoodCity Team")
+  def self.system_user
+    User.system.order(:id).first
   end
 
-  def self.without_mobile
-    where("mobile = '' OR mobile IS NULL")
-  end
-
-  def default?
-    first_name == "GoodCity Team" && mobile.blank?
+  def system_user?
+    User.system.pluck(:id).include?(self.id)
   end
 
   private
