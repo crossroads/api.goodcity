@@ -19,4 +19,8 @@ FactoryGirl.define do
     name 'Administrator'
   end
 
+  factory :system_permission, parent: :permission do
+    name 'System'
+  end
+
 end

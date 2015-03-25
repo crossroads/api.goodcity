@@ -49,6 +49,6 @@ RSpec.configure do |config|
   # Apipie can record examples using "APIPIE_RECORD=examples rake"
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 
-  FactoryGirl.create :system_user
+  FactoryGirl.create :user, :system
 
 end
