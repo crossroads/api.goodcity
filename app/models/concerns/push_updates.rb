@@ -8,12 +8,17 @@ module PushUpdates
   end
 
   def update_client_store(operation)
+    current_user = User.current_user
+    if self.class == GogovanOrder
+      current_user ||= delivery.try(:offer).try(:created_by)
+    end
+
     # current_user can be nil if accessed from rails console, tests or db seed
-    return if User.current_user.nil?
+    return if current_user.nil?
 
     exclude_relationships = {exclude: self.class.reflections.keys.map(&:to_sym)}
     serializer = "Api::V1::#{self.class}Serializer".constantize.new(self, exclude_relationships)
-    user = Api::V1::UserSerializer.new(User.current_user)
+    user = Api::V1::UserSerializer.new(current_user)
     type = self.class.name
     object = {}
 

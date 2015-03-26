@@ -54,6 +54,11 @@ class GogovanOrder < ActiveRecord::Base
     self
   end
 
+  #required by PusherUpdates module
+  def offer
+    delivery.try(:offer)
+  end
+
   private
 
   def start_polling_status
