@@ -7,6 +7,26 @@ class Package < ActiveRecord::Base
 
   validates :package_type_id, :quantity, presence: true
 
+  state_machine :state, initial: :expecting do
+    state :expecting, :missing, :received
+
+    event :mark_received do
+      transition [:expecting, :missing] => :received
+    end
+
+    event :mark_missing do
+      transition [:expecting, :received] => :missing
+    end
+
+    before_transition :on => :mark_received do |package|
+      package.received_at = Time.now
+    end
+
+    before_transition :on => :mark_missing do |package|
+      package.received_at = nil
+    end
+  end
+
   private
 
   #required by PusherUpdates module
