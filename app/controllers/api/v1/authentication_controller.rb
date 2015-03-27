@@ -55,26 +55,24 @@ module Api::V1
 
     ===Response status codes
     * 200 - returned regardless of whether mobile number exists or not
-    * 403 - returned if the host is invalid
     * 422 - returned if the mobile number is invalid
     EOS
     param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85262345678"
     error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
-    error 403, "Invalid host"
     error 500, "Internal Server Error"
     # Lookup user based on mobile. Validate mobile format first.
     def send_pin
       @mobile = params[:mobile]
-      if(User::HongKongMobileRegExp === @mobile)
-        @user = User.find_by_mobile(@mobile)
-        if @user.present?
-          return render_error(I18n.t('host.invalid'), 403) if !valid_host?
-          @user.send_verification_pin
-        end
-        render json: { otp_auth_key: otp_auth_key_for(@user) }
-      else
-        render_invalid_mobile
+      unless User::HongKongMobileRegExp === @mobile
+        return render_invalid_mobile
       end
+
+      @user = User.find_by_mobile(@mobile)
+      if @user.present? && (app_name != ADMIN_APP || @user.staff? && app_name == ADMIN_APP)
+        @user.send_verification_pin
+      end
+
+      render json: { otp_auth_key: otp_auth_key_for(@user) }
     end
 
     api :POST, '/v1/auth/signup', "Register a new user"
@@ -139,7 +137,7 @@ module Api::V1
     error 500, "Internal Server Error"
     def verify
       @user = warden.authenticate(:pin)
-      if @user && warden.authenticated?
+      if @user && warden.authenticated? && (app_name != ADMIN_APP || @user.staff? && app_name == ADMIN_APP)
         render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user) }
       else
         render json: { errors: { pin: I18n.t('auth.invalid_pin') } }, status: 422
