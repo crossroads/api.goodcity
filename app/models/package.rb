@@ -1,5 +1,6 @@
 class Package < ActiveRecord::Base
   include Paranoid
+  include StateMachineScope
   include PushUpdates
 
   belongs_to :item
@@ -7,15 +8,22 @@ class Package < ActiveRecord::Base
 
   validates :package_type_id, :quantity, presence: true
 
+  # Workaround to set initial state for the state_machine
+  # StateMachine has Issue with rails 4.2, it does not set initial state by default
+  # refer - https://github.com/pluginaweek/state_machine/issues/334
+  after_initialize do
+    self.state ||= :expecting
+  end
+
   state_machine :state, initial: :expecting do
     state :expecting, :missing, :received
 
     event :mark_received do
-      transition [:expecting, :missing] => :received
+      transition [:expecting, :missing, :received] => :received
     end
 
     event :mark_missing do
-      transition [:expecting, :received] => :missing
+      transition [:expecting, :missing, :received] => :missing
     end
 
     before_transition :on => :mark_received do |package|
