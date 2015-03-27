@@ -45,6 +45,15 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(JSON.parse(response.body)["jwt_token"]).to eq(jwt_token)
         expect(response.status).to eq(200)
       end
+
+      it 'should return unprocessable entity if donor is accessing admin app', :show_in_doc do
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
+        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(controller).to receive(:app_name).and_return(ADMIN_APP)
+        post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
+        expect(JSON.parse(response.body)["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(response.status).to eq(422)
+      end
     end
 
     context "with unsucessful authentication" do
@@ -59,35 +68,34 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   end
 
   context "send_pin" do
-    context "with valid host" do
-      it 'should find user by mobile', :show_in_doc do
-        expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-        expect(user).to receive(:send_verification_pin)
-        expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
-        expect(controller).to receive(:app_name).and_return(DONOR_APP)
-        post :send_pin, mobile: mobile
+    it 'should find user by mobile', :show_in_doc do
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+      expect(user).to receive(:send_verification_pin)
+      expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
+      expect(controller).to receive(:app_name).and_return(DONOR_APP)
+      post :send_pin, mobile: mobile
 
-        body = JSON.parse(response.body)
-        expect(body['otp_auth_key']).to eql( otp_auth_key )
-      end
-
-      it "where user does not exist" do
-        expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
-        expect(user).to_not receive(:send_verification_pin)
-        expect(controller).to receive(:otp_auth_key_for).with(nil).and_return( otp_auth_key )
-        post :send_pin, mobile: mobile
-        body = JSON.parse(response.body)
-        expect(body['otp_auth_key']).to eql( otp_auth_key )
-      end
+      body = JSON.parse(response.body)
+      expect(body['otp_auth_key']).to eql( otp_auth_key )
     end
 
-    context "with invalid host" do
-      it 'should return 403', :show_in_doc do
-        expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-        expect(controller).to receive(:app_name).and_return("reviewer")
-        post :send_pin, mobile: mobile
-        expect(response.status).to eql(403)
-      end
+    it "where user does not exist" do
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:otp_auth_key_for).with(nil).and_return( otp_auth_key )
+      post :send_pin, mobile: mobile
+      body = JSON.parse(response.body)
+      expect(body['otp_auth_key']).to eql( otp_auth_key )
+    end
+
+    it 'should not send pin if donor logging into admin', :show_in_doc do
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
+      expect(controller).to receive(:app_name).and_return(ADMIN_APP)
+      post :send_pin, mobile: mobile
+      body = JSON.parse(response.body)
+      expect(body['otp_auth_key']).to eql( otp_auth_key )
     end
 
     context "where mobile is" do

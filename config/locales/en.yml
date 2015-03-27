@@ -32,8 +32,6 @@ en:
               blank: "can't be blank"
   notification:
     new_offer: New offer submitted by %{name}
-  host:
-    invalid: Invalid host
   offer:
     thank_message: Thank you for your offer, our team will start reviewing it
       soon. The reviewer will message you if they have questions about any of
