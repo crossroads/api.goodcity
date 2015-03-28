@@ -71,6 +71,7 @@ The following command will start the ```rails server```, ```sidekiq workers``` a
 Using capistrano, commit all changes to master branch and push to github. Then type:
 
     bundle exec cap production deploy
+    bundle exec cap staging deploy
 
 This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure your ssh keys are loaded)
 
