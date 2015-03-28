@@ -24,6 +24,7 @@ module Api::V1
         param :received_at, String, desc: "Date on which package is received", allow_nil: true
         param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
         param :package_type_id, String, desc: "Category of the package", allow_nil: true
+        param :image_id, Integer, desc: "The id of the item image that represents this package", allow_nil: true
       end
     end
 
@@ -69,7 +70,7 @@ module Api::V1
     private
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
-        :received_at, :rejected_at, :package_type_id, :state_event]
+        :received_at, :rejected_at, :package_type_id, :state_event, :image_id]
       params.require(:package).permit(attributes)
     end
 
