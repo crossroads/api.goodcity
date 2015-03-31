@@ -17,7 +17,10 @@ class TwilioService
 
   private
 
+  # Whitelisting happens only on staging.
+  # On live, ALL mobiles are allowed
   def allowed_to_send?
+    return true if Rails.env.production?
     mobile = @user.mobile
     ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).include?(mobile)
   end
