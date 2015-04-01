@@ -1,5 +1,3 @@
-require_dependency 'lib/classes/date_set'
-
 class Gogovan
 
   attr_accessor :user, :name, :mobile, :time, :need_english,
