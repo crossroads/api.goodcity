@@ -43,6 +43,7 @@ module Api::V1
     param_group :package
     def create
       @package = Package.new(package_params)
+      @package.offer_id = Item.where(id: @package.item_id).pluck(:offer_id).first
       if @package.save
         render json: @package, serializer: serializer, status: 201
       else

@@ -72,7 +72,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :receive do
-      transition :scheduled => :received
+      transition [:under_review, :reviewed, :scheduled] => :received
     end
 
     before_transition :on => :submit do |offer, transition|
