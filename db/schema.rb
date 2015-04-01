@@ -194,7 +194,7 @@ ActiveRecord::Schema.define(version: 20150401030717) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "image_id"
-    t.integer  "offer_id",        default: 0, null: false
+    t.integer  "offer_id",                    default: 0, null: false
   end
 
   create_table "permissions", force: :cascade do |t|
