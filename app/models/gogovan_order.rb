@@ -40,7 +40,8 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def push_back_offer_state
-    delivery.offer.cancel_schedule
+    delivery.try(:offer).try(:cancel_schedule)
+    true
   end
 
   def assign_details(order_details)
