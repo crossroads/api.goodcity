@@ -5,7 +5,6 @@ class GogovanOrder < ActiveRecord::Base
   has_one :delivery
 
   after_commit :start_polling_status, on: [:create]
-  before_save :push_back_offer_state, if: :cancelled?
 
   def self.save_booking(booking_id)
     create(status: 'pending', booking_id: booking_id)
@@ -37,11 +36,6 @@ class GogovanOrder < ActiveRecord::Base
   def cancel_order
     Gogovan.cancel_order(booking_id)
     update_status('cancelled')
-  end
-
-  def push_back_offer_state
-    delivery.try(:offer).try(:cancel_schedule)
-    true
   end
 
   def assign_details(order_details)

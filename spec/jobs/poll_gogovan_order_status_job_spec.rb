@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe PollGogovanOrderStatusJob, type: :job do
 
-  let(:order) { create :gogovan_order }
+  let(:order) { create :gogovan_order, :with_delivery }
   let(:ggv_response) {
     { "id" => 260,
       "status" => "active",
