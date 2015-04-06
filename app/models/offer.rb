@@ -120,7 +120,22 @@ class Offer < ActiveRecord::Base
 
   def send_new_offer_notification
     text = I18n.t("notification.new_offer", name: self.created_by.full_name)
-    PushService.new.send_notification(text: text, entity_type: "offer", entity: self, channel: Channel.reviewer)
+    send_notification(text)
+  end
+
+  def send_ggv_cancel_order_message
+    text = I18n.t("offer.ggv_cancel_message",
+      time: "#{delivery.try(:schedule).try(:formatted_date_and_slot)}")
+    messages.create(body: text, sender: User.system_user)
+    send_notification(text)
+  end
+
+  def send_notification(text)
+    PushService.new.send_notification(
+      text: text,
+      entity_type: "offer",
+      entity: self,
+      channel: Channel.reviewer)
   end
 
   private
