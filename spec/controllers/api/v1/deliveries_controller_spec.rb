@@ -50,6 +50,20 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       post :create, delivery: attributes_for(:delivery)
       expect(response.status).to eq(201)
     end
+
+    context "for offer having delivery" do
+      let!(:delivery) { create :gogovan_delivery }
+      let!(:delivery_id) { delivery.id }
+
+      it "should delete existing delivery" do
+        post :create, delivery: delivery.attributes
+        expect(response.status).to eq(201)
+
+        expect{
+          Delivery.find(delivery_id)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   describe "PUT delivery/1 : update gogovan delivery" do
