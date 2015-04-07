@@ -9,9 +9,7 @@ module PushUpdates
 
   def update_client_store(operation)
     current_user = User.current_user
-    if self.class == GogovanOrder
-      current_user ||= delivery.try(:offer).try(:created_by)
-    end
+    current_user ||= send(:offer).try(:created_by)
 
     # current_user can be nil if accessed from rails console, tests or db seed
     return if current_user.nil?
