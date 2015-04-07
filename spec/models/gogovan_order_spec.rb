@@ -58,17 +58,4 @@ RSpec.describe GogovanOrder, type: :model do
       expect(order.cancelled?).to eq(false)
     end
   end
-
-  describe 'callbacks' do
-    describe 'push_back_offer_state' do
-      it 'should change offer state to reviewed' do
-        order = create :gogovan_order, :with_delivery
-        expect{
-          order.update_attributes(status: 'cancelled')
-          order.delivery.offer.reload
-        }.to change(order.delivery.offer, :state).to('reviewed')
-      end
-    end
-  end
-
 end

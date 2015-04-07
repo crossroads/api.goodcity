@@ -19,7 +19,8 @@ class Delivery < ActiveRecord::Base
   private
 
   def push_back_offer_state
-    offer.cancel_schedule
+    offer.try(:cancel_schedule)
+    true
   end
 
   def process_completed?
