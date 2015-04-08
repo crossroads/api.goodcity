@@ -31,6 +31,7 @@ Rails.application.routes.draw do
       put  "messages/:id" => "messages#update"
       put  "messages/:id/mark_read" => "messages#mark_read"
 
+      get  "offers/ggv_order_offer" => "offers#ggv_order_offer"
       get  "offers" => "offers#index"
       get  "offers/:id" => "offers#show"
       post "offers" => "offers#create"
@@ -39,6 +40,7 @@ Rails.application.routes.draw do
       put  "offers/:id/review" => "offers#review"
       put  "offers/:id/complete_review" => "offers#complete_review"
       put  "offers/:id/close_offer" => "offers#close_offer"
+
 
       get  "packages" => "packages#index"
       get  "packages/:id" => "packages#show"
