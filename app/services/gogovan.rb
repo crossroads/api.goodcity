@@ -1,7 +1,7 @@
 class Gogovan
 
   attr_accessor :user, :name, :mobile, :time, :need_english,
-    :need_cart, :need_carry, :district_id, :vehicle
+    :need_cart, :need_carry, :district_id, :vehicle, :offer
 
   def initialize(user = nil, options = {})
     @user         = user
@@ -13,6 +13,7 @@ class Gogovan
     @need_carry   = options['needCarry']
     @district_id  = options['districtId']
     @vehicle      = options['vehicle']
+    @offer        = Offer.find_by(id: options['offerId'])
   end
 
   def initiate_order
@@ -48,7 +49,8 @@ class Gogovan
         extra_requirements: {
           need_english: @need_english,
           need_cart:    @need_cart,
-          need_carry:   @need_carry
+          need_carry:   @need_carry,
+          remark:       ggv_driver_notes
         }
       }
     }
@@ -57,5 +59,15 @@ class Gogovan
   def get_pickup_date
     next_available_date = DateSet.new().available_dates.first
     next_available_date.beginning_of_day + 12.hours
+  end
+
+  def ggv_driver_notes
+    delivery = offer.delivery
+    if offer && delivery
+      user = offer.created_by
+      id = "#{offer.id}-$$-#{user.first_name}-$$-#{user.last_name}-$$-#{delivery.id}"
+      link = "https://localhost:4200/ggv_order/#{id}"
+      "Ensure you deliver all the items listed: See details <a href=\"#{link}\">#{link}</a>"
+    end
   end
 end
