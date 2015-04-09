@@ -32,6 +32,7 @@ Rails.application.routes.draw do
       put  "messages/:id/mark_read" => "messages#mark_read"
 
       get  "offers" => "offers#index"
+      get  "offers/donor_offers" => "offers#donor_offers"
       get  "offers/:id" => "offers#show"
       post "offers" => "offers#create"
       put  "offers/:id" => "offers#update"

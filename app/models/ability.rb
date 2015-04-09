@@ -58,7 +58,7 @@ class Ability
         'submitted', 'scheduled']
       can :destroy, Offer, state: 'draft' if reviewer
       can :destroy, Offer if supervisor
-      can :review, Offer if reviewer || supervisor
+      can [:review, :donor_offers], Offer if reviewer || supervisor
       can [:complete_review, :close_offer, :finished], Offer if reviewer || supervisor
 
       # Package (same as item permissions)
