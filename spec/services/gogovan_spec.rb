@@ -11,6 +11,7 @@ describe Gogovan do
   let(:needCarry)   { "true" }
   let(:districtId)  { (create :district).id }
   let(:vehicle)     { "van" }
+  let(:offer_id)    { create(:delivery).offer.id }
 
   let(:attributes) {
     {
@@ -21,7 +22,8 @@ describe Gogovan do
       'needCarry' => needCarry,
       'needCart' => needCart,
       'districtId' => districtId,
-      'vehicle' => vehicle
+      'vehicle' => vehicle,
+      'offerId' => offer_id
     }
   }
 
