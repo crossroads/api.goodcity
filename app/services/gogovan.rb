@@ -66,7 +66,7 @@ class Gogovan
     if offer && delivery
       user = offer.created_by
       id = "#{offer.id}-$$-#{user.first_name}-$$-#{user.last_name}-$$-#{delivery.id}"
-      link = "https://localhost:4200/ggv_order/#{id}"
+      link = "#{DONOR_APP_HOST}/ggv_order/#{id}"
       "Ensure you deliver all the items listed: See details <a href=\"#{link}\">#{link}</a>"
     end
   end
