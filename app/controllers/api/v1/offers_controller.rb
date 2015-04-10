@@ -1,6 +1,9 @@
 module Api::V1
   class OffersController < Api::V1::ApiController
 
+    skip_before_action :validate_token, only: [:ggv_order_offer]
+    skip_authorization_check only: [:ggv_order_offer]
+
     before_action :eager_load_offer, except: [:index, :create, :finished]
     load_and_authorize_resource :offer, parent: false
 
@@ -114,6 +117,10 @@ module Api::V1
     def close_offer
       @offer.update_attributes({ state_event: 'close' })
       render json: @offer, serializer: serializer
+    end
+
+    def ggv_order_offer
+      render json: @offer, serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
     private
