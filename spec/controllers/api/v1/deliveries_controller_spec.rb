@@ -52,7 +52,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     end
 
     context "for offer having delivery" do
-      let!(:delivery) { create :gogovan_delivery }
+      let!(:delivery) { create :drop_off_delivery }
       let!(:delivery_id) { delivery.id }
 
       it "should delete existing delivery" do
@@ -105,7 +105,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
   describe "DELETE delivery/1" do
     before { generate_and_set_token(user) }
-    let(:delivery) { create :gogovan_delivery }
+    let(:delivery) { create :drop_off_delivery }
 
     it "returns 200", :show_in_doc do
       delete :destroy, id: delivery.id

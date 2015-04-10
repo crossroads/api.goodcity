@@ -56,9 +56,14 @@ module Api::V1
     param :category, ["finished"], desc: "To get finished(received and closed) offers"
     def index
       return finished if params["category"] == "finished"
+
+      @offers = Offer.accessible_by(current_ability).with_deleted if params[:include_deleted] == "true"
+      @offers = @offers.donated_by(params[:donated_by_id]) if params[:donated_by_id].present?
+
       @offers = params['state'] ?
         @offers.by_state(params['state']).with_eager_load :
         @offers.active.with_eager_load # this maintains security
+
       @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
       @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
