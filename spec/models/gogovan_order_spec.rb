@@ -58,4 +58,8 @@ RSpec.describe GogovanOrder, type: :model do
       expect(order.cancelled?).to eq(false)
     end
   end
+
+  describe 'callbacks' do
+    it { is_expected.to callback(:cancel_order).before(:destroy) }
+  end
 end

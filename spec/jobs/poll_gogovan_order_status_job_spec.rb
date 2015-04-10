@@ -46,6 +46,8 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
   end
 
   it "should delete empty GGV order if not belongs to any delivery" do
+    expect(Gogovan).to receive_message_chain(:cancel_order).with(empty_order.booking_id)
+
     expect {
       PollGogovanOrderStatusJob.new.perform(empty_order.id)
     }.to change(GogovanOrder, :count).by(-1)
