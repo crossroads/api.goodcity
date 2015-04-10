@@ -117,4 +117,12 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "GET offer/ggv_order_offer" do
+    before { generate_and_set_token(user) }
+    it "returns 200" do
+      get :ggv_order_offer, id: offer.id
+      expect(response.status).to eq(200)
+    end
+  end
+
 end

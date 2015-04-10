@@ -67,4 +67,10 @@ describe Gogovan do
     end
   end
 
+  describe 'ggv driver notes' do
+    it do
+      notes = gogovan_order.send(:ggv_driver_notes)
+      expect(notes).to include("Ensure you deliver all the items listed: See details")
+    end
+  end
 end
