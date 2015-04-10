@@ -99,5 +99,6 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+    can :ggv_order_offer, Offer
   end
 end

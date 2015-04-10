@@ -140,4 +140,18 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "#send_ggv_cancel_order_message" do
+    let!(:delivery) { create :gogovan_delivery, offer: offer }
+    let!(:time_string) { delivery.schedule.formatted_date_and_slot }
+    let(:subject) { offer.messages.last }
+
+    it 'should send GGV cancel message to donor' do
+      expect{
+        offer.send_ggv_cancel_order_message
+      }.to change(offer.messages, :count).by(1)
+      expect(subject.sender).to eq(User.system_user)
+      expect(subject.body).to eq("A van booking for #{time_string} was canceled via GoGoVan. Please choose new transport arrangements.")
+    end
+  end
+
 end
