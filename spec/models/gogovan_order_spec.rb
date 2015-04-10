@@ -69,6 +69,8 @@ RSpec.describe GogovanOrder, type: :model do
         }.to change(order.delivery.offer, :state).to('reviewed')
       end
     end
+
+    it { is_expected.to callback(:cancel_order).before(:destroy) }
   end
 
 end

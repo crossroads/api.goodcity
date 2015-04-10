@@ -6,6 +6,7 @@ class GogovanOrder < ActiveRecord::Base
 
   after_commit :start_polling_status, on: [:create]
   before_save :push_back_offer_state, if: :cancelled?
+  before_destroy :cancel_order, if: :pending?
 
   def self.save_booking(booking_id)
     create(status: 'pending', booking_id: booking_id)
@@ -28,6 +29,10 @@ class GogovanOrder < ActiveRecord::Base
 
   def need_polling?
     status == "active" || status == "pending"
+  end
+
+  def pending?
+    status == "pending"
   end
 
   def cancelled?
