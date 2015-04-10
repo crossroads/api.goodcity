@@ -56,14 +56,6 @@ RSpec.describe Offer, type: :model do
         expect(Offer.valid_states).to include("submitted")
       end
     end
-
-    describe "review_by" do
-      it "should return offers reviewed by current reviewer" do
-        reviewer = create :user, :reviewer
-        offer = create :offer, reviewed_by: reviewer
-        expect(Offer.review_by(reviewer.id)).to include(offer)
-      end
-    end
   end
 
   describe 'assign_reviewer' do
@@ -120,6 +112,22 @@ RSpec.describe Offer, type: :model do
       expect(inactive_offers).to include(received_offer)
       expect(scrub(Offer.inactive.to_sql)).to include(
         "deleted_at IS NOT NULL OR state IN ('received','closed')")
+    end
+
+    describe "review_by" do
+      it "should return offers reviewed by current reviewer" do
+        reviewer = create :user, :reviewer
+        offer = create :offer, reviewed_by: reviewer
+        expect(Offer.review_by(reviewer.id)).to include(offer)
+      end
+    end
+
+    describe "donated_by" do
+      it "should return offers donated by specific donor" do
+        donor = create :user
+        offer = create :offer, created_by: donor
+        expect(Offer.donated_by(donor.id)).to include(offer)
+      end
     end
   end
 

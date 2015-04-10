@@ -48,17 +48,22 @@ module Api::V1
     end
 
     api :GET, '/v1/offers', "List all offers"
-    # param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
+    param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
-    # param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
+    param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
     param :category, ["finished"], desc: "To get finished(received and closed) offers"
     def index
       return finished if params["category"] == "finished"
+
+      @offers = Offer.accessible_by(current_ability).with_deleted if params[:include_deleted] == "true"
+      @offers = @offers.donated_by(params[:donated_by_id]) if params[:donated_by_id].present?
+
       @offers = params['state'] ?
         @offers.by_state(params['state']).with_eager_load :
         @offers.active.with_eager_load # this maintains security
-      # @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
-      # @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
+
+      @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
+      @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
@@ -98,12 +103,6 @@ module Api::V1
         @offer.assign_reviewer(current_user) if @offer.submitted?
       end
       render json: @offer, serializer: serializer
-    end
-
-    # all offers for given donor
-    def donor_offers
-      @offers = Offer.with_deleted.donated_by(params[:donor]).with_eager_load
-      render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
     api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
