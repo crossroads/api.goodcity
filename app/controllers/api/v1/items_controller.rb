@@ -48,7 +48,20 @@ module Api::V1
     api :DELETE, '/v1/items/1', "Delete an item"
     description "If this item's offer is in draft state it will be destroyed. Any other state and it will be marked as deleted but remain recoverable."
     def destroy
+      offer = @item.offer
+
+      if offer.state != 'draft' && offer.items.length == 1
+        return render json: {errors:'Cannot delete the last item of a non-draft offer'}.to_json, status: 422
+      end
+
       @item.remove
+
+      offer.items.reload
+
+      if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all?{|i| i.state_name == :rejected}
+        offer.cancel_schedule_no_items!
+      end
+
       render json: {}
     end
 
