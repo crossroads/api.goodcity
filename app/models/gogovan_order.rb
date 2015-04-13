@@ -39,7 +39,7 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def cancel_order
-    Gogovan.cancel_order(booking_id)
+    Gogovan.cancel_order(booking_id) if booking_id
     update_status('cancelled')
   end
 
