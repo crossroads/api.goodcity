@@ -29,11 +29,11 @@ class Gogovan
   end
 
   def get_status(id)
-    GoGoVanApi::Order.new(id, {}).status
+    GoGoVanApi::Order.new(id).status
   end
 
   def self.cancel_order(booking_id)
-    GoGoVanApi::Order.cancel(booking_id)
+    GoGoVanApi::Order.new(booking_id).cancel
   end
 
   private
