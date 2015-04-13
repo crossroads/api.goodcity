@@ -9,7 +9,7 @@ class Offer < ActiveRecord::Base
   belongs_to :crossroads_transport
 
   has_one  :delivery, dependent: :destroy
-  has_many :items, -> { with_deleted }, inverse_of: :offer, dependent: :destroy
+  has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_many :users, through: :subscriptions
@@ -45,6 +45,8 @@ class Offer < ActiveRecord::Base
   end
 
   state_machine :state, initial: :draft do
+    # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
+    # to state when there are some accepted items
     state :submitted, :under_review, :reviewed, :scheduled, :closed, :received
 
     event :submit do
@@ -68,11 +70,15 @@ class Offer < ActiveRecord::Base
     end
 
     event :close do
-      transition :under_review => :closed
+      transition [:under_review, :reviewed, :scheduled] => :closed
     end
 
     event :receive do
       transition [:under_review, :reviewed, :scheduled] => :received
+    end
+
+    event :cancel_schedule_no_items do
+      transition [:scheduled, :reviewed] => :under_review
     end
 
     before_transition :on => :submit do |offer, transition|
@@ -94,6 +100,12 @@ class Offer < ActiveRecord::Base
     after_transition :on => :submit do |offer, transition|
       offer.send_thank_you_message
       offer.send_new_offer_notification
+    end
+
+    after_transition :on => [:close, :cancel_schedule_no_items] do |offer, transition|
+      if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
+        offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
+      end
     end
   end
 

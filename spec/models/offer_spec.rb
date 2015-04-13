@@ -154,4 +154,14 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe 'close offer' do
+    let(:offer) { create :offer, state: 'scheduled' }
+    let!(:delivery) { create :gogovan_delivery, offer: offer }
+    it 'should cancel GoGoVan booking' do
+      expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id)
+      expect(delivery.gogovan_order.status).to eq('pending')
+      offer.close!
+      expect(delivery.gogovan_order.status).to eq('cancelled')
+    end
+  end
 end
