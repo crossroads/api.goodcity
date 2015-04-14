@@ -75,8 +75,10 @@ module Api::V1
     end
 
     def delete_existing_delivery_record
-      delivery = Delivery.where(offer_id: params[:delivery][:offer_id]).last
-      delivery.try(:destroy)
+      offer_id = params[:delivery][:offer_id]
+      if offer_id && (delivery = Delivery.where(offer_id: offer_id).last).present?
+        delivery.destroy
+      end
     end
 
   end
