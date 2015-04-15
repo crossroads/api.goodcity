@@ -2,9 +2,9 @@
 
 FactoryGirl.define do
   factory :address do
-    flat         { Faker::Address.secondary_address }
-    building     { Faker::Address.building_number }
-    street       { Faker::Address.street_name }
+    flat         { FFaker::Address.secondary_address }
+    building     { FFaker::Address.building_number }
+    street       { FFaker::Address.street_name }
     association  :district
     address_type "Collection"
     addressable   { create(:contact) }
