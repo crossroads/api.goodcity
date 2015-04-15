@@ -47,7 +47,12 @@ class Offer < ActiveRecord::Base
   state_machine :state, initial: :draft do
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items
-    state :submitted, :under_review, :reviewed, :scheduled, :closed, :received
+    state :submitted, :under_review, :reviewed, :scheduled, :closed, :received,
+      :cancelled
+
+    event :cancel do
+      transition all => :cancelled
+    end
 
     event :submit do
       transition :draft => :submitted

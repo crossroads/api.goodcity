@@ -63,15 +63,31 @@ module Api::V1
       render json: {}
     end
 
-    private
-
-    def serializer
-      Api::V1::DeliverySerializer
+    def confirm_ggv_order
+      @delivery = Delivery.find_by(id: params["delivery"]["id"])
+      @delivery.gogovan_order = GogovanOrder.book_order(current_user,
+        order_params)
+      if @delivery && @delivery.update(get_delivery_details)
+        render json: @delivery, serializer: serializer
+      else
+        render json: @delivery.errors.to_json, status: 422
+      end
     end
+
+    private
 
     def delivery_params
       params.require(:delivery).permit(:start, :finish, :offer_id,
         :contact_id, :schedule_id, :delivery_type, :gogovan_order_id)
+    end
+
+    def order_params
+      params.require(:gogovanOrder).permit(:pickupTime, :districtId,
+        :needEnglish, :needCart, :needCarry, :offerId)
+    end
+
+    def serializer
+      Api::V1::DeliverySerializer
     end
 
     def delete_existing_delivery_record
@@ -81,5 +97,21 @@ module Api::V1
       end
     end
 
+    def get_delivery_details
+      params["delivery"] = get_hash(params["delivery"])
+      params.require(:delivery).permit(:start, :finish, :offer_id,
+        :contact_id, :schedule_id, :delivery_type, :gogovan_order_id,
+        schedule_attributes: [:scheduled_at, :slot_name],
+        contact_attributes: [:name, :mobile,
+          address_attributes: [:address_type, :district_id]])
+    end
+
+    def get_hash(object)
+      Hash[
+        object.map do |(m,n)|
+          [m.underscore, (n.is_a?(Hash) ? get_hash(n) : n)  ]
+        end
+      ]
+    end
   end
 end

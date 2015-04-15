@@ -61,16 +61,16 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
     end
   end
 
-  describe "POST gogovan_orders/confirm_order" do
-    context "donor" do
-      before { generate_and_set_token(user) }
-      it "can book gogovan order", :show_in_doc do
-        allow(GogovanOrder).to receive(:book_order).with(user, order_details_hash).and_return(gogovan_order)
-        post :confirm_order, format: 'json', gogovan_order: order_details['gogovan_order']
-        expect(response.status).to eq(200)
-        expect( response.body ).to eq(serialized_order.to_json)
-      end
-    end
-  end
+  # describe "POST gogovan_orders/confirm_order" do
+  #   context "donor" do
+  #     before { generate_and_set_token(user) }
+  #     it "can book gogovan order", :show_in_doc do
+  #       allow(GogovanOrder).to receive(:book_order).with(user, order_details_hash).and_return(gogovan_order)
+  #       post :confirm_order, format: 'json', gogovan_order: order_details['gogovan_order']
+  #       expect(response.status).to eq(200)
+  #       expect( response.body ).to eq(serialized_order.to_json)
+  #     end
+  #   end
+  # end
 
 end
