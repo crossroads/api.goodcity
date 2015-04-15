@@ -7,6 +7,8 @@ class Delivery < ActiveRecord::Base
   belongs_to :schedule
   belongs_to :gogovan_order, dependent: :destroy
 
+  accepts_nested_attributes_for :contact, :schedule
+
   before_save :update_offer_state
   before_destroy :push_back_offer_state
 
