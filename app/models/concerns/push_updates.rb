@@ -7,14 +7,7 @@ module PushUpdates
     after_destroy {update_client_store :delete unless Rails.env.test? }
   end
 
-  def no_updates(operation)
-    (operation == :create && [Schedule, GogovanOrder, Contact, Address].include?(self.class)) ||
-    (operation == :update && self.class == Delivery)
-  end
-
   def update_client_store(operation)
-    return if no_updates(operation)
-
     current_user = User.current_user
     current_user ||= send(:offer).try(:created_by)
 

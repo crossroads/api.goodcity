@@ -44,6 +44,10 @@ class Offer < ActiveRecord::Base
     self.state ||= :draft
   end
 
+  def scheduled?
+    state == "scheduled"
+  end
+
   state_machine :state, initial: :draft do
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items

@@ -1,7 +1,8 @@
 class Schedule < ActiveRecord::Base
-  include PushUpdates
 
   has_many :deliveries, inverse_of: :schedule
+
+  include PushUpdates
 
   def formatted_date_and_slot
     "#{slot_name},

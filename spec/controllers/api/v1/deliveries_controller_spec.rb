@@ -46,8 +46,10 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
   describe "POST delivery/1" do
     before { generate_and_set_token(user) }
+    let!(:offer) { create :offer, :reviewed }
+
     it "returns 201", :show_in_doc do
-      post :create, delivery: attributes_for(:delivery)
+      post :create, delivery: attributes_for(:delivery).merge(offer_id: offer.id)
       expect(response.status).to eq(201)
     end
 
