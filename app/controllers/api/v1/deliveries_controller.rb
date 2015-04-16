@@ -63,10 +63,10 @@ module Api::V1
       render json: {}
     end
 
-    def confirm_ggv_order
+    def confirm_delivery
       @delivery = Delivery.find_by(id: params["delivery"]["id"])
       @delivery.gogovan_order = GogovanOrder.book_order(current_user,
-        order_params)
+        order_params) if params["gogovanOrder"]
       if @delivery && @delivery.update(get_delivery_details)
         render json: @delivery, serializer: serializer
       else
