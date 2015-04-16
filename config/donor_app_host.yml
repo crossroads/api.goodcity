@@ -1,11 +1,11 @@
 development:
-  host: localhost:4200
+  host: http://localhost:4200
 
 test:
-  host: localhost:4200
+  host: http://localhost:4200
 
 staging:
-  host: app-staging.goodcity.hk
+  host: https://app-staging.goodcity.hk
 
 production:
-  host: app.goodcity.hk
+  host: https://app.goodcity.hk
