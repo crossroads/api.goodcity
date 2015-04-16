@@ -83,7 +83,7 @@ module Api::V1
 
     def order_params
       params.require(:gogovanOrder).permit(:pickupTime, :districtId,
-        :needEnglish, :needCart, :needCarry, :offerId)
+        :needEnglish, :needCart, :needCarry, :offerId, :name, :mobile)
     end
 
     def serializer
