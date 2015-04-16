@@ -25,7 +25,7 @@ class Ability
       can [:create, :destroy], Contact
 
       # Delivery
-      can [:create, :show, :update, :destroy, :confirm_ggv_order], Delivery
+      can [:create, :show, :update, :destroy, :confirm_delivery], Delivery
 
       # Item
       can [:index, :show, :create, :update], Item, offer: { created_by_id: user_id }
