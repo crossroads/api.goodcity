@@ -2,7 +2,6 @@ module Api::V1
   class DeliveriesController < Api::V1::ApiController
 
     load_and_authorize_resource :delivery, parent: false
-    before_action :delete_existing_delivery_record, only: :create
 
     resource_description do
       short 'Get, create, and update deliveries.'
@@ -99,6 +98,7 @@ module Api::V1
     end
     def confirm_delivery
       @delivery = Delivery.find_by(id: params["delivery"]["id"])
+      delete_old_associations
       @delivery.gogovan_order = GogovanOrder.book_order(current_user,
         order_params) if params["gogovanOrder"]
       if @delivery && @delivery.update(get_delivery_details)
@@ -124,11 +124,9 @@ module Api::V1
       Api::V1::DeliverySerializer
     end
 
-    def delete_existing_delivery_record
-      offer_id = params[:delivery][:offer_id]
-      if offer_id && (delivery = Delivery.where(offer_id: offer_id).last).present?
-        delivery.destroy
-      end
+    def delete_old_associations
+      @delivery.contact.try(:destroy)
+      @delivery.gogovan_order.try(:destroy)
     end
 
     def get_delivery_details
