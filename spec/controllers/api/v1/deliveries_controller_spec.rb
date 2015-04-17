@@ -170,6 +170,32 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       }
     }
 
+    let(:collection_address) {
+      { "street" => "test3", "flat" => "test5", "building" => "test4", "districtId" => "#{district.id}", "addressType" => "collection" }
+    }
+
+    let(:collection_contact) {
+      { "name" => "David Dara51",
+        "mobile" => "+85251111111",
+        "addressAttributes" =>  collection_address }
+    }
+
+    let(:collection_schedule) {
+      { "zone" => "South",
+        "resource" => "Truck C",
+        "scheduledAt" => "Sun Apr 26 2015 11:26:47 GMT+0530 (IST)",
+        "slot" => "4",
+        "slotName" => "Evening,4pm-6pm" }
+    }
+
+    let(:collection_delivery) {
+      { "id" => "#{delivery.id}",
+        "deliveryType" => "Alternate",
+        "offerId" => "#{offer.id}",
+        "scheduleAttributes" => collection_schedule,
+        "contactAttributes" => collection_contact }
+    }
+
     it "should confirm delivery for gogovan option" do
       expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
       post :confirm_delivery, delivery: delivery_params, gogovanOrder: ggv_order
@@ -183,8 +209,19 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       expect(subject).to eq(serialized_delivery_json)
     end
 
-    it "should confirm delivery for gogovan option" do
+    it "should confirm delivery for drop-off option" do
       post :confirm_delivery, delivery: drop_off_delivery
+
+      expect(offer.reload.state).to eq("scheduled")
+      expect(response.status).to eq(200)
+
+      serialized_delivery = Api::V1::DeliverySerializer.new(delivery.reload)
+      serialized_delivery_json = JSON.parse(serialized_delivery.to_json)
+      expect(JSON.parse(response.body)).to eq(serialized_delivery_json)
+    end
+
+    it "should confirm delivery for collection option" do
+      post :confirm_delivery, delivery: collection_delivery
 
       expect(offer.reload.state).to eq("scheduled")
       expect(response.status).to eq(200)
