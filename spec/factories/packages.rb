@@ -6,7 +6,7 @@ FactoryGirl.define do
     length      { rand(199) + 1 }
     width       { rand(199) + 1 }
     height      { rand(199) + 1 }
-    notes       { Faker::Lorem.paragraph }
+    notes       { FFaker::Lorem.paragraph }
     state       'expecting'
 
     received_at nil
