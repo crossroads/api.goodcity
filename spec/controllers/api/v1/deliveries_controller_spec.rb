@@ -52,20 +52,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       post :create, delivery: attributes_for(:delivery).merge(offer_id: offer.id)
       expect(response.status).to eq(201)
     end
-
-    context "for offer having delivery" do
-      let!(:delivery) { create :drop_off_delivery }
-      let!(:delivery_id) { delivery.id }
-
-      it "should delete existing delivery" do
-        post :create, delivery: delivery.attributes
-        expect(response.status).to eq(201)
-
-        expect{
-          Delivery.find(delivery_id)
-        }.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
   end
 
   describe "PUT delivery/1 : update gogovan delivery" do
@@ -195,6 +181,37 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
         "scheduleAttributes" => collection_schedule,
         "contactAttributes" => collection_contact }
     }
+
+    let!(:old_delivery) { create :gogovan_delivery }
+    let!(:old_offer)    { old_delivery.offer }
+    let!(:old_contact_id)  { old_delivery.contact_id }
+    let!(:old_ggv_id)  { old_delivery.gogovan_order_id }
+
+    let(:new_delivery) {
+      { "id" => "#{old_delivery.id}",
+        "deliveryType" => "Gogovan",
+        "offerId" => "#{old_offer.id}",
+        "scheduleAttributes" => ggv_schedule,
+        "contactAttributes" => ggv_contact }
+    }
+
+    it "should confirm delivery by removing old associated records" do
+      expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id)
+      expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
+      post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+
+      expect(old_offer.reload.state).to eq("scheduled")
+      expect(response.status).to eq(200)
+
+      expect{
+        Contact.find(old_contact_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+
+      expect{
+        GogovanOrder.find(old_ggv_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+
+    end
 
     it "should confirm delivery for gogovan option" do
       expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
