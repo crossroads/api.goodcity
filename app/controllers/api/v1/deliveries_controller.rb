@@ -63,6 +63,40 @@ module Api::V1
       render json: {}
     end
 
+    api :POST, '/confirm_delivery', "Confirm Delivery with address, contact and schedule details"
+    param :delivery, Hash, required: true do
+      param :id, String, 'Id of Delivery'
+      param :deliveryType, ['Gogovan', 'Drop Off', 'Alternate'], desc: "Delivery type."
+      param :offerId, String, 'Id of Offer'
+      param :scheduleAttributes, Hash, required: true do
+        param :zone, String
+        param :resource, String
+        param :scheduledAt, String, required: true, desc: "Date scheduled for delivery pick-up"
+        param :slot, String
+        param :slotName, String, desc: "Time slot booked for delivery pick-up"
+      end
+      param :contactAttributes, Hash do
+        param :name, String
+        param :mobile, String
+        param :addressAttributes, Hash do
+          param :street, String
+          param :flat, String
+          param :building, String
+          param :districtId, String
+          param :addressType, ['collection']
+        end
+      end
+    end
+    param :gogovanOrder, Hash do
+      param :pickupTime, String, desc: "Time scheduled for delivery pick-up"
+      param :districtId, String, desc: "Id of District"
+      param :needEnglish, String, desc: "Need english-speaking GGV Driver"
+      param :needCart, String, desc: "Need carts"
+      param :needCarry, String, desc: ""
+      param :offerId, String, desc: "Id of Offer"
+      param :name, String
+      param :mobile, String
+    end
     def confirm_delivery
       @delivery = Delivery.find_by(id: params["delivery"]["id"])
       @delivery.gogovan_order = GogovanOrder.book_order(current_user,
@@ -99,11 +133,12 @@ module Api::V1
 
     def get_delivery_details
       params["delivery"] = get_hash(params["delivery"])
+      schedule_details = [:scheduled_at, :slot_name, :zone, :resource, :slot]
+      address = [:address_type, :district_id, :street, :flat, :building]
       params.require(:delivery).permit(:start, :finish, :offer_id,
         :contact_id, :schedule_id, :delivery_type, :gogovan_order_id,
-        schedule_attributes: [:scheduled_at, :slot_name],
-        contact_attributes: [:name, :mobile,
-          address_attributes: [:address_type, :district_id]])
+        schedule_attributes: schedule_details,
+        contact_attributes: [:name, :mobile, address_attributes: address])
     end
 
     def get_hash(object)
