@@ -10,7 +10,7 @@ describe TwilioJob, :type => :job do
   end
 
   it "should call twilio with options" do
-    expect(twilio_client).to receive_message_chain(:account, :sms, :messages, :create).with(options)
+    expect(twilio_client).to receive_message_chain(:account, :messages, :create).with(options)
     TwilioJob.new.perform(options)
   end
 

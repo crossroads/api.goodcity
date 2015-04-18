@@ -43,7 +43,7 @@ class Gogovan
       order: {
         name:           @name || @user.full_name,
         phone_number:   @mobile || @user.mobile,
-        pickup_time:    @time,
+        pickup_time:    parse_time,
         vehicle:        @vehicle,
         locations:      District.location_json(@district_id),
         extra_requirements: {
@@ -66,8 +66,17 @@ class Gogovan
     if offer && delivery
       user = offer.created_by
       id = "#{offer.id}-$$-#{user.first_name}-$$-#{user.last_name}-$$-#{delivery.id}"
-      link = "#{DONOR_APP_HOST}/ggv_order/#{id}"
-      "Ensure you deliver all the items listed: See details <a href=\"#{link}\">#{link}</a>"
+      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_order/#{id}"
+      "Ensure you deliver all the items listed: See details #{link}"
     end
   end
+
+  def parse_time
+    if @time.is_a?(Time)
+      @time
+    else
+      Time.parse(@time)
+    end
+  end
+
 end
