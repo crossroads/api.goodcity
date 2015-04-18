@@ -15,6 +15,15 @@ class TwilioService
     TwilioJob.perform_later(options)
   end
 
+  def new_offer_alert(offer)
+    return unless allowed_to_send?
+    creator = offer.created_by
+    name = "#{creator.first_name} #{creator.last_name}"
+    body = "#{name} submitted new offer."
+    options = {to: @user.mobile, body: body}
+    TwilioJob.perform_later(options)
+  end
+
   private
 
   # Whitelisting happens only on staging.
