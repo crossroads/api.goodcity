@@ -26,4 +26,18 @@ describe TwilioService do
     end
   end
 
+  context "new_offer_alert" do
+
+    let(:donor) { build(:user, first_name: "John", last_name: "Lowe") }
+    let(:offer) { build(:offer, created_by: donor) }
+
+    it "sends new offer alert SMS via Twilio" do
+      allow(twilio).to receive(:allowed_to_send?).and_return(true)
+      body = "John Lowe submitted new offer."
+      expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+      twilio.new_offer_alert(offer)
+    end
+
+  end
+
 end
