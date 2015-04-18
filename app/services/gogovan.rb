@@ -67,7 +67,7 @@ class Gogovan
       user = offer.created_by
       id = "#{offer.id}-$$-#{user.first_name}-$$-#{user.last_name}-$$-#{delivery.id}"
       link = "#{DONOR_APP_HOST}/ggv_order/#{id}"
-      "Ensure you deliver all the items listed: See details <a href=\"#{link}\">#{link}</a>"
+      "Ensure you deliver all the items listed: See details #{link}"
     end
   end
 end
