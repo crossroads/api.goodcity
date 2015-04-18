@@ -43,7 +43,7 @@ class Gogovan
       order: {
         name:           @name || @user.full_name,
         phone_number:   @mobile || @user.mobile,
-        pickup_time:    @time,
+        pickup_time:    parse_time,
         vehicle:        @vehicle,
         locations:      District.location_json(@district_id),
         extra_requirements: {
@@ -70,4 +70,13 @@ class Gogovan
       "Ensure you deliver all the items listed: See details #{link}"
     end
   end
+
+  def parse_time
+    if @time.is_a?(Time)
+      @time
+    else
+      Time.parse(@time)
+    end
+  end
+
 end
