@@ -19,8 +19,7 @@ class TwilioService
     return unless allowed_to_send?
     creator = offer.created_by
     name = "#{creator.first_name} #{creator.last_name}"
-    link = "#{Rails.application.secrets.base_urls["admin"]}/offers/#{offer.id}/review_offer/items"
-    body = "#{name} submitted #{link}"
+    body = "#{name} submitted new offer."
     options = {to: @user.mobile, body: body}
     TwilioJob.perform_later(options)
   end
