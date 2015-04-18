@@ -33,8 +33,7 @@ describe TwilioService do
 
     it "sends new offer alert SMS via Twilio" do
       allow(twilio).to receive(:allowed_to_send?).and_return(true)
-      base_url = "#{Rails.application.secrets.base_urls["admin"]}/offers/#{offer.id}/review_offer/items"
-      body = "John Lowe submitted #{base_url}"
+      body = "John Lowe submitted new offer."
       expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
       twilio.new_offer_alert(offer)
     end
