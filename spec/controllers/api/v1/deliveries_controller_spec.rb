@@ -182,35 +182,42 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
         "contactAttributes" => collection_contact }
     }
 
-    let!(:old_delivery) { create :gogovan_delivery }
-    let!(:old_offer)    { old_delivery.offer }
-    let!(:old_contact_id)  { old_delivery.contact_id }
-    let!(:old_ggv_id)  { old_delivery.gogovan_order_id }
+    describe "modify existing delivery" do
 
-    let(:new_delivery) {
-      { "id" => "#{old_delivery.id}",
-        "deliveryType" => "Gogovan",
-        "offerId" => "#{old_offer.id}",
-        "scheduleAttributes" => ggv_schedule,
-        "contactAttributes" => ggv_contact }
-    }
+      let!(:old_delivery) { create :gogovan_delivery }
+      let!(:old_offer)    { old_delivery.offer }
+      let!(:old_contact_id)  { old_delivery.contact_id }
+      let!(:old_ggv_id)  { old_delivery.gogovan_order_id }
+      let!(:schedule) {
+        { "scheduledAt" => "Fri Apr 17 2015 10:30:00 GMT+0530 (IST)",
+          "slotName" => "10:30 AM" }
+      }
 
-    it "should confirm delivery by removing old associated records" do
-      expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id)
-      expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
-      post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+      let!(:new_delivery) {
+        { "id" => "#{old_delivery.id}",
+          "deliveryType" => "Gogovan",
+          "offerId" => "#{old_offer.id}",
+          "scheduleAttributes" => schedule,
+          "contactAttributes" => ggv_contact }
+      }
 
-      expect(old_offer.reload.state).to eq("scheduled")
-      expect(response.status).to eq(200)
+      it "should confirm delivery by removing old associated records" do
+        expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id)
+        expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
+        post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
 
-      expect{
-        Contact.find(old_contact_id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(old_offer.reload.state).to eq("scheduled")
+        expect(response.status).to eq(200)
 
-      expect{
-        GogovanOrder.find(old_ggv_id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+        expect{
+          Contact.find(old_contact_id)
+        }.to raise_error(ActiveRecord::RecordNotFound)
 
+        expect{
+          GogovanOrder.find(old_ggv_id)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+
+      end
     end
 
     it "should confirm delivery for gogovan option" do
