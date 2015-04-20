@@ -4,12 +4,9 @@ class GogovanOrder < ActiveRecord::Base
 
   has_one :delivery, inverse_of: :gogovan_order
 
+  before_create :generate_uuid
   after_commit :start_polling_status, on: [:create]
   before_destroy :cancel_order, if: :pending?
-
-  def self.save_booking(booking_id)
-    create(status: 'pending', booking_id: booking_id)
-  end
 
   def self.place_order(user, attributes)
     attributes = set_vehicle_type(attributes) if attributes['offerId']
@@ -17,9 +14,16 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def self.book_order(user, attributes)
+    order = create(status: 'pending')
+    attributes["ggv_uuid"] = order.ggv_uuid
     attributes = set_vehicle_type(attributes) if attributes['offerId']
     book_order = Gogovan.new(user, attributes).confirm_order
-    save_booking(book_order['id'])
+    order.update_booking(book_order['id'])
+    order
+  end
+
+  def update_booking(booking_id)
+    update_column(:booking_id, booking_id)
   end
 
   def update_status(status)
@@ -60,6 +64,10 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   private
+
+  def generate_uuid
+    self.ggv_uuid = SecureRandom.uuid[0,8]
+  end
 
   def start_polling_status
     PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).
