@@ -12,6 +12,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   let(:serialized_offer_json) { JSON.parse( serialized_offer.to_json ) }
   let(:allowed_params) { [:language, :origin, :stairs, :parking, :estimated_size, :notes] }
   let(:offer_params) { FactoryGirl.attributes_for(:offer).tap{|attrs| (attrs.keys - allowed_params).each{|a| attrs.delete(a)} } }
+  let(:ggv_order) { create(:gogovan_order, :with_delivery) }
 
   describe "GET offers" do
     before { generate_and_set_token(reviewer) }
@@ -120,7 +121,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   describe "GET offer/ggv_order_offer" do
     before { generate_and_set_token(user) }
     it "returns 200" do
-      get :ggv_order_offer, id: offer.id
+      get :ggv_order_offer, id: ggv_order.ggv_uuid
       expect(response.status).to eq(200)
     end
   end
