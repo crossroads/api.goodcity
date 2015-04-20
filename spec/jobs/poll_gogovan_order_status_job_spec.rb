@@ -40,9 +40,9 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
     PollGogovanOrderStatusJob.new.perform(order.id)
 
     order.reload
-    expect(enqueued_jobs.size).to eq(3)
-    expect(enqueued_jobs[2][:job]).to eq(PollGogovanOrderStatusJob)
-    expect(enqueued_jobs[2][:args]).to eq([order.id])
+    expect(enqueued_jobs.size).to eq(11)
+    expect(enqueued_jobs.last[:job]).to eq(PollGogovanOrderStatusJob)
+    expect(enqueued_jobs.last[:args]).to eq([order.id])
   end
 
   it "should delete empty GGV order if not belongs to any delivery" do
@@ -57,8 +57,8 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
     expect(Gogovan).to receive_message_chain(:new, :get_status).with(active_order.booking_id).and_return(cancel_ggv_response)
 
     PollGogovanOrderStatusJob.new.perform(active_order.id)
-    expect(enqueued_jobs.size).to eq(3)
-    expect(enqueued_jobs[2][:job]).to eq(GgvDeliveryCleanupJob)
-    expect(enqueued_jobs[2][:args]).to eq([active_order.id])
+    expect(enqueued_jobs.size).to eq(11)
+    expect(enqueued_jobs.last[:job]).to eq(GgvDeliveryCleanupJob)
+    expect(enqueued_jobs.last[:args]).to eq([active_order.id])
   end
 end

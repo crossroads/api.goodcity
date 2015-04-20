@@ -127,6 +127,7 @@ module Api::V1
     def delete_old_associations
       @delivery.contact.try(:destroy)
       @delivery.gogovan_order.try(:destroy)
+      @delivery.schedule && @delivery.schedule.deliveries.delete(@delivery)
     end
 
     def get_delivery_details
