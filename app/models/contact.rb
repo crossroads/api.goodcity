@@ -5,13 +5,4 @@ class Contact < ActiveRecord::Base
   has_one :delivery, inverse_of: :contact
 
   accepts_nested_attributes_for :address
-
-  include PushUpdates
-
-  private
-
-  #required by PusherUpdates module
-  def offer
-    delivery.try(:offer)
-  end
 end
