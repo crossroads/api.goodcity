@@ -44,10 +44,19 @@ class Offer < ActiveRecord::Base
     self.state ||= :draft
   end
 
+  def scheduled?
+    state == "scheduled"
+  end
+
   state_machine :state, initial: :draft do
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items
-    state :submitted, :under_review, :reviewed, :scheduled, :closed, :received
+    state :submitted, :under_review, :reviewed, :scheduled, :closed, :received,
+      :cancelled
+
+    event :cancel do
+      transition all => :cancelled
+    end
 
     event :submit do
       transition :draft => :submitted
@@ -100,6 +109,7 @@ class Offer < ActiveRecord::Base
     after_transition :on => :submit do |offer, transition|
       offer.send_thank_you_message
       offer.send_new_offer_notification
+      offer.send_new_offer_alert
     end
 
     after_transition :on => [:close, :cancel_schedule_no_items] do |offer, transition|
@@ -133,6 +143,15 @@ class Offer < ActiveRecord::Base
   def send_new_offer_notification
     text = I18n.t("notification.new_offer", name: self.created_by.full_name)
     send_notification(text)
+  end
+
+  def send_new_offer_alert
+    mobiles = (ENV['NEW_OFFER_ALERT_MOBILES'] || "").split(",").map(&:strip).compact
+    if mobiles.any?
+      User.where(mobile: mobiles).each do |user|
+        TwilioService.new(user).new_offer_alert(self)
+      end
+    end
   end
 
   def send_ggv_cancel_order_message

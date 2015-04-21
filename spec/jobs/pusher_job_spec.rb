@@ -7,7 +7,7 @@ describe PusherJob, :type => :job do
     event = 'update'
     data = {one: 1}.to_json
 
-    expect(Nestful).to receive(:post).with(any_args, {rooms:channels, event:event, args:JSON.parse(data)}, any_args)
+    expect(Nestful).to receive(:post).with(/http/, {rooms:channels, event:event, args:JSON.parse(data)}, format: :json)
     PusherJob.new.perform(channels, event, data)
   end
 

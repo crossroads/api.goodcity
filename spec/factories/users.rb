@@ -4,8 +4,8 @@ FactoryGirl.define do
   factory :user, aliases: [:sender] do
     association :address
 
-    first_name { Faker::Name.first_name }
-    last_name  { Faker::Name.last_name }
+    first_name { FFaker::Name.first_name }
+    last_name  { FFaker::Name.last_name }
     mobile     { generate(:mobile) }
 
     association :image
