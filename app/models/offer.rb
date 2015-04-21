@@ -119,6 +119,15 @@ class Offer < ActiveRecord::Base
     end
   end
 
+  def self.find_by_ggv_uuid(ggv_uuid)
+    begin
+      offer = GogovanOrder.find_by(ggv_uuid: ggv_uuid).delivery.offer
+    rescue Exception => e
+      raise ActiveRecord::RecordNotFound
+    end
+    with_eager_load.find(offer.id)
+  end
+
   def send_thank_you_message
     messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
   end

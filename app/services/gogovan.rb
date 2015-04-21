@@ -1,7 +1,7 @@
 class Gogovan
 
   attr_accessor :user, :name, :mobile, :time, :need_english,
-    :need_cart, :need_carry, :district_id, :vehicle, :offer
+    :need_cart, :need_carry, :district_id, :vehicle, :ggv_uuid, :offer
 
   def initialize(user = nil, options = {})
     @user         = user
@@ -13,6 +13,7 @@ class Gogovan
     @need_carry   = options['needCarry']
     @district_id  = options['districtId']
     @vehicle      = options['vehicle']
+    @ggv_uuid     = options['ggv_uuid']
     @offer        = Offer.find_by(id: options['offerId'])
   end
 
@@ -63,10 +64,8 @@ class Gogovan
 
   def ggv_driver_notes
     delivery = offer.delivery
-    if offer && delivery
-      user = offer.created_by
-      id = "#{offer.id}-$$-#{user.first_name}-$$-#{user.last_name}-$$-#{delivery.id}"
-      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_order/#{id}"
+    if offer && ggv_uuid
+      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_order/#{ggv_uuid}"
       "Ensure you deliver all the items listed: See details #{link}"
     end
   end

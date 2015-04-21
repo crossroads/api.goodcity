@@ -23,7 +23,8 @@ describe Gogovan do
       'needCart' => needCart,
       'districtId' => districtId,
       'vehicle' => vehicle,
-      'offerId' => offer_id
+      'offerId' => offer_id,
+      'ggv_uuid' => "1234"
     }
   }
 
