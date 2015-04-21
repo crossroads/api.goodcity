@@ -120,7 +120,11 @@ class Offer < ActiveRecord::Base
   end
 
   def self.find_by_ggv_uuid(ggv_uuid)
-    offer = GogovanOrder.find_by(ggv_uuid: ggv_uuid).delivery.offer
+    begin
+      offer = GogovanOrder.find_by(ggv_uuid: ggv_uuid).delivery.offer
+    rescue Exception => e
+      raise ActiveRecord::RecordNotFound
+    end
     with_eager_load.find(offer.id)
   end
 
