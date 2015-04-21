@@ -9,10 +9,10 @@ RSpec.describe GogovanTransport, type: :model do
   describe 'instance methods' do
     it '#vehical_tag' do
       expect(
-        (build :gogovan_transport, name_en: 'Van').vehical_tag
+        (build :gogovan_transport, name_en: 'Van').vehicle_tag
       ).to eq('van')
       expect(
-        (build :gogovan_transport, name_en: '5.5t Truck').vehical_tag
+        (build :gogovan_transport, name_en: '5.5t Truck').vehicle_tag
       ).to eq('mudou')
     end
   end

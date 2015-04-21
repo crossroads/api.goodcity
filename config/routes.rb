@@ -61,6 +61,7 @@ Rails.application.routes.draw do
       post "contacts" => "contacts#create"
 
       post "deliveries" => "deliveries#create"
+      post "confirm_delivery" => "deliveries#confirm_delivery"
       get  "deliveries/:id" => "deliveries#show"
       put  "deliveries/:id" => "deliveries#update"
       delete "deliveries/:id" => "deliveries#destroy"

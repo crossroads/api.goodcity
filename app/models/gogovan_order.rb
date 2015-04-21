@@ -2,7 +2,7 @@ class GogovanOrder < ActiveRecord::Base
   include Paranoid
   include PushUpdates
 
-  has_one :delivery
+  has_one :delivery, inverse_of: :gogovan_order
 
   after_commit :start_polling_status, on: [:create]
   before_destroy :cancel_order, if: :pending?
@@ -68,7 +68,7 @@ class GogovanOrder < ActiveRecord::Base
 
   def self.set_vehicle_type(attributes)
     offer = Offer.find(attributes["offerId"])
-    attributes["vehicle"] = offer.gogovan_transport.vehical_tag
+    attributes["vehicle"] = offer.gogovan_transport.vehicle_tag
     attributes
   end
 
