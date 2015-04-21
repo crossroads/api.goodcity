@@ -39,4 +39,4 @@ zh-tw:
       limited and needs in the community change daily. Once the review is
       complete you will be able to arrange transport for any accepted items.
       If you have questions feel free to reply to this message.
-    ggv_cancel_message: A van booking for %{time} was canceled via GoGoVan. Please choose new transport arrangements.
+    ggv_cancel_message: A van booking for %{time} was cancelled via GoGoVan. Please choose new transport arrangements.
