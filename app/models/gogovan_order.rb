@@ -68,7 +68,7 @@ class GogovanOrder < ActiveRecord::Base
 
   def self.set_vehicle_type(attributes)
     offer = Offer.find(attributes["offerId"])
-    attributes["vehicle"] = offer.gogovan_transport.vehical_tag
+    attributes["vehicle"] = offer.gogovan_transport.vehicle_tag
     attributes
   end
 
