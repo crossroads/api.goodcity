@@ -20,8 +20,18 @@ module Api::V1
     has_one  :crossroads_transport, serializer: CrossroadsTransportSerializer
 
     def include_messages?
+      return false unless goodcity_user?
       @options[:exclude_messages] != true
     end
+
+    def goodcity_user?
+      User.current_user.present?
+    end
+
+    alias_method :include_reviewed_by?, :goodcity_user?
+    alias_method :include_gogovan_transport?, :goodcity_user?
+    alias_method :include_crossroads_transport?, :goodcity_user?
+
 
     # Use it to send soft-deleted offers
     def removed_at__sql
