@@ -181,10 +181,17 @@ RSpec.describe Offer, type: :model do
     let(:offer) { create :offer, state: 'scheduled' }
     let!(:delivery) { create :gogovan_delivery, offer: offer }
     it 'should cancel GoGoVan booking' do
-      expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id)
+      expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id).and_return(200)
       expect(delivery.gogovan_order.status).to eq('pending')
       offer.close!
       expect(delivery.gogovan_order.status).to eq('cancelled')
     end
+    it "cannot close offer if GoGoVan booking can't be cancelled" do
+      expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id).and_return({:error=>"Failed.  Response code = 409.  Response message = Conflict.  Response Body = {\"error\":\"Order that is already accepted by a driver cannot be cancelled\"}."})
+      expect(delivery.gogovan_order.status).to eq('pending')
+      offer.close!
+      expect(delivery.gogovan_order.status).to eq('pending')
+    end
+
   end
 end
