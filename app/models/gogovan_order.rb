@@ -66,7 +66,7 @@ class GogovanOrder < ActiveRecord::Base
   private
 
   def generate_uuid
-    self.ggv_uuid = SecureRandom.uuid[0,8]
+    self.ggv_uuid = SecureRandom.uuid[0,6]
   end
 
   def start_polling_status
