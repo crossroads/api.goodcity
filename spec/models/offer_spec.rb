@@ -122,11 +122,11 @@ RSpec.describe Offer, type: :model do
       end
     end
 
-    describe "donated_by" do
+    describe "created_by" do
       it "should return offers donated by specific donor" do
         donor = create :user
         offer = create :offer, created_by: donor
-        expect(Offer.donated_by(donor.id)).to include(offer)
+        expect(Offer.created_by(donor.id)).to include(offer)
       end
     end
   end
