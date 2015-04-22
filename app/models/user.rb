@@ -15,9 +15,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  HongKongMobileRegExp = /\A\+852[569]\d{7}\z/
-
-  validates :mobile, presence: true, uniqueness: true, format: { with: HongKongMobileRegExp }
+  validates :mobile, presence: true, uniqueness: true, format: { with: Mobile::HongKongMobileRegExp }
 
   after_create :generate_auth_token
 

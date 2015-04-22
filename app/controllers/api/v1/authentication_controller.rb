@@ -62,12 +62,12 @@ module Api::V1
     error 500, "Internal Server Error"
     # Lookup user based on mobile. Validate mobile format first.
     def send_pin
-      @mobile = params[:mobile]
-      unless User::HongKongMobileRegExp === @mobile
-        return render_invalid_mobile
+      @mobile = Mobile.new(params[:mobile])
+      unless @mobile.valid?
+        return render json: { errors: @mobile.errors.full_messages.join('. ') }, status: 422
       end
 
-      @user = User.find_by_mobile(@mobile)
+      @user = User.find_by_mobile(@mobile.mobile)
       if @user.present? && (app_name != ADMIN_APP || @user.staff? && app_name == ADMIN_APP)
         @user.send_verification_pin
       end
@@ -187,18 +187,6 @@ module Api::V1
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
       params.require(:user_auth).permit(attributes)
-    end
-
-    def render_invalid_mobile
-      attr = I18n.t('activerecord.attributes.user.mobile')
-      reason = @mobile.blank? ? 'blank' : 'invalid'
-      err = I18n.t("activerecord.errors.models.user.attributes.mobile.#{reason}")
-      message = I18n.t('errors.format', attribute: attr, message: err)
-      render_error(message, 422)
-    end
-
-    def render_error(message, status)
-      render json: { errors: message }, status: status
     end
 
     def valid_host?
