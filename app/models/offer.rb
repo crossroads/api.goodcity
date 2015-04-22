@@ -55,7 +55,7 @@ class Offer < ActiveRecord::Base
       :cancelled
 
     event :cancel do
-      transition all => :cancelled
+      transition all => :cancelled, if: 'can_cancel?'
     end
 
     event :submit do
@@ -117,6 +117,14 @@ class Offer < ActiveRecord::Base
         offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
       end
     end
+  end
+
+  def gogovan_order
+    self.try(:delivery).try(:gogovan_order)
+  end
+
+  def can_cancel?
+    return false if gogovan_order && !gogovan_order.can_cancel?
   end
 
   def self.find_by_ggv_uuid(ggv_uuid)

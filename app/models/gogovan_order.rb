@@ -42,6 +42,10 @@ class GogovanOrder < ActiveRecord::Base
     status_changed?(to: "cancelled")
   end
 
+  def can_cancel?
+    pending? # only cancel orders in this state
+  end
+
   def cancel_order
     Gogovan.cancel_order(booking_id) if booking_id
     update_status('cancelled')
