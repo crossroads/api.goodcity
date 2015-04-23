@@ -1,11 +1,8 @@
 module Api::V1
   class OffersController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:ggv_order_offer]
-    skip_authorization_check only: [:ggv_order_offer]
-
-    before_action :eager_load_offer, except: [:index, :create, :finished, :ggv_order_offer]
-    load_and_authorize_resource :offer, parent: false, except: [:ggv_order_offer]
+    before_action :eager_load_offer, except: [:index, :create, :finished]
+    load_and_authorize_resource :offer, parent: false
 
     resource_description do
       short "List, create, update and delete offers."
@@ -124,11 +121,6 @@ module Api::V1
       render json: @offer, serializer: serializer
     end
 
-    def ggv_order_offer
-      @offer = Offer.find_by_ggv_uuid(params[:id])
-      render json: @offer, serializer: serializer, exclude_messages: params[:exclude] == "messages"
-    end
-
     private
 
     def eager_load_offer
@@ -150,6 +142,5 @@ module Api::V1
     def serializer
       Api::V1::OfferSerializer
     end
-
   end
 end
