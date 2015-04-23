@@ -29,7 +29,7 @@ module Api::V1
 
     def driver_details
       @offer = GogovanOrder.offer_by_ggv_uuid(params[:id])
-      render json: @offer, serializer: Api::V1::OfferSerializer, exclude_messages: params[:exclude] == "messages"
+      render json: @offer, serializer: Api::V1::OfferSerializer, exclude_messages: true
     end
 
     private
