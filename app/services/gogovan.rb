@@ -17,27 +17,31 @@ class Gogovan
     @offer        = Offer.find_by(id: options['offerId'])
   end
 
-  def initiate_order
-    GoGoVanApi::Order.new(nil, order_attributes)
-  end
-
   def confirm_order
-    initiate_order.book
+    order.book
   end
 
   def get_order_price
-    initiate_order.price
+    order.price
   end
 
-  def get_status(id)
-    GoGoVanApi::Order.new(id).status
-  end
+  class << self
 
-  def self.cancel_order(booking_id)
-    GoGoVanApi::Order.new(booking_id).cancel
+    def order_status(booking_id)
+      GoGoVanApi::Order.new(booking_id).status
+    end
+
+    def cancel_order(booking_id)
+      GoGoVanApi::Order.new(booking_id).cancel
+    end
+
   end
 
   private
+
+  def order
+    GoGoVanApi::Order.new(nil, order_attributes)
+  end
 
   def order_attributes
     {

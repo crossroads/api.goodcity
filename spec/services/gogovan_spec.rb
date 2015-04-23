@@ -61,9 +61,9 @@ describe Gogovan do
     end
   end
 
-  describe 'initiate gogovan order' do
+  describe 'gogovan order' do
     it do
-      order_object = gogovan_order.initiate_order
+      order_object = gogovan_order.send(:order)
       expect(order_object.params).to eq(gogovan_order.send(:order_attributes))
     end
   end
