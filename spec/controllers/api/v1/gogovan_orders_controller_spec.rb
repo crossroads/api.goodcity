@@ -6,6 +6,7 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
   let(:gogovan_order) { create(:gogovan_order) }
   let(:serialized_order) { Api::V1::GogovanOrderSerializer.new(gogovan_order) }
   let(:offer) { create(:offer, :with_transport) }
+  let(:ggv_order) { create(:gogovan_order, :with_delivery) }
   let(:order_attributes) {
     {
       "pickupTime" => "Wed Nov 26 2014 21:30:00 GMT+0530 (IST)",
@@ -58,6 +59,14 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
         expect(response.status).to eq(200)
         expect(response.body).to eq(price_details.to_json)
       end
+    end
+  end
+
+  describe "GET gogovan_orders/driver_details" do
+    before { generate_and_set_token(user) }
+    it "returns 200" do
+      get :driver_details, id: ggv_order.ggv_uuid
+      expect(response.status).to eq(200)
     end
   end
 end
