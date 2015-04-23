@@ -23,6 +23,13 @@ RSpec.describe GogovanOrder, type: :model do
     end
   end
 
+  describe 'offer_by_ggv_uuid' do
+    let(:ggv_order) { create(:gogovan_order, :with_delivery) }
+    it 'should return offer by ggv_uuid' do
+      expect(GogovanOrder.offer_by_ggv_uuid(ggv_order.ggv_uuid)).to eq(ggv_order.delivery.offer)
+    end
+  end
+
   describe '#update_status' do
     it 'should update status of order' do
       order = create :gogovan_order
