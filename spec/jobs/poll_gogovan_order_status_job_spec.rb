@@ -24,7 +24,7 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
   let(:cancel_ggv_response) { response.merge({ "status" => "cancelled" }) }
 
   it "should poll GGV order status and update it" do
-    expect(Gogovan).to receive_message_chain(:new, :get_status).with(order.booking_id).and_return(ggv_response)
+    expect(Gogovan).to receive(:order_status).with(order.booking_id).and_return(ggv_response)
     PollGogovanOrderStatusJob.new.perform(order.id)
 
     order.reload
@@ -36,7 +36,7 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
   end
 
   it "should schedule itself for updated status" do
-    expect(Gogovan).to receive_message_chain(:new, :get_status).with(order.booking_id).and_return(ggv_response)
+    expect(Gogovan).to receive(:order_status).with(order.booking_id).and_return(ggv_response)
     PollGogovanOrderStatusJob.new.perform(order.id)
 
     order.reload
@@ -54,7 +54,7 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
   end
 
   it "schedule delete delivery job if GGV order is cancelled" do
-    expect(Gogovan).to receive_message_chain(:new, :get_status).with(active_order.booking_id).and_return(cancel_ggv_response)
+    expect(Gogovan).to receive(:order_status).with(active_order.booking_id).and_return(cancel_ggv_response)
 
     PollGogovanOrderStatusJob.new.perform(active_order.id)
     expect(enqueued_jobs.size).to eq(11)
