@@ -25,8 +25,12 @@ RSpec.describe GogovanOrder, type: :model do
 
   describe 'offer_by_ggv_uuid' do
     let(:ggv_order) { create(:gogovan_order, :with_delivery) }
-    it 'should return offer by ggv_uuid' do
+    it "should return offer by ggv_uuid" do
       expect(GogovanOrder.offer_by_ggv_uuid(ggv_order.ggv_uuid)).to eq(ggv_order.delivery.offer)
+    end
+
+    it "should raise exception" do
+      expect{GogovanOrder.offer_by_ggv_uuid("dummy")}.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
