@@ -13,6 +13,8 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
 
         order.save if order.changed? # avoid un-necessary push-updates to api
         schedule_polling(order_id) if order.reload.need_polling?
+      else
+        raise(ValueError, order_details[:error])
       end
     else
       order.try(:destroy)
@@ -27,4 +29,9 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
   def schedule_polling(order_id)
     self.class.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(order_id)
   end
+
+  private
+
+  class ValueError < StandardError; end
+
 end

@@ -23,16 +23,28 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
   let(:ggv_response) { response.merge({ "status" => "active" }) }
   let(:cancel_ggv_response) { response.merge({ "status" => "cancelled" }) }
 
-  it "should poll GGV order status and update it" do
-    expect(Gogovan).to receive(:order_status).with(order.booking_id).and_return(ggv_response)
-    PollGogovanOrderStatusJob.new.perform(order.id)
+  context "polling GGV order status" do
 
-    order.reload
-    expect(order.status).to eq(ggv_response["status"])
-    expect(order.price).to eq(ggv_response["price"])
-    expect(order.driver_mobile).to eq(ggv_response["driver"]["phone_number"])
-    expect(order.driver_name).to eq(ggv_response["driver"]["name"])
-    expect(order.driver_license).to eq(ggv_response["driver"]["license_plate"])
+    it "successfully and update it" do
+      expect(Gogovan).to receive(:order_status).with(order.booking_id).and_return(ggv_response)
+      PollGogovanOrderStatusJob.new.perform(order.id)
+
+      order.reload
+      expect(order.status).to eq(ggv_response["status"])
+      expect(order.price).to eq(ggv_response["price"])
+      expect(order.driver_mobile).to eq(ggv_response["driver"]["phone_number"])
+      expect(order.driver_name).to eq(ggv_response["driver"]["name"])
+      expect(order.driver_license).to eq(ggv_response["driver"]["license_plate"])
+    end
+
+    context "with an error and re-raise it" do
+      let(:ggv_response) { {:error => "API call failed"} }
+      it do
+        expect(Gogovan).to receive(:order_status).with(order.booking_id).and_return(ggv_response)
+        expect{PollGogovanOrderStatusJob.new.perform(order.id)}.to raise_error(PollGogovanOrderStatusJob::ValueError, "API call failed")
+      end
+    end
+
   end
 
   it "should schedule itself for updated status" do
