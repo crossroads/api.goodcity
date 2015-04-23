@@ -1,7 +1,10 @@
 module Api::V1
   class GogovanOrdersController < Api::V1::ApiController
 
-    load_and_authorize_resource :gogovan_order, parent: false
+    skip_before_action :validate_token, only: [:driver_details]
+    skip_authorization_check only: [:driver_details]
+
+    load_and_authorize_resource :gogovan_order, parent: false, except: [:driver_details]
 
     resource_description do
       short 'Gogovan: Calculate Price and Book Order'
@@ -22,6 +25,11 @@ module Api::V1
     def calculate_price
       order_price = GogovanOrder.place_order(current_user, order_params)
       render json: order_price.to_json
+    end
+
+    def driver_details
+      @offer = GogovanOrder.offer_by_ggv_uuid(params[:id])
+      render json: @offer, serializer: Api::V1::OfferSerializer, exclude_messages: true
     end
 
     private

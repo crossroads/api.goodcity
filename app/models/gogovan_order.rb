@@ -22,6 +22,12 @@ class GogovanOrder < ActiveRecord::Base
     order
   end
 
+  def self.offer_by_ggv_uuid(ggv_uuid)
+    offer = find_by(ggv_uuid: ggv_uuid).try(:delivery).try(:offer)
+    raise ActiveRecord::RecordNotFound unless offer
+    Offer.with_eager_load.find(offer.id)
+  end
+
   def update_booking(booking_id)
     update_column(:booking_id, booking_id)
   end
