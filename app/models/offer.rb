@@ -86,7 +86,7 @@ class Offer < ActiveRecord::Base
       transition [:under_review, :reviewed, :scheduled] => :received
     end
 
-    event :cancel_schedule_no_items do
+    event :re_review do
       transition [:scheduled, :reviewed] => :under_review
     end
 
@@ -112,7 +112,7 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_alert
     end
 
-    after_transition :on => [:close, :cancel_schedule_no_items] do |offer, transition|
+    after_transition :on => [:close, :re_review] do |offer, transition|
       if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
         offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
       end
