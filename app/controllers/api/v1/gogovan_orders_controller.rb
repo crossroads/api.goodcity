@@ -1,7 +1,10 @@
 module Api::V1
   class GogovanOrdersController < Api::V1::ApiController
 
-    load_and_authorize_resource :gogovan_order, parent: false
+    skip_before_action :validate_token, only: [:driver_details]
+    skip_authorization_check only: [:driver_details]
+
+    load_and_authorize_resource :gogovan_order, parent: false, except: [:driver_details]
 
     resource_description do
       short 'Gogovan: Calculate Price and Book Order'
@@ -24,21 +27,9 @@ module Api::V1
       render json: order_price.to_json
     end
 
-    api :POST, '/v1/gogovan_orders/confirm_order', "Place Order"
-    param :gogovan_order, Hash do
-      param :name, String, desc: "Donor's name"
-      param :mobile, String, desc: "Donor's mobile"
-      param :pickup_time, String, desc: "Scheduled time for delivery", required: true
-      param :district_id, Integer, desc: "Id of the district", required: true
-      param :need_english, [true, false], desc: "Speak English?"
-      param :need_cart, [true, false], desc: "Borrow Trolley(s)?"
-      param :need_carry, [true, false], desc: "Porterage?"
-      param :offer_id, Integer, desc: "Id of the offer", required: true
-    end
-    def confirm_order
-      attributes = params_hash(params["gogovan_order"])
-      @gogovan_order = GogovanOrder.book_order(current_user, attributes)
-      render json: @gogovan_order, serializer: serializer
+    def driver_details
+      @offer = GogovanOrder.offer_by_ggv_uuid(params[:id])
+      render json: @offer, serializer: Api::V1::OfferSerializer, exclude_messages: true
     end
 
     private
@@ -46,11 +37,6 @@ module Api::V1
     def order_params
       params.permit(["pickupTime", "districtId", "needEnglish", "needCart",
         "needCarry", "offerId"])
-    end
-
-    # hash with keys in lower-camelcase form
-    def params_hash(params)
-      Hash[params.map{|(k,v)| [k.camelize(:lower),v]}]
     end
 
     def serializer

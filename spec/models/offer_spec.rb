@@ -122,11 +122,11 @@ RSpec.describe Offer, type: :model do
       end
     end
 
-    describe "donated_by" do
+    describe "created_by" do
       it "should return offers donated by specific donor" do
         donor = create :user
         offer = create :offer, created_by: donor
-        expect(Offer.donated_by(donor.id)).to include(offer)
+        expect(Offer.created_by(donor.id)).to include(offer)
       end
     end
   end
@@ -173,7 +173,7 @@ RSpec.describe Offer, type: :model do
         offer.send_ggv_cancel_order_message
       }.to change(offer.messages, :count).by(1)
       expect(subject.sender).to eq(User.system_user)
-      expect(subject.body).to eq("A van booking for #{time_string} was canceled via GoGoVan. Please choose new transport arrangements.")
+      expect(subject.body).to eq("A van booking for #{time_string} was cancelled via GoGoVan. Please choose new transport arrangements.")
     end
   end
 
@@ -181,10 +181,17 @@ RSpec.describe Offer, type: :model do
     let(:offer) { create :offer, state: 'scheduled' }
     let!(:delivery) { create :gogovan_delivery, offer: offer }
     it 'should cancel GoGoVan booking' do
-      expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id)
+      expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id).and_return(200)
       expect(delivery.gogovan_order.status).to eq('pending')
       offer.close!
       expect(delivery.gogovan_order.status).to eq('cancelled')
     end
+    it "cannot close offer if GoGoVan booking can't be cancelled" do
+      expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id).and_return({:error=>"Failed.  Response code = 409.  Response message = Conflict.  Response Body = {\"error\":\"Order that is already accepted by a driver cannot be cancelled\"}."})
+      expect(delivery.gogovan_order.status).to eq('pending')
+      offer.close!
+      expect(delivery.gogovan_order.status).to eq('pending')
+    end
+
   end
 end

@@ -9,7 +9,7 @@ FactoryGirl.define do
     stairs         { [false, true].sample }
     parking        { [false, true].sample }
     estimated_size { [1,2,3,4].sample.to_s }
-    notes          { Faker::Lorem.paragraph }
+    notes          { FFaker::Lorem.paragraph }
     created_by     {|m| m.association(:user) }
     reviewed_by_id nil
     reviewed_at    nil

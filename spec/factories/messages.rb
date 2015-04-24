@@ -3,7 +3,7 @@
 FactoryGirl.define do
 
   factory :message do
-    body        { Faker::Lorem.paragraph }
+    body        { FFaker::Lorem.paragraph }
     sender      { |m| m.association(:user) }
     is_private  false
     offer

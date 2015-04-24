@@ -1,9 +1,6 @@
 module Api::V1
   class OffersController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:ggv_order_offer]
-    skip_authorization_check only: [:ggv_order_offer]
-
     before_action :eager_load_offer, except: [:index, :create, :finished]
     load_and_authorize_resource :offer, parent: false
 
@@ -58,7 +55,7 @@ module Api::V1
       return finished if params["category"] == "finished"
 
       @offers = Offer.accessible_by(current_ability).with_deleted if params[:include_deleted] == "true"
-      @offers = @offers.donated_by(params[:donated_by_id]) if params[:donated_by_id].present?
+      @offers = @offers.created_by(params[:created_by_id]) if params[:created_by_id].present?
 
       @offers = params['state'] ?
         @offers.by_state(params['state']).with_eager_load :
@@ -124,10 +121,6 @@ module Api::V1
       render json: @offer, serializer: serializer
     end
 
-    def ggv_order_offer
-      render json: @offer, serializer: serializer, exclude_messages: params[:exclude] == "messages"
-    end
-
     private
 
     def eager_load_offer
@@ -149,6 +142,5 @@ module Api::V1
     def serializer
       Api::V1::OfferSerializer
     end
-
   end
 end

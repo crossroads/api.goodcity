@@ -14,13 +14,23 @@ RSpec.describe GogovanOrder, type: :model do
     it{ is_expected.to have_db_column(:driver_license).of_type(:string)}
   end
 
-  describe 'save_booking' do
+  describe 'update_booking' do
     let(:booking_id) { rand(1000000..9999999) }
-    it 'should create record with booking_id' do
-      expect{
-        GogovanOrder.save_booking(booking_id)
-      }.to change(GogovanOrder, :count).by(1)
-      expect(GogovanOrder.last.booking_id).to eq(booking_id)
+    let(:ggv_order) { create :gogovan_order }
+    it 'should update record with booking_id' do
+      expect(ggv_order.update_booking(booking_id)).to be true
+      expect(ggv_order.booking_id).to eq(booking_id)
+    end
+  end
+
+  describe 'offer_by_ggv_uuid' do
+    let(:ggv_order) { create(:gogovan_order, :with_delivery) }
+    it "should return offer by ggv_uuid" do
+      expect(GogovanOrder.offer_by_ggv_uuid(ggv_order.ggv_uuid)).to eq(ggv_order.delivery.offer)
+    end
+
+    it "should raise exception" do
+      expect{GogovanOrder.offer_by_ggv_uuid("dummy")}.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
