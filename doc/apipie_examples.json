@@ -389,6 +389,228 @@
       "recorded" : true
     }
   ],
+  "deliveries#confirm_delivery" : [
+    {
+      "title" : "Confirm Delivery of Gogovan Type",
+      "verb" : "POST",
+      "path" : "/api/v1/confirm_delivery",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "id" : "1442",
+          "deliveryType" : "Gogovan",
+          "offerId" : "10893",
+          "scheduleAttributes" : {
+            "scheduledAt" : "Fri Apr 17 2015 10:30:00 GMT+0530 (IST)",
+            "slotName" : "10:30 AM"
+          },
+          "contactAttributes" : {
+            "name" : "David Dara51",
+            "mobile" : "+85251111111",
+            "addressAttributes" : {
+              "addressType" : "collection",
+              "districtId" : "23091"
+            }
+          }
+        },
+        "gogovanOrder" : {
+          "pickupTime" : "Fri Apr 17 2015 10:30:00 GMT+0530 (IST)",
+          "districtId" : "23091",
+          "needEnglish" : "true",
+          "needCart" : "true",
+          "needCarry" : "true",
+          "offerId" : "10893",
+          "name" : "Ocie",
+          "mobile" : "+85265288776"
+        }
+      },
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 30664,
+            "name" : "David Dara51",
+            "mobile" : "+85251111111",
+            "address_id" : 30723
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 30723,
+            "street" : null,
+            "flat" : null,
+            "building" : null,
+            "district_id" : 23091,
+            "addressable_id" : 30664,
+            "addressable_type" : "Contact"
+          }
+        ],
+        "schedules" : [
+          {
+            "id" : 94,
+            "resource" : null,
+            "scheduled_at" : "2015-04-17T13:00:00.000+08:00",
+            "slot" : null,
+            "slot_name" : "10:30 AM",
+            "zone" : null
+          }
+        ],
+        "gogovan_orders" : [
+          {
+            "id" : 992,
+            "booking_id" : 9725102,
+            "status" : "pending",
+            "price" : null,
+            "driver_name" : null,
+            "driver_mobile" : null,
+            "driver_license" : null
+          }
+        ],
+        "delivery" : {
+          "id" : 1442,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 10893,
+          "delivery_type" : "Gogovan",
+          "contact_id" : 30664,
+          "schedule_id" : 94,
+          "gogovan_order_id" : 992
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "Confirm Delivery of Drop Off Type",
+      "verb" : "POST",
+      "path" : "/api/v1/confirm_delivery",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "id" : "1443",
+          "deliveryType" : "Drop Off",
+          "offerId" : "10894",
+          "scheduleAttributes" : {
+            "slot" : "2",
+            "scheduledAt" : "Fri Apr 17 2015 00:00:00 GMT+0530 (IST)",
+            "slotName" : "11AM-1PM"
+          }
+        }
+      },
+      "response_data" : {
+        "contacts" : [],
+        "schedules" : [
+          {
+            "id" : 95,
+            "resource" : null,
+            "scheduled_at" : "2015-04-17T02:30:00.000+08:00",
+            "slot" : 2,
+            "slot_name" : "11AM-1PM",
+            "zone" : null
+          }
+        ],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 1443,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 10894,
+          "delivery_type" : "Drop Off",
+          "contact_id" : null,
+          "schedule_id" : 95,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "Confirm Delivery of Alternate Type",
+      "verb" : "POST",
+      "path" : "/api/v1/confirm_delivery",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "delivery" : {
+          "id" : "1444",
+          "deliveryType" : "Alternate",
+          "offerId" : "10895",
+          "scheduleAttributes" : {
+            "zone" : "South",
+            "resource" : "Truck C",
+            "scheduledAt" : "Sun Apr 26 2015 11:26:47 GMT+0530 (IST)",
+            "slot" : "4",
+            "slotName" : "Evening,4pm-6pm"
+          },
+          "contactAttributes" : {
+            "name" : "David Dara51",
+            "mobile" : "+85251111111",
+            "addressAttributes" : {
+              "street" : "test3",
+              "flat" : "test5",
+              "building" : "test4",
+              "districtId" : "3944",
+              "addressType" : "collection"
+            }
+          }
+        }
+      },
+      "response_data" : {
+        "contacts" : [
+          {
+            "id" : 30673,
+            "name" : "David Dara51",
+            "mobile" : "+85251111111",
+            "address_id" : 30732
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 30732,
+            "street" : "test3",
+            "flat" : "test5",
+            "building" : "test4",
+            "district_id" : 3944,
+            "addressable_id" : 30673,
+            "addressable_type" : "Contact"
+          }
+        ],
+        "schedules" : [
+          {
+            "id" : 96,
+            "resource" : "Truck C",
+            "scheduled_at" : "2015-04-26T13:56:47.000+08:00",
+            "slot" : 4,
+            "slot_name" : "Evening,4pm-6pm",
+            "zone" : "South"
+          }
+        ],
+        "gogovan_orders" : [],
+        "delivery" : {
+          "id" : 1444,
+          "start" : null,
+          "finish" : null,
+          "offer_id" : 10895,
+          "delivery_type" : "Alternate",
+          "contact_id" : 30673,
+          "schedule_id" : 96,
+          "gogovan_order_id" : null
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "deliveries#create" : [
     {
       "title" : "This is an example of creating delivery. TO create delivery of specific type values should be from ['Alternate', 'Drop Off', 'Gogovan']",

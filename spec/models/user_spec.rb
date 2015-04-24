@@ -65,7 +65,7 @@ describe User, :type => :model do
       it "should raise validation error" do
         user = User.creation_with_auth(user_attributes)
         expect(user.errors[:mobile]).to include("can't be blank")
-        expect(user.errors[:mobile]).to include("must begin with +852")
+        expect(user.errors[:mobile]).to include("is invalid")
       end
     end
 

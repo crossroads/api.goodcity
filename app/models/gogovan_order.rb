@@ -2,14 +2,11 @@ class GogovanOrder < ActiveRecord::Base
   include Paranoid
   include PushUpdates
 
-  has_one :delivery
+  has_one :delivery, inverse_of: :gogovan_order
 
+  before_create :generate_uuid
   after_commit :start_polling_status, on: [:create]
   before_destroy :cancel_order, if: :pending?
-
-  def self.save_booking(booking_id)
-    create(status: 'pending', booking_id: booking_id)
-  end
 
   def self.place_order(user, attributes)
     attributes = set_vehicle_type(attributes) if attributes['offerId']
@@ -17,9 +14,22 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def self.book_order(user, attributes)
+    order = create(status: 'pending')
+    attributes["ggv_uuid"] = order.ggv_uuid
     attributes = set_vehicle_type(attributes) if attributes['offerId']
     book_order = Gogovan.new(user, attributes).confirm_order
-    save_booking(book_order['id'])
+    order.update_booking(book_order['id'])
+    order
+  end
+
+  def self.offer_by_ggv_uuid(ggv_uuid)
+    offer = find_by(ggv_uuid: ggv_uuid).try(:delivery).try(:offer)
+    raise ActiveRecord::RecordNotFound unless offer
+    Offer.with_eager_load.find(offer.id)
+  end
+
+  def update_booking(booking_id)
+    update_column(:booking_id, booking_id)
   end
 
   def update_status(status)
@@ -38,9 +48,21 @@ class GogovanOrder < ActiveRecord::Base
     status_changed?(to: "cancelled")
   end
 
+  def can_cancel?
+    pending? # only cancel orders in this state
+  end
+
+  # '200' Fixnum
+  # {:error=>"Failed.  Response code = 409.  Response message = Conflict.  Response Body = {\"error\":\"Order that is already accepted by a driver cannot be cancelled\"}."}
   def cancel_order
-    Gogovan.cancel_order(booking_id) if booking_id
-    update_status('cancelled')
+    if booking_id
+      result = Gogovan.cancel_order(booking_id)
+      if result == 200
+        update_status('cancelled')
+      else
+        result[:error]
+      end
+    end
   end
 
   def assign_details(order_details)
@@ -54,12 +76,11 @@ class GogovanOrder < ActiveRecord::Base
     self
   end
 
-  #required by PusherUpdates module
-  def offer
-    delivery.try(:offer)
-  end
-
   private
+
+  def generate_uuid
+    self.ggv_uuid = SecureRandom.uuid[0,6]
+  end
 
   def start_polling_status
     PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).
@@ -68,11 +89,11 @@ class GogovanOrder < ActiveRecord::Base
 
   def self.set_vehicle_type(attributes)
     offer = Offer.find(attributes["offerId"])
-    attributes["vehicle"] = offer.gogovan_transport.vehical_tag
+    attributes["vehicle"] = offer.gogovan_transport.vehicle_tag
     attributes
   end
 
-  #required by PusherUpdates module
+  # required by PushUpdates module
   def offer
     delivery.try(:offer)
   end

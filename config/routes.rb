@@ -31,7 +31,6 @@ Rails.application.routes.draw do
       put  "messages/:id" => "messages#update"
       put  "messages/:id/mark_read" => "messages#mark_read"
 
-      get  "offers/ggv_order_offer" => "offers#ggv_order_offer"
       get  "offers" => "offers#index"
       get  "offers/:id" => "offers#show"
       post "offers" => "offers#create"
@@ -61,6 +60,7 @@ Rails.application.routes.draw do
       post "contacts" => "contacts#create"
 
       post "deliveries" => "deliveries#create"
+      post "confirm_delivery" => "deliveries#confirm_delivery"
       get  "deliveries/:id" => "deliveries#show"
       put  "deliveries/:id" => "deliveries#update"
       delete "deliveries/:id" => "deliveries#destroy"
@@ -68,6 +68,7 @@ Rails.application.routes.draw do
       get  "schedules" => "schedules#availableTimeSlots"
       post "schedules" => "schedules#create"
 
+      get  "gogovan_orders/driver_details" => "gogovan_orders#driver_details"
       post "gogovan_orders" => "gogovan_orders#confirm_order"
       post "gogovan_orders/calculate_price" => "gogovan_orders#calculate_price"
 

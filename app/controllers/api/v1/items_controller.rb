@@ -59,7 +59,7 @@ module Api::V1
       offer.items.reload
 
       if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all?{|i| i.state_name == :rejected}
-        offer.cancel_schedule_no_items!
+        offer.re_review!
       end
 
       render json: {}

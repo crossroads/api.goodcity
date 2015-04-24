@@ -16,12 +16,12 @@ class District < ActiveRecord::Base
     where("latitude IS NOT NULL AND longitude IS NOT NULL")
   end
 
-  def self.location_json(district_id)
-    district = where(id: district_id).try(:first) || first
-    [
-      [district.latitude, district.longitude, district.name],
-      CROSSROADS_ADDRESS
-    ].to_json
+  def self.crossroads_address
+    CROSSROADS_ADDRESS
+  end
+
+  def lat_lng_name
+    [latitude, longitude, name]
   end
 
 end

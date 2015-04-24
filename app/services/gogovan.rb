@@ -1,7 +1,7 @@
 class Gogovan
 
   attr_accessor :user, :name, :mobile, :time, :need_english,
-    :need_cart, :need_carry, :district_id, :vehicle, :offer
+    :need_cart, :need_carry, :district_id, :vehicle, :ggv_uuid, :offer
 
   def initialize(user = nil, options = {})
     @user         = user
@@ -13,39 +13,44 @@ class Gogovan
     @need_carry   = options['needCarry']
     @district_id  = options['districtId']
     @vehicle      = options['vehicle']
+    @ggv_uuid     = options['ggv_uuid']
     @offer        = Offer.find_by(id: options['offerId'])
   end
 
-  def initiate_order
-    GoGoVanApi::Order.new(nil, order_attributes)
-  end
-
   def confirm_order
-    initiate_order.book
+    order.book
   end
 
   def get_order_price
-    initiate_order.price
+    order.price
   end
 
-  def get_status(id)
-    GoGoVanApi::Order.new(id).status
-  end
+  class << self
 
-  def self.cancel_order(booking_id)
-    GoGoVanApi::Order.new(booking_id).cancel
+    def order_status(booking_id)
+      GoGoVanApi::Order.new(booking_id).status
+    end
+
+    def cancel_order(booking_id)
+      GoGoVanApi::Order.new(booking_id).cancel
+    end
+
   end
 
   private
+
+  def order
+    GoGoVanApi::Order.new(nil, order_attributes)
+  end
 
   def order_attributes
     {
       order: {
         name:           @name || @user.full_name,
         phone_number:   @mobile || @user.mobile,
-        pickup_time:    @time,
+        pickup_time:    parse_time,
         vehicle:        @vehicle,
-        locations:      District.location_json(@district_id),
+        locations:      locations,
         extra_requirements: {
           need_english: @need_english,
           need_cart:    @need_cart,
@@ -56,6 +61,13 @@ class Gogovan
     }
   end
 
+  def locations
+    pickup_district = District.find(@district_id)
+    pickup_location = pickup_district.lat_lng_name
+    drop_off_location = District.crossroads_address
+    [pickup_location, drop_off_location].to_json
+  end
+
   def get_pickup_date
     next_available_date = DateSet.new().available_dates.first
     next_available_date.beginning_of_day + 12.hours
@@ -63,11 +75,18 @@ class Gogovan
 
   def ggv_driver_notes
     delivery = offer.delivery
-    if offer && delivery
-      user = offer.created_by
-      id = "#{offer.id}-$$-#{user.first_name}-$$-#{user.last_name}-$$-#{delivery.id}"
-      link = "#{DONOR_APP_HOST}/ggv_order/#{id}"
+    if offer && ggv_uuid
+      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_order/#{ggv_uuid}"
       "Ensure you deliver all the items listed: See details #{link}"
     end
   end
+
+  def parse_time
+    if @time.is_a?(Time)
+      @time
+    else
+      Time.parse(@time)
+    end
+  end
+
 end

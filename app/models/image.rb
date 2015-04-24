@@ -20,8 +20,8 @@ class Image < ActiveRecord::Base
     true
   end
 
-  #required by PusherUpdates module
+  # required by PushUpdates module
   def offer
-    item.offer
+    item.offer unless item.nil?
   end
 end

@@ -10,7 +10,7 @@ en:
     pin_sent: A pin has been sent to your mobile device.
     mobile_required: Please provide a mobile number.
     mobile_exists: Mobile number already exists.
-    invalid_mobile: Sorry, your mobile must begin with +852.
+    invalid_mobile: Sorry, your mobile number is invalid.
     invalid_pin: Invalid SMS code.
   token:
     invalid: Invalid token
@@ -28,7 +28,7 @@ en:
         user:
           attributes:
             mobile:
-              invalid: "must begin with +852"
+              invalid: "is invalid"
               blank: "can't be blank"
   notification:
     new_offer: New offer submitted by %{name}
@@ -39,4 +39,4 @@ en:
       limited and needs in the community change daily. Once the review is
       complete you will be able to arrange transport for any accepted items.
       If you have questions feel free to reply to this message.
-    ggv_cancel_message: A van booking for %{time} was canceled via GoGoVan. Please choose new transport arrangements.
+    ggv_cancel_message: A van booking for %{time} was cancelled via GoGoVan. Please choose new transport arrangements.

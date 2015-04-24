@@ -25,12 +25,12 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     it "with invalid mobile number" do
       post :signup, format: 'json', user_auth: { mobile: "123456", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
-      expect(JSON.parse(response.body)["errors"]).to eq( 'Mobile must begin with +852' )
+      expect(JSON.parse(response.body)["errors"]).to eq( 'Mobile is invalid' )
     end
 
     it "with blank mobile number" do
       post :signup, format: 'json', user_auth: { mobile: "", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
-      expect(JSON.parse(response.body)["errors"]).to eq( "Mobile can't be blank. Mobile must begin with +852" )
+      expect(JSON.parse(response.body)["errors"]).to eq( "Mobile can't be blank. Mobile is invalid" )
     end
 
   end
@@ -106,7 +106,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :send_pin, mobile: ""
         expect(response.status).to eq(422)
         body = JSON.parse(response.body)
-        expect(body['errors']).to eql( "Mobile can't be blank" )
+        expect(body['errors']).to eql( "Mobile is invalid" )
       end
       it "not +852..." do
         expect(User).to_not receive(:find_by_mobile)
@@ -115,7 +115,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :send_pin, mobile: "+9101234567"
         expect(response.status).to eq(422)
         body = JSON.parse(response.body)
-        expect(body['errors']).to eql( "Mobile must begin with +852" )
+        expect(body['errors']).to eql( "Mobile is invalid" )
       end
     end
   end

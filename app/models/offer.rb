@@ -30,7 +30,7 @@ class Offer < ActiveRecord::Base
   }
 
   scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
-  scope :donated_by, ->(donor_id){ where('created_by_id = ?', donor_id) }
+  scope :created_by, ->(created_by_id){ where('created_by_id = ?', created_by_id) }
   scope :active, -> { where("state NOT IN (?)", ["received", "closed"]) }
   scope :inactive, -> { where("deleted_at IS NOT NULL OR state IN (?)", ["received", "closed"]) }
 
@@ -44,10 +44,19 @@ class Offer < ActiveRecord::Base
     self.state ||= :draft
   end
 
+  def scheduled?
+    state == "scheduled"
+  end
+
   state_machine :state, initial: :draft do
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items
-    state :submitted, :under_review, :reviewed, :scheduled, :closed, :received
+    state :submitted, :under_review, :reviewed, :scheduled, :closed, :received,
+      :cancelled
+
+    event :cancel do
+      transition all => :cancelled, if: 'can_cancel?'
+    end
 
     event :submit do
       transition :draft => :submitted
@@ -77,7 +86,7 @@ class Offer < ActiveRecord::Base
       transition [:under_review, :reviewed, :scheduled] => :received
     end
 
-    event :cancel_schedule_no_items do
+    event :re_review do
       transition [:scheduled, :reviewed] => :under_review
     end
 
@@ -103,11 +112,19 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_alert
     end
 
-    after_transition :on => [:close, :cancel_schedule_no_items] do |offer, transition|
+    after_transition :on => [:close, :re_review] do |offer, transition|
       if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
         offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
       end
     end
+  end
+
+  def gogovan_order
+    self.try(:delivery).try(:gogovan_order)
+  end
+
+  def can_cancel?
+    return false if gogovan_order && !gogovan_order.can_cancel?
   end
 
   def send_thank_you_message
