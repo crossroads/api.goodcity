@@ -50,7 +50,7 @@ class Gogovan
         phone_number:   @mobile || @user.mobile,
         pickup_time:    parse_time,
         vehicle:        @vehicle,
-        locations:      District.location_json(@district_id),
+        locations:      locations,
         extra_requirements: {
           need_english: @need_english,
           need_cart:    @need_cart,
@@ -59,6 +59,13 @@ class Gogovan
         }
       }
     }
+  end
+
+  def locations
+    pickup_district = District.find(@district_id)
+    pickup_location = pickup_district.lat_lng_name
+    drop_off_location = District.crossroads_address
+    [pickup_location, drop_off_location].to_json
   end
 
   def get_pickup_date
