@@ -115,7 +115,7 @@ class User < ActiveRecord::Base
     auth_tokens.create( user_id:  self.id )
   end
 
-  #required by PusherUpdates module
+  # required by PushUpdates module
   def offer
     nil
   end
