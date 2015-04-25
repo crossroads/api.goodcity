@@ -55,10 +55,6 @@ gem 'lograge'
 group :development do
   unless ENV["CI"]
     gem 'spring'
-    gem 'capistrano-rails'
-    gem 'capistrano-bundler'
-    gem 'capistrano-rvm'
-    gem 'capistrano-sidekiq'
     gem 'annotate'
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
@@ -71,6 +67,10 @@ end
 group :development, :test do
   gem 'byebug', platform: 'mri' unless ENV["CI"] or ENV["RM_INFO"]
   gem 'rspec-rails'
+  gem 'capistrano-rails'
+  gem 'capistrano-bundler'
+  gem 'capistrano-rvm'
+  gem 'capistrano-sidekiq'
 end
 
 group :test do
