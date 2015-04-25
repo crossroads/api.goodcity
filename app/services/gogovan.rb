@@ -76,8 +76,8 @@ class Gogovan
   def ggv_driver_notes
     delivery = offer.delivery
     if offer && ggv_uuid
-      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_order/#{ggv_uuid}"
-      "Ensure you deliver all the items listed: See details #{link}"
+      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{ggv_uuid}"
+      I18n.t('gogovan.driver_note', link: link)
     end
   end
 
