@@ -2,4 +2,4 @@ deployment:
   staging:
     branch: master
     commands:
-      - cap staging deploy
+      - bundle exec cap staging deploy
