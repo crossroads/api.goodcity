@@ -42,7 +42,7 @@ gem 'oj_mimic_json'
 gem 'redis'
 gem 'redis-rails'
 gem 'pusher'
-gem 'apipie-rails'
+gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails", branch: 'master'
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "git://github.com/radar/by_star"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
