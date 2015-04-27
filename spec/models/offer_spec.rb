@@ -140,6 +140,16 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "#send_received_message" do
+    it 'should send received message to donor on offer receive' do
+      offer = create :offer, state: "reviewed"
+      offer.receive
+      expect(offer.messages.count).to eq(1)
+      expect(offer.messages.last.body).to eq(I18n.t("offer.received_message"))
+      expect(offer.messages.last.sender).to eq(User.system_user)
+    end
+  end
+
   describe "#send_new_offer_alert" do
     let(:user)  { build(:user) }
     let(:offer) { create(:offer) }

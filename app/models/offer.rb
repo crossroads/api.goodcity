@@ -112,6 +112,8 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_alert
     end
 
+    after_transition on: :receive, do: :send_received_message
+
     after_transition :on => [:close, :re_review] do |offer, transition|
       if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
         offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
@@ -129,6 +131,10 @@ class Offer < ActiveRecord::Base
 
   def send_thank_you_message
     messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
+  end
+
+  def send_received_message
+    messages.create(body: I18n.t("offer.received_message"), sender: User.system_user)
   end
 
   def update_saleable_items
