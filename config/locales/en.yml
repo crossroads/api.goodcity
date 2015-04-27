@@ -40,5 +40,6 @@ en:
       complete you will be able to arrange transport for any accepted items.
       If you have questions feel free to reply to this message.
     ggv_cancel_message: A van booking for %{time} was cancelled via GoGoVan. Please choose new transport arrangements.
+    received_message: Your offer was received, thank you.
   gogovan:
     driver_note: "Ensure you deliver all the items listed: See details %{link}"
