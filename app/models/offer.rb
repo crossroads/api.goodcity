@@ -47,10 +47,6 @@ class Offer < ActiveRecord::Base
     self.state ||= :draft
   end
 
-  def scheduled?
-    state == "scheduled"
-  end
-
   state_machine :state, initial: :draft do
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items
@@ -188,6 +184,10 @@ class Offer < ActiveRecord::Base
       entity_type: "offer",
       entity: self,
       channel: Channel.reviewer)
+  end
+
+  def self.donor_valid_states
+    Offer.valid_states - ["cancelled"]
   end
 
   private

@@ -47,22 +47,20 @@ module Api::V1
     end
 
     api :GET, '/v1/offers', "List all offers"
-    param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
-    param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
     param :category, ["finished"], desc: "To get finished(received and closed) offers"
     def index
       return finished if params["category"] == "finished"
 
-      @offers = @offers.active unless params[:include_deleted] == "true"
-      @offers = @offers.created_by(params[:created_by_id]) if params[:created_by_id].present?
+      @offers = if params['state']
+        @offers.by_state(params['state']).with_eager_load
+      elsif params[:created_by_id].present?
+        @offers.created_by(params[:created_by_id])
+      else
+        @offers = @offers.active if User.current_user.staff?
+        @offers.with_eager_load # this maintains security
+      end
 
-      @offers = params['state'] ?
-        @offers.by_state(params['state']).with_eager_load :
-        @offers.active.with_eager_load # this maintains security
-
-      @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
-      @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
