@@ -54,7 +54,7 @@ module Api::V1
     def index
       return finished if params["category"] == "finished"
 
-      @offers = Offer.accessible_by(current_ability).with_deleted if params[:include_deleted] == "true"
+      @offers = @offers.active unless params[:include_deleted] == "true"
       @offers = @offers.created_by(params[:created_by_id]) if params[:created_by_id].present?
 
       @offers = params['state'] ?
@@ -68,9 +68,9 @@ module Api::V1
 
     def finished
       @offers = if params["reviewer"]
-        Offer.inactive.review_by(User.current_user).with_eager_load
+        @offers.inactive.review_by(User.current_user).with_eager_load
       else
-        Offer.inactive.with_eager_load
+        @offers.inactive.with_eager_load
       end
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
@@ -90,9 +90,9 @@ module Api::V1
     end
 
     api :DELETE, '/v1/offers/1', "Delete an offer"
-    description "If an offer is in draft state it will be destroyed. Any other state and it will be marked as deleted but remain recoverable."
+    description "If an offer is in draft state it will be destroyed. Any other state will be changed to 'cancelled'."
     def destroy
-      @offer.draft? ? @offer.really_destroy! : @offer.destroy
+      @offer.draft? ? @offer.really_destroy! : @offer.cancel
       render json: {}
     end
 
