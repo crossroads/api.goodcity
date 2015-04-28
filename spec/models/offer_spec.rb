@@ -27,6 +27,7 @@ RSpec.describe Offer, type: :model do
     it { is_expected.to have_db_column(:reviewed_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:review_completed_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:received_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:cancelled_at).of_type(:datetime) }
   end
 
   describe "validations" do

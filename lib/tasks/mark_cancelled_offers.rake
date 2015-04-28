@@ -6,8 +6,10 @@ namespace :goodcity do
 
     Offer.only_deleted.find_in_batches(batch_size: 50).each do |offers|
       offers.each do |offer|
+        deletedTime = offer.deleted_at
         offer.restore(recursive: true)
         offer.cancel
+        offer.update_column(:cancelled_at, deletedTime)
         puts "updated offer #{offer.id}"
       end
     end

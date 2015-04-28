@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150428061827) do
+ActiveRecord::Schema.define(version: 20150428135028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -181,6 +181,7 @@ ActiveRecord::Schema.define(version: 20150428061827) do
     t.datetime "received_at"
     t.string   "delivered_by",            limit: 30
     t.integer  "closed_by_id"
+    t.datetime "cancelled_at"
   end
 
   create_table "packages", force: :cascade do |t|

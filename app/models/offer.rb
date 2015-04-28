@@ -109,6 +109,10 @@ class Offer < ActiveRecord::Base
       offer.received_at = Time.now
     end
 
+    before_transition :on => :cancel do |offer, transition|
+      offer.cancelled_at = Time.now
+    end
+
     after_transition :on => :submit do |offer, transition|
       offer.send_thank_you_message
       offer.send_new_offer_notification
