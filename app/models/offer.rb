@@ -3,6 +3,8 @@ class Offer < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
+  INACTIVE_STATES = ["received", "closed", "cancelled"]
+
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
   belongs_to :closed_by, class_name: 'User'
@@ -32,8 +34,8 @@ class Offer < ActiveRecord::Base
 
   scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
   scope :created_by, ->(created_by_id){ where('created_by_id = ?', created_by_id) }
-  scope :active, -> { where("state NOT IN (?)", ["received", "closed"]) }
-  scope :inactive, -> { where("deleted_at IS NOT NULL OR state IN (?)", ["received", "closed"]) }
+  scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
+  scope :inactive, -> { where("state IN (?)", INACTIVE_STATES) }
 
   before_create :set_language
   after_initialize :set_initial_state
@@ -131,7 +133,7 @@ class Offer < ActiveRecord::Base
   end
 
   def can_cancel?
-    return try(:gogovan_order).try(:can_cancel?) || false
+    gogovan_order ? gogovan_order.can_cancel? : true
   end
 
   def send_thank_you_message
