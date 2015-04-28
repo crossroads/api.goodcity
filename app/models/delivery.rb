@@ -1,4 +1,5 @@
 class Delivery < ActiveRecord::Base
+  has_paper_trail
   include Paranoid
 
   belongs_to :offer

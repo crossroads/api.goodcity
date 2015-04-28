@@ -204,4 +204,8 @@ RSpec.describe Offer, type: :model do
     end
 
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to respond_to(:versions) }
+  end
 end

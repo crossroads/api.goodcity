@@ -1,4 +1,5 @@
 class Contact < ActiveRecord::Base
+  has_paper_trail
   include Paranoid
 
   has_one :address, as: :addressable, dependent: :destroy

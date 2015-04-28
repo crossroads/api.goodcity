@@ -1,4 +1,5 @@
 class Message < ActiveRecord::Base
+  has_paper_trail
   include Paranoid
   include StateMachineScope
 

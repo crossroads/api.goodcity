@@ -193,6 +193,9 @@ GEM
       shellany (~> 0.0)
     oj (2.10.2)
     oj_mimic_json (1.0.1)
+    paper_trail (4.0.0.beta2)
+      activerecord (>= 3.0, < 6.0)
+      activesupport (>= 3.0, < 6.0)
     paranoia (2.0.5)
       activerecord (~> 4.0)
     pg (0.18.1)
@@ -384,6 +387,7 @@ DEPENDENCIES
   nokogiri
   oj (= 2.10.2)
   oj_mimic_json
+  paper_trail (~> 4.0.0.beta)
   paranoia (~> 2.0.4)
   pg
   postgres_ext (~> 2.4.0.beta.1)

@@ -15,4 +15,8 @@ RSpec.describe Address, type: :model do
     it{ is_expected.to have_db_column(:addressable_type).of_type(:string)}
     it{ is_expected.to have_db_column(:address_type).of_type(:string)}
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to respond_to(:versions) }
+  end
 end

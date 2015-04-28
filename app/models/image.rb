@@ -1,5 +1,5 @@
 class Image < ActiveRecord::Base
-
+  has_paper_trail
   include CloudinaryHelper
   include Paranoid
   include PushUpdates

@@ -1,4 +1,5 @@
 class Package < ActiveRecord::Base
+  has_paper_trail
   include Paranoid
   include StateMachineScope
   include PushUpdates

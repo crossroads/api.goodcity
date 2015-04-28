@@ -6,4 +6,9 @@ RSpec.describe Delivery, type: :model do
     it { is_expected.to belong_to :offer }
     it { is_expected.to belong_to :contact }
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to respond_to(:versions) }
+  end
+
 end
