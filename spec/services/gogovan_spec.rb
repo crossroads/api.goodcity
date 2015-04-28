@@ -90,6 +90,9 @@ describe Gogovan do
     it do
       notes = gogovan.send(:ggv_driver_notes)
       expect(notes).to include("Ensure you deliver all the items listed: See details")
+      expect(notes).to include("English")
+      expect(notes).to include("Chinese")
+
     end
   end
 end
