@@ -5,6 +5,7 @@ class Offer < ActiveRecord::Base
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
+  belongs_to :closed_by, class_name: 'User'
   belongs_to :gogovan_transport
   belongs_to :crossroads_transport
 
@@ -21,7 +22,7 @@ class Offer < ActiveRecord::Base
   scope :with_eager_load, -> {
     includes (
       [
-        :created_by, :reviewed_by,
+        :created_by, :reviewed_by, :closed_by,
         { delivery: [:schedule, :contact] },
         { messages: :sender },
         { items: [:images, :packages, { messages: :sender } ] }
@@ -100,6 +101,10 @@ class Offer < ActiveRecord::Base
 
     before_transition :on => [:finish_review, :close] do |offer, transition|
       offer.review_completed_at = Time.now
+    end
+
+    before_transition :on => [:close, :cancel, :receive] do |offer, transition|
+      offer.closed_by = User.current_user
     end
 
     before_transition :on => :receive do |offer, transition|
