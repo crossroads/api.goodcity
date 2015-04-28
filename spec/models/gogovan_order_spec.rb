@@ -72,4 +72,8 @@ RSpec.describe GogovanOrder, type: :model do
   describe 'callbacks' do
     it { is_expected.to callback(:cancel_order).before(:destroy) }
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to respond_to(:versions) }
+  end
 end

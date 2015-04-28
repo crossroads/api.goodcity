@@ -1,4 +1,5 @@
 class Address < ActiveRecord::Base
+  has_paper_trail
   include Paranoid
 
   belongs_to :addressable, polymorphic: true

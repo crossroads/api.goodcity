@@ -51,6 +51,7 @@ gem 'sidekiq'
 gem 'sinatra', :require => nil # for sidekiq reporting console
 gem 'airbrake'
 gem 'lograge'
+gem 'paper_trail', '~> 4.0.0.beta'
 
 group :development do
   unless ENV["CI"]

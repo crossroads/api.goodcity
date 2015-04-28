@@ -1,4 +1,5 @@
 class GogovanOrder < ActiveRecord::Base
+  has_paper_trail
   include Paranoid
   include PushUpdates
 
