@@ -126,7 +126,7 @@ class Offer < ActiveRecord::Base
   end
 
   def can_cancel?
-    return false if gogovan_order && !gogovan_order.can_cancel?
+    return try(:gogovan_order).try(:can_cancel?) || false
   end
 
   def send_thank_you_message
