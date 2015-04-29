@@ -8,8 +8,8 @@ module Api::V1
     attributes :id, :language, :state, :origin, :stairs, :parking,
       :estimated_size, :notes, :created_by_id, :created_at,
       :updated_at, :submitted_at, :reviewed_at, :gogovan_transport_id,
-      :crossroads_transport_id, :review_completed_at, :removed_at,
-      :received_at, :delivered_by, :closed_by_id
+      :crossroads_transport_id, :review_completed_at, :received_at,
+      :delivered_by, :closed_by_id, :cancelled_at
 
     has_many :items, serializer: ItemSerializer
     has_many :messages, serializer: MessageSerializer
@@ -32,14 +32,5 @@ module Api::V1
     alias_method :include_gogovan_transport?, :goodcity_user?
     alias_method :include_crossroads_transport?, :goodcity_user?
 
-
-    # Use it to send soft-deleted offers
-    def removed_at__sql
-      "deleted_at"
-    end
-
-    def removed_at
-      object.deleted_at
-    end
   end
 end
