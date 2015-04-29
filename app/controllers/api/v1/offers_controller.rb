@@ -55,7 +55,7 @@ module Api::V1
       @offers = if params['state']
         @offers.with_state(params['state']).with_eager_load
       elsif params[:created_by_id].present?
-        @offers.created_by(params[:created_by_id])
+        @offers.created_by(params[:created_by_id]).non_draft
       else
         @offers = @offers.active if User.current_user.staff?
         @offers.with_eager_load # this maintains security
