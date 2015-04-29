@@ -128,6 +128,11 @@ class Offer < ActiveRecord::Base
     end
   end
 
+  def self.with_state(state)
+    state == "closed" ? where("state IN (?)", ["closed", "cancelled"]) :
+      by_state(state)
+  end
+
   def gogovan_order
     self.try(:delivery).try(:gogovan_order)
   end

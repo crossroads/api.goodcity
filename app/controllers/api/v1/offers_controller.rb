@@ -53,7 +53,7 @@ module Api::V1
       return finished if params["category"] == "finished"
 
       @offers = if params['state']
-        @offers.by_state(params['state']).with_eager_load
+        @offers.with_state(params['state']).with_eager_load
       elsif params[:created_by_id].present?
         @offers.created_by(params[:created_by_id])
       else
