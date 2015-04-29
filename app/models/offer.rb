@@ -36,6 +36,7 @@ class Offer < ActiveRecord::Base
   scope :created_by, ->(created_by_id){ where('created_by_id = ?', created_by_id) }
   scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
   scope :inactive, -> { where("state IN (?)", INACTIVE_STATES) }
+  scope :non_draft, -> { where("state <> 'draft'") }
 
   before_create :set_language
   after_initialize :set_initial_state
