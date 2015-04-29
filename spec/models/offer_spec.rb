@@ -205,4 +205,18 @@ RSpec.describe Offer, type: :model do
     end
 
   end
+
+  describe "with_state :state" do
+    let!(:submitted_offer) { create :offer, :submitted }
+    let!(:closed_offer) { create :offer, :closed }
+    let!(:cancelled_offer) { create :offer, :cancelled }
+
+    it "should include only matching offer state" do
+      expect(Offer.with_state("submitted")).to include(submitted_offer)
+      expect(Offer.with_state("submitted")).to_not include(closed_offer)
+
+      expect(Offer.with_state("closed")).to include(closed_offer)
+      expect(Offer.with_state("closed")).to include(cancelled_offer)
+    end
+  end
 end
