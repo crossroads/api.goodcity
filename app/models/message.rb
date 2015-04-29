@@ -45,7 +45,7 @@ class Message < ActiveRecord::Base
     subscriptions.create(state: "read", message_id: id, offer_id: offer_id, user_id: sender_id) unless sender.try(:system_user?)
 
     # subscribe donor if not already subscribed
-    unless self.is_private || self.user_subscribed?(self.offer.created_by_id)
+    unless self.is_private || self.offer.cancelled? || self.user_subscribed?(self.offer.created_by_id)
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: self.offer.created_by_id)
     end
 
@@ -64,7 +64,8 @@ class Message < ActiveRecord::Base
     text = self.body.truncate(150, separator: ' ')
 
     # notify subscribed users except sender
-    channels = subscribed_user_channels - Channel.user(self.sender)
+    channels = subscribed_user_channels - Channel.user(sender)
+    channels -= Channel.user(offer.created_by) if offer.cancelled?
     service.send_notification(text: text, entity_type: "message", entity: self, channel: channels) unless channels.empty?
 
     # notify all supervisors if no supervisor is subscribed in private thread
@@ -76,6 +77,7 @@ class Message < ActiveRecord::Base
   def update_client_store
     sender_channel = Channel.user(sender)
     subscribed_user_channels = subscribed_user_channels() - sender_channel
+    subscribed_user_channels -= Channel.user(offer.created_by) if offer.cancelled?
     unsubscribed_user_channels = Channel.users(User.staff) -
       subscribed_user_channels - sender_channel
 

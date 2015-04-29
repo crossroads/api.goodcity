@@ -27,6 +27,7 @@ RSpec.describe Offer, type: :model do
     it { is_expected.to have_db_column(:reviewed_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:review_completed_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:received_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:cancelled_at).of_type(:datetime) }
   end
 
   describe "validations" do
@@ -102,7 +103,7 @@ RSpec.describe Offer, type: :model do
       expect(active_offers).to_not include(closed_offer)
       expect(active_offers).to_not include(received_offer)
       expect(scrub(Offer.active.to_sql)).to include(
-        "state NOT IN ('received','closed')")
+        "state NOT IN ('received','closed','cancelled')")
     end
 
     it 'inactive' do
@@ -111,7 +112,7 @@ RSpec.describe Offer, type: :model do
       expect(inactive_offers).to include(closed_offer)
       expect(inactive_offers).to include(received_offer)
       expect(scrub(Offer.inactive.to_sql)).to include(
-        "deleted_at IS NOT NULL OR state IN ('received','closed')")
+        "state IN ('received','closed','cancelled')")
     end
 
     describe "review_by" do
