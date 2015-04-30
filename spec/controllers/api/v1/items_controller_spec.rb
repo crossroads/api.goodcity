@@ -39,7 +39,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       delete :destroy, id: item.id
       expect(response.status).to eq(422)
       body = JSON.parse(response.body)
-      expect(body['errors']).to eq('Cannot delete the last item of a non-draft offer')
+      expect(body['errors']).to eq('Cannot delete the last item of a submitted offer')
     end
 
     it 'should revert to under_review offer state if deleted item is last accepted item' do
@@ -69,6 +69,16 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       put :update, id: item.id, item: item_params.merge(extra_params)
       expect(response.status).to eq(200)
       expect(item.reload.donor_description).to eq("Test item")
+    end
+
+    let(:gogovan_order) { create :gogovan_order, :active }
+    let(:delivery) { create :delivery, gogovan_order:  gogovan_order }
+    let(:offer) { create :offer, :scheduled, created_by: user, delivery: delivery }
+    it 'should not allow last item to be rejected if there\'s a confirmed gogovan booking' do
+      put :update, id: item.id, item: item_params.merge({state_event:'reject'})
+      expect(response.status).to eq(422)
+      body = JSON.parse(response.body)
+      expect(body['errors'][0]['requires_gogovan_cancellation']).not_to be_nil
     end
   end
 

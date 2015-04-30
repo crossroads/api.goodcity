@@ -31,6 +31,11 @@ FactoryGirl.define do
       state "closed"
     end
 
+    trait :cancelled do
+      cancelled_at { Time.now }
+      state "cancelled"
+    end
+
     trait :reviewed do
       reviewed_at { Time.now }
       state       'reviewed'

@@ -47,30 +47,28 @@ module Api::V1
     end
 
     api :GET, '/v1/offers', "List all offers"
-    param :ids, Array, of: Integer, desc: "Filter by offer ids e.g. ids = [1,2,3,4]"
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
-    param :reviewed_by_id, String, desc: "Filter by reviewer id e.g. reviewed_by_id = 1"
     param :category, ["finished"], desc: "To get finished(received and closed) offers"
     def index
       return finished if params["category"] == "finished"
 
-      @offers = Offer.accessible_by(current_ability).with_deleted if params[:include_deleted] == "true"
-      @offers = @offers.created_by(params[:created_by_id]) if params[:created_by_id].present?
+      @offers = if params['state']
+        @offers.with_state(params['state']).with_eager_load
+      elsif params[:created_by_id].present?
+        @offers.created_by(params[:created_by_id]).non_draft
+      else
+        @offers = @offers.active if User.current_user.staff?
+        @offers.with_eager_load # this maintains security
+      end
 
-      @offers = params['state'] ?
-        @offers.by_state(params['state']).with_eager_load :
-        @offers.active.with_eager_load # this maintains security
-
-      @offers = @offers.find(params[:ids].split(",")) if params[:ids].present?
-      @offers = @offers.review_by(params['reviewed_by_id']) if params['reviewed_by_id']
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
 
     def finished
       @offers = if params["reviewer"]
-        Offer.inactive.review_by(User.current_user).with_eager_load
+        @offers.inactive.review_by(User.current_user).with_eager_load
       else
-        Offer.inactive.with_eager_load
+        @offers.inactive.with_eager_load
       end
       render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
     end
@@ -84,15 +82,15 @@ module Api::V1
     param_group :offer
     param :saleable, [true, false], desc: "Can these items be sold?"
     def update
-      @offer.update_attributes(offer_params)
       @offer.update_saleable_items if params[:offer][:saleable]
+      @offer.update_attributes(offer_params)
       render json: @offer, serializer: serializer
     end
 
     api :DELETE, '/v1/offers/1', "Delete an offer"
-    description "If an offer is in draft state it will be destroyed. Any other state and it will be marked as deleted but remain recoverable."
+    description "If an offer is in draft state it will be destroyed. Any other state will be changed to 'cancelled'."
     def destroy
-      @offer.draft? ? @offer.really_destroy! : @offer.destroy
+      @offer.draft? ? @offer.really_destroy! : @offer.cancel
       render json: {}
     end
 
@@ -128,7 +126,8 @@ module Api::V1
     end
 
     def offer_params
-      attributes = [:language, :origin, :stairs, :parking, :estimated_size, :notes, :state_event]
+      attributes = [:language, :origin, :stairs, :parking, :estimated_size,
+        :notes, :delivered_by, :state_event]
       params.require(:offer).permit(attributes)
     end
 
