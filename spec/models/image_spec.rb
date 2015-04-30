@@ -12,6 +12,6 @@ RSpec.describe Image, type: :model do
     it { is_expected.to have_db_column(:item_id).of_type(:integer) }
   end
   context "has_paper_trail" do
-    it { is_expected.to respond_to(:versions) }
+    it { is_expected.to be_versioned }
   end
 end

@@ -74,6 +74,6 @@ RSpec.describe GogovanOrder, type: :model do
   end
 
   context "has_paper_trail" do
-    it { is_expected.to respond_to(:versions) }
+    it { is_expected.to be_versioned }
   end
 end
