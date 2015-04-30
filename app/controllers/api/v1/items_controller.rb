@@ -51,16 +51,12 @@ module Api::V1
       offer = @item.offer
 
       if offer.state != 'draft' && offer.items.length == 1
-        return render json: {errors:'Cannot delete the last item of a non-draft offer'}.to_json, status: 422
+        return render json: {errors:'Cannot delete the last item of a submitted offer'}.to_json, status: 422
       end
 
       @item.remove
 
-      offer.items.reload
-
-      if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all?{|i| i.state_name == :rejected}
-        offer.re_review!
-      end
+      update_offer_state(offer)
 
       render json: {}
     end
@@ -68,7 +64,19 @@ module Api::V1
     api :PUT, '/v1/items/1', "Update an item"
     param_group :item
     def update
+      offer = @item.offer
+
+      # if rejecting last accepted item but gogovan is booked return error
+      if item_params[:state_event] == 'reject' &&
+        offer.items.all?{|i| i.state_name == :rejected || i.id == @item.id} &&
+        offer.gogovan_order && offer.scheduled? && !offer.can_cancel?
+
+        error = {requires_gogovan_cancellation:'Cannot reject last item if there\'s a confirmed gogovan booking'}
+        return render json: {errors:[error]}.to_json, status: 422
+      end
+
       if @item.update_attributes(item_params)
+        update_offer_state(offer)
         render json: @item, serializer: serializer
       else
         render json: @item.errors.to_json, status: 422
@@ -76,6 +84,13 @@ module Api::V1
     end
 
     private
+
+    def update_offer_state(offer)
+      offer.items.reload
+      if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all?{|i| i.state_name == :rejected}
+        offer.re_review!
+      end
+    end
 
     def item_params
       params.require(:item).permit(:donor_description, :donor_condition_id,

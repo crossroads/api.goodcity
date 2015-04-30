@@ -52,7 +52,8 @@ class Ability
 
       # Offer
       can :create, Offer
-      can [:index, :show, :update], Offer, created_by_id: user_id
+      can [:index, :show, :update], Offer, created_by_id: user_id,
+        state: Offer.donor_valid_states
       can [:index, :show, :update], Offer if reviewer || supervisor
       can :destroy, Offer, created_by_id: user_id, state: ['draft',
         'submitted', 'reviewed', 'scheduled']

@@ -3,8 +3,11 @@ class Offer < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
+  INACTIVE_STATES = ["received", "closed", "cancelled"]
+
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
+  belongs_to :closed_by, class_name: 'User'
   belongs_to :gogovan_transport
   belongs_to :crossroads_transport
 
@@ -21,7 +24,7 @@ class Offer < ActiveRecord::Base
   scope :with_eager_load, -> {
     includes (
       [
-        :created_by, :reviewed_by,
+        :created_by, :reviewed_by, :closed_by,
         { delivery: [:schedule, :contact] },
         { messages: :sender },
         { items: [:images, :packages, { messages: :sender } ] }
@@ -31,8 +34,9 @@ class Offer < ActiveRecord::Base
 
   scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
   scope :created_by, ->(created_by_id){ where('created_by_id = ?', created_by_id) }
-  scope :active, -> { where("state NOT IN (?)", ["received", "closed"]) }
-  scope :inactive, -> { where("deleted_at IS NOT NULL OR state IN (?)", ["received", "closed"]) }
+  scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
+  scope :inactive, -> { where("state IN (?)", INACTIVE_STATES) }
+  scope :non_draft, -> { where("state <> 'draft'") }
 
   before_create :set_language
   after_initialize :set_initial_state
@@ -42,10 +46,6 @@ class Offer < ActiveRecord::Base
   # refer - https://github.com/pluginaweek/state_machine/issues/334
   def set_initial_state
     self.state ||= :draft
-  end
-
-  def scheduled?
-    state == "scheduled"
   end
 
   state_machine :state, initial: :draft do
@@ -102,8 +102,16 @@ class Offer < ActiveRecord::Base
       offer.review_completed_at = Time.now
     end
 
+    before_transition :on => [:close, :cancel, :receive] do |offer, transition|
+      offer.closed_by = User.current_user
+    end
+
     before_transition :on => :receive do |offer, transition|
       offer.received_at = Time.now
+    end
+
+    before_transition :on => :cancel do |offer, transition|
+      offer.cancelled_at = Time.now
     end
 
     after_transition :on => :submit do |offer, transition|
@@ -112,6 +120,8 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_alert
     end
 
+    after_transition on: :receive, do: :send_received_message
+
     after_transition :on => [:close, :re_review] do |offer, transition|
       if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
         offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
@@ -119,16 +129,25 @@ class Offer < ActiveRecord::Base
     end
   end
 
+  def self.with_state(state)
+    state == "closed" ? where("state IN (?)", ["closed", "cancelled"]) :
+      by_state(state)
+  end
+
   def gogovan_order
     self.try(:delivery).try(:gogovan_order)
   end
 
   def can_cancel?
-    return false if gogovan_order && !gogovan_order.can_cancel?
+    gogovan_order ? gogovan_order.can_cancel? : true
   end
 
   def send_thank_you_message
     messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
+  end
+
+  def send_received_message
+    messages.create(body: I18n.t("offer.received_message"), sender: User.system_user)
   end
 
   def update_saleable_items
@@ -175,6 +194,10 @@ class Offer < ActiveRecord::Base
       entity_type: "offer",
       entity: self,
       channel: Channel.reviewer)
+  end
+
+  def self.donor_valid_states
+    Offer.valid_states - ["cancelled"]
   end
 
   private

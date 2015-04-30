@@ -27,6 +27,7 @@ RSpec.describe Offer, type: :model do
     it { is_expected.to have_db_column(:reviewed_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:review_completed_at).of_type(:datetime) }
     it { is_expected.to have_db_column(:received_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:cancelled_at).of_type(:datetime) }
   end
 
   describe "validations" do
@@ -102,7 +103,7 @@ RSpec.describe Offer, type: :model do
       expect(active_offers).to_not include(closed_offer)
       expect(active_offers).to_not include(received_offer)
       expect(scrub(Offer.active.to_sql)).to include(
-        "state NOT IN ('received','closed')")
+        "state NOT IN ('received','closed','cancelled')")
     end
 
     it 'inactive' do
@@ -111,7 +112,7 @@ RSpec.describe Offer, type: :model do
       expect(inactive_offers).to include(closed_offer)
       expect(inactive_offers).to include(received_offer)
       expect(scrub(Offer.inactive.to_sql)).to include(
-        "deleted_at IS NOT NULL OR state IN ('received','closed')")
+        "state IN ('received','closed','cancelled')")
     end
 
     describe "review_by" do
@@ -136,6 +137,16 @@ RSpec.describe Offer, type: :model do
       offer = create :offer
       offer.submit
       expect(offer.messages.count).to eq(1)
+      expect(offer.messages.last.sender).to eq(User.system_user)
+    end
+  end
+
+  describe "#send_received_message" do
+    it 'should send received message to donor on offer receive' do
+      offer = create :offer, state: "reviewed"
+      offer.receive
+      expect(offer.messages.count).to eq(1)
+      expect(offer.messages.last.body).to eq(I18n.t("offer.received_message"))
       expect(offer.messages.last.sender).to eq(User.system_user)
     end
   end
@@ -193,5 +204,19 @@ RSpec.describe Offer, type: :model do
       expect(delivery.gogovan_order.status).to eq('pending')
     end
 
+  end
+
+  describe "with_state :state" do
+    let!(:submitted_offer) { create :offer, :submitted }
+    let!(:closed_offer) { create :offer, :closed }
+    let!(:cancelled_offer) { create :offer, :cancelled }
+
+    it "should include only matching offer state" do
+      expect(Offer.with_state("submitted")).to include(submitted_offer)
+      expect(Offer.with_state("submitted")).to_not include(closed_offer)
+
+      expect(Offer.with_state("closed")).to include(closed_offer)
+      expect(Offer.with_state("closed")).to include(cancelled_offer)
+    end
   end
 end
