@@ -12,6 +12,7 @@ require 'rspec/rails'
 require 'ffaker'
 require 'shoulda/matchers'
 require 'webmock/rspec'
+require 'paper_trail/frameworks/rspec'
 
 WebMock.disable_net_connect!
 

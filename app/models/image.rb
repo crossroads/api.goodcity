@@ -1,5 +1,5 @@
 class Image < ActiveRecord::Base
-
+  has_paper_trail class_name: 'Version', meta: { related: :offer }
   include CloudinaryHelper
   include Paranoid
   include PushUpdates
@@ -12,6 +12,11 @@ class Image < ActiveRecord::Base
     cloudinary_id.split("/").last.split(".").first rescue nil
   end
 
+  # required by PushUpdates and PaperTrail modules
+  def offer
+    item.try(:offer)
+  end
+
   private
 
   def delete_image_from_cloudinary
@@ -20,8 +25,4 @@ class Image < ActiveRecord::Base
     true
   end
 
-  # required by PushUpdates module
-  def offer
-    item.offer unless item.nil?
-  end
 end

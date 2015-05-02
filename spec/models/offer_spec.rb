@@ -219,4 +219,14 @@ RSpec.describe Offer, type: :model do
       expect(Offer.with_state("closed")).to include(cancelled_offer)
     end
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+    with_versioning do
+      it 'within a `with_versioning` block it will be turned on' do
+        expect(PaperTrail).to be_enabled
+      end
+    end
+  end
+
 end

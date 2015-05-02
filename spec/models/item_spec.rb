@@ -117,4 +117,8 @@ RSpec.describe Item, type: :model do
       expect(item.messages.last.body).to eq(item.rejection_comments)
     end
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+  end
 end
