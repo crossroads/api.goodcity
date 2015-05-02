@@ -129,4 +129,8 @@ describe Message, type: :model do
       expect(Message.all).to include(private_message)
     end
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+  end
 end

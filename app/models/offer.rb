@@ -1,4 +1,5 @@
 class Offer < ActiveRecord::Base
+  has_paper_trail class_name: 'Version'
   include Paranoid
   include StateMachineScope
   include PushUpdates

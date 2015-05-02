@@ -1,4 +1,5 @@
 class GogovanOrder < ActiveRecord::Base
+  has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
   include PushUpdates
 
@@ -76,6 +77,11 @@ class GogovanOrder < ActiveRecord::Base
     self
   end
 
+  # required by PushUpdates and PaperTrail modules
+  def offer
+    delivery.try(:offer)
+  end
+
   private
 
   def generate_uuid
@@ -93,8 +99,4 @@ class GogovanOrder < ActiveRecord::Base
     attributes
   end
 
-  # required by PushUpdates module
-  def offer
-    delivery.try(:offer)
-  end
 end
