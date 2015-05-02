@@ -1,5 +1,5 @@
 class Package < ActiveRecord::Base
-  has_paper_trail
+  has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -36,10 +36,8 @@ class Package < ActiveRecord::Base
     end
   end
 
-  private
-
-  # required by PushUpdates module
+  # Required by PushUpdates and PaperTrail modules
   def offer
-    item.offer unless item.nil?
+    item.try(:offer)
   end
 end

@@ -1,5 +1,5 @@
 class Address < ActiveRecord::Base
-  has_paper_trail
+  has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
 
   belongs_to :addressable, polymorphic: true
@@ -7,7 +7,7 @@ class Address < ActiveRecord::Base
 
   include PushUpdates
 
-  #required by PusherUpdates module
+  # Required by PushUpdates and PaperTrail modules
   def offer
     if addressable_type == "Contact"
       addressable.try(:delivery).try(:offer)

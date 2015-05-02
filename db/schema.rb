@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150428092154) do
+ActiveRecord::Schema.define(version: 20150430072551) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -261,14 +261,18 @@ ActiveRecord::Schema.define(version: 20150428092154) do
   add_index "users", ["permission_id"], name: "index_users_on_permission_id", using: :btree
 
   create_table "versions", force: :cascade do |t|
-    t.string   "item_type",  null: false
-    t.integer  "item_id",    null: false
-    t.string   "event",      null: false
+    t.string   "item_type",      null: false
+    t.integer  "item_id",        null: false
+    t.string   "event",          null: false
     t.string   "whodunnit"
-    t.text     "object"
+    t.json     "object"
+    t.json     "object_changes"
+    t.integer  "related_id"
+    t.string   "related_type"
     t.datetime "created_at"
   end
 
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+  add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
 
 end

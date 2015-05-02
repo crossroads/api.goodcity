@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  has_paper_trail
+  has_paper_trail class_name: 'Version'
   include PushUpdates
 
   has_one :address, as: :addressable, dependent: :destroy

@@ -13,8 +13,4 @@ RSpec.describe Schedule, type: :model do
     it{ is_expected.to have_db_column(:zone).of_type(:string)}
     it{ is_expected.to have_db_column(:scheduled_at).of_type(:datetime)}
   end
-
-  context "has_paper_trail" do
-    it { is_expected.to be_versioned }
-  end
 end
