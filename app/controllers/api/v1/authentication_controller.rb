@@ -157,8 +157,8 @@ module Api::V1
     param :platform, String, desc: "The azure notification platform name, this should be `gcm` for android"
     def register_device
       authorize!(:register, :device)
-      render text: "Only 'gcm' platform is supported at this stage", status: 400 if params[:platform] != 'gcm'
-      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user))
+      render text: "Unrecognised platform, expecting 'gcm' (Android), 'aps' (iOS) or 'mpns' (WP8)", status: 400 unless ['gcm','aps','mpns'].include?(params[:platform])
+      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user), platform)
     end
 
     api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socket.io rooms the user can listen to"

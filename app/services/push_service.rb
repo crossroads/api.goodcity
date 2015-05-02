@@ -41,7 +41,7 @@ class PushService
       end
       operation = data[:operation].to_s
       data = {event:'update_store', entity_type:entity_type, entity_id:entity_id, operation:operation, date:Time.now.to_json.tr('"','')}
-      AzureNotifyJob.perform_later(channel, {data: data}, collapse_key, true)
+      AzureNotifyJob.perform_later(channel, data, collapse_key, true)
     end
   end
 
@@ -60,7 +60,7 @@ class PushService
 
     if Channel.user_channel?(channel)
       data = data.merge({event:'notification', entity_id: entity.id})
-      AzureNotifyJob.perform_later(channel, {data: data})
+      AzureNotifyJob.perform_later(channel, data)
     end
   end
 end
