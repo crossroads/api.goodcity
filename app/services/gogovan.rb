@@ -83,10 +83,10 @@ class Gogovan
   end
 
   def parse_time
-    if @time.is_a?(Time)
+    if @time.is_a?(DateTime)
       @time
     else
-      Time.parse(@time)
+      DateTime.parse(@time.to_s)
     end
   end
 
