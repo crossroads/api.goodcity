@@ -2684,5 +2684,107 @@
       "show_in_doc" : 1,
       "recorded" : true
     }
+  ],
+  "users#update" : [
+    {
+      "title" : "Update last_connected time of user",
+      "verb" : "PUT",
+      "path" : "/api/v1/users/3085",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "user" : {
+          "last_connected" : "2015-04-30 22:49:00 +0800"
+        }
+      },
+      "response_data" : {
+        "images" : [
+          {
+            "id" : 3264,
+            "favourite" : false,
+            "cloudinary_id" : "1416229451/jgpyo4oxrnfnjriofdjd.jpg",
+            "item_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 3288,
+            "street" : "Twila Drives",
+            "flat" : "Apt. 140",
+            "building" : "6413",
+            "district_id" : 3367,
+            "addressable_id" : 3085,
+            "addressable_type" : "User"
+          }
+        ],
+        "user" : {
+          "id" : 3085,
+          "first_name" : "Federico",
+          "last_name" : "Jakubowski",
+          "permission_id" : 656,
+          "mobile" : "+85290786755",
+          "created_at" : "2015-05-05T22:49:00.652+08:00",
+          "last_connected" : "2015-04-30T22:49:00.000+08:00",
+          "last_disconnected" : "2015-05-04T22:49:00.639+08:00",
+          "image_id" : 3264,
+          "address_id" : 3288
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "Update last_disconnected time of user",
+      "verb" : "PUT",
+      "path" : "/api/v1/users/3087",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "user" : {
+          "last_disconnected" : "2015-05-02 22:49:01 +0800"
+        }
+      },
+      "response_data" : {
+        "images" : [
+          {
+            "id" : 3266,
+            "favourite" : false,
+            "cloudinary_id" : "1416375331/zppxdm5fljlyv3tcfo3p.jpg",
+            "item_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 3290,
+            "street" : "Gusikowski Keys",
+            "flat" : "Suite 485",
+            "building" : "791",
+            "district_id" : 1664,
+            "addressable_id" : 3087,
+            "addressable_type" : "User"
+          }
+        ],
+        "user" : {
+          "id" : 3087,
+          "first_name" : "Hildegard",
+          "last_name" : "Hyatt",
+          "permission_id" : 657,
+          "mobile" : "+85291126424",
+          "created_at" : "2015-05-05T22:49:01.030+08:00",
+          "last_connected" : "2015-05-03T22:49:00.902+08:00",
+          "last_disconnected" : "2015-05-02T22:49:01.000+08:00",
+          "image_id" : 3266,
+          "address_id" : 3290
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
   ]
 }
