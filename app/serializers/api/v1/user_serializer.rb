@@ -1,6 +1,8 @@
 module Api::V1
 
   class UserSerializer < ApplicationSerializer
+    include SerializeTimeValue
+
     embed :ids, include: true
     attributes :id, :first_name, :last_name, :permission_id, :mobile,
       :created_at, :last_connected, :last_disconnected
