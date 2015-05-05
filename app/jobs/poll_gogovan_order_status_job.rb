@@ -14,6 +14,8 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
         order.save if order.changed? # avoid un-necessary push-updates to api
         schedule_polling(order_id) if order.reload.need_polling?
       else
+        remove_delivery(order_id) if order_details[:error].include?("404")
+        schedule_polling(order_id) if order_details[:error].include?("503")
         raise(ValueError, order_details[:error])
       end
     else
