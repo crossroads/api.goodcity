@@ -22,6 +22,8 @@ describe User, :type => :model do
     it{ is_expected.to  have_db_column(:first_name).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_name).of_type(:string)}
     it{ is_expected.to  have_db_column(:mobile).of_type(:string)}
+    it{ is_expected.to  have_db_column(:last_connected).of_type(:datetime)}
+    it{ is_expected.to  have_db_column(:last_disconnected).of_type(:datetime)}
   end
 
   describe "Validations" do
