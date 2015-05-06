@@ -48,7 +48,7 @@ class Gogovan
       order: {
         name:           @name || @user.full_name,
         phone_number:   @mobile || @user.mobile,
-        pickup_time:    parse_time,
+        pickup_time:    parse_time.utc,
         vehicle:        @vehicle,
         locations:      locations,
         extra_requirements: {
@@ -83,10 +83,10 @@ class Gogovan
   end
 
   def parse_time
-    if @time.is_a?(Time)
+    if @time.is_a?(DateTime)
       @time
     else
-      Time.parse(@time)
+      DateTime.parse(@time.to_s)
     end
   end
 
