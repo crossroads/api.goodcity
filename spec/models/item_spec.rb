@@ -121,4 +121,21 @@ RSpec.describe Item, type: :model do
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
   end
+
+  describe "when item created by Admin" do
+    it "should set item_type name as donor_description when rejected" do
+      item = create :item, :draft
+      expect{
+        item.reject
+      }.to change(item, :donor_description).to(item.item_type.name)
+    end
+
+    it "should set packages notes as donor_description when accepted" do
+      item = create :item, :draft, :with_packages
+      expected_text = item.packages.pluck(:notes).reject(&:blank?).join(". ")
+      expect{
+        item.accept
+      }.to change(item, :donor_description).to(expected_text)
+    end
+  end
 end
