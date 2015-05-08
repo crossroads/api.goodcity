@@ -48,6 +48,30 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(response.body).to include(offer1.messages.first.body)
       end
     end
+    context "states" do
+      it "returns offers in the submitted state" do
+        offer1 = create(:offer, state: "submitted")
+        offer2 = create(:offer, state: "draft")
+        get :index, states: ["submitted"]
+        expect(assigns(:offers).to_a).to eql([offer1])
+      end
+      it "returns offers in the active states (default)" do
+        offer1 = create(:offer, state: "submitted")
+        offer2 = create(:offer, state: "draft")
+        get :index
+        subject = assigns(:offers).to_a
+        expect(subject).to include(offer1)
+        expect(subject).to include(offer2)
+      end
+    end
+    context "created_by_id" do
+      it "returns offers created_by this user" do
+        offer1 = create(:offer)
+        offer2 = create(:offer)
+        get :index, created_by_id: offer1.created_by_id
+        expect(assigns(:offers).to_a).to eql([offer1])
+      end
+    end
   end
 
   describe "GET offer/1" do
