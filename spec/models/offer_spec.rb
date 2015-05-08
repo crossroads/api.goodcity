@@ -102,8 +102,6 @@ RSpec.describe Offer, type: :model do
       expect(active_offers).to include(submitted_offer)
       expect(active_offers).to_not include(closed_offer)
       expect(active_offers).to_not include(received_offer)
-      expect(scrub(Offer.active.to_sql)).to include(
-        "state NOT IN ('received','closed','cancelled')")
     end
 
     it 'inactive' do
@@ -111,8 +109,6 @@ RSpec.describe Offer, type: :model do
       expect(inactive_offers).to_not include(submitted_offer)
       expect(inactive_offers).to include(closed_offer)
       expect(inactive_offers).to include(received_offer)
-      expect(scrub(Offer.inactive.to_sql)).to include(
-        "state IN ('received','closed','cancelled')")
     end
 
     describe "review_by" do
@@ -130,6 +126,31 @@ RSpec.describe Offer, type: :model do
         expect(Offer.created_by(donor.id)).to include(offer)
       end
     end
+
+    context "in_states" do
+      it "matches submitted offers" do
+        expect(Offer.in_states(["submitted"])).to include(submitted_offer)
+        expect(Offer.in_states(["submitted"])).to_not include(closed_offer)
+      end
+
+      it "matches multiple states" do
+        subject = Offer.in_states(["submitted", "closed"])
+        expect(subject).to include(submitted_offer)
+        expect(subject).to include(closed_offer)
+      end
+
+      it "accepts string arguments" do
+        expect(Offer.in_states("submitted")).to include(submitted_offer)
+      end
+
+      it "accepts pseudo states" do
+        subject = Offer.in_states(["inactive"])
+        expect(subject).to include(closed_offer)
+        expect(subject).to include(received_offer)
+        expect(subject).to_not include(submitted_offer)
+      end
+    end
+
   end
 
   describe "#send_thank_you_message" do
@@ -204,20 +225,6 @@ RSpec.describe Offer, type: :model do
       expect(delivery.gogovan_order.status).to eq('pending')
     end
 
-  end
-
-  describe "with_state :state" do
-    let!(:submitted_offer) { create :offer, :submitted }
-    let!(:closed_offer) { create :offer, :closed }
-    let!(:cancelled_offer) { create :offer, :cancelled }
-
-    it "should include only matching offer state" do
-      expect(Offer.with_state("submitted")).to include(submitted_offer)
-      expect(Offer.with_state("submitted")).to_not include(closed_offer)
-
-      expect(Offer.with_state("closed")).to include(closed_offer)
-      expect(Offer.with_state("closed")).to include(cancelled_offer)
-    end
   end
 
   context "has_paper_trail" do

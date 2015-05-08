@@ -34,10 +34,15 @@ class Offer < ActiveRecord::Base
   }
 
   scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
-  scope :created_by, ->(created_by_id){ where('created_by_id = ?', created_by_id) }
+  scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
   scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
-  scope :inactive, -> { where("state IN (?)", INACTIVE_STATES) }
-  scope :non_draft, -> { where("state <> 'draft'") }
+  scope :inactive, -> { where(state: INACTIVE_STATES) }
+  scope :in_states, ->(states) { # overwrite concerns/state_machine_scope to add pseudo states
+    states = [states].flatten.compact
+    states.push(*Offer.inactive_states) if states.delete('inactive')
+    states.push(*Offer.nondraft_states) if states.delete('nondraft')
+    where(state: states.uniq)
+  }
 
   before_create :set_language
   after_initialize :set_initial_state
@@ -130,9 +135,16 @@ class Offer < ActiveRecord::Base
     end
   end
 
-  def self.with_state(state)
-    state == "closed" ? where("state IN (?)", ["closed", "cancelled"]) :
-      by_state(state)
+  class << self
+    def donor_valid_states
+      Offer.valid_states - ["cancelled"]
+    end
+    def inactive_states
+      INACTIVE_STATES
+    end
+    def nondraft_states
+      Offer.valid_states - ["draft"]
+    end
   end
 
   def gogovan_order
@@ -195,10 +207,6 @@ class Offer < ActiveRecord::Base
       entity_type: "offer",
       entity: self,
       channel: Channel.reviewer)
-  end
-
-  def self.donor_valid_states
-    Offer.valid_states - ["cancelled"]
   end
 
   private
