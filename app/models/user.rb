@@ -81,6 +81,11 @@ class User < ActiveRecord::Base
     permission.try(:name) == nil
   end
 
+  def online?
+    (last_connected && last_disconnected) ?
+      (last_connected > last_disconnected) : false
+  end
+
   def send_verification_pin
     most_recent_token.cycle_otp_auth_key!
     EmailFlowdockService.new(self).send_otp
