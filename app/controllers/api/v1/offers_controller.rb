@@ -49,6 +49,7 @@ module Api::V1
     api :GET, '/v1/offers', "List all offers"
     param :state, Offer.valid_states, desc: "Filter by an offer state e.g. state=draft"
     param :category, ["finished"], desc: "To get finished(received and closed) offers"
+    param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
     def index
       return finished if params["category"] == "finished"
 
@@ -61,7 +62,7 @@ module Api::V1
         @offers.with_eager_load # this maintains security
       end
 
-      render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
+      render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude_messages] == "true"
     end
 
     def finished
@@ -70,12 +71,12 @@ module Api::V1
       else
         @offers.inactive.with_eager_load
       end
-      render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude] == "messages"
+      render json: @offers, each_serializer: serializer, exclude_messages: params[:exclude_messages] == "true"
     end
 
     api :GET, '/v1/offers/1', "List an offer"
     def show
-      render json: @offer, serializer: serializer, exclude_messages: params[:exclude] == "messages"
+      render json: @offer, serializer: serializer, exclude_messages: params[:exclude_messages] == "true"
     end
 
     api :PUT, '/v1/offers/1', "Update an offer"

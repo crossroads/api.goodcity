@@ -25,6 +25,29 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       body = JSON.parse(response.body)
       expect( body['offers'].length ).to eq(2)
     end
+    context "exclude_messages" do
+      it "is 'false'" do
+        offer1 = create(:offer, :with_messages)
+        expect(offer1.messages.size).to eql(1)
+        get :index, exclude_messages: "false"
+        expect(assigns(:offers).to_a).to eql([offer1])
+        expect(response.body).to include(offer1.messages.first.body)
+      end
+      it "is 'true'" do
+        offer1 = create(:offer, :with_messages)
+        expect(offer1.messages.size).to eql(1)
+        get :index, exclude_messages: "true"
+        expect(assigns(:offers).to_a).to eql([offer1])
+        expect(response.body).to_not include(offer1.messages.first.body)
+      end
+      it "is not set" do
+        offer1 = create(:offer, :with_messages)
+        expect(offer1.messages.size).to eql(1)
+        get :index
+        expect(assigns(:offers).to_a).to eql([offer1])
+        expect(response.body).to include(offer1.messages.first.body)
+      end
+    end
   end
 
   describe "GET offer/1" do
