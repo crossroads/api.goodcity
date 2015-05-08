@@ -9,6 +9,12 @@ FactoryGirl.define do
     association :item_type
     association :offer
 
+    trait :draft do
+      donor_description nil
+      state             'draft'
+      item_type
+    end
+
     trait :with_packages do
       packages { create_list(:package, 2) }
     end
