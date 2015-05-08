@@ -6,7 +6,7 @@ class AzureNotificationsService
       'ServiceBusNotification-Tags' => tags,
       'Content-Type' => 'application/json;charset=utf-8'
     }
-    body = { message: {data: data}.to_json }
+    body = data
     body[:collapse_key] = collapse_key unless collapse_key.nil?
     body[:delay_while_idle] = delay_while_idle unless collapse_key.nil?
     send :post, 'messages', body: body.to_json, headers: headers
@@ -23,7 +23,7 @@ class AzureNotificationsService
     # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
     body = ""
     if platform == "gcm"
-      template = "{'data':{'message':'$(message)'}}"
+      template = '{"message":"$(message)"}'
       body =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>
         <entry xmlns=\"http://www.w3.org/2005/Atom\">
@@ -36,7 +36,7 @@ class AzureNotificationsService
           </content>
         </entry>"
     elsif platform == "aps"
-      template = "{'aps':{'alert':'$(message)'}}"
+      template = '{"aps":{"alert":"$(message)"}}'
       body =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>
         <entry xmlns=\"http://www.w3.org/2005/Atom\">
@@ -60,19 +60,19 @@ class AzureNotificationsService
       body =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>
         <entry xmlns=\"http://www.w3.org/2005/Atom\">
-            <content type=\"application/xml\">
-                <WindowsTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
-                    <Tags>#{tags.join(', ')}</Tags>
-                    <ChannelUri>#{handle}</ChannelUri>
-                    <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
-                    <WnsHeaders>
-                        <WNSHeader>
-                            <Header>X-WNS-Type</Header>
-                            <Value>wns/toast</Value>
-                        </WNSHeader>
-                    </WnsHeaders>
-                </WindowsTemplateRegistrationDescription>
-            </content>
+          <content type=\"application/xml\">
+            <WindowsTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
+              <Tags>#{tags.join(', ')}</Tags>
+              <ChannelUri>#{handle}</ChannelUri>
+              <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
+              <WnsHeaders>
+                <WNSHeader>
+                  <Header>X-WNS-Type</Header>
+                  <Value>wns/toast</Value>
+                </WNSHeader>
+              </WnsHeaders>
+            </WindowsTemplateRegistrationDescription>
+          </content>
         </entry>"
     end
 
