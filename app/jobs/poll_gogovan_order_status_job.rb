@@ -12,10 +12,10 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
         return remove_delivery(order_id) if order.cancelled?
 
         order.save if order.changed? # avoid un-necessary push-updates to api
-        schedule_polling(order_id) if order.reload.need_polling?
+        schedule_polling(order) if order.reload.need_polling?
       else
         remove_delivery(order_id) if order_details[:error].include?("404")
-        schedule_polling(order_id) if order_details[:error].include?("503")
+        schedule_polling(order) if order_details[:error].include?("503")
         raise(ValueError, order_details[:error])
       end
     else
@@ -28,8 +28,13 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
       perform_later(order_id)
   end
 
-  def schedule_polling(order_id)
-    self.class.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(order_id)
+  def schedule_polling(order)
+    wait_time = if order.donor.try(:online?)
+      GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR
+    else
+      GGV_POLL_JOB_WAIT_TIME
+    end
+    self.class.set(wait: wait_time).perform_later(order.id)
   end
 
   private
