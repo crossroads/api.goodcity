@@ -29,6 +29,12 @@ class GogovanOrder < ActiveRecord::Base
     Offer.with_eager_load.find(offer.id)
   end
 
+  def donor
+    User.
+      joins(offers: {delivery: :gogovan_order}).
+      where('gogovan_orders.id = ?', id).last
+  end
+
   def update_booking(booking_id)
     update_column(:booking_id, booking_id)
   end
