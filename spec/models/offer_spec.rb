@@ -111,11 +111,11 @@ RSpec.describe Offer, type: :model do
       expect(inactive_offers).to include(received_offer)
     end
 
-    describe "review_by" do
-      it "should return offers reviewed by current reviewer" do
+    describe "reviewed_by" do
+      it "should return offers reviewed by given user id" do
         reviewer = create :user, :reviewer
         offer = create :offer, reviewed_by: reviewer
-        expect(Offer.review_by(reviewer.id)).to include(offer)
+        expect(Offer.reviewed_by(reviewer.id)).to include(offer)
       end
     end
 
