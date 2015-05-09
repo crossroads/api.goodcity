@@ -41,6 +41,7 @@ class Offer < ActiveRecord::Base
     states = [states].flatten.compact
     states.push(*Offer.inactive_states) if states.delete('inactive')
     states.push(*Offer.nondraft_states) if states.delete('nondraft')
+    states.push(*Offer.active_states) if states.delete('active')
     where(state: states.uniq)
   }
 
@@ -137,13 +138,16 @@ class Offer < ActiveRecord::Base
 
   class << self
     def donor_valid_states
-      Offer.valid_states - ["cancelled"]
+      valid_states - ["cancelled"]
     end
     def inactive_states
       INACTIVE_STATES
     end
+    def active_states
+      valid_states - inactive_states
+    end
     def nondraft_states
-      Offer.valid_states - ["draft"]
+      valid_states - ["draft"]
     end
   end
 
