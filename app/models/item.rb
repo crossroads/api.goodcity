@@ -12,8 +12,6 @@ class Item < ActiveRecord::Base
   has_many   :images, dependent: :destroy
   has_many   :packages, dependent: :destroy
 
-  validates :donor_condition_id, presence: true
-
   scope :with_eager_load, -> {
     eager_load( [:item_type, :rejection_reason, :donor_condition, :images,
       { messages: :sender }, { packages: :package_type }
@@ -54,7 +52,7 @@ class Item < ActiveRecord::Base
 
   def set_description
     self.donor_description = if packages.present?
-      packages.pluck(:notes).reject(&:blank?).join(". ")
+      packages.pluck(:notes).reject(&:blank?).join(" + ")
     else
       item_type.name
     end
