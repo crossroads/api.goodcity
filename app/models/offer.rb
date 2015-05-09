@@ -33,7 +33,7 @@ class Offer < ActiveRecord::Base
     )
   }
 
-  scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
+  scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
   scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
   scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
   scope :inactive, -> { where(state: INACTIVE_STATES) }

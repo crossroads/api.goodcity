@@ -19,12 +19,14 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       get :index
       expect(response.status).to eq(200)
     end
+
     it "return serialized offers", :show_in_doc do
       2.times{ create :offer }
       get :index
       body = JSON.parse(response.body)
       expect( body['offers'].length ).to eq(2)
     end
+
     context "exclude_messages" do
       it "is 'false'" do
         offer1 = create(:offer, :with_messages)
@@ -33,6 +35,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(assigns(:offers).to_a).to eql([offer1])
         expect(response.body).to include(offer1.messages.first.body)
       end
+
       it "is 'true'" do
         offer1 = create(:offer, :with_messages)
         expect(offer1.messages.size).to eql(1)
@@ -40,6 +43,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(assigns(:offers).to_a).to eql([offer1])
         expect(response.body).to_not include(offer1.messages.first.body)
       end
+
       it "is not set" do
         offer1 = create(:offer, :with_messages)
         expect(offer1.messages.size).to eql(1)
@@ -55,6 +59,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         get :index, states: ["submitted"]
         expect(assigns(:offers).to_a).to eql([offer1])
       end
+
       it "returns offers in the active states (default)" do
         offer1 = create(:offer, state: "submitted")
         offer2 = create(:offer, state: "draft")
@@ -64,11 +69,21 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(subject).to include(offer2)
       end
     end
+
     context "created_by_id" do
-      it "returns offers created_by this user" do
+      it "returns offers created by this user" do
         offer1 = create(:offer)
         offer2 = create(:offer)
         get :index, created_by_id: offer1.created_by_id
+        expect(assigns(:offers).to_a).to eql([offer1])
+      end
+    end
+
+    context "reviewed_by_id" do
+      it "returns offers reviewed by this user" do
+        offer1 = create(:offer, reviewed_by: user)
+        offer2 = create(:offer)
+        get :index, reviewed_by_id: offer1.reviewed_by_id
         expect(assigns(:offers).to_a).to eql([offer1])
       end
     end
