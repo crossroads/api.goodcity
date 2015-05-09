@@ -60,9 +60,18 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(assigns(:offers).to_a).to eql([offer1])
       end
 
-      it "returns offers in the active states (default)" do
-        offer1 = create(:offer, state: "submitted")
-        offer2 = create(:offer, state: "draft")
+      it "returns offers in the active states" do
+        offer1 = create(:offer, state: "draft")
+        offer2 = create(:offer, state: "closed")
+        get :index, states: ["active"]
+        subject = assigns(:offers).to_a
+        expect(subject).to include(offer1)
+        expect(subject).to_not include(offer2)
+      end
+
+      it "returns offers in all states (default)" do
+        offer1 = create(:offer, state: "draft")
+        offer2 = create(:offer, state: "closed")
         get :index
         subject = assigns(:offers).to_a
         expect(subject).to include(offer1)
