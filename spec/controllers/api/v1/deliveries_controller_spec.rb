@@ -202,6 +202,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       }
 
       it "should confirm delivery by removing old associated records" do
+        ActiveRecord::Base.connection.reset_pk_sequence!("schedules")
         expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id).and_return(200)
         expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
         post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
