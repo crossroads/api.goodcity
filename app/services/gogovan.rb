@@ -77,8 +77,7 @@ class Gogovan
     delivery = offer.delivery
     if offer && ggv_uuid
       link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{ggv_uuid}"
-      ch_link = link + "?ln=zh-tw"
-      I18n.t('gogovan.driver_note', link: link, ch_link: ch_link)
+      I18n.t('gogovan.driver_note', link: "#{link}?ln=en", ch_link: "#{link}?ln=zh-tw")
     end
   end
 
