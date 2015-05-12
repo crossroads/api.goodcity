@@ -205,7 +205,7 @@ RSpec.describe Offer, type: :model do
         offer.send_ggv_cancel_order_message
       }.to change(offer.messages, :count).by(1)
       expect(subject.sender).to eq(User.system_user)
-      expect(subject.body).to eq("A van booking for #{time_string} was cancelled via GoGoVan. Please choose new transport arrangements.")
+      expect(subject.body).to include("A van booking for #{time_string} was cancelled via GoGoVan. Please choose new transport arrangements.")
     end
   end
 
