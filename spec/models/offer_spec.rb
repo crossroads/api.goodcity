@@ -202,7 +202,7 @@ RSpec.describe Offer, type: :model do
 
     it 'should send GGV cancel message to donor' do
       expect{
-        offer.send_ggv_cancel_order_message
+        offer.send_ggv_cancel_order_message(time_string)
       }.to change(offer.messages, :count).by(1)
       expect(subject.sender).to eq(User.system_user)
       expect(subject.body).to include("A van booking for #{time_string} was cancelled via GoGoVan. Please choose new transport arrangements.")
