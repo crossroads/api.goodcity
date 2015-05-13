@@ -198,8 +198,8 @@ class Offer < ActiveRecord::Base
     end
   end
 
-  def send_ggv_cancel_order_message
-    message = cancel_message
+  def send_ggv_cancel_order_message(ggv_time)
+    message = cancel_message(ggv_time)
     messages.create(body: message, sender: User.system_user)
     send_notification(message)
   end
@@ -214,8 +214,7 @@ class Offer < ActiveRecord::Base
 
   private
 
-  def cancel_message
-    time = delivery.try(:schedule).try(:formatted_date_and_slot)
+  def cancel_message(time)
     text = I18n.t("offer.ggv_cancel_message", time: time, locale: "en")
     text += "<br/>"
     text += I18n.t("offer.ggv_cancel_message", time: time, locale: "zh-tw")
