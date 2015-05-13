@@ -12,6 +12,7 @@ class Delivery < ActiveRecord::Base
   before_save :update_offer_state
   before_destroy :push_back_offer_state
   after_save :send_updates, if: "offer.scheduled?" && :process_completed?
+  after_destroy {send_updates :delete unless Rails.env.test? }
 
   def update_offer_state
     self.delivery_type = self.delivery_type.titleize
@@ -31,13 +32,13 @@ class Delivery < ActiveRecord::Base
     (delivery_type == 'Drop Off' && schedule_id_changed? && schedule.present?)
   end
 
-  def send_updates
+  def send_updates(operation = nil)
     donor   = offer.created_by
     user    = Api::V1::UserSerializer.new(User.current_user || donor)
     channel = Channel.staff + Channel.user_id(donor.id)
 
     [self.gogovan_order, self.contact.try(:address), self.contact, self.schedule, self].compact.each do |record|
-      operation = self.class == 'Delivery' ? "update" : "create"
+      operation ||= (self.class == 'Delivery' ? "update" : "create")
       data = { item: serialized_object(record), sender: user, operation: operation }
       PushService.new.send_update_store(channel, data, "offer#{offer.id}")
     end
