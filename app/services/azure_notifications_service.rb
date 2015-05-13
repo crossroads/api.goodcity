@@ -23,7 +23,7 @@ class AzureNotificationsService
     # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
     body = ""
     if platform == "gcm"
-      template = '{"message":"$(message)"}'
+      template = '{"data":{"message":"$(message)"}}'
       body =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>
         <entry xmlns=\"http://www.w3.org/2005/Atom\">
