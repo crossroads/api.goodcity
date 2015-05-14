@@ -24,8 +24,7 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
   end
 
   def remove_delivery(order_id)
-    GgvDeliveryCleanupJob.set(wait: GGV_POLL_JOB_WAIT_TIME).
-      perform_later(order_id)
+    GgvDeliveryCleanupJob.perform_later(order_id)
   end
 
   def schedule_polling(order)
