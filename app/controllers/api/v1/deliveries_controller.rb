@@ -33,6 +33,7 @@ module Api::V1
     api :POST, '/v1/deliveries', "Create a delivery"
     param_group :delivery
     def create
+      delete_existing_delivery
       @delivery.attributes = delivery_params
       if @delivery.save
         render json: @delivery, serializer: serializer, status: 201
@@ -122,6 +123,10 @@ module Api::V1
 
     def serializer
       Api::V1::DeliverySerializer
+    end
+
+    def delete_existing_delivery
+      Delivery.where(offer_id: params[:delivery][:offer_id]).map(&:destroy)
     end
 
     def delete_old_associations
