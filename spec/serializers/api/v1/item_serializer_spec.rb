@@ -12,7 +12,7 @@ describe Api::V1::ItemSerializer do
     expect(json['item']['donor_condition_id']).to eql(item.donor_condition_id)
     expect(json['item']['state']).to eql(item.state)
     expect(json['item']['offer_id']).to eql(item.offer_id)
-    expect(json['item']['item_type_id']).to eql(item.item_type_id)
+    expect(json['item']['package_type_id']).to eql(item.package_type_id)
     expect(json['item']['rejection_reason_id']).to eql(item.rejection_reason_id)
     expect(json['item']['reject_reason']).to eql(item.reject_reason)
     expect(json['item']['rejection_comments']).to eql(item.rejection_comments)
