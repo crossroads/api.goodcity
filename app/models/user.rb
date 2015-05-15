@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_paper_trail class_name: 'Version'
   include PushUpdates
 
   has_one :address, as: :addressable, dependent: :destroy
@@ -78,6 +79,11 @@ class User < ActiveRecord::Base
 
   def donor?
     permission.try(:name) == nil
+  end
+
+  def online?
+    (last_connected && last_disconnected) ?
+      (last_connected > last_disconnected) : false
   end
 
   def send_verification_pin

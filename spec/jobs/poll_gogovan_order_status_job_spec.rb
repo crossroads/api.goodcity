@@ -23,6 +23,14 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
   let(:ggv_response) { response.merge({ "status" => "active" }) }
   let(:cancel_ggv_response) { response.merge({ "status" => "cancelled" }) }
 
+  let(:not_found_response) {
+    {:error=>"Failed.  Response code = 404.  Response message = Not Found.  Response Body = {\"status\":\"404\",\"error\":\"Not Found\"}."}
+  }
+
+  let(:service_unavailable_response) {
+    {:error=>"Failed.  Response code = 503.  Response message = Service Unavailable.  Response Body = {\"status\":\"503\",\"error\":\"Service Unavailable\"}."}
+  }
+
   context "polling GGV order status" do
 
     it "successfully and update it" do
@@ -72,5 +80,30 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
     expect(enqueued_jobs.size).to eq(11)
     expect(enqueued_jobs.last[:job]).to eq(GgvDeliveryCleanupJob)
     expect(enqueued_jobs.last[:args]).to eq([active_order.id])
+  end
+
+  it "schedule delete delivery job if response is 404" do
+    expect(Gogovan).to receive(:order_status).with(active_order.booking_id).and_return(not_found_response)
+
+    expect{
+      PollGogovanOrderStatusJob.new.perform(active_order.id)
+    }.to raise_error(PollGogovanOrderStatusJob::ValueError)
+
+    expect(enqueued_jobs.size).to eq(11)
+    expect(enqueued_jobs.last[:job]).to eq(GgvDeliveryCleanupJob)
+    expect(enqueued_jobs.last[:args]).to eq([active_order.id])
+  end
+
+  it "should schedule itself if GGV service is unavailable" do
+    expect(Gogovan).to receive(:order_status).with(order.booking_id).and_return(service_unavailable_response)
+
+    expect{
+      PollGogovanOrderStatusJob.new.perform(order.id)
+    }.to raise_error(PollGogovanOrderStatusJob::ValueError)
+
+    order.reload
+    expect(enqueued_jobs.size).to eq(11)
+    expect(enqueued_jobs.last[:job]).to eq(PollGogovanOrderStatusJob)
+    expect(enqueued_jobs.last[:args]).to eq([order.id])
   end
 end

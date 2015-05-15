@@ -9,4 +9,8 @@ RSpec.describe Contact, type: :model do
     it{ is_expected.to have_db_column(:name).of_type(:string)}
     it{ is_expected.to have_db_column(:mobile).of_type(:string)}
   end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+  end
 end

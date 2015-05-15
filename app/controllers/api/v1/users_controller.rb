@@ -28,11 +28,24 @@ module Api::V1
       render json: @user, serializer: serializer
     end
 
+    api :PUT, '/v1/users/1', "Update user"
+    param :user, Hash, required: true do
+      param :last_connected, String, desc: "Time when user last connected to server."
+      param :last_disconnected, String, desc: "Time when user disconnected from server."
+    end
+    def update
+      @user.update_attributes(user_params)
+      render json: @user, serializer: serializer
+    end
+
     private
 
     def serializer
       Api::V1::UserSerializer
     end
 
+    def user_params
+      params.require(:user).permit(:last_connected, :last_disconnected)
+    end
   end
 end

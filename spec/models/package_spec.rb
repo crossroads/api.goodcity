@@ -10,4 +10,7 @@ RSpec.describe Package, :type => :model do
     it { is_expected.to validate_presence_of(:package_type_id) }
   end
 
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+  end
 end
