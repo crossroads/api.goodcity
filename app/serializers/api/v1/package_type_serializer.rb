@@ -1,8 +1,8 @@
 module Api::V1
 
-  class ItemTypeSerializer < ApplicationSerializer
+  class PackageTypeSerializer < ApplicationSerializer
     embed :ids, include: true
-    attributes :id, :name, :code, :parent_id, :is_item_type_node
+    attributes :id, :name, :code
 
     def name__sql
       "name_#{current_language}"

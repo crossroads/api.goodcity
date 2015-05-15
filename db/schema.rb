@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150515075646) do
+ActiveRecord::Schema.define(version: 20150515111235) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,7 +138,7 @@ ActiveRecord::Schema.define(version: 20150515075646) do
     t.text     "donor_description"
     t.string   "state",               limit: 255
     t.integer  "offer_id",                                        null: false
-    t.integer  "item_type_id"
+    t.integer  "package_type_id"
     t.integer  "rejection_reason_id"
     t.string   "reject_reason",       limit: 255
     t.datetime "created_at"
