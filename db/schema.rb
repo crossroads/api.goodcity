@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150505060613) do
+ActiveRecord::Schema.define(version: 20150515075646) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -184,6 +184,16 @@ ActiveRecord::Schema.define(version: 20150505060613) do
     t.datetime "cancelled_at"
   end
 
+  create_table "package_types", force: :cascade do |t|
+    t.string   "code"
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.string   "other_terms_en"
+    t.string   "other_terms_zh_tw"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
   create_table "packages", force: :cascade do |t|
     t.integer  "quantity"
     t.integer  "length"
@@ -223,6 +233,14 @@ ActiveRecord::Schema.define(version: 20150505060613) do
     t.datetime "scheduled_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "subpackage_types", force: :cascade do |t|
+    t.integer  "package_type_id"
+    t.integer  "subpackage_type_id"
+    t.boolean  "is_default",         default: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
   end
 
   create_table "subscriptions", force: :cascade do |t|
