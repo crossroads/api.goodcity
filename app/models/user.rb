@@ -92,10 +92,12 @@ class User < ActiveRecord::Base
     TwilioService.new(self).sms_verification_pin
   end
 
-  def channels
+  def channels(app)
     channels = Channel.user(self)
-    channels += Channel.reviewer if reviewer?
-    channels += Channel.supervisor if supervisor?
+    if app == ADMIN_APP
+      channels += Channel.reviewer if reviewer?
+      channels += Channel.supervisor if supervisor?
+    end
     channels
   end
 
