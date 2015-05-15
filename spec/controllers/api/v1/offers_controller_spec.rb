@@ -19,11 +19,82 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       get :index
       expect(response.status).to eq(200)
     end
+
     it "return serialized offers", :show_in_doc do
       2.times{ create :offer }
       get :index
       body = JSON.parse(response.body)
       expect( body['offers'].length ).to eq(2)
+    end
+
+    context "exclude_messages" do
+      it "is 'false'" do
+        offer1 = create(:offer, :with_messages)
+        expect(offer1.messages.size).to eql(1)
+        get :index, exclude_messages: "false"
+        expect(assigns(:offers).to_a).to eql([offer1])
+        expect(response.body).to include(offer1.messages.first.body)
+      end
+
+      it "is 'true'" do
+        offer1 = create(:offer, :with_messages)
+        expect(offer1.messages.size).to eql(1)
+        get :index, exclude_messages: "true"
+        expect(assigns(:offers).to_a).to eql([offer1])
+        expect(response.body).to_not include(offer1.messages.first.body)
+      end
+
+      it "is not set" do
+        offer1 = create(:offer, :with_messages)
+        expect(offer1.messages.size).to eql(1)
+        get :index
+        expect(assigns(:offers).to_a).to eql([offer1])
+        expect(response.body).to include(offer1.messages.first.body)
+      end
+    end
+    context "states" do
+      it "returns offers in the submitted state" do
+        offer1 = create(:offer, state: "submitted")
+        offer2 = create(:offer, state: "draft")
+        get :index, states: ["submitted"]
+        expect(assigns(:offers).to_a).to eql([offer1])
+      end
+
+      it "returns offers in the active states" do
+        offer1 = create(:offer, state: "draft")
+        offer2 = create(:offer, state: "closed")
+        get :index, states: ["active"]
+        subject = assigns(:offers).to_a
+        expect(subject).to include(offer1)
+        expect(subject).to_not include(offer2)
+      end
+
+      it "returns offers in all states (default)" do
+        offer1 = create(:offer, state: "draft")
+        offer2 = create(:offer, state: "closed")
+        get :index
+        subject = assigns(:offers).to_a
+        expect(subject).to include(offer1)
+        expect(subject).to include(offer2)
+      end
+    end
+
+    context "created_by_id" do
+      it "returns offers created by this user" do
+        offer1 = create(:offer)
+        offer2 = create(:offer)
+        get :index, created_by_id: offer1.created_by_id
+        expect(assigns(:offers).to_a).to eql([offer1])
+      end
+    end
+
+    context "reviewed_by_id" do
+      it "returns offers reviewed by this user" do
+        offer1 = create(:offer, reviewed_by: user)
+        offer2 = create(:offer)
+        get :index, reviewed_by_id: offer1.reviewed_by_id
+        expect(assigns(:offers).to_a).to eql([offer1])
+      end
     end
   end
 

@@ -25,10 +25,6 @@ RSpec.describe Item, type: :model do
     it { is_expected.to have_db_column(:saleable).of_type(:boolean) }
   end
 
-  describe "validations" do
-    it { is_expected.to validate_presence_of(:donor_condition_id) }
-  end
-
   describe 'Scope Methods' do
     let!(:item)    { create :item }
     let!(:an_item) { create :item } # this item should not be changed
@@ -115,6 +111,27 @@ RSpec.describe Item, type: :model do
         item.reject
       }.to change(item.messages, :count).by(1)
       expect(item.messages.last.body).to eq(item.rejection_comments)
+    end
+  end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+  end
+
+  describe "when item created by Admin" do
+    it "should set item_type name as donor_description when rejected" do
+      item = create :item, :draft
+      expect{
+        item.reject
+      }.to change(item, :donor_description).to(item.item_type.name)
+    end
+
+    it "should set packages notes as donor_description when accepted" do
+      item = create :item, :draft, :with_packages
+      expected_text = item.packages.pluck(:notes).reject(&:blank?).join(" + ")
+      expect{
+        item.accept
+      }.to change(item, :donor_description).to(expected_text)
     end
   end
 end

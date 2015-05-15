@@ -1,4 +1,5 @@
 class GogovanOrder < ActiveRecord::Base
+  has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
   include PushUpdates
 
@@ -26,6 +27,12 @@ class GogovanOrder < ActiveRecord::Base
     offer = find_by(ggv_uuid: ggv_uuid).try(:delivery).try(:offer)
     raise ActiveRecord::RecordNotFound unless offer
     Offer.with_eager_load.find(offer.id)
+  end
+
+  def donor
+    User.
+      joins(offers: {delivery: :gogovan_order}).
+      where('gogovan_orders.id = ?', id).last
   end
 
   def update_booking(booking_id)
@@ -76,6 +83,11 @@ class GogovanOrder < ActiveRecord::Base
     self
   end
 
+  # required by PushUpdates and PaperTrail modules
+  def offer
+    delivery.try(:offer)
+  end
+
   private
 
   def generate_uuid
@@ -93,8 +105,4 @@ class GogovanOrder < ActiveRecord::Base
     attributes
   end
 
-  # required by PushUpdates module
-  def offer
-    delivery.try(:offer)
-  end
 end

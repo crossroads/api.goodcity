@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150428135028) do
+ActiveRecord::Schema.define(version: 20150505060613) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -249,16 +249,33 @@ ActiveRecord::Schema.define(version: 20150428135028) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "first_name",    limit: 255
-    t.string   "last_name",     limit: 255
-    t.string   "mobile",        limit: 255
+    t.string   "first_name",        limit: 255
+    t.string   "last_name",         limit: 255
+    t.string   "mobile",            limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "permission_id"
     t.integer  "image_id"
+    t.datetime "last_connected"
+    t.datetime "last_disconnected"
   end
 
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
   add_index "users", ["permission_id"], name: "index_users_on_permission_id", using: :btree
+
+  create_table "versions", force: :cascade do |t|
+    t.string   "item_type",      null: false
+    t.integer  "item_id",        null: false
+    t.string   "event",          null: false
+    t.string   "whodunnit"
+    t.json     "object"
+    t.json     "object_changes"
+    t.integer  "related_id"
+    t.string   "related_type"
+    t.datetime "created_at"
+  end
+
+  add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
+  add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
 
 end

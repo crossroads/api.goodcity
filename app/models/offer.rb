@@ -1,4 +1,5 @@
 class Offer < ActiveRecord::Base
+  has_paper_trail class_name: 'Version'
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -32,11 +33,17 @@ class Offer < ActiveRecord::Base
     )
   }
 
-  scope :review_by, ->(reviewer_id){ where('reviewed_by_id = ?', reviewer_id) }
-  scope :created_by, ->(created_by_id){ where('created_by_id = ?', created_by_id) }
+  scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
+  scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
   scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
-  scope :inactive, -> { where("state IN (?)", INACTIVE_STATES) }
-  scope :non_draft, -> { where("state <> 'draft'") }
+  scope :inactive, -> { where(state: INACTIVE_STATES) }
+  scope :in_states, ->(states) { # overwrite concerns/state_machine_scope to add pseudo states
+    states = [states].flatten.compact
+    states.push(*Offer.inactive_states) if states.delete('inactive')
+    states.push(*Offer.nondraft_states) if states.delete('nondraft')
+    states.push(*Offer.active_states) if states.delete('active')
+    where(state: states.uniq)
+  }
 
   before_create :set_language
   after_initialize :set_initial_state
@@ -129,9 +136,19 @@ class Offer < ActiveRecord::Base
     end
   end
 
-  def self.with_state(state)
-    state == "closed" ? where("state IN (?)", ["closed", "cancelled"]) :
-      by_state(state)
+  class << self
+    def donor_valid_states
+      valid_states - ["cancelled"]
+    end
+    def inactive_states
+      INACTIVE_STATES
+    end
+    def active_states
+      valid_states - inactive_states
+    end
+    def nondraft_states
+      valid_states - ["draft"]
+    end
   end
 
   def gogovan_order
@@ -181,11 +198,10 @@ class Offer < ActiveRecord::Base
     end
   end
 
-  def send_ggv_cancel_order_message
-    text = I18n.t("offer.ggv_cancel_message",
-      time: "#{delivery.try(:schedule).try(:formatted_date_and_slot)}")
-    messages.create(body: text, sender: User.system_user)
-    send_notification(text)
+  def send_ggv_cancel_order_message(ggv_time)
+    message = cancel_message(ggv_time)
+    messages.create(body: message, sender: User.system_user)
+    send_notification(message)
   end
 
   def send_notification(text)
@@ -196,11 +212,13 @@ class Offer < ActiveRecord::Base
       channel: Channel.reviewer)
   end
 
-  def self.donor_valid_states
-    Offer.valid_states - ["cancelled"]
-  end
-
   private
+
+  def cancel_message(time)
+    text = I18n.t("offer.ggv_cancel_message", time: time, locale: "en")
+    text += "<br/>"
+    text += I18n.t("offer.ggv_cancel_message", time: time, locale: "zh-tw")
+  end
 
   # Set a default offer language if it hasn't been set already
   def set_language

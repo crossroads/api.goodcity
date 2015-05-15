@@ -1,4 +1,5 @@
 class Item < ActiveRecord::Base
+  has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -10,8 +11,6 @@ class Item < ActiveRecord::Base
   has_many   :messages, dependent: :destroy
   has_many   :images, dependent: :destroy
   has_many   :packages, dependent: :destroy
-
-  validates :donor_condition_id, presence: true
 
   scope :with_eager_load, -> {
     eager_load( [:item_type, :rejection_reason, :donor_condition, :images,
@@ -48,6 +47,15 @@ class Item < ActiveRecord::Base
 
     after_transition on: [:accept, :reject], do: :assign_reviewer
     after_transition on: :reject, do: :send_reject_message
+    before_transition :draft => [:accepted, :rejected], do: :set_description
+  end
+
+  def set_description
+    self.donor_description = if packages.present?
+      packages.pluck(:notes).reject(&:blank?).join(" + ")
+    else
+      item_type.name
+    end
   end
 
   def send_reject_message
