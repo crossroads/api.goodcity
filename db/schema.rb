@@ -47,12 +47,13 @@ ActiveRecord::Schema.define(version: 20150515111235) do
   end
 
   create_table "crossroads_transports", force: :cascade do |t|
-    t.string   "name_en",    limit: 255
-    t.string   "name_zh_tw", limit: 255
+    t.string   "name_en",        limit: 255
+    t.string   "name_zh_tw",     limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "cost"
     t.float    "truck_size"
+    t.boolean  "is_van_allowed",             default: true
   end
 
   create_table "deliveries", force: :cascade do |t|
