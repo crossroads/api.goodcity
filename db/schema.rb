@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150515111235) do
+ActiveRecord::Schema.define(version: 20150518123926) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,16 +123,6 @@ ActiveRecord::Schema.define(version: 20150515111235) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-  end
-
-  create_table "item_types", force: :cascade do |t|
-    t.string   "name_en",           limit: 255
-    t.string   "code",              limit: 255
-    t.integer  "parent_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "name_zh_tw",        limit: 255
-    t.boolean  "is_item_type_node",             default: false, null: false
   end
 
   create_table "items", force: :cascade do |t|

@@ -6,11 +6,6 @@ donor_conditions.each do |name, value|
   FactoryGirl.create :donor_condition, name_en: name, name_zh_tw: value[:name_zh_tw]
 end
 
-item_types = YAML.load_file("#{Rails.root}/db/item_types.yml")
-item_types.each do |code, value|
-  FactoryGirl.create :item_type, code: code, name_en: value[:name_en], name_zh_tw: value[:name_zh_tw]
-end
-
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
 package_types.each do |code, value|
   FactoryGirl.create(:package_type,
