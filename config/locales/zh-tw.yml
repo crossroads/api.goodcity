@@ -1,45 +1,40 @@
 ---
 zh-tw:
-  success: Success
+  success: 成功
   warden:
     token_invalid: Invalid token
     token_expired: Expired token
     token_valid: Valid token
-    unauthorized: You are not authorized to take this action.
+    unauthorized: 你沒有權限執行這項行動。
   auth:
-    pin_sent: A pin has been sent to your mobile device.
-    mobile_required: Please provide a mobile number.
-    mobile_exists: Mobile number already exists.
-    invalid_mobile: Sorry, your mobile number is invalid.
-    invalid_pin: Invalid SMS code.
+    pin_sent: 驗證碼已發送到您的手提電話。
+    mobile_required: 請提供電話號碼。
+    mobile_exists: 這個電話號碼已存在。
+    invalid_mobile: 對不起，您的電話號碼並不正確。
+    invalid_pin: 驗證碼不正確。
   token:
     invalid: Invalid token
     expired: Expired token
   twilio:
     sms_verification_pin: |
-      Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy donating
-      your quality goods. (If you didn't request this message, please ignore)
+      一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
+      （如你並沒有要求驗證碼，請忽略此信息）
   activerecord:
     attributes:
       user:
-        mobile: "Mobile"
+        mobile: "手提電話"
     errors:
       models:
         user:
           attributes:
             mobile:
-              invalid: "is invalid"
-              blank: "can't be blank"
+              invalid: "不正確"
+              blank: "不能留空"
   notification:
-    new_offer: New offer submitted by %{name}
+    new_offer: %{name} 的新捐獻。
   offer:
-    thank_message: Thank you for your offer, our team will start reviewing it
-      soon. The reviewer will message you if they have questions about any of
-      the items. We apologise if we cannot accept some items. Storage is
-      limited and needs in the community change daily. Once the review is
-      complete you will be able to arrange transport for any accepted items.
-      If you have questions feel free to reply to this message.
-    ggv_cancel_message: A van booking for %{time} was cancelled via GoGoVan. Please choose new transport arrangements.
-    received_message: Your offer was received, thank you.
+    thank_message: 感謝您的捐獻，我們的團隊很快就會開始審查。假如審查員有任何關於捐獻物資的疑問，他們會以訊息向您查詢。由於儲存空間有限，社區的需要亦時時改變，我們可能無法接收部分物資。為此，我們深感遺憾，並先行道歉。審查一旦完成，您就能立刻安排已接受的物資的運輸安排。假如您有任何疑問，請隨時回覆此信息查詢。
+    ggv_cancel_message: 預約於 %{time} 的貨車已通過GoGoVan取消。請重新安排運輸。
+    received_message: 已收到您提交的資料，感謝您的熱心捐獻，謝謝！
   gogovan:
-    driver_note: "Ensure you deliver all the items listed: See details \nEnglish %{link} \nChinese %{ch_link}"
+    driver_note: "請確保您運送以下所有物件：詳情請參見 \nEnglish %{link} \nChinese %{ch_link}"
