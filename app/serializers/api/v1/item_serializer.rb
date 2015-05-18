@@ -5,11 +5,12 @@ module Api::V1
 
     attributes :id, :donor_description, :state, :offer_id, :reject_reason,
       :saleable, :created_at, :updated_at, :package_type_id,
-      :rejection_comments, :donor_condition_id, :rejection_reason_id, :message_ids
+      :rejection_comments, :donor_condition_id, :rejection_reason_id,
+      :message_ids
 
     has_many :packages, serializer: PackageSerializer
     has_many :images,   serializer: ImageSerializer
-    has_one :package_type, serializer: PackageTypeSerializer
+    has_one  :package_type, serializer: PackageTypeSerializer
 
     def message_ids
       User.current_user.try(:donor?) ? object.messages.non_private.pluck(:id) : object.messages.pluck(:id)
