@@ -8,7 +8,7 @@ end
 
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
 package_types.each do |code, value|
-  FactoryGirl.create(:package_type,
+  PackageType.create(
     code: code,
     name_en: value[:name_en],
     name_zh_tw: value[:name_zh_tw],
@@ -23,7 +23,7 @@ package_types.each do |code, value|
     default_packages = value[:default_packages].gsub(" ", "").split(",")
     default_packages.each do |default_package|
       child_package = PackageType.find_by(code: default_package)
-      FactoryGirl.create(:subpackage_type,
+      SubpackageType.create(
         package_type: parent_package,
         child_package_type: child_package,
         is_default: true)
@@ -34,7 +34,7 @@ package_types.each do |code, value|
     other_packages = value[:other_packages].gsub(" ", "").split(",")
     other_packages.each do |other_package|
       child_package = PackageType.find_by(code: other_package)
-      FactoryGirl.create(:subpackage_type,
+      SubpackageType.create(
         package_type: parent_package,
         child_package_type: child_package)
     end
