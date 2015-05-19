@@ -12,7 +12,7 @@ FactoryGirl.define do
     received_at nil
     rejected_at nil
 
-    association :package_type, factory: :item_type
+    association :package_type
 
     trait :with_item do
       association :item
