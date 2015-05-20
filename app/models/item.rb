@@ -5,7 +5,7 @@ class Item < ActiveRecord::Base
   include PushUpdates
 
   belongs_to :offer,     inverse_of: :items
-  belongs_to :item_type, inverse_of: :items
+  belongs_to :package_type, inverse_of: :items
   belongs_to :rejection_reason
   belongs_to :donor_condition
   has_many   :messages, dependent: :destroy
@@ -13,7 +13,7 @@ class Item < ActiveRecord::Base
   has_many   :packages, dependent: :destroy
 
   scope :with_eager_load, -> {
-    eager_load( [:item_type, :rejection_reason, :donor_condition, :images,
+    eager_load( [:package_type, :rejection_reason, :donor_condition, :images,
       { messages: :sender }, { packages: :package_type }
     ] )
   }
@@ -54,7 +54,7 @@ class Item < ActiveRecord::Base
     self.donor_description = if packages.present?
       packages.pluck(:notes).reject(&:blank?).join(" + ")
     else
-      item_type.name
+      package_type.name
     end
   end
 

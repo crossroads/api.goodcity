@@ -5,7 +5,7 @@ class Package < ActiveRecord::Base
   include PushUpdates
 
   belongs_to :item
-  belongs_to :package_type, class_name: 'ItemType', inverse_of: :packages
+  belongs_to :package_type, inverse_of: :packages
 
   validates :package_type_id, :quantity, presence: true
 
