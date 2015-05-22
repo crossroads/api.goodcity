@@ -8,6 +8,8 @@ describe Offer do
   it 'update - only changed properties are included' do
     expect_any_instance_of(PushService).to receive(:send_update_store) do |service, channel, data, collapse_key|
       expect(data[:item]['Offer'].to_json).to eq("{\"id\":#{offer.id},\"notes\":\"New test note\"}")
+      expect(data[:sender].to_json.include?("mobile")).to eq(false)
+      expect(data[:sender].to_json.include?("address")).to eq(false)
     end
     offer.notes = 'New test note'
     offer.update_client_store(:update)

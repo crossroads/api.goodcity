@@ -11,13 +11,13 @@ module Api::V1
     has_one :address, serializer: AddressSerializer
 
     def include_attribute?
-      User.current_user.try(:permission).try(:present?)
+      (@options[:user_summary].blank? ? true : @options[:user_summary]) &&
+      (User.current_user.try(:staff?) || User.current_user == id)
     end
     alias_method :include_address?, :include_attribute?
     alias_method :include_mobile?, :include_attribute?
     alias_method :include_last_connected?, :include_attribute?
     alias_method :include_last_disconnected?, :include_attribute?
-
   end
 
 end
