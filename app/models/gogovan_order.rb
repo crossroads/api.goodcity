@@ -80,6 +80,7 @@ class GogovanOrder < ActiveRecord::Base
       self.driver_mobile = driver_details["phone_number"]
       self.driver_license = driver_details["license_plate"]
     end
+    self.completed_at = Time.now if(order_details["status"] == "completed")
     self
   end
 
