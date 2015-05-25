@@ -11,7 +11,7 @@ RSpec.describe Api::V1::PackageTypesController, type: :controller do
       get :index
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)
-      expect(body["package_types"].size).to eq(3)
+      expect(body["package_types"].size).to eq(6)
     end
   end
 end
