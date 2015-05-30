@@ -12,7 +12,7 @@ class ApplicationController < ActionController::API
   protected
 
   def app_name
-    request.headers['X-GOODCITY-APP-NAME']
+    request.headers['X-GOODCITY-APP-NAME'] || request.headers['X-APP-NAME']
   end
 
   def app_version
