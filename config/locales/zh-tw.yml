@@ -2,9 +2,9 @@
 zh-tw:
   success: 成功
   warden:
-    token_invalid: Invalid token
-    token_expired: Expired token
-    token_valid: Valid token
+    token_invalid: 代碼不正確
+    token_expired: 代碼已過期
+    token_valid: 正確代碼
     unauthorized: 你沒有權限執行這項行動。
   auth:
     pin_sent: 驗證碼已發送到您的手提電話。
@@ -13,8 +13,8 @@ zh-tw:
     invalid_mobile: 對不起，您的電話號碼並不正確。
     invalid_pin: 驗證碼不正確。
   token:
-    invalid: Invalid token
-    expired: Expired token
+    invalid: 代碼不正確
+    expired: 代碼已過期
   twilio:
     sms_verification_pin: |
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。

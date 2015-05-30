@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150514091411) do
+ActiveRecord::Schema.define(version: 20150525102526) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,6 +97,7 @@ ActiveRecord::Schema.define(version: 20150514091411) do
     t.string   "driver_mobile"
     t.string   "driver_license"
     t.string   "ggv_uuid"
+    t.datetime "completed_at"
   end
 
   add_index "gogovan_orders", ["ggv_uuid"], name: "index_gogovan_orders_on_ggv_uuid", unique: true, using: :btree
@@ -125,21 +126,11 @@ ActiveRecord::Schema.define(version: 20150514091411) do
     t.datetime "deleted_at"
   end
 
-  create_table "item_types", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "code"
-    t.integer  "parent_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "name_zh_tw"
-    t.boolean  "is_item_type_node", default: false, null: false
-  end
-
   create_table "items", force: :cascade do |t|
     t.text     "donor_description"
     t.string   "state"
     t.integer  "offer_id",                            null: false
-    t.integer  "item_type_id"
+    t.integer  "package_type_id"
     t.integer  "rejection_reason_id"
     t.string   "reject_reason"
     t.datetime "created_at"
@@ -185,6 +176,16 @@ ActiveRecord::Schema.define(version: 20150514091411) do
     t.datetime "cancelled_at"
   end
 
+  create_table "package_types", force: :cascade do |t|
+    t.string   "code"
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.string   "other_terms_en"
+    t.string   "other_terms_zh_tw"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
   create_table "packages", force: :cascade do |t|
     t.integer  "quantity"
     t.integer  "length"
@@ -224,6 +225,14 @@ ActiveRecord::Schema.define(version: 20150514091411) do
     t.datetime "scheduled_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "subpackage_types", force: :cascade do |t|
+    t.integer  "package_type_id"
+    t.integer  "subpackage_type_id"
+    t.boolean  "is_default",         default: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
   end
 
   create_table "subscriptions", force: :cascade do |t|

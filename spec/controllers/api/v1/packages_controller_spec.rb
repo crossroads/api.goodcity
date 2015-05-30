@@ -6,13 +6,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:donor) { create(:user_with_token) }
   let(:offer) { create :offer, created_by: donor }
   let(:item)  { create :item, offer: offer }
-  let(:item_type)  { create :item_type }
+  let(:package_type)  { create :package_type }
   let(:package) { create :package, item: item}
   let(:serialized_package) { Api::V1::PackageSerializer.new(package) }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
 
   let(:package_params) do
-    FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{item_type.id}")
+    FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
   end
 
   subject { JSON.parse(response.body) }
