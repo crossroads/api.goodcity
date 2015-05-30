@@ -20,7 +20,7 @@ RSpec.describe Api::V1::ImagesController, type: :controller do
     it "return cloudinary signature", :show_in_doc do
       get :generate_signature
       body = JSON.parse(response.body)
-      expect( body.keys ).to eq(["api_key", "signature", "timestamp"])
+      expect( body.keys ).to eq(["api_key", "signature", "timestamp", "tags"])
     end
 
     # don't want client apps displaying error if app is simply out of data and image
