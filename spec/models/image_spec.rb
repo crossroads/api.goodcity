@@ -11,7 +11,16 @@ RSpec.describe Image, type: :model do
     it { is_expected.to have_db_column(:favourite).of_type(:boolean) }
     it { is_expected.to have_db_column(:item_id).of_type(:integer) }
   end
+
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
+  end
+
+  describe "has_multiple_items" do
+    it "should return true if image belong_to multiple-items" do
+      image = create :image, :with_item
+      copy_image = create :image, :with_item, cloudinary_id: image.cloudinary_id
+      expect(image.send(:has_multiple_items)).to be_truthy
+    end
   end
 end
