@@ -158,7 +158,7 @@ module Api::V1
     def register_device
       authorize!(:register, :device)
       render text: "Unrecognised platform, expecting 'gcm' (Android), 'aps' (iOS) or 'mpns' (WP8)", status: 400 unless ['gcm','aps','mpns'].include?(params[:platform])
-      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user), platform)
+      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user), params[:platform])
     end
 
     api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socket.io rooms the user can listen to"
