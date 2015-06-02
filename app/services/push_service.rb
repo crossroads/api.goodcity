@@ -59,7 +59,8 @@ class PushService
     notify
 
     if Channel.user_channel?(channel)
-      data = data.merge({event:'notification', entity_id: entity.id})
+      # data = data.merge({event:'notification', entity_id: entity.id})
+      data = {message:text}
       AzureNotifyJob.perform_later(channel, data)
     end
   end
