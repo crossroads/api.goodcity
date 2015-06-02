@@ -40,7 +40,7 @@ class Ability
       can :destroy, Image, item: { offer: { created_by_id: user_id },
         state: ['draft', 'submitted', 'scheduled'] }
       can :destroy, Image, item: {
-        state: ['draft', 'submitted', 'scheduled'] } if reviewer
+        state: ['draft', 'submitted', 'accepted', 'rejected', 'scheduled'] } if reviewer
       can :destroy, Image if supervisor
 
       # Message (sender and admins, not user if private is true)
@@ -57,7 +57,8 @@ class Ability
       can [:index, :show, :update], Offer if reviewer || supervisor
       can :destroy, Offer, created_by_id: user_id, state: ['draft',
         'submitted', 'reviewed', 'scheduled']
-      can :destroy, Offer, state: 'draft' if reviewer
+      can :destroy, Offer, state: ['draft', 'under_review',
+        'submitted', 'scheduled'] if reviewer
       can :destroy, Offer if supervisor
       can :review, Offer if reviewer || supervisor
       can [:complete_review, :close_offer, :finished], Offer if reviewer || supervisor
