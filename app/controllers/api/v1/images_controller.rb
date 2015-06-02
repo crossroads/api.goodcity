@@ -20,14 +20,17 @@ module Api::V1
 
     api :GET, '/v1/images/generate_signature', "Use this method to get an authentication signature in order to upload an image to the Cloudinary service."
     description " This API server does not accept direct image uploads. Instead, they should be sent directly to the Cloudinary service. Please refer to the {Cloudinary jQuery integration documentation}[http://cloudinary.com/documentation/jquery_integration] for further information."
+    param :tags, String, desc: "csv list of tags to identify image", allow_nil: true
     def generate_signature
       unix_timestamp    = Time.now.to_i
-      serialized_params = "timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
+      tags              = ENV['RAILS_ENV'] + (params[:tags].nil? ? "" : "," + params[:tags])
+      serialized_params = "tags=#{tags}&timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
       signature         = Digest::SHA1.hexdigest(serialized_params)
       render json: {
         api_key:   cloudinary_config['api_key'],
         signature: signature,
-        timestamp: unix_timestamp }.to_json
+        timestamp: unix_timestamp,
+        tags: tags }.to_json
     end
 
     api :POST, '/v1/images', "Create an image"

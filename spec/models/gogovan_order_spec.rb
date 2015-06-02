@@ -12,6 +12,7 @@ RSpec.describe GogovanOrder, type: :model do
     it{ is_expected.to have_db_column(:driver_name).of_type(:string)}
     it{ is_expected.to have_db_column(:driver_mobile).of_type(:string)}
     it{ is_expected.to have_db_column(:driver_license).of_type(:string)}
+    it{ is_expected.to have_db_column(:completed_at).of_type(:datetime)}
   end
 
   describe 'update_booking' do
@@ -55,6 +56,14 @@ RSpec.describe GogovanOrder, type: :model do
     end
   end
 
+  describe '#donor' do
+    it "should return Donor of offer for GGV-delivery is scheduled" do
+      ggv_order = create(:gogovan_order, :with_delivery)
+      donor = ggv_order.delivery.offer.created_by
+      expect(ggv_order.donor).to eq(donor)
+    end
+  end
+
   describe '#cancelled?' do
     let(:order) { build :gogovan_order }
 
@@ -71,5 +80,9 @@ RSpec.describe GogovanOrder, type: :model do
 
   describe 'callbacks' do
     it { is_expected.to callback(:cancel_order).before(:destroy) }
+  end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
   end
 end

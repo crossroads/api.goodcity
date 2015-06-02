@@ -6,8 +6,13 @@ FactoryGirl.define do
     state             'submitted'
 
     association :donor_condition
-    association :item_type
+    association :package_type
     association :offer
+
+    trait :draft do
+      donor_description nil
+      state             'draft'
+    end
 
     trait :with_packages do
       packages { create_list(:package, 2) }

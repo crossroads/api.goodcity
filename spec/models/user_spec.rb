@@ -22,6 +22,8 @@ describe User, :type => :model do
     it{ is_expected.to  have_db_column(:first_name).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_name).of_type(:string)}
     it{ is_expected.to  have_db_column(:mobile).of_type(:string)}
+    it{ is_expected.to  have_db_column(:last_connected).of_type(:datetime)}
+    it{ is_expected.to  have_db_column(:last_disconnected).of_type(:datetime)}
   end
 
   describe "Validations" do
@@ -108,6 +110,20 @@ describe User, :type => :model do
     end
     it "should be true" do
       expect(User.system_user.system_user?).to eql(true)
+    end
+  end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+  end
+
+  describe "#online?" do
+    it "should be false" do
+      expect(build(:user).online?).to eq(false)
+    end
+
+    it "should be false" do
+      expect(build(:user, last_connected: 1.hour.ago).online?).to eq(true)
     end
   end
 

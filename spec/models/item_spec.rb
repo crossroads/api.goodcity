@@ -6,7 +6,7 @@ RSpec.describe Item, type: :model do
 
   describe 'Associations' do
     it { is_expected.to belong_to :offer }
-    it { is_expected.to belong_to :item_type }
+    it { is_expected.to belong_to :package_type }
     it { is_expected.to belong_to :rejection_reason }
     it { is_expected.to belong_to :donor_condition }
     it { is_expected.to have_many :messages }
@@ -18,15 +18,11 @@ RSpec.describe Item, type: :model do
     it { is_expected.to have_db_column(:donor_description).of_type(:text) }
     it { is_expected.to have_db_column(:state).of_type(:string) }
     it { is_expected.to have_db_column(:offer_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:item_type_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:package_type_id).of_type(:integer) }
     it { is_expected.to have_db_column(:rejection_reason_id).of_type(:integer) }
     it { is_expected.to have_db_column(:reject_reason).of_type(:string) }
     it { is_expected.to have_db_column(:rejection_comments).of_type(:string) }
     it { is_expected.to have_db_column(:saleable).of_type(:boolean) }
-  end
-
-  describe "validations" do
-    it { is_expected.to validate_presence_of(:donor_condition_id) }
   end
 
   describe 'Scope Methods' do
@@ -115,6 +111,27 @@ RSpec.describe Item, type: :model do
         item.reject
       }.to change(item.messages, :count).by(1)
       expect(item.messages.last.body).to eq(item.rejection_comments)
+    end
+  end
+
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+  end
+
+  describe "when item created by Admin" do
+    it "should set package_type name as donor_description when rejected" do
+      item = create :item, :draft
+      expect{
+        item.reject
+      }.to change(item, :donor_description).to(item.package_type.name)
+    end
+
+    it "should set packages notes as donor_description when accepted" do
+      item = create :item, :draft, :with_packages
+      expected_text = item.packages.pluck(:notes).reject(&:blank?).join(" + ")
+      expect{
+        item.accept
+      }.to change(item, :donor_description).to(expected_text)
     end
   end
 end
