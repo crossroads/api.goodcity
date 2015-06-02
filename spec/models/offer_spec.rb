@@ -102,8 +102,6 @@ RSpec.describe Offer, type: :model do
       expect(active_offers).to include(submitted_offer)
       expect(active_offers).to_not include(closed_offer)
       expect(active_offers).to_not include(received_offer)
-      expect(scrub(Offer.active.to_sql)).to include(
-        "state NOT IN ('received','closed','cancelled')")
     end
 
     it 'inactive' do
@@ -111,15 +109,13 @@ RSpec.describe Offer, type: :model do
       expect(inactive_offers).to_not include(submitted_offer)
       expect(inactive_offers).to include(closed_offer)
       expect(inactive_offers).to include(received_offer)
-      expect(scrub(Offer.inactive.to_sql)).to include(
-        "state IN ('received','closed','cancelled')")
     end
 
-    describe "review_by" do
-      it "should return offers reviewed by current reviewer" do
+    describe "reviewed_by" do
+      it "should return offers reviewed by given user id" do
         reviewer = create :user, :reviewer
         offer = create :offer, reviewed_by: reviewer
-        expect(Offer.review_by(reviewer.id)).to include(offer)
+        expect(Offer.reviewed_by(reviewer.id)).to include(offer)
       end
     end
 
@@ -130,6 +126,31 @@ RSpec.describe Offer, type: :model do
         expect(Offer.created_by(donor.id)).to include(offer)
       end
     end
+
+    context "in_states" do
+      it "matches submitted offers" do
+        expect(Offer.in_states(["submitted"])).to include(submitted_offer)
+        expect(Offer.in_states(["submitted"])).to_not include(closed_offer)
+      end
+
+      it "matches multiple states" do
+        subject = Offer.in_states(["submitted", "closed"])
+        expect(subject).to include(submitted_offer)
+        expect(subject).to include(closed_offer)
+      end
+
+      it "accepts string arguments" do
+        expect(Offer.in_states("submitted")).to include(submitted_offer)
+      end
+
+      it "accepts pseudo states" do
+        subject = Offer.in_states(["inactive"])
+        expect(subject).to include(closed_offer)
+        expect(subject).to include(received_offer)
+        expect(subject).to_not include(submitted_offer)
+      end
+    end
+
   end
 
   describe "#send_thank_you_message" do
@@ -181,10 +202,10 @@ RSpec.describe Offer, type: :model do
 
     it 'should send GGV cancel message to donor' do
       expect{
-        offer.send_ggv_cancel_order_message
+        offer.send_ggv_cancel_order_message(time_string)
       }.to change(offer.messages, :count).by(1)
       expect(subject.sender).to eq(User.system_user)
-      expect(subject.body).to eq("A van booking for #{time_string} was cancelled via GoGoVan. Please choose new transport arrangements.")
+      expect(subject.body).to include("A van booking for #{time_string} was cancelled via GoGoVan. Please choose new transport arrangements.")
     end
   end
 
@@ -206,17 +227,13 @@ RSpec.describe Offer, type: :model do
 
   end
 
-  describe "with_state :state" do
-    let!(:submitted_offer) { create :offer, :submitted }
-    let!(:closed_offer) { create :offer, :closed }
-    let!(:cancelled_offer) { create :offer, :cancelled }
-
-    it "should include only matching offer state" do
-      expect(Offer.with_state("submitted")).to include(submitted_offer)
-      expect(Offer.with_state("submitted")).to_not include(closed_offer)
-
-      expect(Offer.with_state("closed")).to include(closed_offer)
-      expect(Offer.with_state("closed")).to include(cancelled_offer)
+  context "has_paper_trail" do
+    it { is_expected.to be_versioned }
+    with_versioning do
+      it 'within a `with_versioning` block it will be turned on' do
+        expect(PaperTrail).to be_enabled
+      end
     end
   end
+
 end

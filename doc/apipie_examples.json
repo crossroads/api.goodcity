@@ -1263,45 +1263,6 @@
       "recorded" : true
     }
   ],
-  "item_types#index" : [
-    {
-      "verb" : "GET",
-      "path" : "/api/v1/item_types",
-      "versions" : [
-        "v1"
-      ],
-      "query" : "",
-      "request_data" : null,
-      "response_data" : {
-        "item_types" : [
-          {
-            "id" : 535,
-            "name" : "School stationery",
-            "code" : "NQ",
-            "parent_id" : null,
-            "is_item_type_node" : false
-          },
-          {
-            "id" : 536,
-            "name" : "Carpet/rug",
-            "code" : "CHP",
-            "parent_id" : null,
-            "is_item_type_node" : false
-          },
-          {
-            "id" : 537,
-            "name" : "Bicycles - Adult",
-            "code" : "RPA",
-            "parent_id" : null,
-            "is_item_type_node" : false
-          }
-        ]
-      },
-      "code" : "200",
-      "show_in_doc" : 1,
-      "recorded" : true
-    }
-  ],
   "items#create" : [
     {
       "verb" : "POST",
@@ -1312,46 +1273,47 @@
       "query" : null,
       "request_data" : {
         "item" : {
-          "donor_description" : "Et voluptatem quasi iusto suscipit veritatis est voluptatem similique.",
-          "state" : "draft",
-          "offer_id" : "569",
-          "item_type_id" : "621",
-          "rejection_reason_id" : "503",
-          "reject_reason" : "Ipsa consectetur dolor tenetur recusandae harum qui.",
-          "created_at" : "2014-12-03 11:56:55 +0800",
-          "updated_at" : "2014-12-03 11:56:55 +0800",
+          "donor_description" : "Est aperiam delectus quas officiis ea iure et voluptates.",
+          "state" : "submitted",
+          "offer_id" : "677",
+          "package_type_id" : "329",
+          "rejection_reason_id" : null,
+          "reject_reason" : null,
+          "created_at" : "2015-05-19 15:50:20 +0800",
+          "updated_at" : "2015-05-19 15:50:20 +0800",
           "saleable" : false,
-          "donor_condition_id" : "556",
+          "donor_condition_id" : "257",
           "deleted_at" : null,
           "rejection_comments" : null
         }
       },
       "response_data" : {
         "packages" : [],
-        "messages" : [],
         "images" : [],
-        "item_types" : [
+        "package_types" : [
           {
-            "id" : 621,
-            "name" : "School chair",
-            "code" : "FCQ"
+            "id" : 329,
+            "name" : "9gk9i",
+            "code" : "rmb",
+            "other_child_packages" : "",
+            "default_child_packages" : ""
           }
         ],
         "item" : {
-          "id" : 515,
-          "donor_description" : "Et voluptatem quasi iusto suscipit veritatis est voluptatem similique.",
+          "id" : 223,
+          "donor_description" : "Est aperiam delectus quas officiis ea iure et voluptates.",
           "state" : "draft",
-          "offer_id" : 569,
-          "reject_reason" : "Ipsa consectetur dolor tenetur recusandae harum qui.",
+          "offer_id" : 677,
+          "reject_reason" : null,
           "saleable" : false,
-          "created_at" : "2014-12-03T11:56:55.217+08:00",
-          "updated_at" : "2014-12-03T11:56:55.217+08:00",
-          "item_type_id" : 621,
+          "created_at" : "2015-05-19T15:50:20.092+08:00",
+          "updated_at" : "2015-05-19T15:50:20.092+08:00",
+          "package_type_id" : 329,
           "rejection_comments" : null,
-          "donor_condition_id" : 556,
-          "rejection_reason_id" : 503,
-          "package_ids" : [],
+          "donor_condition_id" : 257,
+          "rejection_reason_id" : null,
           "message_ids" : [],
+          "package_ids" : [],
           "image_ids" : []
         }
       },
@@ -1363,7 +1325,7 @@
   "items#destroy" : [
     {
       "verb" : "DELETE",
-      "path" : "/api/v1/items/512",
+      "path" : "/api/v1/items/221",
       "versions" : [
         "v1"
       ],
@@ -1375,77 +1337,10 @@
       "recorded" : true
     }
   ],
-  "items#index" : [
-    {
-      "verb" : "GET",
-      "path" : "/api/v1/items",
-      "versions" : [
-        "v1"
-      ],
-      "query" : "",
-      "request_data" : null,
-      "response_data" : {
-        "packages" : [],
-        "messages" : [],
-        "images" : [],
-        "item_types" : [
-          {
-            "id" : 614,
-            "name" : "PALLET OF Household Kitchen, Unsorted",
-            "code" : "HZK"
-          },
-          {
-            "id" : 615,
-            "name" : "Slide projector",
-            "code" : "EVS"
-          }
-        ],
-        "items" : [
-          {
-            "id" : 507,
-            "donor_description" : "Dolorem quae exercitationem aliquid et adipisci dolores rerum aspernatur.",
-            "state" : "draft",
-            "offer_id" : 566,
-            "reject_reason" : "Quia rem voluptatem eaque soluta.",
-            "saleable" : false,
-            "created_at" : "2014-12-03T11:56:54.790+08:00",
-            "updated_at" : "2014-12-03T11:56:54.790+08:00",
-            "item_type_id" : 614,
-            "rejection_comments" : null,
-            "donor_condition_id" : 550,
-            "rejection_reason_id" : 498,
-            "package_ids" : [],
-            "message_ids" : [],
-            "image_ids" : []
-          },
-          {
-            "id" : 508,
-            "donor_description" : "Non exercitationem provident esse voluptatem rerum accusantium voluptas labore.",
-            "state" : "draft",
-            "offer_id" : 566,
-            "reject_reason" : "Ut et delectus accusantium mollitia.",
-            "saleable" : false,
-            "created_at" : "2014-12-03T11:56:54.828+08:00",
-            "updated_at" : "2014-12-03T11:56:54.828+08:00",
-            "item_type_id" : 615,
-            "rejection_comments" : null,
-            "donor_condition_id" : 551,
-            "rejection_reason_id" : 498,
-            "package_ids" : [],
-            "message_ids" : [],
-            "image_ids" : []
-          }
-        ]
-      },
-      "code" : "200",
-      "show_in_doc" : 1,
-      "recorded" : true
-    }
-  ],
   "items#show" : [
     {
       "verb" : "GET",
-      "path" : "/api/v1/items/510",
+      "path" : "/api/v1/items/220",
       "versions" : [
         "v1"
       ],
@@ -1453,39 +1348,40 @@
       "request_data" : null,
       "response_data" : {
         "packages" : [],
-        "messages" : [],
         "images" : [
           {
-            "id" : 124,
+            "id" : 1723,
             "favourite" : true,
-            "cloudinary_id" : "1416902230/mmguhm3zdkonc2nynjue.jpg",
-            "item_id" : 510
+            "cloudinary_id" : "1416375331/zppxdm5fljlyv3tcfo3p.jpg",
+            "item_id" : 220
           }
         ],
-        "item_types" : [
+        "package_types" : [
           {
-            "id" : 617,
-            "name" : "Computer equipment",
-            "code" : "V"
+            "id" : 327,
+            "name" : "ak8lu",
+            "code" : "tg0",
+            "other_child_packages" : "",
+            "default_child_packages" : ""
           }
         ],
         "item" : {
-          "id" : 510,
-          "donor_description" : "Dolorem itaque vel ut qui voluptatem.",
-          "state" : "draft",
-          "offer_id" : 567,
-          "reject_reason" : "Incidunt fuga numquam iste eos aut.",
+          "id" : 220,
+          "donor_description" : "Dolorum rerum et excepturi magnam ex et.",
+          "state" : "submitted",
+          "offer_id" : 675,
+          "reject_reason" : null,
           "saleable" : false,
-          "created_at" : "2014-12-03T11:56:54.975+08:00",
-          "updated_at" : "2014-12-03T11:56:54.975+08:00",
-          "item_type_id" : 617,
+          "created_at" : "2015-05-19T15:50:19.450+08:00",
+          "updated_at" : "2015-05-19T15:50:19.450+08:00",
+          "package_type_id" : 327,
           "rejection_comments" : null,
-          "donor_condition_id" : 553,
-          "rejection_reason_id" : 499,
-          "package_ids" : [],
+          "donor_condition_id" : 255,
+          "rejection_reason_id" : null,
           "message_ids" : [],
+          "package_ids" : [],
           "image_ids" : [
-            124
+            1723
           ]
         }
       },
@@ -1497,7 +1393,7 @@
   "items#update" : [
     {
       "verb" : "PUT",
-      "path" : "/api/v1/items/517",
+      "path" : "/api/v1/items/224",
       "versions" : [
         "v1"
       ],
@@ -1505,54 +1401,55 @@
       "request_data" : {
         "item" : {
           "donor_description" : "Test item",
-          "state" : "draft",
-          "offer_id" : "570",
-          "item_type_id" : "623",
-          "rejection_reason_id" : "504",
-          "reject_reason" : "Nihil qui corrupti perspiciatis dolorum explicabo excepturi.",
-          "created_at" : "2014-12-03 11:56:55 +0800",
-          "updated_at" : "2014-12-03 11:56:55 +0800",
+          "state" : "submitted",
+          "offer_id" : "679",
+          "package_type_id" : "330",
+          "rejection_reason_id" : null,
+          "reject_reason" : null,
+          "created_at" : "2015-05-19 15:50:20 +0800",
+          "updated_at" : "2015-05-19 15:50:20 +0800",
           "saleable" : false,
-          "donor_condition_id" : "558",
+          "donor_condition_id" : "258",
           "deleted_at" : null,
           "rejection_comments" : null
         }
       },
       "response_data" : {
         "packages" : [],
-        "messages" : [],
         "images" : [
           {
-            "id" : 127,
+            "id" : 1732,
             "favourite" : true,
-            "cloudinary_id" : "1416375331/zppxdm5fljlyv3tcfo3p.jpg",
-            "item_id" : 517
+            "cloudinary_id" : "1416817641/auyhxsvppoohnubhtdvp.jpg",
+            "item_id" : 224
           }
         ],
-        "item_types" : [
+        "package_types" : [
           {
-            "id" : 623,
-            "name" : "Bunk bed base",
-            "code" : "BKB"
+            "id" : 330,
+            "name" : "10e7q",
+            "code" : "p4w",
+            "other_child_packages" : "",
+            "default_child_packages" : ""
           }
         ],
         "item" : {
-          "id" : 517,
+          "id" : 224,
           "donor_description" : "Test item",
-          "state" : "draft",
-          "offer_id" : 570,
-          "reject_reason" : "Nihil qui corrupti perspiciatis dolorum explicabo excepturi.",
+          "state" : "submitted",
+          "offer_id" : 679,
+          "reject_reason" : null,
           "saleable" : false,
-          "created_at" : "2014-12-03T11:56:55.312+08:00",
-          "updated_at" : "2014-12-03T11:56:55.328+08:00",
-          "item_type_id" : 623,
+          "created_at" : "2015-05-19T15:50:20.402+08:00",
+          "updated_at" : "2015-05-19T15:50:20.427+08:00",
+          "package_type_id" : 330,
           "rejection_comments" : null,
-          "donor_condition_id" : 558,
-          "rejection_reason_id" : 504,
-          "package_ids" : [],
+          "donor_condition_id" : 258,
+          "rejection_reason_id" : null,
           "message_ids" : [],
+          "package_ids" : [],
           "image_ids" : [
-            127
+            1732
           ]
         }
       },
@@ -2170,6 +2067,45 @@
       "recorded" : true
     }
   ],
+  "package_types#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/package_types",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "package_types" : [
+          {
+            "id" : 590,
+            "name" : "mh9xs",
+            "code" : "dec",
+            "other_child_packages" : "dec",
+            "default_child_packages" : "dec"
+          },
+          {
+            "id" : 591,
+            "name" : "zcib3",
+            "code" : "ibe",
+            "other_child_packages" : "ibe",
+            "default_child_packages" : "ibe"
+          },
+          {
+            "id" : 592,
+            "name" : "w2rgd",
+            "code" : "uw0",
+            "other_child_packages" : "uw0",
+            "default_child_packages" : "uw0"
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "packages#create" : [
     {
       "verb" : "POST",
@@ -2678,6 +2614,108 @@
           "last_name" : "Kohler",
           "permission_id" : 11,
           "avatar_id" : 21
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "users#update" : [
+    {
+      "title" : "Update last_connected time of user",
+      "verb" : "PUT",
+      "path" : "/api/v1/users/3085",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "user" : {
+          "last_connected" : "2015-04-30 22:49:00 +0800"
+        }
+      },
+      "response_data" : {
+        "images" : [
+          {
+            "id" : 3264,
+            "favourite" : false,
+            "cloudinary_id" : "1416229451/jgpyo4oxrnfnjriofdjd.jpg",
+            "item_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 3288,
+            "street" : "Twila Drives",
+            "flat" : "Apt. 140",
+            "building" : "6413",
+            "district_id" : 3367,
+            "addressable_id" : 3085,
+            "addressable_type" : "User"
+          }
+        ],
+        "user" : {
+          "id" : 3085,
+          "first_name" : "Federico",
+          "last_name" : "Jakubowski",
+          "permission_id" : 656,
+          "mobile" : "+85290786755",
+          "created_at" : "2015-05-05T22:49:00.652+08:00",
+          "last_connected" : "2015-04-30T22:49:00.000+08:00",
+          "last_disconnected" : "2015-05-04T22:49:00.639+08:00",
+          "image_id" : 3264,
+          "address_id" : 3288
+        }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "Update last_disconnected time of user",
+      "verb" : "PUT",
+      "path" : "/api/v1/users/3087",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "user" : {
+          "last_disconnected" : "2015-05-02 22:49:01 +0800"
+        }
+      },
+      "response_data" : {
+        "images" : [
+          {
+            "id" : 3266,
+            "favourite" : false,
+            "cloudinary_id" : "1416375331/zppxdm5fljlyv3tcfo3p.jpg",
+            "item_id" : null
+          }
+        ],
+        "addresses" : [
+          {
+            "id" : 3290,
+            "street" : "Gusikowski Keys",
+            "flat" : "Suite 485",
+            "building" : "791",
+            "district_id" : 1664,
+            "addressable_id" : 3087,
+            "addressable_type" : "User"
+          }
+        ],
+        "user" : {
+          "id" : 3087,
+          "first_name" : "Hildegard",
+          "last_name" : "Hyatt",
+          "permission_id" : 657,
+          "mobile" : "+85291126424",
+          "created_at" : "2015-05-05T22:49:01.030+08:00",
+          "last_connected" : "2015-05-03T22:49:00.902+08:00",
+          "last_disconnected" : "2015-05-02T22:49:01.000+08:00",
+          "image_id" : 3266,
+          "address_id" : 3290
         }
       },
       "code" : "200",

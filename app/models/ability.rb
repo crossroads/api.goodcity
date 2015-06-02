@@ -86,7 +86,8 @@ class Ability
 
       # Taxonomies
       can [:index, :show], DonorCondition
-      can [:index, :show], ItemType
+      can [:index, :show], PackageType
+      can [:index, :show], SubpackageType
       can [:index, :show], RejectionReason
       can [:index, :show], Permission
 

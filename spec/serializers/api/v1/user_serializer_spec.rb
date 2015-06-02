@@ -18,6 +18,8 @@ describe Api::V1::OfferSerializer do
 
       expect(donor_json['user']['mobile']).to eql(nil)
       expect(donor_json['addresses']).to eql(nil)
+      expect(donor_json['user']['last_connected']).to eql(nil)
+      expect(donor_json['user']['last_disconnected']).to eql(nil)
     end
   end
 
@@ -32,6 +34,12 @@ describe Api::V1::OfferSerializer do
 
       expect(donor_json['user']['mobile']).to eql(donor.mobile)
       expect(donor_json['addresses'][0]['id']).to eql(donor.address.id)
+      expect(
+        donor_json['user']['last_connected'].to_date
+      ).to eql(donor.last_connected.to_date)
+      expect(
+        donor_json['user']['last_disconnected'].to_date
+      ).to eql(donor.last_disconnected.to_date)
     end
   end
 end

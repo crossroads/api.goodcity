@@ -3,7 +3,7 @@ module StateMachineScope
   extend ActiveSupport::Concern
 
   included do
-    scope :by_state, ->(state) { where(state: valid_state?(state) ? state : default_state) }
+    scope :in_states, ->(states) { where(state: states) }
   end
 
   module ClassMethods

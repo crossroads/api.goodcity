@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  has_paper_trail class_name: 'Version'
   include PushUpdates
 
   has_one :address, as: :addressable, dependent: :destroy
@@ -80,16 +81,23 @@ class User < ActiveRecord::Base
     permission.try(:name) == nil
   end
 
+  def online?
+    (last_connected && last_disconnected) ?
+      (last_connected > last_disconnected) : false
+  end
+
   def send_verification_pin
     most_recent_token.cycle_otp_auth_key!
     EmailFlowdockService.new(self).send_otp
     TwilioService.new(self).sms_verification_pin
   end
 
-  def channels
+  def channels(app)
     channels = Channel.user(self)
-    channels += Channel.reviewer if reviewer?
-    channels += Channel.supervisor if supervisor?
+    if app == ADMIN_APP
+      channels += Channel.reviewer if reviewer?
+      channels += Channel.supervisor if supervisor?
+    end
     channels
   end
 
