@@ -28,21 +28,22 @@ class PushService
     @resync = true
     notify
 
-    channel = [channel].flatten.find_all{|c| Channel.user_channel?(c)}
-    unless channel.empty?
-      entity_type = nil, entity_id = nil
-      if collapse_key.nil?
-        entity_type = data[:item].object.class.name
-        entity_id = data[:item].id
-      else
-        # collapse_key should be in the format of "#{entity_type}#{entity_id}"
-        entity_id = collapse_key.scan(/\d+/).first.to_i
-        entity_type = collapse_key.sub(collapse_key.to_s, "")
-      end
-      operation = data[:operation].to_s
-      data = {event:'update_store', entity_type:entity_type, entity_id:entity_id, operation:operation, date:Time.now.to_json.tr('"','')}
-      AzureNotifyJob.perform_later(channel, data, collapse_key, true)
-    end
+    ## Data updates for Android native app
+    # channel = [channel].flatten.find_all{|c| Channel.user_channel?(c)}
+    # unless channel.empty?
+    #   entity_type = nil, entity_id = nil
+    #   if collapse_key.nil?
+    #     entity_type = data[:item].object.class.name
+    #     entity_id = data[:item].id
+    #   else
+    #     # collapse_key should be in the format of "#{entity_type}#{entity_id}"
+    #     entity_id = collapse_key.scan(/\d+/).first.to_i
+    #     entity_type = collapse_key.sub(collapse_key.to_s, "")
+    #   end
+    #   operation = data[:operation].to_s
+    #   data = {event:'update_store', entity_type:entity_type, entity_id:entity_id, operation:operation, date:Time.now.to_json.tr('"','')}
+    #   AzureNotifyJob.perform_later(channel, data, collapse_key, true)
+    # end
   end
 
   # new offer to reviewers
@@ -59,7 +60,9 @@ class PushService
     notify
 
     if Channel.user_channel?(channel)
+      ## Notification for Android native app
       # data = data.merge({event:'notification', entity_id: entity.id})
+
       data = {message:text}
       AzureNotifyJob.perform_later(channel, data)
     end
