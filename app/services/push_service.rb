@@ -1,5 +1,3 @@
-require 'pusher'
-
 class PushService
 
   class PushServiceError < StandardError; end
