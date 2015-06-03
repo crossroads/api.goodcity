@@ -21,7 +21,7 @@ RSpec.describe Item, type: :model do
     it { is_expected.to have_db_column(:package_type_id).of_type(:integer) }
     it { is_expected.to have_db_column(:rejection_reason_id).of_type(:integer) }
     it { is_expected.to have_db_column(:reject_reason).of_type(:string) }
-    it { is_expected.to have_db_column(:rejection_comments).of_type(:string) }
+    it { is_expected.to have_db_column(:rejection_comments).of_type(:text) }
     it { is_expected.to have_db_column(:saleable).of_type(:boolean) }
   end
 
