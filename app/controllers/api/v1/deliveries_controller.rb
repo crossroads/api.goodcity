@@ -90,6 +90,7 @@ module Api::V1
     param :gogovanOrder, Hash do
       param :pickupTime, String, desc: "Time scheduled for delivery pick-up"
       param :districtId, String, desc: "Id of District"
+      param :gogovanOptionId, String, desc: "Id of gogovan transport option"
       param :needEnglish, String, desc: "Need english-speaking GGV Driver"
       param :needCart, String, desc: "Need carts"
       param :needCarry, String, desc: ""
@@ -118,7 +119,8 @@ module Api::V1
 
     def order_params
       params.require(:gogovanOrder).permit(:pickupTime, :districtId,
-        :needEnglish, :needCart, :needCarry, :offerId, :name, :mobile)
+        :needEnglish, :needCart, :needCarry, :offerId, :name, :mobile,
+        :gogovanOptionId)
     end
 
     def serializer

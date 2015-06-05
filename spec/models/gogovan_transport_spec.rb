@@ -12,7 +12,7 @@ RSpec.describe GogovanTransport, type: :model do
         (build :gogovan_transport, name_en: 'Van').vehicle_tag
       ).to eq('van')
       expect(
-        (build :gogovan_transport, name_en: '5.5t Truck').vehicle_tag
+        (build :gogovan_transport, name_en: '5.5 Tonne Truck').vehicle_tag
       ).to eq('mudou')
     end
   end
