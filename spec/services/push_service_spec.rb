@@ -2,7 +2,6 @@ require "rails_helper"
 
 describe PushService do
 
-  before { allow(Pusher).to receive(:trigger) }
   let(:offer) { create :offer }
   let(:user) { create :user }
   let(:one_channel) { "user_#{ user.id}" }
