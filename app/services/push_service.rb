@@ -61,7 +61,8 @@ class PushService
       ## Notification for Android native app
       # data = data.merge({event:'notification', entity_id: entity.id})
 
-      data = {message:text}
+      data = { message:text, offer_id: entity.offer_id,
+        item_id: entity.item_id, is_private: entity.is_private }
       AzureNotifyJob.perform_later(channel, data)
     end
   end
