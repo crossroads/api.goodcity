@@ -62,12 +62,12 @@ gogovan_transports = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
 gogovan_transports.each do |name, value|
   FactoryGirl.create :gogovan_transport, name_en: name, name_zh_tw: value[:name_zh_tw]
 end
-CrossroadsTransport.find_by(name_en: "Disable").update_column(:is_van_allowed, false)
 
 crossroads_transports = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
 crossroads_transports.each do |name, value|
   FactoryGirl.create :crossroads_transport, name_en: name, name_zh_tw: value[:name_zh_tw], cost: value[:cost], truck_size: value[:truck_size]
 end
+CrossroadsTransport.find_by(name_en: "Disable").update_column(:is_van_allowed, false)
 
 # Create System User
 FactoryGirl.create(:user, :system)
