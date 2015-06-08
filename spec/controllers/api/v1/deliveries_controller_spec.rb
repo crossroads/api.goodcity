@@ -110,6 +110,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     let(:offer) { create :offer, :reviewed, :with_transport }
     let(:delivery) { create :delivery, offer: offer }
     let(:district) { create :district }
+    let(:ggv_transport) { create :gogovan_transport }
 
     let(:ggv_schedule) {
       { "scheduledAt" => "Fri Apr 17 2015 10:30:00 GMT+0530 (IST)",
@@ -134,7 +135,8 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
         "needCarry" => "true",
         "offerId" => "#{offer.id}",
         "name" => user.first_name,
-        "mobile" => user.mobile }
+        "mobile" => user.mobile,
+        "gogovanOptionId" => ggv_transport.id.to_s }
     }
 
     let(:delivery_params) {
@@ -232,6 +234,15 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       serialized_delivery = Api::V1::DeliverySerializer.new(delivery)
       serialized_delivery_json = JSON.parse(serialized_delivery.to_json)
       expect(subject).to eq(serialized_delivery_json)
+    end
+
+    it "should set new gogovan_transport option to offer" do
+      expect(Gogovan).to receive_message_chain(:new, :confirm_order).and_return({"id"=> gogovan_order.booking_id})
+      post :confirm_delivery, delivery: delivery_params, gogovanOrder: ggv_order
+
+      expect(offer.reload.state).to eq("scheduled")
+      expect(response.status).to eq(200)
+      expect(offer.reload.gogovan_transport).to eq(ggv_transport)
     end
 
     it "should confirm delivery for drop-off option" do

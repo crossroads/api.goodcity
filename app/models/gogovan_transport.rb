@@ -4,8 +4,9 @@ class GogovanTransport < ActiveRecord::Base
 
   def vehicle_tag
     case name_en
-      when '5.5t Truck' then 'mudou'
+      when '5.5 Tonne Truck' then 'mudou'
       when 'Van' then 'van'
+      when '9 Tonne Truck' then 'mudou9'
       end
   end
 end

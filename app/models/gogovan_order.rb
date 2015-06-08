@@ -10,14 +10,15 @@ class GogovanOrder < ActiveRecord::Base
   before_destroy :cancel_order, if: :pending?
 
   def self.place_order(user, attributes)
-    attributes = set_vehicle_type(attributes) if attributes['offerId']
+    attributes = set_vehicle_type(attributes)
     Gogovan.new(user, attributes).get_order_price
   end
 
   def self.book_order(user, attributes)
     order = create(status: 'pending')
     attributes["ggv_uuid"] = order.ggv_uuid
-    attributes = set_vehicle_type(attributes) if attributes['offerId']
+    attributes = set_vehicle_type(attributes)
+    update_vehicle_type(attributes)
     book_order = Gogovan.new(user, attributes).confirm_order
     order.update_booking(book_order['id'])
     order
@@ -101,9 +102,21 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def self.set_vehicle_type(attributes)
-    offer = Offer.find(attributes["offerId"])
-    attributes["vehicle"] = offer.gogovan_transport.vehicle_tag
+    if(attributes["gogovanOptionId"])
+      transport = GogovanTransport.find_by(id: attributes["gogovanOptionId"])
+      attributes["vehicle"] = transport.try(:vehicle_tag)
+    elsif(attributes['offerId'])
+      offer = Offer.find(attributes["offerId"])
+      attributes["vehicle"] = offer.gogovan_transport.vehicle_tag
+    end
     attributes
   end
 
+  def self.update_vehicle_type(attributes)
+    if attributes["gogovanOptionId"] && attributes['offerId']
+      offer = Offer.find(attributes["offerId"])
+      offer && offer.update_column(:gogovan_transport_id,
+        attributes["gogovanOptionId"])
+    end
+  end
 end
