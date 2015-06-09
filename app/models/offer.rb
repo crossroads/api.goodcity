@@ -159,12 +159,22 @@ class Offer < ActiveRecord::Base
     gogovan_order ? gogovan_order.can_cancel? : true
   end
 
+  def clear_logistics_details
+    update_attributes(crossroads_transport_id: nil, gogovan_transport_id: nil)
+  end
+
   def send_thank_you_message
     messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
   end
 
   def send_received_message
     messages.create(body: I18n.t("offer.received_message"), sender: User.system_user)
+  end
+
+  def send_item_add_message
+    text = I18n.t("offer.item_add_message", donor_name: created_by.full_name)
+    messages.create(sender: User.system_user, is_private: true, body: text)
+    send_notification(text)
   end
 
   def update_saleable_items
