@@ -195,6 +195,27 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "#send_item_add_message" do
+    let(:all_messages) { offer.messages.unscoped }
+    let(:subject) { all_messages.last }
+
+    it 'should send item add message to donor' do
+      expect{
+        offer.send_item_add_message
+      }.to change(all_messages, :count).by(1)
+      expect(subject.sender).to eq(User.system_user)
+      expect(subject.body).to include("#{offer.created_by.full_name} added a new item to their offer. Please review it.")
+    end
+  end
+
+  describe "#clear_logistics_details" do
+    it 'should reset logistic details' do
+      offer.clear_logistics_details
+      expect(offer.gogovan_transport).to be_nil
+      expect(offer.crossroads_transport).to be_nil
+    end
+  end
+
   describe "#send_ggv_cancel_order_message" do
     let!(:delivery) { create :gogovan_delivery, offer: offer }
     let!(:time_string) { delivery.schedule.formatted_date_and_slot }

@@ -134,4 +134,15 @@ RSpec.describe Item, type: :model do
       }.to change(item, :donor_description).to(expected_text)
     end
   end
+
+  describe "#submit" do
+    it "on item addition for reviewed offer reset its offer's state" do
+      offer = create :offer, :reviewed
+      User.current_user = offer.created_by
+      item = create :item, :draft, offer: offer
+      expect{
+        item.submit
+      }.to change(offer, :state).to("under_review")
+    end
+  end
 end

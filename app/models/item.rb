@@ -48,6 +48,7 @@ class Item < ActiveRecord::Base
     after_transition on: [:accept, :reject], do: :assign_reviewer
     after_transition on: :reject, do: :send_reject_message
     before_transition :draft => [:submitted, :accepted, :rejected], do: :set_description
+    after_transition on: :submit, do: :send_new_item_message
   end
 
   def set_description
@@ -66,6 +67,14 @@ class Item < ActiveRecord::Base
         offer: offer,
         sender: User.current_user
       )
+    end
+  end
+
+  def send_new_item_message
+    if offer.reviewed? && User.current_user.donor?
+      offer.re_review
+      offer.clear_logistics_details
+      offer.send_item_add_message
     end
   end
 
