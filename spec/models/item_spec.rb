@@ -136,13 +136,22 @@ RSpec.describe Item, type: :model do
   end
 
   describe "#submit" do
+    let(:message) { Message.unscoped.last }
+
     it "on item addition for reviewed offer reset its offer's state" do
       offer = create :offer, :reviewed
       User.current_user = offer.created_by
       item = create :item, :draft, offer: offer
-      expect{
-        item.submit
-      }.to change(offer, :state).to("under_review")
+      expect{ item.submit }.to change(offer, :state).to("under_review")
+      expect(message.offer_id).to eq(offer.id)
+    end
+
+    it "on item addition for scheduled offer send message to admin" do
+      offer = create :offer, :scheduled
+      User.current_user = offer.created_by
+      item = create :item, :draft, offer: offer
+      expect{ item.submit }.to_not change(offer, :state)
+      expect(message.offer_id).to eq(offer.id)
     end
   end
 end
