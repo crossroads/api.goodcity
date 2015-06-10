@@ -13,7 +13,15 @@ class AzureNotificationsService
   end
 
   def register_device(handle, tags, platform)
-    res = send :get, "registrations?$filter=#{URI::encode("GcmRegistrationId eq '#{handle}'")}"
+    res = ""
+    if platform == "gcm"
+      res = send :get, "registrations?$filter=#{URI::encode("GcmRegistrationId eq '#{handle}'")}"
+    elsif platform == "aps"
+      res = send :get, "registrations?$filter=#{URI::encode("DeviceToken eq '#{handle.upcase}'")}"
+    elsif platform == "wns"
+      res = send :get, "registrations?$filter=#{URI::encode("ChannelUri eq '#{handle}'")}"
+    end
+
     Nokogiri::XML(res.decoded).css('entry title').each {|n| send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}}
     res = send :post, 'registrationIDs'
     # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
@@ -36,7 +44,7 @@ class AzureNotificationsService
           </content>
         </entry>"
     elsif platform == "aps"
-      template = '{"aps":{"alert":"$(message)"}}'
+      template = '{"aps":{"alert":"$(message)","badge":1,"sound":"default"}}'
       body =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>
         <entry xmlns=\"http://www.w3.org/2005/Atom\">
@@ -66,10 +74,10 @@ class AzureNotificationsService
               <ChannelUri>#{handle}</ChannelUri>
               <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
               <WnsHeaders>
-                <WNSHeader>
+                <WnsHeader>
                   <Header>X-WNS-Type</Header>
                   <Value>wns/toast</Value>
-                </WNSHeader>
+                </WnsHeader>
               </WnsHeaders>
             </WindowsTemplateRegistrationDescription>
           </content>
@@ -81,7 +89,7 @@ class AzureNotificationsService
 
   def send(method, resource, options = {})
     sep = resource.include?('?') ? '&' : '?'
-    url = "#{settings['endpoint']}/#{resource}#{sep}api-version=2014-09"
+    url = "#{settings['endpoint']}/#{resource}#{sep}api-version=2015-01"
     options[:method] = method
     options[:headers] ||= {}
     options[:headers]['Authorization'] = sas_token(url)
