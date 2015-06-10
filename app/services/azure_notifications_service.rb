@@ -74,10 +74,10 @@ class AzureNotificationsService
               <ChannelUri>#{handle}</ChannelUri>
               <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
               <WnsHeaders>
-                <WNSHeader>
+                <WnsHeader>
                   <Header>X-WNS-Type</Header>
                   <Value>wns/toast</Value>
-                </WNSHeader>
+                </WnsHeader>
               </WnsHeaders>
             </WindowsTemplateRegistrationDescription>
           </content>
@@ -89,7 +89,7 @@ class AzureNotificationsService
 
   def send(method, resource, options = {})
     sep = resource.include?('?') ? '&' : '?'
-    url = "#{settings['endpoint']}/#{resource}#{sep}api-version=2014-09"
+    url = "#{settings['endpoint']}/#{resource}#{sep}api-version=2015-01"
     options[:method] = method
     options[:headers] ||= {}
     options[:headers]['Authorization'] = sas_token(url)
