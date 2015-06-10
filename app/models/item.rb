@@ -71,9 +71,11 @@ class Item < ActiveRecord::Base
   end
 
   def send_new_item_message
-    if offer.reviewed? && User.current_user.donor?
-      offer.re_review
-      offer.clear_logistics_details
+    if User.current_user.donor? && (offer.scheduled? || offer.reviewed?)
+      if offer.reviewed?
+        offer.re_review
+        offer.clear_logistics_details
+      end
       offer.send_item_add_message
     end
   end
