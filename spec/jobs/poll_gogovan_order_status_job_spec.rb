@@ -60,7 +60,6 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
     PollGogovanOrderStatusJob.new.perform(order.id)
 
     order.reload
-    expect(enqueued_jobs.size).to eq(11)
     expect(enqueued_jobs.last[:job]).to eq(PollGogovanOrderStatusJob)
     expect(enqueued_jobs.last[:args]).to eq([order.id])
   end
@@ -77,7 +76,6 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
     expect(Gogovan).to receive(:order_status).with(active_order.booking_id).and_return(cancel_ggv_response)
 
     PollGogovanOrderStatusJob.new.perform(active_order.id)
-    expect(enqueued_jobs.size).to eq(11)
     expect(enqueued_jobs.last[:job]).to eq(GgvDeliveryCleanupJob)
     expect(enqueued_jobs.last[:args]).to eq([active_order.id])
   end
@@ -89,7 +87,6 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
       PollGogovanOrderStatusJob.new.perform(active_order.id)
     }.to raise_error(PollGogovanOrderStatusJob::ValueError)
 
-    expect(enqueued_jobs.size).to eq(11)
     expect(enqueued_jobs.last[:job]).to eq(GgvDeliveryCleanupJob)
     expect(enqueued_jobs.last[:args]).to eq([active_order.id])
   end
@@ -102,7 +99,6 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
     }.to raise_error(PollGogovanOrderStatusJob::ValueError)
 
     order.reload
-    expect(enqueued_jobs.size).to eq(11)
     expect(enqueued_jobs.last[:job]).to eq(PollGogovanOrderStatusJob)
     expect(enqueued_jobs.last[:args]).to eq([order.id])
   end
