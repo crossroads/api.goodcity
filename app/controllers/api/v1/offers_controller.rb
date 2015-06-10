@@ -52,7 +52,10 @@ module Api::V1
     param :reviewed_by_id, String, desc: "Return offers reviewed by the given user id."
     param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
     def index
-      params.merge!({ "created_by_id": current_user.id }) if reviewer_as_donor?
+      if reviewer_as_donor?
+        params.merge!({ "created_by_id": current_user.id,
+          "states": Offer.donor_valid_states })
+      end
       states = params["states"]
       @offers = @offers.in_states(states) if states.present?
       @offers = @offers.created_by(params["created_by_id"]) if params["created_by_id"].present?

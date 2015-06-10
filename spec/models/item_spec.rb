@@ -21,7 +21,7 @@ RSpec.describe Item, type: :model do
     it { is_expected.to have_db_column(:package_type_id).of_type(:integer) }
     it { is_expected.to have_db_column(:rejection_reason_id).of_type(:integer) }
     it { is_expected.to have_db_column(:reject_reason).of_type(:string) }
-    it { is_expected.to have_db_column(:rejection_comments).of_type(:string) }
+    it { is_expected.to have_db_column(:rejection_comments).of_type(:text) }
     it { is_expected.to have_db_column(:saleable).of_type(:boolean) }
   end
 
@@ -132,6 +132,17 @@ RSpec.describe Item, type: :model do
       expect{
         item.accept
       }.to change(item, :donor_description).to(expected_text)
+    end
+  end
+
+  describe "#submit" do
+    it "on item addition for reviewed offer reset its offer's state" do
+      offer = create :offer, :reviewed
+      User.current_user = offer.created_by
+      item = create :item, :draft, offer: offer
+      expect{
+        item.submit
+      }.to change(offer, :state).to("under_review")
     end
   end
 end
