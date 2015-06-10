@@ -39,7 +39,7 @@ class Message < ActiveRecord::Base
   private
 
   def subscribe_users_to_message
-    users_ids = self.offer.subscribed_users(self.is_private).pluck(:id) - [sender_id]
+    users_ids = self.offer.subscribed_users(self.is_private) - [sender_id]
     users_ids.each do |user_id|
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: user_id)
     end
@@ -57,7 +57,7 @@ class Message < ActiveRecord::Base
   end
 
   def subscribed_user_channels
-    Channel.users(self.offer.subscribed_users(self.is_private))
+    Channel.user_ids(self.offer.subscribed_users(self.is_private))
   end
 
   def send_new_message_notification
