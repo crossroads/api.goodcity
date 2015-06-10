@@ -30,7 +30,7 @@ describe DateSet do
   context "available_dates" do
     it "should return next available dates" do
       next_dates = date_set.available_dates
-      expect(next_dates.length).to eq(10)
+      expect(next_dates.length).to eq(NEXT_AVAILABLE_DAYS_COUNT)
       expect(next_dates.map(&:wday)).to_not include(0) # no sunday
       expect(next_dates.map(&:wday)).to_not include(1) # no monday
       expect(
