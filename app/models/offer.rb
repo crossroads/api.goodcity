@@ -182,10 +182,10 @@ class Offer < ActiveRecord::Base
   end
 
   def subscribed_users(is_private)
-    User
-      .joins(subscriptions: [:offer, :message])
-      .where(offers: {id: self.id}, messages: {is_private: is_private})
-      .distinct
+    Message.unscoped.joins(:subscriptions)
+      .select("distinct subscriptions.user_id as user_id")
+      .where(is_private: is_private, offer_id: id)
+      .map(&:user_id)
   end
 
   def assign_reviewer(reviewer)
