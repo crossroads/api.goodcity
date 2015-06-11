@@ -12,7 +12,12 @@ class ApplicationController < ActionController::API
   protected
 
   def app_name
-    request.headers['X-GOODCITY-APP-NAME'] || request.headers['X-APP-NAME']
+    request.headers['X-GOODCITY-APP-NAME'] || meta_info["appName"]
+  end
+
+  def meta_info
+    meta = request.headers["X-META"].try(:split, "|")
+    meta ? Hash[*meta.flat_map{|a| a.split(":")}] : {}
   end
 
   def app_version
