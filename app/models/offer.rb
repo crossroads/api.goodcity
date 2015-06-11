@@ -42,6 +42,7 @@ class Offer < ActiveRecord::Base
     states.push(*Offer.inactive_states) if states.delete('inactive')
     states.push(*Offer.nondraft_states) if states.delete('nondraft')
     states.push(*Offer.active_states) if states.delete('active')
+    states.push(*Offer.donor_valid_states) if states.delete('for_donor')
     where(state: states.uniq)
   }
 
