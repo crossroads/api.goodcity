@@ -34,7 +34,7 @@ zh-tw:
     new_offer: "%{name} 的新捐獻。"
   offer:
     thank_message: 感謝您的捐獻，我們的團隊很快就會開始審查。假如審查員有任何關於捐獻物資的疑問，他們會以訊息向您查詢。由於儲存空間有限，社區的需要亦經常改變，我們可能無法接收部分物資。為此，我們深感遺憾，並先就此道歉。當審查完成時，您就能立刻安排已接受的物資的運輸。假如您有任何疑問，請隨時回覆此信息。
-    ggv_cancel_message: 預約於 %{time} 的貨車已通過GoGoVan取消。請重新安排運輸。
+    ggv_cancel_message: GoGoVan已取消預約於 %{time} 的貨車，請重新安排運輸。
     received_message: 已收到您提交的資料，感謝您的熱心捐獻，謝謝！
     item_add_message: "%{donor_name} 捐獻了一件新物品。請審查。"
   gogovan:
