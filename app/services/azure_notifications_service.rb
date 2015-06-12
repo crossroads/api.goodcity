@@ -1,22 +1,18 @@
 class AzureNotificationsService
-  def notify(tags, data, collapse_key = nil, delay_while_idle = nil)
+  attr_accessor :app_name
+
+  def initialize(is_admin_app=nil)
+    @app_name = is_admin_app ? "admin" : "donor"
+  end
+
+  def notify(tags, data)
     tags = tags.join(' || ') if tags.instance_of?(Array)
-    body = data
-    body[:collapse_key] = collapse_key unless collapse_key.nil?
-    body[:delay_while_idle] = delay_while_idle unless delay_while_idle.nil?
-    send :post, 'messages', body: body.to_json, headers: headers(tags)
+    send :post, 'messages', body: data.to_json, headers: notify_headers(tags)
   end
 
   def register_device(handle, tags, platform)
-    res = case platform
-    when "gcm"
-      send :get, "registrations?$filter=#{URI::encode("GcmRegistrationId eq '#{handle}'")}"
-    when "aps"
-      send :get, "registrations?$filter=#{URI::encode("DeviceToken eq '#{handle.upcase}'")}"
-    when "wns"
-      send :get, "registrations?$filter=#{URI::encode("ChannelUri eq '#{handle}'")}"
-    else ""
-    end
+    encoded_url = encoded_url(platform, handle)
+    res = encoded_url ? (send :get, "registrations?$filter=#{encoded_url}") : ""
 
     Nokogiri::XML(res.decoded).css('entry title').each do |n|
       send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}
@@ -24,17 +20,7 @@ class AzureNotificationsService
     res = send :post, 'registrationIDs'
     # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
     regId = res.headers['location'].split('/').last.split('?').first
-
-    # platform
-    # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
-    body = case platform
-    when "gcm" then gcm_platform_xml(handle, tags)
-    when "aps" then aps_platform_xml(handle, tags)
-    when "wns" then wns_platform_xml(handle, tags)
-    else ""
-    end
-
-    send :put, "registrations/#{regId}", body: body
+    send :put, "registrations/#{regId}", body: platform_xml_body(handle, tags, platform)
   end
 
   def send(method, resource, options = {})
@@ -46,6 +32,25 @@ class AzureNotificationsService
   end
 
   private
+
+  def encoded_url(platform, handle)
+    case platform
+    when "gcm" then URI::encode("GcmRegistrationId eq '#{handle}'")
+    when "aps" then URI::encode("DeviceToken eq '#{handle.upcase}'")
+    when "wns" then URI::encode("ChannelUri eq '#{handle}'")
+    end
+  end
+
+  def platform_xml_body(handle, tags, platform)
+    # platform
+    # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
+    case platform
+    when "gcm" then gcm_platform_xml(handle, tags)
+    when "aps" then aps_platform_xml(handle, tags)
+    when "wns" then wns_platform_xml(handle, tags)
+    else ""
+    end
+  end
 
   def gcm_platform_xml(handle, tags)
     template = '{"data":{"message":"$(message)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "is_private":"$(is_private)"}}'
@@ -103,7 +108,7 @@ class AzureNotificationsService
     </entry>"
   end
 
-  def headers(tags)
+  def notify_headers(tags)
     {
       'ServiceBusNotification-Format' => 'template',
       'ServiceBusNotification-Tags' => tags,
@@ -129,6 +134,6 @@ class AzureNotificationsService
   end
 
   def settings
-    Rails.application.secrets.azure_notifications
+    Rails.application.secrets.azure_notifications[@app_name]
   end
 end
