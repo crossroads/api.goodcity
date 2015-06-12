@@ -11,8 +11,8 @@ module Api::V1
     has_one :address, serializer: AddressSerializer
 
     def include_attribute?
-      (@options[:user_summary].blank? ? true : @options[:user_summary]) &&
-      (User.current_user.try(:staff?) || User.current_user == id)
+      return !@options[:user_summary] unless @options[:user_summary].nil?
+      (User.current_user.try(:staff?) || User.current_user.try(:id) == id)
     end
     alias_method :include_address?, :include_attribute?
     alias_method :include_mobile?, :include_attribute?
