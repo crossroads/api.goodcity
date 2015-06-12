@@ -31,14 +31,14 @@ class PushService
   # first reviewer message to supervisors
   # new message to subscribed users
   # todo: offer accepted
-  def send_notification(text:, entity_type:, entity:, channel:)
+  def send_notification(text:, entity_type:, entity:, channel:, is_admin_app: false)
     @channel = channel
     @event   = "notification"
     @data    = pusher_data(text, entity_type, entity)
     notify
 
     if Channel.user_channel?(channel)
-      AzureNotifyJob.perform_later(channel, notification_data(text, entity))
+      AzureNotifyJob.perform_later(channel, notification_data(text, entity), is_admin_app)
     end
   end
 
