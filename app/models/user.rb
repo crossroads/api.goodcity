@@ -128,10 +128,13 @@ class User < ActiveRecord::Base
   def self.inactive?(mobile)
     return true unless user = user_exist?(mobile)
     offers = user.non_draft_offers
-    if offers.length == 0 || Version.past_month_activities(offers).count == 0
-      return true
-    end
-    false
+    staff_activities = Version.past_month_activities(offers, user.id)
+    return [true, user] if offers.length == 0 || staff_activities.count == 0
+    [false, user]
+  end
+
+  def recent_active_offer_id
+    Version.for_offers.by_user(id).last.try(:related_id)
   end
 
   private

@@ -6,5 +6,5 @@ ADMIN_APP = "admin.goodcity"
 GGV_POLL_JOB_WAIT_TIME = 30.seconds
 GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR = 10.seconds
 SYSTEM_USER_MOBILE = "+85264522773"
-THANK_YOU_CALLING_MESSAGE = "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
+THANK_YOU_CALLING_MESSAGE = "Thank you for calling GoodCity.HK, operated by Crossroads Foundation."
 GOODCITY_NUMBER = "+85258084822"
