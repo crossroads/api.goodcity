@@ -76,6 +76,10 @@ Rails.application.routes.draw do
       get "timeslots" => "timeslots#index"
       get "gogovan_transports" => "gogovan_transports#index"
       get "crossroads_transports" => "crossroads_transports#index"
+
+      post "twilio/voice" => "twilio#voice"
+      get "accept_voicemail" => "twilio#accept_voicemail"
+      get "send_voicemail" => "twilio#send_voicemail"
     end
   end
 end
