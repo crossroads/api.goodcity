@@ -67,7 +67,7 @@ class AzureNotificationsService
   end
 
   def aps_platform_xml(handle, tags)
-    template = '{"aps":{"alert":"$(message)","badge":1,"sound":"default"}}'
+    template = '{"aps":{"alert":"$(message)","badge":1,"sound":"default", "payload":{"offer_id":"$(offer_id)", "item_id":"$(item_id)", "is_private":"$(is_private)"}}}'
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
@@ -81,8 +81,9 @@ class AzureNotificationsService
   end
 
   def wns_platform_xml(handle, tags)
+    launch_attributes = '"{\"offer_id\":\"$(offer_id)\",\"item_id\":\"$(item_id)"\",\"is_private\":\"$(is_private)\"}"'
     template =
-      "<toast>
+      "<toast launch=#{launch_attributes}>
         <visual>
           <binding template=\"ToastText01\">
             <text id=\"1\">$(message)</text>
