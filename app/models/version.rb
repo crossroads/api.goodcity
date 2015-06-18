@@ -19,6 +19,8 @@ class Version < PaperTrail::Version
       ids: objects.map(&:id), type: objects.last.class.name)
   }
 
+  scope :item_states_log, -> { where("object_changes #>> '{state, 1}' <> '' ") }
+
   def to_s
     "id:#{self.id} #{self.item_type}##{self.item_id} #{self.event}"
   end

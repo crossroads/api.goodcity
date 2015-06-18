@@ -33,6 +33,12 @@ class Ability
       can :destroy, Item, offer: { created_by_id: user_id }
       can :destroy, Item if reviewer || supervisor
 
+      #Version
+      can :index, Version, related_type: "Offer", related_id: user.offers.map(&:id),
+        item_type: "Item"
+
+      can :index, Version, related_type: "Offer", item_type: "Item" if reviewer || supervisor
+
       # Image (same as item permissions)
       can [:index, :show, :create, :update], Image, item: { offer:
         { created_by_id: user_id } }
