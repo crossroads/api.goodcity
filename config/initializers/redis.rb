@@ -11,3 +11,4 @@ end
 
 Sidekiq.redis = redis_options.merge(url: redis_url)
 
+$redis = Redis.new(:host => 'localhost', :port => 6379)

@@ -78,8 +78,12 @@ Rails.application.routes.draw do
       get "crossroads_transports" => "crossroads_transports#index"
 
       post "twilio/voice" => "twilio#voice"
+      post "ask_voicemail" => "twilio#ask_voicemail"
       get "accept_voicemail" => "twilio#accept_voicemail"
       get "send_voicemail" => "twilio#send_voicemail"
+      get "twilio/accept_call" => "twilio#accept_call"
+      post "twilio/assignment" => "twilio#assignment"
+      post "hold_gc_donor" => "twilio#hold_gc_donor"
     end
   end
 end
