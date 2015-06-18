@@ -80,6 +80,8 @@ Rails.application.routes.draw do
       post "twilio/voice" => "twilio#voice"
       get "accept_voicemail" => "twilio#accept_voicemail"
       get "send_voicemail" => "twilio#send_voicemail"
+
+      get "versions" => "versions#index"
     end
   end
 end
