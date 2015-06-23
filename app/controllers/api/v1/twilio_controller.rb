@@ -36,6 +36,8 @@ module Api::V1
         response = Twilio::TwiML::Response.new do |r|
           r.Record maxLength: "60", playBeep: true, action: "/api/v1/send_voicemail", method: "get"
         end
+      else
+        response = Twilio::TwiML::Response.new { |r| r.Hangup }
       end
       render_twiml response
     end
