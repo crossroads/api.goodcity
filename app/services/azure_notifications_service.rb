@@ -1,95 +1,30 @@
 class AzureNotificationsService
-  def notify(tags, data, collapse_key = nil, delay_while_idle = nil)
+  attr_accessor :app_name
+
+  def initialize(is_admin_app=nil)
+    @app_name = is_admin_app ? "admin" : "donor"
+  end
+
+  def notify(tags, data)
     tags = tags.join(' || ') if tags.instance_of?(Array)
-    headers = {
-      'ServiceBusNotification-Format' => 'template',
-      'ServiceBusNotification-Tags' => tags,
-      'Content-Type' => 'application/json;charset=utf-8'
-    }
-    body = data
-    body[:collapse_key] = collapse_key unless collapse_key.nil?
-    body[:delay_while_idle] = delay_while_idle unless collapse_key.nil?
-    send :post, 'messages', body: body.to_json, headers: headers
+    send :post, 'messages', body: data.to_json, headers: notify_headers(tags)
   end
 
   def register_device(handle, tags, platform)
-    res = ""
-    if platform == "gcm"
-      res = send :get, "registrations?$filter=#{URI::encode("GcmRegistrationId eq '#{handle}'")}"
-    elsif platform == "aps"
-      res = send :get, "registrations?$filter=#{URI::encode("DeviceToken eq '#{handle.upcase}'")}"
-    elsif platform == "wns"
-      res = send :get, "registrations?$filter=#{URI::encode("ChannelUri eq '#{handle}'")}"
-    end
+    encoded_url = encoded_url(platform, handle)
+    res = encoded_url ? (send :get, "registrations?$filter=#{encoded_url}") : ""
 
-    Nokogiri::XML(res.decoded).css('entry title').each {|n| send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}}
+    Nokogiri::XML(res.decoded).css('entry title').each do |n|
+      send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}
+    end
     res = send :post, 'registrationIDs'
     # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
     regId = res.headers['location'].split('/').last.split('?').first
-
-    # platform
-    # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
-    body = ""
-    if platform == "gcm"
-      template = '{"data":{"message":"$(message)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "is_private":"$(is_private)"}}'
-      body =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-        <entry xmlns=\"http://www.w3.org/2005/Atom\">
-          <content type=\"application/xml\">
-            <GcmTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
-              <Tags>#{tags.join(', ')}</Tags>
-              <GcmRegistrationId>#{handle}</GcmRegistrationId>
-              <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
-            </GcmTemplateRegistrationDescription>
-          </content>
-        </entry>"
-    elsif platform == "aps"
-      template = '{"aps":{"alert":"$(message)","badge":1,"sound":"default"}}'
-      body =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-        <entry xmlns=\"http://www.w3.org/2005/Atom\">
-          <content type=\"application/xml\">
-            <AppleTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
-              <Tags>#{tags.join(', ')}</Tags>
-              <DeviceToken>#{handle}</DeviceToken>
-              <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
-            </AppleTemplateRegistrationDescription>
-          </content>
-        </entry>"
-    elsif platform == "wns"
-      template =
-        "<toast>
-          <visual>
-            <binding template=\"ToastText01\">
-              <text id=\"1\">$(message)</text>
-            </binding>
-          </visual>
-        </toast>"
-      body =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-        <entry xmlns=\"http://www.w3.org/2005/Atom\">
-          <content type=\"application/xml\">
-            <WindowsTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
-              <Tags>#{tags.join(', ')}</Tags>
-              <ChannelUri>#{handle}</ChannelUri>
-              <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
-              <WnsHeaders>
-                <WnsHeader>
-                  <Header>X-WNS-Type</Header>
-                  <Value>wns/toast</Value>
-                </WnsHeader>
-              </WnsHeaders>
-            </WindowsTemplateRegistrationDescription>
-          </content>
-        </entry>"
-    end
-
-    send :put, "registrations/#{regId}", body: body
+    send :put, "registrations/#{regId}", body: platform_xml_body(handle, tags, platform)
   end
 
   def send(method, resource, options = {})
-    sep = resource.include?('?') ? '&' : '?'
-    url = "#{settings['endpoint']}/#{resource}#{sep}api-version=2015-01"
+    url = request_url(resource)
     options[:method] = method
     options[:headers] ||= {}
     options[:headers]['Authorization'] = sas_token(url)
@@ -98,15 +33,110 @@ class AzureNotificationsService
 
   private
 
+  def encoded_url(platform, handle)
+    case platform
+    when "gcm" then URI::encode("GcmRegistrationId eq '#{handle}'")
+    when "aps" then URI::encode("DeviceToken eq '#{handle.upcase}'")
+    when "wns" then URI::encode("ChannelUri eq '#{handle}'")
+    end
+  end
+
+  def platform_xml_body(handle, tags, platform)
+    # platform
+    # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
+    case platform
+    when "gcm" then gcm_platform_xml(handle, tags)
+    when "aps" then aps_platform_xml(handle, tags)
+    when "wns" then wns_platform_xml(handle, tags)
+    else ""
+    end
+  end
+
+  def gcm_platform_xml(handle, tags)
+    template = '{"data":{"message":"$(message)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "is_private":"$(is_private)"}}'
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+    <entry xmlns=\"http://www.w3.org/2005/Atom\">
+      <content type=\"application/xml\">
+        <GcmTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
+          <Tags>#{tags.join(', ')}</Tags>
+          <GcmRegistrationId>#{handle}</GcmRegistrationId>
+          <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
+        </GcmTemplateRegistrationDescription>
+      </content>
+    </entry>"
+  end
+
+  def aps_platform_xml(handle, tags)
+    template = '{"aps":{"alert":"$(message)","badge":1,"sound":"default", "payload":{"offer_id":"$(offer_id)", "item_id":"$(item_id)", "is_private":"$(is_private)"}}}'
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+    <entry xmlns=\"http://www.w3.org/2005/Atom\">
+      <content type=\"application/xml\">
+        <AppleTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
+          <Tags>#{tags.join(', ')}</Tags>
+          <DeviceToken>#{handle}</DeviceToken>
+          <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
+        </AppleTemplateRegistrationDescription>
+      </content>
+    </entry>"
+  end
+
+  def wns_platform_xml(handle, tags)
+    # launch attribute = {offer_id:$(offer_id), item_id:$(item_id), is_private:$(is_private)}
+    # {} are used for expressions in template so using it like this {'{offer_id:' + $(offer_id) + '...}'}
+    # https://msdn.microsoft.com/en-us/library/azure/dn530748.aspx
+    template =
+      "<toast launch=\"{'{&quot;offer_id&quot;:&quot;' + $(offer_id) + '&quot;,&quot;item_id&quot;:&quot;' + $(item_id) + '&quot;,&quot;is_private&quot;:&quot;' + $(is_private) + '&quot;}'}\">
+        <visual>
+          <binding template=\"ToastText01\">
+            <text id=\"1\">$(message)</text>
+          </binding>
+        </visual>
+      </toast>"
+
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+    <entry xmlns=\"http://www.w3.org/2005/Atom\">
+      <content type=\"application/xml\">
+        <WindowsTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
+          <Tags>#{tags.join(', ')}</Tags>
+          <ChannelUri>#{handle}</ChannelUri>
+          <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
+          <WnsHeaders>
+            <WnsHeader>
+              <Header>X-WNS-Type</Header>
+              <Value>wns/toast</Value>
+            </WnsHeader>
+          </WnsHeaders>
+        </WindowsTemplateRegistrationDescription>
+      </content>
+    </entry>"
+  end
+
+  def notify_headers(tags)
+    {
+      'ServiceBusNotification-Format' => 'template',
+      'ServiceBusNotification-Tags' => tags,
+      'Content-Type' => 'application/json;charset=utf-8'
+    }
+  end
+
+  def request_url(resource)
+    sep = resource.include?('?') ? '&' : '?'
+    "#{settings['endpoint']}/#{resource}#{sep}api-version=2015-01"
+  end
+
   def sas_token(url, lifetime: 10)
-    target_uri = CGI.escape(url.downcase).gsub('+', '%20').downcase
+    target_uri = escaped_url(url).downcase
     expires = Time.now.to_i + lifetime
     to_sign = "#{target_uri}\n#{expires}"
-    signature = CGI.escape(Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', settings['key'], to_sign))).gsub('+', '%20')
+    signature = escaped_url(Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', settings['key'], to_sign)))
     "SharedAccessSignature sr=#{target_uri}&sig=#{signature}&se=#{expires}&skn=#{settings['key_name']}"
   end
 
+  def escaped_url(url)
+    CGI.escape(url).gsub('+', '%20')
+  end
+
   def settings
-    Rails.application.secrets.azure_notifications
+    Rails.application.secrets.azure_notifications[@app_name]
   end
 end
