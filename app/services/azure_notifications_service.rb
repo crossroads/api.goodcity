@@ -81,9 +81,11 @@ class AzureNotificationsService
   end
 
   def wns_platform_xml(handle, tags)
-    launch_attributes = '"{\"offer_id\":\"$(offer_id)\",\"item_id\":\"$(item_id)"\",\"is_private\":\"$(is_private)\"}"'
+    # launch attribute = {offer_id:$(offer_id), item_id:$(item_id), is_private:$(is_private)}
+    # {} are used for expressions in template so using it like this {'{offer_id:' + $(offer_id) + '...}'}
+    # https://msdn.microsoft.com/en-us/library/azure/dn530748.aspx
     template =
-      "<toast launch=#{launch_attributes}>
+      "<toast launch=\"{'{&quot;offer_id&quot;:&quot;' + $(offer_id) + '&quot;,&quot;item_id&quot;:&quot;' + $(item_id) + '&quot;,&quot;is_private&quot;:&quot;' + $(is_private) + '&quot;}'}\">
         <visual>
           <binding template=\"ToastText01\">
             <text id=\"1\">$(message)</text>
