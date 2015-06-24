@@ -1,4 +1,5 @@
 require "twilio-ruby"
+require "goodcity/redis_store"
 
 module Api::V1
   class TwilioController < Api::V1::ApiController
@@ -12,7 +13,7 @@ module Api::V1
     def assignment
       set_json_header
       donor_id = JSON.parse(params["TaskAttributes"])["user_id"]
-      mobile   = $redis.get("twilio_donor_#{donor_id}")
+      mobile   = redis.get("twilio_donor_#{donor_id}")
 
       if mobile
         assignment_instruction = {
@@ -112,13 +113,13 @@ module Api::V1
     end
 
     def delete_redis_keys(user_id)
-      $redis.del("twilio_donor_#{user_id}")
-      $redis.del("twilio_notify_#{user_id}")
+      redis.del("twilio_donor_#{user_id}")
+      redis.del("twilio_notify_#{user_id}")
     end
 
     def notify_reviewer
       # notify only once when at least one worker is offline
-      if offline_worker && $redis.get("twilio_notify_#{user.id}").blank?
+      if offline_worker && redis.get("twilio_notify_#{user.id}").blank?
         SendDonorCallingNotificationJob.perform_later(user.id)
         redis_storage("twilio_notify_#{user.id}", true)
       end
@@ -146,8 +147,12 @@ module Api::V1
     end
 
     def redis_storage(key, value)
-      $redis.set(key, value)
-      $redis.expireat(key, Time.now.to_i + 60)
+      redis.set(key, value)
+      redis.expireat(key, Time.now.to_i + 60)
+    end
+
+    def redis
+      @redis ||= Goodcity::RedisStore.new.init
     end
 
   end
