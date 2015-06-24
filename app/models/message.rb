@@ -39,7 +39,7 @@ class Message < ActiveRecord::Base
   private
 
   def subscribe_users_to_message
-    users_ids = self.offer.subscribed_users(self.is_private).pluck(:id) - [sender_id]
+    users_ids = self.offer.subscribed_users(self.is_private) - [sender_id]
     users_ids.each do |user_id|
       subscriptions.create(state: "unread", message_id: id, offer_id: offer_id, user_id: user_id)
     end
@@ -57,7 +57,7 @@ class Message < ActiveRecord::Base
   end
 
   def subscribed_user_channels
-    Channel.users(self.offer.subscribed_users(self.is_private))
+    Channel.user_ids(self.offer.subscribed_users(self.is_private))
   end
 
   def send_new_message_notification
@@ -67,11 +67,19 @@ class Message < ActiveRecord::Base
     # notify subscribed users except sender
     channels = subscribed_user_channels - Channel.user(sender)
     channels -= Channel.user(offer.created_by) if offer.cancelled?
-    service.send_notification(text: text, entity_type: "message", entity: self, channel: channels) unless channels.empty?
+
+    donor_channel = channels.delete("user_#{offer.created_by_id}")
+
+    service.send_notification(text: text, entity_type: "message",
+      entity: self, channel: [donor_channel]) if donor_channel
+
+    service.send_notification(text: text, entity_type: "message",
+      entity: self, channel: channels, is_admin_app: true) unless channels.empty?
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
-      service.send_notification(text: text, entity_type: "message", entity: self, channel: Channel.supervisor)
+      service.send_notification(text: text, entity_type: "message",
+        entity: self, channel: Channel.supervisor, is_admin_app: true)
     end
   end
 
