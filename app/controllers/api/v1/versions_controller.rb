@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :version, parent: false
 
     def index
-      render json: @versions.item_states_log, each_serializer: serializer
+      render json: @versions, each_serializer: serializer
     end
 
     private
