@@ -5,7 +5,7 @@ module Api::V1
   class TwilioController < Api::V1::ApiController
     include Webhookable
 
-    after_filter :set_header, except: :assignment
+    after_filter :set_header, except: [:assignment, :hold_music]
     skip_authorization_check
     skip_before_action :validate_token
     skip_before_action :verify_authenticity_token
@@ -37,9 +37,7 @@ module Api::V1
         r.Say THANK_YOU_CALLING_MESSAGE
 
         if(inactive_caller)
-          r.Dial do |d|
-            d.Number GOODCITY_NUMBER
-          end
+          r.Dial { |d| d.Number GOODCITY_NUMBER }
         else
           task = { "selected_language" => "en", "user_id" => user.id }.to_json
           r.Enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: "/api/v1/hold_gc_donor", waitUrlMethod: "post" do |t|
@@ -57,14 +55,12 @@ module Api::V1
 
       if(params['QueueTime'].to_i < 45)
         response = Twilio::TwiML::Response.new do |r|
-          r.Say "Kindly wait for few seconds"
-          r.Say THANK_YOU_CALLING_MESSAGE
+          r.Play api_v1_twilio_hold_music_url
         end
-        render_twiml response
       else
         response = Twilio::TwiML::Response.new { |r| r.Leave }
-        render_twiml response
       end
+      render_twiml response
     end
 
     def ask_voicemail(r)
@@ -104,6 +100,11 @@ module Api::V1
       redis_storage("twilio_donor_#{params['donor_id']}", params['mobile'])
       offline_worker.update(activity_sid: activity_sid('Idle'))
       render json: {}
+    end
+
+    def hold_music
+      response.headers["Content-Type"] = "audio/mpeg"
+      send_file "app/assets/audio/30_sec_hold_music.mp3", type: "audio/mpeg"
     end
 
     private

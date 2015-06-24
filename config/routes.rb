@@ -84,6 +84,7 @@ Rails.application.routes.draw do
       get "twilio/accept_call" => "twilio#accept_call"
       post "twilio/assignment" => "twilio#assignment"
       post "hold_gc_donor" => "twilio#hold_gc_donor"
+      get "twilio/hold_music" => "twilio#hold_music"
     end
   end
 end
