@@ -9,4 +9,7 @@ module Webhookable
     render text: response.text
   end
 
+  def set_json_header
+    response.headers["Content-Type"] = "application/json"
+  end
 end

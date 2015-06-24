@@ -31,10 +31,11 @@ class PushService
   # first reviewer message to supervisors
   # new message to subscribed users
   # todo: offer accepted
-  def send_notification(text:, entity_type:, entity:, channel:, is_admin_app: false)
+  def send_notification(text:, entity_type:, entity:, channel:, is_admin_app: false, call:nil)
+
     @channel = channel
     @event   = "notification"
-    @data    = pusher_data(text, entity_type, entity)
+    @data    = pusher_data(text, entity_type, entity, call)
     notify
 
     if Channel.user_channel?(channel)
@@ -42,13 +43,14 @@ class PushService
     end
   end
 
-  def pusher_data(text, entity_type, entity)
+  def pusher_data(text, entity_type, entity, call=nil)
     # ActiveJob::Serializer doesn't support Time so convert to string
     {
       text: text,
       entity_type: entity_type,
       date: Time.now.to_json.tr('"',''),
-      entity: entity
+      entity: entity,
+      call: call
     }
   end
 
