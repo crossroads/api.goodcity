@@ -42,6 +42,7 @@ class Offer < ActiveRecord::Base
     states.push(*Offer.inactive_states) if states.delete('inactive')
     states.push(*Offer.nondraft_states) if states.delete('nondraft')
     states.push(*Offer.active_states) if states.delete('active')
+    states.push(*Offer.donor_valid_states) if states.delete('for_donor')
     where(state: states.uniq)
   }
 
@@ -174,7 +175,6 @@ class Offer < ActiveRecord::Base
   def send_item_add_message
     text = I18n.t("offer.item_add_message", donor_name: created_by.full_name)
     messages.create(sender: User.system_user, is_private: true, body: text)
-    send_notification(text)
   end
 
   def update_saleable_items
@@ -182,10 +182,10 @@ class Offer < ActiveRecord::Base
   end
 
   def subscribed_users(is_private)
-    User
-      .joins(subscriptions: [:offer, :message])
-      .where(offers: {id: self.id}, messages: {is_private: is_private})
-      .distinct
+    Message.unscoped.joins(:subscriptions)
+      .select("distinct subscriptions.user_id as user_id")
+      .where(is_private: is_private, offer_id: id)
+      .map(&:user_id)
   end
 
   def assign_reviewer(reviewer)
@@ -196,7 +196,7 @@ class Offer < ActiveRecord::Base
 
   def send_new_offer_notification
     text = I18n.t("notification.new_offer", name: self.created_by.full_name)
-    send_notification(text)
+    send_reviewers_notification(text)
   end
 
   def send_new_offer_alert
@@ -211,15 +211,15 @@ class Offer < ActiveRecord::Base
   def send_ggv_cancel_order_message(ggv_time)
     message = cancel_message(ggv_time)
     messages.create(body: message, sender: User.system_user)
-    send_notification(message)
   end
 
-  def send_notification(text)
+  def send_reviewers_notification(text)
     PushService.new.send_notification(
       text: text,
       entity_type: "offer",
       entity: self,
-      channel: Channel.reviewer)
+      channel: Channel.reviewer,
+      is_admin_app: true)
   end
 
   private
