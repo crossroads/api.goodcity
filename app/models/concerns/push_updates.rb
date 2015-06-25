@@ -16,7 +16,6 @@ module PushUpdates
 
     exclude_relationships = {exclude: self.class.reflections.keys.map(&:to_sym)}
     serializer = "Api::V1::#{self.class}Serializer".constantize.new(self, exclude_relationships)
-    user = Api::V1::UserSerializer.new(current_user)
     type = self.class.name
     object = {}
 
@@ -34,11 +33,17 @@ module PushUpdates
     end
 
     offer = send(:offer)
-    donor_channel = (offer.nil? || offer.try(:cancelled?)) ? [] :
-      Channel.user_id(offer.created_by_id)
-    channel = Channel.staff + donor_channel
+    user = Api::V1::UserSerializer.new(current_user, {user_summary: true})
     data = {item:object, sender:user, operation:operation}
-    collapse_key = offer.nil? ? nil : "offer" + offer.id.to_s
-    PushService.new.send_update_store(channel, data, collapse_key)
+    unless offer.nil? || offer.try(:cancelled?)
+      donor_channel = Channel.user_id(offer.created_by_id)
+      service.send_update_store(donor_channel, data)
+    end
+    user.options[:user_summary] = false
+    service.send_update_store(Channel.staff, data)
+  end
+
+  def service
+    PushService.new
   end
 end

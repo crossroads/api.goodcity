@@ -40,7 +40,7 @@ class Delivery < ActiveRecord::Base
     [self.gogovan_order, self.contact.try(:address), self.contact, self.schedule, self].compact.each do |record|
       operation ||= (self.class == 'Delivery' ? "update" : "create")
       data = { item: serialized_object(record), sender: user, operation: operation }
-      PushService.new.send_update_store(channel, data, "offer#{offer.id}")
+      PushService.new.send_update_store(channel, data)
     end
     true
   end

@@ -175,7 +175,6 @@ class Offer < ActiveRecord::Base
   def send_item_add_message
     text = I18n.t("offer.item_add_message", donor_name: created_by.full_name)
     messages.create(sender: User.system_user, is_private: true, body: text)
-    send_notification(text)
   end
 
   def update_saleable_items
@@ -197,7 +196,7 @@ class Offer < ActiveRecord::Base
 
   def send_new_offer_notification
     text = I18n.t("notification.new_offer", name: self.created_by.full_name)
-    send_notification(text)
+    send_reviewers_notification(text)
   end
 
   def send_new_offer_alert
@@ -212,15 +211,15 @@ class Offer < ActiveRecord::Base
   def send_ggv_cancel_order_message(ggv_time)
     message = cancel_message(ggv_time)
     messages.create(body: message, sender: User.system_user)
-    send_notification(message)
   end
 
-  def send_notification(text)
+  def send_reviewers_notification(text)
     PushService.new.send_notification(
       text: text,
       entity_type: "offer",
       entity: self,
-      channel: Channel.reviewer)
+      channel: Channel.reviewer,
+      is_admin_app: true)
   end
 
   private

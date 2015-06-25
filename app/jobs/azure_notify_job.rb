@@ -1,7 +1,7 @@
 class AzureNotifyJob < ActiveJob::Base
   queue_as :default
 
-  def perform(channel, data, collapse_key = nil, delay_while_idle = false)
-    AzureNotificationsService.new.notify channel, data, collapse_key, delay_while_idle
+  def perform(channel, data, is_admin_app = false)
+    AzureNotificationsService.new(is_admin_app).notify(channel, data)
   end
 end

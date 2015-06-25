@@ -10,4 +10,3 @@ if Rails.env.production?
 end
 
 Sidekiq.redis = redis_options.merge(url: redis_url)
-
