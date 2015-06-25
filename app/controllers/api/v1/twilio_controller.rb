@@ -29,6 +29,24 @@ module Api::V1
       render json: assignment_instruction.to_json
     end
 
+    # This action will be called from twilio when call is completed
+    def call_summary
+      render json: {}
+    end
+
+    # This action will be called from twilio when runtime exception
+    # Example Parameters received from Twilio are
+    # {"AccountSid"=>"..", "ToZip"=>"", "FromState"=>"", "Called"=>"+85258087803", "FromCountry"=>"LS", "CallerCountry"=>"LS", "CalledZip"=>"", "ErrorUrl"=>"http://6b6d4611.ngrok.io/api/v1/twilio/voice", "Direction"=>"inbound", "FromCity"=>"", "CalledCountry"=>"HK", "CallerState"=>"", "CallSid"=>"..", "CalledState"=>"", "From"=>"+266696687", "CallerZip"=>"", "FromZip"=>"", "CallStatus"=>"ringing", "ToCity"=>"", "ToState"=>"", "To"=>"+85258087803", "ToCountry"=>"HK", "CallerCity"=>"", "ApiVersion"=>"2010-04-01", "Caller"=>"+266696687", "CalledCity"=>"", "ErrorCode"=>"11200"}
+    def call_fallback
+      Airbrake.notify(Exception, parameters: params,
+        error_class: "TwilioError", error_message: "Twilio Voice Call Error")
+      response = Twilio::TwiML::Response.new do |r|
+        r.Say "Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you."
+        r.Hangup
+      end
+      render_twiml response
+    end
+
     def voice
       inactive_caller, user = User.inactive?(params["From"]) if params["From"]
 
