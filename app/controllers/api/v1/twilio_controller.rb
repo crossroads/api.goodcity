@@ -1,5 +1,5 @@
 require "twilio-ruby"
-require "goodcity/redis_store"
+require "goodcity/redis"
 
 module Api::V1
   class TwilioController < Api::V1::ApiController
@@ -174,7 +174,7 @@ module Api::V1
     end
 
     def redis
-      @redis ||= Goodcity::RedisStore.new.init
+      @redis ||= Goodcity::Redis.new
     end
 
   end
