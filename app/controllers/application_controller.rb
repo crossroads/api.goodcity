@@ -9,6 +9,10 @@ class ApplicationController < ActionController::API
   before_action :set_locale, :current_user
   helper_method :current_user
 
+  def is_admin_app
+    current_user.try(:staff?) && app_name == ADMIN_APP
+  end
+
   protected
 
   def app_name
