@@ -13,7 +13,7 @@ module PushUpdates
 
     # current_user can be nil if accessed from rails console, tests or db seed
     return if current_user.nil?
-
+    return if self.class.to_s == "Version" && !self.valid_pusher_update?
     exclude_relationships = {exclude: self.class.reflections.keys.map(&:to_sym)}
     serializer = "Api::V1::#{self.class}Serializer".constantize.new(self, exclude_relationships)
     type = self.class.name

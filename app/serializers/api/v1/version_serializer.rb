@@ -15,7 +15,7 @@ module Api::V1
     end
 
     def whodunnit_name
-      User.find_by(id: whodunnit).try(:name)
+      User.find_by(id: whodunnit).try(:full_name)
     end
 
     def whodunnit_name__sql
