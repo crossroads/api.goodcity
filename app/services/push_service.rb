@@ -57,9 +57,9 @@ class PushService
   def notification_data(text, entity)
     {
       message:    text,
-      offer_id:   entity.offer_id,
-      item_id:    entity.item_id,
-      is_private: entity.is_private
+      offer_id:   entity.try(:offer).try(:id),
+      item_id:    entity.try(:item_id),
+      is_private: entity.try(:is_private)
     }
   end
 end
