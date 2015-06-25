@@ -25,12 +25,13 @@ module Api::V1
       else
         assignment_instruction = {}
       end
-      delete_redis_keys(donor_id)
       render json: assignment_instruction.to_json
     end
 
     # This action will be called from twilio when call is completed
     def call_summary
+      delete_redis_keys(user.id)
+      mark_worker_offline
       render json: {}
     end
 
@@ -82,8 +83,6 @@ module Api::V1
     end
 
     def ask_voicemail(r)
-      idle_worker && idle_worker.update(activity_sid: activity_sid('Offline'))
-
       # ask Donor to leave message on voicemail
       r.Gather numDigits: "1", action: "/api/v1/accept_voicemail", method: "get" do |g|
         g.Say "Unfortunately it none of our staff are able to take your call at the moment."
@@ -104,13 +103,11 @@ module Api::V1
     end
 
     def send_voicemail
-      user = User.user_exist?(params["From"]) if params["From"]
       SendVoicemailJob.perform_later(params["RecordingUrl"], user.try(:id))
       response = Twilio::TwiML::Response.new do |r|
         r.Say "Goodbye."
         r.Hangup
       end
-      delete_redis_keys(user.id)
       render_twiml response
     end
 
@@ -139,6 +136,14 @@ module Api::V1
       redis.del("twilio_notify_#{user_id}")
     end
 
+    def idle_worker
+      task_router.workers.list(activity_name: "Idle").first
+    end
+
+    def mark_worker_offline
+      idle_worker && idle_worker.update(activity_sid: activity_sid('Offline'))
+    end
+
     def notify_reviewer
       # notify only once when at least one worker is offline
       if offline_worker && redis.get("twilio_notify_#{user.id}").blank?
@@ -151,10 +156,6 @@ module Api::V1
       task_router.workers.list(activity_name: "Offline").first
     end
 
-    def idle_worker
-      task_router.workers.list(activity_name: "Idle").first
-    end
-
     def task_router
       @client = Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
         twilio_creds["auth_token"], twilio_creds["workspace_sid"])
@@ -162,10 +163,6 @@ module Api::V1
 
     def twilio_creds
       @twilio ||= Rails.application.secrets.twilio
-    end
-
-    def user
-      @user ||= User.user_exist?(params["From"])
     end
 
     def redis_storage(key, value)
@@ -177,5 +174,8 @@ module Api::V1
       @redis ||= Goodcity::Redis.new
     end
 
+    def user
+      @user ||= User.user_exist?(params["From"])
+    end
   end
 end
