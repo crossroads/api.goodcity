@@ -97,8 +97,11 @@ module Api::V1
     end
 
     def accept_call
-      redis_storage("twilio_donor_#{params['donor_id']}", params['mobile'])
-      offline_worker.update(activity_sid: activity_sid('Idle'))
+      unless redis.get("twilio_donor_#{params['donor_id']}")
+        redis_storage("twilio_donor_#{params['donor_id']}", params['mobile'])
+        offline_worker.update(activity_sid: activity_sid('Idle'))
+        AcceptedCallNotificationJob.perform_later(params['donor_id'], params['mobile'])
+      end
       render json: {}
     end
 
