@@ -35,9 +35,9 @@ class Ability
 
       #Version
       can :index, Version, related_type: "Offer", related_id: user.offers.map(&:id),
-        item_type: "Item"
+        item_type: ["Item", "Package"]
 
-      can :index, Version, related_type: "Offer", item_type: "Item" if reviewer || supervisor
+      can :index, Version, related_type: "Offer", item_type: ["Item", "Package"] if reviewer || supervisor
 
       # Image (same as item permissions)
       can [:index, :show, :create, :update], Image, item: { offer:
