@@ -63,7 +63,8 @@ module Api::V1
             t.TaskAttributes task
           end
 
-          ask_voicemail(r)
+          ask_callback(r)
+          accept_voicemail(r)
         end
       end
       render_twiml response
@@ -82,28 +83,32 @@ module Api::V1
       render_twiml response
     end
 
-    def ask_voicemail(r)
+    def ask_callback(r)
       # ask Donor to leave message on voicemail
-      r.Gather numDigits: "1", action: "/api/v1/accept_voicemail", method: "get" do |g|
+      r.Gather numDigits: "1", timeout: 3,  action: "/api/v1/accept_callback", method: "get" do |g|
         g.Say "Unfortunately it none of our staff are able to take your call at the moment."
-        g.Say "Press 1 to leave a message after the tone and our staff will get back to you as soon as possible. Thank you."
-        g.Say "Or Press any other key to finish the call."
+        g.Say "You can request a call-back without leaving a message by pressing 1."
+        g.Say "Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you."
       end
     end
 
-    def accept_voicemail
+    def accept_callback
       if params["Digits"] == "1"
+        SendDonorCallResponseJob.perform_later(user.try(:id))
         response = Twilio::TwiML::Response.new do |r|
-          r.Record maxLength: "60", playBeep: true, action: "/api/v1/send_voicemail", method: "get"
+          r.Say "Thank you, our staff will call you as soon as possible. Goodbye."
+          r.Hangup
         end
-      else
-        response = Twilio::TwiML::Response.new { |r| r.Hangup }
       end
       render_twiml response
     end
 
+    def accept_voicemail(r)
+      r.Record maxLength: "60", playBeep: true, action: "/api/v1/send_voicemail", method: "get"
+    end
+
     def send_voicemail
-      SendVoicemailJob.perform_later(params["RecordingUrl"], user.try(:id))
+      SendDonorCallResponseJob.perform_later(user.try(:id), params["RecordingUrl"])
       response = Twilio::TwiML::Response.new do |r|
         r.Say "Goodbye."
         r.Hangup
