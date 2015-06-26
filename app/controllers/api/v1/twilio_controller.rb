@@ -1,5 +1,5 @@
 require "twilio-ruby"
-require "goodcity/redis_store"
+require "goodcity/redis"
 
 module Api::V1
   class TwilioController < Api::V1::ApiController
@@ -25,8 +25,27 @@ module Api::V1
       else
         assignment_instruction = {}
       end
-      delete_redis_keys(donor_id)
       render json: assignment_instruction.to_json
+    end
+
+    # This action will be called from twilio when call is completed
+    def call_summary
+      delete_redis_keys(user.id)
+      mark_worker_offline
+      render json: {}
+    end
+
+    # This action will be called from twilio when runtime exception
+    # Example Parameters received from Twilio are
+    # {"AccountSid"=>"..", "ToZip"=>"", "FromState"=>"", "Called"=>"+85258087803", "FromCountry"=>"LS", "CallerCountry"=>"LS", "CalledZip"=>"", "ErrorUrl"=>"http://6b6d4611.ngrok.io/api/v1/twilio/voice", "Direction"=>"inbound", "FromCity"=>"", "CalledCountry"=>"HK", "CallerState"=>"", "CallSid"=>"..", "CalledState"=>"", "From"=>"+266696687", "CallerZip"=>"", "FromZip"=>"", "CallStatus"=>"ringing", "ToCity"=>"", "ToState"=>"", "To"=>"+85258087803", "ToCountry"=>"HK", "CallerCity"=>"", "ApiVersion"=>"2010-04-01", "Caller"=>"+266696687", "CalledCity"=>"", "ErrorCode"=>"11200"}
+    def call_fallback
+      Airbrake.notify(Exception, parameters: params,
+        error_class: "TwilioError", error_message: "Twilio Voice Call Error")
+      response = Twilio::TwiML::Response.new do |r|
+        r.Say "Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you."
+        r.Hangup
+      end
+      render_twiml response
     end
 
     def voice
@@ -64,8 +83,6 @@ module Api::V1
     end
 
     def ask_voicemail(r)
-      idle_worker && idle_worker.update(activity_sid: activity_sid('Offline'))
-
       # ask Donor to leave message on voicemail
       r.Gather numDigits: "1", action: "/api/v1/accept_voicemail", method: "get" do |g|
         g.Say "Unfortunately it none of our staff are able to take your call at the moment."
@@ -86,19 +103,20 @@ module Api::V1
     end
 
     def send_voicemail
-      user = User.user_exist?(params["From"]) if params["From"]
       SendVoicemailJob.perform_later(params["RecordingUrl"], user.try(:id))
       response = Twilio::TwiML::Response.new do |r|
         r.Say "Goodbye."
         r.Hangup
       end
-      delete_redis_keys(user.id)
       render_twiml response
     end
 
     def accept_call
-      redis_storage("twilio_donor_#{params['donor_id']}", params['mobile'])
-      offline_worker.update(activity_sid: activity_sid('Idle'))
+      unless redis.get("twilio_donor_#{params['donor_id']}")
+        redis_storage("twilio_donor_#{params['donor_id']}", params['mobile'])
+        offline_worker.update(activity_sid: activity_sid('Idle'))
+        AcceptedCallNotificationJob.perform_later(params['donor_id'], params['mobile'])
+      end
       render json: {}
     end
 
@@ -118,6 +136,14 @@ module Api::V1
       redis.del("twilio_notify_#{user_id}")
     end
 
+    def idle_worker
+      task_router.workers.list(activity_name: "Idle").first
+    end
+
+    def mark_worker_offline
+      idle_worker && idle_worker.update(activity_sid: activity_sid('Offline'))
+    end
+
     def notify_reviewer
       # notify only once when at least one worker is offline
       if offline_worker && redis.get("twilio_notify_#{user.id}").blank?
@@ -130,10 +156,6 @@ module Api::V1
       task_router.workers.list(activity_name: "Offline").first
     end
 
-    def idle_worker
-      task_router.workers.list(activity_name: "Idle").first
-    end
-
     def task_router
       @client = Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
         twilio_creds["auth_token"], twilio_creds["workspace_sid"])
@@ -143,18 +165,17 @@ module Api::V1
       @twilio ||= Rails.application.secrets.twilio
     end
 
-    def user
-      @user ||= User.user_exist?(params["From"])
-    end
-
     def redis_storage(key, value)
       redis.set(key, value)
       redis.expireat(key, Time.now.to_i + 60)
     end
 
     def redis
-      @redis ||= Goodcity::RedisStore.new.init
+      @redis ||= Goodcity::Redis.new
     end
 
+    def user
+      @user ||= User.user_exist?(params["From"])
+    end
   end
 end

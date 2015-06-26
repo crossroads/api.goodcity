@@ -8,10 +8,10 @@ class SendDonorCallingNotificationJob < ActiveJob::Base
     text     = "#{user.full_name} calling now: "
 
     PushService.new.send_notification(
-      text: text,
+      text:        text,
       entity_type: "offer",
-      entity: offer,
-      channel: Channel.reviewer,
-      call: true)
+      entity:      offer,
+      channel:     offer.call_notify_channels,
+      call:        true)
   end
 end

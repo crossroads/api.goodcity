@@ -1,18 +1,14 @@
-module Goodcity
-  class RedisStore
-    attr_accessor :params
+require 'redis'
 
+module Goodcity
+  class Redis < ::Redis
     def initialize(options = {})
-      @params = {
+      opts = {
         namespace: ENV['REDIS_NAMESPACE'] || 'goodcity',
         password:  ENV['REDIS_PASSWORD'],
         url:       ENV['REDIS_URL'] || 'redis://localhost:6379'
       }
-      @params.merge!(options)
-    end
-
-    def init
-      Redis.new(@params)
+      super(opts.merge(options))
     end
   end
 end
