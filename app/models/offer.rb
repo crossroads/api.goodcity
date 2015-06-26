@@ -228,7 +228,9 @@ class Offer < ActiveRecord::Base
 
   def call_notify_channels
     channel_names = Channel.user_ids(subscribed_users(true))
-    channel_names = Channel.supervisor if (channel_names - [reviewer_channel]).blank?
+    if (channel_names - [reviewer_channel]).blank?
+      channel_names = Channel.user_ids(User.supervisors.pluck(:id))
+    end
     channel_names << reviewer_channel
     channel_names.uniq.compact
   end
