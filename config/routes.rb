@@ -78,7 +78,8 @@ Rails.application.routes.draw do
       get "crossroads_transports" => "crossroads_transports#index"
 
       post "twilio/voice" => "twilio#voice"
-      post "ask_voicemail" => "twilio#ask_voicemail"
+      post "ask_callback" => "twilio#ask_callback"
+      get  "accept_callback" => "twilio#accept_callback"
       get  "accept_voicemail" => "twilio#accept_voicemail"
       get  "send_voicemail" => "twilio#send_voicemail"
       get  "twilio/accept_call" => "twilio#accept_call"
