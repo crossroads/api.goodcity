@@ -425,7 +425,7 @@
           "offerId" : "10893",
           "name" : "Ocie",
           "mobile" : "+85265288776",
-          "gogovanOptionId": "25"
+          "gogovanOptionId" : "25"
         }
       },
       "response_data" : {
@@ -2718,6 +2718,34 @@
           "image_id" : 3266,
           "address_id" : 3290
         }
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "versions#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/versions",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "versions" : [
+          {
+            "id" : 228,
+            "event" : "create",
+            "item_id" : 339,
+            "item_type" : "Item",
+            "whodunnit" : "2684",
+            "whodunnit_name" : "Concepcion Price",
+            "state" : "submitted",
+            "created_at" : "2015-06-30T10:59:36Z"
+          }
+        ]
       },
       "code" : "200",
       "show_in_doc" : 1,

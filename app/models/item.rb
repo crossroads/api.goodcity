@@ -1,5 +1,6 @@
 class Item < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+  has_paper_trail class_name: 'Version', meta: { related: :offer },
+    only: [:donor_description, :donor_condition_id, :state]
   include Paranoid
   include StateMachineScope
   include PushUpdates
