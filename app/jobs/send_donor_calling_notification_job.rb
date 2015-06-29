@@ -5,7 +5,7 @@ class SendDonorCallingNotificationJob < ActiveJob::Base
     user     = User.find_by(id: user_id)
     offer_id = user.try(:recent_active_offer_id)
     offer    = Offer.find_by(id: offer_id)
-    text     = "#{user.full_name} calling now: "
+    text     = "#{user.full_name} calling now.. "
 
     PushService.new.send_notification(
       text:        text,
