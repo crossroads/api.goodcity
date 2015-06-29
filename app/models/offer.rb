@@ -222,6 +222,19 @@ class Offer < ActiveRecord::Base
       is_admin_app: true)
   end
 
+  def reviewer_channel
+    reviewed_by_id && "user_#{reviewed_by_id}"
+  end
+
+  def call_notify_channels
+    channel_names = Channel.user_ids(subscribed_users(true))
+    if (channel_names - [reviewer_channel]).blank?
+      channel_names = Channel.user_ids(User.supervisors.pluck(:id))
+    end
+    channel_names << reviewer_channel
+    channel_names.uniq.compact
+  end
+
   private
 
   def cancel_message(time)
