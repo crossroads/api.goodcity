@@ -34,7 +34,7 @@ class Ability
       can :destroy, Item if reviewer || supervisor
 
       #Version
-      can :index, Version, related_type: "Offer", related_id: user.offers.map(&:id),
+      can :index, Version, related_type: "Offer", related_id: user.offers.pluck(:id),
         item_type: ["Item", "Package"]
 
       can :index, Version, related_type: "Offer", item_type: ["Item", "Package"] if reviewer || supervisor
