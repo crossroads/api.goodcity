@@ -76,16 +76,19 @@ Rails.application.routes.draw do
       get "timeslots" => "timeslots#index"
       get "gogovan_transports" => "gogovan_transports#index"
       get "crossroads_transports" => "crossroads_transports#index"
+      get "versions" => "versions#index"
 
       post "twilio/voice" => "twilio#voice"
-      post "ask_voicemail" => "twilio#ask_voicemail"
-      get "accept_voicemail" => "twilio#accept_voicemail"
-      get "send_voicemail" => "twilio#send_voicemail"
-      get "versions" => "versions#index"
-      get "twilio/accept_call" => "twilio#accept_call"
+      post "ask_callback" => "twilio#ask_callback"
+      get  "accept_callback" => "twilio#accept_callback"
+      get  "accept_voicemail" => "twilio#accept_voicemail"
+      get  "send_voicemail" => "twilio#send_voicemail"
+      get  "twilio/accept_call" => "twilio#accept_call"
       post "twilio/assignment" => "twilio#assignment"
       post "hold_gc_donor" => "twilio#hold_gc_donor"
-      get "twilio/hold_music" => "twilio#hold_music"
+      get  "twilio/hold_music" => "twilio#hold_music"
+      post "twilio/call_summary" => "twilio#call_summary"
+      post "twilio/call_fallback" => "twilio#call_fallback"
     end
   end
 end
