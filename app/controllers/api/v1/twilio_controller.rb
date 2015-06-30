@@ -52,9 +52,6 @@ module Api::V1
       inactive_caller, user = User.inactive?(params["From"]) if params["From"]
 
       response = Twilio::TwiML::Response.new do |r|
-        r.Say "Hello #{user.full_name}," if user
-        r.Say THANK_YOU_CALLING_MESSAGE
-
         if(inactive_caller)
           r.Dial { |d| d.Number GOODCITY_NUMBER }
         else
@@ -73,8 +70,10 @@ module Api::V1
     def hold_gc_donor
       notify_reviewer
 
-      if(params['QueueTime'].to_i < 45)
+      if(params['QueueTime'].to_i < TWILIO_QUEUE_WAIT_TIME)
         response = Twilio::TwiML::Response.new do |r|
+          r.Say "Hello #{user.full_name}," if user
+          r.Say THANK_YOU_CALLING_MESSAGE
           r.Play api_v1_twilio_hold_music_url
         end
       else

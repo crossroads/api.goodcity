@@ -9,3 +9,4 @@ SYSTEM_USER_MOBILE = "+85264522773"
 THANK_YOU_CALLING_MESSAGE = "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
 GOODCITY_NUMBER = "+85222729345"
 TWILIO_VOICE_NUMBER = "+85258087803"
+TWILIO_QUEUE_WAIT_TIME = 30
