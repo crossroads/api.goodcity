@@ -1,6 +1,7 @@
 require 'paper_trail/version'
 
 class Version < PaperTrail::Version
+  include PushUpdates
   belongs_to :related, polymorphic: true
 
   scope :by_user, ->(user_id) { where('whodunnit = ?', user_id.to_s) }
@@ -19,11 +20,18 @@ class Version < PaperTrail::Version
       ids: objects.map(&:id), type: objects.last.class.name)
   }
 
+  scope :items_log, -> { where("item_type IN (?)", %w(Item Package)) }
+
   def to_s
     "id:#{self.id} #{self.item_type}##{self.item_id} #{self.event}"
   end
 
   def self.past_month_activities(objects, donor_id)
     related_to_multiple(objects).except_user(donor_id).past_month
+  end
+
+  # required by PushUpdates and PaperTrail modules
+  def offer
+    related_type == "Offer" ? related : nil
   end
 end
