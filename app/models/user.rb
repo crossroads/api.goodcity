@@ -134,7 +134,8 @@ class User < ActiveRecord::Base
   end
 
   def recent_active_offer_id
-    Version.for_offers.by_user(id).last.try(:related_id)
+    offer_version = Version.for_offers.by_user(id).last
+    offer_version.try(:related_id) || offer_version.try(:item_id)
   end
 
   private
