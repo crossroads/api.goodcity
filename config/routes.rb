@@ -89,6 +89,12 @@ Rails.application.routes.draw do
       get  "twilio/hold_music" => "twilio#hold_music"
       post "twilio/call_summary" => "twilio#call_summary"
       post "twilio/call_fallback" => "twilio#call_fallback"
+
+      post "twilio/connect_outbound_call" => "twilio#connect_outbound_call"
+      post "twilio/completed_outbound_call" => "twilio#completed_outbound_call"
+      post "twilio/outbound_call_status" => "twilio#outbound_call_status"
+      get  "twilio/twilio_generate_call_token" =>
+        "twilio#twilio_generate_call_token"
     end
   end
 end

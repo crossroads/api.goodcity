@@ -5,7 +5,7 @@ module Api::V1
   class TwilioController < Api::V1::ApiController
     include Webhookable
 
-    after_filter :set_header, except: [:assignment, :hold_music]
+    after_filter :set_header, except: [:assignment, :hold_music, :twilio_generate_call_token]
     skip_authorization_check
     skip_before_action :validate_token
     skip_before_action :verify_authenticity_token
@@ -20,12 +20,44 @@ module Api::V1
           instruction: 'dequeue',
           post_work_activity_sid: activity_sid("Offline"),
           from: TWILIO_VOICE_NUMBER,
+          url: api_v1_twilio_answer_donor_call_url,
           to: mobile
         }
       else
         assignment_instruction = {}
       end
       render json: assignment_instruction.to_json
+    end
+
+    def connect_outbound_call
+      caller_id, offer_id, mobile = params["phone_number"].split("#")
+      redis.hmset("twilio_outbound_#{mobile}", :offer_id, offer_id, :caller_id, caller_id)
+
+      response = Twilio::TwiML::Response.new do |r|
+        r.Dial callerId: TWILIO_VOICE_NUMBER, action: "/api/v1/twilio/completed_outbound_call" do |d|
+          d.Number mobile
+        end
+      end
+      render_twiml response
+    end
+
+    def completed_outbound_call
+      response = Twilio::TwiML::Response.new do |r|
+        unless params["DialCallStatus"] == "completed"
+          r.Say "Couldn't reach try again soon. Goodbye."
+        end
+        r.Hangup
+      end
+      render_twiml response
+    end
+
+    def outbound_call_status
+      child_call = twilio_client.calls.list(parent_call_sid: params["CallSid"])[0]
+      offer_id = redis.hmget("twilio_outbound_#{child_call.to}", :offer_id)
+      user_id  = redis.hmget("twilio_outbound_#{child_call.to}", :caller_id)
+      redis.del("twilio_outbound_#{child_call.to}")
+      SendOutboundCallStatusJob.perform_later(user_id, offer_id, child_call.status)
+      render json: {}
     end
 
     # This action will be called from twilio when call is completed
@@ -129,6 +161,10 @@ module Api::V1
       send_file "app/assets/audio/30_sec_hold_music.mp3", type: "audio/mpeg"
     end
 
+    def twilio_generate_call_token
+      render json: { token: twilio_outgoing_call_capability.generate }
+    end
+
     private
 
     def activity_sid(friendly_name)
@@ -165,8 +201,19 @@ module Api::V1
         twilio_creds["auth_token"], twilio_creds["workspace_sid"])
     end
 
+    def twilio_client
+      Twilio::REST::Client.new(twilio_creds["account_sid"],
+        twilio_creds["auth_token"])
+    end
+
     def twilio_creds
       @twilio ||= Rails.application.secrets.twilio
+    end
+
+    def twilio_outgoing_call_capability
+      capability ||= Twilio::Util::Capability.new(twilio_creds["account_sid"], twilio_creds["auth_token"])
+      capability.allow_client_outgoing(twilio_creds["call_app_sid"])
+      capability
     end
 
     def redis_storage(key, value)
@@ -178,8 +225,8 @@ module Api::V1
       @redis ||= Goodcity::Redis.new
     end
 
-    def user
-      @user ||= User.user_exist?(params["From"])
+    def user(mobile = nil)
+      @user ||= User.user_exist?(mobile || params["From"])
     end
   end
 end
