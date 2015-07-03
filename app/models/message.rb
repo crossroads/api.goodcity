@@ -20,7 +20,7 @@ class Message < ActiveRecord::Base
   scope :non_private, -> { where(is_private: false) }
 
   # used to override the state value during serialization
-  attr_accessor :state_value
+  attr_accessor :state_value, :is_call_log
 
   after_create do
     subscribe_users_to_message
@@ -61,6 +61,7 @@ class Message < ActiveRecord::Base
   end
 
   def send_new_message_notification
+    return if is_call_log
     subscribed_user_channels = subscribed_user_channels()
     text = self.body.truncate(150, separator: ' ')
 
