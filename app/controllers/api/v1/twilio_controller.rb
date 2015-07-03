@@ -31,7 +31,9 @@ module Api::V1
 
     def connect_outbound_call
       caller_id, offer_id, mobile = params["phone_number"].split("#")
-      redis.hmset("twilio_outbound_#{mobile}", :offer_id, offer_id, :caller_id, caller_id)
+      redis.hmset("twilio_outbound_#{mobile}",
+        :offer_id, offer_id,
+        :caller_id, caller_id)
 
       response = Twilio::TwiML::Response.new do |r|
         r.Dial callerId: TWILIO_VOICE_NUMBER, action: "/api/v1/twilio/completed_outbound_call" do |d|
@@ -42,9 +44,10 @@ module Api::V1
     end
 
     def completed_outbound_call
+      child_call = twilio_client.calls.list(parent_call_sid: params["CallSid"])[0]
       response = Twilio::TwiML::Response.new do |r|
         unless params["DialCallStatus"] == "completed"
-          r.Say "Couldn't reach try again soon. Goodbye."
+          r.Say "Couldn't reach #{user(child_call.to).full_name} try again soon. Goodbye."
         end
         r.Hangup
       end
