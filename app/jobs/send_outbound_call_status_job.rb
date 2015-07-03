@@ -12,7 +12,12 @@ class SendOutboundCallStatusJob < ActiveJob::Base
           "Call attempt failed: #{status.titleize}"
         end
 
-      offer.messages.create(body: text, sender: user, is_private: true)
+      offer.messages.create(
+        body: text,
+        sender: user,
+        is_private: true,
+        is_call_log: true
+      )
     end
   end
 end
