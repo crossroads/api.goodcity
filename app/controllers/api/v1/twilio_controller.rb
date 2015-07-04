@@ -156,7 +156,7 @@ module Api::V1
     def ask_callback(r)
       # ask Donor to leave message on voicemail
       r.Gather numDigits: "1", timeout: 3,  action: api_v1_accept_callback_path do |g|
-        g.Say "Unfortunately it none of our staff are able to take your call at the moment."
+        g.Say "Unfortunately none of our staff are able to take your call at the moment."
         g.Say "You can request a call-back without leaving a message by pressing 1."
         g.Say "Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you."
       end
@@ -205,10 +205,29 @@ module Api::V1
       - Send Call notification to Admin Staff.
     EOS
     def accept_call
-      unless redis.get("twilio_donor_#{params['donor_id']}")
-        redis_storage("twilio_donor_#{params['donor_id']}", params['mobile'])
+      donor_id = params['donor_id']
+
+      unless redis.get("twilio_donor_#{donor_id}")
+        redis_storage("twilio_donor_#{donor_id}", params['mobile'])
         offline_worker.update(activity_sid: activity_sid('Idle'))
-        AcceptedCallNotificationJob.perform_later(params['donor_id'], params['mobile'])
+
+        donor    = User.find(donor_id)
+        receiver = User.find_by_mobile(params['mobile'])
+        offer    = Offer.find(donor.recent_active_offer_id)
+
+        PushService.new.send_call_answered_notification(
+          channel:       offer.call_notify_channels - ["user_#{receiver.id}"],
+          donor_id:      donor_id,
+          donor_name:    donor.full_name,
+          receiver_name: receiver.full_name
+        )
+
+        Version.create(
+          item_type:    'Offer',
+          item_id:      offer.id,
+          event:        'call_accepted',
+          whodunnit:    receiver.id.to_s
+        )
       end
       render json: {}
     end
@@ -229,7 +248,21 @@ module Api::V1
     def notify_reviewer
       # notify only once when at least one worker is offline
       if offline_worker && redis.get("twilio_notify_#{user.id}").blank?
-        SendDonorCallingNotificationJob.perform_later(user.id)
+        offer = Offer.find(user.recent_active_offer_id)
+
+        PushService.new.send_incoming_call_notification(
+          channel:       offer.call_notify_channels,
+          donor_id:      user.id,
+          donor_name:    user.full_name
+        )
+
+        Version.create(
+          item_type:    'Offer',
+          item_id:      offer.id,
+          event:        'donor_called',
+          whodunnit:    user.id.to_s
+        )
+
         redis_storage("twilio_notify_#{user.id}", true)
       end
     end

@@ -53,10 +53,9 @@ describe Message, type: :model do
     it "notify subscribed users except sender" do
       message1 = create_message(sender_id: donor.id)
       message2 = build_message(sender_id: reviewer.id, body: "Sample message")
-      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, args|
-        expect(args[:text]).to eq("Sample message")
-        expect(args[:entity_type]).to eq("message")
-        expect(args[:entity]).to eq(message2)
+      expect_any_instance_of(PushService).to receive(:send_new_message_notification) do |obj, args|
+        expect(args[:message_object]).to eq(message2)
+        expect(args[:message_object].body).to eq("Sample message")
         expect(args[:channel]).to eq(["user_#{donor.id}"])
       end
       message2.save
@@ -67,8 +66,8 @@ describe Message, type: :model do
       message1 = create_message(sender_id: donor.id)
       message2 = create_message(sender_id: supervisor.id, is_private: true)
       message3 = build_message(sender_id: reviewer.id, is_private: true)
-      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, args|
-        expect(args[:entity]).to eq(message3)
+      expect_any_instance_of(PushService).to receive(:send_new_message_notification) do |obj, args|
+        expect(args[:message_object]).to eq(message3)
         expect(args[:channel]).to_not include(["user_#{donor.id}"])
       end
       message3.save
@@ -76,7 +75,7 @@ describe Message, type: :model do
 
     it "notify all supervisors if no supervisor is subscribed in private thread" do
       message = build_message(sender_id: reviewer.id, body: "Sample message", is_private: true)
-      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, args|
+      expect_any_instance_of(PushService).to receive(:send_new_message_notification) do |obj, args|
         expect(args[:channel]).to eq(["supervisor"])
       end
       message.save

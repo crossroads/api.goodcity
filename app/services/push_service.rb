@@ -27,39 +27,53 @@ class PushService
     notify
   end
 
-  # new offer to reviewers
-  # first reviewer message to supervisors
-  # new message to subscribed users
-  # todo: offer accepted
-  def send_notification(text:, entity_type:, entity:, channel:, is_admin_app: false, call:nil)
+  def send_new_offer_notification(channel:, offer:, is_admin_app: false)
+    send_notification channel: channel, is_admin_app: is_admin_app, data: {
+      category:   'new_offer',
+      message:    I18n.t("notification.new_offer", name: offer.created_by.full_name),
+      offer_id:   offer.id,
+      author_id:  offer.created_by_id
+    }
+  end
 
+  def send_new_message_notification(channel:, message_object:, is_admin_app: false)
+    send_notification channel: channel, is_admin_app: is_admin_app, data: {
+      category:   'message',
+      message:    message_object.body.truncate(150, separator: ' '),
+      is_private: message_object.is_private,
+      offer_id:   message_object.offer.id,
+      item_id:    message_object.item.try(:id),
+      author_id:  message_object.sender_id
+    }
+  end
+
+  def send_incoming_call_notification(channel:, donor_id:, donor_name:)
+    send_notification channel: channel, is_admin_app: true, data: {
+      category:   'incoming_call',
+      message:    "#{donor_name} calling now..",
+      author_id:  donor_id
+    }
+  end
+
+  def send_call_answered_notification(channel:, donor_id:, donor_name:, receiver_name:)
+    send_notification channel: channel, is_admin_app: true, data: {
+      category:   'call_answered',
+      message:    "Call from #{donor_name} has been accepted by #{receiver_name}",
+      author_id:  donor_id
+    }
+  end
+
+  private
+
+  def send_notification(channel:, is_admin_app:, data:)
+    @data = data
+    @data[:date] = Time.now.to_json.tr('"','')
     @channel = channel
     @event   = "notification"
-    @data    = pusher_data(text, entity_type, entity, call)
     notify
 
     if Channel.user_channel?(channel)
-      AzureNotifyJob.perform_later(channel, notification_data(text, entity), is_admin_app)
+      AzureNotifyJob.perform_later(channel, data, is_admin_app)
     end
-  end
-
-  def pusher_data(text, entity_type, entity, call=nil)
-    # ActiveJob::Serializer doesn't support Time so convert to string
-    {
-      text: text,
-      entity_type: entity_type,
-      date: Time.now.to_json.tr('"',''),
-      entity: entity,
-      call: call
-    }
-  end
-
-  def notification_data(text, entity)
-    {
-      message:    text,
-      offer_id:   entity.try(:offer).try(:id),
-      item_id:    entity.try(:item_id),
-      is_private: entity.try(:is_private)
-    }
   end
 end

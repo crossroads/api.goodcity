@@ -52,8 +52,12 @@ class AzureNotificationsService
     end
   end
 
+  def payload
+    '"category":"$(category)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "author_id":"$(author_id)", "is_private":"$(is_private)"'
+  end
+
   def gcm_platform_xml(handle, tags)
-    template = '{"data":{"message":"$(message)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "is_private":"$(is_private)"}}'
+    template = "{\"data\":{\"message\":\"$(message)\", #{payload}}}"
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
@@ -67,7 +71,7 @@ class AzureNotificationsService
   end
 
   def aps_platform_xml(handle, tags)
-    template = '{"aps":{"alert":"$(message)","badge":1,"sound":"default", "payload":{"offer_id":"$(offer_id)", "item_id":"$(item_id)", "is_private":"$(is_private)"}}}'
+    template = "{\"aps\":{\"alert\":\"$(message)\",\"badge\":1,\"sound\":\"default\", \"payload\":{#{payload}}}"
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
@@ -81,11 +85,11 @@ class AzureNotificationsService
   end
 
   def wns_platform_xml(handle, tags)
-    # launch attribute = {offer_id:$(offer_id), item_id:$(item_id), is_private:$(is_private)}
-    # {} are used for expressions in template so using it like this {'{offer_id:' + $(offer_id) + '...}'}
-    # https://msdn.microsoft.com/en-us/library/azure/dn530748.aspx
+    # {} are used for expressions in template - https://msdn.microsoft.com/en-us/library/azure/dn530748.aspx
+    # so turning {prop:$(prop)} into {'{prop:' + $(prop) + '}'}
+    payload_attr = "{'{#{payload}}'}".gsub(/(\$\([^)]+\))/, "' + \\1 + '").encode(:xml => :attr)
     template =
-      "<toast launch=\"{'{&quot;offer_id&quot;:&quot;' + $(offer_id) + '&quot;,&quot;item_id&quot;:&quot;' + $(item_id) + '&quot;,&quot;is_private&quot;:&quot;' + $(is_private) + '&quot;}'}\">
+      "<toast launch=#{payload_attr}>
         <visual>
           <binding template=\"ToastText01\">
             <text id=\"1\">$(message)</text>

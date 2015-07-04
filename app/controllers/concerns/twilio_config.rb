@@ -69,7 +69,7 @@ module TwilioConfig
   end
 
   def user(mobile = nil)
-    @user ||= User.user_exist?(mobile || params["From"])
+    @user ||= User.find_by_mobile(mobile || params["From"])
   end
 
   def voice_number
