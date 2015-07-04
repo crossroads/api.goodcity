@@ -195,8 +195,11 @@ class Offer < ActiveRecord::Base
   end
 
   def send_new_offer_notification
-    text = I18n.t("notification.new_offer", name: self.created_by.full_name)
-    send_reviewers_notification(text)
+    PushService.new.send_new_offer_notification(
+      channel: Channel.reviewer,
+      offer: self,
+      is_admin_app: true
+    )
   end
 
   def send_new_offer_alert
@@ -211,15 +214,6 @@ class Offer < ActiveRecord::Base
   def send_ggv_cancel_order_message(ggv_time)
     message = cancel_message(ggv_time)
     messages.create(body: message, sender: User.system_user)
-  end
-
-  def send_reviewers_notification(text)
-    PushService.new.send_notification(
-      text: text,
-      entity_type: "offer",
-      entity: self,
-      channel: Channel.reviewer,
-      is_admin_app: true)
   end
 
   def reviewer_channel

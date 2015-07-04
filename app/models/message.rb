@@ -71,16 +71,15 @@ class Message < ActiveRecord::Base
 
     donor_channel = channels.delete("user_#{offer.created_by_id}")
 
-    service.send_notification(text: text, entity_type: "message",
-      entity: self, channel: [donor_channel]) if donor_channel
+    service.send_new_message_notification(channel: [donor_channel], message_object: self,
+      is_admin_app: false) if donor_channel
 
-    service.send_notification(text: text, entity_type: "message",
-      entity: self, channel: channels, is_admin_app: true) unless channels.empty?
+    service.send_new_message_notification(channel: channels, message_object: self,
+      is_admin_app: true) unless channels.empty?
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
-      service.send_notification(text: text, entity_type: "message",
-        entity: self, channel: Channel.supervisor, is_admin_app: true)
+      service.send_new_message_notification(channel: Channel.supervisor, message_object: self, is_admin_app: true)
     end
   end
 

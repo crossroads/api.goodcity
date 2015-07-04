@@ -46,18 +46,20 @@ describe PushService do
     end
   end
 
-  describe "send_notification" do
+  describe "send_new_message_notification" do
     it do
-      text = "A notification text string"
-      entity_type = "message"
-      entity = OpenStruct.new(id:1, dummy: "entity", prop2: "dummy")
+      entity = OpenStruct.new(id:1, dummy: "entity", prop2: "dummy", body: "A notification text string",
+        is_private: true, sender_id: 1, offer: OpenStruct.new(id:2))
 
       expect(service).to receive(:notify)
       expect(AzureNotifyJob).to receive(:perform_later)
-      service.send_notification(text: text, entity_type: entity_type, entity: entity, channel: [one_channel])
-      expect(service.data[:text]).to eq(text)
-      expect(service.data[:entity_type]).to eq(entity_type)
-      expect(service.data[:entity].as_json).to eq(entity.as_json)
+      service.send_new_message_notification(channel: [one_channel], message_object: entity)
+      expect(service.data[:category]).to eq('message')
+      expect(service.data[:message]).to eq('A notification text string')
+      expect(service.data[:is_private]).to eq(true)
+      expect(service.data[:offer_id]).to eq(2)
+      expect(service.data[:item_id]).to eq(nil)
+      expect(service.data[:author_id]).to eq(1)
       expect(service.channel).to eq([one_channel])
       expect(service.event).to eq("notification")
     end
