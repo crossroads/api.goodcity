@@ -2545,6 +2545,131 @@
       "recorded" : true
     }
   ],
+  "twilio_outbound#call_status" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/call_status",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "completed",
+        "Duration" : "1",
+        "CallDuration" : "17",
+        "Timestamp" : "Mon, 06 Jul 2015 11:36:41 +0000",
+        "CallbackSource" : "call-progress-events",
+        "SequenceNumber" : "0"
+      },
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio_outbound#completed_call" : [
+    {
+      "title" : "When call completed between Admin and Donor",
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/completed_call",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "in-progress",
+        "DialCallSid" : "CAf6de0c98d9d697b29ec60797f9e76ac2",
+        "DialCallStatus" : "completed",
+        "DialCallDuration" : "30"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Hangup/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "When call to Donor is failed, not-answered or busy.",
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/completed_call",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "in-progress",
+        "DialCallSid" : "CAf6de0c98d9d697b29ec60797f9e76ac2",
+        "DialCallStatus" : "no-answer",
+        "DialCallDuration" : "30"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Couldn't reach Monserrat Boyle try again soon. Goodbye.</Say><Hangup/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio_outbound#connect_call" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/connect_call",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "ringing",
+        "phone_number" : "9#148#+85251111111"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Dial callerId=\"+163456799\" action=\"/api/v1/twilio_outbound/completed_call\"><Number>+85251111111</Number></Dial></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio_outbound#generate_call_token" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/twilio_outbound/generate_call_token",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlOmNsaWVudDpvdXRnb2luZz9hcHBTaWQ9Y3hjdnhodjg5ZmRiYjBiMDI5OWM5NjY4Y2RmOTUzNCIsImlzcyI6ImYwMmUzYzg1NTcyZGM5YWQ3Y2I3N2MyYTYzOGUzYmUyNCIsImV4cCI6MTQzNjI1Nzc3MH0.iQtu0sj_lsQloAa-hi8cTmyCxSsbGvkIxRw3SdK_u0E"
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "users#index" : [
     {
       "verb" : "GET",
