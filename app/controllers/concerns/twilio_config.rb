@@ -15,6 +15,12 @@ module TwilioConfig
 
   private
 
+  def voice_number
+    number = twilio_creds["voice_number"].to_s
+    number.prepend("+") unless number.starts_with?("+")
+    number
+  end
+
   def child_call
     @call = twilio_client.calls.list(parent_call_sid: params["CallSid"])[0]
   end
