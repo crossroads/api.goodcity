@@ -1,48 +1,23 @@
 require "twilio-ruby"
-require "goodcity/redis"
 
 module Api::V1
   class TwilioController < Api::V1::ApiController
     include TwilioConfig
 
-    after_filter :set_header, except: [:assignment, :hold_music, :twilio_generate_call_token]
-    skip_authorization_check
-    skip_before_action :validate_token
-    skip_before_action :verify_authenticity_token
+    after_filter :set_header, except: [:assignment, :hold_music]
 
-    # OUTBOUND CALL : START
-    def connect_outbound_call
-      caller_id, offer_id, mobile = params["phone_number"].split("#")
-      redis.hmset("twilio_outbound_#{mobile}",
-        :offer_id, offer_id,
-        :caller_id, caller_id)
-
-      response = Twilio::TwiML::Response.new do |r|
-        r.Dial callerId: voice_number, action: api_v1_twilio_completed_outbound_call_path do |d|
-          d.Number mobile
-        end
-      end
-      render_twiml response
+    resource_description do
+      short "Handle Twilio Inbound and Outbound Calls"
+      description <<-EOS
+        - Call from Donor is notified to Goodcity Staff who is subscribed
+          to the Donor's recent Offer's private message thread. Twilio will
+          redirect it to the person who accepts the call.
+          (Implemented using Twilio's Taskrouter feature.)
+      EOS
+      formats ['application/json', 'text/xml']
+      error 404, "Not Found"
+      error 500, "Internal Server Error"
     end
-
-    def completed_outbound_call
-      response = Twilio::TwiML::Response.new do |r|
-        unless params["DialCallStatus"] == "completed"
-          r.Say "Couldn't reach #{user(child_call.to).full_name} try again soon. Goodbye."
-        end
-        r.Hangup
-      end
-      render_twiml response
-    end
-
-    def outbound_call_status
-      offer_id = redis.hmget("twilio_outbound_#{child_call.to}", :offer_id)
-      user_id  = redis.hmget("twilio_outbound_#{child_call.to}", :caller_id)
-      redis.del("twilio_outbound_#{child_call.to}")
-      SendOutboundCallStatusJob.perform_later(user_id, offer_id, child_call.status)
-      render json: {}
-    end
-    # OUTBOUND CALL : END
 
     def assignment
       set_json_header
@@ -163,10 +138,6 @@ module Api::V1
       send_file "app/assets/audio/30_sec_hold_music.mp3", type: "audio/mpeg"
     end
 
-    def twilio_generate_call_token
-      render json: { token: twilio_outgoing_call_capability.generate }
-    end
-
     private
 
     def delete_redis_keys(user_id)
@@ -185,14 +156,6 @@ module Api::V1
     def redis_storage(key, value)
       redis.set(key, value)
       redis.expireat(key, Time.now.to_i + 60)
-    end
-
-    def redis
-      @redis ||= Goodcity::Redis.new
-    end
-
-    def user(mobile = nil)
-      @user ||= User.user_exist?(mobile || params["From"])
     end
   end
 end
