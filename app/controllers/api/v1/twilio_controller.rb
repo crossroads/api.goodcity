@@ -18,7 +18,7 @@ module Api::V1
         :caller_id, caller_id)
 
       response = Twilio::TwiML::Response.new do |r|
-        r.Dial callerId: twilio_creds["voice_number"], action: api_v1_twilio_completed_outbound_call_path do |d|
+        r.Dial callerId: voice_number, action: api_v1_twilio_completed_outbound_call_path do |d|
           d.Number mobile
         end
       end
@@ -53,8 +53,7 @@ module Api::V1
         assignment_instruction = {
           instruction: 'dequeue',
           post_work_activity_sid: activity_sid("Offline"),
-          from: twilio_creds["voice_number"],
-          url: api_v1_twilio_answer_donor_call_url,
+          from: voice_number,
           to: mobile
         }
       else
