@@ -3,12 +3,46 @@ require "goodcity/redis"
 
 module Api::V1
   class TwilioController < Api::V1::ApiController
-    include Webhookable
+    include TwilioConfig
 
-    after_filter :set_header, except: [:assignment, :hold_music]
+    after_filter :set_header, except: [:assignment, :hold_music, :twilio_generate_call_token]
     skip_authorization_check
     skip_before_action :validate_token
     skip_before_action :verify_authenticity_token
+
+    # OUTBOUND CALL : START
+    def connect_outbound_call
+      caller_id, offer_id, mobile = params["phone_number"].split("#")
+      redis.hmset("twilio_outbound_#{mobile}",
+        :offer_id, offer_id,
+        :caller_id, caller_id)
+
+      response = Twilio::TwiML::Response.new do |r|
+        r.Dial callerId: voice_number, action: api_v1_twilio_completed_outbound_call_path do |d|
+          d.Number mobile
+        end
+      end
+      render_twiml response
+    end
+
+    def completed_outbound_call
+      response = Twilio::TwiML::Response.new do |r|
+        unless params["DialCallStatus"] == "completed"
+          r.Say "Couldn't reach #{user(child_call.to).full_name} try again soon. Goodbye."
+        end
+        r.Hangup
+      end
+      render_twiml response
+    end
+
+    def outbound_call_status
+      offer_id = redis.hmget("twilio_outbound_#{child_call.to}", :offer_id)
+      user_id  = redis.hmget("twilio_outbound_#{child_call.to}", :caller_id)
+      redis.del("twilio_outbound_#{child_call.to}")
+      SendOutboundCallStatusJob.perform_later(user_id, offer_id, child_call.status)
+      render json: {}
+    end
+    # OUTBOUND CALL : END
 
     def assignment
       set_json_header
@@ -19,7 +53,7 @@ module Api::V1
         assignment_instruction = {
           instruction: 'dequeue',
           post_work_activity_sid: activity_sid("Offline"),
-          from: TWILIO_VOICE_NUMBER,
+          from: voice_number,
           to: mobile
         }
       else
@@ -56,7 +90,7 @@ module Api::V1
           r.Dial { |d| d.Number GOODCITY_NUMBER }
         else
           task = { "selected_language" => "en", "user_id" => user.id }.to_json
-          r.Enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: "/api/v1/hold_gc_donor", waitUrlMethod: "post" do |t|
+          r.Enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: api_v1_hold_gc_donor_path, waitUrlMethod: "post" do |t|
             t.TaskAttributes task
           end
 
@@ -84,7 +118,7 @@ module Api::V1
 
     def ask_callback(r)
       # ask Donor to leave message on voicemail
-      r.Gather numDigits: "1", timeout: 3,  action: "/api/v1/accept_callback", method: "get" do |g|
+      r.Gather numDigits: "1", timeout: 3,  action: api_v1_accept_callback_path, method: "get" do |g|
         g.Say "Unfortunately it none of our staff are able to take your call at the moment."
         g.Say "You can request a call-back without leaving a message by pressing 1."
         g.Say "Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you."
@@ -103,7 +137,7 @@ module Api::V1
     end
 
     def accept_voicemail(r)
-      r.Record maxLength: "60", playBeep: true, action: "/api/v1/send_voicemail", method: "get"
+      r.Record maxLength: "60", playBeep: true, action: api_v1_send_voicemail_path, method: "get"
     end
 
     def send_voicemail
@@ -129,23 +163,15 @@ module Api::V1
       send_file "app/assets/audio/30_sec_hold_music.mp3", type: "audio/mpeg"
     end
 
-    private
-
-    def activity_sid(friendly_name)
-      task_router.activities.list(friendly_name: friendly_name).first.sid
+    def twilio_generate_call_token
+      render json: { token: twilio_outgoing_call_capability.generate }
     end
+
+    private
 
     def delete_redis_keys(user_id)
       redis.del("twilio_donor_#{user_id}")
       redis.del("twilio_notify_#{user_id}")
-    end
-
-    def idle_worker
-      task_router.workers.list(activity_name: "Idle").first
-    end
-
-    def mark_worker_offline
-      idle_worker && idle_worker.update(activity_sid: activity_sid('Offline'))
     end
 
     def notify_reviewer
@@ -154,19 +180,6 @@ module Api::V1
         SendDonorCallingNotificationJob.perform_later(user.id)
         redis_storage("twilio_notify_#{user.id}", true)
       end
-    end
-
-    def offline_worker
-      task_router.workers.list(activity_name: "Offline").first
-    end
-
-    def task_router
-      @client = Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
-        twilio_creds["auth_token"], twilio_creds["workspace_sid"])
-    end
-
-    def twilio_creds
-      @twilio ||= Rails.application.secrets.twilio
     end
 
     def redis_storage(key, value)
@@ -178,8 +191,8 @@ module Api::V1
       @redis ||= Goodcity::Redis.new
     end
 
-    def user
-      @user ||= User.user_exist?(params["From"])
+    def user(mobile = nil)
+      @user ||= User.user_exist?(mobile || params["From"])
     end
   end
 end

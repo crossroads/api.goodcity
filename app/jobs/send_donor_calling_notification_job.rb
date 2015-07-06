@@ -1,5 +1,9 @@
 class SendDonorCallingNotificationJob < ActiveJob::Base
-  queue_as :default
+  queue_as :high
+
+  rescue_from(Exception) do
+    retry_job wait: 5.seconds
+  end
 
   def perform(user_id)
     user     = User.find_by(id: user_id)
