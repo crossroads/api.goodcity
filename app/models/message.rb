@@ -12,7 +12,7 @@ class Message < ActiveRecord::Base
 
   default_scope do
     unless User.current_user.try(:staff?)
-      Message.where(is_private: false)
+      where("is_private = 'f'")
     end
   end
 
