@@ -19,18 +19,22 @@ module Api::V1
       error 500, "Internal Server Error"
     end
 
+    def_param_group :twilio_params do
+      param :ApplicationSid, String, desc: "Twilio Twiml Application SID"
+      param :CallSid, String, desc: "SID of call initialted by Admin"
+      param :AccountSid, String, desc: "Twilio Account SID"
+      param :ApiVersion, String, desc: "Twilio API version"
+      param :Direction, String, desc: "inbound or outbound"
+      param :Caller, String, desc:  "Name of the caller or phone number ex: 'client:Anonymous'"
+      param :From, String, desc:  "Name of the caller or phone number ex: 'client:Anonymous'"
+    end
+
     api :POST, '/v1/twilio_outbound/connect_call', "When Admin make a call \
     to Donor from application using Twilio Twiml app, it will request for the\
     response to be sent over it."
-    param :AccountSid, String, desc: "Twilio Account SID"
-    param :ApplicationSid, String, desc: "Twilio Twiml Application SID"
-    param :Caller, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
+    param_group :twilio_params
     param :CallStatus, String, desc: "Status of Call ex: 'ringing'"
     param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<current_user_id>#<offer_id>#<phone_number>'"
-    param :CallSid, String, desc: "SID of current call"
-    param :From, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
-    param :Direction, String, desc: "Inbound or Outbound"
-    param :ApiVersion, String, desc: "Twilio API version"
     def connect_call
       caller_id, offer_id, mobile = params["phone_number"].split("#")
       redis.hmset("twilio_outbound_#{mobile}",
@@ -46,17 +50,11 @@ module Api::V1
     end
 
     api :POST, '/v1/twilio_outbound/completed_call', "Outbound call from Admin to donor: Response sent to twilio when call fails, timeout or no response from Donor."
-    param :AccountSid, String, desc: "Twilio Account SID"
-    param :ApplicationSid, String, desc: "Twilio Twiml Application SID"
+    param_group :twilio_params
     param :CallStatus, String, desc: "Status of Call initialted by Admin (parent call)ex: 'in-progress'"
     param :DialCallSid, String, desc: "SID of call between admin-donor"
     param :DialCallStatus, String, desc: "Status of Call between admin-donor (child call)ex: 'completed'"
-    param :Direction, String, desc: "Inbound or Outbound"
-    param :ApiVersion, String, desc: "Twilio API version"
-    param :Caller, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
-    param :CallSid, String, desc: "SID of call initialted by Admin"
     param :DialCallDuration, String, desc: "Admin-donor call duration in seconds (child-call)"
-    param :From, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
     def completed_call
       response = Twilio::TwiML::Response.new do |r|
         unless params["DialCallStatus"] == "completed"
@@ -68,14 +66,8 @@ module Api::V1
     end
 
     api :POST, '/v1/twilio_outbound/call_status', "Called from Twilio when outbound call between Admin and Donor is completed."
-    param :AccountSid, String, desc: "Twilio Account SID"
-    param :ApplicationSid, String, desc: "Twilio Twiml Application SID"
-    param :Caller, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
+    param_group :twilio_params
     param :CallStatus, String, desc: "Status of Call ex: 'completed'"
-    param :CallSid, String, desc: "SID of current call"
-    param :From, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
-    param :Direction, String, desc: "Inbound or Outbound"
-    param :ApiVersion, String, desc: "Twilio API version"
     param :Duration, String
     param :CallDuration, String, desc: "Call duration in seconds"
     param :Timestamp, String
