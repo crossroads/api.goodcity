@@ -33,7 +33,6 @@ module Api::V1
     param :ApiVersion, String, desc: "Twilio API version"
     def connect_call
       caller_id, offer_id, mobile = params["phone_number"].split("#")
-      # mobile = "+919172034260"
       redis.hmset("twilio_outbound_#{mobile}",
         :offer_id, offer_id,
         :caller_id, caller_id)

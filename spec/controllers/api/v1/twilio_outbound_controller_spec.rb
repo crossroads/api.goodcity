@@ -4,13 +4,13 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
 
   let(:user) { create :user }
   let(:basic_outbound_call_params) { {
-    "AccountSid"=> ENV['TWILIO_ACCOUNT_SID'],
-    "ApplicationSid"=>ENV['TWILIO_CALL_APP_SID'],
-    "Direction"=>"inbound",
-    "ApiVersion"=>"2010-04-01",
-    "Caller"=>"client:Anonymous",
-    "CallSid"=>"CA7a9b9a9a6a113e45091c6482ebcf38b8",
-    "From"=>"client:Anonymous"
+    "AccountSid"     => ENV['TWILIO_ACCOUNT_SID'],
+    "ApplicationSid" => ENV['TWILIO_CALL_APP_SID'],
+    "Direction"      => "inbound",
+    "ApiVersion"     => "2010-04-01",
+    "Caller"         => "client:Anonymous",
+    "CallSid"        => "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+    "From"           => "client:Anonymous"
   } }
 
   describe "generate_call_token" do
@@ -26,8 +26,8 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
 
   describe "connect_call" do
     let(:params) { basic_outbound_call_params.merge({
-      "CallStatus"=>"ringing",
-      "phone_number"=>"9#148#+85251111111"
+      "CallStatus"   => "ringing",
+      "phone_number" => "9#148#+85251111111"
     }) }
 
     it "will generate response for twilio when Admin calling Donor's number", :show_in_doc do
@@ -39,14 +39,14 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
 
   describe "completed_call" do
     let(:params) { basic_outbound_call_params.merge({
-      "CallStatus"=>"in-progress",
-      "DialCallSid"=>"CAf6de0c98d9d697b29ec60797f9e76ac2",
-      "DialCallStatus"=>"completed",
-      "DialCallDuration"=>"30"
+      "CallStatus"       => "in-progress",
+      "DialCallSid"      => "CAf6de0c98d9d697b29ec60797f9e76ac2",
+      "DialCallStatus"   => "completed",
+      "DialCallDuration" => "30"
     }) }
 
     let(:failed_call_params) {
-      params.merge({"DialCallStatus"=>"no-answer",})
+      params.merge({"DialCallStatus" => "no-answer"})
     }
 
     before {
@@ -68,12 +68,12 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
 
   describe "call_status" do
     let(:params) { basic_outbound_call_params.merge({
-      "CallStatus"=>"completed",
-      "Duration"=>"1",
-      "CallDuration"=>"17",
-      "Timestamp"=>"Mon, 06 Jul 2015 11:36:41 +0000",
-      "CallbackSource"=>"call-progress-events",
-      "SequenceNumber"=>"0"
+      "CallStatus"     => "completed",
+      "Duration"       => "1",
+      "CallDuration"   => "17",
+      "Timestamp"      => "Mon, 06 Jul 2015 11:36:41 +0000",
+      "CallbackSource" => "call-progress-events",
+      "SequenceNumber" => "0"
     }) }
 
     before {
