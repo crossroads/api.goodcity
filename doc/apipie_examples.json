@@ -2545,6 +2545,397 @@
       "recorded" : true
     }
   ],
+  "twilio#accept_call" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/twilio/accept_call",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "donor_id=105&mobile=%2B85258051837",
+      "request_data" : null,
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio#accept_callback" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/accept_callback",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85262828854",
+        "Caller" : "+85262828854",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "CallStatus" : "in-progress",
+        "Digits" : "1",
+        "msg" : "Gather End"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Thank you, our staff will call you as soon as possible. Goodbye.</Say><Hangup/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio#assignment" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/twilio/assignment",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "WorkspaceSid" : "cc1d5bea9f7x67x8299c9668475c534",
+        "WorkflowSid" : "csdb5bea9nxcbxb0299c9668bvcc534",
+        "ReservationSid" : "WR6e4c4e79ce0a7411e0fad3f2c53db619",
+        "TaskQueueSid" : "WQ221f569e7835ac4a724ddbcf955857c6",
+        "TaskSid" : "WTbd83b25v3454v5bn5vb29e64abf299347e4",
+        "WorkerSid" : "WKb1f124b5v3nb5vnb35v7d346dfae20ef38",
+        "TaskAge" : "13",
+        "TaskPriority" : "1",
+        "TaskAttributes" : "{\"AccountSid\":\"f02e3c85572dc9ad7cb77c2a638e3be24\",\"Direction\":\"inbound\",\"ApiVersion\":\"2010-04-01\",\"CallSid\":\"CA7a9b9a9a6a113e45091c6482ebcf38b8\",\"From\":\"+85298168830\",\"Caller\":\"+85298168830\",\"To\":\"+163456799\",\"Called\":\"+163456799\",\"user_id\":17,\"selected_language\":\"en\",\"call_status\":\"ringing\"}",
+        "WorkerAttributes" : "{\"languages\":[\"en\"],\"user_id\":\"\"}"
+      },
+      "response_data" : {
+        "instruction" : "dequeue",
+        "post_work_activity_sid" : null,
+        "from" : "+163456799",
+        "to" : "+85258181010"
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio#call_fallback" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/twilio/call_fallback",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85257573506",
+        "Caller" : "+85257573506",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "ErrorUrl" : "http://api-staging.goodcity.hk/api/v1/twilio/voice",
+        "CallStatus" : "ringing",
+        "ErrorCode" : "11200"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you.</Say><Hangup/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio#call_summary" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/twilio/call_summary",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85298104647",
+        "Caller" : "+85298104647",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "CallStatus" : "completed",
+        "Timestamp" : "2015-07-07 17:22:47 +0530",
+        "CallDuration" : "66"
+      },
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio#hold_gc_donor" : [
+    {
+      "title" : "Caller waiting in queue for less than 30 seconds",
+      "verb" : "POST",
+      "path" : "/api/v1/hold_gc_donor",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85250418864",
+        "Caller" : "+85250418864",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "QueueSid" : "QU2f978538fcc71e13701f703a884ff392",
+        "CallStatus" : "ringing",
+        "QueueTime" : "0",
+        "AvgQueueTime" : "0",
+        "QueuePosition" : "1",
+        "CurrentQueueSize" : "1"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Hello Chauncey Schulist,</Say><Say>Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff.</Say><Play>http://test.host/api/v1/twilio/hold_music</Play></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "Caller waiting in queue for more than 30 seconds",
+      "verb" : "POST",
+      "path" : "/api/v1/hold_gc_donor",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85265657087",
+        "Caller" : "+85265657087",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "QueueSid" : "QU2f978538fcc71e13701f703a884ff392",
+        "CallStatus" : "ringing",
+        "QueueTime" : "40",
+        "AvgQueueTime" : "0",
+        "QueuePosition" : "1",
+        "CurrentQueueSize" : "1"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Leave/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio#send_voicemail" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/send_voicemail",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85261731772",
+        "Caller" : "+85261731772",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "CallStatus" : "completed",
+        "RecordingUrl" : "http://api.twilio.com/2010-04-01/Accounts/<account_sid>/Recordings/<recording_sid>",
+        "Digits" : "hangup",
+        "RecordingDuration" : "19",
+        "RecordingSid" : "<RecordingSid>"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Goodbye.</Say><Hangup/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio#voice" : [
+    {
+      "title" : "Inactive Donor calling to Goodcity",
+      "verb" : "POST",
+      "path" : "/api/v1/twilio/voice",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85264088040",
+        "Caller" : "+85264088040",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "CallStatus" : "ringing"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Dial><Number>+85222729345</Number></Dial></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "Active Donor calling to Goodcity",
+      "verb" : "POST",
+      "path" : "/api/v1/twilio/voice",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "+85251773515",
+        "Caller" : "+85251773515",
+        "To" : "+163456799",
+        "Called" : "+163456799",
+        "CallStatus" : "ringing"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"csdb5bea9nxcbxb0299c9668bvcc534\" waitUrl=\"/api/v1/hold_gc_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":20633}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/accept_callback\"><Say>Unfortunately it none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/send_voicemail\"/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio_outbound#call_status" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/call_status",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "completed",
+        "Duration" : "1",
+        "CallDuration" : "17",
+        "Timestamp" : "Mon, 06 Jul 2015 11:36:41 +0000",
+        "CallbackSource" : "call-progress-events",
+        "SequenceNumber" : "0"
+      },
+      "response_data" : {},
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio_outbound#completed_call" : [
+    {
+      "title" : "When call completed between Admin and Donor",
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/completed_call",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "in-progress",
+        "DialCallSid" : "CAf6de0c98d9d697b29ec60797f9e76ac2",
+        "DialCallStatus" : "completed",
+        "DialCallDuration" : "30"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Hangup/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    },
+    {
+      "title" : "When call to Donor is failed, not-answered or busy.",
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/completed_call",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "in-progress",
+        "DialCallSid" : "CAf6de0c98d9d697b29ec60797f9e76ac2",
+        "DialCallStatus" : "no-answer",
+        "DialCallDuration" : "30"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Couldn't reach Monserrat Boyle try again soon. Goodbye.</Say><Hangup/></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio_outbound#connect_call" : [
+    {
+      "verb" : "POST",
+      "path" : "/api/v1/twilio_outbound/connect_call",
+      "versions" : [
+        "v1"
+      ],
+      "query" : null,
+      "request_data" : {
+        "AccountSid" : "f02e3c85572dc9ad7cb77c2a638e3be24",
+        "ApplicationSid" : "cxcvxhv89fdbb0b0299c9668cdf9534",
+        "Direction" : "inbound",
+        "ApiVersion" : "2010-04-01",
+        "Caller" : "client:Anonymous",
+        "CallSid" : "CA7a9b9a9a6a113e45091c6482ebcf38b8",
+        "From" : "client:Anonymous",
+        "CallStatus" : "ringing",
+        "phone_number" : "9#148#+85251111111"
+      },
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Dial callerId=\"+163456799\" action=\"/api/v1/twilio_outbound/completed_call\"><Number>+85251111111</Number></Dial></Response>",
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
+  "twilio_outbound#generate_call_token" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/twilio_outbound/generate_call_token",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlOmNsaWVudDpvdXRnb2luZz9hcHBTaWQ9Y3hjdnhodjg5ZmRiYjBiMDI5OWM5NjY4Y2RmOTUzNCIsImlzcyI6ImYwMmUzYzg1NTcyZGM5YWQ3Y2I3N2MyYTYzOGUzYmUyNCIsImV4cCI6MTQzNjI1Nzc3MH0.iQtu0sj_lsQloAa-hi8cTmyCxSsbGvkIxRw3SdK_u0E"
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "users#index" : [
     {
       "verb" : "GET",

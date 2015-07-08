@@ -79,22 +79,20 @@ Rails.application.routes.draw do
       get "versions" => "versions#index"
 
       post "twilio/voice" => "twilio#voice"
-      post "ask_callback" => "twilio#ask_callback"
-      get  "accept_callback" => "twilio#accept_callback"
-      get  "accept_voicemail" => "twilio#accept_voicemail"
-      get  "send_voicemail" => "twilio#send_voicemail"
-      get  "twilio/accept_call" => "twilio#accept_call"
-      post "twilio/assignment" => "twilio#assignment"
       post "hold_gc_donor" => "twilio#hold_gc_donor"
+      post "accept_callback" => "twilio#accept_callback"
+      post "send_voicemail" => "twilio#send_voicemail"
+      post "twilio/assignment" => "twilio#assignment"
+      get  "twilio/accept_call" => "twilio#accept_call"
       get  "twilio/hold_music" => "twilio#hold_music"
       post "twilio/call_summary" => "twilio#call_summary"
       post "twilio/call_fallback" => "twilio#call_fallback"
 
-      post "twilio/connect_outbound_call" => "twilio#connect_outbound_call"
-      post "twilio/completed_outbound_call" => "twilio#completed_outbound_call"
-      post "twilio/outbound_call_status" => "twilio#outbound_call_status"
-      get  "twilio/twilio_generate_call_token" =>
-        "twilio#twilio_generate_call_token"
+      post "twilio_outbound/connect_call" => "twilio_outbound#connect_call"
+      post "twilio_outbound/completed_call" => "twilio_outbound#completed_call"
+      post "twilio_outbound/call_status" => "twilio_outbound#call_status"
+      get  "twilio_outbound/generate_call_token" =>
+        "twilio_outbound#generate_call_token"
     end
   end
 end
