@@ -1,5 +1,13 @@
+require "goodcity/redis"
+
 module TwilioConfig
   extend ActiveSupport::Concern
+
+  included do
+    skip_authorization_check
+    skip_before_action :validate_token
+    skip_before_action :verify_authenticity_token
+  end
 
   def set_header
     response.headers["Content-Type"] = "text/xml"
@@ -13,17 +21,11 @@ module TwilioConfig
     response.headers["Content-Type"] = "application/json"
   end
 
-  private
-
-  def voice_number
-    number = twilio_creds["voice_number"].to_s
-    number.prepend("+") unless number.starts_with?("+")
-    number
-  end
-
   def child_call
     @call = twilio_client.calls.list(parent_call_sid: params["CallSid"])[0]
   end
+
+  private
 
   def activity_sid(friendly_name)
     task_router.activities.list(friendly_name: friendly_name).first.sid
@@ -60,5 +62,19 @@ module TwilioConfig
 
   def twilio_creds
     @twilio ||= Rails.application.secrets.twilio
+  end
+
+  def redis
+    @redis ||= Goodcity::Redis.new
+  end
+
+  def user(mobile = nil)
+    @user ||= User.user_exist?(mobile || params["From"])
+  end
+
+  def voice_number
+    number = twilio_creds["voice_number"].to_s
+    number.prepend("+") unless number.starts_with?("+")
+    number
   end
 end
