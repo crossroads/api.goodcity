@@ -14,7 +14,8 @@ module Api::V1
 
     api :GET, '/v1/Versions', "List Versions of items and related packages"
     def index
-      render json: @versions.items_log, each_serializer: serializer
+      data = @versions.where("item_type IN ('Item','Package') OR event IN ('call_accepted','donor_called')")
+      render json: data, each_serializer: serializer
     end
 
     private

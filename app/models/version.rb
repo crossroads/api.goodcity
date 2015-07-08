@@ -20,8 +20,6 @@ class Version < PaperTrail::Version
       ids: objects.map(&:id), type: objects.last.class.name)
   }
 
-  scope :items_log, -> { where("item_type IN (?)", %w(Item Package)) }
-
   def to_s
     "id:#{self.id} #{self.item_type}##{self.item_id} #{self.event}"
   end
