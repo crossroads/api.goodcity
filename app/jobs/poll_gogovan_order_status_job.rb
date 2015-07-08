@@ -5,6 +5,10 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
     order = GogovanOrder.find_by(id: order_id)
     if order.try(:delivery)
       Rails.logger.info "Updating GGV Order #{order_id}"
+
+      # GGV Order is not placed successfully i.r. booking_id is nil
+      return remove_delivery(order_id) unless order.booking_id
+
       order_details = Gogovan.order_status(order.booking_id)
 
       unless order_details[:error]
