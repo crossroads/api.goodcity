@@ -7,7 +7,7 @@ module Api::V1
       :state, :created_at
 
     def state
-      object.object_changes["state"].try(:last)
+      object.object_changes && object.object_changes["state"].try(:last)
     end
 
     def state__sql
