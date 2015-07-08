@@ -14,7 +14,7 @@ require 'shoulda/matchers'
 require 'webmock/rspec'
 require 'paper_trail/frameworks/rspec'
 
-WebMock.disable_net_connect!
+WebMock.disable_net_connect!(:allow => "codeclimate.com")
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
