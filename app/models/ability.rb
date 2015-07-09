@@ -34,10 +34,9 @@ class Ability
       can :destroy, Item if reviewer || supervisor
 
       #Version
-      can :index, Version, related_type: "Offer", related_id: user.offers.pluck(:id),
-        item_type: ["Item", "Package"]
-
-      can :index, Version, related_type: "Offer", item_type: ["Item", "Package"] if reviewer || supervisor
+      can :index, Version, related_type: "Offer", related_id: user.offers.pluck(:id)
+      can :index, Version, item_type: "Offer", item_id: user.offers.pluck(:id)
+      can :index, Version if reviewer || supervisor
 
       # Image (same as item permissions)
       can [:index, :show, :create, :update], Image, item: { offer:
