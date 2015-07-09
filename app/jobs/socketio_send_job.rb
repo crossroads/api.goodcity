@@ -1,4 +1,4 @@
-class PusherJob  < ActiveJob::Base
+class SocketioSendJob < ActiveJob::Base
   queue_as :default
 
   def perform(channels, event, data, resync = false)

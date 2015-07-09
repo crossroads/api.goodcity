@@ -195,11 +195,12 @@ class Offer < ActiveRecord::Base
   end
 
   def send_new_offer_notification
-    PushService.new.send_new_offer_notification(
-      channel: Channel.reviewer,
-      offer: self,
-      is_admin_app: true
-    )
+    PushService.new.send_notification Channel.reviewer, true, {
+      category:   'new_offer',
+      message:    I18n.t("notification.new_offer", name: created_by.full_name),
+      offer_id:   id,
+      author_id:  created_by_id
+    }
   end
 
   def send_new_offer_alert
