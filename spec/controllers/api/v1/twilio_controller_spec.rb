@@ -25,11 +25,14 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
   end
 
   describe "accept_call" do
+    let(:reviewer) { create(:user, :reviewer) }
+    let(:offer) { create :offer, :reviewed, created_by: user }
+    before { create :version, item_type: 'Offer', item_id: offer.id, whodunnit: user.id.to_s }
     it "will return empty response", :show_in_doc do
       allow_any_instance_of(Api::V1::TwilioController).to receive(:activity_sid)
       allow_any_instance_of(Api::V1::TwilioController).to receive_message_chain(:offline_worker, :update)
 
-      get :accept_call, { donor_id: 105, mobile: user.mobile }
+      get :accept_call, { donor_id: user.id, mobile: reviewer.mobile }
       expect(response.status).to eq(200)
       expect(response.body).to eq("{}")
     end
@@ -85,7 +88,7 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
 
         post :voice, parameters
         expect(response.status).to eq(200)
-        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"#{ENV['TWILIO_WORKFLOW_SID']}\" waitUrl=\"/api/v1/hold_gc_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":#{user.id}}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/accept_callback\"><Say>Unfortunately it none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/send_voicemail\"/></Response>")
+        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"#{ENV['TWILIO_WORKFLOW_SID']}\" waitUrl=\"/api/v1/hold_gc_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":#{user.id}}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/accept_callback\"><Say>Unfortunately none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/send_voicemail\"/></Response>")
       end
     end
   end

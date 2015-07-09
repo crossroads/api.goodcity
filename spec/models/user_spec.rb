@@ -127,13 +127,6 @@ describe User, :type => :model do
     end
   end
 
-  describe "#user_exist?" do
-    let(:user) { create :user }
-    it "should return user with matching mobile number" do
-      expect(User.user_exist?(user.mobile)).to eq(user)
-    end
-  end
-
   describe "non_draft_offers" do
     let(:user) { create :user }
     let!(:draft_offer) { create :offer, created_by: user }

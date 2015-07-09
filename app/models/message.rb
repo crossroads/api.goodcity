@@ -71,16 +71,12 @@ class Message < ActiveRecord::Base
 
     donor_channel = channels.delete("user_#{offer.created_by_id}")
 
-    service.send_notification(text: text, entity_type: "message",
-      entity: self, channel: [donor_channel]) if donor_channel
-
-    service.send_notification(text: text, entity_type: "message",
-      entity: self, channel: channels, is_admin_app: true) unless channels.empty?
+    send_notification [donor_channel], false if donor_channel
+    send_notification channels, true unless channels.empty?
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
-      service.send_notification(text: text, entity_type: "message",
-        entity: self, channel: Channel.supervisor, is_admin_app: true)
+      send_notification Channel.supervisor, true
     end
   end
 
@@ -103,6 +99,17 @@ class Message < ActiveRecord::Base
     object = Api::V1::MessageSerializer.new(object, {exclude:Message.reflections.keys.map(&:to_sym)})
     PushService.new.send_update_store(channel, {item:object, sender:user, operation: :create}) unless channel.empty?
     self.state_value = nil
+  end
+
+  def send_notification(channel, is_admin_app)
+    PushService.new.send_notification channel, is_admin_app, {
+      category:   'message',
+      message:    body.truncate(150, separator: ' '),
+      is_private: is_private,
+      offer_id:   offer.id,
+      item_id:    item.try(:id),
+      author_id:  sender_id
+    }
   end
 
   def service
