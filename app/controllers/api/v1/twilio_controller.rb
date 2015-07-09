@@ -215,12 +215,11 @@ module Api::V1
         receiver = User.find_by_mobile(params['mobile'])
         offer    = Offer.find(donor.recent_active_offer_id)
 
-        PushService.new.send_call_answered_notification(
-          channel:       offer.call_notify_channels - ["user_#{receiver.id}"],
-          donor_id:      donor_id,
-          donor_name:    donor.full_name,
-          receiver_name: receiver.full_name
-        )
+        PushService.new.send_notification offer.call_notify_channels - ["user_#{receiver.id}"], true, {
+          category:   'call_answered',
+          message:    "Call from #{donor.full_name} has been accepted by #{receiver.full_name}",
+          author_id:  donor_id
+        }
 
         Version.create(
           item_type:    'Offer',
@@ -250,11 +249,11 @@ module Api::V1
       if offline_worker && redis.get("twilio_notify_#{user.id}").blank?
         offer = Offer.find(user.recent_active_offer_id)
 
-        PushService.new.send_incoming_call_notification(
-          channel:       offer.call_notify_channels,
-          donor_id:      user.id,
-          donor_name:    user.full_name
-        )
+        PushService.new.send_notification offer.call_notify_channels, true, {
+          category:   'incoming_call',
+          message:    "#{user.full_name} calling now..",
+          author_id:  user.id
+        }
 
         Version.create(
           item_type:    'Offer',

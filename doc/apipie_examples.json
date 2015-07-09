@@ -2805,7 +2805,7 @@
         "Called" : "+163456799",
         "CallStatus" : "ringing"
       },
-      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"csdb5bea9nxcbxb0299c9668bvcc534\" waitUrl=\"/api/v1/hold_gc_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":20633}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/accept_callback\"><Say>Unfortunately it none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/send_voicemail\"/></Response>",
+      "response_data" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"csdb5bea9nxcbxb0299c9668bvcc534\" waitUrl=\"/api/v1/hold_gc_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":20633}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/accept_callback\"><Say>Unfortunately none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/send_voicemail\"/></Response>",
       "code" : "200",
       "show_in_doc" : 1,
       "recorded" : true
