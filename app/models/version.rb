@@ -34,6 +34,11 @@ class Version < PaperTrail::Version
 
   # required by PushUpdates and PaperTrail modules
   def offer
-    related_type == "Offer" ? related : nil
+    # same as items_and_calls_log
+    if ['Item','Package'].include?(item_type) || ['call_accepted','donor_called'].include?(event)
+      return item if item_type == "Offer"
+      return related if related_type == "Offer"
+    end
+    nil
   end
 end

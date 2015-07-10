@@ -218,7 +218,8 @@ module Api::V1
         PushService.new.send_notification offer.call_notify_channels - ["user_#{receiver.id}"], true, {
           category:   'call_answered',
           message:    "Call from #{donor.full_name} has been accepted by #{receiver.full_name}",
-          author_id:  donor_id
+          author_id:  donor_id,
+          offer_id: offer.id
         }
 
         Version.create(
@@ -252,7 +253,8 @@ module Api::V1
         PushService.new.send_notification offer.call_notify_channels, true, {
           category:   'incoming_call',
           message:    "#{user.full_name} calling now..",
-          author_id:  user.id
+          author_id:  user.id,
+          offer_id: offer.id
         }
 
         Version.create(
