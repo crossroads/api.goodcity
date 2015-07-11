@@ -13,6 +13,7 @@ module Api::V1
         - If Donor is busy, not-answering or call-fails then it will play
           message to Admin.
         - After call completion it will add call-log message to Offer's Private Messaging thread.
+        - {Click for a Tech Diagram}[https://docs.google.com/drawings/d/1vlBcYUqLMv59ggetGAx-SStzF3hF7NxsSLtcduwYjhA/edit]
       EOS
       formats ['application/json', 'text/xml']
       error 404, "Not Found"
@@ -29,9 +30,9 @@ module Api::V1
       param :From, String, desc:  "Name of the caller or phone number ex: 'client:Anonymous'"
     end
 
-    api :POST, '/v1/twilio_outbound/connect_call', "When Admin make a call \
-    to Donor from application using Twilio Twiml app, it will request for the\
-    response to be sent over it."
+    api :POST, '/v1/twilio_outbound/connect_call', "When an Admin calls \
+    a donor from the application, Twilio will call this hook to determine what\
+    it should do (who to call etc...)"
     param_group :twilio_params
     param :CallStatus, String, desc: "Status of Call ex: 'ringing'"
     param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<current_user_id>#<offer_id>#<phone_number>'"
@@ -74,9 +75,10 @@ module Api::V1
     param :CallbackSource, String
     param :SequenceNumber, String
     def call_status
-      offer_id = redis.hmget("twilio_outbound_#{child_call.to}", :offer_id)
-      user_id  = redis.hmget("twilio_outbound_#{child_call.to}", :caller_id)
-      redis.del("twilio_outbound_#{child_call.to}")
+      key = "twilio_outbound_#{child_call.to}"
+      offer_id = redis.hmget(key, :offer_id)
+      user_id  = redis.hmget(key, :caller_id)
+      redis.del(key)
       SendOutboundCallStatusJob.perform_later(user_id, offer_id, child_call.status)
       render json: {}
     end
