@@ -3,12 +3,6 @@ require "goodcity/redis"
 module TwilioConfig
   extend ActiveSupport::Concern
 
-  included do
-    skip_authorization_check
-    skip_before_action :validate_token
-    skip_before_action :verify_authenticity_token
-  end
-
   def set_header
     response.headers["Content-Type"] = "text/xml"
   end

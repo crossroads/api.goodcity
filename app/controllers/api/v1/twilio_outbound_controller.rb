@@ -4,6 +4,9 @@ module Api::V1
   class TwilioOutboundController < Api::V1::ApiController
     include TwilioConfig
 
+    skip_authorization_check
+    skip_before_action :validate_token, except: :generate_call_token
+    skip_before_action :verify_authenticity_token, except: :generate_call_token
     after_filter :set_header, except: :generate_call_token
 
     resource_description do
@@ -37,7 +40,8 @@ module Api::V1
     param :CallStatus, String, desc: "Status of Call ex: 'ringing'"
     param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<current_user_id>#<offer_id>#<phone_number>'"
     def connect_call
-      caller_id, offer_id, mobile = params["phone_number"].split("#")
+      offer_id, caller_id = params["phone_number"].split("#")
+      mobile = Offer.find_by(id: offer_id).created_by.mobile
       redis.hmset("twilio_outbound_#{mobile}",
         :offer_id, offer_id,
         :caller_id, caller_id)

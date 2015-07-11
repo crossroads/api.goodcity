@@ -4,6 +4,9 @@ module Api::V1
   class TwilioController < Api::V1::ApiController
     include TwilioConfig
 
+    skip_authorization_check
+    skip_before_action :validate_token
+    skip_before_action :verify_authenticity_token
     after_filter :set_header, except: [:assignment, :hold_music]
 
     resource_description do
