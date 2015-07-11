@@ -81,7 +81,7 @@ module Api::V1
       render json: {}
     end
 
-    api :GET, '/v1/twilio_outbound/generate_call_token', "Generate Twilio Ougoing Call Capability Token."
+    api :GET, '/v1/twilio_outbound/generate_call_token', "Generate Twilio Outgoing Call Capability Token. This allows clients to authenticate with Twilio and place calls etc."
     def generate_call_token
       render json: { token: twilio_outgoing_call_capability.generate }
     end
