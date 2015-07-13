@@ -27,12 +27,17 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
   describe "accept_call" do
     let(:reviewer) { create(:user, :reviewer) }
     let(:offer) { create :offer, :reviewed, created_by: user }
-    before { create :version, item_type: 'Offer', item_id: offer.id, whodunnit: user.id.to_s }
+
+    before do
+      generate_and_set_token(reviewer)
+      create :version, item_type: 'Offer', item_id: offer.id, whodunnit: user.id.to_s
+    end
+
     it "will return empty response", :show_in_doc do
       allow_any_instance_of(Api::V1::TwilioController).to receive(:activity_sid)
       allow_any_instance_of(Api::V1::TwilioController).to receive_message_chain(:offline_worker, :update)
 
-      get :accept_call, { donor_id: user.id, mobile: reviewer.mobile }
+      get :accept_call, { donor_id: user.id }
       expect(response.status).to eq(200)
       expect(response.body).to eq("{}")
     end

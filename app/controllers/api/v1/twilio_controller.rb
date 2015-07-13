@@ -1,9 +1,13 @@
 require "twilio-ruby"
+require "goodcity/redis"
 
 module Api::V1
   class TwilioController < Api::V1::ApiController
     include TwilioConfig
 
+    skip_authorization_check
+    skip_before_action :validate_token, except: :accept_call
+    skip_before_action :verify_authenticity_token, except: :accept_call
     after_filter :set_header, except: [:assignment, :hold_music]
 
     resource_description do
@@ -208,11 +212,11 @@ module Api::V1
       donor_id = params['donor_id']
 
       unless redis.get("twilio_donor_#{donor_id}")
-        redis_storage("twilio_donor_#{donor_id}", params['mobile'])
+        redis_storage("twilio_donor_#{donor_id}", current_user.mobile)
         offline_worker.update(activity_sid: activity_sid('Idle'))
 
         donor    = User.find(donor_id)
-        receiver = User.find_by_mobile(params['mobile'])
+        receiver = User.find_by_mobile(current_user.mobile)
         offer    = Offer.find(donor.recent_active_offer_id)
 
         PushService.new.send_notification offer.call_notify_channels - ["user_#{receiver.id}"], true, {
@@ -271,6 +275,10 @@ module Api::V1
     def redis_storage(key, value)
       redis.set(key, value)
       redis.expireat(key, Time.now.to_i + 60)
+    end
+
+    def redis
+      @redis ||= Goodcity::Redis.new
     end
   end
 end
