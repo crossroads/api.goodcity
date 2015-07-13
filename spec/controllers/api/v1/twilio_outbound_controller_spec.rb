@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
 
-  let(:user) { create :user }
+  let(:user) { create(:user_with_token) }
   let(:basic_outbound_call_params) { {
     "AccountSid"     => ENV['TWILIO_ACCOUNT_SID'],
     "ApplicationSid" => ENV['TWILIO_CALL_APP_SID'],
@@ -15,6 +15,7 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
 
   describe "generate_call_token" do
     let(:subject) { JSON.parse(response.body) }
+    before { generate_and_set_token(user) }
 
     it "will generate Twilio Ougoing Call Capability Token", :show_in_doc do
       get :generate_call_token
@@ -25,15 +26,16 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
   end
 
   describe "connect_call" do
+    let(:offer)  { create :offer, :submitted }
     let(:params) { basic_outbound_call_params.merge({
       "CallStatus"   => "ringing",
-      "phone_number" => "9#148#+85251111111"
+      "phone_number" => "#{offer.id}#9"
     }) }
 
     it "will generate response for twilio when Admin calling Donor's number", :show_in_doc do
       post :connect_call, params
       expect(response.status).to eq(200)
-      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Dial callerId=\"+163456799\" action=\"/api/v1/twilio_outbound/completed_call\"><Number>+85251111111</Number></Dial></Response>")
+      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Dial callerId=\"+163456799\" action=\"/api/v1/twilio_outbound/completed_call\"><Number>#{offer.created_by.mobile}</Number></Dial></Response>")
     end
   end
 

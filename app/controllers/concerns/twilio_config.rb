@@ -1,13 +1,5 @@
-require "goodcity/redis"
-
 module TwilioConfig
   extend ActiveSupport::Concern
-
-  included do
-    skip_authorization_check
-    skip_before_action :validate_token
-    skip_before_action :verify_authenticity_token
-  end
 
   def set_header
     response.headers["Content-Type"] = "text/xml"
@@ -62,10 +54,6 @@ module TwilioConfig
 
   def twilio_creds
     @twilio ||= Rails.application.secrets.twilio
-  end
-
-  def redis
-    @redis ||= Goodcity::Redis.new
   end
 
   def user(mobile = nil)
