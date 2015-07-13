@@ -275,5 +275,9 @@ module Api::V1
       redis.set(key, value)
       redis.expireat(key, Time.now.to_i + 60)
     end
+
+    def redis
+      @redis ||= Goodcity::Redis.new
+    end
   end
 end

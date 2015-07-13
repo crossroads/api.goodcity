@@ -58,10 +58,6 @@ module TwilioConfig
     @twilio ||= Rails.application.secrets.twilio
   end
 
-  def redis
-    @redis ||= Goodcity::Redis.new
-  end
-
   def user(mobile = nil)
     @user ||= User.find_by_mobile(mobile || params["From"])
   end

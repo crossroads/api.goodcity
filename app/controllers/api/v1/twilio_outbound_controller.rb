@@ -38,13 +38,11 @@ module Api::V1
     it should do (who to call etc...)"
     param_group :twilio_params
     param :CallStatus, String, desc: "Status of Call ex: 'ringing'"
-    param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<current_user_id>#<offer_id>#<phone_number>'"
+    param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<offer_id>#<caller_id>'"
     def connect_call
       offer_id, caller_id = params["phone_number"].split("#")
       mobile = Offer.find_by(id: offer_id).created_by.mobile
-      redis.hmset("twilio_outbound_#{mobile}",
-        :offer_id, offer_id,
-        :caller_id, caller_id)
+      TwilioCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
 
       response = Twilio::TwiML::Response.new do |r|
         r.Dial callerId: voice_number, action: api_v1_twilio_outbound_completed_call_path do |d|
@@ -79,11 +77,9 @@ module Api::V1
     param :CallbackSource, String
     param :SequenceNumber, String
     def call_status
-      key = "twilio_outbound_#{child_call.to}"
-      offer_id = redis.hmget(key, :offer_id)
-      user_id  = redis.hmget(key, :caller_id)
-      redis.del(key)
-      SendOutboundCallStatusJob.perform_later(user_id, offer_id, child_call.status)
+      tcm = TwilioCallManager.new(to: child_call.to)
+      SendOutboundCallStatusJob.perform_later(tcm.user_id, tcm.offer_id, child_call.status)
+      tcm.remove
       render json: {}
     end
 
@@ -91,5 +87,6 @@ module Api::V1
     def generate_call_token
       render json: { token: twilio_outgoing_call_capability.generate }
     end
+
   end
 end
