@@ -92,7 +92,7 @@ module Api::V1
     param :Timestamp, String, desc: "Timestamp when call is completed"
     param :CallDuration, String, desc: "Time Duration of Call in seconds"
     def call_summary
-      delete_redis_keys(user.id)
+      delete_redis_keys(user.id) if user
       mark_worker_offline
       render json: {}
     end
@@ -131,6 +131,7 @@ module Api::V1
           accept_voicemail(r)
         end
       end
+
       render_twiml response
     end
 
