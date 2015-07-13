@@ -1,5 +1,3 @@
-require "goodcity/redis"
-
 module TwilioConfig
   extend ActiveSupport::Concern
 
