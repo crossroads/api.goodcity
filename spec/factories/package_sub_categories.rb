@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :package_sub_category do
-    package_type_id     1
-    package_category_id 1
+    association :package_type, factory: :base_package_type
+    association :package_category, factory: :child_package_category
   end
 end

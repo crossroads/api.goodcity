@@ -2068,6 +2068,60 @@
       "recorded" : true
     }
   ],
+  "package_categories#index" : [
+    {
+      "verb" : "GET",
+      "path" : "/api/v1/package_categories",
+      "versions" : [
+        "v1"
+      ],
+      "query" : "",
+      "request_data" : null,
+      "response_data" : {
+        "package_categories" : [
+          {
+            "id" : 16,
+            "name" : "j5f0p",
+            "parent_id" : null,
+            "package_type_codes" : null
+          },
+          {
+            "id" : 17,
+            "name" : "hbqlh",
+            "parent_id" : 16,
+            "package_type_codes" : null
+          },
+          {
+            "id" : 18,
+            "name" : "ylanj",
+            "parent_id" : null,
+            "package_type_codes" : null
+          },
+          {
+            "id" : 19,
+            "name" : "l3jye",
+            "parent_id" : 18,
+            "package_type_codes" : null
+          },
+          {
+            "id" : 20,
+            "name" : "4vjo9",
+            "parent_id" : null,
+            "package_type_codes" : null
+          },
+          {
+            "id" : 21,
+            "name" : "teqq6",
+            "parent_id" : 20,
+            "package_type_codes" : null
+          }
+        ]
+      },
+      "code" : "200",
+      "show_in_doc" : 1,
+      "recorded" : true
+    }
+  ],
   "package_types#index" : [
     {
       "verb" : "GET",

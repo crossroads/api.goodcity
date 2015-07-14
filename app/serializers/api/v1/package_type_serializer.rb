@@ -5,6 +5,12 @@ module Api::V1
     attributes :id, :name, :code, :other_child_packages,
       :default_child_packages
 
+    def include_attribute?
+      User.current_user.present?
+    end
+    alias_method :include_other_child_packages?, :include_attribute?
+    alias_method :include_default_child_packages?, :include_attribute?
+
     def name__sql
       "name_#{current_language}"
     end

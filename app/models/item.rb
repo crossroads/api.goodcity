@@ -19,6 +19,8 @@ class Item < ActiveRecord::Base
     ] )
   }
 
+  scope :accepted, -> { where("state = 'accepted'") }
+
   # Workaround to set initial state fror the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial
   # state by default
