@@ -2,6 +2,7 @@ module Api::V1
   class ItemsController < Api::V1::ApiController
 
     load_and_authorize_resource :item, parent: false
+    skip_before_action :validate_token, only: [:browse]
 
     resource_description do
       short 'Get, create, update and delete items.'
@@ -81,6 +82,10 @@ module Api::V1
       else
         render json: @item.errors.to_json, status: 422
       end
+    end
+
+    def browse
+      render json: @items.accepted, each_serializer: serializer
     end
 
     private

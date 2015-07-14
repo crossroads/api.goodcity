@@ -92,7 +92,6 @@ class Ability
 
       # Taxonomies
       can [:index, :show], DonorCondition
-      can [:index, :show], PackageType
       can [:index, :show], SubpackageType
       can [:index, :show], RejectionReason
       can [:index, :show], Permission
@@ -101,6 +100,9 @@ class Ability
 
     # Anonymous and all users
     can [:index, :show], PackageCategory
+    can [:index, :show], PackageType
+    can [:browse], Item
+
     can [:index, :show], District
     can [:index, :show], Territory
     can [:index, :show, :availableTimeSlots], Schedule

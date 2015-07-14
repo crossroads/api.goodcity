@@ -22,11 +22,6 @@ module Api::V1
       render json: @package_categories, each_serializer: serializer
     end
 
-    api :GET, '/v1/package_category/1', "List a package_category"
-    def show
-      render json: @package_category, serializer: serializer
-    end
-
     private
 
     def serializer
