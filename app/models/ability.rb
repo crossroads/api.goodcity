@@ -100,6 +100,7 @@ class Ability
     end
 
     # Anonymous and all users
+    can [:index, :show], PackageCategory
     can [:index, :show], District
     can [:index, :show], Territory
     can [:index, :show, :availableTimeSlots], Schedule
