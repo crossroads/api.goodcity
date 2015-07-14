@@ -93,6 +93,8 @@ Rails.application.routes.draw do
       post "twilio_outbound/call_status" => "twilio_outbound#call_status"
       get  "twilio_outbound/generate_call_token" =>
         "twilio_outbound#generate_call_token"
+
+      resources :package_categories, only: [:index, :show]
     end
   end
 end
