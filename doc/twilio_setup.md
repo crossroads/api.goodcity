@@ -25,15 +25,15 @@
 
 #####Request URL:
   - Retrieve and execute the TwiML at this URL via the selected HTTP method when this application receives a phone call.
-  - Example: https://api-staging.goodcity.hk/api/v1/twilio/voice
+  - Example: https://api-staging.goodcity.hk/api/v1/twilio_inbound/voice
 
 #####Fallback URL:
   - Retrieve and execute the TwiML at this URL when the voice request URL can't be reached or there is runtime exception or invalid response.
-  - Example: https://api-staging.goodcity.hk/api/v1/twilio/call_fallback
+  - Example: https://api-staging.goodcity.hk/api/v1/twilio_inbound/call_fallback
 
 #####Status Callback URL:
   - Make a request to this URL when a call to this phone number is completed.
-  - Example: https://api-staging.goodcity.hk/api/v1/twilio/call_summary
+  - Example: https://api-staging.goodcity.hk/api/v1/twilio_inbound/call_complete
 
 ## TWILIO TASKROUTER SETUP:
 
@@ -53,7 +53,7 @@
 (Workflow can be created with `Friendly name`, `Assignment Callback Url` and `Timeout` values)
 
   * **Assignment Callback URL** is the HTTP endpoint that TaskRouter uses to notify your application of a reservation. See the assignment instructions documentation for more information.
-    - Example: https://api-staging.goodcity.hk/api/v1/twilio/assignment
+    - Example: https://api-staging.goodcity.hk/api/v1/twilio_inbound/assignment
   
   * For Routing Configuration of workflow, we can add a filter, example: we have created filter with expression `selected_language == "en"`
 
