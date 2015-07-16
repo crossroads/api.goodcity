@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150710135052) do
+ActiveRecord::Schema.define(version: 20150716133846) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -184,12 +184,17 @@ ActiveRecord::Schema.define(version: 20150710135052) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "package_sub_categories", force: :cascade do |t|
+  add_index "package_categories", ["parent_id"], name: "index_package_categories_on_parent_id", using: :btree
+
+  create_table "package_categories_package_types", force: :cascade do |t|
     t.integer  "package_type_id"
     t.integer  "package_category_id"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
   end
+
+  add_index "package_categories_package_types", ["package_category_id"], name: "index_package_categories_package_types_on_package_category_id", using: :btree
+  add_index "package_categories_package_types", ["package_type_id"], name: "index_package_categories_package_types_on_package_type_id", using: :btree
 
   create_table "package_types", force: :cascade do |t|
     t.string   "code"
