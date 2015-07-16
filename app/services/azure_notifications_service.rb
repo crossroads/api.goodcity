@@ -71,7 +71,7 @@ class AzureNotificationsService
   end
 
   def aps_platform_xml(handle, tags)
-    template = "{\"aps\":{\"alert\":\"$(message)\",\"badge\":1,\"sound\":\"default\", \"payload\":{#{payload}}}"
+    template = "{\"aps\":{\"alert\":\"$(message)\",\"badge\":1,\"sound\":\"default\", \"payload\":{#{payload}}}}"
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
