@@ -42,7 +42,7 @@ module Api::V1
     def connect_call
       offer_id, caller_id = params["phone_number"].split("#")
       mobile = Offer.find_by(id: offer_id).created_by.mobile
-      TwilioCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
+      TwilioOutboundCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
 
       response = Twilio::TwiML::Response.new do |r|
         r.Dial callerId: voice_number, action: api_v1_twilio_outbound_completed_call_path do |d|
@@ -77,7 +77,7 @@ module Api::V1
     param :CallbackSource, String
     param :SequenceNumber, String
     def call_status
-      tcm = TwilioCallManager.new(to: child_call.to)
+      tcm = TwilioOutboundCallManager.new(to: child_call.to)
       SendOutboundCallStatus.new(tcm.user_id, tcm.offer_id, child_call.status).notify
       tcm.remove
       render json: {}
