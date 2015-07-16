@@ -28,8 +28,12 @@ class Version < PaperTrail::Version
     "id:#{self.id} #{self.item_type}##{self.item_id} #{self.event}"
   end
 
+  def item_id_or_related_id
+    related_id || item_id
+  end
+
   def self.past_month_activities(objects, donor_id)
-    related_to_multiple(objects).except_user(donor_id).past_month
+    past_month.related_to_multiple(objects).except_user(donor_id)
   end
 
   # required by PushUpdates and PaperTrail modules

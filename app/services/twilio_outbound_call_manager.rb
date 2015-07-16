@@ -1,6 +1,6 @@
 require "goodcity/redis"
 
-class TwilioCallManager
+class TwilioOutboundCallManager
 
   OutBoundCallPrefix = "twilio_outbound"
 
