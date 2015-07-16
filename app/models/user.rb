@@ -117,21 +117,8 @@ class User < ActiveRecord::Base
     User.system.pluck(:id).include?(self.id)
   end
 
-  def non_draft_offers
-    offers.reject{ |offer| offer.draft? }
-  end
-
-  def self.inactive?(mobile)
-    return true unless user = find_by_mobile(mobile)
-    offers = user.non_draft_offers
-    staff_activities = Version.past_month_activities(offers, user.id)
-    return [true, user] if offers.length == 0 || staff_activities.count == 0
-    [false, user]
-  end
-
   def recent_active_offer_id
-    offer_version = Version.for_offers.by_user(id).last
-    offer_version.try(:related_id) || offer_version.try(:item_id)
+    Version.for_offers.by_user(id).last.try(:item_id_or_related_id)
   end
 
   private

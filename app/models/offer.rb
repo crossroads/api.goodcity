@@ -35,6 +35,7 @@ class Offer < ActiveRecord::Base
 
   scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
   scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
+  scope :non_draft, -> { where("state NOT IN (?)", 'draft') }
   scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
   scope :inactive, -> { where(state: INACTIVE_STATES) }
   scope :in_states, ->(states) { # overwrite concerns/state_machine_scope to add pseudo states

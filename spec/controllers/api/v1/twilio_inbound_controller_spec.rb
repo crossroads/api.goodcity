@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::TwilioController, type: :controller do
+RSpec.describe Api::V1::TwilioInboundController, type: :controller do
 
   let(:user) { create :user }
   let(:basic_call_params) { {
@@ -34,8 +34,8 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
     end
 
     it "will return empty response", :show_in_doc do
-      allow_any_instance_of(Api::V1::TwilioController).to receive(:activity_sid)
-      allow_any_instance_of(Api::V1::TwilioController).to receive_message_chain(:offline_worker, :update)
+      allow_any_instance_of(described_class).to receive(:activity_sid)
+      allow_any_instance_of(described_class).to receive_message_chain(:offline_worker, :update)
 
       get :accept_call, { donor_id: user.id }
       expect(response.status).to eq(200)
@@ -45,7 +45,7 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
 
   describe "call_fallback" do
     let(:parameters) { basic_call_params.merge({
-      "ErrorUrl"   => "http://api-staging.goodcity.hk/api/v1/twilio/voice",
+      "ErrorUrl"   => "http://api-staging.goodcity.hk/api/v1/twilio_inbound/voice",
       "CallStatus" => "ringing",
       "ErrorCode"  => "11200"
     }) }
@@ -59,7 +59,7 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
     end
   end
 
-  describe "call_summary" do
+  describe "call_complete" do
     let(:parameters) { basic_call_params.merge({
       "CallStatus"   => "completed",
       "Timestamp"    => Time.now.to_s,
@@ -67,10 +67,10 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
     }) }
 
     it "will return empty response", :show_in_doc do
-      allow_any_instance_of(Api::V1::TwilioController).to receive_message_chain(:activity_sid)
-      allow_any_instance_of(Api::V1::TwilioController).to receive_message_chain(:idle_worker, :update)
+      allow_any_instance_of(described_class).to receive_message_chain(:activity_sid)
+      allow_any_instance_of(described_class).to receive_message_chain(:idle_worker, :update)
 
-      post :call_summary, parameters
+      post :call_complete, parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("{}")
     end
@@ -89,16 +89,16 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
 
     context "Active Donor" do
       it "will return response to Twilio", :show_in_doc do
-        expect(User).to receive(:inactive?).with(user.mobile).and_return([false, user])
+        expect(TwilioInboundCallManager).to receive(:caller_has_active_offer?).with(user.mobile).and_return(true)
 
         post :voice, parameters
         expect(response.status).to eq(200)
-        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"#{ENV['TWILIO_WORKFLOW_SID']}\" waitUrl=\"/api/v1/hold_gc_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":#{user.id}}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/accept_callback\"><Say>Unfortunately none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/send_voicemail\"/></Response>")
+        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"#{ENV['TWILIO_WORKFLOW_SID']}\" waitUrl=\"/api/v1/twilio_inbound/hold_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":#{user.id}}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/twilio_inbound/accept_callback\"><Say>Unfortunately none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/twilio_inbound/send_voicemail\"/></Response>")
       end
     end
   end
 
-  describe "hold_gc_donor" do
+  describe "hold_donor" do
     let(:parameters) { basic_call_params.merge({
       "QueueSid"         => "QU2f978538fcc71e13701f703a884ff392",
       "CallStatus"       => "ringing",
@@ -109,14 +109,14 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
     }) }
 
     before {
-      allow_any_instance_of(Api::V1::TwilioController).to receive(:offline_worker).and_return(false)
+      allow_any_instance_of(described_class).to receive(:offline_worker).and_return(false)
     }
 
     context "Caller waiting in queue for less than 30 seconds" do
       it "will return response to Twilio", :show_in_doc do
-        post :hold_gc_donor, parameters
+        post :hold_donor, parameters
         expect(response.status).to eq(200)
-        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Hello #{user.full_name},</Say><Say>Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff.</Say><Play>http://test.host/api/v1/twilio/hold_music</Play></Response>")
+        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Hello #{user.full_name},</Say><Say>Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff.</Say><Play>http://test.host/api/v1/twilio_inbound/hold_music</Play></Response>")
       end
     end
 
@@ -124,7 +124,7 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
       let(:params) { parameters.merge({ "QueueTime" => "40" }) }
 
       it "will return response to Twilio", :show_in_doc do
-        post :hold_gc_donor, params
+        post :hold_donor, params
         expect(response.status).to eq(200)
         expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Leave/></Response>")
       end
@@ -183,8 +183,8 @@ RSpec.describe Api::V1::TwilioController, type: :controller do
     } }
 
     it "will return response to Twilio", :show_in_doc do
-      allow_any_instance_of(Api::V1::TwilioController).to receive_message_chain(:redis, :get).and_return(admin.mobile)
-      allow_any_instance_of(Api::V1::TwilioController).to receive(:activity_sid)
+      expect(TwilioInboundCallManager).to receive_message_chain(:new, :mobile).and_return(admin.mobile)
+      allow_any_instance_of(described_class).to receive(:activity_sid)
 
       post :assignment, parameters, format: :json
       expect(response.status).to eq(200)

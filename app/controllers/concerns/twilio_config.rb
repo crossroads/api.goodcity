@@ -14,7 +14,7 @@ module TwilioConfig
   end
 
   def child_call
-    @call = twilio_client.calls.list(parent_call_sid: params["CallSid"])[0]
+    @call ||= twilio_client.calls.list(parent_call_sid: params["CallSid"])[0]
   end
 
   private
@@ -36,7 +36,7 @@ module TwilioConfig
   end
 
   def task_router
-    @client = Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
+    @client ||= Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
       twilio_creds["auth_token"], twilio_creds["workspace_sid"])
   end
 
@@ -46,10 +46,10 @@ module TwilioConfig
   end
 
   def twilio_outgoing_call_capability
-    capability ||= Twilio::Util::Capability.new(twilio_creds["account_sid"],
+    @capability ||= Twilio::Util::Capability.new(twilio_creds["account_sid"],
       twilio_creds["auth_token"])
-    capability.allow_client_outgoing(twilio_creds["call_app_sid"])
-    capability
+    @capability.allow_client_outgoing(twilio_creds["call_app_sid"])
+    @capability
   end
 
   def twilio_creds
