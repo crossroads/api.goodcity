@@ -14,10 +14,10 @@ module Api::V1
 
     def package_type_codes__sql
       " (SELECT string_agg(package_types.code, ',')
-        FROM package_types, package_sub_categories
-        where package_types.id = package_sub_categories.package_type_id AND
-          package_categories.id = package_sub_categories.package_category_id
-        GROUP BY package_sub_categories.package_category_id) "
+        FROM package_types, package_categories_package_types as relation
+        where package_types.id = relation.package_type_id AND
+          package_categories.id = relation.package_category_id
+        GROUP BY relation.package_category_id) "
     end
   end
 

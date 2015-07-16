@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe PackageSubCategory, type: :model do
+RSpec.describe PackageCategoriesPackageType, type: :model do
   describe 'Association' do
     it { is_expected.to belong_to :package_category }
     it { is_expected.to belong_to :package_type }

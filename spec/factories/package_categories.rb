@@ -11,7 +11,7 @@ FactoryGirl.define do
 
     factory :package_category_with_package_type, parent: :child_package_category do
       after(:build) do |category|
-        create_list :package_sub_category, 2, package_category: category
+        create_list :package_categories_package_type, 2, package_category: category
       end
     end
   end
