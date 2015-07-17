@@ -1,4 +1,4 @@
-class PackageSubCategory < ActiveRecord::Base
+class PackageCategoriesPackageType < ActiveRecord::Base
   belongs_to :package_type
   belongs_to :package_category
 
