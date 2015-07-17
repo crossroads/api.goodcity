@@ -1,0 +1,133 @@
+---
+1:
+  :name_en: "Electrical"
+  :name_zh_tw: ''
+  :child_categories:
+    1:
+      :name_en: "Computer"
+      :name_zh_tw: ''
+    2:
+      :name_en: "Household"
+      :name_zh_tw: ''
+    3:
+      :name_en: "Kitchen"
+      :name_zh_tw: ''
+    4:
+      :name_en: "Other electrical"
+      :name_zh_tw: ''
+    5:
+      :name_en: "Audio visual"
+      :name_zh_tw: ''
+    6:
+      :name_en: "Office appliances"
+      :name_zh_tw: ''
+
+2:
+  :name_en: "Furniture"
+  :name_zh_tw: ''
+  :child_categories:
+    1:
+      :name_en: "Baby / child"
+      :name_zh_tw: ''
+    2:
+      :name_en: "Beds"
+      :name_zh_tw: ''
+    3:
+      :name_en: "Desk"
+      :name_zh_tw: ''
+    4:
+      :name_en: "Seating"
+      :name_zh_tw: ''
+    5:
+      :name_en: "Shelves"
+      :name_zh_tw: ''
+    6:
+      :name_en: "Storage"
+      :name_zh_tw: ''
+    7:
+      :name_en: "Table"
+      :name_zh_tw: ''
+    8:
+      :name_en: "Other furniture"
+      :name_zh_tw: ''
+    9:
+      :name_en: "Office furniture"
+      :name_zh_tw: ''
+    10:
+      :name_en: "Sets"
+      :name_zh_tw: ''
+
+3:
+  :name_en: "Household"
+  :name_zh_tw: ''
+  :child_categories:
+    1:
+      :name_en: "Appliances"
+      :name_zh_tw: ''
+    2:
+      :name_en: "Baby"
+      :name_zh_tw: ''
+    3:
+      :name_en: "Textiles / clothes"
+      :name_zh_tw: ''
+    4:
+      :name_en: "Kitchen, bedroom, bathroom, dining"
+      :name_zh_tw: ''
+    5:
+      :name_en: "Other household"
+      :name_zh_tw: ''
+
+4:
+  :name_en: "Small goods & bulk items"
+  :name_zh_tw: ''
+  :child_categories:
+    1:
+      :name_en: "Books"
+      :name_zh_tw: ''
+    2:
+      :name_en: "Food"
+      :name_zh_tw: ''
+    3:
+      :name_en: "Glasses"
+      :name_zh_tw: ''
+    4:
+      :name_en: "Stationery"
+      :name_zh_tw: ''
+    5:
+      :name_en: "Tools"
+      :name_zh_tw: ''
+    6:
+      :name_en: "Toys"
+      :name_zh_tw: ''
+    7:
+      :name_en: "Medical"
+      :name_zh_tw: ''
+    8:
+      :name_en: "Clothing & accessories"
+      :name_zh_tw: ''
+    9:
+      :name_en: "Mixed / miscellaneous"
+      :name_zh_tw: ''
+    10:
+      :name_en: "Household textiles"
+      :name_zh_tw: ''
+
+5:
+  :name_en: "Recreation"
+  :name_zh_tw: ''
+  :child_categories:
+    1:
+      :name_en: "Music"
+      :name_zh_tw: ''
+    2:
+      :name_en: "Other"
+      :name_zh_tw: ''
+    3:
+      :name_en: "Playground"
+      :name_zh_tw: ''
+    4:
+      :name_en: "Sport"
+      :name_zh_tw: ''
+    5:
+      :name_en: "Bicycles"
+      :name_zh_tw: ''

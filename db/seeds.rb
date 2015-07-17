@@ -72,6 +72,12 @@ CrossroadsTransport.find_by(name_en: "Disable").update_column(:is_van_allowed, f
 # Create System User
 FactoryGirl.create(:user, :system)
 
+# Create PackageCategories
+PackageCategoryImporter.import
+
+# Create PackageCategoriesPackageType
+PackageCategoryImporter.import_package_relation
+
 # Don't run the following setup on the live server.
 # This is for dummy data
 unless ENV['LIVE'] == "true"
