@@ -101,7 +101,7 @@ class Ability
     # Anonymous and all users
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
-    can [:browse], Item
+    can [:fetch_items], Item
 
     can [:index, :show], District
     can [:index, :show], Territory
