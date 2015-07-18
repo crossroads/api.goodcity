@@ -66,7 +66,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'byebug', platform: 'mri' unless ENV["CI"] or ENV["RM_INFO"]
+  gem 'byebug' unless ENV["CI"] or ENV["RM_INFO"]
   gem 'rspec-rails'
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
