@@ -40,12 +40,13 @@ describe Warden::Strategies::PinStrategy, type: :controller do
     context "with valid auth_token" do
       let(:params) { {'pin' => pin, 'otp_auth_key' => otp_auth_key} }
       before { expect(AuthToken).to receive(:find_by_otp_auth_key).with(otp_auth_key).and_return(auth_token) }
+      before { Rails.application.secrets.appstore_reviewer_login = {} }
 
       context "and successful otp authentication" do
         before { expect(auth_token).to receive(:authenticate_otp).with(pin, {drift: ENV['OTP_CODE_VALIDITY'].to_i}).and_return(true) }
 
         context "and user found" do
-          before { expect(auth_token).to receive(:user).and_return(user) }
+          before { expect(auth_token).to receive(:user).and_return(user).at_least(:once) }
           it "should be success!" do
             expect(strategy).to receive(:success!).with(user)
             strategy.authenticate!
@@ -53,7 +54,7 @@ describe Warden::Strategies::PinStrategy, type: :controller do
         end
 
         context "and user not found" do
-          before { expect(auth_token).to receive(:user).and_return(nil) }
+          before { expect(auth_token).to receive(:user).and_return(nil).at_least(:once) }
           it "should return failure" do
             expect(strategy.authenticate!).to equal(:failure)
           end
@@ -68,6 +69,16 @@ describe Warden::Strategies::PinStrategy, type: :controller do
         end
       end
 
+      context "with appstore reviewer login credentials" do
+        let(:params) { {'pin' => '1234', 'otp_auth_key' => otp_auth_key} }
+        let(:user) { build :user, mobile: "+85255555555" }
+        before { expect(auth_token).to receive(:user).and_return(user).at_least(:once) }
+        before { expect(Rails.application.secrets).to receive(:appstore_reviewer_login).and_return({"number"=>"+85255555555","pin"=>"1234"}).at_least(:once) }
+        it "should return success" do
+          expect(strategy).to receive(:success!)
+          strategy.authenticate!
+        end
+      end
     end
 
     context "with invalid auth_token" do
@@ -75,7 +86,6 @@ describe Warden::Strategies::PinStrategy, type: :controller do
       it "should return failure" do
         expect(strategy.authenticate!).to equal(:failure)
       end
-
     end
 
   end
