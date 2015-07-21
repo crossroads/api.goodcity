@@ -11,8 +11,8 @@ module Warden
       def authenticate!
         auth_token = AuthToken.find_by_otp_auth_key(params['otp_auth_key'])
 
-        if appstore['number'].present? && appstore['pin'] == params['pin']
-          appstore['number'] == auth_token.try(:user).try(:mobile)
+        if appstore.try(:[], 'number').present? && appstore.try(:[], 'pin').present? &&
+          appstore['pin'] == params['pin'] && appstore['number'] == auth_token.try(:user).try(:mobile)
           return success!(auth_token.user)
         end
 
