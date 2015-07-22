@@ -2,6 +2,7 @@ module Api::V1
   class DonorConditionsController < Api::V1::ApiController
 
     load_and_authorize_resource :donor_condition, parent: false
+    skip_before_action :validate_token, only: :index
 
     resource_description do
       short 'Categorise the state a donation item is in. E.g. New / Used / Broken'

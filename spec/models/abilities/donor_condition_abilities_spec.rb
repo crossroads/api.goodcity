@@ -40,8 +40,9 @@ describe "DonorCondition abilities" do
 
   context "when Anonymous" do
     let(:user)     { nil }
+    let(:can)      { [:index] }
     let(:donor_condition) { create :donor_condition }
-    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, donor_condition) } }
+    it{ (all_actions - can).each { |do_action| is_expected.to_not be_able_to(do_action, donor_condition) } }
   end
 
 end

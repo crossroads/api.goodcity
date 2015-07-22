@@ -102,6 +102,7 @@ class Ability
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
     can [:fetch_items], Item
+    can :index, DonorCondition
 
     can [:index, :show], District
     can [:index, :show], Territory
