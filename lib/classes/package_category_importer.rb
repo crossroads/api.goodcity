@@ -3,12 +3,21 @@ class PackageCategoryImporter
     categories = YAML.load_file("#{Rails.root}/db/package_categories.yml")
 
     categories.each do |key, value|
-      parent = PackageCategory.create name_en: value[:name_en]
+      parent = create_category(value)
 
       value[:child_categories].each do |key, value|
-        PackageCategory.create(name_en: value[:name_en], parent_id: parent.id)
+        create_category(value, parent)
       end
     end
+  end
+
+  def self.create_category(value, parent = nil)
+    category = PackageCategory.where(name_en: value[:name_en], parent_id: parent.try(:id)).
+      first_or_initialize
+    category.name_zh_tw = value[:name_zh_tw]
+    category.parent_id  = parent.id if parent
+    category.save
+    category
   end
 
   def self.import_package_relation
