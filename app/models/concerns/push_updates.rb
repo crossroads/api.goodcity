@@ -36,10 +36,10 @@ module PushUpdates
     data = {item:object, sender:user, operation:operation}
     unless offer.nil? || offer.try(:cancelled?)
       donor_channel = Channel.private(offer.created_by_id)
-      service.send_update_store(donor_channel, data)
+      service.send_update_store(donor_channel, data, false)
     end
     user.options[:user_summary] = false
-    service.send_update_store(Channel.staff, data)
+    service.send_update_store(Channel.staff, data, true)
   end
 
   def service
