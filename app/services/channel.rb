@@ -25,5 +25,9 @@ class Channel
       [channel_name].flatten.any? {|n| n.include?('user_')}
     end
 
+    def add_admin_app_prefix(channel_name)
+      [channel_name].flatten.map {|c| user_channel?(c) ? "#{c}_admin" : c}
+    end
+
   end
 end

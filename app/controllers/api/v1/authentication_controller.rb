@@ -167,7 +167,9 @@ module Api::V1
     error 500, "Internal Server Error"
     def current_user_rooms
       authorize!(:current_user_profile, User)
-      render json: current_user.channels, root: false
+      channels = current_user.channels
+      channels = Channel.add_admin_app_prefix(channels) if is_admin_app
+      render json: channels, root: false
     end
 
     private
