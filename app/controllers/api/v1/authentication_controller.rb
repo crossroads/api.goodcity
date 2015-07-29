@@ -158,7 +158,7 @@ module Api::V1
     def register_device
       authorize!(:register, :device)
       return render text: "Unrecognised platform, expecting 'gcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)", status: 400 unless ['gcm','aps','wns'].include?(params[:platform])
-      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user), params[:platform], is_admin_app)
+      AzureRegisterJob.perform_later(params[:handle], Channel.private(current_user), params[:platform], is_admin_app)
       render nothing: true, status: 204
     end
 
@@ -188,11 +188,6 @@ module Api::V1
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
       params.require(:user_auth).permit(attributes)
-    end
-
-    def valid_host?
-      (@user.donor? && app_name == DONOR_APP) ||
-      (@user.reviewer? && app_name == ADMIN_APP)
     end
 
     def warden
