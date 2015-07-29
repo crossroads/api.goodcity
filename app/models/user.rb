@@ -93,7 +93,7 @@ class User < ActiveRecord::Base
   end
 
   def channels(app)
-    channels = Channel.user(self)
+    channels = Channel.private(self)
     if app == ADMIN_APP
       channels += Channel.reviewer if reviewer?
       channels += Channel.supervisor if supervisor?

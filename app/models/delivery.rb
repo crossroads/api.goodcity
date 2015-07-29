@@ -35,7 +35,7 @@ class Delivery < ActiveRecord::Base
   def send_updates(operation = nil)
     donor   = offer.created_by
     user    = Api::V1::UserSerializer.new(User.current_user || donor)
-    channel = Channel.staff + Channel.user_id(donor.id)
+    channel = Channel.staff + Channel.private(donor)
 
     [self.gogovan_order, self.contact.try(:address), self.contact, self.schedule, self].compact.each do |record|
       operation ||= (self.class == 'Delivery' ? "update" : "create")

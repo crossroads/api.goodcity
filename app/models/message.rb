@@ -57,7 +57,7 @@ class Message < ActiveRecord::Base
   end
 
   def subscribed_user_channels
-    Channel.user_ids(self.offer.subscribed_users(self.is_private))
+    Channel.private(self.offer.subscribed_users(self.is_private))
   end
 
   def send_new_message_notification
@@ -66,8 +66,8 @@ class Message < ActiveRecord::Base
     text = self.body.truncate(150, separator: ' ')
 
     # notify subscribed users except sender
-    channels = subscribed_user_channels - Channel.user(sender)
-    channels -= Channel.user(offer.created_by) if offer.cancelled?
+    channels = subscribed_user_channels - Channel.private(sender)
+    channels -= Channel.private(offer.created_by) if offer.cancelled?
 
     donor_channel = channels.delete("user_#{offer.created_by_id}")
 
@@ -75,16 +75,16 @@ class Message < ActiveRecord::Base
     send_notification channels, true unless channels.empty?
 
     # notify all supervisors if no supervisor is subscribed in private thread
-    if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
+    if self.is_private && (Channel.private(User.supervisors) & subscribed_user_channels).empty?
       send_notification Channel.supervisor, true
     end
   end
 
   def update_client_store
-    sender_channel = Channel.user(sender)
+    sender_channel = Channel.private(sender)
     subscribed_user_channels = subscribed_user_channels() - sender_channel
-    subscribed_user_channels -= Channel.user(offer.created_by) if offer.cancelled?
-    unsubscribed_user_channels = Channel.users(User.staff) -
+    subscribed_user_channels -= Channel.private(offer.created_by) if offer.cancelled?
+    unsubscribed_user_channels = Channel.private(User.staff) -
       subscribed_user_channels - sender_channel
 
     user = Api::V1::UserSerializer.new(sender)
