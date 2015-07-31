@@ -9,6 +9,8 @@ class Image < ActiveRecord::Base
   before_destroy :delete_image_from_cloudinary,
     unless: "Rails.env.test? || has_multiple_items"
 
+  scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
+
   def public_image_id
     cloudinary_id.split("/").last.split(".").first rescue nil
   end
