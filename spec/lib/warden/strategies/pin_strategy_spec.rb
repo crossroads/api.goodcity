@@ -6,12 +6,11 @@ describe Warden::Strategies::PinStrategy, type: :controller do
   let(:params) { {} }
   let(:pin) { "1234" }
   let(:otp_auth_key) { "zKER89Q/NRm0TXhqGII+Ww==" }
-  let(:request) { double( params: params) }
   let(:strategy) { Warden::Strategies::PinStrategy.new(env) }
   let(:auth_token) { build :auth_token }
   let(:user) { build :user }
 
-  before { allow(strategy).to receive(:request).and_return(request) }
+  before { allow(strategy).to receive(:request).and_return(double( params: params)) }
 
   context 'valid?' do
     context "with valid params" do
