@@ -38,6 +38,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   context "verify" do
     context "with successful authentication" do
       it 'should allow access to user after signed-in', :show_in_doc do
+        set_donor_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(controller).to receive(:generate_token).with(user_id: user.id).and_return(jwt_token)
