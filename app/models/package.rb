@@ -10,6 +10,7 @@ class Package < ActiveRecord::Base
   validates :package_type_id, :quantity, presence: true
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
+  scope :received, -> { where("state = 'received'") }
 
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
