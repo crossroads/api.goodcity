@@ -32,8 +32,12 @@ class Ability
       if reviewer || supervisor
         can [:index, :show, :create, :update], Item
       else
-        can [:index, :show, :create, :update], Item, Item.donor_items(user_id) do |item|
+        can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
           item.offer.created_by_id == user_id
+        end
+
+        can :update, Item, Item.donor_items(user_id) do |item|
+          item.offer.created_by_id == user_id && item.not_received_packages?
         end
       end
       can :destroy, Item, offer: { created_by_id: user_id }

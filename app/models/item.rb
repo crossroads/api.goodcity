@@ -103,4 +103,8 @@ class Item < ActiveRecord::Base
   def need_to_persist?
     accepted? || rejected? || messages.present?
   end
+
+  def not_received_packages?
+    packages.received.count.zero?
+  end
 end

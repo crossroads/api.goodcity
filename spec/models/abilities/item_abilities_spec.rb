@@ -80,6 +80,15 @@ describe "Item abilities" do
         is_expected.to_not be_able_to(do_action, item)
       end}
     end
+
+    context "and item has received package" do
+      let!(:item)   { create :item, state: 'accepted', offer: offer }
+      let!(:package) { create :package, state: "received", item: item }
+      let(:cannot) { [:update] }
+      it{ cannot.each do |do_action|
+        is_expected.to_not be_able_to(do_action, item)
+      end}
+    end
   end
 
   context "when not Owner" do
