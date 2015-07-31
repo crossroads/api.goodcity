@@ -26,6 +26,9 @@ class User < ActiveRecord::Base
   scope :system,      -> { where( permissions: { name: 'System' } ).joins(:permission) }
   scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
 
+  # used when reviewer is logged into donor app
+  attr :treat_user_as_donor
+
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params)
@@ -58,11 +61,11 @@ class User < ActiveRecord::Base
   end
 
   def reviewer?
-    permission.try(:name) == 'Reviewer'
+    permission.try(:name) == 'Reviewer' && @treat_user_as_donor != true
   end
 
   def supervisor?
-    permission.try(:name) == 'Supervisor'
+    permission.try(:name) == 'Supervisor' && @treat_user_as_donor != true
   end
 
   def system?
@@ -74,11 +77,11 @@ class User < ActiveRecord::Base
   end
 
   def administrator?
-    permission.try(:name) == 'Administrator'
+    permission.try(:name) == 'Administrator' && @treat_user_as_donor != true
   end
 
   def donor?
-    permission.try(:name) == nil
+    permission.try(:name) == nil || @treat_user_as_donor == true
   end
 
   def online?
@@ -92,12 +95,10 @@ class User < ActiveRecord::Base
     TwilioService.new(self).sms_verification_pin
   end
 
-  def channels(app)
-    channels = Channel.user(self)
-    if app == ADMIN_APP
-      channels += Channel.reviewer if reviewer?
-      channels += Channel.supervisor if supervisor?
-    end
+  def channels
+    channels = Channel.private(self)
+    channels += Channel.reviewer if reviewer?
+    channels += Channel.supervisor if supervisor?
     channels
   end
 

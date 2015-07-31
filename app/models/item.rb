@@ -20,6 +20,7 @@ class Item < ActiveRecord::Base
   }
 
   scope :accepted, -> { where("state = 'accepted'") }
+  scope :donor_items, ->(donor_id) { joins(:offer).where(offers: {created_by_id: donor_id}) }
 
   # Workaround to set initial state fror the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial

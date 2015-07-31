@@ -13,28 +13,20 @@ class Channel
      [reviewer, supervisor].flatten
     end
 
-    def user(user)
-      ["user_#{user.id}"]
-    end
-
-    def user_id(user_id)
-      ["user_#{user_id}"]
-    end
-
-    def users(users)
-      users.pluck(:id).map {|id| "user_#{id}"}
-    end
-
-    def user_ids(users)
-      users.map {|id| "user_#{id}"}
+    # users - can be array or single instance of user id or user object
+    def private(users)
+      [users].flatten.map do |user|
+        user = user.id if user.is_a?(User)
+        "user_#{user}"
+      end
     end
 
     def user_channel?(channel_name)
-      if channel_name.kind_of?(Array)
-        channel_name.any? {|n| n.include?('user_')}
-      else
-        channel_name.include?('user_')
-      end
+      [channel_name].flatten.any? {|n| n.include?('user_')}
+    end
+
+    def add_admin_app_prefix(channel_name)
+      [channel_name].flatten.map {|c| user_channel?(c) ? "#{c}_admin" : c}
     end
 
   end

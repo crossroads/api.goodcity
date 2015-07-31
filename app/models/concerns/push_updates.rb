@@ -35,11 +35,11 @@ module PushUpdates
     user = Api::V1::UserSerializer.new(current_user, {user_summary: true})
     data = {item:object, sender:user, operation:operation}
     unless offer.nil? || offer.try(:cancelled?)
-      donor_channel = Channel.user_id(offer.created_by_id)
-      service.send_update_store(donor_channel, data)
+      donor_channel = Channel.private(offer.created_by_id)
+      service.send_update_store(donor_channel, data, false)
     end
     user.options[:user_summary] = false
-    service.send_update_store(Channel.staff, data)
+    service.send_update_store(Channel.staff, data, true)
   end
 
   def service
