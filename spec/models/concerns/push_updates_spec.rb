@@ -11,7 +11,7 @@ describe Offer do
   let(:service) {PushService.new}
 
   it 'update - only changed properties are included' do
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data, collapse_key|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
       expect(data[:item]['Offer'].to_json).to eq("{\"id\":#{offer.id},\"notes\":\"New test note\"}")
     end
     offer.notes = 'New test note'
@@ -19,7 +19,7 @@ describe Offer do
   end
 
   it 'update - foreign key property changes are handled' do
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data, collapse_key|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
       expect(data[:item]['Offer'].to_json).to eq("{\"id\":#{offer.id},\"reviewed_by_id\":#{user.id}}")
     end
     offer.reviewed_by_id = user.id
@@ -37,7 +37,7 @@ describe Offer do
   it 'should not include private reviewer details when sending to donor' do
     User.current_user = create :user, :reviewer
     json_checked = false
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data, collapse_key|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
       if !channel.include?("reviewer")
         expect(data[:sender].to_json.include?("mobile")).to eq(false)
         expect(data[:sender].to_json.include?("address")).to eq(false)
@@ -51,7 +51,7 @@ describe Offer do
 
   it 'should include private donor details when sending to reviewer' do
     json_checked = false
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data, collapse_key|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
       if channel.include?("reviewer")
         expect(data[:sender].to_json.include?("mobile")).to eq(true)
         expect(data[:sender].to_json.include?("address")).to eq(true)
