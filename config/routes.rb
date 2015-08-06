@@ -81,6 +81,7 @@ Rails.application.routes.draw do
 
       post "twilio_inbound/voice" => "twilio_inbound#voice"
       post "twilio_inbound/hold_donor" => "twilio_inbound#hold_donor"
+      post "twilio_inbound/accept_offer_id" => "twilio_inbound#accept_offer_id"
       post "twilio_inbound/accept_callback" => "twilio_inbound#accept_callback"
       post "twilio_inbound/send_voicemail" => "twilio_inbound#send_voicemail"
       post "twilio_inbound/assignment" => "twilio_inbound#assignment"
