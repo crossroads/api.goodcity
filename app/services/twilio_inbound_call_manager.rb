@@ -9,6 +9,16 @@ class TwilioInboundCallManager
     @admin_mobile = options[:admin_mobile]
     @user_id      = options[:user_id]
     @record_link  = options[:record_link]
+    @offer_id     = options[:offer_id]
+  end
+
+  def offer_donor
+    Offer.find_by(id: @offer_id).try(:created_by)
+  end
+
+  def self.from_admin?(mobile)
+    user = User.find_by_mobile(mobile) if mobile.present?
+    user.try(:staff?)
   end
 
   def self.caller_has_active_offer?(mobile)
