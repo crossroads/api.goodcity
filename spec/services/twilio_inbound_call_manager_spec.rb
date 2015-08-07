@@ -2,20 +2,20 @@ require 'rails_helper'
 
 describe TwilioInboundCallManager do
 
-  let(:admin_mobile) { generate(:mobile) }
+  let(:mobile) { generate(:mobile) }
   let(:user)         { create :user }
   let(:record_link)  { FFaker::Internet.http_url }
 
   let!(:call_manager) {
     TwilioInboundCallManager.new({
-      admin_mobile: admin_mobile,
+      mobile: mobile,
       user_id:      user.id,
       record_link:  record_link })
   }
 
   context "initialize" do
     it {
-      expect(call_manager.instance_variable_get(:@admin_mobile)).to equal(admin_mobile)
+      expect(call_manager.instance_variable_get(:@mobile)).to equal(mobile)
     }
 
     it {
@@ -31,7 +31,7 @@ describe TwilioInboundCallManager do
     it "should store mobile against donor_id in redis" do
       expect{
         call_manager.set_mobile
-      }.to change(call_manager, :mobile).from(nil).to(admin_mobile)
+      }.to change(call_manager, :mobile).from(nil).to(mobile)
     end
   end
 
@@ -41,7 +41,7 @@ describe TwilioInboundCallManager do
     it "should delete values from redis" do
       expect{
         call_manager.call_teardown
-      }.to change(call_manager, :mobile).from(admin_mobile).to(nil)
+      }.to change(call_manager, :mobile).from(mobile).to(nil)
     end
   end
 

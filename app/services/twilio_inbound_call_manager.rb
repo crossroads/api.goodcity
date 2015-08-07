@@ -6,7 +6,7 @@ class TwilioInboundCallManager
   NotifyPrefix = "twilio_notify"
 
   def initialize(options = {})
-    @admin_mobile = options[:admin_mobile]
+    @mobile = options[:mobile]
     @user_id      = options[:user_id]
     @record_link  = options[:record_link]
     @offer_id     = options[:offer_id]
@@ -30,7 +30,7 @@ class TwilioInboundCallManager
   end
 
   def set_mobile
-    store(donor_id_key, @admin_mobile)
+    store(donor_id_key, @mobile)
   end
 
   def mobile
@@ -141,7 +141,7 @@ class TwilioInboundCallManager
   end
 
   def receiver
-    @receiver ||= User.find_by_mobile(@admin_mobile)
+    @receiver ||= User.find_by_mobile(@mobile)
   end
 
 end
