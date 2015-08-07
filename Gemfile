@@ -52,6 +52,7 @@ gem 'airbrake'
 gem 'lograge'
 gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
+gem 'hashie'
 
 group :development do
   unless ENV["CI"]

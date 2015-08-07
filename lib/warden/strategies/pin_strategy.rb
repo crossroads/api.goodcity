@@ -30,11 +30,11 @@ module Warden
       private
 
       def otp_code_validity
-        Rails.application.secrets.token['otp_code_validity']
+        Goodcity.config.token.otp_code_validity
       end
 
       def appstore
-        Rails.application.secrets.appstore_reviewer_login
+        Goodcity.config.appstore_reviewer_login
       end
 
     end

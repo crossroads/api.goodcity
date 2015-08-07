@@ -125,7 +125,7 @@ class AzureNotificationsService
 
   def request_url(resource)
     sep = resource.include?('?') ? '&' : '?'
-    "#{settings['endpoint']}/#{resource}#{sep}api-version=2015-01"
+    "#{settings.endpoint}/#{resource}#{sep}api-version=2015-01"
   end
 
   def sas_token(url, lifetime: 10)
@@ -133,7 +133,7 @@ class AzureNotificationsService
     expires = Time.now.to_i + lifetime
     to_sign = "#{target_uri}\n#{expires}"
     signature = escaped_url(Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', settings['key'], to_sign)))
-    "SharedAccessSignature sr=#{target_uri}&sig=#{signature}&se=#{expires}&skn=#{settings['key_name']}"
+    "SharedAccessSignature sr=#{target_uri}&sig=#{signature}&se=#{expires}&skn=#{settings.key_name}"
   end
 
   def escaped_url(url)
@@ -141,6 +141,6 @@ class AzureNotificationsService
   end
 
   def settings
-    Rails.application.secrets.azure_notifications[@app_name]
+    Goodcity.config.azure_notifications[@app_name]
   end
 end

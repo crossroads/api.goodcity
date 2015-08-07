@@ -14,9 +14,9 @@ describe "Token", :type => :model do
   context "generate" do
     it "with no extra parameters" do
       expect(JWT).to receive(:encode) do |args, secret_key, hmac_sha_algo|
-        expect(args["iss"]).to eql(Rails.application.secrets.jwt["issuer"])
-        expect(secret_key).to eql(Rails.application.secrets.jwt["secret_key"])
-        expect(hmac_sha_algo).to eql(Rails.application.secrets.jwt["hmac_sha_algo"])
+        expect(args["iss"]).to eql(Goodcity.config.jwt.issuer)
+        expect(secret_key).to eql(Goodcity.config.jwt.secret_key)
+        expect(hmac_sha_algo).to eql(Goodcity.config.jwt.hmac_sha_algo)
       end
       token.generate
     end
@@ -89,14 +89,14 @@ describe "Token", :type => :model do
 
   context "jwt_config" do
     let(:conf) { {config: true} }
-    before{ allow(Rails.application.secrets).to receive(:jwt).and_return(conf) }
+    before{ allow(Goodcity.config).to receive(:jwt).and_return(conf) }
     it{ expect(token.send(:jwt_config)).to eql(conf) }
   end
 
   context "configuration" do
     before do
       allow(token).to receive(:jwt_config).
-      and_return( { "secret_key" => "123456", "hmac_sha_algo" => "SECURE", "issuer" => "ME" } )
+        and_return( Goodcity::Config.new("secret_key" => "123456", "hmac_sha_algo" => "SECURE", "issuer" => "ME") )
     end
     it{ expect(token.send(:secret_key)).to eql("123456") }
     it{ expect(token.send(:hmac_sha_algo)).to eql("SECURE") }

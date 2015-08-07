@@ -10,13 +10,13 @@ module ControllerMacros
   def generate_and_set_token(user=nil)
     user ||= create(:user_with_token)
     current_time = Time.now
-    jwt_config = Rails.application.secrets.jwt
+    jwt_config = Goodcity.config.jwt
     token = JWT.encode({"iat" => current_time.to_i,
-      "iss" => jwt_config['issuer'],
+      "iss" => jwt_config.issuer,
       "exp" => (current_time + 14.days).to_i,
       "user_id"  => user.id},
-      jwt_config['secret_key'],
-      jwt_config['hmac_sha_algo'])
+      jwt_config.secret_key,
+      jwt_config.hmac_sha_algo)
     request.headers['Authorization'] = "Bearer #{token}"
   end
 

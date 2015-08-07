@@ -76,7 +76,7 @@ class Gogovan
   def ggv_driver_notes
     delivery = offer.delivery
     if offer && ggv_uuid
-      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{ggv_uuid}"
+      link = "#{Goodcity.config.base_urls.app}/ggv_orders/#{ggv_uuid}"
       I18n.t('gogovan.driver_note', link: "#{link}?ln=en", ch_link: "#{link}?ln=zh-tw")
     end
   end

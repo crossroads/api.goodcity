@@ -120,7 +120,7 @@ module Api::V1
 
       response = Twilio::TwiML::Response.new do |r|
         unless active_caller
-          r.Dial { |d| d.Number GOODCITY_NUMBER }
+          r.Dial { |d| d.Number Goodcity.config.phone_numbers.back_office }
         else
           task = { "selected_language" => "en", "user_id" => user.id }.to_json
           r.Enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: api_v1_twilio_inbound_hold_donor_path, waitUrlMethod: "post" do |t|
