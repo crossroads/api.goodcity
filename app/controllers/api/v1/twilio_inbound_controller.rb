@@ -201,7 +201,7 @@ module Api::V1
     EOS
     def accept_call
       donor_id = params['donor_id']
-      call_manager = TwilioInboundCallManager.new(user_id: donor_id, admin_mobile: current_user.mobile)
+      call_manager = TwilioInboundCallManager.new(user_id: donor_id, mobile: current_user.mobile)
 
       unless call_manager.mobile
         call_manager.set_mobile
