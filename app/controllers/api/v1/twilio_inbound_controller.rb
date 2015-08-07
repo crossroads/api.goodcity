@@ -36,7 +36,7 @@ module Api::V1
       param :From, String, desc: "Phone number of Caller(Donor)"
     end
 
-    api :POST, "/v1/twilio/assignment", "Called by Twilio when worker becomes Idle and Task is added to TaskQueue"
+    api :POST, "/v1/twilio_inbound/assignment", "Called by Twilio when worker becomes Idle and Task is added to TaskQueue"
     param :AccountSid, String, desc: "Twilio Account SID"
     param :WorkspaceSid, String, desc: "Twilio Workspace SID"
     param :WorkflowSid, String, desc: "Twilio Workflow SID"
@@ -112,7 +112,7 @@ module Api::V1
       render_twiml response
     end
 
-    api :POST, "/v1/twilio/voice", "Called by Twilio when Donor calls to Goodcity Voice Number."
+    api :POST, "/v1/twilio_inbound/voice", "Called by Twilio when Donor calls to Goodcity Voice Number."
     param_group :twilio_params
     param :CallStatus, String, desc: "Status of call ex: ringing"
     def voice

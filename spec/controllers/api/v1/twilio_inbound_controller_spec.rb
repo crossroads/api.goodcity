@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::TwilioInboundController, type: :controller do
 
   let(:user) { create :user }
+  let(:reviewer) { create :user, :reviewer }
   let(:basic_call_params) { {
     "AccountSid"     => ENV['TWILIO_ACCOUNT_SID'],
     "Direction"      => "inbound",
@@ -96,6 +97,18 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
         expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Enqueue workflowSid=\"#{ENV['TWILIO_WORKFLOW_SID']}\" waitUrl=\"/api/v1/twilio_inbound/hold_donor\" waitUrlMethod=\"post\"><TaskAttributes>{\"selected_language\":\"en\",\"user_id\":#{user.id}}</TaskAttributes></Enqueue><Gather numDigits=\"1\" timeout=\"3\" action=\"/api/v1/twilio_inbound/accept_callback\"><Say>Unfortunately none of our staff are able to take your call at the moment.</Say><Say>You can request a call-back without leaving a message by pressing 1.</Say><Say>Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.</Say></Gather><Record maxLength=\"60\" playBeep=\"true\" action=\"/api/v1/twilio_inbound/send_voicemail\"/></Response>")
       end
     end
+
+    context "Staff" do
+      let(:parameters) { basic_call_params.merge({
+        "From"   => reviewer.mobile
+      }) }
+
+      it "should ask for offer id", :show_in_doc do
+        post :voice, parameters
+        expect(response.status).to eq(200)
+        expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Hello #{reviewer.full_name},</Say><Gather numDigits=\"5\" action=\"/api/v1/twilio_inbound/accept_offer_id\"><Say>Please input an offer ID and we will forward you to the donor's number.</Say></Gather><Say>Goodbye</Say><Hangup/></Response>")
+      end
+    end
   end
 
   describe "hold_donor" do
@@ -142,6 +155,22 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       post :accept_callback, parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Thank you, our staff will call you as soon as possible. Goodbye.</Say><Hangup/></Response>")
+    end
+  end
+
+  describe "accept_offer_id" do
+    let(:offer) { create :offer, created_by: user }
+    let(:parameters) { basic_call_params.merge({
+      "CallStatus" => "in-progress",
+      "Digits"     => offer.id.to_s,
+      "msg"        => "Gather End",
+      "From"       => reviewer.mobile
+    }) }
+
+    it "will return response to Twilio when admin inputs offer-id", :show_in_doc do
+      post :accept_offer_id, parameters
+      expect(response.status).to eq(200)
+      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Connecting to #{user.full_name}..</Say><Dial callerId=\"+163456799\"><Number>#{user.mobile}</Number></Dial></Response>")
     end
   end
 
