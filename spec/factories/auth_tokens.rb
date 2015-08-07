@@ -6,6 +6,6 @@ FactoryGirl.define do
   end
 
   factory :scenario_before_auth_token, parent: :auth_token do
-    otp_code_expiry { Time.now + Rails.application.secrets.token['otp_code_validity'] }
+    otp_code_expiry { Time.now + Goodcity.config.token.otp_code_validity }
   end
 end

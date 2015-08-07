@@ -39,7 +39,7 @@ describe Warden::Strategies::PinStrategy, type: :controller do
     context "with valid auth_token" do
       let(:params) { {'pin' => pin, 'otp_auth_key' => otp_auth_key} }
       before { expect(AuthToken).to receive(:find_by_otp_auth_key).with(otp_auth_key).and_return(auth_token) }
-      before { Rails.application.secrets.appstore_reviewer_login = {} }
+      before { Goodcity.config.appstore_reviewer_login = {} }
 
       context "and successful otp authentication" do
         before { expect(auth_token).to receive(:authenticate_otp).with(pin, {drift: ENV['OTP_CODE_VALIDITY'].to_i}).and_return(true) }
@@ -72,7 +72,7 @@ describe Warden::Strategies::PinStrategy, type: :controller do
         let(:params) { {'pin' => '1234', 'otp_auth_key' => otp_auth_key} }
         let(:user) { build :user, mobile: "+85255555555" }
         before { expect(auth_token).to receive(:user).and_return(user).at_least(:once) }
-        before { expect(Rails.application.secrets).to receive(:appstore_reviewer_login).and_return({"number"=>"+85255555555","pin"=>"1234"}).at_least(:once) }
+        before { expect(Goodcity.config).to receive(:appstore_reviewer_login).and_return({"number"=>"+85255555555","pin"=>"1234"}).at_least(:once) }
         it "should return success" do
           expect(strategy).to receive(:success!)
           strategy.authenticate!

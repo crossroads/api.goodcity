@@ -36,24 +36,24 @@ module TwilioConfig
   end
 
   def task_router
-    @client ||= Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"], twilio_creds["workspace_sid"])
+    @client ||= Twilio::REST::TaskRouterClient.new(twilio_creds.account_sid,
+      twilio_creds.auth_token, twilio_creds.workspace_sid)
   end
 
   def twilio_client
-    Twilio::REST::Client.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"])
+    Twilio::REST::Client.new(twilio_creds.account_sid,
+      twilio_creds.auth_token)
   end
 
   def twilio_outgoing_call_capability
-    @capability ||= Twilio::Util::Capability.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"])
-    @capability.allow_client_outgoing(twilio_creds["call_app_sid"])
+    @capability ||= Twilio::Util::Capability.new(twilio_creds.account_sid,
+      twilio_creds.auth_token)
+    @capability.allow_client_outgoing(twilio_creds.call_app_sid)
     @capability
   end
 
   def twilio_creds
-    @twilio ||= Rails.application.secrets.twilio
+    @twilio_creds ||= Goodcity.config.twilio
   end
 
   def user(mobile = nil)
@@ -61,8 +61,6 @@ module TwilioConfig
   end
 
   def voice_number
-    number = twilio_creds["voice_number"].to_s
-    number.prepend("+") unless number.starts_with?("+")
-    number
+    twilio_creds.voice_number
   end
 end

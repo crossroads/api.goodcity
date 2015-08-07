@@ -154,6 +154,7 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
+    hashie (3.4.2)
     hitimes (1.2.2)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
@@ -374,6 +375,7 @@ DEPENDENCIES
   foreman
   go_go_van_api!
   guard-rspec
+  hashie
   http_accept_language
   jwt (~> 1.2.0)
   lograge
@@ -409,3 +411,6 @@ DEPENDENCIES
   twilio-ruby
   warden
   webmock
+
+BUNDLED WITH
+   1.10.6

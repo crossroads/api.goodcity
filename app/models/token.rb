@@ -66,25 +66,25 @@ class Token
   end
 
   def jwt_config
-    Rails.application.secrets.jwt
+    Goodcity.config.jwt
   end
 
   # Key used to generate tokens. MUST be private. Changing this will invalidate all tokens.
   def secret_key
-    jwt_config['secret_key']
+    jwt_config.secret_key
   end
 
   def hmac_sha_algo
-    jwt_config['hmac_sha_algo']
+    jwt_config.hmac_sha_algo
   end
 
   def issuer
-    jwt_config['issuer']
+    jwt_config.issuer
   end
 
   # Number of seconds the token is valid for
   def validity
-    jwt_config['validity']
+    jwt_config.validity
   end
 
 end
