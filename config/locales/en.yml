@@ -19,6 +19,8 @@ en:
     sms_verification_pin: |
       Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy donating
       your quality goods. (If you didn't request this message, please ignore)
+    input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
+    thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
   activerecord:
     attributes:
       user:

@@ -36,7 +36,7 @@ module Api::V1
       param :From, String, desc: "Phone number of Caller(Donor)"
     end
 
-    api :POST, "/v1/twilio/assignment", "Called by Twilio when worker becomes Idle and Task is added to TaskQueue"
+    api :POST, "/v1/twilio_inbound/assignment", "Called by Twilio when worker becomes Idle and Task is added to TaskQueue"
     param :AccountSid, String, desc: "Twilio Account SID"
     param :WorkspaceSid, String, desc: "Twilio Workspace SID"
     param :WorkflowSid, String, desc: "Twilio Workflow SID"
@@ -112,23 +112,22 @@ module Api::V1
       render_twiml response
     end
 
-    api :POST, "/v1/twilio/voice", "Called by Twilio when Donor calls to Goodcity Voice Number."
+    api :POST, "/v1/twilio_inbound/voice", "Called by Twilio when Donor calls to Goodcity Voice Number."
     param_group :twilio_params
     param :CallStatus, String, desc: "Status of call ex: ringing"
     def voice
-      active_caller = TwilioInboundCallManager.caller_has_active_offer?(params["From"])
-
-      response = Twilio::TwiML::Response.new do |r|
-        unless active_caller
-          r.Dial { |d| d.Number GOODCITY_NUMBER }
-        else
-          task = { "selected_language" => "en", "user_id" => user.id }.to_json
-          r.Enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: api_v1_twilio_inbound_hold_donor_path, waitUrlMethod: "post" do |t|
-            t.TaskAttributes task
+      if TwilioInboundCallManager.from_admin?(params["From"])
+        response = admin_call_response
+      else
+        active_caller = TwilioInboundCallManager.caller_has_active_offer?(params["From"])
+        response = Twilio::TwiML::Response.new do |r|
+          unless active_caller
+            r.Dial { |d| d.Number GOODCITY_NUMBER }
+          else
+            enqueue_donor_call(r)
+            ask_callback(r)
+            accept_voicemail(r)
           end
-
-          ask_callback(r)
-          accept_voicemail(r)
         end
       end
 
@@ -149,7 +148,7 @@ module Api::V1
       if(params['QueueTime'].to_i < TWILIO_QUEUE_WAIT_TIME)
         response = Twilio::TwiML::Response.new do |r|
           r.Say "Hello #{user.full_name}," if user
-          r.Say THANK_YOU_CALLING_MESSAGE
+          r.Say I18n.t('twilio.thank_you_calling_message')
           r.Play api_v1_twilio_inbound_hold_music_url
         end
       else
@@ -214,7 +213,47 @@ module Api::V1
       send_file "app/assets/audio/30_sec_hold_music.mp3", type: "audio/mpeg"
     end
 
+    api :POST, "/v1/accept_offer_id", "Twilio response sent when input offer ID"
+    param_group :twilio_params
+    param :CallStatus, String, desc: "Status of call ex: in-progress"
+    param :Digits, String, desc: "Digits entered by Caller"
+    def accept_offer_id
+      response = Twilio::TwiML::Response.new do |r|
+        if params["Digits"]
+          donor = TwilioInboundCallManager.new(offer_id: params["Digits"]).offer_donor
+
+          if donor
+            r.Say "Connecting to #{donor.full_name}.."
+            r.Dial callerId: voice_number do |d|
+              d.Number donor.mobile
+            end
+          else
+            r.Say "You have entered invalid offer ID. Please try again."
+            ask_offer_id(r)
+          end
+        else
+          hangup_call(r)
+        end
+      end
+      render_twiml response
+    end
+
     private
+
+    def admin_call_response
+      Twilio::TwiML::Response.new do |r|
+        r.Say "Hello #{user.full_name}," if user
+        ask_offer_id(r, true)
+        hangup_call(r)
+      end
+    end
+
+    def ask_offer_id(r, play_welcome=false)
+      # ask Donor to leave message on voicemail
+      r.Gather numDigits: "5",  action: api_v1_twilio_inbound_accept_offer_id_path do |g|
+        g.Say I18n.t('twilio.input_offer_id_message') if play_welcome
+      end
+    end
 
     def ask_callback(r)
       # ask Donor to leave message on voicemail
@@ -229,5 +268,16 @@ module Api::V1
       r.Record maxLength: "60", playBeep: true, action: api_v1_twilio_inbound_send_voicemail_path
     end
 
+    def enqueue_donor_call(r)
+      task = { "selected_language" => "en", "user_id" => user.id }.to_json
+      r.Enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: api_v1_twilio_inbound_hold_donor_path, waitUrlMethod: "post" do |t|
+        t.TaskAttributes task
+      end
+    end
+
+    def hangup_call(r)
+      r.Say "Goodbye"
+      r.Hangup
+    end
   end
 end

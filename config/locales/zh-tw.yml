@@ -19,6 +19,8 @@ zh-tw:
     sms_verification_pin: |
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
       （如你並沒有要求驗證碼，請忽略此信息）
+    input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
+    thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
   activerecord:
     attributes:
       user:
