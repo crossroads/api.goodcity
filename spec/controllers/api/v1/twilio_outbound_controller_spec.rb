@@ -2,6 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
 
+  before {
+    allow_any_instance_of(described_class).to receive(:validate_twilio_request)
+      .and_return(true)
+  }
+
   let(:user) { create(:user_with_token) }
   let(:basic_outbound_call_params) { {
     "AccountSid"     => ENV['TWILIO_ACCOUNT_SID'],
