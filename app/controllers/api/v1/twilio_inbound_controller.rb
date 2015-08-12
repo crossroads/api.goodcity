@@ -10,8 +10,7 @@ module Api::V1
     skip_before_action :validate_token, except: :accept_call
     skip_before_action :verify_authenticity_token, except: :accept_call
 
-    before_action :validate_twilio_request,
-      except: [:accept_call, :accept_offer_id]
+    before_action :validate_twilio_request, except: :accept_call
 
     after_filter :set_header, except: [:assignment, :hold_music]
     after_filter :set_json_header, only: :assignment
