@@ -2,6 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::TwilioInboundController, type: :controller do
 
+  before {
+    allow_any_instance_of(described_class).to receive(:validate_twilio_request)
+      .and_return(true)
+  }
+
   let(:user) { create :user }
   let(:reviewer) { create :user, :reviewer }
   let(:basic_call_params) { {
