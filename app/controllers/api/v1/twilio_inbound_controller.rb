@@ -4,10 +4,15 @@ require "goodcity/redis"
 module Api::V1
   class TwilioInboundController < Api::V1::ApiController
     include TwilioConfig
+    include ValidateTwilioRequest
 
     skip_authorization_check
     skip_before_action :validate_token, except: :accept_call
     skip_before_action :verify_authenticity_token, except: :accept_call
+
+    before_action :validate_twilio_request,
+      except: [:accept_call, :accept_offer_id]
+
     after_filter :set_header, except: [:assignment, :hold_music]
     after_filter :set_json_header, only: :assignment
 
@@ -134,7 +139,7 @@ module Api::V1
       render_twiml response
     end
 
-    api :POST, '/v1/hold_donor', "Twilio Response to the caller waiting in queue"
+    api :POST, "/v1/twilio_inbound/hold_donor", "Twilio Response to the caller waiting in queue"
     param_group :twilio_params
     param :QueueSid, String, desc: "Twilio API version"
     param :CallStatus, String, desc: "Status of call ex: ringing"
