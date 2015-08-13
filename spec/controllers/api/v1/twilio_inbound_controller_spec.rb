@@ -95,7 +95,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
 
     context "Active Donor" do
       it "will return response to Twilio", :show_in_doc do
-        expect(TwilioInboundCallManager).to receive(:caller_has_active_offer?).with(user.mobile).and_return(true)
+        expect(TwilioInboundCallManager).to receive(:new).with(mobile: user.mobile).and_return(double("caller_has_active_offer?" => true, "caller_is_admin?" => false))
 
         post :voice, parameters
         expect(response.status).to eq(200)

@@ -120,10 +120,11 @@ module Api::V1
     param_group :twilio_params
     param :CallStatus, String, desc: "Status of call ex: ringing"
     def voice
-      if TwilioInboundCallManager.from_admin?(params["From"])
+      call_manager = TwilioInboundCallManager.new(mobile: params["From"])
+      if call_manager.caller_is_admin?
         response = admin_call_response
       else
-        active_caller = TwilioInboundCallManager.caller_has_active_offer?(params["From"])
+        active_caller = call_manager.caller_has_active_offer?
         response = Twilio::TwiML::Response.new do |r|
           unless active_caller
             r.Dial { |d| d.Number GOODCITY_NUMBER }
@@ -134,7 +135,6 @@ module Api::V1
           end
         end
       end
-
       render_twiml response
     end
 
