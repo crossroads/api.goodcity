@@ -81,11 +81,7 @@ class Ability
       can [:index, :show, :update], Offer if reviewer || supervisor
       can :destroy, Offer, created_by_id: user_id, state: ['draft',
         'submitted', 'reviewed', 'scheduled']
-      can :destroy, Offer, state: ['draft', 'under_review',
-        'submitted', 'scheduled'] if reviewer
-      can :destroy, Offer if supervisor
-      can :review, Offer if reviewer || supervisor
-      can [:complete_review, :close_offer, :finished], Offer if reviewer || supervisor
+      can [:complete_review, :close_offer, :finished, :destroy, :review], Offer if reviewer || supervisor
 
       # Package (same as item permissions)
       if reviewer || supervisor
