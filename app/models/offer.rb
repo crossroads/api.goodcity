@@ -130,6 +130,7 @@ class Offer < ActiveRecord::Base
     end
 
     after_transition on: :receive, do: :send_received_message
+    after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
     after_transition :on => [:close, :re_review] do |offer, transition|
       if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
@@ -167,6 +168,10 @@ class Offer < ActiveRecord::Base
 
   def send_thank_you_message
     messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
+  end
+
+  def send_ready_for_schedule_message
+    messages.create(body: I18n.t("offer.ready_for_schedule_message"), sender: reviewed_by)
   end
 
   def send_received_message

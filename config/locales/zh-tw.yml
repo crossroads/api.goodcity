@@ -39,5 +39,6 @@ zh-tw:
     ggv_cancel_message: GoGoVan已取消預約於 %{time} 的貨車，請重新安排運輸。
     received_message: 已收到您提交的資料，感謝您的熱心捐獻，謝謝！
     item_add_message: "%{donor_name} 捐獻了一件新物品。請審查。"
+    ready_for_schedule_message: "Your offer has been reviewed. Please proceed to arrange transportation."
   gogovan:
     driver_note: "請確保您運送以下所有物件：詳情請參見 \nEnglish %{link} \nChinese %{ch_link}"
