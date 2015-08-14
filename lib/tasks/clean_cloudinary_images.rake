@@ -1,9 +1,9 @@
-namespace :goodcity do
+namespace :cloudinary do
   # tag value can be "development"/"staging"/"offer_#{id}"/
   # list of comma seperated tags: "offer_163, offer_164"
-  # rake goodcity:clean_cloudinary_images tag=development
+  # rake cloudinary:delete tag=development
   desc 'clean cloudinary images'
-  task clean_cloudinary_images: :environment do
+  task delete: :environment do
     if ENV['tag']
       tag_names = ENV['tag'].split(",").map(&:strip)
       tag_names.each do |tag|
@@ -12,4 +12,18 @@ namespace :goodcity do
       end
     end
   end
+
+  desc "List cloudinary tags"
+  task list_tags: :environment do
+    tags = []
+    next_cursor = nil
+    while true do
+      list = Cloudinary::Api.tags(max_results: 500, next_cursor: next_cursor)
+      tags << list["tags"]
+      next_cursor = list[:next_cursor]
+      break if next_cursor.nil?
+    end
+    puts tags.uniq.compact
+  end
+
 end
