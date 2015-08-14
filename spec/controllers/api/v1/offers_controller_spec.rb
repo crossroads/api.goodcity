@@ -179,12 +179,24 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   end
 
   describe "DELETE offer/1" do
-    before { generate_and_set_token(user) }
-    it "returns 200", :show_in_doc do
-      delete :destroy, id: offer.id
-      expect(response.status).to eq(200)
-      body = JSON.parse(response.body)
-      expect(body).to eq( {} )
+    context "donor" do
+      before { generate_and_set_token(user) }
+      it "returns 200", :show_in_doc do
+        delete :destroy, id: offer.id
+        expect(response.status).to eq(200)
+        body = JSON.parse(response.body)
+        expect(body).to eq( {} )
+      end
+    end
+
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+      it "can delete offer", :show_in_doc do
+        delete :destroy, id: in_review_offer.id
+        expect(response.status).to eq(200)
+        body = JSON.parse(response.body)
+        expect(body).to eq( {} )
+      end
     end
   end
 end
