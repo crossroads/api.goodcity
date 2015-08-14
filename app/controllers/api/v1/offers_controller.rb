@@ -76,7 +76,8 @@ module Api::V1
     api :DELETE, '/v1/offers/1', "Delete an offer"
     description "If an offer is in draft state it will be destroyed. Any other state will be changed to 'cancelled'."
     def destroy
-      @offer.draft? ? @offer.really_destroy! : @offer.cancel
+      (@offer.draft? || current_user.staff?) ? @offer.really_destroy! :
+        @offer.cancel
       render json: {}
     end
 
