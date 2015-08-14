@@ -2,35 +2,34 @@ require "goodcity/redis"
 
 class TwilioInboundCallManager
 
-  DonorPrefix  = "twilio_donor"
+  DonorPrefix = "twilio_donor"
   NotifyPrefix = "twilio_notify"
 
   def initialize(options = {})
-    @admin_mobile = options[:admin_mobile]
-    @user_id      = options[:user_id]
-    @record_link  = options[:record_link]
-    @offer_id     = options[:offer_id]
+    @mobile = options[:mobile]
+    @user_id = options[:user_id]
+    @record_link = options[:record_link]
+    @offer_id = options[:offer_id]
   end
 
   def offer_donor
     Offer.find_by(id: @offer_id).try(:created_by)
   end
 
-  def self.from_admin?(mobile)
-    user = User.find_by_mobile(mobile) if mobile.present?
-    user.try(:staff?)
+  def caller_is_admin?
+    caller.try(:staff?)
   end
 
-  def self.caller_has_active_offer?(mobile)
-    return false if mobile.blank?
-    return false if (donor = User.find_by_mobile(mobile)).nil?
-    donor_active_offers = donor.offers.non_draft
-    staff_active = Version.past_month_activities(donor_active_offers, donor.id)
-    return !(donor_active_offers.count.zero? && staff_active.count.zero?)
+  def caller_has_active_offer?
+    return false if @mobile.blank?
+    return false if caller.nil?
+    caller_active_offers = caller.offers.non_draft
+    staff_active = Version.past_month_activities(caller_active_offers, caller.id)
+    return !(caller_active_offers.count.zero? && staff_active.count.zero?)
   end
 
   def set_mobile
-    store(donor_id_key, @admin_mobile)
+    store(donor_id_key, @mobile)
   end
 
   def mobile
@@ -106,7 +105,7 @@ class TwilioInboundCallManager
       item_type:    'Offer',
       item_id:      offer.id,
       event:        'call_accepted',
-      whodunnit:    receiver.id.to_s
+      whodunnit:    caller.id.to_s
     )
   end
 
@@ -120,9 +119,9 @@ class TwilioInboundCallManager
   end
 
   def send_call_accept_notification
-    PushService.new.send_notification offer.call_notify_channels - ["user_#{receiver.id}"], true, {
+    PushService.new.send_notification offer.call_notify_channels - ["user_#{caller.id}"], true, {
       category:   'call_answered',
-      message:    "Call from #{user.full_name} has been accepted by #{receiver.full_name}",
+      message:    "Call from #{user.full_name} has been accepted by #{caller.full_name}",
       author_id:  @user_id,
       offer_id:   offer.id
     }
@@ -140,8 +139,9 @@ class TwilioInboundCallManager
     @redis ||= Goodcity::Redis.new
   end
 
-  def receiver
-    @receiver ||= User.find_by_mobile(@admin_mobile)
+  # caller is the user looked up via mobile (because they are calling)
+  def caller
+    @caller ||= User.find_by_mobile(@mobile) if @mobile.present?
   end
 
 end
