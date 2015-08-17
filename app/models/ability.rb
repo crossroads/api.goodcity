@@ -80,7 +80,7 @@ class Ability
         state: Offer.donor_valid_states
       can [:index, :show, :update], Offer if reviewer || supervisor
       can :destroy, Offer, created_by_id: user_id, state: ['draft',
-        'submitted', 'reviewed', 'scheduled']
+        'submitted', 'reviewed', 'scheduled', 'under_review']
       can [:complete_review, :close_offer, :finished, :destroy, :review], Offer if reviewer || supervisor
 
       # Package (same as item permissions)
