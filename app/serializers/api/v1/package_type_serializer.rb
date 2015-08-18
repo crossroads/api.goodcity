@@ -12,7 +12,7 @@ module Api::V1
     alias_method :include_default_child_packages?, :include_attribute?
 
     def name__sql
-      "name_#{current_language}"
+      "coalesce(NULLIF(name_#{current_language}, ''), name_en)"
     end
 
     def other_child_packages
