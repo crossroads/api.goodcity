@@ -33,9 +33,9 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
 
   def schedule_polling(order)
     wait_time = if order.donor.try(:online?)
-      GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR
+      GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR + rand(GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR)
     else
-      GGV_POLL_JOB_WAIT_TIME
+      GGV_POLL_JOB_WAIT_TIME + rand(GGV_POLL_JOB_WAIT_TIME)
     end
     self.class.set(wait: wait_time).perform_later(order.id)
   end
