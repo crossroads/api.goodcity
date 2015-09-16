@@ -21,6 +21,10 @@ class Channel
       end
     end
 
+    def my_channel(user, is_admin_app)
+      ["user_#{user.id}" + (is_admin_app ? "_admin" : "")]
+    end
+
     def user_channel?(channel_name)
       [channel_name].flatten.any? {|n| n.include?('user_')}
     end

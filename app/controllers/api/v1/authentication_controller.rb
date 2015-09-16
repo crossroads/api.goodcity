@@ -158,7 +158,7 @@ module Api::V1
     def register_device
       authorize!(:register, :device)
       return render text: "Unrecognised platform, expecting 'gcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)", status: 400 unless ['gcm','aps','wns'].include?(params[:platform])
-      AzureRegisterJob.perform_later(params[:handle], Channel.private(current_user), params[:platform], is_admin_app)
+      AzureRegisterJob.perform_later(params[:handle], Channel.my_channel(current_user, is_admin_app), params[:platform], is_admin_app)
       render nothing: true, status: 204
     end
 
