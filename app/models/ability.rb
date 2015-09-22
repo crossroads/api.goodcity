@@ -107,7 +107,7 @@ class Ability
       can :current_user_profile, User
 
       # Auth
-      can [:register, :unregister], :device
+      can :register, :device
 
       # Taxonomies
       can [:index, :show], DonorCondition

@@ -162,16 +162,6 @@ module Api::V1
       render nothing: true, status: 204
     end
 
-    api :POST, "/v1/auth/unregister_device", "Unregister a mobile device after logout"
-    param :handle, String, desc: "The registration id for the push messaging service for the platform i.e. gcm registration id for android"
-    param :platform, String, desc: "The azure notification platform name, this should be `gcm` for android"
-    def unregister_device
-      authorize!(:unregister, :device)
-      AzureNotificationsService.new(is_admin_app).
-        unregister_device(params[:handle], params[:platform])
-      render nothing: true, status: 204
-    end
-
     api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socket.io rooms the user can listen to"
     error 401, "Unauthorized"
     error 500, "Internal Server Error"
