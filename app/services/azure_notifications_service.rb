@@ -10,19 +10,13 @@ class AzureNotificationsService
     send :post, 'messages', body: data.to_json, headers: notify_headers(tags)
   end
 
-  def unregister_device(handle, platform)
+  def register_device(handle, tags, platform)
     encoded_url = encoded_url(platform, handle)
     res = encoded_url ? (send :get, "registrations?$filter=#{encoded_url}") : ""
 
     Nokogiri::XML(res.decoded).css('entry title').each do |n|
       send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}
     end
-  end
-
-  def register_device(handle, tags, platform)
-    # unregister devise if registered already
-    unregister_device(handle, platform)
-
     res = send :post, 'registrationIDs'
     # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
     regId = res.headers['location'].split('/').last.split('?').first
