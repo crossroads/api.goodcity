@@ -1,20 +1,20 @@
 ---
 1:
   :name_en: "Electrical"
-  :name_zh_tw: '電動'
+  :name_zh_tw: '電器/電子產品'
   :child_categories:
     1:
       :name_en: "Computer"
-      :name_zh_tw: '計算機'
+      :name_zh_tw: '電腦'
     2:
       :name_en: "Household"
-      :name_zh_tw: '家庭'
+      :name_zh_tw: '家用'
     3:
       :name_en: "Kitchen"
       :name_zh_tw: '廚房'
     4:
       :name_en: "Other electrical"
-      :name_zh_tw: '其他電氣'
+      :name_zh_tw: '其他電器'
     5:
       :name_en: "Audio visual"
       :name_zh_tw: '視聽'
@@ -37,29 +37,29 @@
       :name_zh_tw: '辦公桌'
     4:
       :name_en: "Seating"
-      :name_zh_tw: '座位'
+      :name_zh_tw: '座椅'
     5:
       :name_en: "Shelves"
-      :name_zh_tw: '貨架'
+      :name_zh_tw: '置物架'
     6:
       :name_en: "Storage"
-      :name_zh_tw: '存儲'
+      :name_zh_tw: '收納'
     7:
       :name_en: "Table"
-      :name_zh_tw: '表'
+      :name_zh_tw: '桌子'
     8:
       :name_en: "Other furniture"
       :name_zh_tw: '其他家具'
     9:
       :name_en: "Office furniture"
-      :name_zh_tw: '辦公家具'
+      :name_zh_tw: '辦公室家具'
     10:
       :name_en: "Sets"
-      :name_zh_tw: '集'
+      :name_zh_tw: '套裝'
 
 3:
   :name_en: "Household"
-  :name_zh_tw: '家庭'
+  :name_zh_tw: '家居用品'
   :child_categories:
     1:
       :name_en: "Appliances"
@@ -75,11 +75,11 @@
       :name_zh_tw: '廚房，臥室，衛生間，廚房'
     5:
       :name_en: "Other household"
-      :name_zh_tw: '其他家庭'
+      :name_zh_tw: '其他家居用品'
 
 4:
   :name_en: "Small goods & bulk items"
-  :name_zh_tw: '小型商品和大宗物品'
+  :name_zh_tw: '小型商品和大型物品'
   :child_categories:
     1:
       :name_en: "Books"
@@ -101,7 +101,7 @@
       :name_zh_tw: '玩具'
     7:
       :name_en: "Medical"
-      :name_zh_tw: '醫'
+      :name_zh_tw: '醫療'
     8:
       :name_en: "Clothing & accessories"
       :name_zh_tw: '服裝服飾'
