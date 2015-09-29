@@ -7,7 +7,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   let(:reviewer) { create(:user, :reviewer) }
   let(:offer) { create(:offer, :with_transport, created_by: user) }
   let(:submitted_offer) { create(:offer, created_by: user, state: 'submitted') }
-  let(:in_review_offer) { create(:offer, created_by: user, state: 'under_review') }
+  let(:in_review_offer) { create(:offer, created_by: user, state: 'under_review', reviewed_by: reviewer) }
   let(:serialized_offer) { Api::V1::OfferSerializer.new(offer) }
   let(:serialized_offer_json) { JSON.parse( serialized_offer.to_json ) }
   let(:allowed_params) { [:language, :origin, :stairs, :parking, :estimated_size, :notes] }
@@ -179,12 +179,24 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   end
 
   describe "DELETE offer/1" do
-    before { generate_and_set_token(user) }
-    it "returns 200", :show_in_doc do
-      delete :destroy, id: offer.id
-      expect(response.status).to eq(200)
-      body = JSON.parse(response.body)
-      expect(body).to eq( {} )
+    context "donor" do
+      before { generate_and_set_token(user) }
+      it "returns 200", :show_in_doc do
+        delete :destroy, id: offer.id
+        expect(response.status).to eq(200)
+        body = JSON.parse(response.body)
+        expect(body).to eq( {} )
+      end
+    end
+
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+      it "can delete offer", :show_in_doc do
+        delete :destroy, id: in_review_offer.id
+        expect(response.status).to eq(200)
+        body = JSON.parse(response.body)
+        expect(body).to eq( {} )
+      end
     end
   end
 end

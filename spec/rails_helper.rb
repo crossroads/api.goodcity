@@ -53,4 +53,9 @@ RSpec.configure do |config|
 
   FactoryGirl.create :user, :system
 
+  # Default app to be 'admin' in order to not use treat_user_as_donor
+  config.include ApplicationHeaders
+  config.before(:each, type: :controller) do
+    set_admin_app_header
+  end
 end

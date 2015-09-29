@@ -23,7 +23,7 @@ module Api::V1
     param :tags, String, desc: "csv list of tags to identify image", allow_nil: true
     def generate_signature
       unix_timestamp    = Time.now.to_i
-      tags              = ENV['RAILS_ENV'] + (params[:tags].nil? ? "" : "," + params[:tags])
+      tags              = [Rails.env, params[:tags]].compact.join(",")
       serialized_params = "tags=#{tags}&timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
       signature         = Digest::SHA1.hexdigest(serialized_params)
       render json: {

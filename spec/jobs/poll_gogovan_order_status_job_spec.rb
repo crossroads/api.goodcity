@@ -4,6 +4,7 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
 
   let(:order) { create :gogovan_order, :with_delivery }
   let!(:empty_order) { create :gogovan_order }
+  let(:invalid_order) { create :gogovan_order, :with_delivery,  booking_id: nil }
   let(:active_order) { create :gogovan_order, :with_delivery, :active }
 
   let(:response) {
@@ -70,6 +71,12 @@ RSpec.describe PollGogovanOrderStatusJob, type: :job do
     expect {
       PollGogovanOrderStatusJob.new.perform(empty_order.id)
     }.to change(GogovanOrder, :count).by(-1)
+  end
+
+  it "schedule delete delivery job if not planned properly (having nil booking_id)" do
+    PollGogovanOrderStatusJob.new.perform(invalid_order.id)
+    expect(enqueued_jobs.last[:job]).to eq(GgvDeliveryCleanupJob)
+    expect(enqueued_jobs.last[:args]).to eq([invalid_order.id])
   end
 
   it "schedule delete delivery job if GGV order is cancelled" do

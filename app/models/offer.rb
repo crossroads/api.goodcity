@@ -35,6 +35,7 @@ class Offer < ActiveRecord::Base
 
   scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
   scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
+  scope :non_draft, -> { where("state NOT IN (?)", 'draft') }
   scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
   scope :inactive, -> { where(state: INACTIVE_STATES) }
   scope :in_states, ->(states) { # overwrite concerns/state_machine_scope to add pseudo states
@@ -129,6 +130,7 @@ class Offer < ActiveRecord::Base
     end
 
     after_transition on: :receive, do: :send_received_message
+    after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
     after_transition :on => [:close, :re_review] do |offer, transition|
       if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
@@ -168,6 +170,10 @@ class Offer < ActiveRecord::Base
     messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
   end
 
+  def send_ready_for_schedule_message
+    messages.create(body: I18n.t("offer.ready_for_schedule_message"), sender: reviewed_by)
+  end
+
   def send_received_message
     messages.create(body: I18n.t("offer.received_message"), sender: User.system_user)
   end
@@ -195,8 +201,12 @@ class Offer < ActiveRecord::Base
   end
 
   def send_new_offer_notification
-    text = I18n.t("notification.new_offer", name: self.created_by.full_name)
-    send_reviewers_notification(text)
+    PushService.new.send_notification Channel.reviewer, true, {
+      category:   'new_offer',
+      message:    I18n.t("notification.new_offer", name: created_by.full_name),
+      offer_id:   id,
+      author_id:  created_by_id
+    }
   end
 
   def send_new_offer_alert
@@ -213,13 +223,17 @@ class Offer < ActiveRecord::Base
     messages.create(body: message, sender: User.system_user)
   end
 
-  def send_reviewers_notification(text)
-    PushService.new.send_notification(
-      text: text,
-      entity_type: "offer",
-      entity: self,
-      channel: Channel.reviewer,
-      is_admin_app: true)
+  def reviewer_channel
+    reviewed_by_id && "user_#{reviewed_by_id}"
+  end
+
+  def call_notify_channels
+    channel_names = Channel.private(subscribed_users(true))
+    if (channel_names - [reviewer_channel]).blank?
+      channel_names = Channel.private(User.supervisors.pluck(:id))
+    end
+    channel_names << reviewer_channel
+    channel_names.uniq.compact
   end
 
   private

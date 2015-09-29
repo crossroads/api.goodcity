@@ -162,6 +162,15 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "#send_ready_for_schedule_message" do
+    it 'should send ready_for_schedule message to donor on offer after review-completion' do
+      offer = create :offer, :under_review
+      offer.finish_review
+      expect(offer.messages.count).to eq(1)
+      expect(offer.messages.last.sender).to eq(offer.reviewed_by)
+    end
+  end
+
   describe "#send_received_message" do
     it 'should send received message to donor on offer receive' do
       offer = create :offer, state: "reviewed"

@@ -1,5 +1,6 @@
 class Item < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+  has_paper_trail class_name: 'Version', meta: { related: :offer },
+    only: [:donor_description, :donor_condition_id, :state]
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -17,6 +18,9 @@ class Item < ActiveRecord::Base
       { messages: :sender }, { packages: :package_type }
     ] )
   }
+
+  scope :accepted, -> { where("state = 'accepted'") }
+  scope :donor_items, ->(donor_id) { joins(:offer).where(offers: {created_by_id: donor_id}) }
 
   # Workaround to set initial state fror the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial
@@ -98,5 +102,9 @@ class Item < ActiveRecord::Base
 
   def need_to_persist?
     accepted? || rejected? || messages.present?
+  end
+
+  def not_received_packages?
+    packages.received.count.zero?
   end
 end

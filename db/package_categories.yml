@@ -1,0 +1,133 @@
+---
+1:
+  :name_en: "Electrical"
+  :name_zh_tw: '電器/電子產品'
+  :child_categories:
+    1:
+      :name_en: "Computer"
+      :name_zh_tw: '電腦'
+    2:
+      :name_en: "Household"
+      :name_zh_tw: '家用'
+    3:
+      :name_en: "Kitchen"
+      :name_zh_tw: '廚房'
+    4:
+      :name_en: "Other electrical"
+      :name_zh_tw: '其他電器'
+    5:
+      :name_en: "Audio visual"
+      :name_zh_tw: '視聽'
+    6:
+      :name_en: "Office appliances"
+      :name_zh_tw: '辦公設備'
+
+2:
+  :name_en: "Furniture"
+  :name_zh_tw: '家具'
+  :child_categories:
+    1:
+      :name_en: "Baby / child"
+      :name_zh_tw: '嬰兒/兒童'
+    2:
+      :name_en: "Beds"
+      :name_zh_tw: '床'
+    3:
+      :name_en: "Desk"
+      :name_zh_tw: '辦公桌'
+    4:
+      :name_en: "Seating"
+      :name_zh_tw: '座椅'
+    5:
+      :name_en: "Shelves"
+      :name_zh_tw: '置物架'
+    6:
+      :name_en: "Storage"
+      :name_zh_tw: '收納'
+    7:
+      :name_en: "Table"
+      :name_zh_tw: '桌子'
+    8:
+      :name_en: "Other furniture"
+      :name_zh_tw: '其他家具'
+    9:
+      :name_en: "Office furniture"
+      :name_zh_tw: '辦公室家具'
+    10:
+      :name_en: "Sets"
+      :name_zh_tw: '套裝'
+
+3:
+  :name_en: "Household"
+  :name_zh_tw: '家居用品'
+  :child_categories:
+    1:
+      :name_en: "Appliances"
+      :name_zh_tw: '家電'
+    2:
+      :name_en: "Baby"
+      :name_zh_tw: '嬰兒'
+    3:
+      :name_en: "Textiles / clothes"
+      :name_zh_tw: '紡織/服裝'
+    4:
+      :name_en: "Kitchen, bedroom, bathroom, dining"
+      :name_zh_tw: '廚房，臥室，衛生間，廚房'
+    5:
+      :name_en: "Other household"
+      :name_zh_tw: '其他家居用品'
+
+4:
+  :name_en: "Small goods & bulk items"
+  :name_zh_tw: '小型商品和大型物品'
+  :child_categories:
+    1:
+      :name_en: "Books"
+      :name_zh_tw: '書籍'
+    2:
+      :name_en: "Food"
+      :name_zh_tw: '食品'
+    3:
+      :name_en: "Glasses"
+      :name_zh_tw: '眼鏡'
+    4:
+      :name_en: "Stationery"
+      :name_zh_tw: '文具'
+    5:
+      :name_en: "Tools"
+      :name_zh_tw: '工具'
+    6:
+      :name_en: "Toys"
+      :name_zh_tw: '玩具'
+    7:
+      :name_en: "Medical"
+      :name_zh_tw: '醫療'
+    8:
+      :name_en: "Clothing & accessories"
+      :name_zh_tw: '服裝服飾'
+    9:
+      :name_en: "Mixed / miscellaneous"
+      :name_zh_tw: '混合/雜項'
+    10:
+      :name_en: "Household textiles"
+      :name_zh_tw: '家用紡織品'
+
+5:
+  :name_en: "Recreation"
+  :name_zh_tw: '娛樂'
+  :child_categories:
+    1:
+      :name_en: "Music"
+      :name_zh_tw: '音樂'
+    2:
+      :name_en: "Other"
+      :name_zh_tw: '其他'
+    3:
+      :name_en: "Playground"
+      :name_zh_tw: '操場'
+    4:
+      :name_en: "Sport"
+      :name_zh_tw: '體育'
+    5:
+      :name_en: "Bicycles"
+      :name_zh_tw: '自行車'

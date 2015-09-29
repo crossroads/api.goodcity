@@ -12,15 +12,16 @@ class Message < ActiveRecord::Base
 
   default_scope do
     unless User.current_user.try(:staff?)
-      Message.where(is_private: false)
+      where("is_private = 'f'")
     end
   end
 
   scope :with_eager_load, -> { includes( [:sender] ) }
   scope :non_private, -> { where(is_private: false) }
+  scope :donor_messages, ->(donor_id) { joins(:offer).where(offers: {created_by_id: donor_id}, is_private: false) }
 
   # used to override the state value during serialization
-  attr_accessor :state_value
+  attr_accessor :state_value, :is_call_log
 
   after_create do
     subscribe_users_to_message
@@ -57,54 +58,65 @@ class Message < ActiveRecord::Base
   end
 
   def subscribed_user_channels
-    Channel.user_ids(self.offer.subscribed_users(self.is_private))
+    Channel.private(self.offer.subscribed_users(self.is_private))
   end
 
   def send_new_message_notification
+    return if is_call_log
     subscribed_user_channels = subscribed_user_channels()
     text = self.body.truncate(150, separator: ' ')
 
     # notify subscribed users except sender
-    channels = subscribed_user_channels - Channel.user(sender)
-    channels -= Channel.user(offer.created_by) if offer.cancelled?
+    sender_channel = Channel.private(sender)
+    donor_channel = Channel.private(offer.created_by_id)
+    channels = subscribed_user_channels - sender_channel - donor_channel
 
-    donor_channel = channels.delete("user_#{offer.created_by_id}")
-
-    service.send_notification(text: text, entity_type: "message",
-      entity: self, channel: [donor_channel]) if donor_channel
-
-    service.send_notification(text: text, entity_type: "message",
-      entity: self, channel: channels, is_admin_app: true) unless channels.empty?
+    send_notification donor_channel, false unless is_private || offer.cancelled? || donor_channel == sender_channel
+    send_notification channels, true
 
     # notify all supervisors if no supervisor is subscribed in private thread
-    if self.is_private && (Channel.users(User.supervisors) & subscribed_user_channels).empty?
-      service.send_notification(text: text, entity_type: "message",
-        entity: self, channel: Channel.supervisor, is_admin_app: true)
+    if self.is_private && (Channel.private(User.supervisors) & subscribed_user_channels).empty?
+      send_notification Channel.supervisor, true
     end
   end
 
   def update_client_store
-    sender_channel = Channel.user(sender)
-    subscribed_user_channels = subscribed_user_channels() - sender_channel
-    subscribed_user_channels -= Channel.user(offer.created_by) if offer.cancelled?
-    unsubscribed_user_channels = Channel.users(User.staff) -
-      subscribed_user_channels - sender_channel
+    sender_channel = Channel.private(sender)
+    donor_channel = Channel.private(offer.created_by_id)
+    subscribed_user_channels = subscribed_user_channels() - sender_channel - donor_channel
+    unsubscribed_user_channels = Channel.private(User.staff) - subscribed_user_channels - sender_channel - donor_channel
 
     user = Api::V1::UserSerializer.new(sender)
 
-    send_update self, user, "read", sender_channel unless sender.system_user?
-    send_update self, user, 'unread', subscribed_user_channels
-    send_update self, user, 'never-subscribed', unsubscribed_user_channels
+    if sender_channel == donor_channel
+      send_update self, user, "read", donor_channel, false unless offer.cancelled? || is_private
+    else
+      send_update self, user, "read", sender_channel, true unless sender.system_user?
+      send_update self, user, "unread", donor_channel, false unless offer.cancelled? || is_private
+    end
+    send_update self, user, 'unread', subscribed_user_channels, true
+    send_update self, user, 'never-subscribed', unsubscribed_user_channels, true
   end
 
-  def send_update(object, user, state, channel)
+  def send_update(object, user, state, channel, is_admin_app)
     self.state_value = state
     object = Api::V1::MessageSerializer.new(object, {exclude:Message.reflections.keys.map(&:to_sym)})
-    PushService.new.send_update_store(channel, {item:object, sender:user, operation: :create}) unless channel.empty?
+    PushService.new.send_update_store channel, is_admin_app, {
+      item: object,
+      sender:user,
+      operation: :create
+    } unless channel.empty?
     self.state_value = nil
   end
 
-  def service
-    PushService.new
+  def send_notification(channel, is_admin_app)
+    PushService.new.send_notification channel, is_admin_app, {
+      category:   'message',
+      message:    body.truncate(150, separator: ' '),
+      is_private: is_private,
+      offer_id:   offer.id,
+      item_id:    item.try(:id),
+      author_id:  sender_id
+    } unless channel.empty?
   end
 end

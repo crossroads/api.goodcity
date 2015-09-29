@@ -20,7 +20,7 @@ module Api::V1
     def available_dates
       days_count = params[:schedule_days] || NEXT_AVAILABLE_DAYS_COUNT
       start_from = params[:start_from] || START_DAYS_COUNT
-      render json: DateSet.new(days_count, start_from).available_dates.to_json
+      render json: DateSet.new(days_count, start_from).available_dates.map(&:to_date).to_json
     end
   end
 end

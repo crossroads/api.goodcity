@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
+      get "browse/fetch_items" => "browse#fetch_items"
       resources :items, except: [:index]
       post "auth/signup" => "authentication#signup"
       post "auth/verify" => "authentication#verify"
@@ -76,10 +77,26 @@ Rails.application.routes.draw do
       get "timeslots" => "timeslots#index"
       get "gogovan_transports" => "gogovan_transports#index"
       get "crossroads_transports" => "crossroads_transports#index"
+      get "versions" => "versions#index"
 
-      post "twilio/voice" => "twilio#voice"
-      get "accept_voicemail" => "twilio#accept_voicemail"
-      get "send_voicemail" => "twilio#send_voicemail"
+      post "twilio_inbound/voice" => "twilio_inbound#voice"
+      post "twilio_inbound/hold_donor" => "twilio_inbound#hold_donor"
+      post "twilio_inbound/accept_offer_id" => "twilio_inbound#accept_offer_id"
+      post "twilio_inbound/accept_callback" => "twilio_inbound#accept_callback"
+      post "twilio_inbound/send_voicemail" => "twilio_inbound#send_voicemail"
+      post "twilio_inbound/assignment" => "twilio_inbound#assignment"
+      get  "twilio_inbound/accept_call" => "twilio_inbound#accept_call"
+      get  "twilio_inbound/hold_music" => "twilio_inbound#hold_music"
+      post "twilio_inbound/call_complete" => "twilio_inbound#call_complete"
+      post "twilio_inbound/call_fallback" => "twilio_inbound#call_fallback"
+
+      post "twilio_outbound/connect_call" => "twilio_outbound#connect_call"
+      post "twilio_outbound/completed_call" => "twilio_outbound#completed_call"
+      post "twilio_outbound/call_status" => "twilio_outbound#call_status"
+      get  "twilio_outbound/generate_call_token" =>
+        "twilio_outbound#generate_call_token"
+
+      resources :package_categories, only: [:index, :show]
     end
   end
 end

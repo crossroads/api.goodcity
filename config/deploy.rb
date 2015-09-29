@@ -2,7 +2,7 @@
 lock '3.4.0'
 
 set :application, 'goodcity_server'
-set :repo_url, 'git@github.com:crossroads/goodcity-server-prototype.git'
+set :repo_url, 'git@github.com:crossroads/api.goodcity.git'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
@@ -39,7 +39,7 @@ set :bundle_binstubs, nil
 # How many processes do we want? Each one has 20 threads in production.
 set :sidekiq_processes, 2
 
-set :rvm_ruby_version, '2.2'
+set :rvm_ruby_version, '2.2.2'
 
 namespace :deploy do
 

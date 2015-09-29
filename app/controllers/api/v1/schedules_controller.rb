@@ -18,7 +18,7 @@ module Api::V1
         param :resource, String, desc: "Transport Type", allow_nil: true
         param :slot, Integer, desc: "Time slot for the pick up e.g. slot 1 or slot2 etc", allow_nil: true
         param :scheduled_at, String, desc: "Date and time of the pick up e.g Tuesday 23 October 2014, 10:30 am."
-        param :slot_name, String, desc: "Slot timing details e.g. Morning,11am-1pm or Afternoon,2pm-4pmetc"
+        param :slot_name, String, desc: "Slot timing details e.g. Morning,11am-1pm or Afternoon,2pm-4pm etc"
         param :zone, String, desc: "zone for selection e.g. East, West, North etc", allow_nil: true
       end
     end

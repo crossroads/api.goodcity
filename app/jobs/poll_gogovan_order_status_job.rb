@@ -5,6 +5,10 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
     order = GogovanOrder.find_by(id: order_id)
     if order.try(:delivery)
       Rails.logger.info "Updating GGV Order #{order_id}"
+
+      # GGV Order is not placed successfully i.r. booking_id is nil
+      return remove_delivery(order_id) unless order.booking_id
+
       order_details = Gogovan.order_status(order.booking_id)
 
       unless order_details[:error]
@@ -29,9 +33,9 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
 
   def schedule_polling(order)
     wait_time = if order.donor.try(:online?)
-      GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR
+      GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR + rand(GGV_POLL_JOB_WAIT_TIME_FOR_ONLINE_DONOR)
     else
-      GGV_POLL_JOB_WAIT_TIME
+      GGV_POLL_JOB_WAIT_TIME + rand(GGV_POLL_JOB_WAIT_TIME)
     end
     self.class.set(wait: wait_time).perform_later(order.id)
   end

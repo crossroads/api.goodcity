@@ -1,0 +1,1021 @@
+---
+1:
+  :code: AFO
+  :lv1: Small goods & bulk items
+  :lv2: Food
+2:
+  :code: BBC
+  :lv1: Furniture
+  :lv2: Beds
+3:
+  :code: BBM
+  :lv1: Furniture
+  :lv2: Beds
+4:
+  :code: BBS
+  :lv1: Furniture
+  :lv2: Beds
+5:
+  :code: BCB
+  :lv1: Furniture
+  :lv2: Beds
+6:
+  :code: BCM
+  :lv1: Furniture
+  :lv2: Beds
+7:
+  :code: BCS
+  :lv1: Furniture
+  :lv2: Beds
+8:
+  :code: BCX
+  :lv1: Furniture
+  :lv2: Beds
+9:
+  :code: BDB
+  :lv1: Furniture
+  :lv2: Beds
+10:
+  :code: BDM
+  :lv1: Furniture
+  :lv2: Beds
+11:
+  :code: BDS
+  :lv1: Furniture
+  :lv2: Beds
+12:
+  :code: BDX
+  :lv1: Furniture
+  :lv2: Beds
+13:
+  :code: BKB
+  :lv1: Furniture
+  :lv2: Beds
+14:
+  :code: BKS
+  :lv1: Furniture
+  :lv2: Beds
+15:
+  :code: BKX
+  :lv1: Furniture
+  :lv2: Beds
+16:
+  :code: BLS
+  :lv1: Furniture
+  :lv2: Beds
+17:
+  :code: BSB
+  :lv1: Furniture
+  :lv2: Beds
+18:
+  :code: BSF
+  :lv1: Furniture
+  :lv2: Beds
+19:
+  :code: BSM
+  :lv1: Furniture
+  :lv2: Beds
+20:
+  :code: BSS
+  :lv1: Furniture
+  :lv2: Beds
+21:
+  :code: BSX
+  :lv1: Furniture
+  :lv2: Beds
+22:
+  :code: BTB
+  :lv1: Furniture
+  :lv2: Beds
+23:
+  :code: BTM
+  :lv1: Furniture
+  :lv2: Beds
+24:
+  :code: BTS
+  :lv1: Furniture
+  :lv2: Beds
+25:
+  :code: BX
+  :lv1: Furniture
+  :lv2: Beds
+26:
+  :code: CBX
+  :lv1: Small goods & bulk items
+  :lv2: Household textiles
+27:
+  :code: CHX
+  :lv1: Small goods & bulk items
+  :lv2: Household textiles
+28:
+  :code: CL
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+29:
+  :code: DD
+  :lv1: Small goods & bulk items
+  :lv2: Tools
+30:
+  :code: DE
+  :lv1: Electrical
+  :lv2: Other electrical
+31:
+  :code: EHA
+  :lv1: Electrical
+  :lv2: Household
+32:
+  :code: EHC
+  :lv1: Electrical
+  :lv2: Household
+33:
+  :code: EHD
+  :lv1: Electrical
+  :lv2: Household
+34:
+  :code: EHF
+  :lv1: Electrical
+  :lv2: Household
+35:
+  :code: EHH
+  :lv1: Electrical
+  :lv2: Household
+36:
+  :code: EHI
+  :lv1: Electrical
+  :lv2: Household
+37:
+  :code: EHL
+  :lv1: Electrical
+  :lv2: Household
+38:
+  :code: EHW
+  :lv1: Electrical
+  :lv2: Household
+39:
+  :code: EHX
+  :lv1: Electrical
+  :lv2: Household
+40:
+  :code: EHY
+  :lv1: Electrical
+  :lv2: Household
+41:
+  :code: EKC
+  :lv1: Electrical
+  :lv2: Kitchen
+42:
+  :code: EKD
+  :lv1: Electrical
+  :lv2: Kitchen
+43:
+  :code: EKF
+  :lv1: Electrical
+  :lv2: Kitchen
+44:
+  :code: EKH
+  :lv1: Electrical
+  :lv2: Kitchen
+45:
+  :code: EKI
+  :lv1: Electrical
+  :lv2: Kitchen
+46:
+  :code: EKJ
+  :lv1: Electrical
+  :lv2: Kitchen
+47:
+  :code: EKK
+  :lv1: Electrical
+  :lv2: Kitchen
+48:
+  :code: EKL
+  :lv1: Electrical
+  :lv2: Kitchen
+49:
+  :code: EKM
+  :lv1: Electrical
+  :lv2: Kitchen
+50:
+  :code: EKP
+  :lv1: Electrical
+  :lv2: Kitchen
+51:
+  :code: EKR
+  :lv1: Electrical
+  :lv2: Kitchen
+52:
+  :code: EKS
+  :lv1: Electrical
+  :lv2: Kitchen
+53:
+  :code: EKT
+  :lv1: Electrical
+  :lv2: Kitchen
+54:
+  :code: EKX
+  :lv1: Electrical
+  :lv2: Kitchen
+55:
+  :code: EOF
+  :lv1: Electrical
+  :lv2: Office appliances
+56:
+  :code: EOP
+  :lv1: Electrical
+  :lv2: Office appliances
+57:
+  :code: EOT
+  :lv1: Electrical
+  :lv2: Office appliances
+58:
+  :code: EOW
+  :lv1: Electrical
+  :lv2: Office appliances
+59:
+  :code: EOX
+  :lv1: Electrical
+  :lv2: Office appliances
+60:
+  :code: EUD
+  :lv1: Electrical
+  :lv2: Audio visual
+61:
+  :code: EUH
+  :lv1: Electrical
+  :lv2: Audio visual
+62:
+  :code: EUK
+  :lv1: Electrical
+  :lv2: Audio visual
+63:
+  :code: EUM
+  :lv1: Electrical
+  :lv2: Audio visual
+64:
+  :code: EUR
+  :lv1: Electrical
+  :lv2: Audio visual
+65:
+  :code: EUS
+  :lv1: Electrical
+  :lv2: Audio visual
+66:
+  :code: EUX
+  :lv1: Electrical
+  :lv2: Audio visual
+67:
+  :code: EVA
+  :lv1: Electrical
+  :lv2: Audio visual
+68:
+  :code: EVD
+  :lv1: Electrical
+  :lv2: Audio visual
+69:
+  :code: EVP
+  :lv1: Electrical
+  :lv2: Audio visual
+70:
+  :code: EVQ
+  :lv1: Electrical
+  :lv2: Audio visual
+71:
+  :code: EVS
+  :lv1: Electrical
+  :lv2: Audio visual
+72:
+  :code: EVT
+  :lv1: Electrical
+  :lv2: Audio visual
+73:
+  :code: EVX
+  :lv1: Electrical
+  :lv2: Audio visual
+74:
+  :code: EX
+  :lv1: Electrical
+  :lv2: Other electrical
+75:
+  :code: EXB
+  :lv1: Electrical
+  :lv2: Other electrical
+76:
+  :code: EXS
+  :lv1: Electrical
+  :lv2: Other electrical
+77:
+  :code: FBB
+  :lv1: Furniture
+  :lv2: Storage
+78:
+  :code: FBC
+  :lv1: Furniture
+  :lv2: Storage
+79:
+  :code: FBD
+  :lv1: Furniture
+  :lv2: Storage
+80:
+  :code: FBK
+  :lv1: Furniture
+  :lv2: Storage
+81:
+  :code: FBL
+  :lv1: Furniture
+  :lv2: Storage
+82:
+  :code: FBO
+  :lv1: Furniture
+  :lv2: Storage
+83:
+  :code: FBP
+  :lv1: Furniture
+  :lv2: Storage
+84:
+  :code: FBR
+  :lv1: Furniture
+  :lv2: Storage
+85:
+  :code: FBS
+  :lv1: Furniture
+  :lv2: Storage
+86:
+  :code: FBT
+  :lv1: Furniture
+  :lv2: Storage
+87:
+  :code: FBV
+  :lv1: Furniture
+  :lv2: Storage
+88:
+  :code: FBX
+  :lv1: Furniture
+  :lv2: Storage
+89:
+  :code: FCC
+  :lv1: Furniture
+  :lv2: Seating
+90:
+  :code: FCD
+  :lv1: Furniture
+  :lv2: Seating
+91:
+  :code: FCF
+  :lv1: Furniture
+  :lv2: Seating
+92:
+  :code: FCH
+  :lv1: Furniture
+  :lv2: Seating
+93:
+  :code: FCI
+  :lv1: Furniture
+  :lv2: Seating
+94:
+  :code: FCL
+  :lv1: Furniture
+  :lv2: Seating
+95:
+  :code: FCO
+  :lv1: Furniture
+  :lv2: Seating
+96:
+  :code: FCQ
+  :lv1: Furniture
+  :lv2: Seating
+97:
+  :code: FCS
+  :lv1: Furniture
+  :lv2: Seating
+98:
+  :code: FCT
+  :lv1: Furniture
+  :lv2: Seating
+99:
+  :code: FCU
+  :lv1: Furniture
+  :lv2: Seating
+100:
+  :code: FCX
+  :lv1: Furniture
+  :lv2: Seating
+101:
+  :code: FDC
+  :lv1: Furniture
+  :lv2: Desk
+102:
+  :code: FDH
+  :lv1: Furniture
+  :lv2: Desk
+103:
+  :code: FDO
+  :lv1: Furniture
+  :lv2: Desk
+104:
+  :code: FDP
+  :lv1: Furniture
+  :lv2: Desk
+105:
+  :code: FDQ
+  :lv1: Furniture
+  :lv2: Desk
+106:
+  :code: FDX
+  :lv1: Furniture
+  :lv2: Desk
+107:
+  :code: FSB
+  :lv1: Furniture
+  :lv2: Shelves
+108:
+  :code: FSC
+  :lv1: Furniture
+  :lv2: Shelves
+109:
+  :code: FSD
+  :lv1: Furniture
+  :lv2: Shelves
+110:
+  :code: FSO
+  :lv1: Furniture
+  :lv2: Shelves
+111:
+  :code: FSR
+  :lv1: Furniture
+  :lv2: Storage
+112:
+  :code: FSS
+  :lv1: Furniture
+  :lv2: Storage
+113:
+  :code: FSX
+  :lv1: Furniture
+  :lv2: Shelves
+114:
+  :code: FTA
+  :lv1: Furniture
+  :lv2: Table
+115:
+  :code: FTC
+  :lv1: Furniture
+  :lv2: Table
+116:
+  :code: FTD
+  :lv1: Furniture
+  :lv2: Table
+117:
+  :code: FTE
+  :lv1: Furniture
+  :lv2: Table
+118:
+  :code: FTF
+  :lv1: Furniture
+  :lv2: Table
+119:
+  :code: FTK
+  :lv1: Furniture
+  :lv2: Table
+120:
+  :code: FTO
+  :lv1: Furniture
+  :lv2: Table
+121:
+  :code: FTU
+  :lv1: Furniture
+  :lv2: Table
+122:
+  :code: FTV
+  :lv1: Furniture
+  :lv2: Table
+123:
+  :code: FTW
+  :lv1: Furniture
+  :lv2: Table
+124:
+  :code: FTX
+  :lv1: Furniture
+  :lv2: Table
+125:
+  :code: FWT
+  :lv1: Furniture
+  :lv2: Table
+126:
+  :code: FX
+  :lv1: Furniture
+  :lv2: Other furniture
+127:
+  :code: FXA
+  :lv1: Furniture
+  :lv2: Other furniture
+128:
+  :code: FXB
+  :lv1: Furniture
+  :lv2: Other furniture
+129:
+  :code: FXH
+  :lv1: Furniture
+  :lv2: Other furniture
+130:
+  :code: FXM
+  :lv1: Furniture
+  :lv2: Other furniture
+131:
+  :code: FXP
+  :lv1: Furniture
+  :lv2: Other furniture
+132:
+  :code: FXT
+  :lv1: Furniture
+  :lv2: Other furniture
+133:
+  :code: FXU
+  :lv1: Furniture
+  :lv2: Other furniture
+134:
+  :code: FXX
+  :lv1: Furniture
+  :lv2: Other furniture
+135:
+  :code: HPB
+  :lv1: Household
+  :lv2: Baby
+136:
+  :code: HPC
+  :lv1: Household
+  :lv2: Baby
+137:
+  :code: HPH
+  :lv1: Household
+  :lv2: Baby
+138:
+  :code: HPS
+  :lv1: Household
+  :lv2: Baby
+139:
+  :code: HPT
+  :lv1: Household
+  :lv2: Baby
+140:
+  :code: HPW
+  :lv1: Household
+  :lv2: Baby
+141:
+  :code: HPX
+  :lv1: Household
+  :lv2: Baby
+142:
+  :code: MDV
+  :lv1: Electrical
+  :lv2: Other electrical
+143:
+  :code: MEW
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+144:
+  :code: MFB
+  :lv1: Furniture
+  :lv2: Beds
+145:
+  :code: MFC
+  :lv1: Furniture
+  :lv2: Beds
+146:
+  :code: MFD
+  :lv1: Furniture
+  :lv2: Beds
+147:
+  :code: MFE
+  :lv1: Furniture
+  :lv2: Table
+148:
+  :code: MFX
+  :lv1: Furniture
+  :lv2: Other furniture
+149:
+  :code: MGX
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+150:
+  :code: NXX
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+151:
+  :code: PXX
+  :lv1: Small goods & bulk items
+  :lv2: Books
+152:
+  :code: RCX
+  :lv1: Recreation
+  :lv2: Other
+153:
+  :code: REC
+  :lv1: Recreation
+  :lv2: Sport
+154:
+  :code: REE
+  :lv1: Recreation
+  :lv2: Sport
+155:
+  :code: RMP
+  :lv1: Recreation
+  :lv2: Music
+156:
+  :code: RMS
+  :lv1: Recreation
+  :lv2: Music
+157:
+  :code: RPA
+  :lv1: Recreation
+  :lv2: Bicycles
+158:
+  :code: RPB
+  :lv1: Recreation
+  :lv2: Bicycles
+159:
+  :code: RPC
+  :lv1: Recreation
+  :lv2: Playground
+160:
+  :code: RPP
+  :lv1: Recreation
+  :lv2: Playground
+161:
+  :code: RPR
+  :lv1: Recreation
+  :lv2: Playground
+162:
+  :code: RPS
+  :lv1: Recreation
+  :lv2: Sport
+163:
+  :code: RPX
+  :lv1: Recreation
+  :lv2: Playground
+164:
+  :code: RX
+  :lv1: Recreation
+  :lv2: Other
+165:
+  :code: TXX
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+166:
+  :code: VA
+  :lv1: Electrical
+  :lv2: Computer
+167:
+  :code: VCD
+  :lv1: Electrical
+  :lv2: Computer
+168:
+  :code: VCL
+  :lv1: Electrical
+  :lv2: Computer
+169:
+  :code: VCS
+  :lv1: Electrical
+  :lv2: Computer
+170:
+  :code: VMF
+  :lv1: Electrical
+  :lv2: Computer
+171:
+  :code: VP
+  :lv1: Electrical
+  :lv2: Computer
+172:
+  :code: VXX
+  :lv1: Electrical
+  :lv2: Computer
+173:
+  :code: XX
+  :lv1: Small goods & bulk items
+  :lv2: Mixed / miscellaneous
+174:
+  :code: EXX
+  :lv1: Electrical
+  :lv2: Other electrical
+175:
+  :code: RXX
+  :lv1: Recreation
+  :lv2: Other
+176:
+  :code: BBC
+  :lv1: Furniture
+  :lv2: Baby / child
+177:
+  :code: BBM
+  :lv1: Furniture
+  :lv2: Baby / child
+178:
+  :code: BBS
+  :lv1: Furniture
+  :lv2: Baby / child
+179:
+  :code: BCB
+  :lv1: Furniture
+  :lv2: Baby / child
+180:
+  :code: BCM
+  :lv1: Furniture
+  :lv2: Baby / child
+181:
+  :code: BCS
+  :lv1: Furniture
+  :lv2: Baby / child
+182:
+  :code: BCX
+  :lv1: Furniture
+  :lv2: Baby / child
+183:
+  :code: CL
+  :lv1: Household
+  :lv2: Textiles / clothes
+184:
+  :code: EHA
+  :lv1: Household
+  :lv2: Appliances
+185:
+  :code: EHC
+  :lv1: Household
+  :lv2: Appliances
+186:
+  :code: EHD
+  :lv1: Household
+  :lv2: Appliances
+187:
+  :code: EHF
+  :lv1: Household
+  :lv2: Appliances
+188:
+  :code: EHH
+  :lv1: Household
+  :lv2: Appliances
+189:
+  :code: EHI
+  :lv1: Household
+  :lv2: Appliances
+190:
+  :code: EHL
+  :lv1: Household
+  :lv2: Appliances
+191:
+  :code: EHW
+  :lv1: Household
+  :lv2: Appliances
+192:
+  :code: EHX
+  :lv1: Household
+  :lv2: Appliances
+193:
+  :code: EHY
+  :lv1: Household
+  :lv2: Appliances
+194:
+  :code: EKC
+  :lv1: Household
+  :lv2: Appliances
+195:
+  :code: EKD
+  :lv1: Household
+  :lv2: Appliances
+196:
+  :code: EKF
+  :lv1: Household
+  :lv2: Appliances
+197:
+  :code: EKH
+  :lv1: Household
+  :lv2: Appliances
+198:
+  :code: EKI
+  :lv1: Household
+  :lv2: Appliances
+199:
+  :code: EKJ
+  :lv1: Household
+  :lv2: Appliances
+200:
+  :code: EKK
+  :lv1: Household
+  :lv2: Appliances
+201:
+  :code: EKL
+  :lv1: Household
+  :lv2: Appliances
+202:
+  :code: EKM
+  :lv1: Household
+  :lv2: Appliances
+203:
+  :code: EKP
+  :lv1: Household
+  :lv2: Appliances
+204:
+  :code: EKR
+  :lv1: Household
+  :lv2: Appliances
+205:
+  :code: EKS
+  :lv1: Household
+  :lv2: Appliances
+206:
+  :code: EKT
+  :lv1: Household
+  :lv2: Appliances
+207:
+  :code: EKX
+  :lv1: Household
+  :lv2: Appliances
+208:
+  :code: EUD
+  :lv1: Household
+  :lv2: Appliances
+209:
+  :code: EUH
+  :lv1: Household
+  :lv2: Appliances
+210:
+  :code: EUK
+  :lv1: Recreation
+  :lv2: Music
+211:
+  :code: EUM
+  :lv1: Household
+  :lv2: Appliances
+212:
+  :code: EUR
+  :lv1: Household
+  :lv2: Appliances
+213:
+  :code: EUS
+  :lv1: Household
+  :lv2: Appliances
+214:
+  :code: EVD
+  :lv1: Household
+  :lv2: Appliances
+215:
+  :code: EVP
+  :lv1: Electrical
+  :lv2: Office appliances
+216:
+  :code: EVQ
+  :lv1: Electrical
+  :lv2: Office appliances
+217:
+  :code: FBO
+  :lv1: Furniture
+  :lv2: Office furniture
+218:
+  :code: FBP
+  :lv1: Furniture
+  :lv2: Office furniture
+219:
+  :code: FBR
+  :lv1: Furniture
+  :lv2: Office furniture
+220:
+  :code: FCC
+  :lv1: Furniture
+  :lv2: Baby / child
+221:
+  :code: FCO
+  :lv1: Furniture
+  :lv2: Office furniture
+222:
+  :code: FCT
+  :lv1: Furniture
+  :lv2: Beds
+223:
+  :code: FDC
+  :lv1: Furniture
+  :lv2: Baby / child
+224:
+  :code: FDO
+  :lv1: Furniture
+  :lv2: Office furniture
+225:
+  :code: FDP
+  :lv1: Electrical
+  :lv2: Computer
+226:
+  :code: FDQ
+  :lv1: Furniture
+  :lv2: Baby / child
+227:
+  :code: FSC
+  :lv1: Furniture
+  :lv2: Baby / child
+228:
+  :code: FSO
+  :lv1: Furniture
+  :lv2: Office furniture
+229:
+  :code: FTA
+  :lv1: Furniture
+  :lv2: Baby / child
+230:
+  :code: FTC
+  :lv1: Furniture
+  :lv2: Baby / child
+231:
+  :code: FTO
+  :lv1: Furniture
+  :lv2: Office furniture
+232:
+  :code: FWT
+  :lv1: Furniture
+  :lv2: Seating
+233:
+  :code: FXA
+  :lv1: Household
+  :lv2: Other household
+234:
+  :code: FXB
+  :lv1: Furniture
+  :lv2: Office furniture
+235:
+  :code: FXH
+  :lv1: Household
+  :lv2: Other household
+236:
+  :code: FXP
+  :lv1: Furniture
+  :lv2: Office furniture
+237:
+  :code: HPB
+  :lv1: Furniture
+  :lv2: Baby / child
+238:
+  :code: HPC
+  :lv1: Furniture
+  :lv2: Baby / child
+239:
+  :code: HPH
+  :lv1: Furniture
+  :lv2: Baby / child
+240:
+  :code: HPS
+  :lv1: Furniture
+  :lv2: Baby / child
+241:
+  :code: HPT
+  :lv1: Furniture
+  :lv2: Baby / child
+242:
+  :code: HPW
+  :lv1: Furniture
+  :lv2: Baby / child
+243:
+  :code: HPX
+  :lv1: Furniture
+  :lv2: Baby / child
+244:
+  :code: RPC
+  :lv1: Furniture
+  :lv2: Baby / child
+245:
+  :code: RPP
+  :lv1: Furniture
+  :lv2: Baby / child
+246:
+  :code: RPR
+  :lv1: Recreation
+  :lv2: Bicycles
+247:
+  :code: XX
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+248:
+  :code: BBS
+  :lv1: Furniture
+  :lv2: Sets
+249:
+  :code: BCS
+  :lv1: Furniture
+  :lv2: Sets
+250:
+  :code: BDS
+  :lv1: Furniture
+  :lv2: Sets
+251:
+  :code: BKS
+  :lv1: Furniture
+  :lv2: Sets
+252:
+  :code: BLS
+  :lv1: Furniture
+  :lv2: Sets
+253:
+  :code: BSS
+  :lv1: Furniture
+  :lv2: Sets
+254:
+  :code: BTS
+  :lv1: Furniture
+  :lv2: Sets
+255:
+  :code: FWT
+  :lv1: Furniture
+  :lv2: Sets

@@ -41,7 +41,9 @@ describe "PackageType abilities" do
   context "when Anonymous" do
     let(:user)     { nil }
     let(:package_type) { create :package_type }
-    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package_type) } }
+    let(:can) { [:index, :show] }
+    it{ can.each { |do_action| is_expected.to be_able_to(do_action, package_type) } }
+    it{ (all_actions - can).each { |do_action| is_expected.to_not be_able_to(do_action, package_type) } }
   end
 
 end
