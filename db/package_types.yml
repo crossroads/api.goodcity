@@ -3,869 +3,869 @@ AFO:
   :default_packages: AFO
   :other_packages: 
   :name_en: Food (uncategorized)
-  :name_zh_tw: ''
+  :name_zh_tw: '食品（未分類）'
   :other_terms_en: Tinned
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '罐頭食品'
 BBC:
   :default_packages: BBC
   :other_packages: FXX
   :name_en: Baby Crib, Frame
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒床，床架'
   :other_terms_en: Cot
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '嬰兒床'
 BBM:
   :default_packages: BBM
   :other_packages: 
   :name_en: Baby Crib, Mattress
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒床，床褥'
   :other_terms_en: Cot
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '嬰兒床'
 BBS:
   :default_packages: BBM, BBC
   :other_packages: FXX
   :name_en: Baby Crib, Set (frame, mattress)
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒床，套裝（床架及床褥）'
   :other_terms_en: Cot
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '嬰兒床'
 BCB:
   :default_packages: BCB
   :other_packages: FXX
   :name_en: Child bed, Base
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童床，床架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BCM:
   :default_packages: BCM
   :other_packages: 
   :name_en: Child bed, Mattress
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童床，床褥'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BCS:
   :default_packages: BCB, BCM
   :other_packages: FXX
   :name_en: Child bed, Set (base, mattress)
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童床，套裝（床架及床褥）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BCX:
   :default_packages: BCX
   :other_packages: FXX
   :name_en: Child bed, Other
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童床，其他'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BDB:
   :default_packages: BDB
   :other_packages: FXX
   :name_en: Double bed, Base
-  :name_zh_tw: ''
+  :name_zh_tw: '雙人床，床架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BDM:
   :default_packages: BDM
   :other_packages: 
   :name_en: Double bed, Mattress
-  :name_zh_tw: ''
+  :name_zh_tw: '雙人床，床褥'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BDS:
   :default_packages: BDB, BDM
   :other_packages: BDX, FXX
   :name_en: Double bed, Set (base, mattress)
-  :name_zh_tw: ''
+  :name_zh_tw: '雙人床，套裝（床架及床褥）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BDX:
   :default_packages: BDX
   :other_packages: FXX
   :name_en: Double bed, Other
-  :name_zh_tw: ''
+  :name_zh_tw: '雙人床，其他'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BKB:
   :default_packages: BKB
   :other_packages: FXX
   :name_en: Bunk bed, Base
-  :name_zh_tw: ''
+  :name_zh_tw: '雙層床，床架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BKS:
   :default_packages: BKB, BSM
   :other_packages: BDM, BCM, BKX, FXX
   :name_en: Bunk bed, Set (base, mattress)
-  :name_zh_tw: ''
+  :name_zh_tw: '雙層床，套裝（床架及床褥）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BKX:
   :default_packages: BKX
   :other_packages: FXX
   :name_en: Bunk bed, Other
-  :name_zh_tw: ''
+  :name_zh_tw: '雙層床，其他'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BLS:
   :default_packages: BLS, BSM
   :other_packages: BDM, BCM, BKX, FXX
   :name_en: Loft bed, Set (base, mattress)
-  :name_zh_tw: ''
+  :name_zh_tw: '高架床，套裝（床架及床褥）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BSB:
   :default_packages: BSB
   :other_packages: FXX
   :name_en: Single bed, Base
-  :name_zh_tw: ''
+  :name_zh_tw: '單人床，床架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BSF:
   :default_packages: BSF
   :other_packages: FXX
-  :name_en: 'Folding bed, '
-  :name_zh_tw: ''
+  :name_en: Folding bed
+  :name_zh_tw: '折疊床'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BSM:
   :default_packages: BSM
   :other_packages: 
   :name_en: Single bed, Mattress
-  :name_zh_tw: ''
+  :name_zh_tw: '單人床，床褥'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BSS:
   :default_packages: BSB, BSM
   :other_packages: BSX, FXX
   :name_en: Single bed, Set (base, mattress)
-  :name_zh_tw: ''
+  :name_zh_tw: '單人床，套裝（床架及床褥）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BSX:
   :default_packages: BSX
   :other_packages: FXX
   :name_en: Single bed, Other
-  :name_zh_tw: ''
+  :name_zh_tw: '單人床，其他'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BTB:
   :default_packages: BTB
   :other_packages: FXX
   :name_en: Trundle bed, Base
-  :name_zh_tw: ''
+  :name_zh_tw: '子母床，床架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BTM:
   :default_packages: BTM
   :other_packages: 
   :name_en: Trundle bed, Mattress
-  :name_zh_tw: ''
+  :name_zh_tw: '子母床，床褥'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BTS:
   :default_packages: BTB, BTM
   :other_packages: FXX
   :name_en: Trundle bed, Set
-  :name_zh_tw: ''
+  :name_zh_tw: '子母床，套裝（床架及床褥）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 BX:
   :default_packages: BX
   :other_packages: FXX
   :name_en: Uncategorised bed
-  :name_zh_tw: ''
+  :name_zh_tw: '床（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 CBX:
   :default_packages: CBX
   :other_packages: 
   :name_en: Bedding - sheets, blankets, other
-  :name_zh_tw: ''
+  :name_zh_tw: '床具－床單，被子，其他'
   :other_terms_en: pillow, pillow cover
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '枕頭，枕頭套'
 CHX:
   :default_packages: CHX
   :other_packages: 
   :name_en: Curtains, towels, other household textiles
-  :name_zh_tw: ''
+  :name_zh_tw: '窗簾，毛巾，其他家用紡織品'
   :other_terms_en: 'curtain, fabric, craft, carpet, rug, cushions, linen, towels '
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '窗簾，布料，手工品，地氊，抱枕，亞麻製品，毛巾'
 CL:
   :default_packages: CL
   :other_packages: 
   :name_en: Clothing & accessories (uncategorized)
-  :name_zh_tw: ''
+  :name_zh_tw: '衣物及飾品'
   :other_terms_en: shoes, clothes, belts, bags, summer, winter, baby, child, mens,
     womens
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '鞋履，衣物，腰帶，手袋，夏季，冬季，嬰兒，兒童，男士，女士'
 DD:
   :default_packages: DD
   :other_packages: 
   :name_en: Hand tools
-  :name_zh_tw: ''
+  :name_zh_tw: '工具'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 DE:
   :default_packages: DE
   :other_packages: EXX
   :name_en: Power tools
-  :name_zh_tw: ''
+  :name_zh_tw: '電動工具'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EHA:
   :default_packages: EHA
   :other_packages: EXX
   :name_en: Air conditioner
-  :name_zh_tw: ''
+  :name_zh_tw: '空調'
   :other_terms_en: AC
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '冷氣機'
 EHC:
   :default_packages: EHC
   :other_packages: EXX
   :name_en: Vacuum cleaner
-  :name_zh_tw: ''
+  :name_zh_tw: '吸塵機'
   :other_terms_en: Hoover
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '吸塵機'
 EHD:
   :default_packages: EHD
   :other_packages: EXX
   :name_en: Dehumidifier
-  :name_zh_tw: ''
+  :name_zh_tw: '抽濕機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EHF:
   :default_packages: EHF
   :other_packages: EXX
   :name_en: Fan
-  :name_zh_tw: ''
+  :name_zh_tw: '電動風扇'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EHH:
   :default_packages: EHH
   :other_packages: EXX
   :name_en: Heater
-  :name_zh_tw: ''
+  :name_zh_tw: '電暖爐'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EHI:
   :default_packages: EHI
   :other_packages: EXX
   :name_en: Iron
-  :name_zh_tw: ''
+  :name_zh_tw: '熨斗'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EHL:
   :default_packages: EHL
   :other_packages: EXX
   :name_en: Lighting / Lamp
-  :name_zh_tw: ''
+  :name_zh_tw: '照明/燈'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EHW:
   :default_packages: EHW
   :other_packages: EXX
   :name_en: Washing machine
-  :name_zh_tw: ''
+  :name_zh_tw: '洗衣機'
   :other_terms_en: Clothes washer
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '洗衣機'
 EHX:
   :default_packages: EHX
   :other_packages: EXX
   :name_en: Other household electrical items
-  :name_zh_tw: ''
+  :name_zh_tw: '其他家電'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EHY:
   :default_packages: EHY
   :other_packages: EXX
   :name_en: Clothes dryer
-  :name_zh_tw: ''
+  :name_zh_tw: '乾衣機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKC:
   :default_packages: EKC
   :other_packages: EXX
   :name_en: Coffee maker
-  :name_zh_tw: ''
+  :name_zh_tw: '咖啡機'
   :other_terms_en: Espresso machine, Drip filter
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '咖啡壺'
 EKD:
   :default_packages: EKD
   :other_packages: EXX
   :name_en: Dishwasher
-  :name_zh_tw: ''
+  :name_zh_tw: '洗碗機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKF:
   :default_packages: EKF
   :other_packages: EXX
   :name_en: Freezer
-  :name_zh_tw: ''
+  :name_zh_tw: '冰箱'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKH:
   :default_packages: EKH
   :other_packages: EXX
   :name_en: Range hood
-  :name_zh_tw: ''
+  :name_zh_tw: '抽油煙機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKI:
   :default_packages: EKI
   :other_packages: EXX
   :name_en: Rice cooker
-  :name_zh_tw: ''
+  :name_zh_tw: '電飯煲'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKJ:
   :default_packages: EKJ
   :other_packages: EXX
   :name_en: Fruit juicer / Blender
-  :name_zh_tw: ''
+  :name_zh_tw: '搾汁機/攪拌機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKK:
   :default_packages: EKK
   :other_packages: EXX
   :name_en: Kettle
-  :name_zh_tw: ''
+  :name_zh_tw: '熱水壺'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKL:
   :default_packages: EKL
   :other_packages: EXX
   :name_en: Water cooler / Water Heater
-  :name_zh_tw: ''
+  :name_zh_tw: '飲水機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKM:
   :default_packages: EKM
   :other_packages: EXX
   :name_en: Microwave / Toaster oven
-  :name_zh_tw: ''
+  :name_zh_tw: '微波爐/焗爐'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKP:
   :default_packages: EKP
   :other_packages: EXX
   :name_en: Pot / Urn
-  :name_zh_tw: ''
+  :name_zh_tw: '壺/甕'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKR:
   :default_packages: EKR
   :other_packages: EXX
   :name_en: Refrigerator
-  :name_zh_tw: ''
+  :name_zh_tw: '雪櫃'
   :other_terms_en: Fridge
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '雪櫃'
 EKS:
   :default_packages: EKS
   :other_packages: EXX
   :name_en: Stove / oven
-  :name_zh_tw: ''
+  :name_zh_tw: '煤氣爐/焗爐'
   :other_terms_en: Induction, hotplate
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '電磁爐，加熱板'
 EKT:
   :default_packages: EKT
   :other_packages: EXX
   :name_en: Toaster / Toaster oven
-  :name_zh_tw: ''
+  :name_zh_tw: '多士爐'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EKX:
   :default_packages: EKX
   :other_packages: EXX
   :name_en: Other small appliances
-  :name_zh_tw: ''
+  :name_zh_tw: '其他小型電器'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EOF:
   :default_packages: EOF
   :other_packages: EXX
   :name_en: FAX machine
-  :name_zh_tw: ''
+  :name_zh_tw: '傳真機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EOP:
   :default_packages: EOP
   :other_packages: EXX
   :name_en: Photocopier
-  :name_zh_tw: ''
+  :name_zh_tw: '影印機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EOT:
   :default_packages: EOT
   :other_packages: EXX
   :name_en: Telephone
-  :name_zh_tw: ''
+  :name_zh_tw: '電話'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EOW:
   :default_packages: EOW
   :other_packages: EXX
   :name_en: Typewriter
-  :name_zh_tw: ''
+  :name_zh_tw: '打字機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EOX:
   :default_packages: EOX
   :other_packages: EXX
   :name_en: Other office / communication items
-  :name_zh_tw: ''
+  :name_zh_tw: '其他辦公室用品'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EUD:
   :default_packages: EUD
   :other_packages: EXX
   :name_en: CD player
-  :name_zh_tw: ''
+  :name_zh_tw: '光碟唱盤'
   :other_terms_en: Compact disc
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '光碟'
 EUH:
   :default_packages: EUH
   :other_packages: EXX
   :name_en: Hi-Fi System
-  :name_zh_tw: ''
+  :name_zh_tw: '音響設備'
   :other_terms_en: Stereo
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '音響設備'
 EUK:
   :default_packages: EUK
   :other_packages: EXX
   :name_en: Music keyboard
-  :name_zh_tw: ''
+  :name_zh_tw: '電子琴'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EUM:
   :default_packages: EUM
   :other_packages: EXX
   :name_en: Amplifier
-  :name_zh_tw: ''
+  :name_zh_tw: '擴音器'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EUR:
   :default_packages: EUR
   :other_packages: EXX
   :name_en: Radio
-  :name_zh_tw: ''
+  :name_zh_tw: '收音機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EUS:
   :default_packages: EUS
   :other_packages: EXX
   :name_en: Speaker
-  :name_zh_tw: ''
+  :name_zh_tw: '揚聲器'
   :other_terms_en: 
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '喇叭'
 EUX:
   :default_packages: EUX
   :other_packages: EXX
   :name_en: Other audio appliances
-  :name_zh_tw: ''
+  :name_zh_tw: '其他音響儀器'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EVA:
   :default_packages: EVA
   :other_packages: EXX
   :name_en: Cameras - Digital / Still / Video
-  :name_zh_tw: ''
+  :name_zh_tw: '攝影器材－數碼相機/攝錄機'
   :other_terms_en: photography
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '攝影'
 EVD:
   :default_packages: EVD
   :other_packages: EXX
   :name_en: DVD / VCD player
-  :name_zh_tw: ''
+  :name_zh_tw: '視訊光碟放映器'
   :other_terms_en: 
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: 'DVD/VCD 播放機'
 EVP:
   :default_packages: EVP
   :other_packages: EXX
   :name_en: Overhead projector
-  :name_zh_tw: ''
+  :name_zh_tw: '高影機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EVQ:
   :default_packages: EVQ
   :other_packages: EXX
   :name_en: Video projector
-  :name_zh_tw: ''
+  :name_zh_tw: '影像投影機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EVS:
   :default_packages: EVS
   :other_packages: EXX
   :name_en: Slide projector
-  :name_zh_tw: ''
+  :name_zh_tw: '幻燈片投影機'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EVT:
   :default_packages: EVT
   :other_packages: EXX
   :name_en: Television, TV
-  :name_zh_tw: ''
+  :name_zh_tw: '電視'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EVX:
   :default_packages: EVX
   :other_packages: EXX
   :name_en: Other visual appliances
-  :name_zh_tw: ''
+  :name_zh_tw: '其他影像儀器'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EX:
   :default_packages: EX
   :other_packages: EXX
   :name_en: Uncategorised electrical items
-  :name_zh_tw: ''
+  :name_zh_tw: '電器（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EXB:
   :default_packages: EXB
   :other_packages: EXX
   :name_en: Bodycare appliances
-  :name_zh_tw: ''
+  :name_zh_tw: '身體護理用品'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 EXS:
   :default_packages: EXS
   :other_packages: EXX
   :name_en: Sewing machine
-  :name_zh_tw: ''
+  :name_zh_tw: '縫紉機'
   :other_terms_en: 
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '衣車'
 FBB:
   :default_packages: FBB
   :other_packages: FXX
   :name_en: Bedside cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '床頭櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBC:
   :default_packages: FBC
   :other_packages: FXX
   :name_en: Bedroom chest of drawers
-  :name_zh_tw: ''
+  :name_zh_tw: '抽屜櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBD:
   :default_packages: FBD
   :other_packages: FXX
   :name_en: Bedroom wardrobe
-  :name_zh_tw: ''
+  :name_zh_tw: '衣櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBK:
   :default_packages: FBK
   :other_packages: FXX
   :name_en: Kitchen cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '廚櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBL:
   :default_packages: FBL
   :other_packages: FXX
   :name_en: Living room cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '客廳櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBO:
   :default_packages: FBO
   :other_packages: FXX
   :name_en: Office file cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '辦公室文件櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBP:
   :default_packages: FBP
   :other_packages: FXX
   :name_en: Office drawer unit
-  :name_zh_tw: ''
+  :name_zh_tw: '可動式文件櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBR:
   :default_packages: FBR
   :other_packages: FXX
   :name_en: Office cupboard
-  :name_zh_tw: ''
+  :name_zh_tw: '辦公室櫥櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBS:
   :default_packages: FBS
   :other_packages: FXX
   :name_en: Display cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '展示櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBT:
   :default_packages: FBT
   :other_packages: FXX
   :name_en: Shoe cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '鞋櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FBV:
   :default_packages: FBV
   :other_packages: FXX
   :name_en: TV / Hi-Fi cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '電視/音響櫃'
   :other_terms_en: television
   :other_terms_zh_tw: ''
 FBX:
   :default_packages: FBX
   :other_packages: FXX
   :name_en: Other cabinet
-  :name_zh_tw: ''
+  :name_zh_tw: '其他櫃'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCC:
   :default_packages: FCC
   :other_packages: FXX
   :name_en: Children's chair
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCD:
   :default_packages: FCD
   :other_packages: FXX
   :name_en: Dining chair
-  :name_zh_tw: ''
+  :name_zh_tw: '餐椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCF:
   :default_packages: FCF
   :other_packages: FXX
   :name_en: Folding chair
-  :name_zh_tw: ''
+  :name_zh_tw: '折疊椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCH:
   :default_packages: FCH
   :other_packages: FXX
   :name_en: Stacking chair
-  :name_zh_tw: ''
+  :name_zh_tw: '堆疊椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCI:
   :default_packages: FCI
   :other_packages: FXX
   :name_en: Stool
-  :name_zh_tw: ''
+  :name_zh_tw: '圓椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCL:
   :default_packages: FCL
   :other_packages: FXX
   :name_en: Living room chair
-  :name_zh_tw: ''
+  :name_zh_tw: '客廳椅子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCO:
   :default_packages: FCO
   :other_packages: FXX
   :name_en: Office chair
-  :name_zh_tw: ''
+  :name_zh_tw: '辦公室椅子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCQ:
   :default_packages: FCQ
   :other_packages: FXX
   :name_en: School chair
-  :name_zh_tw: ''
+  :name_zh_tw: '學校椅子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCS:
   :default_packages: FCS
   :other_packages: FXX
   :name_en: Sofa / Lounge sofa
-  :name_zh_tw: ''
+  :name_zh_tw: '沙發'
   :other_terms_en: 
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '梳化'
 FCT:
   :default_packages: FCT
   :other_packages: FXX
   :name_en: Sofa bed
-  :name_zh_tw: ''
+  :name_zh_tw: '沙發床'
   :other_terms_en: futon
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '日本床墊'
 FCU:
   :default_packages: FCU
   :other_packages: FXX
   :name_en: Outdoor chair
-  :name_zh_tw: ''
+  :name_zh_tw: '戶外椅子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FCX:
   :default_packages: FCX
   :other_packages: FXX
   :name_en: Other chair
-  :name_zh_tw: ''
+  :name_zh_tw: '其他椅子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FDC:
   :default_packages: FDC
   :other_packages: FXX
   :name_en: Children's desk
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童書桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FDH:
   :default_packages: FDH
   :other_packages: FXX
   :name_en: Household desk
-  :name_zh_tw: ''
+  :name_zh_tw: '家用書桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FDO:
   :default_packages: FDO
   :other_packages: FXX
   :name_en: Office desk
-  :name_zh_tw: ''
+  :name_zh_tw: '辦公室書桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FDP:
   :default_packages: FDP
   :other_packages: FXX
   :name_en: Computer desk
-  :name_zh_tw: ''
+  :name_zh_tw: '電腦桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FDQ:
   :default_packages: FDQ
   :other_packages: FXX
   :name_en: School desk
-  :name_zh_tw: ''
+  :name_zh_tw: '學校書桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FDX:
   :default_packages: FDX
   :other_packages: FXX
   :name_en: Other desk
-  :name_zh_tw: ''
+  :name_zh_tw: '其他書桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FSB:
   :default_packages: FSB
   :other_packages: FXX
   :name_en: Bookshelf
-  :name_zh_tw: ''
+  :name_zh_tw: '書架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FSC:
   :default_packages: FSC
   :other_packages: FXX
   :name_en: Children's shelf
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童書架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FSD:
   :default_packages: FSD
   :other_packages: FXX
   :name_en: Display shelf
-  :name_zh_tw: ''
+  :name_zh_tw: '展示架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FSO:
   :default_packages: FSO
   :other_packages: FXX
   :name_en: Office shelf
-  :name_zh_tw: ''
+  :name_zh_tw: '辦公室書架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FSR:
   :default_packages: FSR
   :other_packages: FXX
   :name_en: Rack - CD, Magazine, Shoe
-  :name_zh_tw: ''
+  :name_zh_tw: '架子－光碟，雜誌，鞋履'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FSS:
   :default_packages: FSS
   :other_packages: FXX
   :name_en: Storage shelf
-  :name_zh_tw: ''
+  :name_zh_tw: '儲物架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FSX:
   :default_packages: FSX
   :other_packages: FXX
   :name_en: Other shelf
-  :name_zh_tw: ''
+  :name_zh_tw: '其他架子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTA:
   :default_packages: FTA
   :other_packages: FXX
   :name_en: Baby-change table
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒尿布台'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTC:
   :default_packages: FTC
   :other_packages: FXX
   :name_en: Children's table
-  :name_zh_tw: ''
+  :name_zh_tw: '兒童桌子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTD:
   :default_packages: FTD
   :other_packages: FXX
   :name_en: Dining table
-  :name_zh_tw: ''
+  :name_zh_tw: '餐桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTE:
   :default_packages: FTE
   :other_packages: FXX
   :name_en: Coffee table
-  :name_zh_tw: ''
+  :name_zh_tw: '茶几'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTF:
   :default_packages: FTF
   :other_packages: FXX
   :name_en: Folding table
-  :name_zh_tw: ''
+  :name_zh_tw: '摺疊式桌子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTK:
   :default_packages: FTK
   :other_packages: FXX
   :name_en: Kitchen table
-  :name_zh_tw: ''
+  :name_zh_tw: '廚房桌子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTO:
   :default_packages: FTO
   :other_packages: FXX
   :name_en: Office conference table
-  :name_zh_tw: ''
+  :name_zh_tw: '會議室桌子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTU:
   :default_packages: FTU
   :other_packages: FXX
   :name_en: Outdoor table
-  :name_zh_tw: ''
+  :name_zh_tw: '戶外桌子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTV:
   :default_packages: FTV
   :other_packages: FXX
   :name_en: TV / Hi-Fi table
-  :name_zh_tw: ''
+  :name_zh_tw: '電視/音響桌'
   :other_terms_en: television
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '電視'
 FTW:
   :default_packages: FTW
   :other_packages: FXX
   :name_en: Workbench
-  :name_zh_tw: ''
+  :name_zh_tw: '工作台'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FTX:
   :default_packages: FTX
   :other_packages: FXX
   :name_en: Other table
-  :name_zh_tw: ''
+  :name_zh_tw: '其他桌子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FWT:
@@ -873,356 +873,356 @@ FWT:
   :other_packages: FCC, FCD, FCF, FCH, FCI, FCH, FCI, FCO, FCQ, FCU, FCX, FXX, FTF,
     FTK, FTO, FTU, FTX
   :name_en: Table and chairs set
-  :name_zh_tw: ''
+  :name_zh_tw: '桌椅套裝'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FX:
   :default_packages: FX
   :other_packages: FXX
   :name_en: Uncategorised furniture
-  :name_zh_tw: ''
+  :name_zh_tw: '家具（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXA:
   :default_packages: FXA
   :other_packages: FXX
   :name_en: Artwork - wall pictures, frames
-  :name_zh_tw: ''
+  :name_zh_tw: '藝術品－掛畫'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXB:
   :default_packages: FXB
   :other_packages: FXX
   :name_en: Writing board / notice board
-  :name_zh_tw: ''
+  :name_zh_tw: '書寫板/告示板'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXH:
   :default_packages: FXH
   :other_packages: FXX
   :name_en: Clothes hanging racks
-  :name_zh_tw: ''
+  :name_zh_tw: '掛衣架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXM:
   :default_packages: FXM
   :other_packages: FXX
   :name_en: Mirror
-  :name_zh_tw: ''
+  :name_zh_tw: '鏡子'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXP:
   :default_packages: FXP
   :other_packages: FXX
   :name_en: Office partitions
-  :name_zh_tw: ''
+  :name_zh_tw: '辦公室屏風'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXT:
   :default_packages: FXT
   :other_packages: FXX
   :name_en: Trolley
-  :name_zh_tw: ''
+  :name_zh_tw: '手推車'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXU:
   :default_packages: FXU
   :other_packages: FCU, FTU, FXX
   :name_en: Outdoor furniture
-  :name_zh_tw: ''
+  :name_zh_tw: '戶外家具'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 FXX:
   :default_packages: FXX
   :other_packages: 
   :name_en: Furniture parts
-  :name_zh_tw: ''
+  :name_zh_tw: '家具散件'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 HPB:
   :default_packages: HPB
   :other_packages: 
   :name_en: Baby bath / toilet
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒浴盆/便盆'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 HPC:
   :default_packages: HPC
   :other_packages: 
   :name_en: Car seat (child safety)
-  :name_zh_tw: ''
+  :name_zh_tw: '汽車安全椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 HPH:
   :default_packages: HPH
   :other_packages: 
   :name_en: Baby high chair
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒餐椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 HPS:
   :default_packages: HPS
   :other_packages: 
   :name_en: Stroller
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒手推車'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 HPT:
   :default_packages: HPT
   :other_packages: 
   :name_en: Travel cot
-  :name_zh_tw: ''
+  :name_zh_tw: '旅行嬰兒床'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 HPW:
   :default_packages: HPW
   :other_packages: 
   :name_en: Baby swing / walker / jumper
-  :name_zh_tw: ''
+  :name_zh_tw: '嬰兒搖床/學行車/跳跳椅'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 HPX:
   :default_packages: HPX
   :other_packages: 
   :name_en: Child stairgate, Safety items, Other
-  :name_zh_tw: ''
+  :name_zh_tw: '樓梯門欄，兒童安全設備'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 MDV:
   :default_packages: MDV
   :other_packages: 
   :name_en: Medical devices (uncategorised)
-  :name_zh_tw: ''
+  :name_zh_tw: '醫療器材（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 MEW:
   :default_packages: MEW
   :other_packages: 
   :name_en: Eye glasses & frames (uncategorized)
-  :name_zh_tw: ''
+  :name_zh_tw: '眼鏡，鏡片及鏡框（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 MFB:
   :default_packages: MFB
   :other_packages: MFC, MFD
   :name_en: Hospital bed
-  :name_zh_tw: ''
+  :name_zh_tw: '病床'
   :other_terms_en: 
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '醫院床'
 MFC:
   :default_packages: MFC
   :other_packages: FXX
   :name_en: Hospital bed parts
-  :name_zh_tw: ''
+  :name_zh_tw: '病床零件'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 MFD:
   :default_packages: MFD
   :other_packages: FXX
   :name_en: Hospital bed mattress
-  :name_zh_tw: ''
+  :name_zh_tw: '病床床褥'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 MFE:
   :default_packages: MFE
   :other_packages: FXX
   :name_en: Hospital bed over table
-  :name_zh_tw: ''
+  :name_zh_tw: '醫院跨床桌'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 MFX:
   :default_packages: MFX
   :other_packages: FXX
   :name_en: Medical furniture (uncategorized)
-  :name_zh_tw: ''
+  :name_zh_tw: '醫療家具（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 MGX:
   :default_packages: MGX
   :other_packages: 
   :name_en: Medical supplies (uncategorized)
-  :name_zh_tw: ''
+  :name_zh_tw: '醫療用品（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 NXX:
   :default_packages: NXX
   :other_packages: 
   :name_en: Stationery (uncategorized)
-  :name_zh_tw: ''
+  :name_zh_tw: '文具（未分類）'
   :other_terms_en: Office, school
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '辦公室，學校'
 PXX:
   :default_packages: PXX
   :other_packages: 
   :name_en: Books / publications (uncategorised)
-  :name_zh_tw: ''
+  :name_zh_tw: '書藉/出版刊物（未分類）'
   :other_terms_en: books magazines, textbooks
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '雜誌，教科書'
 RCX:
   :default_packages: RCX
   :other_packages: RXX
   :name_en: Camping equipment (uncategorised)
-  :name_zh_tw: ''
+  :name_zh_tw: '露營用品（未分類）'
   :other_terms_en: tents, sleeping bags
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '帳蓬，睡袋'
 REC:
   :default_packages: REC
   :other_packages: RXX
   :name_en: Large exercise equipment
-  :name_zh_tw: ''
+  :name_zh_tw: '健身器材'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 REE:
   :default_packages: REE
   :other_packages: RXX
   :name_en: Small exercise aids
-  :name_zh_tw: ''
+  :name_zh_tw: '運動輔助器材'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 RMP:
   :default_packages: RMP
   :other_packages: RXX
   :name_en: Piano, organ
-  :name_zh_tw: ''
+  :name_zh_tw: '鋼琴，風琴'
   :other_terms_en: Music instrument
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '樂器'
 RMS:
   :default_packages: RMS
   :other_packages: RXX
   :name_en: Musical instruments
-  :name_zh_tw: ''
+  :name_zh_tw: '樂器'
   :other_terms_en: Violin, Trumpet, Guitar, Saxophone, Flute, Drums
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '小提琴，喇叭，結他，色士風，長笛，鼓'
 RPA:
   :default_packages: RPA
   :other_packages: RXX
   :name_en: Bicycles - Adult
-  :name_zh_tw: ''
+  :name_zh_tw: '自行車－成人'
   :other_terms_en: 
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '單車－成人'
 RPB:
   :default_packages: RPB
   :other_packages: RXX
   :name_en: Bicycles - Children
-  :name_zh_tw: ''
+  :name_zh_tw: '自行車－兒童'
   :other_terms_en: 
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '單車－兒童'
 RPC:
   :default_packages: RPC
   :other_packages: RXX
   :name_en: Climbing frame
-  :name_zh_tw: ''
+  :name_zh_tw: '攀登架'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 RPP:
   :default_packages: RPP
   :other_packages: RXX
   :name_en: Play house / station
-  :name_zh_tw: ''
+  :name_zh_tw: '玩具屋'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 RPR:
   :default_packages: RPR
   :other_packages: RXX
   :name_en: Ride-on toy / scooter
-  :name_zh_tw: ''
+  :name_zh_tw: '騎乘玩具/滑板車'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 RPS:
   :default_packages: RPS
   :other_packages: RXX
   :name_en: Sports equipment
-  :name_zh_tw: ''
+  :name_zh_tw: '運動用品'
   :other_terms_en: Snowboard, surfboard, skis, golf clubs, tennis, basketball, soccer
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '滑雪板，滑浪板，網球，高爾夫球棒，籃球，足球'
 RPX:
   :default_packages: RPX
   :other_packages: RXX
   :name_en: Other playground items
-  :name_zh_tw: ''
+  :name_zh_tw: '其他操場設備'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 RX:
   :default_packages: RX
   :other_packages: RXX
   :name_en: Uncategorised recreation equipment
-  :name_zh_tw: ''
+  :name_zh_tw: '休閒用品（未分類）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 TXX:
   :default_packages: TXX
   :other_packages: 
   :name_en: Toys (uncategorized)
-  :name_zh_tw: ''
+  :name_zh_tw: '玩具（未分類）'
   :other_terms_en: Educational, games, puzzles
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '教育，遊戲，拼圖'
 VA:
   :default_packages: VA
   :other_packages: VXX
   :name_en: Computer accessories
-  :name_zh_tw: ''
+  :name_zh_tw: '電腦配件'
   :other_terms_en: mouse, keyboard, USB, HDD, storage
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '滑鼠，鍵盤，USB隨身碟，硬碟'
 VCD:
   :default_packages: VCD
   :other_packages: VXX
   :name_en: Desktop computer (CPU only)
-  :name_zh_tw: ''
+  :name_zh_tw: '座枱電腦（主機）'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 VCL:
   :default_packages: VCL
   :other_packages: VXX
   :name_en: Laptop computer
-  :name_zh_tw: ''
+  :name_zh_tw: '筆記型電腦'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 VCS:
   :default_packages: VCD, VMF
   :other_packages: VXX, VA
   :name_en: Desktop computer (with monitor)
-  :name_zh_tw: ''
+  :name_zh_tw: '座枱電腦'
   :other_terms_en: CPU, screen, LCD
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '主機，螢幕'
 VMF:
   :default_packages: VMF
   :other_packages: VXX
   :name_en: Computer monitor
-  :name_zh_tw: ''
+  :name_zh_tw: '顯示屏'
   :other_terms_en: screen, LCD, LED
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '螢幕'
 VP:
   :default_packages: VP
   :other_packages: VXX
   :name_en: Printer
-  :name_zh_tw: ''
+  :name_zh_tw: '打印機'
   :other_terms_en: Laser, Bubble jet
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '雷射打印機'
 VXX:
   :default_packages: VXX
   :other_packages: 
   :name_en: Other computer equipment
-  :name_zh_tw: ''
+  :name_zh_tw: '其他電腦裝備'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 XX:
   :default_packages: XX
   :other_packages: 
   :name_en: Mixed small goods
-  :name_zh_tw: ''
+  :name_zh_tw: '雜物'
   :other_terms_en: Books, toys, clothes, electical, household, kitchen
-  :other_terms_zh_tw: ''
+  :other_terms_zh_tw: '書藉，玩具，衣物，電器，家品，廚房用品'
 EXX:
   :default_packages: EXX
   :other_packages: 
   :name_en: Electrical Parts
-  :name_zh_tw: ''
+  :name_zh_tw: '電子零件'
   :other_terms_en: 
   :other_terms_zh_tw: ''
 RXX:
   :default_packages: RXX
   :other_packages: 
   :name_en: Parts for recreational goods
-  :name_zh_tw: ''
+  :name_zh_tw: '休閒用品（散件）'
   :other_terms_en: 
   :other_terms_zh_tw: ''

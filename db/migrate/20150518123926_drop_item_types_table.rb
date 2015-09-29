@@ -1,7 +1,5 @@
 class DropItemTypesTable < ActiveRecord::Migration
   def up
-    Rake::Task["goodcity:update_packages"].invoke
-
     rename_column :items, :item_type_id, :package_type_id
 
     drop_table :item_types

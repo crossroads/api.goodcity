@@ -158,7 +158,7 @@ module Api::V1
     def register_device
       authorize!(:register, :device)
       return render text: "Unrecognised platform, expecting 'gcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)", status: 400 unless ['gcm','aps','wns'].include?(params[:platform])
-      AzureRegisterJob.perform_later(params[:handle], Channel.user(current_user), params[:platform], is_admin_app)
+      AzureRegisterJob.perform_later(params[:handle], Channel.my_channel(current_user, is_admin_app), params[:platform], is_admin_app)
       render nothing: true, status: 204
     end
 
@@ -167,7 +167,9 @@ module Api::V1
     error 500, "Internal Server Error"
     def current_user_rooms
       authorize!(:current_user_profile, User)
-      render json: current_user.channels(app_name), root: false
+      channels = current_user.channels
+      channels = Channel.add_admin_app_prefix(channels) if is_admin_app
+      render json: channels, root: false
     end
 
     private
@@ -188,11 +190,6 @@ module Api::V1
     def auth_params
       attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
       params.require(:user_auth).permit(attributes)
-    end
-
-    def valid_host?
-      (@user.donor? && app_name == DONOR_APP) ||
-      (@user.reviewer? && app_name == ADMIN_APP)
     end
 
     def warden

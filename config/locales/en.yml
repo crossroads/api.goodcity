@@ -19,6 +19,8 @@ en:
     sms_verification_pin: |
       Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy donating
       your quality goods. (If you didn't request this message, please ignore)
+    input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
+    thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
   activerecord:
     attributes:
       user:
@@ -42,5 +44,6 @@ en:
     ggv_cancel_message: A van booking for %{time} was cancelled via GoGoVan. Please choose new transport arrangements.
     received_message: Your offer was received, thank you.
     item_add_message: "%{donor_name} added a new item to their offer. Please review it."
+    ready_for_schedule_message: "Your offer has been reviewed. Please proceed to arrange transportation."
   gogovan:
     driver_note: "Ensure you deliver all the items listed: See details \nEnglish %{link} \nChinese %{ch_link}"

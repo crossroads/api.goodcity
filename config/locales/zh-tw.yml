@@ -19,6 +19,8 @@ zh-tw:
     sms_verification_pin: |
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
       （如你並沒有要求驗證碼，請忽略此信息）
+    input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
+    thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
   activerecord:
     attributes:
       user:
@@ -37,5 +39,6 @@ zh-tw:
     ggv_cancel_message: GoGoVan已取消預約於 %{time} 的貨車，請重新安排運輸。
     received_message: 已收到您提交的資料，感謝您的熱心捐獻，謝謝！
     item_add_message: "%{donor_name} 捐獻了一件新物品。請審查。"
+    ready_for_schedule_message: "你的捐獻已通過審查, 請即安排物資運輸。"
   gogovan:
     driver_note: "請確保您運送以下所有物件：詳情請參見 \nEnglish %{link} \nChinese %{ch_link}"

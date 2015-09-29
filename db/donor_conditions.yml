@@ -1,9 +1,9 @@
 --- !omap
 New:
-  :name_zh_tw: 新
+  :name_zh_tw: 全新
 Lightly Used:
-  :name_zh_tw: 随便乱用
+  :name_zh_tw: 接近全新
 Heavily Used:
-  :name_zh_tw: 大量使用
+  :name_zh_tw: 較為殘舊
 Broken:
-  :name_zh_tw: 破
+  :name_zh_tw: 需要維修
