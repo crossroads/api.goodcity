@@ -1,6 +1,8 @@
 #
 # Services such as CircleCI are located in the Amazon 'us-east-1' region.
 # To enable continuous deployment, we need to open up various IP ranges in the firewall.
+# for CircleCI, use
+#   REGION=us-east-1 SERVICE=EC2 FIREWALLD=true rake amazon:ips
 
 require 'nestful'
 
