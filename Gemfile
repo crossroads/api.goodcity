@@ -79,4 +79,5 @@ group :test do
   gem 'shoulda-matchers', require: false
   gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
+  gem 'rspec_junit_formatter'
 end
