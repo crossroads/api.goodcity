@@ -76,7 +76,7 @@ end
 
 group :test do
   gem 'webmock'
-  gem 'shoulda-matchers', require: false
+  gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
   gem 'rspec_junit_formatter'
