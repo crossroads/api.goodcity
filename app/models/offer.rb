@@ -14,6 +14,7 @@ class Offer < ActiveRecord::Base
   belongs_to :crossroads_transport
 
   has_one  :delivery, dependent: :destroy
+  has_one  :gogovan_order, through: :delivery
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
@@ -93,7 +94,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :receive do
-      transition [:under_review, :reviewed, :scheduled] => :received
+      transition [:under_review, :reviewed, :scheduled, :receiving] => :received
     end
 
     event :start_receiving do
@@ -143,9 +144,13 @@ class Offer < ActiveRecord::Base
     after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
     after_transition :on => [:close, :re_review] do |offer, transition|
-      if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
-        offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
-      end
+      ggv_order = offer.try(:gogovan_order)
+      ggv_order.try(:cancel_order) if ggv_order.try(:status) != 'cancelled'
+    end
+
+    after_transition :on => :start_receiving do |offer, transition|
+      ggv_order = offer.try(:gogovan_order)
+      ggv_order.try(:cancel_order) if ggv_order.try(:pending?)
     end
   end
 
