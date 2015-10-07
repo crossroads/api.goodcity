@@ -9,10 +9,12 @@ class Offer < ActiveRecord::Base
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
   belongs_to :closed_by, class_name: 'User'
+  belongs_to :received_by, class_name: 'User'
   belongs_to :gogovan_transport
   belongs_to :crossroads_transport
 
   has_one  :delivery, dependent: :destroy
+  has_one  :gogovan_order, through: :delivery
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
@@ -61,7 +63,7 @@ class Offer < ActiveRecord::Base
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items
     state :submitted, :under_review, :reviewed, :scheduled, :closed, :received,
-      :cancelled
+      :cancelled, :receiving
 
     event :cancel do
       transition all => :cancelled, if: 'can_cancel?'
@@ -92,7 +94,11 @@ class Offer < ActiveRecord::Base
     end
 
     event :receive do
-      transition [:under_review, :reviewed, :scheduled] => :received
+      transition [:under_review, :reviewed, :scheduled, :receiving] => :received
+    end
+
+    event :start_receiving do
+      transition [:under_review, :reviewed, :scheduled] => :receiving
     end
 
     event :re_review do
@@ -123,6 +129,11 @@ class Offer < ActiveRecord::Base
       offer.cancelled_at = Time.now
     end
 
+    before_transition :on => :start_receiving do |offer, transition|
+      offer.received_by = User.current_user
+      offer.start_receiving_at = Time.now
+    end
+
     after_transition :on => :submit do |offer, transition|
       offer.send_thank_you_message
       offer.send_new_offer_notification
@@ -133,9 +144,13 @@ class Offer < ActiveRecord::Base
     after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
     after_transition :on => [:close, :re_review] do |offer, transition|
-      if offer.try(:delivery).try(:gogovan_order).try(:status) != 'cancelled'
-        offer.try(:delivery).try(:gogovan_order).try(:cancel_order)
-      end
+      ggv_order = offer.try(:gogovan_order)
+      ggv_order.try(:cancel_order) if ggv_order.try(:status) != 'cancelled'
+    end
+
+    after_transition :on => :start_receiving do |offer, transition|
+      ggv_order = offer.try(:gogovan_order)
+      ggv_order.try(:cancel_order) if ggv_order.try(:pending?)
     end
   end
 
