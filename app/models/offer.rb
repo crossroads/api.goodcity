@@ -9,6 +9,7 @@ class Offer < ActiveRecord::Base
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
   belongs_to :closed_by, class_name: 'User'
+  belongs_to :received_by, class_name: 'User'
   belongs_to :gogovan_transport
   belongs_to :crossroads_transport
 
@@ -61,7 +62,7 @@ class Offer < ActiveRecord::Base
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items
     state :submitted, :under_review, :reviewed, :scheduled, :closed, :received,
-      :cancelled
+      :cancelled, :receiving
 
     event :cancel do
       transition all => :cancelled, if: 'can_cancel?'
@@ -95,6 +96,10 @@ class Offer < ActiveRecord::Base
       transition [:under_review, :reviewed, :scheduled] => :received
     end
 
+    event :start_receiving do
+      transition [:under_review, :reviewed, :scheduled] => :receiving
+    end
+
     event :re_review do
       transition [:scheduled, :reviewed] => :under_review
     end
@@ -121,6 +126,11 @@ class Offer < ActiveRecord::Base
 
     before_transition :on => :cancel do |offer, transition|
       offer.cancelled_at = Time.now
+    end
+
+    before_transition :on => :start_receiving do |offer, transition|
+      offer.received_by = User.current_user
+      offer.start_receiving_at = Time.now
     end
 
     after_transition :on => :submit do |offer, transition|

@@ -9,7 +9,8 @@ module Api::V1
       :estimated_size, :notes, :created_by_id, :created_at,
       :updated_at, :submitted_at, :reviewed_at, :gogovan_transport_id,
       :crossroads_transport_id, :review_completed_at, :received_at,
-      :delivered_by, :closed_by_id, :cancelled_at
+      :delivered_by, :closed_by_id, :cancelled_at, :received_by_id,
+      :start_receiving_at
 
     has_many :items, serializer: ItemSerializer
     has_many :messages, serializer: MessageSerializer
