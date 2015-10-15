@@ -143,7 +143,7 @@ class Offer < ActiveRecord::Base
     after_transition on: :receive, do: :send_received_message
     after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
-    after_transition :on => [:close, :re_review] do |offer, transition|
+    after_transition :on => [:close, :re_review, :cancel] do |offer, transition|
       ggv_order = offer.try(:gogovan_order)
       ggv_order.try(:cancel_order) if ggv_order.try(:status) != 'cancelled'
     end
