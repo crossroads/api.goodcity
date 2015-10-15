@@ -38,9 +38,9 @@ module PushUpdates
       donor_channel = Channel.private(offer.created_by_id)
       # update donor on his offer-cancellation
       if offer.try(:cancelled?) && self == offer
-        data = {item: {"#{type}": {id: self.id}}, sender: user, operation: :delete}
+        offer_data = {item: {"#{type}": {id: self.id}}, sender: user, operation: :delete}
       end
-      service.send_update_store(donor_channel, false, data)
+      service.send_update_store(donor_channel, false, offer_data || data)
     end
     user.options[:user_summary] = false
     service.send_update_store(Channel.staff, true, data)
