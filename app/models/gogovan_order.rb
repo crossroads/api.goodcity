@@ -66,7 +66,7 @@ class GogovanOrder < ActiveRecord::Base
     if booking_id
       result = Gogovan.cancel_order(booking_id)
       if result == 200
-        update_status('cancelled')
+        update_status('cancelled') unless self.destroyed?
       else
         result[:error]
       end
