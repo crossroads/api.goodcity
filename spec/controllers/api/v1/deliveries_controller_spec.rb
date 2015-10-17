@@ -262,4 +262,26 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     end
   end
 
+  describe "delete_existing_delivery" do
+    let(:delivery) { create :drop_off_delivery }
+    before do
+      allow(controller).to receive(:current_user).and_return(user)
+      allow(controller).to receive(:params).and_return({ delivery: { offer_id: delivery.offer_id } })
+      allow(Delivery).to receive(:where).and_return([delivery])
+    end
+    describe "owned by me" do
+      let(:user) { delivery.offer.created_by }
+      it do
+        expect(delivery).to receive(:destroy)
+        controller.send(:delete_existing_delivery)
+      end
+    end
+    describe "not owned by me" do
+      let(:user) { create :user }
+      it do
+        expect{controller.send(:delete_existing_delivery)}.to raise_error(CanCan::AccessDenied)
+      end
+    end
+  end
+
 end
