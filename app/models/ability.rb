@@ -20,13 +20,20 @@ class Ability
       can(:manage, :all) if admin
 
       # Address
+      # TODO
       can [:create, :show], Address
 
       # Contact
+      # TODO
       can [:create, :destroy], Contact
 
       # Delivery
-      can [:create, :show, :update, :destroy, :confirm_delivery], Delivery
+      can [:create], Delivery
+      if reviewer || supervisor
+        can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
+      else
+        can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: user_offer_ids
+      end
 
       # Item
       if reviewer || supervisor
@@ -99,6 +106,7 @@ class Ability
       can :create, Schedule
 
       # GogovanOrder
+      # TODO
       can [:calculate_price, :confirm_order, :destroy], GogovanOrder
 
       # User
