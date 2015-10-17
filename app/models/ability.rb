@@ -101,12 +101,12 @@ class Ability
       can :destroy, Package, item: { offer: { created_by_id: user_id }, state: 'draft' }
       can :destroy, Package, item: { state: 'draft' } if reviewer
 
-
       # Schedule
+      # TODO - only for offers owned by user
       can :create, Schedule
 
       # GogovanOrder
-      # TODO
+      # TODO - only for offers owned by user
       can [:calculate_price, :confirm_order, :destroy], GogovanOrder
 
       # User
@@ -128,9 +128,8 @@ class Ability
     # Anonymous and all users
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
-    can [:fetch_items], Item
+    can [:fetch_items], Item # for BrowseController
     can :index, DonorCondition
-
     can [:index, :show], District
     can [:index, :show], Territory
     can [:index, :show, :availableTimeSlots], Schedule
@@ -138,6 +137,5 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
-    can :ggv_order_offer, Offer
   end
 end
