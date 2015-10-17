@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
-  let(:user) { create :user_with_token }
+  let(:user) { delivery.offer.created_by }
   subject { JSON.parse(response.body) }
+  before { generate_and_set_token(user) }
 
   describe "GET delivery with gogovan-transport" do
     let(:delivery) { create :gogovan_delivery }
     let(:serialized_delivery) { Api::V1::DeliverySerializer.new(delivery) }
     let(:serialized_delivery_json) { JSON.parse( serialized_delivery.to_json ) }
 
-    before { generate_and_set_token(user) }
     it "return serialized delivery", :show_in_doc do
       get :show, id: delivery.id
       expect(response.status).to eq(200)
@@ -23,7 +23,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     let(:serialized_delivery) { Api::V1::DeliverySerializer.new(delivery) }
     let(:serialized_delivery_json) { JSON.parse( serialized_delivery.to_json ) }
 
-    before { generate_and_set_token(user) }
     it "return serialized delivery", :show_in_doc do
       get :show, id: delivery.id
       expect(response.status).to eq(200)
@@ -36,7 +35,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     let(:serialized_delivery) { Api::V1::DeliverySerializer.new(delivery) }
     let(:serialized_delivery_json) { JSON.parse( serialized_delivery.to_json ) }
 
-    before { generate_and_set_token(user) }
     it "return serialized delivery", :show_in_doc do
       get :show, id: delivery.id
       expect(response.status).to eq(200)
@@ -45,10 +43,11 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   end
 
   describe "POST delivery/1" do
-    before { generate_and_set_token(user) }
     let!(:offer) { create :offer, :reviewed }
+    let(:user) { offer.created_by }
 
     it "returns 201", :show_in_doc do
+      expect(controller).to receive(:delete_existing_delivery)
       post :create, delivery: attributes_for(:delivery).merge(offer_id: offer.id)
       expect(response.status).to eq(201)
     end
@@ -57,7 +56,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   describe "PUT delivery/1 : update gogovan delivery" do
     let(:delivery) { create :gogovan_delivery, gogovan_order: nil }
     let(:gogovan_order) { create(:gogovan_order) }
-    before { generate_and_set_token(user) }
 
     it "owner can update", :show_in_doc do
       params = { gogovan_order_id: gogovan_order.id }
@@ -70,7 +68,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   describe "PUT delivery/1 : update crossroads delivery" do
     let(:delivery) { create :crossroads_delivery, contact: nil, schedule: nil }
     let(:crossroads_delivery) { build(:crossroads_delivery) }
-    before { generate_and_set_token(user) }
 
     it "owner can update", :show_in_doc do
       put :update, id: delivery.id, delivery: crossroads_delivery.attributes.except(:id)
@@ -82,7 +79,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   describe "PUT delivery/1 : update drop-off delivery" do
     let(:delivery) { create :drop_off_delivery, schedule: nil }
     let(:drop_off_delivery) { build(:drop_off_delivery) }
-    before { generate_and_set_token(user) }
 
     it "owner can update", :show_in_doc do
       put :update, id: delivery.id, delivery: drop_off_delivery.attributes.except(:id)
@@ -92,7 +88,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   end
 
   describe "DELETE delivery/1" do
-    before { generate_and_set_token(user) }
     let(:delivery) { create :drop_off_delivery }
 
     it "returns 200", :show_in_doc do
@@ -104,7 +99,6 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
   end
 
   describe "confirm_delivery" do
-    before { generate_and_set_token(user) }
     let!(:gogovan_order) { create :gogovan_order }
 
     let(:offer) { create :offer, :reviewed, :with_transport }

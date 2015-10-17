@@ -128,7 +128,11 @@ module Api::V1
     end
 
     def delete_existing_delivery
-      Delivery.where(offer_id: params[:delivery][:offer_id]).map(&:destroy)
+      offer_id = params[:delivery][:offer_id]
+      Delivery.where(offer_id: offer_id).each do |delivery|
+        authorize!(:destroy, delivery)
+        delivery.destroy
+      end
     end
 
     def delete_old_associations
