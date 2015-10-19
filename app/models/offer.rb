@@ -13,11 +13,10 @@ class Offer < ActiveRecord::Base
   belongs_to :gogovan_transport
   belongs_to :crossroads_transport
 
-  has_one  :delivery, dependent: :destroy
-  has_one  :gogovan_order, through: :delivery
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
+  has_one  :delivery, dependent: :destroy
   has_many :users, through: :subscriptions
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true

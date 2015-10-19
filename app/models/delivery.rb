@@ -23,7 +23,7 @@ class Delivery < ActiveRecord::Base
   private
 
   def push_back_offer_state
-    offer.try(:cancel_schedule)
+    offer.try(:cancel_schedule) unless offer.destroyed?
     true
   end
 
