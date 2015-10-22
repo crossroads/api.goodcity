@@ -12,7 +12,6 @@ class AzureNotificationsService
   def register_device(handle, tags, platform)
     encoded_url = encoded_url(platform, handle)
     res = encoded_url ? (execute :get, "registrations?$filter=#{encoded_url}") : ""
-
     Nokogiri::XML(res.decoded).css('entry title').each do |n|
       execute :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}
     end
@@ -22,6 +21,8 @@ class AzureNotificationsService
     execute :put, "registrations/#{regId}", body: platform_xml_body(handle, tags, platform)
   end
 
+  private
+
   def execute(method, resource, options = {})
     url = request_url(resource)
     options[:method] = method
@@ -29,8 +30,6 @@ class AzureNotificationsService
     options[:headers]['Authorization'] = sas_token(url)
     Nestful::Request.new(url, options).execute
   end
-
-  private
 
   def encoded_url(platform, handle)
     case platform
