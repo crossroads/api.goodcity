@@ -57,7 +57,7 @@ class AzureNotificationsService
   end
 
   def gcm_platform_xml(handle, tags)
-    template = "{\"data\":{\"title\":\"GoodCity\", \"message\":\"$(message)\", #{payload} } }"
+    template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", #{payload} } }"
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
@@ -142,5 +142,11 @@ class AzureNotificationsService
 
   def settings
     Rails.application.secrets.azure_notifications[@app_name]
+  end
+
+  def notification_title
+    prefix = Rails.env.production? ? "" : "S. "
+    suffix = is_admin_app ? " Admin" : ""
+    prefix << "GoodCity" << suffix
   end
 end
