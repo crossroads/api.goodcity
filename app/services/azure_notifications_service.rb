@@ -2,7 +2,7 @@ class AzureNotificationsService
   attr_accessor :app_name
 
   def initialize(is_admin_app=nil)
-    @app_name = is_admin_app ? "admin" : "donor"
+    @is_admin_app = is_admin_app
   end
 
   def notify(tags, data)
@@ -140,13 +140,17 @@ class AzureNotificationsService
     CGI.escape(url).gsub('+', '%20')
   end
 
+  def app_name
+    @app_name ||= (@is_admin_app ? "admin" : "donor")
+  end
+
   def settings
-    Rails.application.secrets.azure_notifications[@app_name]
+    Rails.application.secrets.azure_notifications[app_name]
   end
 
   def notification_title
     prefix = Rails.env.production? ? "" : "S. "
-    suffix = is_admin_app ? " Admin" : ""
+    suffix = @is_admin_app ? " Admin" : ""
     prefix << "GoodCity" << suffix
   end
 end
