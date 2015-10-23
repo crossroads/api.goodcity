@@ -15,15 +15,6 @@ RSpec.describe GogovanOrder, type: :model do
     it{ is_expected.to have_db_column(:completed_at).of_type(:datetime)}
   end
 
-  describe 'update_booking' do
-    let(:booking_id) { rand(1000000..9999999) }
-    let(:ggv_order) { create :gogovan_order }
-    it 'should update record with booking_id' do
-      expect(ggv_order.update_booking(booking_id)).to be true
-      expect(ggv_order.booking_id).to eq(booking_id)
-    end
-  end
-
   describe 'offer_by_ggv_uuid' do
     let(:ggv_order) { create(:gogovan_order, :with_delivery) }
     it "should return offer by ggv_uuid" do
@@ -32,15 +23,6 @@ RSpec.describe GogovanOrder, type: :model do
 
     it "should raise exception" do
       expect{GogovanOrder.offer_by_ggv_uuid("dummy")}.to raise_error(ActiveRecord::RecordNotFound)
-    end
-  end
-
-  describe '#update_status' do
-    it 'should update status of order' do
-      order = create :gogovan_order
-      expect{
-        order.update_status("cancelled")
-      }.to change(order, :status).from('pending').to('cancelled')
     end
   end
 
