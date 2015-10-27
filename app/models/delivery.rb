@@ -15,7 +15,7 @@ class Delivery < ActiveRecord::Base
   after_destroy {send_updates :delete unless Rails.env.test? }
 
   def update_offer_state
-    self.delivery_type = self.delivery_type.titleize
+    self.delivery_type = self.delivery_type.try(:titleize)
     offer.schedule if process_completed?
     true
   end

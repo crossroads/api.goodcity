@@ -24,7 +24,7 @@ module Api::V1
         param :offer_id, String, desc: "Id of offer to which delivery belongs."
         param :contact_id, String, allow_nil: true, desc: "Id of contact to which delivery belongs."
         param :schedule_id, String, allow_nil: true, desc: "Id of schedule to which delivery belongs."
-        param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type."
+        param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type.", allow_nil: true
         param :start, String, allow_nil: true, desc: "Not yet used"
         param :finish, String, allow_nil: true, desc: "Not yet used"
       end
