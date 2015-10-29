@@ -5,7 +5,7 @@ class GogovanOrder < ActiveRecord::Base
 
   has_one :delivery, inverse_of: :gogovan_order
 
-  before_create :generate_uuid
+  before_create :generate_ggv_uuid
   after_commit :start_polling_status, on: [:create]
   before_destroy :cancel_order, if: :pending?
 
@@ -20,7 +20,7 @@ class GogovanOrder < ActiveRecord::Base
     attributes = set_vehicle_type(attributes)
     update_vehicle_type(attributes)
     book_order = Gogovan.new(user, attributes).confirm_order
-    order.update_booking(book_order['id'])
+    order.update_column(:booking_id, book_order['id'])
     order
   end
 
@@ -31,17 +31,8 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def donor
-    User.
-      joins(offers: {delivery: :gogovan_order}).
+    User.joins(offers: {delivery: :gogovan_order}).
       where('gogovan_orders.id = ?', id).last
-  end
-
-  def update_booking(booking_id)
-    update_column(:booking_id, booking_id)
-  end
-
-  def update_status(status)
-    update_column(:status, status)
   end
 
   def need_polling?
@@ -66,7 +57,7 @@ class GogovanOrder < ActiveRecord::Base
     if booking_id
       result = Gogovan.cancel_order(booking_id)
       if result == 200
-        update_status('cancelled')
+        update_column(:status, 'cancelled') unless self.destroyed?
       else
         result[:error]
       end
@@ -92,7 +83,7 @@ class GogovanOrder < ActiveRecord::Base
 
   private
 
-  def generate_uuid
+  def generate_ggv_uuid
     self.ggv_uuid = SecureRandom.uuid[0,6]
   end
 
@@ -115,8 +106,7 @@ class GogovanOrder < ActiveRecord::Base
   def self.update_vehicle_type(attributes)
     if attributes["gogovanOptionId"] && attributes['offerId']
       offer = Offer.find(attributes["offerId"])
-      offer && offer.update_column(:gogovan_transport_id,
-        attributes["gogovanOptionId"])
+      offer && offer.update_column(:gogovan_transport_id, attributes["gogovanOptionId"])
     end
   end
 end

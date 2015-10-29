@@ -3,3 +3,7 @@ deployment:
     branch: master
     commands:
       - bundle exec cap staging deploy
+  production:
+    branch: live
+    commands:
+      - bundle exec cap production deploy

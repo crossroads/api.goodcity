@@ -24,7 +24,7 @@ module Api::V1
         param :offer_id, String, desc: "Id of offer to which delivery belongs."
         param :contact_id, String, allow_nil: true, desc: "Id of contact to which delivery belongs."
         param :schedule_id, String, allow_nil: true, desc: "Id of schedule to which delivery belongs."
-        param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type."
+        param :delivery_type, ["Alternate", "Drop Off", "Gogovan"], desc: "Delivery type.", allow_nil: true
         param :start, String, allow_nil: true, desc: "Not yet used"
         param :finish, String, allow_nil: true, desc: "Not yet used"
       end
@@ -128,12 +128,18 @@ module Api::V1
     end
 
     def delete_existing_delivery
-      Delivery.where(offer_id: params[:delivery][:offer_id]).map(&:destroy)
+      offer_id = params[:delivery][:offer_id]
+      Delivery.where(offer_id: offer_id).each do |delivery|
+        authorize!(:destroy, delivery)
+        delivery.destroy
+      end
     end
 
     def delete_old_associations
-      @delivery.contact.try(:destroy)
-      @delivery.gogovan_order.try(:destroy)
+      @delivery.contact.try(:really_destroy!)
+      @delivery.gogovan_order.try(:really_destroy!)
+      @delivery.update_column(:contact_id, nil)
+      @delivery.update_column(:gogovan_order_id, nil)
       @delivery.schedule && @delivery.schedule.deliveries.delete(@delivery)
     end
 

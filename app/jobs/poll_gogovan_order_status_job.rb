@@ -9,6 +9,9 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
       # GGV Order is not placed successfully i.r. booking_id is nil
       return remove_delivery(order_id) unless order.booking_id
 
+      # GGV Order or its Offer is cancelled
+      return unless order.need_polling?
+
       order_details = Gogovan.order_status(order.booking_id)
 
       unless order_details[:error]
