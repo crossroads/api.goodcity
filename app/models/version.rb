@@ -20,8 +20,20 @@ class Version < PaperTrail::Version
       ids: objects.map(&:id), type: objects.last.class.name)
   }
 
+  scope :item_logs, -> {
+    joins("INNER JOIN items ON (items.id = versions.item_id AND versions.item_type = 'Item')")
+  }
+
+  scope :package_logs, -> {
+    joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')")
+  }
+
+  scope :call_logs, -> {
+    joins("INNER JOIN offers ON versions.item_id = offers.id AND versions.item_type = 'Offer' AND versions.event IN ('call_Accepted', 'donor_called')")
+  }
+
   scope :items_and_calls_log, -> {
-    where("item_type IN (?) or event IN (?)", %w(Item Package), %w(call_accepted donor_called))
+    find_by_sql("#{item_logs.to_sql} UNION ALL #{package_logs.to_sql} UNION ALL #{call_logs.to_sql}")
   }
 
   def to_s
