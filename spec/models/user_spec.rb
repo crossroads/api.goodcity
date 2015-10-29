@@ -30,7 +30,13 @@ describe User, :type => :model do
 
     context "mobile" do
       it { is_expected.to validate_presence_of(:mobile) }
-      it { is_expected.to validate_uniqueness_of(:mobile) }
+      context "uniqueness" do
+        let(:user) { build(:user, mobile: mobile) }
+        before { create(:user, mobile: mobile) }
+        it do
+          expect(user.tap(&:valid?).errors[:mobile]).to include("has already been taken")
+        end
+      end
       it { is_expected.to allow_value('+85251234567').for(:mobile) }
       it { is_expected.to allow_value('+85261234567').for(:mobile) }
       it { is_expected.to allow_value('+85291234567').for(:mobile) }

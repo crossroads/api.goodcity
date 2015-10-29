@@ -10,7 +10,6 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 
 require 'ffaker'
-require 'shoulda/matchers'
 require 'webmock/rspec'
 require 'paper_trail/frameworks/rspec'
 
@@ -57,5 +56,12 @@ RSpec.configure do |config|
   config.include ApplicationHeaders
   config.before(:each, type: :controller) do
     set_admin_app_header
+  end
+end
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
   end
 end

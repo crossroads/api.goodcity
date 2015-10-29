@@ -46,7 +46,7 @@ class Item < ActiveRecord::Base
     end
 
     event :submit do
-      transition :draft => :submitted
+      transition [:draft, :submitted] => :submitted
     end
 
     after_transition on: [:accept, :reject], do: :assign_reviewer

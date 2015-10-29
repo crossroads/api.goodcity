@@ -1,37 +1,35 @@
 class AzureNotificationsService
-  attr_accessor :app_name
 
   def initialize(is_admin_app=nil)
-    @app_name = is_admin_app ? "admin" : "donor"
+    @is_admin_app = is_admin_app
   end
 
   def notify(tags, data)
     tags = tags.join(' || ') if tags.instance_of?(Array)
-    send :post, 'messages', body: data.to_json, headers: notify_headers(tags)
+    execute :post, 'messages', body: data.to_json, headers: notify_headers(tags)
   end
 
   def register_device(handle, tags, platform)
     encoded_url = encoded_url(platform, handle)
-    res = encoded_url ? (send :get, "registrations?$filter=#{encoded_url}") : ""
-
+    res = encoded_url ? (execute :get, "registrations?$filter=#{encoded_url}") : ""
     Nokogiri::XML(res.decoded).css('entry title').each do |n|
-      send :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}
+      execute :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}
     end
-    res = send :post, 'registrationIDs'
+    res = execute :post, 'registrationIDs'
     # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
     regId = res.headers['location'].split('/').last.split('?').first
-    send :put, "registrations/#{regId}", body: platform_xml_body(handle, tags, platform)
+    execute :put, "registrations/#{regId}", body: platform_xml_body(handle, tags, platform)
   end
 
-  def send(method, resource, options = {})
+  private
+
+  def execute(method, resource, options = {})
     url = request_url(resource)
     options[:method] = method
     options[:headers] ||= {}
     options[:headers]['Authorization'] = sas_token(url)
     Nestful::Request.new(url, options).execute
   end
-
-  private
 
   def encoded_url(platform, handle)
     case platform
@@ -57,7 +55,7 @@ class AzureNotificationsService
   end
 
   def gcm_platform_xml(handle, tags)
-    template = "{\"data\":{\"title\":\"GoodCity\", \"message\":\"$(message)\", #{payload} } }"
+    template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", #{payload} } }"
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
@@ -140,7 +138,17 @@ class AzureNotificationsService
     CGI.escape(url).gsub('+', '%20')
   end
 
+  def app_namespace
+    @app_namespace ||= (@is_admin_app ? "admin" : "donor")
+  end
+
   def settings
-    Rails.application.secrets.azure_notifications[@app_name]
+    Rails.application.secrets.azure_notifications[app_namespace]
+  end
+
+  def notification_title
+    prefix = Rails.env.production? ? "" : "S. "
+    suffix = @is_admin_app ? " Admin" : ""
+    prefix << "GoodCity" << suffix
   end
 end

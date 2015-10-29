@@ -14,7 +14,7 @@ gem 'postgres_ext', '~> 2.4.0.beta.1'
 gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
-gem 'paranoia', '~> 2.0.4'
+gem 'paranoia', '~> 2.1.0'
 # , github: 'radar/paranoia', ref: 'fe70628'
 # Shivani - Should try config_for to load the .env
 gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
@@ -76,7 +76,8 @@ end
 
 group :test do
   gem 'webmock'
-  gem 'shoulda-matchers', require: false
+  gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
+  gem 'rspec_junit_formatter'
 end
