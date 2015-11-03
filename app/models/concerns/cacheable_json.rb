@@ -16,7 +16,10 @@ module CacheableJson
   module ClassMethods
 
     def cache_key
-      "#{name.underscore}:#{I18n.locale}"
+      key = "#{name.underscore}/#{I18n.locale}"
+      max = maximum(:updated_at)
+      key << "/#{max.utc.to_s(:nsec)}" unless max.blank?
+      key
     end
 
     # Save the json representation to cache (operates on all objects)
