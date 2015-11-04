@@ -51,12 +51,16 @@ class Item < ActiveRecord::Base
 
     after_transition on: [:accept, :reject], do: :assign_reviewer
     after_transition on: :reject, do: :send_reject_message
-    before_transition :draft => [:submitted, :accepted, :rejected], do: :set_description
+    before_transition [:draft, :submitted, :accepted, :rejected] => [:submitted, :accepted, :rejected], do: :set_description
     after_transition on: :submit, do: :send_new_item_message
   end
 
   def set_description
-    self.donor_description ||= if packages.present?
+    self.donor_description = donor_description.presence || get_package_notes
+  end
+
+  def get_package_notes
+    if packages.present?
       packages.pluck(:notes).reject(&:blank?).join(" + ")
     else
       package_type.try(:name)
