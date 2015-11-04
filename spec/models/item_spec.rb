@@ -119,11 +119,11 @@ RSpec.describe Item, type: :model do
   end
 
   describe "when item created by Admin" do
-    it "should set package_type name as donor_description when rejected" do
-      item = create :item, :draft
-      expect{
-        item.reject
-      }.to change(item, :donor_description).to(item.package_type.name)
+    it "should set package_type name as donor_description when saved" do
+      item = create :item, :draft, package_type: nil
+      item.package_type = create :package_type
+      item.save
+      expect(item.donor_description).to eq(item.package_type.name)
     end
 
     it "should set packages notes as donor_description when accepted" do
