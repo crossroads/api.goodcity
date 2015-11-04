@@ -27,6 +27,7 @@ class Item < ActiveRecord::Base
   # state by default
   # refer - https://github.com/pluginaweek/state_machine/issues/334
   after_initialize :set_initial_state
+  before_save :set_description
 
   def set_initial_state
     self.state ||= :draft
@@ -51,7 +52,6 @@ class Item < ActiveRecord::Base
 
     after_transition on: [:accept, :reject], do: :assign_reviewer
     after_transition on: :reject, do: :send_reject_message
-    before_transition [:draft, :submitted, :accepted, :rejected] => [:submitted, :accepted, :rejected], do: :set_description
     after_transition on: :submit, do: :send_new_item_message
   end
 
