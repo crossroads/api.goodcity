@@ -31,6 +31,9 @@ class Message < ActiveRecord::Base
 
   def mark_read!(user_id)
     self.subscriptions.where(user_id: user_id).update_all(state: 'read')
+    reader = User.find_by(id: user_id)
+    user = Api::V1::UserSerializer.new(reader)
+    send_update self, user, "read", Channel.private(reader), reader.staff?
   end
 
   def user_subscribed?(user_id)
