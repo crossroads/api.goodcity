@@ -29,6 +29,8 @@ class Message < ActiveRecord::Base
     send_new_message_notification
   end
 
+  after_destroy :notify_deletion_to_subscribers
+
   def mark_read!(user_id)
     self.subscriptions.where(user_id: user_id).update_all(state: 'read')
     reader = User.find_by(id: user_id)
@@ -71,7 +73,6 @@ class Message < ActiveRecord::Base
 
     # notify subscribed users except sender
     sender_channel = Channel.private(sender)
-    donor_channel = Channel.private(offer.created_by_id)
     channels = subscribed_user_channels - sender_channel - donor_channel
 
     send_notification donor_channel, false unless is_private || offer.cancelled? || donor_channel == sender_channel
@@ -85,9 +86,8 @@ class Message < ActiveRecord::Base
 
   def update_client_store
     sender_channel = Channel.private(sender)
-    donor_channel = Channel.private(offer.created_by_id)
     subscribed_user_channels = subscribed_user_channels() - sender_channel - donor_channel
-    unsubscribed_user_channels = Channel.private(User.staff) - subscribed_user_channels - sender_channel - donor_channel
+    unsubscribed_user_channels = admin_channel - subscribed_user_channels - sender_channel - donor_channel
 
     user = Api::V1::UserSerializer.new(sender)
 
@@ -101,13 +101,13 @@ class Message < ActiveRecord::Base
     send_update self, user, 'never-subscribed', unsubscribed_user_channels, true
   end
 
-  def send_update(object, user, state, channel, is_admin_app)
+  def send_update(object, user, state, channel, is_admin_app, operation = :create)
     self.state_value = state
     object = Api::V1::MessageSerializer.new(object, {exclude:Message.reflections.keys.map(&:to_sym)})
     PushService.new.send_update_store channel, is_admin_app, {
       item: object,
       sender:user,
-      operation: :create
+      operation: operation
     } unless channel.empty?
     self.state_value = nil
   end
@@ -121,5 +121,19 @@ class Message < ActiveRecord::Base
       item_id:    item.try(:id),
       author_id:  sender_id
     } unless channel.empty?
+  end
+
+  def notify_deletion_to_subscribers
+    user = Api::V1::UserSerializer.new(User.current_user)
+    channels = admin_channel - donor_channel
+    send_update self, user, 'read', channels, true, :delete
+  end
+
+  def admin_channel
+    Channel.private(User.staff)
+  end
+
+  def donor_channel
+    Channel.private(offer.created_by_id)
   end
 end
