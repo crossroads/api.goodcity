@@ -165,6 +165,15 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "send_new_offer_notification" do
+
+    it "should send notification for new message" do
+      donor_offer = create :offer
+      expect(donor_offer).to receive(:send_new_offer_notification)
+      donor_offer.submit
+    end
+  end
+
   describe "#send_ready_for_schedule_message" do
     it 'should send ready_for_schedule message to donor on offer after review-completion' do
       offer = create :offer, :under_review
@@ -193,6 +202,7 @@ RSpec.describe Offer, type: :model do
     it 'should send new offer alert SMS' do
       ENV['NEW_OFFER_ALERT_MOBILES'] = new_offer_alert_mobiles
       allow(offer).to receive(:send_thank_you_message) # bypass this
+      allow(offer).to receive(:send_new_offer_notification) # bypass this
       expect(User).to receive(:where).with(mobile: new_offer_alert_mobiles.split(",").map(&:strip)).and_return([user])
       expect(TwilioService).to receive(:new).with(user).and_return(twilio)
       expect(twilio).to receive(:new_offer_alert).with(offer)
