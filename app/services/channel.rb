@@ -33,5 +33,9 @@ class Channel
       [channel_name].flatten.map {|c| user_channel?(c) ? "#{c}_admin" : c}
     end
 
+    def reviewers
+      User.reviewers.map{ |user| "user_#{user.id}" }
+    end
+
   end
 end
