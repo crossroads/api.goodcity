@@ -119,7 +119,8 @@ class Message < ActiveRecord::Base
       is_private: is_private,
       offer_id:   offer.id,
       item_id:    item.try(:id),
-      author_id:  sender_id
+      author_id:  sender_id,
+      message_id: id
     } unless channel.empty?
   end
 
