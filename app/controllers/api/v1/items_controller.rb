@@ -45,6 +45,11 @@ module Api::V1
       render json: @item, serializer: serializer
     end
 
+    api :GET, '/v1/items/1/messages', "Get all messages of Item."
+    def messages
+      render json: @item.messages, each_serializer: Api::V1::MessageSerializer
+    end
+
     api :DELETE, '/v1/items/1', "Delete an item"
     description "If this item's offer is in draft state it will be destroyed. Any other state and it will be marked as deleted but remain recoverable."
     def destroy

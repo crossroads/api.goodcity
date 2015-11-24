@@ -37,9 +37,9 @@ class Ability
 
       # Item
       if reviewer || supervisor
-        can [:index, :show, :create, :update], Item
+        can [:index, :show, :create, :update, :messages], Item
       else
-        can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
+        can [:index, :show, :create, :messages], Item, Item.donor_items(user_id) do |item|
           item.offer.created_by_id == user_id
         end
 
@@ -83,9 +83,9 @@ class Ability
 
       # Offer
       can :create, Offer
-      can [:index, :show, :update], Offer, created_by_id: user_id,
+      can [:index, :show, :update, :messages], Offer, created_by_id: user_id,
         state: Offer.donor_valid_states
-      can [:index, :show, :update], Offer if reviewer || supervisor
+      can [:index, :show, :update, :messages], Offer if reviewer || supervisor
       can :destroy, Offer, created_by_id: user_id, state: ['draft',
         'submitted', 'reviewed', 'scheduled', 'under_review']
       can [:complete_review, :close_offer, :finished, :destroy, :review], Offer if reviewer || supervisor

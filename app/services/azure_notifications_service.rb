@@ -51,7 +51,7 @@ class AzureNotificationsService
   end
 
   def payload
-    '"category":"$(category)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "author_id":"$(author_id)", "is_private":"$(is_private)"'
+    '"category":"$(category)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "author_id":"$(author_id)", "is_private":"$(is_private)", "message_id": "$(message_id)"'
   end
 
   def gcm_platform_xml(handle, tags)
