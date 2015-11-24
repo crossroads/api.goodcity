@@ -5,7 +5,7 @@ describe "Offer abilities" do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   subject(:ability) { Ability.new(user) }
-  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
+  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :messages] }
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
@@ -45,7 +45,7 @@ describe "Offer abilities" do
 
     context "and offer is submitted" do
       let(:offer)     { create :offer, state: 'submitted', created_by: create(:user) }
-      let(:can)       { [:index, :show, :create, :update, :destroy] }
+      let(:can)       { [:index, :show, :create, :update, :destroy, :messages] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, offer)
       end}
@@ -68,7 +68,7 @@ describe "Offer abilities" do
 
     context "and offer is submitted" do
       let(:offer)     { create :offer, state: 'submitted', created_by: user }
-      let(:can)       { [:index, :show, :create, :update, :destroy] }
+      let(:can)       { [:index, :show, :create, :update, :destroy, :messages] }
       let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, offer)
@@ -80,7 +80,7 @@ describe "Offer abilities" do
 
     context "and offer is scheduled" do
       let(:offer)     { create :offer, state: 'scheduled', created_by: user }
-      let(:can)       { [:index, :show, :update, :destroy] }
+      let(:can)       { [:index, :show, :update, :destroy, :messages] }
       let(:cannot)    { [:manage] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, offer)
