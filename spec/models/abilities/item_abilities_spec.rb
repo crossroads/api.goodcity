@@ -4,7 +4,7 @@ require 'cancan/matchers'
 describe "Item abilities" do
 
   subject(:ability) { Ability.new(user) }
-  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
+  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :messages] }
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
 
@@ -16,7 +16,7 @@ describe "Item abilities" do
   context "when Supervisor" do
     let(:user)  { create(:user, :supervisor) }
     context "and item is draft" do
-      let(:can)    { [:index, :show, :create, :update, :destroy] }
+      let(:can)    { [:index, :show, :create, :update, :destroy, :messages] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, item)
@@ -43,7 +43,7 @@ describe "Item abilities" do
 
     context "and item is submitted" do
       let(:state)  { 'submitted' }
-      let(:can)    { [:index, :show, :create, :update, :destroy] }
+      let(:can)    { [:index, :show, :create, :update, :destroy, :messages] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, item)
@@ -71,7 +71,7 @@ describe "Item abilities" do
 
     context "and item is submitted" do
       let(:item)   { create :item, state: 'submitted', offer: offer }
-      let(:can)    { [:index, :show, :create, :update, :destroy] }
+      let(:can)    { [:index, :show, :create, :update, :destroy, :messages] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, item)
