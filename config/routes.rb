@@ -32,12 +32,15 @@ Rails.application.routes.draw do
 
       get  "offers" => "offers#index"
       get  "offers/:id" => "offers#show"
+      get  "offers/:id/messages" => "offers#messages"
       post "offers" => "offers#create"
       put  "offers/:id" => "offers#update"
       delete "offers/:id" => "offers#destroy"
       put  "offers/:id/review" => "offers#review"
       put  "offers/:id/complete_review" => "offers#complete_review"
       put  "offers/:id/close_offer" => "offers#close_offer"
+
+      get  "items/:id/messages" => "items#messages"
 
       get  "packages" => "packages#index"
       get  "packages/:id" => "packages#show"
