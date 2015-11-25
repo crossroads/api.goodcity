@@ -69,16 +69,22 @@ describe "Item abilities" do
       end}
     end
 
-    context "and item is submitted" do
-      let(:item)   { create :item, state: 'submitted', offer: offer }
-      let(:can)    { [:index, :show, :create, :update, :destroy, :messages] }
-      let(:cannot) { [:manage] }
-      it{ can.each do |do_action|
-        is_expected.to be_able_to(do_action, item)
-      end}
-      it{ cannot.each do |do_action|
-        is_expected.to_not be_able_to(do_action, item)
-      end}
+    context "and item having valid state" do
+      it do
+        can = [:index, :show, :create, :update, :destroy, :messages]
+        cannot = [:manage]
+
+        ["submitted", "accepted", "rejected"].each do |state|
+          item = create :item, state: state, offer: offer
+          messages = create_list :message, 2, item: item
+
+          can.each{ |do_action| is_expected.to be_able_to(do_action, item) }
+
+          cannot.each do |do_action|
+            is_expected.to_not be_able_to(do_action, item)
+          end
+        end
+      end
     end
 
     context "and item has received package" do
