@@ -29,7 +29,7 @@ end
 
 gogovan_transports = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
 gogovan_transports.each do |name, value|
-  FactoryGirl.create :gogovan_transport, name_en: name, name_zh_tw: value[:name_zh_tw]
+  FactoryGirl.create :gogovan_transport, name_en: name, name_zh_tw: value[:name_zh_tw], disabled: value[:disabled]
 end
 
 crossroads_transports = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
