@@ -1,8 +1,12 @@
 Van:
   :name_zh_tw: 麵包車
+  :disabled: false
 5.5 Tonne Truck:
   :name_zh_tw: 5.5噸卡車
+  :disabled: false
 9 Tonne Truck:
   :name_zh_tw: 9噸卡車
+  :disabled: false
 Disable:
   :name_zh_tw: 關閉
+  :disabled: true
