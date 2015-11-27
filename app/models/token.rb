@@ -22,9 +22,9 @@ class Token
   def generate(options = {})
     now = Time.now
     options.merge!({
-      "iat"     => now.to_i,
-      "iss"     => issuer,
-      "exp"     => (now + validity).to_i,
+      "iat": now.to_i,
+      "iss": issuer,
+      "exp": (now + validity).to_i,
     })
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end

@@ -15,10 +15,7 @@ class Channel
 
     # users - can be array or single instance of user id or user object
     def private(users)
-      [users].flatten.map do |user|
-        user = user.id if user.is_a?(User)
-        "user_#{user}"
-      end
+      [users].flatten.map{ |user| "user_#{user.is_a?(User) ? user.id : user}" }
     end
 
     def my_channel(user, is_admin_app)
