@@ -81,25 +81,4 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       expect(body['errors'][0]['requires_gogovan_cancellation']).not_to be_nil
     end
   end
-
-  describe "GET messages" do
-    before do
-      generate_and_set_token(user)
-      offer = create :offer, :submitted, created_by: user
-      @item = create :item, offer: offer
-      @messages = create_list :message, 2, offer: offer, item: @item
-    end
-
-    it "returns 200" do
-      get :messages, id: @item.id
-      expect(response.status).to eq(200)
-    end
-
-    it "return serialized offers", :show_in_doc do
-      get :messages, id: @item.id
-      body = JSON.parse(response.body)
-      expect( body['messages'].length ).to eq(2)
-    end
-  end
-
 end

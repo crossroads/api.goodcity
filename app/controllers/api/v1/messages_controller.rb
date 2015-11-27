@@ -25,6 +25,8 @@ module Api::V1
 
     api :GET, "/v1/messages", "List all messages"
     param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
+    param :offer_id, String, desc: "Return messages for offer id."
+    param :item_id, String, desc: "Return messages for item id."
     def index
       @messages = @messages.where( id: params[:ids].split(",") ) if params[:ids].present?
       @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
