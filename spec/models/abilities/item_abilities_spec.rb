@@ -4,7 +4,7 @@ require 'cancan/matchers'
 describe "Item abilities" do
 
   subject(:ability) { Ability.new(user) }
-  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :messages] }
+  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
 
@@ -16,7 +16,7 @@ describe "Item abilities" do
   context "when Supervisor" do
     let(:user)  { create(:user, :supervisor) }
     context "and item is draft" do
-      let(:can)    { [:index, :show, :create, :update, :destroy, :messages] }
+      let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, item)
@@ -43,7 +43,7 @@ describe "Item abilities" do
 
     context "and item is submitted" do
       let(:state)  { 'submitted' }
-      let(:can)    { [:index, :show, :create, :update, :destroy, :messages] }
+      let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, item)
@@ -71,12 +71,11 @@ describe "Item abilities" do
 
     context "and item having valid state" do
       it do
-        can = [:index, :show, :create, :update, :destroy, :messages]
+        can = [:index, :show, :create, :update, :destroy]
         cannot = [:manage]
 
         ["submitted", "accepted", "rejected"].each do |state|
           item = create :item, state: state, offer: offer
-          messages = create_list :message, 2, item: item
 
           can.each{ |do_action| is_expected.to be_able_to(do_action, item) }
 
