@@ -199,23 +199,4 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
     end
   end
-
-  describe "GET messages" do
-    before do
-      generate_and_set_token(user)
-      @offer = create :offer, created_by: user
-      @messages = create_list :message, 2, offer: @offer
-    end
-
-    it "returns 200" do
-      get :messages, id: @offer.id
-      expect(response.status).to eq(200)
-    end
-
-    it "return serialized offers", :show_in_doc do
-      get :messages, id: @offer.id
-      body = JSON.parse(response.body)
-      expect( body['messages'].length ).to eq(2)
-    end
-  end
 end
