@@ -35,11 +35,11 @@ class Package < ActiveRecord::Base
       transition [:expecting, :missing, :received] => :missing
     end
 
-    before_transition :on => :mark_received do |package|
+    before_transition on: :mark_received do |package|
       package.received_at = Time.now
     end
 
-    before_transition :on => :mark_missing do |package|
+    before_transition on: :mark_missing do |package|
       package.received_at = nil
     end
   end

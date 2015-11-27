@@ -104,36 +104,36 @@ class Offer < ActiveRecord::Base
       transition [:scheduled, :reviewed] => :under_review
     end
 
-    before_transition :on => :submit do |offer, transition|
+    before_transition on: :submit do |offer, transition|
       offer.submitted_at = Time.now
     end
 
-    before_transition :on => :start_review do |offer, transition|
+    before_transition on: :start_review do |offer, transition|
       offer.reviewed_at = Time.now
     end
 
-    before_transition :on => [:finish_review, :close] do |offer, transition|
+    before_transition on: [:finish_review, :close] do |offer, transition|
       offer.review_completed_at = Time.now
     end
 
-    before_transition :on => [:close, :cancel, :receive] do |offer, transition|
+    before_transition on: [:close, :cancel, :receive] do |offer, transition|
       offer.closed_by = User.current_user
     end
 
-    before_transition :on => :receive do |offer, transition|
+    before_transition on: :receive do |offer, transition|
       offer.received_at = Time.now
     end
 
-    before_transition :on => :cancel do |offer, transition|
+    before_transition on: :cancel do |offer, transition|
       offer.cancelled_at = Time.now
     end
 
-    before_transition :on => :start_receiving do |offer, transition|
+    before_transition on: :start_receiving do |offer, transition|
       offer.received_by = User.current_user
       offer.start_receiving_at = Time.now
     end
 
-    after_transition :on => :submit do |offer, transition|
+    after_transition on: :submit do |offer, transition|
       offer.send_thank_you_message
       offer.send_new_offer_notification
       offer.send_new_offer_alert
@@ -142,12 +142,12 @@ class Offer < ActiveRecord::Base
     after_transition on: :receive, do: :send_received_message
     after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
-    after_transition :on => [:close, :re_review, :cancel] do |offer, transition|
+    after_transition on: [:close, :re_review, :cancel] do |offer, transition|
       ggv_order = offer.try(:gogovan_order)
       ggv_order.try(:cancel_order) if ggv_order.try(:status) != 'cancelled'
     end
 
-    after_transition :on => :start_receiving do |offer, transition|
+    after_transition on: :start_receiving do |offer, transition|
       ggv_order = offer.try(:gogovan_order)
       ggv_order.try(:cancel_order) if ggv_order.try(:pending?)
     end
@@ -181,20 +181,24 @@ class Offer < ActiveRecord::Base
   end
 
   def send_thank_you_message
-    messages.create(body: I18n.t("offer.thank_message"), sender: User.system_user)
+    send_message(I18n.t("offer.thank_message"), User.system_user)
   end
 
   def send_ready_for_schedule_message
-    messages.create(body: I18n.t("offer.ready_for_schedule_message"), sender: reviewed_by)
+    send_message(I18n.t("offer.ready_for_schedule_message"), reviewed_by)
   end
 
   def send_received_message
-    messages.create(body: I18n.t("offer.received_message"), sender: User.system_user)
+    send_message(I18n.t("offer.received_message"), User.system_user)
   end
 
   def send_item_add_message
     text = I18n.t("offer.item_add_message", donor_name: created_by.full_name)
     messages.create(sender: User.system_user, is_private: true, body: text)
+  end
+
+  def send_message(body, user)
+    messages.create(body: body, sender: user)
   end
 
   def update_saleable_items
@@ -233,8 +237,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_ggv_cancel_order_message(ggv_time)
-    message = cancel_message(ggv_time)
-    messages.create(body: message, sender: User.system_user)
+    send_message(cancel_message(ggv_time), User.system_user)
   end
 
   def reviewer_channel
