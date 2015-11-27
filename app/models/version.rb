@@ -32,8 +32,14 @@ class Version < PaperTrail::Version
     joins("INNER JOIN offers ON versions.item_id = offers.id AND versions.item_type = 'Offer' AND versions.event IN ('call_Accepted', 'donor_called')")
   }
 
+  scope :union_all_logs, -> {
+    "#{item_logs.to_sql} UNION ALL #{package_logs.to_sql} UNION ALL #{call_logs.to_sql}"
+  }
+
   scope :items_and_calls_log, -> {
-    find_by_sql("#{item_logs.to_sql} UNION ALL #{package_logs.to_sql} UNION ALL #{call_logs.to_sql}")
+    find_by_sql("
+      SELECT ver.id, event, item_id, item_type, whodunnit, object_changes, ver.created_at, concat(users.first_name,' ', users.last_name) as whodunnit_name, (object_changes -> 'state' -> 1) as state
+      from (#{union_all_logs}) as ver INNER JOIN users ON users.id = CAST(ver.whodunnit AS integer)")
   }
 
   def to_s
