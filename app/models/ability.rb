@@ -42,7 +42,6 @@ class Ability
         can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
           item.offer.created_by_id == user_id
         end
-        can [:messages], Item, messages: { is_private: false }
         can :update, Item, Item.donor_items(user_id) do |item|
           item.offer.created_by_id == user_id && item.not_received_packages?
         end
@@ -85,11 +84,7 @@ class Ability
       can :create, Offer
       can [:index, :show, :update], Offer, created_by_id: user_id,
         state: Offer.donor_valid_states
-      can [:index, :show, :update, :messages], Offer if reviewer || supervisor
-
-      unless (reviewer || supervisor)
-        can [:messages], Offer, messages: { is_private: false }
-      end
+      can [:index, :show, :update], Offer if reviewer || supervisor
 
       can :destroy, Offer, created_by_id: user_id, state: ['draft',
         'submitted', 'reviewed', 'scheduled', 'under_review']

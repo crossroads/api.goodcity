@@ -5,7 +5,7 @@ describe "Offer abilities" do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   subject(:ability) { Ability.new(user) }
-  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :messages] }
+  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
@@ -45,8 +45,7 @@ describe "Offer abilities" do
 
     context "and offer is submitted" do
       let(:offer) { create :offer, state: 'submitted', created_by: create(:user) }
-      let!(:messages) { create_list :message, 2, offer: offer }
-      let(:can) { [:index, :show, :create, :update, :destroy, :messages] }
+      let(:can) { [:index, :show, :create, :update, :destroy] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, offer)
       end}
@@ -56,8 +55,7 @@ describe "Offer abilities" do
       it do
         Offer.valid_states.each do |state|
           offer = create :offer, state: state, created_by: create(:user)
-          messages = create_list :message, 2, offer: offer
-          can = [:index, :show, :create, :update, :destroy, :messages]
+          can = [:index, :show, :create, :update, :destroy]
 
           can.each do |do_action|
             is_expected.to be_able_to(do_action, offer)
@@ -83,12 +81,11 @@ describe "Offer abilities" do
 
     context "and offer is with valid states" do
       it do
-        can = [:index, :show, :create, :update, :messages]
+        can = [:index, :show, :create, :update]
         cannot = [:manage]
 
         [Offer.donor_valid_states - ["draft"]].flatten.each do |state|
           offer = create :offer, state: state, created_by: user
-          messages = create_list :message, 2, offer: offer
 
           can.each{ |do_action| is_expected.to be_able_to(do_action, offer) }
 
