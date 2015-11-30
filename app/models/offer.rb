@@ -253,6 +253,10 @@ class Offer < ActiveRecord::Base
     channel_names.uniq.compact
   end
 
+  def has_single_item?
+    state != 'draft' && items.length == 1
+  end
+
   private
 
   def cancel_message(time)
