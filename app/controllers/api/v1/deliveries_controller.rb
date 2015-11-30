@@ -38,22 +38,22 @@ module Api::V1
       if @delivery.save
         render json: @delivery, serializer: serializer, status: 201
       else
-        render json: @delivery.errors.to_json, status: 422
+        render_errors
       end
     end
 
     api :GET, '/v1/deliveries/1', "Get a delivery"
     def show
-      render json: @delivery, serializer: serializer
+      render_delivery_json
     end
 
     api :PUT, '/v1/deliveries/1', "Update a delivery"
     param_group :delivery
     def update
       if @delivery.update_attributes(delivery_params)
-        render json: @delivery, serializer: serializer
+        render_delivery_json
       else
-        render json: @delivery.errors.to_json, status: 422
+        render_errors
       end
     end
 
@@ -104,13 +104,21 @@ module Api::V1
       @delivery.gogovan_order = GogovanOrder.book_order(current_user,
         order_params) if params["gogovanOrder"]
       if @delivery && @delivery.update(get_delivery_details)
-        render json: @delivery, serializer: serializer
+        render_delivery_json
       else
-        render json: @delivery.errors.to_json, status: 422
+        render_errors
       end
     end
 
     private
+
+    def render_delivery_json
+      render json: @delivery, serializer: serializer
+    end
+
+    def render_errors
+      render json: @delivery.errors.to_json, status: 422
+    end
 
     def delivery_params
       params.require(:delivery).permit(:start, :finish, :offer_id,
