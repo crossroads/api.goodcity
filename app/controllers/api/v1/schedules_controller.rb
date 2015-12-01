@@ -53,7 +53,7 @@ module Api::V1
 
     def schedule_params
       params.require(:schedule).permit(:resource, :slot, :scheduled_at,
-                                       :slot_name, :zone)
+        :slot_name, :zone)
     end
   end
 end

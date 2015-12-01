@@ -43,7 +43,7 @@ module Api::V1
     param_group :package
     def create
       @package = Package.new(package_params)
-      @package.offer_id = Item.where(id: @package.item_id).pluck(:offer_id).first
+      @package.offer_id = offer_id
       if @package.save
         render json: @package, serializer: serializer, status: 201
       else
@@ -69,6 +69,7 @@ module Api::V1
     end
 
     private
+
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id]
@@ -77,6 +78,10 @@ module Api::V1
 
     def serializer
       Api::V1::PackageSerializer
+    end
+
+    def offer_id
+      Item.where(id: @package.item_id).pluck(:offer_id).first
     end
 
   end

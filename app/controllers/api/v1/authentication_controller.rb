@@ -64,14 +64,11 @@ module Api::V1
     def send_pin
       @mobile = Mobile.new(params[:mobile])
       unless @mobile.valid?
-        return render json: { errors: @mobile.errors.full_messages.join('. ') }, status: 422
+        return render_error(@mobile.errors.full_messages.join('. '))
       end
 
       @user = User.find_by_mobile(@mobile.mobile)
-      if @user.present? && (app_name != ADMIN_APP || @user.staff? && app_name == ADMIN_APP)
-        @user.send_verification_pin
-      end
-
+      @user.send_verification_pin if valid_user
       render json: { otp_auth_key: otp_auth_key_for(@user) }
     end
 
@@ -113,7 +110,7 @@ module Api::V1
       if @user.valid? && @user.persisted?
         render json: { otp_auth_key: otp_auth_key_for(@user) }, status: :ok
       else
-        render json: { errors: @user.errors.full_messages.join('. ') }, status: 422
+        render_error(@user.errors.full_messages.join('. '))
       end
     end
 
@@ -137,10 +134,10 @@ module Api::V1
     error 500, "Internal Server Error"
     def verify
       @user = warden.authenticate(:pin)
-      if @user && warden.authenticated? && (app_name != ADMIN_APP || @user.staff? && app_name == ADMIN_APP)
+      if authenticated_user
         render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user) }
       else
-        render json: { errors: { pin: I18n.t('auth.invalid_pin') } }, status: 422
+        render_error({ pin: I18n.t('auth.invalid_pin') })
       end
     end
 
@@ -157,8 +154,8 @@ module Api::V1
     param :platform, String, desc: "The azure notification platform name, this should be `gcm` for android"
     def register_device
       authorize!(:register, :device)
-      return render text: "Unrecognised platform, expecting 'gcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)", status: 400 unless ['gcm','aps','wns'].include?(params[:platform])
-      AzureRegisterJob.perform_later(params[:handle], Channel.my_channel(current_user, is_admin_app), params[:platform], is_admin_app)
+      return render text: platform_error, status: 400 unless valid_platform?
+      register_device_for_notifications
       render nothing: true, status: 204
     end
 
@@ -167,12 +164,28 @@ module Api::V1
     error 500, "Internal Server Error"
     def current_user_rooms
       authorize!(:current_user_profile, User)
-      channels = current_user.channels
-      channels = Channel.add_admin_app_prefix(channels) if is_admin_app
-      render json: channels, root: false
+      render json: current_user_channels, root: false
     end
 
     private
+
+    def render_error(error_message)
+      render json: { errors: error_message }, status: 422
+    end
+
+    def authenticated_user
+      warden.authenticated? && valid_user
+    end
+
+    def valid_user
+      @user && (app_name != ADMIN_APP || @user.staff? && app_name == ADMIN_APP)
+    end
+
+    def current_user_channels
+      channels = current_user.channels
+      channels = Channel.add_admin_app_prefix(channels) if is_admin_app
+      channels
+    end
 
     # Generate a token that contains the otp_auth_key.
     # A client must return this token (which contains the embedded otp_auth_key) AND the correct OTP code
@@ -194,6 +207,22 @@ module Api::V1
 
     def warden
       request.env['warden']
+    end
+
+    def valid_platform?
+      ['gcm','aps','wns'].include?(params[:platform])
+    end
+
+    def platform_error
+      "Unrecognised platform, expecting 'gcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)"
+    end
+
+    def register_device_for_notifications
+      AzureRegisterJob.perform_later(
+        params[:handle],
+        Channel.my_channel(current_user, is_admin_app),
+        params[:platform],
+        is_admin_app )
     end
 
   end

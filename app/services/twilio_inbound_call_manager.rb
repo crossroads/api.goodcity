@@ -56,28 +56,28 @@ class TwilioInboundCallManager
   end
 
   def send_donor_call_response
-    offer_id = user.try(:recent_active_offer_id)
-
-    if user && offer_id
-      text = if @record_link
-        "Left message: <audio controls>
-          <source src='#{@record_link}.mp3' type='audio/mpeg'>
-        </audio>"
-      else
-        "Requested call-back:
-        <a href='tel:#{user.mobile}' class='tel_link'><i class='fa fa-phone'></i>#{user.mobile}</a>"
-      end
-
+    if user && user.try(:recent_active_offer_id)
       # send message to supervisor general-messages thread of Offer
       offer.messages.create(
         sender:     user,
         is_private: true,
-        body:       text
+        body:       call_summary_text
       )
     end
   end
 
   private
+
+  def call_summary_text
+    if @record_link
+      "Left message: <audio controls>
+        <source src='#{@record_link}.mp3' type='audio/mpeg'>
+      </audio>"
+    else
+      "Requested call-back:
+      <a href='tel:#{user.mobile}' class='tel_link'><i class='fa fa-phone'></i>#{user.mobile}</a>"
+    end
+  end
 
   def notify_key
     "#{NotifyPrefix}_#{@user_id}"
@@ -102,10 +102,10 @@ class TwilioInboundCallManager
 
   def call_accept_version
     Version.create(
-      item_type:    'Offer',
-      item_id:      offer.id,
-      event:        'call_accepted',
-      whodunnit:    caller.id.to_s
+      event:     'call_accepted',
+      item_type: 'Offer',
+      item_id:   offer.id,
+      whodunnit: caller.id.to_s
     )
   end
 
@@ -119,12 +119,20 @@ class TwilioInboundCallManager
   end
 
   def send_call_accept_notification
-    PushService.new.send_notification offer.call_notify_channels - ["user_#{caller.id}"], true, {
-      category:   'call_answered',
-      message:    "Call from #{user.full_name} has been accepted by #{caller.full_name}",
-      author_id:  @user_id,
-      offer_id:   offer.id
+    PushService.new.send_notification call_accepted_notify_channels, true, {
+      category:  'call_answered',
+      message:   call_accepted_message,
+      author_id: @user_id,
+      offer_id:  offer.id
     }
+  end
+
+  def call_accepted_message
+    "Call from #{user.full_name} has been accepted by #{caller.full_name}"
+  end
+
+  def call_accepted_notify_channels
+    offer.call_notify_channels - ["user_#{caller.id}"]
   end
 
   def user

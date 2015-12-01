@@ -34,15 +34,23 @@ class Delivery < ActiveRecord::Base
 
   def send_updates(operation = nil)
     donor   = offer.created_by
-    user    = Api::V1::UserSerializer.new(User.current_user || donor)
+    records = [gogovan_order, contact.try(:address), contact, schedule, self]
 
-    [self.gogovan_order, self.contact.try(:address), self.contact, self.schedule, self].compact.each do |record|
+    records.compact.each do |record|
       operation ||= (self.class == 'Delivery' ? "update" : "create")
-      data = { item: serialized_object(record), sender: user, operation: operation }
-      PushService.new.send_update_store(Channel.staff, true, data)
-      PushService.new.send_update_store(Channel.private(donor), false, data)
+      data = { item: serialized_object(record), sender: serialized_user(donor), operation: operation }
+      push_updates(donor, data)
     end
     true
+  end
+
+  def push_updates(donor, data)
+    PushService.new.send_update_store(Channel.staff, true, data)
+    PushService.new.send_update_store(Channel.private(donor), false, data)
+  end
+
+  def serialized_user(donor)
+    Api::V1::UserSerializer.new(User.current_user || donor)
   end
 
   def serialized_object(record)
