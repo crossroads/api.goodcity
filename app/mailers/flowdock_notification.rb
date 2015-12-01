@@ -11,14 +11,14 @@ class FlowdockNotification < ActionMailer::Base
         return
       end
       mail(to: email, subject: "SMS pin code") do |format|
-        format.text { render plain: mail_text }
+        format.text { render plain: mail_text(token) }
       end
     else
       FlowdockNotification.otp(token_id).deliver_later
     end
   end
 
-  def mail_text
+  def mail_text(token)
     code = token.otp_code
     expiry = token.otp_code_expiry.strftime("%A %b %e %H:%M")
     I18n.t('twilio.sms_verification_pin', pin: code, expiry: expiry)
