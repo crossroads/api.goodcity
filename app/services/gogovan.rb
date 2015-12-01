@@ -64,8 +64,7 @@ class Gogovan
   def locations
     pickup_district = District.find(@district_id)
     pickup_location = pickup_district.lat_lng_name
-    drop_off_location = District.crossroads_address
-    [pickup_location, drop_off_location].to_json
+    [pickup_location, District.crossroads_address].to_json
   end
 
   def get_pickup_date
@@ -81,11 +80,7 @@ class Gogovan
   end
 
   def parse_time
-    if @time.is_a?(DateTime)
-      @time
-    else
-      DateTime.parse(@time.to_s)
-    end
+    @time.is_a?(DateTime) ? @time : DateTime.parse(@time.to_s)
   end
 
 end

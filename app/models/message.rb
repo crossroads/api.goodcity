@@ -34,8 +34,7 @@ class Message < ActiveRecord::Base
   def mark_read!(user_id)
     self.subscriptions.where(user_id: user_id).update_all(state: 'read')
     reader = User.find_by(id: user_id)
-    user = Api::V1::UserSerializer.new(reader)
-    send_update self, user, "read", Channel.private(reader), reader.staff?
+    send_update self, serialized_user(reader), "read", Channel.private(reader), reader.staff?
   end
 
   def user_subscribed?(user_id)
@@ -43,6 +42,10 @@ class Message < ActiveRecord::Base
   end
 
   private
+
+  def serialized_user(user)
+    Api::V1::UserSerializer.new(user)
+  end
 
   def subscribe_users_to_message
     users_ids = self.offer.subscribed_users(self.is_private) - [sender_id]
@@ -89,7 +92,7 @@ class Message < ActiveRecord::Base
     subscribed_user_channels = subscribed_user_channels() - sender_channel - donor_channel
     unsubscribed_user_channels = admin_channel - subscribed_user_channels - sender_channel - donor_channel
 
-    user = Api::V1::UserSerializer.new(sender)
+    user = serialized_user(sender)
 
     if sender_channel == donor_channel
       send_update self, user, "read", donor_channel, false unless offer.cancelled? || is_private
@@ -125,9 +128,8 @@ class Message < ActiveRecord::Base
   end
 
   def notify_deletion_to_subscribers
-    user = Api::V1::UserSerializer.new(User.current_user)
-    channels = admin_channel - donor_channel
-    send_update self, user, 'read', channels, true, :delete
+    send_update self, serialized_user(User.current_user), 'read',
+      admin_channel - donor_channel, true, :delete
   end
 
   def admin_channel

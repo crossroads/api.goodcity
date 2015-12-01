@@ -49,15 +49,9 @@ module Api::V1
     description "If this item's offer is in draft state it will be destroyed. Any other state and it will be marked as deleted but remain recoverable."
     def destroy
       offer = @item.offer
-
-      if offer.state != 'draft' && offer.items.length == 1
-        return render json: {errors:'Cannot delete the last item of a submitted offer'}.to_json, status: 422
-      end
-
+      return single_item_error if offer.has_single_item?
       @item.remove
-
       update_offer_state(offer)
-
       render json: {}
     end
 
@@ -67,12 +61,8 @@ module Api::V1
       offer = @item.offer
 
       # if rejecting last accepted item but gogovan is booked return error
-      if item_params[:state_event] == 'reject' &&
-        offer.items.all?{|i| i.state_name == :rejected || i.id == @item.id} &&
-        offer.gogovan_order && offer.scheduled? && !offer.can_cancel?
-
-        error = {requires_gogovan_cancellation:'Cannot reject last item if there\'s a confirmed gogovan booking'}
-        return render json: {errors:[error]}.to_json, status: 422
+      if rejecting_last_item_having_confirmed_ggv(offer)
+        return render_require_ggv_cancel_error
       end
 
       if @item.update_attributes(item_params)
@@ -100,6 +90,24 @@ module Api::V1
 
     def serializer
       Api::V1::ItemSerializer
+    end
+
+    def single_item_error
+      render json:
+        { errors: 'Cannot delete the last item of a submitted offer'}.to_json,
+        status: 422
+    end
+
+    def rejecting_last_item_having_confirmed_ggv(offer)
+      item_params[:state_event] == 'reject' &&
+      offer.items.all?{|i| i.state_name == :rejected || i.id == @item.id} &&
+      offer.gogovan_order && offer.scheduled? && !offer.can_cancel?
+    end
+
+    def render_require_ggv_cancel_error
+      render json: { errors: [{ requires_gogovan_cancellation:
+        'Cannot reject last item if there\'s a confirmed gogovan booking' }]
+        }.to_json, status: 422
     end
   end
 end

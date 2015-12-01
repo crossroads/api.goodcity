@@ -8,18 +8,20 @@ class SendOutboundCallStatus
 
   def notify
     if(@user && @offer)
-      text = if @status == "completed"
-          "Called #{@offer.created_by.full_name}"
-        else
-          "Call attempt failed: #{@status.titleize}"
-        end
-
       @offer.messages.create(
-        body: text,
+        body: message_body,
         sender: @user,
         is_private: true,
         is_call_log: true
       )
+    end
+  end
+
+  def message_body
+    if @status == "completed"
+      "Called #{@offer.created_by.full_name}"
+    else
+      "Call attempt failed: #{@status.titleize}"
     end
   end
 end
