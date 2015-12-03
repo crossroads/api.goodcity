@@ -17,5 +17,10 @@ FactoryGirl.define do
     trait :with_item do
       association :item
     end
+
+    trait :received do
+      state "received"
+      received_at { Time.now }
+    end
   end
 end
