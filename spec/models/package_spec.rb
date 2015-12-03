@@ -41,6 +41,35 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  describe "state" do
+    describe "#mark_received" do
+      it "should set received_at value" do
+        package = create :package
+        expect{
+          package.mark_received
+        }.to change(package, :received_at)
+        expect(package.state).to eq("received")
+      end
+    end
+
+    describe "#mark_missing" do
+      it "should set received_at value" do
+        package = create :package, :received
+        expect{
+          package.mark_missing
+        }.to change(package, :received_at).to(nil)
+        expect(package.state).to eq("missing")
+      end
+    end
+  end
+
+  describe "#offer" do
+    it "should return related offer" do
+      package = create :package, :with_item
+      expect(package.offer).to eq(package.item.offer)
+    end
+  end
+
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
   end

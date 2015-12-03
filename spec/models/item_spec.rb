@@ -118,20 +118,29 @@ RSpec.describe Item, type: :model do
     it { is_expected.to be_versioned }
   end
 
-  describe "when item created by Admin" do
-    it "should set package_type name as donor_description when saved" do
-      item = create :item, :draft, package_type: nil
-      item.package_type = create :package_type
-      item.save
-      expect(item.donor_description).to eq(item.package_type.name)
-    end
+  describe "#set_description" do
+    describe "when item created by Admin" do
+      it "should not reset donor_description if present" do
+        item = build :item
+        expect{
+          item.save
+        }.to_not change(item, :donor_description)
+      end
 
-    it "should set packages notes as donor_description when accepted" do
-      item = create :item, :draft, :with_packages
-      expected_text = item.packages.pluck(:notes).reject(&:blank?).join(" + ")
-      expect{
-        item.accept
-      }.to change(item, :donor_description).to(expected_text)
+      it "should set package_type name as donor_description when saved" do
+        item = create :item, :draft, package_type: nil
+        item.package_type = create :package_type
+        item.save
+        expect(item.donor_description).to eq(item.package_type.name)
+      end
+
+      it "should set packages notes as donor_description when accepted" do
+        item = create :item, :draft, :with_packages
+        expected_text = item.packages.pluck(:notes).reject(&:blank?).join(" + ")
+        expect{
+          item.accept
+        }.to change(item, :donor_description).to(expected_text)
+      end
     end
   end
 
@@ -152,6 +161,18 @@ RSpec.describe Item, type: :model do
       item = create :item, :draft, offer: offer
       expect{ item.submit }.to_not change(offer, :state)
       expect(message.offer_id).to eq(offer.id)
+    end
+  end
+
+  describe "not_received_packages" do
+    it "should return true for non-received packages" do
+      item = create :item, :draft, :with_packages
+      expect(item.not_received_packages?).to be true
+    end
+
+    it "should return true for non-received packages" do
+      item = create :item, :with_received_packages, state: :accepted
+      expect(item.not_received_packages?).to be false
     end
   end
 end
