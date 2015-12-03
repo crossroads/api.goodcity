@@ -53,7 +53,8 @@ class User < ActiveRecord::Base
   end
 
   def full_name
-    [first_name, last_name].reject(&:blank?).map(&:downcase).map(&:capitalize).join(' ')
+    name = [first_name, last_name].reject(&:blank?)
+    name.map(&:downcase).map(&:capitalize).join(' ')
   end
 
   def staff?
@@ -66,10 +67,6 @@ class User < ActiveRecord::Base
 
   def supervisor?
     permission.try(:name) == 'Supervisor' && @treat_user_as_donor != true
-  end
-
-  def system?
-    permission.try(:name) == 'System'
   end
 
   def admin?
