@@ -1,27 +1,19 @@
 class FlowdockNotification < ActionMailer::Base
   default from: ENV['EMAIL_FROM']
 
-  def otp(token_id)
-    token = AuthToken.find_by(id: token_id)
-
-    if(token)
-      email = ENV['FLOWDOCK_EMAIL']
-      unless email.present?
-        Rails.logger.warn("ENV['FLOWDOCK_EMAIL'] is not defined. Will not send flowdock notification email.")
-        return
-      end
+  def otp(otp_code)
+    email = ENV['FLOWDOCK_EMAIL']
+    if email.present?
       mail(to: email, subject: "SMS pin code") do |format|
-        format.text { render plain: mail_text(token) }
+        format.text { render plain: mail_text(otp_code) }
       end
     else
-      FlowdockNotification.otp(token_id).deliver_later
+      Rails.logger.warn("ENV['FLOWDOCK_EMAIL'] is not defined. Will not send flowdock notification email.")
     end
   end
 
-  def mail_text(token)
-    code = token.otp_code
-    expiry = token.otp_code_expiry.strftime("%A %b %e %H:%M")
-    I18n.t('twilio.sms_verification_pin', pin: code, expiry: expiry)
+  def mail_text(otp_code)
+    I18n.t('twilio.sms_verification_pin', pin: otp_code)
   end
 
 end

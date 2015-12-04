@@ -33,12 +33,11 @@ class User < ActiveRecord::Base
   # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params)
     mobile = user_params['mobile']
-    user = nil
-    user = self.find_by_mobile(mobile) if mobile.present?
+    user = find_by_mobile(mobile) if mobile.present?
     user ||= new(user_params)
     begin
       transaction do
-        user.save
+        user.save if user.changed?
         user.send_verification_pin if user.valid?
       end
     rescue Twilio::REST::RequestError => e
