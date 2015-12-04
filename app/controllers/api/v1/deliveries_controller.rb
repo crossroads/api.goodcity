@@ -44,14 +44,14 @@ module Api::V1
 
     api :GET, '/v1/deliveries/1', "Get a delivery"
     def show
-      render_delivery_json
+      render json: @delivery, serializer: serializer
     end
 
     api :PUT, '/v1/deliveries/1', "Update a delivery"
     param_group :delivery
     def update
       if @delivery.update_attributes(delivery_params)
-        render_delivery_json
+        render json: @delivery, serializer: serializer
       else
         render_errors
       end
@@ -104,17 +104,13 @@ module Api::V1
       @delivery.gogovan_order = GogovanOrder.book_order(current_user,
         order_params) if params["gogovanOrder"]
       if @delivery && @delivery.update(get_delivery_details)
-        render_delivery_json
+        render json: @delivery, serializer: serializer
       else
         render_errors
       end
     end
 
     private
-
-    def render_delivery_json
-      render json: @delivery, serializer: serializer
-    end
 
     def render_errors
       render json: @delivery.errors.to_json, status: 422
