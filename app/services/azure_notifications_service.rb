@@ -6,7 +6,7 @@ class AzureNotificationsService
 
   def notify(tags, data)
     tags = tags.join(' || ') if tags.instance_of?(Array)
-    execute :post, 'messages', body: data.to_json, headers: notify_headers(tags)
+    execute :post, 'messages', body: update_data(data).to_json, headers: notify_headers(tags)
   end
 
   def delete_existing_registration(platform, handle)
@@ -58,8 +58,15 @@ class AzureNotificationsService
     '"category":"$(category)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "author_id":"$(author_id)", "is_private":"$(is_private)", "message_id": "$(message_id)"'
   end
 
+  def update_data(data)
+    id = Digest::MD5.new
+    id.update "o#{data[:offer_id]}i#{data[:item_id]}#{data[:is_private]}"
+    data[:notId] = id.hexdigest.gsub(/[a-zA-Z]/, "")[0..6]
+    data
+  end
+
   def gcm_platform_xml(handle, tags)
-    template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\":\"{$(offer_id) + '00' + $(item_id)}\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } }"
+    template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\": \"$(notId)\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } }"
 
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
