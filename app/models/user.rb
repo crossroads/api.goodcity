@@ -50,8 +50,7 @@ class User < ActiveRecord::Base
   end
 
   def full_name
-    name = [first_name, last_name].reject(&:blank?)
-    name.map(&:downcase).map(&:capitalize).join(' ')
+    [first_name, last_name].reject(&:blank?).map(&:capitalize).join(' ')
   end
 
   def staff?
