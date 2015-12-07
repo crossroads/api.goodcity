@@ -36,10 +36,8 @@ class User < ActiveRecord::Base
     user = find_by_mobile(mobile) if mobile.present?
     user ||= new(user_params)
     begin
-      transaction do
-        user.save if user.changed?
-        user.send_verification_pin if user.valid?
-      end
+      user.save if user.changed?
+      user.send_verification_pin if user.valid?
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, '.').try(:first)
       user.errors.add(:base, msg)
