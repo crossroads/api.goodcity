@@ -8,7 +8,8 @@ class Version < PaperTrail::Version
   scope :except_user, ->(user_id) { where('whodunnit <> ?', user_id.to_s) }
 
   scope :related_to, ->(object) {
-    where('(item_id = :id AND item_type = :type) OR (related_id = :id AND related_type = :type)',
+    where('(item_id = :id AND item_type = :type)
+      OR (related_id = :id AND related_type = :type)',
       id: object.id, type: object.class.name)
   }
 
@@ -16,20 +17,25 @@ class Version < PaperTrail::Version
     where('item_type = :type OR related_type = :type', type: "Offer") }
 
   scope :related_to_multiple, ->(objects) {
-    where('(item_id IN (:ids) AND item_type = :type) OR (related_id IN (:ids) AND related_type = :type)',
+    where('(item_id IN (:ids) AND item_type = :type)
+      OR (related_id IN (:ids) AND related_type = :type)',
       ids: objects.map(&:id), type: objects.last.class.name)
   }
 
   scope :item_logs, -> {
-    joins("INNER JOIN items ON (items.id = versions.item_id AND versions.item_type = 'Item')")
+    joins("INNER JOIN items ON (items.id = versions.item_id
+      AND versions.item_type = 'Item')")
   }
 
   scope :package_logs, -> {
-    joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')")
+    joins("INNER JOIN packages ON (packages.id = versions.item_id
+      AND versions.item_type = 'Package')")
   }
 
   scope :call_logs, -> {
-    joins("INNER JOIN offers ON versions.item_id = offers.id AND versions.item_type = 'Offer' AND versions.event IN ('call_Accepted', 'donor_called')")
+    joins("INNER JOIN offers ON versions.item_id = offers.id
+      AND versions.item_type = 'Offer'
+      AND versions.event IN ('call_Accepted', 'donor_called')")
   }
 
   scope :union_all_logs, -> {
@@ -43,7 +49,7 @@ class Version < PaperTrail::Version
   }
 
   def to_s
-    "id:#{self.id} #{self.item_type}##{self.item_id} #{self.event}"
+    "id:#{id} #{item_type}##{item_id} #{event}"
   end
 
   def item_id_or_related_id
@@ -56,11 +62,13 @@ class Version < PaperTrail::Version
 
   # required by PushUpdates and PaperTrail modules
   def offer
-    # same as items_and_calls_log
-    if ['Item','Package'].include?(item_type) || ['call_accepted','donor_called'].include?(event)
-      return item if item_type == "Offer"
-      return related if related_type == "Offer"
-    end
-    nil
+    return nil unless is_item_or_call_log?
+    return item if item_type == "Offer"
+    return related if related_type == "Offer"
+  end
+
+  def is_item_or_call_log?
+    ['Item','Package'].include?(item_type) ||
+    ['call_accepted','donor_called'].include?(event)
   end
 end
