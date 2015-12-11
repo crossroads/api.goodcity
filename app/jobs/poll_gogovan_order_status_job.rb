@@ -13,21 +13,28 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
       return unless order.need_polling?
 
       order_details = Gogovan.order_status(order.booking_id)
-
-      unless order_details[:error]
-        order = order.assign_details(order_details)
-        return remove_delivery(order_id) if order.cancelled?
-
-        order.save if order.changed? # avoid un-necessary push-updates to api
-        schedule_polling(order) if order.reload.need_polling?
+      if order_details[:error]
+        notify_error(order_details, order)
       else
-        remove_delivery(order_id) if order_details[:error].include?("404")
-        schedule_polling(order) if order_details[:error].include?("503")
-        raise(ValueError, order_details[:error])
+        update_ggv_booking(order_details, order)
       end
     else
       order.try(:destroy)
     end
+  end
+
+  def update_ggv_booking(details, order)
+    order = order.assign_details(details)
+    return remove_delivery(order.id) if order.cancelled?
+
+    order.save if order.changed? # avoid un-necessary push-updates to api
+    schedule_polling(order) if order.reload.need_polling?
+  end
+
+  def notify_error(details, order)
+    remove_delivery(order.id) if details[:error].include?("404")
+    schedule_polling(order) if details[:error].include?("503")
+    raise(ValueError, details[:error])
   end
 
   def remove_delivery(order_id)

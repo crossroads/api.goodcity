@@ -6,15 +6,19 @@ class AzureNotificationsService
 
   def notify(tags, data)
     tags = tags.join(' || ') if tags.instance_of?(Array)
-    execute :post, 'messages', body: data.to_json, headers: notify_headers(tags)
+    execute :post, 'messages', body: update_data(data).to_json, headers: notify_headers(tags)
   end
 
-  def register_device(handle, tags, platform)
+  def delete_existing_registration(platform, handle)
     encoded_url = encoded_url(platform, handle)
     res = encoded_url ? (execute :get, "registrations?$filter=#{encoded_url}") : ""
     Nokogiri::XML(res.decoded).css('entry title').each do |n|
       execute :delete, "registrations/#{n.content}", headers: {'If-Match'=>'*'}
     end
+  end
+
+  def register_device(handle, tags, platform)
+    delete_existing_registration(platform, handle)
     res = execute :post, 'registrationIDs'
     # Location = https://{namespace}.servicebus.windows.net/{NotificationHub}/registrations/<registrationId>?api-version=2014-09
     regId = res.headers['location'].split('/').last.split('?').first
@@ -51,11 +55,19 @@ class AzureNotificationsService
   end
 
   def payload
-    '"category":"$(category)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "author_id":"$(author_id)", "is_private":"$(is_private)"'
+    '"category":"$(category)", "offer_id":"$(offer_id)", "item_id":"$(item_id)", "author_id":"$(author_id)", "is_private":"$(is_private)", "message_id": "$(message_id)"'
+  end
+
+  def update_data(data)
+    id = Digest::MD5.new
+    id.update "o#{data[:offer_id]}i#{data[:item_id]}#{data[:is_private]}"
+    data[:notId] = id.hexdigest.gsub(/[a-zA-Z]/, "")[0..6]
+    data
   end
 
   def gcm_platform_xml(handle, tags)
-    template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", #{payload} } }"
+    template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\": \"$(notId)\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } }"
+
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
@@ -69,7 +81,7 @@ class AzureNotificationsService
   end
 
   def aps_platform_xml(handle, tags)
-    template = "{\"aps\":{\"alert\":\"$(message)\",\"badge\":1,\"sound\":\"default\", \"payload\":{#{payload}}}}"
+    template = "{\"aps\":{\"alert\":\"$(message)\",\"sound\":\"default\", \"payload\":{#{payload}}}}"
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">

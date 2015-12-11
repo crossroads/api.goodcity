@@ -33,14 +33,11 @@ class User < ActiveRecord::Base
   # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params)
     mobile = user_params['mobile']
-    user = nil
-    user = self.find_by_mobile(mobile) if mobile.present?
+    user = find_by_mobile(mobile) if mobile.present?
     user ||= new(user_params)
     begin
-      transaction do
-        user.save
-        user.send_verification_pin if user.valid?
-      end
+      user.save if user.changed?
+      user.send_verification_pin if user.valid?
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, '.').try(:first)
       user.errors.add(:base, msg)
@@ -53,7 +50,8 @@ class User < ActiveRecord::Base
   end
 
   def full_name
-    [first_name, last_name].reject(&:blank?).map(&:downcase).map(&:capitalize).join(' ')
+    name = [first_name, last_name].reject(&:blank?)
+    name.map(&:downcase).map(&:capitalize).join(' ')
   end
 
   def staff?
@@ -66,10 +64,6 @@ class User < ActiveRecord::Base
 
   def supervisor?
     permission.try(:name) == 'Supervisor' && @treat_user_as_donor != true
-  end
-
-  def system?
-    permission.try(:name) == 'System'
   end
 
   def admin?
