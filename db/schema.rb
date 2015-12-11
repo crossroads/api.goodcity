@@ -11,19 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151007060024) do
+ActiveRecord::Schema.define(version: 20151126083717) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "addresses", force: :cascade do |t|
-    t.string   "flat"
-    t.string   "building"
-    t.string   "street"
+    t.string   "flat",             limit: 255
+    t.string   "building",         limit: 255
+    t.string   "street",           limit: 255
     t.integer  "district_id"
     t.integer  "addressable_id"
-    t.string   "addressable_type"
-    t.string   "address_type"
+    t.string   "addressable_type", limit: 255
+    t.string   "address_type",     limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 20151007060024) do
 
   create_table "auth_tokens", force: :cascade do |t|
     t.datetime "otp_code_expiry"
-    t.string   "otp_secret_key"
+    t.string   "otp_secret_key",  limit: 255
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -39,28 +39,28 @@ ActiveRecord::Schema.define(version: 20151007060024) do
   end
 
   create_table "contacts", force: :cascade do |t|
-    t.string   "name"
-    t.string   "mobile"
+    t.string   "name",       limit: 255
+    t.string   "mobile",     limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
   end
 
   create_table "crossroads_transports", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",        limit: 255
+    t.string   "name_zh_tw",     limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "cost"
     t.float    "truck_size"
-    t.boolean  "is_van_allowed", default: true
+    t.boolean  "is_van_allowed",             default: true
   end
 
   create_table "deliveries", force: :cascade do |t|
     t.integer  "offer_id"
     t.integer  "contact_id"
     t.integer  "schedule_id"
-    t.string   "delivery_type"
+    t.string   "delivery_type",    limit: 255
     t.datetime "start"
     t.datetime "finish"
     t.datetime "created_at"
@@ -70,8 +70,8 @@ ActiveRecord::Schema.define(version: 20151007060024) do
   end
 
   create_table "districts", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",      limit: 255
+    t.string   "name_zh_tw",   limit: 255
     t.integer  "territory_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -80,15 +80,15 @@ ActiveRecord::Schema.define(version: 20151007060024) do
   end
 
   create_table "donor_conditions", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",    limit: 255
+    t.string   "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "gogovan_orders", force: :cascade do |t|
     t.integer  "booking_id"
-    t.string   "status"
+    t.string   "status",         limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -103,23 +103,24 @@ ActiveRecord::Schema.define(version: 20151007060024) do
   add_index "gogovan_orders", ["ggv_uuid"], name: "index_gogovan_orders_on_ggv_uuid", unique: true, using: :btree
 
   create_table "gogovan_transports", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",    limit: 255
+    t.string   "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "disabled",               default: false
   end
 
   create_table "holidays", force: :cascade do |t|
     t.datetime "holiday"
     t.integer  "year"
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "images", force: :cascade do |t|
-    t.string   "cloudinary_id"
-    t.boolean  "favourite",     default: false
+    t.string   "cloudinary_id", limit: 255
+    t.boolean  "favourite",                 default: false
     t.integer  "item_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -128,14 +129,14 @@ ActiveRecord::Schema.define(version: 20151007060024) do
 
   create_table "items", force: :cascade do |t|
     t.text     "donor_description"
-    t.string   "state"
-    t.integer  "offer_id",                            null: false
+    t.string   "state",               limit: 255
+    t.integer  "offer_id",                                        null: false
     t.integer  "package_type_id"
     t.integer  "rejection_reason_id"
-    t.string   "reject_reason"
+    t.string   "reject_reason",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "saleable",            default: false
+    t.boolean  "saleable",                        default: false
     t.integer  "donor_condition_id"
     t.datetime "deleted_at"
     t.text     "rejection_comments"
@@ -153,12 +154,12 @@ ActiveRecord::Schema.define(version: 20151007060024) do
   end
 
   create_table "offers", force: :cascade do |t|
-    t.string   "language"
-    t.string   "state"
-    t.string   "origin"
+    t.string   "language",                limit: 255
+    t.string   "state",                   limit: 255
+    t.string   "origin",                  limit: 255
     t.boolean  "stairs"
     t.boolean  "parking"
-    t.string   "estimated_size"
+    t.string   "estimated_size",          limit: 255
     t.text     "notes"
     t.integer  "created_by_id"
     t.datetime "created_at"
@@ -215,7 +216,7 @@ ActiveRecord::Schema.define(version: 20151007060024) do
     t.integer  "height"
     t.text     "notes"
     t.integer  "item_id"
-    t.string   "state"
+    t.string   "state",           limit: 255
     t.datetime "received_at"
     t.datetime "rejected_at"
     t.integer  "package_type_id"
@@ -223,27 +224,27 @@ ActiveRecord::Schema.define(version: 20151007060024) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "image_id"
-    t.integer  "offer_id",        default: 0, null: false
+    t.integer  "offer_id",                    default: 0, null: false
   end
 
   create_table "permissions", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "rejection_reasons", force: :cascade do |t|
-    t.string   "name_en"
+    t.string   "name_en",    limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "name_zh_tw"
+    t.string   "name_zh_tw", limit: 255
   end
 
   create_table "schedules", force: :cascade do |t|
-    t.string   "resource"
+    t.string   "resource",     limit: 255
     t.integer  "slot"
-    t.string   "slot_name"
-    t.string   "zone"
+    t.string   "slot_name",    limit: 255
+    t.string   "zone",         limit: 255
     t.datetime "scheduled_at"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -261,29 +262,29 @@ ActiveRecord::Schema.define(version: 20151007060024) do
     t.integer "offer_id"
     t.integer "user_id"
     t.integer "message_id"
-    t.string  "state"
+    t.string  "state",      limit: 255
   end
 
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
 
   create_table "territories", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",    limit: 255
+    t.string   "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "timeslots", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",    limit: 255
+    t.string   "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "mobile"
+    t.string   "first_name",        limit: 255
+    t.string   "last_name",         limit: 255
+    t.string   "mobile",            limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "permission_id"

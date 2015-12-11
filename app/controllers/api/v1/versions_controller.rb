@@ -14,7 +14,7 @@ module Api::V1
 
     api :GET, '/v1/Versions', "List Versions of items and related packages"
     def index
-      render json: @versions.items_and_calls_log, each_serializer: serializer
+      render json: { versions: @versions.items_and_calls_log }.to_json
     end
 
     private

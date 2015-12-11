@@ -8,6 +8,11 @@ class Package < ActiveRecord::Base
   belongs_to :package_type, inverse_of: :packages
 
   validates :package_type_id, :quantity, presence: true
+  validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
+  validates :length, numericality: {
+    allow_blank: true, greater_than: 0, less_than: 100000000 }
+  validates :width, :height, numericality: {
+    allow_blank: true, greater_than: 0, less_than: 100000 }
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where("state = 'received'") }
@@ -30,11 +35,11 @@ class Package < ActiveRecord::Base
       transition [:expecting, :missing, :received] => :missing
     end
 
-    before_transition :on => :mark_received do |package|
+    before_transition on: :mark_received do |package|
       package.received_at = Time.now
     end
 
-    before_transition :on => :mark_missing do |package|
+    before_transition on: :mark_missing do |package|
       package.received_at = nil
     end
   end

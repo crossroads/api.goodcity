@@ -27,6 +27,22 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       expect(response.status).to eq(200)
       expect(subject['messages'].length).to eq(2)
     end
+
+    describe do
+      before { 2.times { create :message } }
+
+      it "for item" do
+        3.times { create :message, item: item }
+        get :index, item_id: item.id
+        expect(subject['messages'].length).to eq(3)
+      end
+
+      it "for offer" do
+        3.times { create :message, offer: offer }
+        get :index, offer_id: offer.id
+        expect(subject['messages'].length).to eq(3)
+      end
+    end
   end
 
   describe "GET message" do

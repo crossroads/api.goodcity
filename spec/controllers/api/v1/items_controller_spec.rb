@@ -81,5 +81,4 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       expect(body['errors'][0]['requires_gogovan_cancellation']).not_to be_nil
     end
   end
-
 end

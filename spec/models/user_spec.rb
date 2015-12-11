@@ -132,4 +132,24 @@ describe User, :type => :model do
       expect(build(:user, last_connected: 1.hour.ago).online?).to eq(true)
     end
   end
+
+  describe "#channels" do
+    describe "should return array of channels" do
+
+      it "for donor" do
+        user = create(:user)
+        expect(user.channels).to eq(["user_#{user.id}"])
+      end
+
+      it "for reviewer" do
+        user = create(:user, :reviewer)
+        expect(user.channels).to match_array(["user_#{user.id}", "reviewer"])
+      end
+
+      it "for supervisor" do
+        user = create(:user, :supervisor)
+        expect(user.channels).to match_array(["user_#{user.id}", "supervisor"])
+      end
+    end
+  end
 end

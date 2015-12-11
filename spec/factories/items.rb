@@ -18,6 +18,10 @@ FactoryGirl.define do
       packages { create_list(:package, 2) }
     end
 
+    trait :with_received_packages do
+      packages { create_list(:package, 2, state: :received) }
+    end
+
     trait :with_images do
       images { create_list(:image, 1) << create(:image, favourite: true) }
     end

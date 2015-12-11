@@ -44,11 +44,24 @@ describe "Offer abilities" do
     end
 
     context "and offer is submitted" do
-      let(:offer)     { create :offer, state: 'submitted', created_by: create(:user) }
-      let(:can)       { [:index, :show, :create, :update, :destroy] }
+      let(:offer) { create :offer, state: 'submitted', created_by: create(:user) }
+      let(:can) { [:index, :show, :create, :update, :destroy] }
       it{ can.each do |do_action|
         is_expected.to be_able_to(do_action, offer)
       end}
+    end
+
+    context "and offer is with valid states" do
+      it do
+        Offer.valid_states.each do |state|
+          offer = create :offer, state: state, created_by: create(:user)
+          can = [:index, :show, :create, :update, :destroy]
+
+          can.each do |do_action|
+            is_expected.to be_able_to(do_action, offer)
+          end
+        end
+      end
     end
   end
 
@@ -66,28 +79,29 @@ describe "Offer abilities" do
       end}
     end
 
-    context "and offer is submitted" do
-      let(:offer)     { create :offer, state: 'submitted', created_by: user }
-      let(:can)       { [:index, :show, :create, :update, :destroy] }
-      let(:cannot)    { [:manage] }
-      it{ can.each do |do_action|
-        is_expected.to be_able_to(do_action, offer)
-      end}
-      it{ cannot.each do |do_action|
-        is_expected.to_not be_able_to(do_action, offer)
-      end}
-    end
+    context "and offer is with valid states" do
+      it do
+        can = [:index, :show, :create, :update]
+        cannot = [:manage]
 
-    context "and offer is scheduled" do
-      let(:offer)     { create :offer, state: 'scheduled', created_by: user }
-      let(:can)       { [:index, :show, :update, :destroy] }
-      let(:cannot)    { [:manage] }
-      it{ can.each do |do_action|
-        is_expected.to be_able_to(do_action, offer)
-      end}
-      it{ cannot.each do |do_action|
-        is_expected.to_not be_able_to(do_action, offer)
-      end}
+        [Offer.donor_valid_states - ["draft"]].flatten.each do |state|
+          offer = create :offer, state: state, created_by: user
+
+          can.each{ |do_action| is_expected.to be_able_to(do_action, offer) }
+
+          cannot.each do |do_action|
+            is_expected.to_not be_able_to(do_action, offer)
+          end
+        end
+      end
+
+      it "destroy" do
+        valid = ['draft', 'submitted', 'reviewed', 'scheduled', 'under_review']
+        valid.each do |state|
+          offer = create :offer, state: state, created_by: user
+          is_expected.to be_able_to(:destroy, offer)
+        end
+      end
     end
   end
 

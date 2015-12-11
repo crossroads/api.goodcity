@@ -129,6 +129,24 @@ describe Message, type: :model do
     end
   end
 
+  describe 'notify_deletion_to_subscribers' do
+    it "should not allow donor to access private messages" do
+      unsubscribed_user = create :user, :reviewer
+      subscribed_user = create :user, :reviewer
+      message = create_message(sender_id: subscribed_user.id)
+      User.current_user = reviewer
+
+      expect(message).to receive(:send_update) do |item, user, state, channel, is_admin_app, operation|
+        expect(channel).to include("user_#{subscribed_user.id}")
+        expect(channel).to include("user_#{unsubscribed_user.id}")
+        expect(channel).to_not include("user_#{donor.id}")
+        expect(operation).to eq(:delete)
+      end
+
+      message.destroy
+    end
+  end
+
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
   end
