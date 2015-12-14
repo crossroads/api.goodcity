@@ -75,11 +75,41 @@
   :year: 2015
 
 16:
+  :name: Christmas Holiday
+  :holiday: 24 December 2015
+  :year: 2015
+
+17:
   :name: Christmas Day
   :holiday: 25 December 2015
   :year: 2015
 
-17:
+18:
   :name: The first weekday after Christmas Day
   :holiday: 26 December 2015
   :year: 2015
+
+19:
+  :name: Christmas Holiday
+  :holiday: 29 December 2015
+  :year: 2015
+
+20:
+  :name: Christmas Holiday
+  :holiday: 30 December 2015
+  :year: 2015
+
+21:
+  :name: Christmas Holiday
+  :holiday: 31 December 2015
+  :year: 2015
+
+22:
+  :name: Christmas Holiday
+  :holiday: 1 January 2016
+  :year: 2016
+
+23:
+  :name: Christmas Holiday
+  :holiday: 2 January 2016
+  :year: 2016
