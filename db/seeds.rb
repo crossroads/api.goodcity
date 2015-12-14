@@ -39,6 +39,16 @@ end
 
 CrossroadsTransport.find_by(name_en: "Disable").update_column(:is_van_allowed, false)
 
+holidays = YAML.load_file("#{Rails.root}/db/holidays.yml")
+holidays.each do |key, value|
+  date_value = DateTime.parse(value[:holiday]).in_time_zone(Time.zone)
+  holiday = Holiday.where(
+    name: value[:name],
+    year: value[:year],
+    holiday: date_value
+  ).first_or_create
+end
+
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
 package_types.each do |code, value|
   PackageType.create(
