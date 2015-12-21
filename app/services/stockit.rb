@@ -19,18 +19,28 @@ module Stockit
 
     def stockit_params
       {
-        item: {
-          quantity: gc_package.quantity,
-          code: gc_package.package_type.code,
-          inventory_number: gc_package.inventory_number,
-          condition: item_condition,
-          description: gc_package.package_type.name
-        },
-        package: {
-          length: gc_package.length,
-          width: gc_package.width,
-          height: gc_package.height
-        }
+        item: item_params,
+        package: package_params
+      }
+    end
+
+    def item_params
+      {
+        quantity: gc_package.quantity,
+        code_id: gc_package.package_type.code,
+        inventory_number: gc_package.inventory_number,
+        condition: item_condition,
+        description: gc_package.package_type.name,
+        grade: "B",
+        location_id: 117
+      }
+    end
+
+    def package_params
+      {
+        length: gc_package.length,
+        width: gc_package.width,
+        height: gc_package.height
       }
     end
 

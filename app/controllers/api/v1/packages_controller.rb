@@ -72,7 +72,8 @@ module Api::V1
 
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
-        :received_at, :rejected_at, :package_type_id, :state_event, :image_id]
+        :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
+        :inventory_number]
       params.require(:package).permit(attributes)
     end
 

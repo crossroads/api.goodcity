@@ -42,6 +42,10 @@ class Package < ActiveRecord::Base
     before_transition on: :mark_missing do |package|
       package.received_at = nil
     end
+
+    after_transition on: :mark_received do |package|
+      Stockit::Browse.new(package).add_item
+    end
   end
 
   # Required by PushUpdates and PaperTrail modules
