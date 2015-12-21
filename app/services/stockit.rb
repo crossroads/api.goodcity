@@ -67,7 +67,7 @@ module Stockit
     end
 
     def endpoint
-      "http://localhost:3000" # no trailing slash
+      Rails.application.secrets.base_urls["stockit"] # no trailing slash
     end
 
     def default_options
