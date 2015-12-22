@@ -19,9 +19,6 @@ class Ability
 
       can(:manage, :all) if admin
 
-      alias_action :index, :show, :create, :update, to: :csui
-      alias_action :index, :show, :create, :update, :destroy, to: :crud
-
       delivery_abilities
       item_abilities
       version_abilities
@@ -47,7 +44,7 @@ class Ability
 
   def item_abilities
     if staff?
-      can [:csui, :messages], Item
+      can [:index, :show, :create, :update, :messages], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
         item.offer.created_by_id == @user_id
@@ -62,9 +59,11 @@ class Ability
 
   def image_abilities
     if staff?
-      can :csui, Image
+      can [:index, :show, :create, :update], Image
     else
-      action_ability(:csui, Image, Image.donor_images(@user_id))
+      can [:index, :show, :create, :update], Image, Image.donor_images(@user_id) do |record|
+        record.item.offer.created_by_id == @user_id
+      end
     end
     can :destroy, Image, item: { offer: { created_by_id: @user_id },
       state: ['draft', 'submitted', 'scheduled'] }
@@ -76,7 +75,7 @@ class Ability
   def message_abilities
     # Message (sender and admins, not user if private is true)
     if @supervisor
-      can :crud, Message
+      can [:index, :show, :create, :update, :destroy], Message
     elsif @reviewer
       can [:index, :show, :create], Message
     else
@@ -100,9 +99,11 @@ class Ability
 
   def package_abilities
     if staff?
-      can :crud, Package
+      can [:index, :show, :create, :update, :destroy], Package
     else
-      action_ability(:csui, Package, Package.donor_packages(@user_id))
+      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
+        record.item.offer.created_by_id == @user_id
+      end
     end
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
     can :destroy, Package, item: { state: 'draft' } if @reviewer
@@ -159,12 +160,6 @@ class Ability
 
   def staff?
     @reviewer || @supervisor
-  end
-
-  def action_ability(actions, class_name, records)
-    can actions, class_name, records do |record|
-      record.item.offer.created_by_id == @user_id
-    end
   end
 end
 
