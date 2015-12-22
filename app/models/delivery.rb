@@ -15,9 +15,17 @@ class Delivery < ActiveRecord::Base
   after_destroy {send_updates :delete unless Rails.env.test? }
 
   def update_offer_state
-    self.delivery_type = self.delivery_type.try(:titleize)
+    self.delivery_type = delivery_type.try(:titleize)
     offer.schedule if process_completed?
     true
+  end
+
+  def delete_old_associations
+    contact.try(:really_destroy!)
+    gogovan_order.try(:really_destroy!)
+    update_column(:contact_id, nil)
+    update_column(:gogovan_order_id, nil)
+    schedule && schedule.deliveries.delete(self)
   end
 
   private
