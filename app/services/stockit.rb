@@ -15,11 +15,18 @@ module Stockit
       post(url, stockit_params)
     end
 
-    # TO-DO
     def remove_item
+      url = url_for("/api/v1/items/destroy")
+      destroy(url, delete_request_params)
     end
 
     private
+
+    def delete_request_params
+      {
+        inventory_number: gc_package.inventory_number
+      }
+    end
 
     def stockit_params
       {
@@ -62,7 +69,24 @@ module Stockit
       begin
         Nestful.post( url, params, options ).as_json
       rescue Nestful::ConnectionError => ex # catches all Nestful errors
-        { errors: { connection_error: "Could not contact Stockit, try again later." } }
+        {
+          "errors": {
+            connection_error: "Could not contact Stockit, try again later."
+          }
+        }
+      end
+    end
+
+    def destroy(url, params = {}, options = {})
+      options = default_options.merge(options)
+      begin
+        Nestful.put( url, params, options ).as_json
+      rescue Nestful::ConnectionError => ex # catches all Nestful errors
+        {
+          "errors": {
+            connection_error: "Could not contact Stockit, try again later."
+          }
+        }
       end
     end
 
