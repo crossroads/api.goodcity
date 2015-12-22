@@ -54,15 +54,16 @@ module Api::V1
     api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
-      if @package.update_attributes(package_params)
-        response = add_item_to_stockit
-        if response && response[:errors]
-          render json: response.to_json, status: 422
-        else
-          render json: @package, serializer: serializer
-        end
+      @package.assign_attributes(package_params)
+      response = add_item_to_stockit
+      if response && response["errors"]
+        render json: response.to_json, status: 422
       else
-        render json: @package.errors.to_json, status: 422
+        if @package.save
+          render json: @package, serializer: serializer
+        else
+          render json: @package.errors.to_json, status: 422
+        end
       end
     end
 
