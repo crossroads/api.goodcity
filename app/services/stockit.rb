@@ -16,8 +16,10 @@ module Stockit
     end
 
     def remove_item
-      url = url_for("/api/v1/items/destroy")
-      destroy(url, delete_request_params)
+      if gc_package.inventory_number
+        url = url_for("/api/v1/items/destroy")
+        destroy(url, delete_request_params)
+      end
     end
 
     private
