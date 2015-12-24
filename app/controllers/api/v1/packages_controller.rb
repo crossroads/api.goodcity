@@ -56,7 +56,7 @@ module Api::V1
     def update
       @package.assign_attributes(package_params)
       response = add_item_to_stockit
-      if response && response["errors"]
+      if response && (response["errors"] || response[:errors])
         render json: response.to_json, status: 422
       else
         if @package.save
