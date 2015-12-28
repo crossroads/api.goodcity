@@ -46,7 +46,7 @@ describe Stockit::Browse do
   describe "remove_item" do
 
     let(:stockit_package) { create :package, :stockit_package }
-    let(:stockit_remove)  { described_class.new(stockit_package) }
+    let(:stockit_remove)  { described_class.new(stockit_package.inventory_number) }
 
     let(:url) { "#{endpoint}/api/v1/items/destroy" }
     let(:delete_request_params) { stockit_remove.send(:delete_request_params) }
@@ -70,6 +70,7 @@ describe Stockit::Browse do
     end
 
     it "should not contact stockit if not have inventory number" do
+      stockit = described_class.new(package.inventory_number)
       expect(stockit.remove_item).to be_nil
     end
 
