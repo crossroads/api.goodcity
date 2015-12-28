@@ -43,7 +43,7 @@ module Stockit
         code_id: gc_package.package_type.code,
         inventory_number: gc_package.inventory_number,
         condition: item_condition,
-        description: gc_package.package_type.name,
+        description: gc_package.notes,
         grade: "B",
         location_id: 117
       }
@@ -53,7 +53,8 @@ module Stockit
       {
         length: gc_package.length,
         width: gc_package.width,
-        height: gc_package.height
+        height: gc_package.height,
+        description: gc_package.notes,
       }
     end
 
@@ -71,11 +72,7 @@ module Stockit
       begin
         Nestful.post( url, params, options ).as_json
       rescue Nestful::ConnectionError => ex # catches all Nestful errors
-        {
-          "errors": {
-            connection_error: "Could not contact Stockit, try again later."
-          }
-        }
+        stockit_connection_error
       end
     end
 
@@ -84,12 +81,16 @@ module Stockit
       begin
         Nestful.put( url, params, options ).as_json
       rescue Nestful::ConnectionError => ex # catches all Nestful errors
-        {
-          "errors": {
-            connection_error: "Could not contact Stockit, try again later."
-          }
-        }
+        stockit_connection_error
       end
+    end
+
+    def stockit_connection_error
+      {
+        "errors": {
+          connection_error: "Could not contact Stockit, try again later."
+        }
+      }
     end
 
     def headers
