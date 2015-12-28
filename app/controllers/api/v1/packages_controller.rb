@@ -60,6 +60,7 @@ module Api::V1
         render json: response.to_json, status: 422
       else
         if @package.save
+          StockitUpdateJob.perform_later(@package.id) if update_stockit_item?
           render json: @package, serializer: serializer
         else
           render json: @package.errors.to_json, status: 422
@@ -70,6 +71,7 @@ module Api::V1
     api :DELETE, "/v1/packages/1", "Delete an package"
     description "Deletion of the Package item in review mode"
     def destroy
+      StockitDeleteJob.perform_later(@package.inventory_number) if @package.inventory_number
       @package.really_destroy!
       render json: {}
     end
@@ -77,9 +79,11 @@ module Api::V1
     private
 
     def add_item_to_stockit
-      case params["package"]["state_event" ]
-      when "mark_received" then Stockit::Browse.new(@package).add_item
-      when "mark_missing" then Stockit::Browse.new(@package).remove_item
+      case params["package"]["state_event"]
+      when "mark_received"
+        Stockit::Browse.new(@package).add_item
+      when "mark_missing"
+        Stockit::Browse.new(@package.inventory_number).remove_item
       end
     end
 
@@ -96,6 +100,10 @@ module Api::V1
 
     def offer_id
       Item.where(id: @package.item_id).pluck(:offer_id).first
+    end
+
+    def update_stockit_item?
+      params["package"]["state_event"].blank? && @package.received?
     end
 
   end

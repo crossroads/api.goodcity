@@ -15,18 +15,33 @@ module Stockit
       post(url, stockit_params)
     end
 
+    def update_item
+      url = url_for("/api/v1/items/update")
+      put(url, stockit_params)
+    end
+
     def remove_item
-      if gc_package.inventory_number
+      if gc_package
         url = url_for("/api/v1/items/destroy")
-        destroy(url, delete_request_params)
+        put(url, delete_request_params)
       end
+    end
+
+    def self.log_errors(job, errors, inventory_number)
+      log_text = "\n#{job} error for inventory_number:" \
+        " #{inventory_number}\nStart Time: #{Time.now}\n"
+      log_text += "\nERRORS: \n"
+      errors.each { |attribute, error| log_text += "#{attribute}: #{error}\n" }
+      log_text += "\nEnd Time: #{Time.now}\n"
+      log_file  = "#{Rails.root}/log/stockit_errors.log"
+      File.open(log_file, 'a+') { |f| f.write(log_text) }
     end
 
     private
 
     def delete_request_params
       {
-        inventory_number: gc_package.inventory_number
+        inventory_number: gc_package
       }
     end
 
@@ -76,7 +91,7 @@ module Stockit
       end
     end
 
-    def destroy(url, params = {}, options = {})
+    def put(url, params = {}, options = {})
       options = default_options.merge(options)
       begin
         Nestful.put( url, params, options ).as_json
