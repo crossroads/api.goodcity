@@ -25,6 +25,7 @@ FactoryGirl.define do
     trait :received do
       state "received"
       received_at { Time.now }
+      inventory_number "H12345"
     end
   end
 end

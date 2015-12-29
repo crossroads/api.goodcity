@@ -67,6 +67,7 @@ module Api::V1
 
       if @item.update_attributes(item_params)
         update_offer_state(offer)
+        stockit_update_request if User.current_user.staff?
         render json: @item, serializer: serializer
       else
         render json: @item.errors.to_json, status: 422
@@ -74,6 +75,14 @@ module Api::V1
     end
 
     private
+
+    def stockit_update_request
+      if @item.previous_changes.has_key?("donor_condition_id")
+        @item.packages.received.each do |package|
+          StockitUpdateJob.perform_later(package.id)
+        end
+      end
+    end
 
     def update_offer_state(offer)
       offer.items.reload
