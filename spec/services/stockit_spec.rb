@@ -5,6 +5,11 @@ describe Stockit::Browse do
   let(:stockit)  { described_class.new(package) }
   let(:endpoint) { "http://www.example.com" }
   let(:options)  { { format: :json, headers: {} } }
+
+  let(:success_response)    { { "status" => 201 } }
+  let(:mock_response)       { double( as_json: success_response ) }
+  let(:error_response)      { { "errors" => { "code" => "can't be blank" } } }
+  let(:mock_error_response) { double( as_json: error_response ) }
   let(:connection_error_response) {
     { connection_error: "Could not contact Stockit, try again later."}
   }
@@ -19,12 +24,6 @@ describe Stockit::Browse do
 
     let(:url) { "#{endpoint}/api/v1/items" }
     let(:stockit_params) { stockit.send(:stockit_params) }
-
-    let(:success_response) { { "status" => 201 } }
-    let(:mock_response) { double( as_json: success_response ) }
-
-    let(:error_response) { { "errors" => { "code" => "can't be blank" } } }
-    let(:mock_error_response) { double( as_json: error_response ) }
 
     it "should request add_item and get success_response" do
       expect( Nestful ).to receive(:post).with( url, stockit_params, options ).and_return( mock_response )
@@ -76,4 +75,25 @@ describe Stockit::Browse do
 
   end
 
+  describe "update_item" do
+
+    let(:url) { "#{endpoint}/api/v1/items/update" }
+    let(:stockit_params) { stockit.send(:stockit_params) }
+
+    it "should request update_item and get success_response" do
+      expect( Nestful ).to receive(:put).with( url, stockit_params, options ).and_return( mock_response )
+      expect(stockit.update_item).to eql( success_response )
+    end
+
+    it "should request update_item and get error_response" do
+      expect( Nestful ).to receive(:put).with( url, stockit_params, options ).and_return( mock_error_response )
+      expect(stockit.update_item).to eql( error_response )
+    end
+
+    it "should handle error case" do
+      expect( Nestful ).to receive(:put).and_raise(Nestful::ConnectionError, connection_error_response )
+      expect(stockit.update_item).to eql( errors: connection_error_response  )
+    end
+
+  end
 end
