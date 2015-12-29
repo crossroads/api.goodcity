@@ -7,7 +7,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:offer) { create :offer, created_by: donor }
   let(:item)  { create :item, offer: offer }
   let(:package_type)  { create :package_type }
-  let(:package) { create :package, item: item}
+  let(:package) { create :package, item: item }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package) }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
 
@@ -51,11 +51,19 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "PUT package/1" do
    before { generate_and_set_token(user) }
-    it "review can update", :show_in_doc do
-      updated_params = { quantity: 30, width: 100}
+    it "reviewer can update", :show_in_doc do
+      updated_params = { quantity: 30, width: 100 }
       put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
       expect(response.status).to eq(200)
     end
+
+    it "add stockit item-update request" do
+      package = create :package, :received
+      updated_params = { quantity: 30, width: 100, state: "received" }
+      expect(StockitUpdateJob).to receive(:perform_later).with(package.id)
+      put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
+    end
+
   end
 
   describe "DELETE package/1" do
