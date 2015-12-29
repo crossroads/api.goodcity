@@ -27,10 +27,11 @@ module Stockit
       end
     end
 
-    def self.log_errors(job, errors, inventory_number)
-      log_text = "\n#{job} error for inventory_number:" \
-        " #{inventory_number}\nStart Time: #{Time.now}\n"
-      log_text += "\nERRORS: \n"
+    def self.log_errors(job, errors, inventory_number, package = nil)
+      log_text  = "\n#{job} Error:\n"
+      log_text += "Inventory: #{inventory_number}"
+      log_text += " AND Package: #{package.id}" if package
+      log_text += "\n\nStart Time: #{Time.now}\n\nERRORS:\n"
       errors.each { |attribute, error| log_text += "#{attribute}: #{error}\n" }
       log_text += "\nEnd Time: #{Time.now}\n"
       log_file  = "#{Rails.root}/log/stockit_errors.log"
