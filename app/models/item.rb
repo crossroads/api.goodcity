@@ -28,6 +28,7 @@ class Item < ActiveRecord::Base
   # refer - https://github.com/pluginaweek/state_machine/issues/334
   after_initialize :set_initial_state
   before_save :set_description
+  after_save :update_stockit_item
 
   def set_initial_state
     self.state ||= :draft
@@ -110,5 +111,13 @@ class Item < ActiveRecord::Base
 
   def not_received_packages?
     packages.received.count.zero?
+  end
+
+  def update_stockit_item
+    if changes.has_key?("donor_condition_id")
+      packages.received.each do |package|
+        StockitUpdateJob.perform_later(package.id)
+      end
+    end
   end
 end

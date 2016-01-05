@@ -80,5 +80,21 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       body = JSON.parse(response.body)
       expect(body['errors'][0]['requires_gogovan_cancellation']).not_to be_nil
     end
+
+    describe "update donor_condition" do
+      before { generate_and_set_token(create(:user, :reviewer)) }
+
+      it "should add stockit-update-item request job" do
+        item = create :item, state: "accepted"
+        package = create :package, :received, item: item
+        conditions = create_list :donor_condition, 3
+        conditions.delete(item.donor_condition)
+        extra_params = { donor_condition_id: conditions.last.id }
+
+        expect(StockitUpdateJob).to receive(:perform_later).with(package.id)
+        put :update, id: item.id, item: item.attributes.except("id").merge(extra_params)
+        expect(response.status).to eq(200)
+      end
+    end
   end
 end
