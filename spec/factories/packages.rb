@@ -18,9 +18,14 @@ FactoryGirl.define do
       association :item
     end
 
+    trait :stockit_package do
+      inventory_number "H12345"
+    end
+
     trait :received do
       state "received"
       received_at { Time.now }
+      inventory_number "H12345"
     end
   end
 end

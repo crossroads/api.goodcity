@@ -54,10 +54,16 @@ module Api::V1
     api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
-      if @package.update_attributes(package_params)
-        render json: @package, serializer: serializer
+      @package.assign_attributes(package_params)
+      response = add_item_to_stockit
+      if response && (response["errors"] || response[:errors])
+        render json: response.to_json, status: 422
       else
-        render json: @package.errors.to_json, status: 422
+        if @package.save
+          render json: @package, serializer: serializer
+        else
+          render json: @package.errors.to_json, status: 422
+        end
       end
     end
 
@@ -70,9 +76,19 @@ module Api::V1
 
     private
 
+    def add_item_to_stockit
+      case params["package"]["state_event"]
+      when "mark_received"
+        Stockit::Browse.new(@package).add_item
+      when "mark_missing"
+        Stockit::Browse.new(@package.inventory_number).remove_item
+      end
+    end
+
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
-        :received_at, :rejected_at, :package_type_id, :state_event, :image_id]
+        :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
+        :inventory_number]
       params.require(:package).permit(attributes)
     end
 
