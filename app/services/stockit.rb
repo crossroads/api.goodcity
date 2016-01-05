@@ -59,9 +59,7 @@ module Stockit
         code_id: gc_package.package_type.code,
         inventory_number: gc_package.inventory_number,
         condition: item_condition,
-        description: gc_package.notes,
-        grade: "B",
-        location_id: 117
+        description: gc_package.notes
       }
     end
 
