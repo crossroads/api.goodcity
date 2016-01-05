@@ -7,6 +7,8 @@ class Package < ActiveRecord::Base
   belongs_to :item
   belongs_to :package_type, inverse_of: :packages
 
+  before_destroy :delete_item_from_stockit, if: :inventory_number
+
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
   validates :length, numericality: {
@@ -47,5 +49,9 @@ class Package < ActiveRecord::Base
   # Required by PushUpdates and PaperTrail modules
   def offer
     item.try(:offer)
+  end
+
+  def delete_item_from_stockit
+    StockitDeleteJob.perform_later(inventory_number)
   end
 end
