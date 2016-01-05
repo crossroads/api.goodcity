@@ -60,7 +60,6 @@ module Api::V1
         render json: response.to_json, status: 422
       else
         if @package.save
-          StockitUpdateJob.perform_later(@package.id) if update_stockit_item?
           render json: @package, serializer: serializer
         else
           render json: @package.errors.to_json, status: 422
@@ -99,10 +98,6 @@ module Api::V1
 
     def offer_id
       Item.where(id: @package.item_id).pluck(:offer_id).first
-    end
-
-    def update_stockit_item?
-      params["package"]["state_event"].blank? && @package.received?
     end
 
   end

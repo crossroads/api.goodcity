@@ -87,7 +87,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       it "should add stockit-update-item request job" do
         item = create :item, state: "accepted"
         package = create :package, :received, item: item
-        conditions = create_list :donor_condition, 2
+        conditions = create_list :donor_condition, 3
         conditions.delete(item.donor_condition)
         extra_params = { donor_condition_id: conditions.last.id }
 
