@@ -5,7 +5,7 @@ module Stockit
 
     attr_accessor :gc_package, :errors
 
-    def initialize(gc_package)
+    def initialize(gc_package = nil)
       @gc_package = gc_package
       @errors = {}
     end
@@ -25,6 +25,11 @@ module Stockit
         url = url_for("/api/v1/items/destroy")
         put(url, delete_request_params)
       end
+    end
+
+    def get_locations
+      url = url_for("/api/v1/locations")
+      get(url)
     end
 
     private
@@ -83,6 +88,15 @@ module Stockit
       options = default_options.merge(options)
       begin
         Nestful.put( url, params, options ).as_json
+      rescue Nestful::ConnectionError => ex # catches all Nestful errors
+        stockit_connection_error
+      end
+    end
+
+    def get(url, params = {}, options = {})
+      options = default_options.merge(options)
+      begin
+        Nestful.get( url, params, options ).as_json
       rescue Nestful::ConnectionError => ex # catches all Nestful errors
         stockit_connection_error
       end
