@@ -142,6 +142,14 @@ ActiveRecord::Schema.define(version: 20160107151224) do
     t.text     "rejection_comments"
   end
 
+  create_table "locations", force: :cascade do |t|
+    t.string   "building"
+    t.string   "area"
+    t.integer  "stockit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "messages", force: :cascade do |t|
     t.text     "body"
     t.integer  "sender_id"
