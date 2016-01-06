@@ -126,6 +126,7 @@ class Ability
 
   def taxonomies
     can :register, :device
+    can :index, Location
     can [:index, :show], DonorCondition
     can [:index, :show], SubpackageType
     can [:index, :show], RejectionReason
