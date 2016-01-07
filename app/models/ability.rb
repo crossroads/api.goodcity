@@ -122,11 +122,13 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+
+    # Required in stockit
+    can [:index, :create], Location
   end
 
   def taxonomies
     can :register, :device
-    can :index, Location
     can [:index, :show], DonorCondition
     can [:index, :show], SubpackageType
     can [:index, :show], RejectionReason
