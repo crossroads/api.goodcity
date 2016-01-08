@@ -53,7 +53,8 @@ module Stockit
         code_id: gc_package.package_type.code,
         inventory_number: gc_package.inventory_number,
         condition: item_condition,
-        description: gc_package.notes
+        description: gc_package.notes,
+        location_id: gc_package.location.stockit_id
       }
     end
 

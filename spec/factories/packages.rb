@@ -13,6 +13,7 @@ FactoryGirl.define do
     rejected_at nil
 
     association :package_type
+    association :location
 
     trait :with_item do
       association :item
