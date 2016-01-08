@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151221075809) do
+ActiveRecord::Schema.define(version: 20160107151224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -216,7 +216,7 @@ ActiveRecord::Schema.define(version: 20151221075809) do
     t.integer  "height"
     t.text     "notes"
     t.integer  "item_id"
-    t.string   "state",            limit: 255
+    t.string   "state",             limit: 255
     t.datetime "received_at"
     t.datetime "rejected_at"
     t.integer  "package_type_id"
@@ -226,6 +226,8 @@ ActiveRecord::Schema.define(version: 20151221075809) do
     t.integer  "image_id"
     t.integer  "offer_id",                     default: 0, null: false
     t.string   "inventory_number"
+    t.integer  "location_id"
+    t.string   "designation_name"
   end
 
   create_table "permissions", force: :cascade do |t|
