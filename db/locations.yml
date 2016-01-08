@@ -1,0 +1,1009 @@
+---
+-
+  area: A
+  building: "11"
+-
+  area: B
+  building: "11"
+-
+  area: "22"
+  building: SHED
+-
+  area: Officechairs
+  building: "22"
+-
+  area: Beds
+  building: "24"
+-
+  area: A+B
+  building: "24"
+-
+  area: D
+  building: "24"
+-
+  area: E
+  building: "24"
+-
+  area: F
+  building: "24"
+-
+  area: G
+  building: "24"
+-
+  area: H
+  building: "24"
+-
+  area: J
+  building: "24"
+-
+  area: K
+  building: "24"
+-
+  area: Bldg
+  building: "25"
+-
+  area: B
+  building: "25"
+-
+  area: F
+  building: "25"
+-
+  area: G
+  building: "25"
+-
+  area: Grd
+  building: "28"
+-
+  area: "106"
+  building: "28"
+-
+  area: "108"
+  building: "28"
+-
+  area: 109-EyeGl
+  building: "28"
+-
+  area: K Books
+  building: "28"
+-
+  area: L Stationery
+  building: "28"
+-
+  area: M Elect
+  building: "28"
+-
+  area: N Elect
+  building: "28"
+-
+  area: P1A
+  building: "28"
+-
+  area: P1B
+  building: "28"
+-
+  area: P2A
+  building: "28"
+-
+  area: P2B
+  building: "28"
+-
+  area: P3A
+  building: "28"
+-
+  area: P3B
+  building: "28"
+-
+  area: P4B
+  building: "28"
+-
+  area: P6B
+  building: "28"
+-
+  area: P7A
+  building: "28"
+-
+  area: P8A
+  building: "28"
+-
+  area: P8B
+  building: "28"
+-
+  area: P9A
+  building: "28"
+-
+  area: P9B
+  building: "28"
+-
+  area: BulkRm-Q
+  building: "28"
+-
+  area: Clthg
+  building: "29"
+-
+  area: HouseH
+  building: "29"
+-
+  area: Toys
+  building: "29"
+-
+  area: Bldg
+  building: "30"
+-
+  area: A
+  building: "30"
+-
+  area: B
+  building: "30"
+-
+  area: C
+  building: "30"
+-
+  area: D
+  building: "30"
+-
+  area: E
+  building: "30"
+-
+  area: F
+  building: "30"
+-
+  area: G
+  building: "30"
+-
+  area: H
+  building: "30"
+-
+  area: J
+  building: "30"
+-
+  area: L
+  building: "30"
+-
+  area: M
+  building: "30"
+-
+  area: N
+  building: "30"
+-
+  area: U
+  building: "30"
+-
+  area: Incom'g
+  building: "40"
+-
+  area: "35"
+  building: CntrS
+-
+  area: "01"
+  building: CntrA
+-
+  area: "02"
+  building: CntrA
+-
+  area: "03"
+  building: CntrA
+-
+  area: "04"
+  building: CntrA
+-
+  area: "05"
+  building: CntrA
+-
+  area: "06"
+  building: CntrA
+-
+  area: "07"
+  building: CntrA
+-
+  area: 08
+  building: CntrA
+-
+  area: 09
+  building: CntrA
+-
+  area: "01"
+  building: CntrB
+-
+  area: "02"
+  building: CntrB
+-
+  area: "05"
+  building: CntrB
+-
+  area: "06"
+  building: CntrB
+-
+  area: "07"
+  building: CntrB
+-
+  area: 08
+  building: CntrB
+-
+  area: 09
+  building: CntrB
+-
+  area: 01 FILLER
+  building: CntrC
+-
+  area: Cladding
+  building: "22"
+-
+  area: "32"
+  building: RECYCLING
+-
+  area: Comp
+  building: "32"
+-
+  area: ""
+  building: Dispatched
+-
+  area: "16"
+  building: CntrS
+-
+  area: "33"
+  building: CntrS
+-
+  area: AorB
+  building: "11"
+-
+  area: Sports 1st Fl
+  building: "29"
+-
+  area: Baby 1st Fl
+  building: "29"
+-
+  area: Playgrd 1st Fl
+  building: "29"
+-
+  area: "03"
+  building: CntrS
+-
+  area: "04"
+  building: CntrS
+-
+  area: "05"
+  building: CntrS
+-
+  area: "06"
+  building: CntrS
+-
+  area: "07"
+  building: CntrS
+-
+  area: "10"
+  building: CntrS
+-
+  area: "11"
+  building: CntrS
+-
+  area: "12"
+  building: CntrS
+-
+  area: "13"
+  building: CntrS
+-
+  area: "15"
+  building: CntrS
+-
+  area: "17"
+  building: CntrS
+-
+  area: "18"
+  building: CntrS
+-
+  area: "19"
+  building: CntrS
+-
+  area: "20"
+  building: CntrS
+-
+  area: "21"
+  building: CntrS
+-
+  area: "22"
+  building: CntrS
+-
+  area: "23"
+  building: CntrS
+-
+  area: "25"
+  building: CntrS
+-
+  area: A
+  building: "25"
+-
+  area: "107"
+  building: "28"
+-
+  area: P Floor
+  building: "28"
+-
+  area: D-CRteam
+  building: "11"
+-
+  area: "28"
+  building: CntrS
+-
+  area: 31 Boutique
+  building: LOCALS
+-
+  area: 10 Locals
+  building: CntrB
+-
+  area: Theatre
+  building: "37"
+-
+  area: Paint'g
+  building: "28"
+-
+  area: "30"
+  building: CntrS
+-
+  area: "31"
+  building: CntrS
+-
+  area: 09
+  building: CntrS
+-
+  area: "14"
+  building: CntrS
+-
+  area: "32"
+  building: CntrS
+-
+  area: C-Left
+  building: "45"
+-
+  area: D-Left
+  building: "45"
+-
+  area: E-Left
+  building: "45"
+-
+  area: F-Left
+  building: "45"
+-
+  area: G-Left
+  building: "45"
+-
+  area: H-Left
+  building: "45"
+-
+  area: I-Left
+  building: "45"
+-
+  area: J-Left
+  building: "45"
+-
+  area: K-Left
+  building: "45"
+-
+  area: M-Left
+  building: "45"
+-
+  area: N-Left
+  building: "45"
+-
+  area: O-Left
+  building: "45"
+-
+  area: P-Left
+  building: "45"
+-
+  area: R-Left
+  building: "45"
+-
+  area: S-Left
+  building: "45"
+-
+  area: T-Left
+  building: "45"
+-
+  area: U-Left
+  building: "45"
+-
+  area: V-Left
+  building: "45"
+-
+  area: X-Left
+  building: "45"
+-
+  area: Y-Left
+  building: "45"
+-
+  area: B-Mid
+  building: "45"
+-
+  area: C-Mid
+  building: "45"
+-
+  area: D-Mid
+  building: "45"
+-
+  area: E-Mid
+  building: "45"
+-
+  area: F-Mid
+  building: "45"
+-
+  area: G-Mid
+  building: "45"
+-
+  area: H-Mid
+  building: "45"
+-
+  area: I-Mid
+  building: "45"
+-
+  area: J-Mid
+  building: "45"
+-
+  area: K-Mid
+  building: "45"
+-
+  area: L-Mid
+  building: "45"
+-
+  area: M-Mid
+  building: "45"
+-
+  area: N-Mid
+  building: "45"
+-
+  area: O-Mid
+  building: "45"
+-
+  area: P-Mid
+  building: "45"
+-
+  area: Q-Mid
+  building: "45"
+-
+  area: R-Mid
+  building: "45"
+-
+  area: S-Mid
+  building: "45"
+-
+  area: T-Mid
+  building: "45"
+-
+  area: U-Mid
+  building: "45"
+-
+  area: V-Mid
+  building: "45"
+-
+  area: W-Mid
+  building: "45"
+-
+  area: X-Mid
+  building: "45"
+-
+  area: Y-Mid
+  building: "45"
+-
+  area: Z-Mid
+  building: "45"
+-
+  area: A-Right
+  building: "45"
+-
+  area: B-Right
+  building: "45"
+-
+  area: C-Right
+  building: "45"
+-
+  area: D-Right
+  building: "45"
+-
+  area: F-Right
+  building: "45"
+-
+  area: G-Right
+  building: "45"
+-
+  area: H-Right
+  building: "45"
+-
+  area: I-Right
+  building: "45"
+-
+  area: J-Right
+  building: "45"
+-
+  area: K-Right
+  building: "45"
+-
+  area: L-Right
+  building: "45"
+-
+  area: M-Right
+  building: "45"
+-
+  area: N-Right
+  building: "45"
+-
+  area: O-Right
+  building: "45"
+-
+  area: P-Right
+  building: "45"
+-
+  area: Q-Right
+  building: "45"
+-
+  area: R-Right
+  building: "45"
+-
+  area: S-Right
+  building: "45"
+-
+  area: T-Right
+  building: "45"
+-
+  area: U-Right
+  building: "45"
+-
+  area: V-Right
+  building: "45"
+-
+  area: W-Right
+  building: "45"
+-
+  area: X-Right
+  building: "45"
+-
+  area: Y-Right
+  building: "45"
+-
+  area: Annex
+  building: "45"
+-
+  area: Crane Area
+  building: "45"
+-
+  area: " Pde Grd"
+  building: PTL
+-
+  area: Q-Left
+  building: "45"
+-
+  area: Z-Left
+  building: "45"
+-
+  area: Z-Right
+  building: "45"
+-
+  area: W-Left
+  building: "45"
+-
+  area: "04"
+  building: CntrB
+-
+  area: "02"
+  building: CntrS
+-
+  area: L-Left
+  building: "45"
+-
+  area: E-Right
+  building: "45"
+-
+  area: "24"
+  building: CntrS
+-
+  area: "26"
+  building: CntrS
+-
+  area: "27"
+  building: CntrS
+-
+  area: "03"
+  building: CntrB
+-
+  area: MEq-B
+  building: "32"
+-
+  area: MEq-C
+  building: "32"
+-
+  area: MEq-D
+  building: "32"
+-
+  area: MEq-E
+  building: "32"
+-
+  area: MEq-F
+  building: "32"
+-
+  area: MEq-G
+  building: "32"
+-
+  area: MEq-H
+  building: "32"
+-
+  area: MEq-I
+  building: "32"
+-
+  area: MEq-J
+  building: "32"
+-
+  area: MEq-K
+  building: "32"
+-
+  area: MEq-L
+  building: "32"
+-
+  area: MEq-M
+  building: "32"
+-
+  area: MEq-N
+  building: "32"
+-
+  area: MGen-A receiv'g
+  building: "32"
+-
+  area: MGen-C
+  building: "32"
+-
+  area: MGen-D
+  building: "32"
+-
+  area: MGen-F
+  building: "32"
+-
+  area: MGen-G
+  building: "32"
+-
+  area: MGen-H
+  building: "32"
+-
+  area: MGen-I
+  building: "32"
+-
+  area: MGen-J
+  building: "32"
+-
+  area: MGen-K
+  building: "32"
+-
+  area: MGen-L
+  building: "32"
+-
+  area: MEq-O outgoing
+  building: "32"
+-
+  area: aMOVE
+  building: "45"
+-
+  area: Stocktake
+  building: Dec10
+-
+  area: 11 Locals
+  building: CntrB
+-
+  area: MGen-M
+  building: "32"
+-
+  area: MGen-B
+  building: "32"
+-
+  area: MGen-N
+  building: "32"
+-
+  area: MGen-P
+  building: "32"
+-
+  area: MGen-Q
+  building: "32"
+-
+  area: MGen-R
+  building: "32"
+-
+  area: MGen-S
+  building: "32"
+-
+  area: MGen-T
+  building: "32"
+-
+  area: MGen-U
+  building: "32"
+-
+  area: MGen-V
+  building: "32"
+-
+  area: MEq-A-Receiv'g
+  building: "32"
+-
+  area: MGen-E
+  building: "32"
+-
+  area: Stocktake
+  building: Dec11
+-
+  area: C
+  building: "24"
+-
+  area: C
+  building: "25"
+-
+  area: T
+  building: "30"
+-
+  area: P4A
+  building: "28"
+-
+  area: P5A
+  building: "28"
+-
+  area: P5B
+  building: "28"
+-
+  area: P6A
+  building: "28"
+-
+  area: P7B
+  building: "28"
+-
+  area: N1A
+  building: "28"
+-
+  area: N1B
+  building: "28"
+-
+  area: N2A
+  building: "28"
+-
+  area: N2B
+  building: "28"
+-
+  area: N3A
+  building: "28"
+-
+  area: N3B
+  building: "28"
+-
+  area: "34"
+  building: CntrS
+-
+  area: "36"
+  building: CntrS
+-
+  area: "37"
+  building: CntrS
+-
+  area: "38"
+  building: CntrS
+-
+  area: "39"
+  building: CntrS
+-
+  area: "40"
+  building: CntrS
+-
+  area: Alcove
+  building: "45"
+-
+  area: Stocktake
+  building: Dec12
+-
+  area: Shed
+  building: LOCALS
+-
+  area: Tent
+  building: "PG "
+-
+  area: Vision Storeroom
+  building: "28"
+-
+  area: Stocktake
+  building: Dec13
+-
+  area: B
+  building: 26Med
+-
+  area: Building16
+  building: Lapsap
+-
+  area: B1
+  building: 26Med
+-
+  area: B2
+  building: 26Med
+-
+  area: A
+  building: 26Med
+-
+  area: A1
+  building: 26Med
+-
+  area: A2
+  building: 26Med
+-
+  area: A3
+  building: 26Med
+-
+  area: A4
+  building: 26Med
+-
+  area: B10
+  building: 26Med
+-
+  area: B11
+  building: 26Med
+-
+  area: B12
+  building: 26Med
+-
+  area: B13
+  building: 26Med
+-
+  area: B14
+  building: 26Med
+-
+  area: B15
+  building: 26Med
+-
+  area: B16
+  building: 26Med
+-
+  area: B17
+  building: 26Med
+-
+  area: B2
+  building: 26Med
+-
+  area: B3
+  building: 26Med
+-
+  area: B4
+  building: 26Med
+-
+  area: B5
+  building: 26Med
+-
+  area: B6
+  building: 26Med
+-
+  area: B7
+  building: 26Med
+-
+  area: B8
+  building: 26Med
+-
+  area: B9
+  building: 26Med
+-
+  area: C
+  building: 26Med
+-
+  area: C1
+  building: 26Med
+-
+  area: C10
+  building: 26Med
+-
+  area: C11
+  building: 26Med
+-
+  area: C2
+  building: 26Med
+-
+  area: C3
+  building: 26Med
+-
+  area: C4
+  building: 26Med
+-
+  area: C5
+  building: 26Med
+-
+  area: C6
+  building: 26Med
+-
+  area: C7
+  building: 26Med
+-
+  area: C8
+  building: 26Med
+-
+  area: D
+  building: 26Med
+-
+  area: C9
+  building: 26Med
+-
+  area: D1
+  building: 26Med
+-
+  area: D2
+  building: 26Med
+-
+  area: D3
+  building: 26Med
+-
+  area: E
+  building: 26Med
+-
+  area: E1
+  building: 26Med
+-
+  area: E2
+  building: 26Med
+-
+  area: E3
+  building: 26Med
+-
+  area: F
+  building: 26Med
+-
+  area: F2
+  building: 26Med
+-
+  area: F1
+  building: 26Med
+-
+  area: F3
+  building: 26Med
+-
+  area: F4
+  building: 26Med
+-
+  area: G
+  building: 26Med
+-
+  area: G1
+  building: 26Med
+-
+  area: G2
+  building: 26Med
+-
+  area: G3
+  building: 26Med
+-
+  area: H
+  building: 26Med
+-
+  area: G4
+  building: 26Med
+-
+  area: K
+  building: 26Med
+-
+  area: K1
+  building: 26Med
+-
+  area: K2
+  building: 26Med
+-
+  area: J
+  building: 26Med
+-
+  area: B18
+  building: 26Med
+-
+  area: B19
+  building: 26Med
+-
+  area: E4
+  building: 26Med
+-
+  area: E5
+  building: 26Med
+-
+  area: A-Mid
+  building: "45"
+-
+  area: Stocktake
+  building: Dec14
+-
+  area: "41"
+  building: CntrS
+-
+  area: "42"
+  building: CntrS
+-
+  area: Outdoor
+  building: Sunny Bay

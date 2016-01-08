@@ -122,6 +122,9 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+
+    # Required in stockit
+    can [:index, :create], Location
   end
 
   def taxonomies

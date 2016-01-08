@@ -100,6 +100,7 @@ Rails.application.routes.draw do
         "twilio_outbound#generate_call_token"
 
       resources :package_categories, only: [:index, :show]
+      resources :locations, only: [:index, :create]
     end
   end
 end

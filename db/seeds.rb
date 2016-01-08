@@ -15,6 +15,9 @@ rejection_reasons.each do |name_en, value|
     name_zh_tw: value[:name_zh_tw] )
 end
 
+# Load Locations from Stockit
+Rake::Task["goodcity:add_stockit_locations"].invoke
+
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
   # FactoryGirl creates the correct territory for us
