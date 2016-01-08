@@ -142,6 +142,14 @@ ActiveRecord::Schema.define(version: 20160107151224) do
     t.text     "rejection_comments"
   end
 
+  create_table "locations", force: :cascade do |t|
+    t.string   "building"
+    t.string   "area"
+    t.integer  "stockit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "messages", force: :cascade do |t|
     t.text     "body"
     t.integer  "sender_id"
@@ -216,7 +224,7 @@ ActiveRecord::Schema.define(version: 20160107151224) do
     t.integer  "height"
     t.text     "notes"
     t.integer  "item_id"
-    t.string   "state",             limit: 255
+    t.string   "state",            limit: 255
     t.datetime "received_at"
     t.datetime "rejected_at"
     t.integer  "package_type_id"
@@ -226,8 +234,8 @@ ActiveRecord::Schema.define(version: 20160107151224) do
     t.integer  "image_id"
     t.integer  "offer_id",                     default: 0, null: false
     t.string   "inventory_number"
-    t.integer  "location_id"
     t.string   "designation_name"
+    t.integer  "location_id"
   end
 
   create_table "permissions", force: :cascade do |t|

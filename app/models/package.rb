@@ -5,6 +5,7 @@ class Package < ActiveRecord::Base
   include PushUpdates
 
   belongs_to :item
+  belongs_to :location
   belongs_to :package_type, inverse_of: :packages
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
