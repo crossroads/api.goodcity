@@ -16,6 +16,7 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:received_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:rejected_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:designation_name).of_type(:string)}
   end
 
   describe "validations" do
