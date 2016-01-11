@@ -4,7 +4,7 @@ require 'cancan/matchers'
 describe "Package abilities" do
 
   subject(:ability) { Ability.new(user) }
-  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
+  let(:all_actions) { [:index, :show, :update, :destroy, :manage] }
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
   let(:package)     { create :package, item: item }
@@ -91,6 +91,7 @@ describe "Package abilities" do
   context "when Anonymous" do
     let(:user)    { nil }
     it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
+    it{  is_expected.to be_able_to(:create, package)  }
   end
 
 end
