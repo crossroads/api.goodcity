@@ -46,6 +46,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       post :create, format: :json, package: package_params
       expect(response.status).to eq(201)
     end
+
+    it "update designation_name when sent from stockit", :show_in_doc do
+      package = create :package, :stockit_package, item: item
+      post :create, format: :json, package: {designation_name: "HK", inventory_number: package.inventory_number}
+      expect(package.reload.designation_name).to eq("HK")
+      expect(response.status).to eq(201)
+    end
   end
 
 

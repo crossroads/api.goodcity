@@ -1,6 +1,7 @@
 module Api::V1
   class PackagesController < Api::V1::ApiController
 
+    skip_before_action :validate_token, only: :create
     load_and_authorize_resource :package, parent: false
 
     resource_description do
@@ -42,12 +43,13 @@ module Api::V1
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
-      @package = Package.new(package_params)
-      @package.offer_id = offer_id
-      if @package.save
-        render json: @package, serializer: serializer, status: 201
-      else
-        render json: @package.errors.to_json, status: 422
+      if package_record
+        @package.offer_id = offer_id
+        if @package.save
+          render json: @package, serializer: serializer, status: 201
+        else
+          render json: @package.errors.to_json, status: 422
+        end
       end
     end
 
@@ -88,7 +90,7 @@ module Api::V1
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
-        :inventory_number, :location_id]
+        :inventory_number, :location_id, :designation_name]
       params.require(:package).permit(attributes)
     end
 
@@ -98,6 +100,16 @@ module Api::V1
 
     def offer_id
       Item.where(id: @package.item_id).pluck(:offer_id).first
+    end
+
+    def package_record
+      if package_params[:designation_name]
+        @package = Package.find_by(inventory_number: package_params[:inventory_number])
+        @package.assign_attributes(package_params) if @package
+      else
+        @package = Package.new(package_params)
+      end
+      @package
     end
 
   end

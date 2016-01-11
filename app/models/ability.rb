@@ -125,6 +125,7 @@ class Ability
 
     # Required in stockit
     can [:index, :create], Location
+    can :create, Package
   end
 
   def taxonomies
