@@ -47,11 +47,28 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(201)
     end
 
-    it "update designation_name when sent from stockit", :show_in_doc do
-      package = create :package, :stockit_package, item: item
-      post :create, format: :json, package: {designation_name: "HK", inventory_number: package.inventory_number}
-      expect(package.reload.designation_name).to eq("HK")
-      expect(response.status).to eq(201)
+    context "Received from Stockit" do
+      let(:package) { create :package, :stockit_package, item: item }
+      let(:location) { create :location }
+      let(:stockit_item_params) {
+        { designation_name: "HK",
+          inventory_number: package.inventory_number,
+          location_id: location.stockit_id }
+      }
+
+      it "update designation_name and location", :show_in_doc do
+        post :create, format: :json, package: stockit_item_params
+        expect(package.reload.designation_name).to eq("HK")
+        expect(package.reload.location).to eq(location)
+        expect(response.status).to eq(201)
+      end
+
+      it "should not create new package for unknown inventory_number" do
+        expect {
+          post :create, format: :json, package: { designation_name: "HK", inventory_number: "F12345" }
+        }.to_not change(Package, :count)
+        expect(response.status).to eq(200)
+      end
     end
   end
 

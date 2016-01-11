@@ -103,13 +103,23 @@ module Api::V1
     end
 
     def package_record
-      if package_params[:designation_name]
-        @package = Package.find_by(inventory_number: package_params[:inventory_number])
-        @package.assign_attributes(package_params) if @package
+      if package_params[:inventory_number]
+        if existing_package
+          @package.assign_attributes(package_params)
+          @package.location_id = location_id
+          @package
+        end
       else
         @package = Package.new(package_params)
       end
-      @package
+    end
+
+    def location_id
+      Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+    end
+
+    def existing_package
+      @package = Package.find_by(inventory_number: package_params[:inventory_number])
     end
 
   end
