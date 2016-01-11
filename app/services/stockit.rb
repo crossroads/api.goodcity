@@ -54,7 +54,7 @@ module Stockit
         inventory_number: gc_package.inventory_number,
         condition: item_condition,
         description: gc_package.notes,
-        location_id: gc_package.location.stockit_id
+        location_id: gc_package.location.try(:stockit_id)
       }
     end
 
