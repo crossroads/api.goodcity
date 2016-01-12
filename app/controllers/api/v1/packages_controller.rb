@@ -15,7 +15,7 @@ module Api::V1
 
     def_param_group :package do
       param :package, Hash, required: true do
-        param :quantity, Integer, desc: "Package quantity", allow_nil: true
+        param :quantity, /\d{0,}/, desc: "Package quantity", allow_nil: true
         param :length, Integer, desc: "Package length", allow_nil: true
         param :width, Integer, desc: "Package width", allow_nil: true
         param :height, Integer, desc: "Package height", allow_nil: true
@@ -46,6 +46,7 @@ module Api::V1
       if package_record
         @package.offer_id = offer_id
         if @package.save
+          save_item_details
           render json: @package, serializer: serializer, status: 201
         else
           render json: @package.errors.to_json, status: 422
@@ -94,6 +95,21 @@ module Api::V1
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :location_id, :designation_name]
       params.require(:package).permit(attributes)
+    end
+
+    def item_attributes
+      if (item = item_params)
+        item["donor_condition_id"] = DonorCondition.find_by(name_en: item["donor_condition_id"]).try(:id)
+        item
+      end
+    end
+
+    def item_params
+      params["package"].require(:item).permit(:donor_condition_id)
+    end
+
+    def save_item_details
+      (attributes = item_attributes) && @package.item.update_attributes(attributes)
     end
 
     def serializer
