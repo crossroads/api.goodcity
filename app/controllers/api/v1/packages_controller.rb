@@ -50,6 +50,8 @@ module Api::V1
         else
           render json: @package.errors.to_json, status: 422
         end
+      else
+        render nothing: true, status: 204
       end
     end
 
