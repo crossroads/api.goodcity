@@ -67,7 +67,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect {
           post :create, format: :json, package: { designation_name: "HK", inventory_number: "F12345" }
         }.to_not change(Package, :count)
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(204)
       end
     end
   end
