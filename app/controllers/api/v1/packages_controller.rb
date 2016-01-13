@@ -3,6 +3,7 @@ module Api::V1
 
     skip_before_action :validate_token, only: :create
     load_and_authorize_resource :package, parent: false
+    before_action :set_stockit_request, only: [:update, :destroy, :create]
 
     resource_description do
       short "Create, update and delete a package."
@@ -119,12 +120,13 @@ module Api::V1
     end
 
     def offer_id
-      Item.where(id: @package.item_id).pluck(:offer_id).first
+      @package.item.offer_id
     end
 
     def package_record
       if package_params[:inventory_number]
         if existing_package
+          Package.stockit_request = true
           @package.assign_attributes(package_params)
           @package.location_id = location_id
           @package
@@ -140,6 +142,10 @@ module Api::V1
 
     def existing_package
       @package = Package.find_by(inventory_number: package_params[:inventory_number])
+    end
+
+    def set_stockit_request
+      Package.stockit_request = false
     end
 
   end

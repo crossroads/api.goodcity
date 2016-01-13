@@ -45,6 +45,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "reviewer can create", :show_in_doc do
       post :create, format: :json, package: package_params
       expect(response.status).to eq(201)
+      expect(Package.stockit_request).to eq(false)
     end
 
     context "Received from Stockit" do
@@ -57,10 +58,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
 
       it "update designation_name and location", :show_in_doc do
+        expect_any_instance_of(Stockit::Browse).to_not receive(:update_item)
         post :create, format: :json, package: stockit_item_params
         expect(package.reload.designation_name).to eq("HK")
         expect(package.reload.location).to eq(location)
         expect(response.status).to eq(201)
+        expect(Package.stockit_request).to eq(true)
       end
 
       it "should not create new package for unknown inventory_number" do
@@ -95,6 +98,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     it "returns 200", :show_in_doc do
       delete :destroy, id: package.id
+      expect(response.status).to eq(200)
+      body = JSON.parse(response.body)
+      expect(body).to eq( {} )
+    end
+
+    it "should send delete-item request to stockit if package has inventory_number" do
+      expect_any_instance_of(Stockit::Browse).to_not receive(:remove_item)
+      delete :destroy, id: (create :package, :stockit_package).id
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)
       expect(body).to eq( {} )
