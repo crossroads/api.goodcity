@@ -8,7 +8,7 @@ class StockitUpdateJob < ActiveJob::Base
       response = Stockit::Browse.new(package).update_item
 
       if response && (errors = response["errors"] || response[:errors])
-        log_text = "Inventory: #{inventory_number} Package: #{package.id}"
+        log_text = "Inventory: #{package.inventory_number} Package: #{package.id}"
         errors.each{ |attribute, error| log_text += " #{attribute}: #{error}" }
         logger.error log_text
       end

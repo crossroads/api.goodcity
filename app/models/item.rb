@@ -28,7 +28,7 @@ class Item < ActiveRecord::Base
   # refer - https://github.com/pluginaweek/state_machine/issues/334
   after_initialize :set_initial_state
   before_save :set_description
-  after_save :update_stockit_item, unless: "GoodcitySync.request_from_stockit"
+  after_commit :update_stockit_item, on: :update, unless: "GoodcitySync.request_from_stockit"
 
   def set_initial_state
     self.state ||= :draft
@@ -114,7 +114,7 @@ class Item < ActiveRecord::Base
   end
 
   def update_stockit_item
-    if changes.has_key?("donor_condition_id")
+    if previous_changes.has_key?("donor_condition_id")
       packages.received.each do |package|
         StockitUpdateJob.perform_later(package.id)
       end

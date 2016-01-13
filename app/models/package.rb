@@ -9,7 +9,7 @@ class Package < ActiveRecord::Base
   belongs_to :package_type, inverse_of: :packages
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
-  after_save :update_stockit_item, if: :updated_received_package?
+  after_commit :update_stockit_item, on: :update, if: :updated_received_package?
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -54,7 +54,7 @@ class Package < ActiveRecord::Base
   end
 
   def updated_received_package?
-    !self.changes.has_key?("state") && received? &&
+    !self.previous_changes.has_key?("state") && received? &&
     !GoodcitySync.request_from_stockit
   end
 

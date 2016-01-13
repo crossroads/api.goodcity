@@ -3,7 +3,7 @@ module GoodcitySync
   extend ActiveSupport::Concern
 
   included do
-    before_action :set_stockit_request, only: [:update, :destroy, :create]
+    before_action :set_request_from_stockit, only: [:update, :destroy, :create]
   end
 
   def self.request_from_stockit
@@ -16,7 +16,7 @@ module GoodcitySync
 
   private
 
-  def set_stockit_request
+  def set_request_from_stockit
     GoodcitySync.request_from_stockit = false
   end
 
