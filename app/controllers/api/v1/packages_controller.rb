@@ -1,5 +1,6 @@
 module Api::V1
   class PackagesController < Api::V1::ApiController
+    include GoodcitySync
 
     skip_before_action :validate_token, only: :create
     load_and_authorize_resource :package, parent: false
@@ -15,7 +16,7 @@ module Api::V1
 
     def_param_group :package do
       param :package, Hash, required: true do
-        param :quantity, Integer, desc: "Package quantity", allow_nil: true
+        param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
         param :length, Integer, desc: "Package length", allow_nil: true
         param :width, Integer, desc: "Package width", allow_nil: true
         param :height, Integer, desc: "Package height", allow_nil: true
@@ -46,6 +47,7 @@ module Api::V1
       if package_record
         @package.offer_id = offer_id
         if @package.save
+          save_item_details
           render json: @package, serializer: serializer, status: 201
         else
           render json: @package.errors.to_json, status: 422
@@ -96,17 +98,35 @@ module Api::V1
       params.require(:package).permit(attributes)
     end
 
+    def item_attributes
+      if (item = item_params)
+        item["donor_condition_id"] = DonorCondition.find_by(name_en: item["donor_condition_id"]).try(:id)
+        item
+      end
+    end
+
+    def item_params
+      params["package"].require(:item).permit(:donor_condition_id)
+    end
+
+    def save_item_details
+      params["package"]["item"] &&
+      (attributes = item_attributes) &&
+      @package.item.update_attributes(attributes)
+    end
+
     def serializer
       Api::V1::PackageSerializer
     end
 
     def offer_id
-      Item.where(id: @package.item_id).pluck(:offer_id).first
+      @package.item.offer_id
     end
 
     def package_record
       if package_params[:inventory_number]
         if existing_package
+          GoodcitySync.request_from_stockit = true
           @package.assign_attributes(package_params)
           @package.location_id = location_id
           @package
@@ -123,6 +143,5 @@ module Api::V1
     def existing_package
       @package = Package.find_by(inventory_number: package_params[:inventory_number])
     end
-
   end
 end
