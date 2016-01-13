@@ -54,15 +54,8 @@ class Package < ActiveRecord::Base
   end
 
   def updated_received_package?
-    !self.changes.has_key?("state") && received? && !Package.stockit_request
-  end
-
-  def self.stockit_request
-    Thread.current[:stockit_request] || false
-  end
-
-  def self.stockit_request=(value)
-    Thread.current[:stockit_request] = value
+    !self.changes.has_key?("state") && received? &&
+    !GoodcitySync.request_from_stockit
   end
 
   private

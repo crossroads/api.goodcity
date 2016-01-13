@@ -45,7 +45,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "reviewer can create", :show_in_doc do
       post :create, format: :json, package: package_params
       expect(response.status).to eq(201)
-      expect(Package.stockit_request).to eq(false)
+      expect(GoodcitySync.request_from_stockit).to eq(false)
     end
 
     context "Received from Stockit" do
@@ -63,7 +63,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(package.reload.designation_name).to eq("HK")
         expect(package.reload.location).to eq(location)
         expect(response.status).to eq(201)
-        expect(Package.stockit_request).to eq(true)
+        expect(GoodcitySync.request_from_stockit).to eq(true)
       end
 
       it "should not create new package for unknown inventory_number" do
