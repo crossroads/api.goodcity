@@ -47,3 +47,6 @@ en:
     ready_for_schedule_message: "Your offer has been reviewed. Please proceed to arrange transportation."
   gogovan:
     driver_note: "Ensure you deliver all the items listed: See details \nEnglish %{link} \nChinese %{ch_link}"
+  delivery:
+    gogovan_message: "%{name} booked a GoGoVan for %{time}, %{date}"
+    drop_off_message: "%{name} will deliver the items between %{time}, %{date}"
