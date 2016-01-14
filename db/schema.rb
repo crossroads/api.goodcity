@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160107151224) do
+ActiveRecord::Schema.define(version: 20160114124856) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,13 @@ ActiveRecord::Schema.define(version: 20160107151224) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "otp_auth_key",    limit: 30
+  end
+
+  create_table "cancellation_reasons", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -185,6 +192,8 @@ ActiveRecord::Schema.define(version: 20160107151224) do
     t.datetime "cancelled_at"
     t.integer  "received_by_id"
     t.datetime "start_receiving_at"
+    t.integer  "cancellation_reason_id"
+    t.string   "cancel_reason"
   end
 
   create_table "package_categories", force: :cascade do |t|
@@ -234,8 +243,8 @@ ActiveRecord::Schema.define(version: 20160107151224) do
     t.integer  "image_id"
     t.integer  "offer_id",                     default: 0, null: false
     t.string   "inventory_number"
-    t.string   "designation_name"
     t.integer  "location_id"
+    t.string   "designation_name"
   end
 
   create_table "permissions", force: :cascade do |t|

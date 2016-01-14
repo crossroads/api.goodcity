@@ -135,6 +135,7 @@ class Ability
     can [:index, :show], SubpackageType
     can [:index, :show], RejectionReason
     can [:index, :show], Permission
+    can [:index, :show], CancellationReason
 
     # TODO
     can [:create, :show], Address
