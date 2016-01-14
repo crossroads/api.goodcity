@@ -114,7 +114,8 @@ module Api::V1
 
     def offer_params
       attributes = [:language, :origin, :stairs, :parking, :estimated_size,
-        :notes, :delivered_by, :state_event]
+        :notes, :delivered_by, :state_event, :cancel_reason,
+        :cancellation_reason_id]
       params.require(:offer).permit(attributes)
     end
 

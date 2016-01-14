@@ -12,6 +12,7 @@ class Offer < ActiveRecord::Base
   belongs_to :received_by, class_name: 'User'
   belongs_to :gogovan_transport
   belongs_to :crossroads_transport
+  belongs_to :cancellation_reason
 
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
