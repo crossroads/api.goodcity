@@ -123,6 +123,7 @@ class Ability
     can :index, GogovanTransport
     can :index, CrossroadsTransport
 
+    # TODO
     # Required in stockit
     can [:index, :create], Location
     can :create, Package

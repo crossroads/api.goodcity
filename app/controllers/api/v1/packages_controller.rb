@@ -2,7 +2,9 @@ module Api::V1
   class PackagesController < Api::V1::ApiController
     include GoodcitySync
 
+    # TODO (required in stockit)
     skip_before_action :validate_token, only: :create
+
     load_and_authorize_resource :package, parent: false
 
     resource_description do
@@ -125,7 +127,8 @@ module Api::V1
 
     def package_record
       if package_params[:inventory_number]
-        if existing_package
+        @package = Package.find_by(inventory_number: package_params[:inventory_number])
+        if @package
           GoodcitySync.request_from_stockit = true
           @package.assign_attributes(package_params)
           @package.location_id = location_id
@@ -138,10 +141,6 @@ module Api::V1
 
     def location_id
       Location.find_by(stockit_id: package_params[:location_id]).try(:id)
-    end
-
-    def existing_package
-      @package = Package.find_by(inventory_number: package_params[:inventory_number])
     end
   end
 end
