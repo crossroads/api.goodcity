@@ -94,7 +94,7 @@ class Ability
 
     can :destroy, Offer, created_by_id: @user_id, state: ['draft',
       'submitted', 'reviewed', 'scheduled', 'under_review']
-    can [:complete_review, :close_offer, :finished, :destroy, :review], Offer if staff?
+    can [:complete_review, :close_offer, :finished, :destroy, :review, :mark_inactive], Offer if staff?
   end
 
   def package_abilities
