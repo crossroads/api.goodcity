@@ -2,12 +2,13 @@
 
 FactoryGirl.define do
   factory :schedule do
-    id { generate(:schedules).keys.sample }
-    resource { generate(:schedules)[id][:resource] }
-    slot { generate(:schedules)[id][:slot] }
-    slot_name { generate(:schedules)[id][:slot_name] }
-    zone { generate(:schedules)[id][:zone] }
-    scheduled_at { (Time.now + 1.weeks + generate(:schedules)[id][:scheduled_at].day).to_s }
+    zone { generate(:schedules).keys.sample }
+    resource { generate(:schedules)[zone][:resource] }
+    slot { generate(:schedules)[zone][:slot] }
+    slot_name { generate(:schedules)[zone][:slot_name] }
+    scheduled_at { (Time.now + 1.weeks).to_s }
+
+    initialize_with { Schedule.find_or_initialize_by(zone: zone) }
 
     factory :gogovan_schedule, parent: :schedule do
       resource nil
