@@ -33,6 +33,7 @@ Rails.application.routes.draw do
           put :review
           put :complete_review
           put :close_offer
+          put :mark_inactive
         end
       end
 

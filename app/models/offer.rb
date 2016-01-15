@@ -4,7 +4,7 @@ class Offer < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
-  INACTIVE_STATES = ["received", "closed", "cancelled"]
+  INACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
@@ -42,7 +42,7 @@ class Offer < ActiveRecord::Base
   scope :inactive, -> { where(state: INACTIVE_STATES) }
   scope :in_states, ->(states) { # overwrite concerns/state_machine_scope to add pseudo states
     states = [states].flatten.compact
-    states.push(*Offer.inactive_states) if states.delete('inactive')
+    states.push(*Offer.inactive_states) if states.delete('in_active')
     states.push(*Offer.nondraft_states) if states.delete('nondraft')
     states.push(*Offer.active_states) if states.delete('active')
     states.push(*Offer.donor_valid_states) if states.delete('for_donor')
@@ -63,14 +63,14 @@ class Offer < ActiveRecord::Base
     # todo rename 'reviewed' to 'awaiting_scheduling' to make it clear we only transition
     # to state when there are some accepted items
     state :submitted, :under_review, :reviewed, :scheduled, :closed, :received,
-      :cancelled, :receiving
+      :cancelled, :receiving, :inactive
 
     event :cancel do
       transition all => :cancelled, if: 'can_cancel?'
     end
 
     event :submit do
-      transition :draft => :submitted
+      transition [:draft, :inactive] => :submitted
     end
 
     event :start_review do
@@ -105,6 +105,10 @@ class Offer < ActiveRecord::Base
       transition [:scheduled, :reviewed] => :under_review
     end
 
+    event :mark_inactive do
+      transition [:submitted, :under_review, :reviewed, :scheduled, :inactive] => :inactive
+    end
+
     before_transition on: :submit do |offer, transition|
       offer.submitted_at = Time.now
     end
@@ -132,6 +136,10 @@ class Offer < ActiveRecord::Base
     before_transition on: :start_receiving do |offer, transition|
       offer.received_by = User.current_user
       offer.start_receiving_at = Time.now
+    end
+
+    before_transition on: :mark_inactive do |offer, transition|
+      offer.reviewed_by = nil
     end
 
     after_transition on: :submit do |offer, transition|
