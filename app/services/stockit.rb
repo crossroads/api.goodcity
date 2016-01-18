@@ -71,7 +71,7 @@ module Stockit
       case gc_package.item.donor_condition.name_en
       when "New" then "N"
       when "Lightly Used" then "M"
-      when "Heavily Used" then "N"
+      when "Heavily Used" then "U"
       when "Broken" then "B"
       end
     end
