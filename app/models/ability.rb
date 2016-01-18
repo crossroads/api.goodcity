@@ -7,6 +7,7 @@ class Ability
   attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids
 
   def initialize(user)
+    public_ability
 
     if user.present?
 
@@ -29,8 +30,6 @@ class Ability
       user_abilities
       taxonomies
     end
-
-    public_ability
   end
 
   def delivery_abilities
@@ -110,6 +109,9 @@ class Ability
   end
 
   def public_ability
+    # for ggv_order_details page
+    can :show, Offer, state: "scheduled"
+
     # Anonymous and all users
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
