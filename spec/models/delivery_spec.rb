@@ -13,7 +13,7 @@ RSpec.describe Delivery, type: :model do
 
   describe "successful delivery plan" do
     it "should send notification for new message" do
-      delivery = create :drop_off_delivery
+      delivery = create :drop_off_delivery, schedule: nil
       expect(delivery).to receive(:notify_reviewers)
       delivery.update_attributes(schedule_id: (create :drop_off_schedule).id)
     end

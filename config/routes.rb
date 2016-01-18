@@ -33,6 +33,7 @@ Rails.application.routes.draw do
           put :review
           put :complete_review
           put :close_offer
+          put :mark_inactive
         end
       end
 
@@ -42,6 +43,7 @@ Rails.application.routes.draw do
 
       resources :packages, only: [:index, :show, :create, :update, :destroy]
       resources :rejection_reasons, only: [:index, :show]
+      resources :cancellation_reasons, only: [:index, :show]
       resources :territories, only: [:index, :show]
       resources :donor_conditions, only: [:index, :show]
       resources :users, only: [:index, :show, :update]

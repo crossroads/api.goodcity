@@ -13,6 +13,10 @@ FactoryGirl.define do
     @rejection_reasons ||= YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
   end
 
+  sequence :cancellation_reasons do |n|
+    @cancellation_reasons ||= YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
+  end
+
   sequence :districts do |n|
     @districts ||= YAML.load_file("#{Rails.root}/db/districts.yml")
   end
