@@ -1,5 +1,9 @@
 module Api::V1
   class PackagesController < Api::V1::ApiController
+    include GoodcitySync
+
+    # TODO (required in stockit)
+    skip_before_action :validate_token, only: :create
 
     load_and_authorize_resource :package, parent: false
 
@@ -14,7 +18,7 @@ module Api::V1
 
     def_param_group :package do
       param :package, Hash, required: true do
-        param :quantity, Integer, desc: "Package quantity", allow_nil: true
+        param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
         param :length, Integer, desc: "Package length", allow_nil: true
         param :width, Integer, desc: "Package width", allow_nil: true
         param :height, Integer, desc: "Package height", allow_nil: true
@@ -42,12 +46,16 @@ module Api::V1
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
-      @package = Package.new(package_params)
-      @package.offer_id = offer_id
-      if @package.save
-        render json: @package, serializer: serializer, status: 201
+      if package_record
+        @package.offer_id = offer_id
+        if @package.save
+          save_item_details
+          render json: @package, serializer: serializer, status: 201
+        else
+          render json: @package.errors.to_json, status: 422
+        end
       else
-        render json: @package.errors.to_json, status: 422
+        render nothing: true, status: 204
       end
     end
 
@@ -88,8 +96,25 @@ module Api::V1
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
-        :inventory_number, :location_id]
+        :inventory_number, :location_id, :designation_name]
       params.require(:package).permit(attributes)
+    end
+
+    def item_attributes
+      if (item = item_params)
+        item["donor_condition_id"] = DonorCondition.find_by(name_en: item["donor_condition_id"]).try(:id)
+        item
+      end
+    end
+
+    def item_params
+      params["package"].require(:item).permit(:donor_condition_id)
+    end
+
+    def save_item_details
+      params["package"]["item"] &&
+      (attributes = item_attributes) &&
+      @package.item.update_attributes(attributes)
     end
 
     def serializer
@@ -97,8 +122,25 @@ module Api::V1
     end
 
     def offer_id
-      Item.where(id: @package.item_id).pluck(:offer_id).first
+      @package.item.offer_id
     end
 
+    def package_record
+      if package_params[:inventory_number]
+        @package = Package.find_by(inventory_number: package_params[:inventory_number])
+        if @package
+          GoodcitySync.request_from_stockit = true
+          @package.assign_attributes(package_params)
+          @package.location_id = location_id
+          @package
+        end
+      else
+        @package = Package.new(package_params)
+      end
+    end
+
+    def location_id
+      Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+    end
   end
 end
