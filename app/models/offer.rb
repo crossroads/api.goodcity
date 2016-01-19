@@ -266,20 +266,6 @@ class Offer < ActiveRecord::Base
     state != 'draft' && items.length == 1
   end
 
-  # merges the items from another offer into this one
-  # doesn't allow merges from another user as this would lose contact details etc
-  def merge!(duplicate_offer)
-    if duplicate_offer.is_a?(Offer)
-      if duplicate_offer.created_by_id == self.created_by_id
-        self.items << duplicate_offer.items
-      else
-        raise ValueError("Cannot merge: duplicate_offer and offer were not created by the same user.")
-      end
-    else
-      raise ValueError("duplicate_offer params is not an offer")
-    end
-  end
-
   private
 
   def cancel_message(time)
