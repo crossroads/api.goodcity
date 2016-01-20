@@ -112,11 +112,15 @@ module Stockit
     end
 
     def headers
-      { }
+      { "token" => api_token }
     end
 
     def endpoint
       Rails.application.secrets.base_urls["stockit"] # no trailing slash
+    end
+
+    def api_token
+      Rails.application.secrets.stockit["api_token"]
     end
 
     def default_options
