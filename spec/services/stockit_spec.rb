@@ -4,7 +4,7 @@ describe Stockit::Browse do
   let(:package)  { create :package, :with_item }
   let(:stockit)  { described_class.new(package) }
   let(:endpoint) { "http://www.example.com" }
-  let(:options)  { { format: :json, headers: {} } }
+  let(:options)  { stockit.send(:default_options) }
 
   let(:success_response)    { { "status" => 201 } }
   let(:mock_response)       { double( as_json: success_response ) }
