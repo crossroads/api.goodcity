@@ -35,7 +35,7 @@ class Version < PaperTrail::Version
   scope :call_logs, -> {
     joins("INNER JOIN offers ON versions.item_id = offers.id
       AND versions.item_type = 'Offer'
-      AND versions.event IN ('call_Accepted', 'donor_called')")
+      AND versions.event IN ('call_Accepted', 'donor_called', 'admin_called')")
   }
 
   scope :union_all_logs, -> {
@@ -69,6 +69,6 @@ class Version < PaperTrail::Version
 
   def is_item_or_call_log?
     ['Item','Package'].include?(item_type) ||
-    ['call_accepted','donor_called'].include?(event)
+    ['call_accepted','donor_called', 'admin_called'].include?(event)
   end
 end
