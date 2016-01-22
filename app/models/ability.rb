@@ -109,8 +109,7 @@ class Ability
   end
 
   def public_ability
-    # for ggv_order_details page
-    can :show, Offer, state: "scheduled"
+    can :show_driver_details, Offer, {state: "scheduled", delivery: {gogovan_order: {status: ['pending', 'active']}}}
 
     # Anonymous and all users
     can [:index, :show], PackageCategory
@@ -170,4 +169,3 @@ class Ability
     @reviewer || @supervisor
   end
 end
-
