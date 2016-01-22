@@ -30,9 +30,8 @@ module Goodcity
 
       # pre-flight checks
       proceed = offer.created_by_id == other_offer.created_by_id
-      mergeable_statuses = %w(submitted under_review reviewed)
-      proceed = proceed && mergeable_statuses.include?(offer.state)
-      proceed = proceed && mergeable_statuses.include?(other_offer.state)
+      proceed = proceed && %w(submitted under_review reviewed scheduled).include?(offer.state)
+      proceed = proceed && %w(submitted under_review reviewed).include?(other_offer.state)
 
       if proceed
         offer.transaction do
