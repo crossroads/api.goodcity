@@ -171,11 +171,14 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       "msg"        => "Gather End",
       "From"       => reviewer.mobile
     }) }
+    let(:call_version) { Version.call_logs.last }
 
     it "will return response to Twilio when admin inputs offer-id", :show_in_doc do
       post :accept_offer_id, parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Connecting to #{user.full_name}..</Say><Dial callerId=\"+163456799\"><Number>#{user.mobile}</Number></Dial></Response>")
+      expect(call_version.item_id).to eq(offer.id)
+      expect(call_version.event).to eq("admin_called")
     end
   end
 
