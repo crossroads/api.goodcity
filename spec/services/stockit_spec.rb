@@ -15,8 +15,8 @@ describe Stockit::Browse do
   }
 
   describe "initialize" do
-    it "should set @gc_package" do
-      expect( stockit.gc_package ).to eql(package)
+    it "should set @package" do
+      expect( stockit.package ).to eql(package)
     end
   end
 

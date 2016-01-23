@@ -3,10 +3,13 @@ require 'nestful'
 module Stockit
   class Browse
 
-    attr_accessor :gc_package, :errors
+    attr_accessor :package, :errors
 
-    def initialize(gc_package = nil)
-      @gc_package = gc_package
+    def self.create(package)
+    end
+
+    def initialize(package = nil)
+      @package = package
       @errors = {}
     end
 
@@ -21,7 +24,7 @@ module Stockit
     end
 
     def remove_item
-      if gc_package
+      if package
         url = url_for("/api/v1/items/destroy")
         put(url, delete_request_params)
       end
@@ -36,7 +39,7 @@ module Stockit
 
     def delete_request_params
       {
-        inventory_number: gc_package
+        inventory_number: package
       }
     end
 
@@ -49,26 +52,26 @@ module Stockit
 
     def item_params
       {
-        quantity: gc_package.quantity,
-        code_id: gc_package.package_type.code,
-        inventory_number: gc_package.inventory_number,
+        quantity: package.quantity,
+        code_id: package.package_type.code,
+        inventory_number: package.inventory_number,
         condition: item_condition,
-        description: gc_package.notes,
-        location_id: gc_package.location.try(:stockit_id)
+        description: package.notes,
+        location_id: package.location.try(:stockit_id)
       }
     end
 
     def package_params
       {
-        length: gc_package.length,
-        width: gc_package.width,
-        height: gc_package.height,
-        description: gc_package.notes,
+        length: package.length,
+        width: package.width,
+        height: package.height,
+        description: package.notes,
       }
     end
 
     def item_condition
-      case gc_package.item.donor_condition.name_en
+      case package.item.donor_condition.name_en
       when "New" then "N"
       when "Lightly Used" then "M"
       when "Heavily Used" then "U"
