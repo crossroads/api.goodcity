@@ -57,6 +57,11 @@ RSpec.configure do |config|
   config.before(:each, type: :controller) do
     set_admin_app_header
   end
+
+  # Keep RequestStore clean between specs
+  config.before(:each) do
+    RequestStore.clear!
+  end
 end
 
 Shoulda::Matchers.configure do |config|

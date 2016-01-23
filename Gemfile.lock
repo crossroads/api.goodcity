@@ -391,6 +391,7 @@ DEPENDENCIES
   rails-i18n
   redis
   redis-rails
+  request_store
   rspec-rails
   rspec_junit_formatter
   shoulda-callback-matchers
