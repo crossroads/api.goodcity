@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Package, type: :model do
 
+  let(:package) { create :package }
+
   describe "Associations" do
     it { is_expected.to belong_to :item }
     it { is_expected.to belong_to :package_type }
@@ -45,7 +47,7 @@ RSpec.describe Package, type: :model do
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
-        package = create :package
+        expect(Stockit::Browse).to receive_message_chain(:new, :add_item)
         expect{
           package.mark_received
         }.to change(package, :received_at)
@@ -54,13 +56,33 @@ RSpec.describe Package, type: :model do
     end
 
     describe "#mark_missing" do
+      let(:package) { create :package, :received }
       it "should set received_at value" do
-        package = create :package, :received
+        expect(Stockit::Browse).to receive_message_chain(:new, :remove_item)
         expect{
           package.mark_missing
         }.to change(package, :received_at).to(nil)
         expect(package.state).to eq("missing")
       end
+    end
+  end
+
+  describe "add_to_stockit" do
+    it "should add API errors to package.errors" do
+      api_response = {"errors" => {"code" => "can't be blank"}}
+      expect(Stockit::Browse).to receive_message_chain(:new, :add_item).and_return(api_response)
+      package.add_to_stockit
+      expect(package.errors).to include(:code)
+    end
+  end
+
+  describe "remove_from_stockit" do
+    it "should add API errors to package.errors" do
+      package.inventory_number = "F12345"
+      api_response = {"errors" => {"base" => "already designated"}}
+      expect(Stockit::Browse).to receive_message_chain(:new, :remove_item).and_return(api_response)
+      package.remove_from_stockit
+      expect(package.errors).to include(:base)
     end
   end
 

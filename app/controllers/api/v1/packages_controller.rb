@@ -52,7 +52,7 @@ module Api::V1
           save_item_details
           render json: @package, serializer: serializer, status: 201
         else
-          render json: @package.errors.to_json, status: 422
+          render json: {errors: @package.errors.full_messages}.to_json , status: 422
         end
       else
         render nothing: true, status: 204
@@ -63,15 +63,11 @@ module Api::V1
     param_group :package
     def update
       @package.assign_attributes(package_params)
-      response = add_item_to_stockit
-      if response && (response["errors"] || response[:errors])
-        render json: response.to_json, status: 422
+      # use valid? to ensure mark_received errors get caught
+      if @package.valid? and @package.save
+        render json: @package, serializer: serializer
       else
-        if @package.save
-          render json: @package, serializer: serializer
-        else
-          render json: @package.errors.to_json, status: 422
-        end
+        render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
     end
 
@@ -83,15 +79,6 @@ module Api::V1
     end
 
     private
-
-    def add_item_to_stockit
-      case params["package"]["state_event"]
-      when "mark_received"
-        Stockit::Browse.new(@package).add_item
-      when "mark_missing"
-        Stockit::Browse.new(@package.inventory_number).remove_item
-      end
-    end
 
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,

@@ -41,10 +41,28 @@ class Package < ActiveRecord::Base
 
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
+      package.add_to_stockit
     end
 
     before_transition on: :mark_missing do |package|
       package.received_at = nil
+      package.remove_from_stockit
+    end
+  end
+
+  def add_to_stockit
+    response = Stockit::Browse.new(self).add_item
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def remove_from_stockit
+    if self.inventory_number.present?
+      response = Stockit::Browse.new(self.inventory_number).remove_item
+      if response && (errors = response["errors"]).present?
+        errors.each{|key, value| self.errors.add(key, value) }
+      end
     end
   end
 
