@@ -112,6 +112,7 @@ module Stockit
     end
 
     def headers
+      raise(ValueError, "Stockit api_token cannot be blank") if api_token.blank?
       { "token" => api_token }
     end
 
