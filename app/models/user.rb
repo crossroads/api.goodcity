@@ -96,11 +96,11 @@ class User < ActiveRecord::Base
   end
 
   def self.current_user
-    Thread.current[:current_user]
+    RequestStore.store[:current_user]
   end
 
   def self.current_user=(user)
-    Thread.current[:current_user] = user
+    RequestStore.store[:current_user] = user
   end
 
   def self.system_user

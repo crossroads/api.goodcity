@@ -137,6 +137,7 @@ RSpec.describe Item, type: :model do
       it "should set packages notes as donor_description when accepted" do
         item = create :item, :draft, :with_packages
         expected_text = item.packages.pluck(:notes).reject(&:blank?).join(" + ")
+        User.current_user = create(:user, :reviewer)
         expect{
           item.accept
         }.to change(item, :donor_description).to(expected_text)
