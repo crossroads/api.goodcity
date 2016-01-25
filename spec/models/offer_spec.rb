@@ -93,6 +93,33 @@ RSpec.describe Offer, type: :model do
       offer = create :offer, :scheduled
       expect{ offer.receive }.to change(offer, :received_at)
     end
+
+    it 'should set cancelled_at' do
+      offer = create :offer, :under_review
+      expect{ offer.cancel }.to change(offer, :cancelled_at)
+    end
+
+    it 'should set cancelled_at' do
+      offer = create :offer, :under_review
+      expect{ offer.close }.to change(offer, :cancelled_at)
+    end
+  end
+
+  describe "should set cancellation_reason" do
+    it "on close" do
+      reason = create :cancellation_reason, name_en: "Unwanted"
+      offer = create :offer, :under_review
+      expect{ offer.close }.to change(offer, :cancellation_reason)
+      expect(offer.cancellation_reason).to eq reason
+    end
+
+    it "on cancel" do
+      reason = create :cancellation_reason, name_en: "Donor cancelled"
+      offer = create :offer, :under_review
+      User.current_user = offer.created_by
+      expect{ offer.cancel }.to change(offer, :cancellation_reason)
+      expect(offer.cancellation_reason).to eq reason
+    end
   end
 
   describe 'scope' do

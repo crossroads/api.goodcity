@@ -10,7 +10,7 @@ module Api::V1
       :updated_at, :submitted_at, :reviewed_at, :gogovan_transport_id,
       :crossroads_transport_id, :review_completed_at, :received_at,
       :delivered_by, :closed_by_id, :cancelled_at, :received_by_id,
-      :start_receiving_at
+      :start_receiving_at, :cancellation_reason_id, :cancel_reason
 
     has_many :items, serializer: ItemSerializer
     has_many :messages, serializer: MessageSerializer
@@ -19,6 +19,7 @@ module Api::V1
     has_one  :delivery, serializer: DeliverySerializer
     has_one  :gogovan_transport, serializer: GogovanTransportSerializer
     has_one  :crossroads_transport, serializer: CrossroadsTransportSerializer
+    has_one  :cancellation_reason, serializer: CancellationReasonSerializer
 
     def include_messages?
       return false unless goodcity_user?
