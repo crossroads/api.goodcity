@@ -101,7 +101,7 @@ class Ability
       can [:index, :show, :create, :update, :destroy], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
-        record.item.offer.created_by_id == @user_id
+        record.item ? record.item.offer.created_by_id == @user_id : false
       end
     end
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }

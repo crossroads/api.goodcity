@@ -9,6 +9,7 @@ FactoryGirl.define do
     mobile            { generate(:mobile) }
     last_connected    { 2.days.ago }
     last_disconnected { 1.day.ago }
+    disabled          { false }
 
     association :image
 

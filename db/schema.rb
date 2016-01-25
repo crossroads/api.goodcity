@@ -244,8 +244,8 @@ ActiveRecord::Schema.define(version: 20160127065409) do
     t.integer  "image_id"
     t.integer  "offer_id",                     default: 0, null: false
     t.string   "inventory_number"
-    t.integer  "location_id"
     t.string   "designation_name"
+    t.integer  "location_id"
   end
 
   create_table "permissions", force: :cascade do |t|
