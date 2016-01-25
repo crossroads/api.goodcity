@@ -52,7 +52,7 @@ class Package < ActiveRecord::Base
 
   def add_to_stockit
     response = Stockit::Browse.new(self).add_item
-    if response && (errors = response["errors"]).present?
+    if response && (errors = response["errors"] || response[:errors]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
   end
@@ -60,7 +60,7 @@ class Package < ActiveRecord::Base
   def remove_from_stockit
     if self.inventory_number.present?
       response = Stockit::Browse.new(self.inventory_number).remove_item
-      if response && (errors = response["errors"]).present?
+      if response && (errors = response["errors"] || response[:errors]).present?
         errors.each{|key, value| self.errors.add(key, value) }
       end
     end
