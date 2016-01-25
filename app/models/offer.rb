@@ -90,7 +90,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :close do
-      transition [:under_review, :reviewed, :scheduled] => :closed
+      transition [:under_review, :reviewed, :scheduled] => :cancelled
     end
 
     event :receive do
@@ -125,12 +125,20 @@ class Offer < ActiveRecord::Base
       offer.closed_by = User.current_user
     end
 
+    before_transition on: :close do |offer, transition|
+      offer.cancelled_at = Time.now
+      offer.cancellation_reason = CancellationReason.unwanted
+    end
+
     before_transition on: :receive do |offer, transition|
       offer.received_at = Time.now
     end
 
     before_transition on: :cancel do |offer, transition|
       offer.cancelled_at = Time.now
+      if User.current_user == offer.created_by
+        offer.cancellation_reason = CancellationReason.donor_cancelled
+      end
     end
 
     before_transition on: :start_receiving do |offer, transition|
