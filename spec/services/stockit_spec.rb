@@ -11,7 +11,7 @@ describe Stockit::Browse do
   let(:error_response)      { { "errors" => { "code" => "can't be blank" } } }
   let(:mock_error_response) { double( as_json: error_response ) }
   let(:connection_error_response) {
-    { connection_error: "Could not contact Stockit, try again later."}
+    { connection_error: ": could not contact Stockit, try again later."}
   }
 
   describe "initialize" do

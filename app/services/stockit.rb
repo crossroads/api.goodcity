@@ -106,7 +106,7 @@ module Stockit
     def stockit_connection_error
       {
         "errors": {
-          connection_error: "Could not contact Stockit, try again later."
+          connection_error: ": could not contact Stockit, try again later."
         }
       }
     end
