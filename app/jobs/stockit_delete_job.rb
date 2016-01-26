@@ -8,7 +8,7 @@ class StockitDeleteJob < ActiveJob::Base
       response = Stockit::Item.delete(package)
 
       if response && (errors = response["errors"] || response[:errors])
-        log_text = "Inventory: #{package.inventory_number}"
+        log_text = "Inventory: #{package.inventory_number} Package: #{package_id}"
         errors.each { |attribute, error| log_text += " #{attribute}: #{error}" }
         logger.error log_text
       end
