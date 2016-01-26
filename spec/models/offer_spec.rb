@@ -101,7 +101,7 @@ RSpec.describe Offer, type: :model do
 
     it 'should set cancelled_at' do
       offer = create :offer, :under_review
-      expect{ offer.close }.to change(offer, :cancelled_at)
+      expect{ offer.mark_unwanted }.to change(offer, :cancelled_at)
     end
   end
 
@@ -109,7 +109,7 @@ RSpec.describe Offer, type: :model do
     it "on close" do
       reason = create :cancellation_reason, name_en: "Unwanted"
       offer = create :offer, :under_review
-      expect{ offer.close }.to change(offer, :cancellation_reason)
+      expect{ offer.mark_unwanted }.to change(offer, :cancellation_reason)
       expect(offer.cancellation_reason).to eq reason
     end
 
@@ -285,13 +285,13 @@ RSpec.describe Offer, type: :model do
     it 'should cancel GoGoVan booking' do
       expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id).and_return(200)
       expect(delivery.gogovan_order.status).to eq('pending')
-      offer.close!
+      offer.mark_unwanted!
       expect(delivery.gogovan_order.status).to eq('cancelled')
     end
     it "cannot close offer if GoGoVan booking can't be cancelled" do
       expect(Gogovan).to receive(:cancel_order).with(delivery.gogovan_order.booking_id).and_return({:error=>"Failed.  Response code = 409.  Response message = Conflict.  Response Body = {\"error\":\"Order that is already accepted by a driver cannot be cancelled\"}."})
       expect(delivery.gogovan_order.status).to eq('pending')
-      offer.close!
+      offer.mark_unwanted!
       expect(delivery.gogovan_order.status).to eq('pending')
     end
 

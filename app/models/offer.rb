@@ -89,7 +89,7 @@ class Offer < ActiveRecord::Base
       transition :scheduled => :reviewed
     end
 
-    event :close do
+    event :mark_unwanted do
       transition [:under_review, :reviewed, :scheduled] => :cancelled
     end
 
@@ -117,15 +117,15 @@ class Offer < ActiveRecord::Base
       offer.reviewed_at = Time.now
     end
 
-    before_transition on: [:finish_review, :close] do |offer, transition|
+    before_transition on: [:finish_review, :mark_unwanted] do |offer, transition|
       offer.review_completed_at = Time.now
     end
 
-    before_transition on: [:close, :cancel, :receive] do |offer, transition|
+    before_transition on: [:mark_unwanted, :cancel, :receive] do |offer, transition|
       offer.closed_by = User.current_user
     end
 
-    before_transition on: :close do |offer, transition|
+    before_transition on: :mark_unwanted do |offer, transition|
       offer.cancelled_at = Time.now
       offer.cancellation_reason = CancellationReason.unwanted
     end
@@ -159,7 +159,7 @@ class Offer < ActiveRecord::Base
     after_transition on: :receive, do: :send_received_message
     after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
-    after_transition on: [:close, :re_review, :cancel] do |offer, transition|
+    after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, transition|
       ggv_order = offer.try(:gogovan_order)
       ggv_order.try(:cancel_order) if ggv_order.try(:status) != 'cancelled'
     end
