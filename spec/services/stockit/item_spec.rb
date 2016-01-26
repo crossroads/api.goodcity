@@ -1,7 +1,7 @@
 require "rails_helper"
 
-describe Stockit::Browse do
-  let(:package)  { create :package, :with_item }
+describe Stockit::Item do
+  let(:package)  { create :package, :stockit_package, :with_item }
   let(:stockit)  { described_class.new(package) }
   let(:endpoint) { "http://www.example.com" }
   let(:options)  { stockit.send(:default_options) }
@@ -11,7 +11,7 @@ describe Stockit::Browse do
   let(:error_response)      { { "errors" => { "code" => "can't be blank" } } }
   let(:mock_error_response) { double( as_json: error_response ) }
   let(:connection_error_response) {
-    { connection_error: ": could not contact Stockit, try again later."}
+    { connection_error: "Could not contact Stockit, try again later."}
   }
 
   describe "initialize" do
@@ -20,32 +20,32 @@ describe Stockit::Browse do
     end
   end
 
-  describe "add_item" do
+  describe "create" do
 
     let(:url) { "#{endpoint}/api/v1/items" }
     let(:stockit_params) { stockit.send(:stockit_params) }
 
-    it "should request add_item and get success_response" do
+    it "should send create request and get success_response" do
       expect( Nestful ).to receive(:post).with( url, stockit_params, options ).and_return( mock_response )
-      expect(stockit.add_item).to eql( success_response )
+      expect(stockit.create).to eql( success_response )
     end
 
-    it "should request add_item and get error_response" do
+    it "should send create request and get error_response" do
       expect( Nestful ).to receive(:post).with( url, stockit_params, options ).and_return( mock_error_response )
-      expect(stockit.add_item).to eql( error_response )
+      expect(stockit.create).to eql( error_response )
     end
 
     it "should handle error case" do
       expect( Nestful ).to receive(:post).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit.add_item).to eql( errors: connection_error_response  )
+      expect(stockit.create).to eql( errors: connection_error_response  )
     end
 
   end
 
-  describe "remove_item" do
+  describe "delete" do
 
     let(:stockit_package) { create :package, :stockit_package }
-    let(:stockit_remove)  { described_class.new(stockit_package.inventory_number) }
+    let(:stockit_remove)  { described_class.new(stockit_package) }
 
     let(:url) { "#{endpoint}/api/v1/items/destroy" }
     let(:delete_request_params) { stockit_remove.send(:delete_request_params) }
@@ -53,46 +53,47 @@ describe Stockit::Browse do
     let(:error_response) { { "errors" => { "dispatched" => "Designated or dispatched items cannot be marked missing." } } }
     let(:mock_error_response) { double( as_json: error_response ) }
 
-    it "should request remove_item and get success_response" do
+    it "should send delete request and get success_response" do
       expect( Nestful ).to receive(:put).with( url, delete_request_params, options ).and_return( nil )
-      expect(stockit_remove.remove_item).to be_nil
+      expect(stockit_remove.delete).to be_nil
     end
 
-    it "should request remove_item and get error_response" do
+    it "should send delete request and get error_response" do
       expect( Nestful ).to receive(:put).with( url, delete_request_params, options ).and_return( mock_error_response )
-      expect(stockit_remove.remove_item).to eql( error_response )
+      expect(stockit_remove.delete).to eql( error_response )
     end
 
     it "should handle error case" do
       expect( Nestful ).to receive(:put).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit_remove.remove_item).to eql( errors: connection_error_response  )
+      expect(stockit_remove.delete).to eql( errors: connection_error_response  )
     end
 
     it "should not contact stockit if not have inventory number" do
-      stockit = described_class.new(package.inventory_number)
-      expect(stockit.remove_item).to be_nil
+      allow(package).to receive(:inventory_number).and_return(nil)
+      expect(Nestful).to_not receive(:put)
+      expect(stockit.delete).to be_nil
     end
 
   end
 
-  describe "update_item" do
+  describe "update" do
 
     let(:url) { "#{endpoint}/api/v1/items/update" }
     let(:stockit_params) { stockit.send(:stockit_params) }
 
-    it "should request update_item and get success_response" do
+    it "should send update request and get success_response" do
       expect( Nestful ).to receive(:put).with( url, stockit_params, options ).and_return( mock_response )
-      expect(stockit.update_item).to eql( success_response )
+      expect(stockit.update).to eql( success_response )
     end
 
-    it "should request update_item and get error_response" do
+    it "should send update request and get error_response" do
       expect( Nestful ).to receive(:put).with( url, stockit_params, options ).and_return( mock_error_response )
-      expect(stockit.update_item).to eql( error_response )
+      expect(stockit.update).to eql( error_response )
     end
 
     it "should handle error case" do
       expect( Nestful ).to receive(:put).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit.update_item).to eql( errors: connection_error_response  )
+      expect(stockit.update).to eql( errors: connection_error_response  )
     end
 
   end
