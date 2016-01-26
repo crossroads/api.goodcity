@@ -102,7 +102,7 @@ module Api::V1
 
     api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
     def close_offer
-      @offer.update_attributes({ state_event: 'close' })
+      @offer.update_attributes({ state_event: 'mark_unwanted' })
       render json: @offer, serializer: serializer
     end
 
