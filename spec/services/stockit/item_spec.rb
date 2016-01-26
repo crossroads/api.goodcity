@@ -37,7 +37,13 @@ describe Stockit::Item do
 
     it "should handle error case" do
       expect( Nestful ).to receive(:post).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit.create).to eql( errors: connection_error_response  )
+      expect(stockit.create).to eql( "errors" => connection_error_response  )
+    end
+
+    it "should not send create request if inventory_number is blank" do
+      allow(package).to receive(:inventory_number).and_return(nil)
+      expect( Nestful ).not_to receive(:post)
+      stockit.create
     end
 
   end
@@ -65,10 +71,10 @@ describe Stockit::Item do
 
     it "should handle error case" do
       expect( Nestful ).to receive(:put).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit_remove.delete).to eql( errors: connection_error_response  )
+      expect(stockit_remove.delete).to eql( "errors" => connection_error_response  )
     end
 
-    it "should not contact stockit if not have inventory number" do
+    it "should not send delete request if inventory_number is blank" do
       allow(package).to receive(:inventory_number).and_return(nil)
       expect(Nestful).to_not receive(:put)
       expect(stockit.delete).to be_nil
@@ -93,7 +99,13 @@ describe Stockit::Item do
 
     it "should handle error case" do
       expect( Nestful ).to receive(:put).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit.update).to eql( errors: connection_error_response  )
+      expect(stockit.update).to eql( "errors" => connection_error_response  )
+    end
+
+    it "should not send update request if inventory_number is blank" do
+      allow(package).to receive(:inventory_number).and_return(nil)
+      expect(Nestful).to_not receive(:put)
+      expect(stockit.delete).to be_nil
     end
 
   end
