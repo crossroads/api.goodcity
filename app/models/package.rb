@@ -79,7 +79,7 @@ class Package < ActiveRecord::Base
   private
 
   def delete_item_from_stockit
-    StockitDeleteJob.perform_later(self.id)
+    StockitDeleteJob.perform_later(self.inventory_number)
   end
 
   def update_stockit_item
