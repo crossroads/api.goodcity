@@ -59,7 +59,7 @@ class Package < ActiveRecord::Base
 
   def remove_from_stockit
     if self.inventory_number.present?
-      response = Stockit::Item.delete(self)
+      response = Stockit::Item.delete(inventory_number)
       if response && (errors = response["errors"]).present?
         errors.each{|key, value| self.errors.add(key, value) }
       end

@@ -58,7 +58,7 @@ RSpec.describe Package, type: :model do
     describe "#mark_missing" do
       let(:package) { create :package, :received }
       it "should set received_at value" do
-        expect(Stockit::Item).to receive(:delete).with(package)
+        expect(Stockit::Item).to receive(:delete).with(package.inventory_number)
         expect{
           package.mark_missing
         }.to change(package, :received_at).to(nil)
@@ -80,7 +80,7 @@ RSpec.describe Package, type: :model do
     it "should add API errors to package.errors" do
       package.inventory_number = "F12345"
       api_response = {"errors" => {"base" => "already designated"}}
-      expect(Stockit::Item).to receive(:delete).with(package).and_return(api_response)
+      expect(Stockit::Item).to receive(:delete).with(package.inventory_number).and_return(api_response)
       package.remove_from_stockit
       expect(package.errors).to include(:base)
     end
