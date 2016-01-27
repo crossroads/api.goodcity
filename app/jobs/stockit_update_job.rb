@@ -5,10 +5,10 @@ class StockitUpdateJob < ActiveJob::Base
     package = Package.find_by(id: package_id)
 
     if package
-      response = Stockit::Browse.new(package).update_item
+      response = Stockit::Item.update(package)
 
       if response && (errors = response["errors"] || response[:errors])
-        log_text = "Inventory: #{package.inventory_number} Package: #{package.id}"
+        log_text = "Inventory: #{package.inventory_number} Package: #{package_id}"
         errors.each{ |attribute, error| log_text += " #{attribute}: #{error}" }
         logger.error log_text
       end

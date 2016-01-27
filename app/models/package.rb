@@ -51,16 +51,16 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    response = Stockit::Browse.new(self).add_item
-    if response && (errors = response["errors"] || response[:errors]).present?
+    response = Stockit::Item.create(self)
+    if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
   end
 
   def remove_from_stockit
     if self.inventory_number.present?
-      response = Stockit::Browse.new(self.inventory_number).remove_item
-      if response && (errors = response["errors"] || response[:errors]).present?
+      response = Stockit::Item.delete(self)
+      if response && (errors = response["errors"]).present?
         errors.each{|key, value| self.errors.add(key, value) }
       end
     end
@@ -79,7 +79,7 @@ class Package < ActiveRecord::Base
   private
 
   def delete_item_from_stockit
-    StockitDeleteJob.perform_later(inventory_number)
+    StockitDeleteJob.perform_later(self.inventory_number)
   end
 
   def update_stockit_item
