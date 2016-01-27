@@ -1,12 +1,16 @@
 ---
 Donated elsewhere:
   :name_zh_tw: Donated elsewhere
+  :visible_to_admin: true
 
 Transport too difficult:
   :name_zh_tw: Transport too difficult
+  :visible_to_admin: true
 
 Unwanted:
   :name_zh_tw: Unwanted
+  :visible_to_admin: false
 
 Donor cancelled:
   :name_zh_tw: Donor cancelled
+  :visible_to_admin: true

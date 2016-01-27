@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160114124856) do
+ActiveRecord::Schema.define(version: 20160127065409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,8 +41,9 @@ ActiveRecord::Schema.define(version: 20160114124856) do
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.boolean  "visible_to_admin", default: true
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -311,6 +312,7 @@ ActiveRecord::Schema.define(version: 20160114124856) do
     t.integer  "image_id"
     t.datetime "last_connected"
     t.datetime "last_disconnected"
+    t.boolean  "disabled",                      default: false
   end
 
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
