@@ -41,19 +41,14 @@ module Stockit
     end
 
     def delete
-      if package.inventory_number.present?
+      inventory_number = package # package is actually inventory_number
+      if inventory_number.present?
         url = url_for("/api/v1/items/destroy")
-        put(url, delete_request_params)
+        put(url, {inventory_number: inventory_number})
       end
     end
 
     private
-
-    def delete_request_params
-      {
-        inventory_number: package.inventory_number
-      }
-    end
 
     def stockit_params
       {
