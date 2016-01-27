@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::LocationsController, type: :controller do
 
+  let(:reviewer) { create(:user_with_token, :reviewer) }
+  before { generate_and_set_token(reviewer) }
+
   describe "GET locations" do
     let(:locations) { create_list(:location, 2) }
 

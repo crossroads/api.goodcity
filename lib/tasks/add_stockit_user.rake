@@ -8,6 +8,9 @@ namespace :goodcity do
     if mobile
       stockit_user = User.where(first_name: "Stockit", last_name: "User", mobile: mobile.to_s.prepend("+")).first_or_create
 
+      stockit_user.permission = Permission.api_write
+      stockit_user.save
+
       if stockit_user.valid?
         stockit_user.auth_tokens.delete_all
         api_token = Token.new.generate_api_token(user_id: stockit_user.id)

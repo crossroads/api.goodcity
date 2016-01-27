@@ -3,7 +3,7 @@ module Api::V1
     load_and_authorize_resource :permission, parent: false
 
     def index
-      render json: Permission.cached_json
+      render json: Permission.visible.cached_json
     end
 
     def show
