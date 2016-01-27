@@ -98,6 +98,9 @@ end
 # Create System User
 FactoryGirl.create(:user, :system)
 
+# Create api-write permission
+FactoryGirl.create(:permission, name: "api-write")
+
 # Create PackageCategories
 PackageCategoryImporter.import
 

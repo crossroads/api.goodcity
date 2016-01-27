@@ -25,6 +25,10 @@ FactoryGirl.define do
       association :permission, factory: :administrator_permission
     end
 
+    trait :api_user do
+      association :permission, factory: :api_write_permission
+    end
+
     trait :system do
       first_name "GoodCity"
       last_name  "Team"

@@ -91,6 +91,10 @@ describe "Package abilities" do
   context "when Anonymous" do
     let(:user)    { nil }
     it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
+  end
+
+  context "when api_user" do
+    let(:user) { create :user, :api_user }
     it{  is_expected.to be_able_to(:create, package)  }
   end
 

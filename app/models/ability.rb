@@ -16,6 +16,7 @@ class Ability
       @admin = user.admin?
       @supervisor = user.supervisor?
       @reviewer = user.reviewer?
+      @api_user = user.api_user?
       @user_offer_ids = user.offers.pluck(:id)
 
       can(:manage, :all) if admin
@@ -28,8 +29,13 @@ class Ability
       offer_abilities
       package_abilities
       user_abilities
+      location_abilities
       taxonomies
     end
+  end
+
+  def location_abilities
+    can [:index, :create], Location if @api_user || staff?
   end
 
   def delivery_abilities
@@ -104,6 +110,7 @@ class Ability
         record.item ? record.item.offer.created_by_id == @user_id : false
       end
     end
+    can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
     can :destroy, Package, item: { state: 'draft' } if @reviewer
   end
@@ -123,11 +130,6 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
-
-    # TODO
-    # Required in stockit
-    can [:index, :create], Location
-    can :create, Package
   end
 
   def taxonomies
