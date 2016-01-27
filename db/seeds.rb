@@ -19,7 +19,8 @@ cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml
 cancellation_reasons.each do |name_en, value|
   FactoryGirl.create(:cancellation_reason,
     name_en: name_en,
-    name_zh_tw: value[:name_zh_tw] )
+    name_zh_tw: value[:name_zh_tw],
+    visible_to_admin: value[:visible_to_admin] )
 end
 
 # Load Locations from Stockit
