@@ -13,7 +13,7 @@ namespace :goodcity do
         stockit_id: nil )
     end
 
-    locations_json = Stockit::Browse.new.get_locations
+    locations_json = Stockit::Location.index
     stockit_locations = JSON.parse(locations_json["locations"])
 
     if stockit_locations
