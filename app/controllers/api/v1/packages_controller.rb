@@ -2,9 +2,6 @@ module Api::V1
   class PackagesController < Api::V1::ApiController
     include GoodcitySync
 
-    # TODO (required in stockit)
-    skip_before_action :validate_token, only: :create
-
     load_and_authorize_resource :package, parent: false
 
     resource_description do
