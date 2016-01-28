@@ -29,6 +29,16 @@ class Token
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
 
+  def generate_api_token(options = {})
+    now = Time.now
+    options.merge!({
+      "iat": now.to_i,
+      "iss": issuer,
+      "exp": (now + validity(for_api: true)).to_i,
+    })
+    JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
+  end
+
   # Allow access to the data stored inside the token e.g. mobile number
   def data
     token
@@ -83,8 +93,8 @@ class Token
   end
 
   # Number of seconds the token is valid for
-  def validity
-    jwt_config['validity']
+  def validity(options = {})
+    options[:for_api] ? jwt_config['validity_for_api'] : jwt_config['validity']
   end
 
 end

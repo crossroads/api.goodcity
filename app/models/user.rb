@@ -77,6 +77,10 @@ class User < ActiveRecord::Base
     permission.try(:name) == nil || @treat_user_as_donor == true
   end
 
+  def api_user?
+    permission.try(:name) == "api-write"
+  end
+
   def online?
     (last_connected && last_disconnected) ?
       (last_connected > last_disconnected) : false
