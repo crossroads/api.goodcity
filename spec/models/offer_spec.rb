@@ -134,8 +134,8 @@ RSpec.describe Offer, type: :model do
       expect(active_offers).to_not include(received_offer)
     end
 
-    it 'not_active' do
-      inactive_offers = Offer.not_active
+    it 'inactive' do
+      inactive_offers = Offer.inactive
       expect(inactive_offers).to_not include(submitted_offer)
       expect(inactive_offers).to include(closed_offer)
       expect(inactive_offers).to include(received_offer)
@@ -174,7 +174,7 @@ RSpec.describe Offer, type: :model do
       end
 
       it "accepts pseudo states" do
-        subject = Offer.in_states(["not_active"])
+        subject = Offer.in_states(["in_active"])
         expect(subject).to include(closed_offer)
         expect(subject).to include(received_offer)
         expect(subject).to_not include(submitted_offer)
