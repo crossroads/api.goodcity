@@ -4,6 +4,8 @@ Detailed list of changes that will affect the live system during an upgrade.
 
 ## Version 0.5
 
+Update chinese translations for `cancellation_reasons` in https://github.com/crossroads/api.goodcity/blob/master/db/cancellation_reasons.yml
+
 Add `cancellation_reasons`
 
     cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
@@ -29,3 +31,8 @@ Add `Stockit User`
     rake goodcity:add_stockit_user
 
   Copy the `token` returned from above task to `stockit/config/secrets.yml`
+  
+Add follwing environment variables in `.env` file
+
+    STOCKIT_API_TOKEN=
+    JWT_VALIDITY_FOR_API=
