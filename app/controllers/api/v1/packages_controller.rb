@@ -75,6 +75,12 @@ module Api::V1
       render json: {}
     end
 
+    api :POST, "/v1/packages/print_barcode", "Print barcode"
+    def print_barcode
+      print_id, errors, status = BarcodeService.new.print params[:inventory_number]
+      render text: "#{status} #{errors}", status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
+    end
+
     private
 
     def package_params
