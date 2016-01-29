@@ -1,4 +1,8 @@
-Tasks to perform after live deployment:
+# ChangeLog
+
+Detailed list of changes that will affect the live system during an upgrade.
+
+## Version 0.5
 
 Add `cancellation_reasons`
 
@@ -17,9 +21,7 @@ Create api-write permission
 Rake tasks to run:
 
     rake goodcity:add_stockit_locations
-
     rake goodcity:update_cancelled_offers
-
     rake goodcity:update_closed_offers
 
 Add `Stockit User`
