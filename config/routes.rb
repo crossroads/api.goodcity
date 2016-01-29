@@ -83,6 +83,8 @@ Rails.application.routes.draw do
       get  "twilio_outbound/generate_call_token", to:
         "twilio_outbound#generate_call_token"
 
+      post "packages/print_barcode", to: "packages#print_barcode"
+
       resources :package_categories, only: [:index, :show]
       resources :locations, only: [:index, :create]
     end

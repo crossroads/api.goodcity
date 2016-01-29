@@ -104,7 +104,7 @@ class Ability
 
   def package_abilities
     if staff?
-      can [:index, :show, :create, :update, :destroy], Package
+      can [:index, :show, :create, :update, :destroy, :print_barcode], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
