@@ -32,14 +32,22 @@ class Package < ActiveRecord::Base
     state :expecting, :missing, :received
 
     event :mark_received do
-      transition [:expecting, :missing, :received] => :received
+      transition [:expecting, :missing] => :received
+    end
+
+    event :mark_received_with_inventory do
+      transition [:expecting, :missing] => :received
     end
 
     event :mark_missing do
-      transition [:expecting, :missing, :received] => :missing
+      transition [:expecting, :received] => :missing
     end
 
     before_transition on: :mark_received do |package|
+      package.inventory_number = nil
+    end
+
+    before_transition on: :mark_received_with_inventory do |package|
       package.received_at = Time.now
       package.add_to_stockit
     end
