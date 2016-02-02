@@ -83,6 +83,15 @@ RSpec.describe Package, type: :model do
       expect(Stockit::Item).to receive(:delete).with(package.inventory_number).and_return(api_response)
       package.remove_from_stockit
       expect(package.errors).to include(:base)
+      expect(package.inventory_number).to_not be_nil
+    end
+
+    it "should add set inventory_number to nil" do
+      package.inventory_number = "F12345"
+      expect(Stockit::Item).to receive(:delete).with(package.inventory_number).and_return({})
+      package.remove_from_stockit
+      expect(package.errors.full_messages).to eq([])
+      expect(package.inventory_number).to be_nil
     end
   end
 

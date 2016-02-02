@@ -62,6 +62,8 @@ class Package < ActiveRecord::Base
       response = Stockit::Item.delete(inventory_number)
       if response && (errors = response["errors"]).present?
         errors.each{|key, value| self.errors.add(key, value) }
+      else
+        self.inventory_number = nil
       end
     end
   end
