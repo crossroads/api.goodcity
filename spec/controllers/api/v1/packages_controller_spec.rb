@@ -111,4 +111,41 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(body).to eq( {} )
     end
   end
+
+  describe "POST print_barcode" do
+    before { generate_and_set_token(user) }
+    let(:inventory_number) {"000055"}
+    let(:package) { create :package }
+    let(:barcode_service) { BarcodeService.new }
+    before(:each) {
+      allow(barcode_service).to receive(:print).and_return(["", "", "pid 111 exit 0"])
+      allow(controller).to receive(:barcode_service).and_return(barcode_service)
+    }
+
+    it "returns 400 if package does not exist" do
+      post :print_barcode, package_id: 1
+      expect(response.status).to eq(400)
+      body = JSON.parse(response.body)
+      expect(body["errors"]).to eq("Package not found with supplied package_id")
+    end
+
+    it "should generate inventory number if empty on package" do
+      expect(package.inventory_number).to be_blank
+      post :print_barcode, package_id: package.id
+      package.reload
+      expect(package.inventory_number).not_to be_blank
+    end
+
+    it "should print barcode service call with inventory number" do
+      package.inventory_number = inventory_number
+      package.save
+      expect(barcode_service).to receive(:print).with(inventory_number).and_return(["pid 111 exit 0", "", ""])
+      post :print_barcode, package_id: package.id
+    end
+
+    it "return 200 status" do
+      post :print_barcode, package_id: package.id
+      expect(response.status).to eq(200)
+    end
+  end
 end
