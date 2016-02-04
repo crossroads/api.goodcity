@@ -75,6 +75,26 @@ module Api::V1
       render json: {}
     end
 
+    api :POST, "/v1/packages/print_barcode", "Print barcode"
+    def print_barcode
+      begin
+        package = Package.find params[:package_id]
+      rescue ActiveRecord::RecordNotFound
+        return render json: {errors:"Package not found with supplied package_id"}, status: 400
+      end
+      if package.inventory_number.blank?
+        i = InventoryNumber.create
+        package.inventory_number = i.id.to_s.rjust(6, "0")
+        package.save
+      end
+      print_id, errors, status = barcode_service.print package.inventory_number
+      render json: {
+        status: status,
+        errors: errors,
+        inventory_number: package.inventory_number
+      }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
+    end
+
     private
 
     def package_params
@@ -125,6 +145,10 @@ module Api::V1
 
     def location_id
       Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+    end
+
+    def barcode_service
+      BarcodeService.new
     end
   end
 end
