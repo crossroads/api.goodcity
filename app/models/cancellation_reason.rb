@@ -8,7 +8,6 @@ class CancellationReason < ActiveRecord::Base
 
   scope :visible, -> { where(visible_to_admin: true) }
 
-
   def self.unwanted
     find_by(name_en: "Unwanted")
   end
