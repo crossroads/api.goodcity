@@ -32,7 +32,7 @@ class BarcodeService
 
     label.reset_barcode_fields_to_default
 
-    label.bar_code_128( inventory_number,
+    label.bar_code_128( 'X' + inventory_number,
                         0.8,
                         0.4,
                         :orientation => :landscape,
