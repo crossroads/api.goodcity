@@ -8,10 +8,10 @@ RSpec.describe CancellationReason, type: :model do
   it { is_expected.to validate_presence_of(:name_en) }
 
   describe "scope: visible" do
+    let!(:visible_reason) { create :cancellation_reason, visible_to_admin: true }
+    let!(:invisible_reason) { create :cancellation_reason, visible_to_admin: false }
     it "return records having visible_to_admin as true" do
-      visible_reason = create :cancellation_reason, visible_to_admin: true
-      invisible_reason = create :cancellation_reason, visible_to_admin: false
-      visible_scope = CancellationReason.visible
+      visible_scope = CancellationReason.visible.to_a
       expect(visible_scope).to include(visible_reason)
       expect(visible_scope).to_not include(invisible_reason)
     end
