@@ -90,7 +90,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :mark_unwanted do
-      transition [:under_review, :reviewed, :scheduled] => :cancelled
+      transition [:under_review, :reviewed, :scheduled] => :closed
     end
 
     event :receive do
