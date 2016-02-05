@@ -4,7 +4,7 @@ class Offer < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
-  INACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
+  NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
@@ -38,11 +38,11 @@ class Offer < ActiveRecord::Base
   scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
   scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
   scope :non_draft, -> { where("state NOT IN (?)", 'draft') }
-  scope :active, -> { where("state NOT IN (?)", INACTIVE_STATES) }
-  scope :inactive, -> { where(state: INACTIVE_STATES) }
+  scope :active, -> { where("state NOT IN (?)", NOT_ACTIVE_STATES) }
+  scope :not_active, -> { where(state: NOT_ACTIVE_STATES) }
   scope :in_states, ->(states) { # overwrite concerns/state_machine_scope to add pseudo states
     states = [states].flatten.compact
-    states.push(*Offer.inactive_states) if states.delete('inactive')
+    states.push(*Offer.not_active_states) if states.delete('not_active')
     states.push(*Offer.nondraft_states) if states.delete('nondraft')
     states.push(*Offer.active_states) if states.delete('active')
     states.push(*Offer.donor_valid_states) if states.delete('for_donor')
@@ -174,11 +174,11 @@ class Offer < ActiveRecord::Base
     def donor_valid_states
       valid_states - ["cancelled"]
     end
-    def inactive_states
-      INACTIVE_STATES
+    def not_active_states
+      NOT_ACTIVE_STATES
     end
     def active_states
-      valid_states - inactive_states
+      valid_states - not_active_states
     end
     def nondraft_states
       active_states - ["draft"]
