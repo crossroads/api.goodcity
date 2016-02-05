@@ -13,14 +13,20 @@ FactoryGirl.define do
     rejected_at nil
 
     association :package_type
+    association :location
 
     trait :with_item do
       association :item
     end
 
+    trait :stockit_package do
+      inventory_number "H12345"
+    end
+
     trait :received do
       state "received"
       received_at { Time.now }
+      inventory_number "H12345"
     end
   end
 end

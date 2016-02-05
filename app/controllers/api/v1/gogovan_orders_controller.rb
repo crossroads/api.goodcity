@@ -1,9 +1,8 @@
 module Api::V1
   class GogovanOrdersController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:driver_details]
-    skip_authorization_check only: [:driver_details]
-
+    skip_before_action :validate_token, only: :driver_details
+    skip_authorization_check only: :driver_details
     load_and_authorize_resource :gogovan_order, parent: false, except: [:driver_details]
 
     resource_description do
@@ -29,6 +28,7 @@ module Api::V1
 
     def driver_details
       @offer = GogovanOrder.offer_by_ggv_uuid(params[:id])
+      authorize!(:show_driver_details, @offer)
       render json: @offer, serializer: Api::V1::OfferSerializer, exclude_messages: true
     end
 

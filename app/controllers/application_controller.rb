@@ -45,8 +45,10 @@ class ApplicationController < ActionController::API
       if token.valid?
         user_id = token.data[0]["user_id"]
         user = User.find_by_id(user_id) if user_id.present?
-        user.instance_variable_set(:@treat_user_as_donor, true) unless app_name == ADMIN_APP
-        User.current_user = user
+        if user
+          user.instance_variable_set(:@treat_user_as_donor, true) unless app_name == ADMIN_APP
+          User.current_user = user
+        end
       end
       user
     end

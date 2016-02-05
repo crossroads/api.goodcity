@@ -100,7 +100,7 @@ module Api::V1
     end
     def confirm_delivery
       @delivery = Delivery.find_by(id: params["delivery"]["id"])
-      delete_old_associations
+      @delivery.delete_old_associations
       @delivery.gogovan_order = GogovanOrder.book_order(current_user,
         order_params) if params["gogovanOrder"]
       if @delivery && @delivery.update(get_delivery_details)
@@ -139,22 +139,21 @@ module Api::V1
       end
     end
 
-    def delete_old_associations
-      @delivery.contact.try(:really_destroy!)
-      @delivery.gogovan_order.try(:really_destroy!)
-      @delivery.update_column(:contact_id, nil)
-      @delivery.update_column(:gogovan_order_id, nil)
-      @delivery.schedule && @delivery.schedule.deliveries.delete(@delivery)
-    end
-
     def get_delivery_details
       params["delivery"] = get_hash(params["delivery"])
-      schedule_details = [:scheduled_at, :slot_name, :zone, :resource, :slot]
-      address = [:address_type, :district_id, :street, :flat, :building]
       params.require(:delivery).permit(:start, :finish, :offer_id,
         :contact_id, :schedule_id, :delivery_type, :gogovan_order_id,
-        schedule_attributes: schedule_details,
-        contact_attributes: [:name, :mobile, address_attributes: address])
+        schedule_attributes: schedule_attributes,
+        contact_attributes: [:name, :mobile,
+          address_attributes: address_attributes])
+    end
+
+    def address_attributes
+      [:address_type, :district_id, :street, :flat, :building]
+    end
+
+    def schedule_attributes
+      [:scheduled_at, :slot_name, :zone, :resource, :slot]
     end
 
     def get_hash(object)

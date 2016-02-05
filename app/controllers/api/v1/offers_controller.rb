@@ -47,7 +47,7 @@ module Api::V1
     end
 
     api :GET, '/v1/offers', "List all offers"
-    param :states, Array, in: Offer.valid_states + ["active", "inactive", "nondraft", "for_donor"], desc: "Filter by offer states. Note: you can also use the pseudo states 'inactive' or 'nondraft' which mean states=['#{Offer.inactive_states.join('\', \'')}'] and states=['#{Offer.nondraft_states.join('\', \'')}'] respectively."
+    param :states, Array, in: Offer.valid_states + ["active", "not_active", "nondraft", "for_donor"], desc: "Filter by offer states. Note: you can also use the pseudo states 'not_active' or 'nondraft' which mean states=['#{Offer.not_active_states.join('\', \'')}'] and states=['#{Offer.nondraft_states.join('\', \'')}'] respectively."
     param :created_by_id, String, desc: "Return offers created by the given user id."
     param :reviewed_by_id, String, desc: "Return offers reviewed by the given user id."
     param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
@@ -102,7 +102,14 @@ module Api::V1
 
     api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
     def close_offer
-      @offer.update_attributes({ state_event: 'close' })
+      @offer.update_attributes({ state_event: 'mark_unwanted' })
+      render json: @offer, serializer: serializer
+    end
+
+    api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
+    def mark_inactive
+      @offer.update_attributes({ state_event: 'mark_inactive' })
+      @offer.send_message(params["offer"]["inactive_message"], User.system_user)
       render json: @offer, serializer: serializer
     end
 
@@ -114,7 +121,8 @@ module Api::V1
 
     def offer_params
       attributes = [:language, :origin, :stairs, :parking, :estimated_size,
-        :notes, :delivered_by, :state_event]
+        :notes, :delivered_by, :state_event, :cancel_reason,
+        :cancellation_reason_id]
       params.require(:offer).permit(attributes)
     end
 

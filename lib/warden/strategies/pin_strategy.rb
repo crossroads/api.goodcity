@@ -12,10 +12,14 @@ module Warden
         auth_token = AuthToken.find_by_otp_auth_key(params['otp_auth_key'])
         return success!(auth_token.user) if valid_app_store_credentials?(auth_token)
         user = auth_token.try(:user)
-        has_valid_otp_code?(auth_token) && user ? success!(user) : fail
+        has_valid_otp_code?(auth_token) && valid_user(user) ? success!(user) : fail
       end
 
       private
+
+      def valid_user(user)
+        user.present? && !user.disabled
+      end
 
       def has_valid_otp_code?(auth_token)
         auth_token && auth_token.authenticate_otp(params["pin"], { drift: otp_code_validity })

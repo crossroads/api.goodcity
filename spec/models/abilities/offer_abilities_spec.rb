@@ -122,6 +122,43 @@ describe "Offer abilities" do
     let(:user)  { nil }
     let(:offer) { create :offer }
     it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, offer) } }
+
+    context "gogovan_order" do
+      let(:gogovan_order) { create(:gogovan_order, :with_delivery) }
+      let(:offer) { gogovan_order.delivery.offer }
+      context "scheduled offer" do
+        before { offer.state = "scheduled" }
+        it "should be visible if ggv order is pending" do
+          gogovan_order.status = "pending"
+          is_expected.to be_able_to(:show_driver_details, offer)
+        end
+        it "should be visible if ggv order is active" do
+          gogovan_order.status = "active"
+          is_expected.to be_able_to(:show_driver_details, offer)
+        end
+        it "should not be visible if ggv order is completed" do
+          gogovan_order.status = "completed"
+          is_expected.not_to be_able_to(:show_driver_details, offer)
+        end
+        it "should not be visible if ggv order is cancelled" do
+          gogovan_order.status = "cancelled"
+          is_expected.not_to be_able_to(:show_driver_details, offer)
+        end
+      end
+      context "reviewed offer" do
+        it "should not be visible" do
+          offer = create(:offer, state: "reviewed")
+          expect(offer.delivery).to be_nil
+          is_expected.not_to be_able_to(:show_driver_details, offer)
+        end
+        it "should not be visible if ggv order exists (invalid state conditions)" do
+          expect(offer.delivery.gogovan_order).to be_present
+          offer.state = "reviewed"
+          is_expected.not_to be_able_to(:show_driver_details, offer)
+        end
+      end
+
+    end
   end
 
 end

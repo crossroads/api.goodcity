@@ -13,4 +13,5 @@ production:
   - airbrake
   - low
   - gogovan_orders
+  - stockit_updates
   - [high, 2]

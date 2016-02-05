@@ -13,9 +13,13 @@ module TokenValidatable
   private
 
   def validate_token
-    unless token.valid?
+    unless token.valid? && valid_current_user
       throw(:warden, { status: :unauthorized, message: token.errors.full_messages.join })
     end
+  end
+
+  def valid_current_user
+    User.current_user.present? && !User.current_user.disabled
   end
 
   def token

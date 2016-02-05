@@ -23,4 +23,8 @@ FactoryGirl.define do
     name 'System'
   end
 
+  factory :api_write_permission, parent: :permission do
+    name 'api-write'
+  end
+
 end

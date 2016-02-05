@@ -11,16 +11,29 @@ class Delivery < ActiveRecord::Base
 
   before_save :update_offer_state
   before_destroy :push_back_offer_state
-  after_save :send_updates, if: "offer.scheduled?" && :process_completed?
+  after_save :send_updates, if: :successfully_scheduled?
+  after_save :notify_reviewers, if: :successfully_scheduled?
   after_destroy {send_updates :delete unless Rails.env.test? }
 
   def update_offer_state
-    self.delivery_type = self.delivery_type.try(:titleize)
+    self.delivery_type = delivery_type.try(:titleize)
     offer.schedule if process_completed?
     true
   end
 
+  def delete_old_associations
+    contact.try(:really_destroy!)
+    gogovan_order.try(:really_destroy!)
+    update_column(:contact_id, nil)
+    update_column(:gogovan_order_id, nil)
+    schedule && schedule.deliveries.delete(self)
+  end
+
   private
+
+  def successfully_scheduled?
+    offer.scheduled? && process_completed?
+  end
 
   def push_back_offer_state
     offer.try(:cancel_schedule) unless offer.destroyed?
@@ -56,5 +69,22 @@ class Delivery < ActiveRecord::Base
   def serialized_object(record)
     associations = record.class.reflections.keys.map(&:to_sym)
     "Api::V1::#{record.class}Serializer".constantize.new(record, { exclude: associations })
+  end
+
+  def notify_reviewers
+    PushService.new.send_notification Channel.reviewers, true, {
+      category: 'offer_delivery',
+      message:   delivery_notify_message,
+      offer_id:  offer.id,
+      author_id: offer.created_by_id
+    }
+  end
+
+  def delivery_notify_message
+    formatted_date = schedule.scheduled_at.strftime("%a #{schedule.scheduled_at.day.ordinalize} %b %Y")
+    I18n.t("delivery.#{delivery_type.downcase.tr(" ","_")}_message",
+      name: offer.created_by.full_name,
+      time: schedule.slot_name,
+      date: formatted_date)
   end
 end
