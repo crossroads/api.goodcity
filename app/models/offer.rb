@@ -42,7 +42,7 @@ class Offer < ActiveRecord::Base
   scope :inactive, -> { where(state: INACTIVE_STATES) }
   scope :in_states, ->(states) { # overwrite concerns/state_machine_scope to add pseudo states
     states = [states].flatten.compact
-    states.push(*Offer.inactive_states) if states.delete('in_active')
+    states.push(*Offer.inactive_states) if states.delete('inactive')
     states.push(*Offer.nondraft_states) if states.delete('nondraft')
     states.push(*Offer.active_states) if states.delete('active')
     states.push(*Offer.donor_valid_states) if states.delete('for_donor')
