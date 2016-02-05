@@ -45,7 +45,9 @@ module Api::V1
     end
 
     def user_params
-      params.require(:user).permit(:last_connected, :last_disconnected)
+      attributes = [:last_connected, :last_disconnected]
+      attributes.concat([:permission_id]) if User.current_user.supervisor?
+      params.require(:user).permit(attributes)
     end
   end
 end

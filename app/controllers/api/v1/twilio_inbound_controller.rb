@@ -224,13 +224,15 @@ module Api::V1
     def accept_offer_id
       response = Twilio::TwiML::Response.new do |r|
         if params["Digits"]
-          donor = TwilioInboundCallManager.new(offer_id: params["Digits"]).offer_donor
+          twilio_manager = TwilioInboundCallManager.new(offer_id: params["Digits"], mobile: params["From"])
+          donor = twilio_manager.offer_donor
 
           if donor
             r.Say "Connecting to #{donor.full_name}.."
             r.Dial callerId: voice_number do |d|
               d.Number donor.mobile
             end
+            twilio_manager.log_outgoing_call
           else
             r.Say "You have entered invalid offer ID. Please try again."
             ask_offer_id(r)

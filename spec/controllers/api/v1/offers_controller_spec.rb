@@ -173,7 +173,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(in_review_offer).to be_under_review
         put :close_offer, id: in_review_offer.id
         expect(response.status).to eq(200)
-        expect(in_review_offer.reload).to be_closed
+        expect(in_review_offer.reload).to be_cancelled
       end
     end
   end

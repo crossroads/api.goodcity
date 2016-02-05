@@ -9,6 +9,7 @@ FactoryGirl.define do
     mobile            { generate(:mobile) }
     last_connected    { 2.days.ago }
     last_disconnected { 1.day.ago }
+    disabled          { false }
 
     association :image
 
@@ -22,6 +23,10 @@ FactoryGirl.define do
 
     trait :administrator do
       association :permission, factory: :administrator_permission
+    end
+
+    trait :api_user do
+      association :permission, factory: :api_write_permission
     end
 
     trait :system do

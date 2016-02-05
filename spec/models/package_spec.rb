@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Package, type: :model do
 
+  let(:package) { create :package }
+
   describe "Associations" do
     it { is_expected.to belong_to :item }
     it { is_expected.to belong_to :package_type }
@@ -16,6 +18,7 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:received_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:rejected_at).of_type(:datetime)}
+    it{ is_expected.to have_db_column(:designation_name).of_type(:string)}
   end
 
   describe "validations" do
@@ -44,7 +47,7 @@ RSpec.describe Package, type: :model do
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
-        package = create :package
+        expect(Stockit::Item).to receive(:create).with(package)
         expect{
           package.mark_received
         }.to change(package, :received_at)
@@ -53,13 +56,42 @@ RSpec.describe Package, type: :model do
     end
 
     describe "#mark_missing" do
+      let(:package) { create :package, :received }
       it "should set received_at value" do
-        package = create :package, :received
+        expect(Stockit::Item).to receive(:delete).with(package.inventory_number)
         expect{
           package.mark_missing
         }.to change(package, :received_at).to(nil)
         expect(package.state).to eq("missing")
       end
+    end
+  end
+
+  describe "add_to_stockit" do
+    it "should add API errors to package.errors" do
+      api_response = {"errors" => {"code" => "can't be blank"}}
+      expect(Stockit::Item).to receive(:create).with(package).and_return(api_response)
+      package.add_to_stockit
+      expect(package.errors).to include(:code)
+    end
+  end
+
+  describe "remove_from_stockit" do
+    it "should add API errors to package.errors" do
+      package.inventory_number = "F12345"
+      api_response = {"errors" => {"base" => "already designated"}}
+      expect(Stockit::Item).to receive(:delete).with(package.inventory_number).and_return(api_response)
+      package.remove_from_stockit
+      expect(package.errors).to include(:base)
+      expect(package.inventory_number).to_not be_nil
+    end
+
+    it "should add set inventory_number to nil" do
+      package.inventory_number = "F12345"
+      expect(Stockit::Item).to receive(:delete).with(package.inventory_number).and_return({})
+      package.remove_from_stockit
+      expect(package.errors.full_messages).to eq([])
+      expect(package.inventory_number).to be_nil
     end
   end
 

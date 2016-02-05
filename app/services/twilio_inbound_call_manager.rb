@@ -66,6 +66,15 @@ class TwilioInboundCallManager
     end
   end
 
+  def log_outgoing_call
+    Version.create(
+      event:     'admin_called',
+      item_type: 'Offer',
+      item_id:   @offer_id,
+      whodunnit: caller.id.to_s
+    )
+  end
+
   private
 
   def call_summary_text

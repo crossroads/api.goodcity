@@ -50,8 +50,7 @@ class User < ActiveRecord::Base
   end
 
   def full_name
-    name = [first_name, last_name].reject(&:blank?)
-    name.map(&:downcase).map(&:capitalize).join(' ')
+    [first_name, last_name].reject(&:blank?).map(&:capitalize).join(' ')
   end
 
   def staff?
@@ -78,6 +77,10 @@ class User < ActiveRecord::Base
     permission.try(:name) == nil || @treat_user_as_donor == true
   end
 
+  def api_user?
+    permission.try(:name) == "api-write"
+  end
+
   def online?
     (last_connected && last_disconnected) ?
       (last_connected > last_disconnected) : false
@@ -97,11 +100,11 @@ class User < ActiveRecord::Base
   end
 
   def self.current_user
-    Thread.current[:current_user]
+    RequestStore.store[:current_user]
   end
 
   def self.current_user=(user)
-    Thread.current[:current_user] = user
+    RequestStore.store[:current_user] = user
   end
 
   def self.system_user

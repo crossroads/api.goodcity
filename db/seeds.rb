@@ -15,6 +15,17 @@ rejection_reasons.each do |name_en, value|
     name_zh_tw: value[:name_zh_tw] )
 end
 
+cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
+cancellation_reasons.each do |name_en, value|
+  FactoryGirl.create(:cancellation_reason,
+    name_en: name_en,
+    name_zh_tw: value[:name_zh_tw],
+    visible_to_admin: value[:visible_to_admin] )
+end
+
+# Load Locations from Stockit
+Rake::Task["goodcity:add_stockit_locations"].invoke
+
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
   # FactoryGirl creates the correct territory for us
@@ -38,6 +49,16 @@ crossroads_transports.each do |name, value|
 end
 
 CrossroadsTransport.find_by(name_en: "Disable").update_column(:is_van_allowed, false)
+
+holidays = YAML.load_file("#{Rails.root}/db/holidays.yml")
+holidays.each do |key, value|
+  date_value = DateTime.parse(value[:holiday]).in_time_zone(Time.zone)
+  holiday = Holiday.where(
+    name: value[:name],
+    year: value[:year],
+    holiday: date_value
+  ).first_or_create
+end
 
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
 package_types.each do |code, value|
@@ -76,6 +97,9 @@ end
 
 # Create System User
 FactoryGirl.create(:user, :system)
+
+# Create api-write permission
+FactoryGirl.create(:permission, name: "api-write")
 
 # Create PackageCategories
 PackageCategoryImporter.import
