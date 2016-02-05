@@ -47,7 +47,7 @@ module Api::V1
     end
 
     api :GET, '/v1/offers', "List all offers"
-    param :states, Array, in: Offer.valid_states + ["active", "inactive", "nondraft", "for_donor"], desc: "Filter by offer states. Note: you can also use the pseudo states 'inactive' or 'nondraft' which mean states=['#{Offer.inactive_states.join('\', \'')}'] and states=['#{Offer.nondraft_states.join('\', \'')}'] respectively."
+    param :states, Array, in: Offer.valid_states + ["active", "not_active", "nondraft", "for_donor"], desc: "Filter by offer states. Note: you can also use the pseudo states 'not_active' or 'nondraft' which mean states=['#{Offer.not_active_states.join('\', \'')}'] and states=['#{Offer.nondraft_states.join('\', \'')}'] respectively."
     param :created_by_id, String, desc: "Return offers created by the given user id."
     param :reviewed_by_id, String, desc: "Return offers reviewed by the given user id."
     param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
