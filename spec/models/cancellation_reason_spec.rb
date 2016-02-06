@@ -11,9 +11,9 @@ RSpec.describe CancellationReason, type: :model do
     let!(:visible_reason) { create :cancellation_reason, visible_to_admin: true }
     let!(:invisible_reason) { create :cancellation_reason, visible_to_admin: false }
     it "return records having visible_to_admin as true" do
-      visible_scope = CancellationReason.visible.to_a
-      expect(visible_scope).to include(visible_reason)
-      expect(visible_scope).to_not include(invisible_reason)
+      visible_scope_ids = CancellationReason.visible.pluck(:id)
+      expect(visible_scope_ids).to include(visible_reason.id)
+      expect(visible_scope_ids).to_not include(invisible_reason.id)
     end
   end
 
