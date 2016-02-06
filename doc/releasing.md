@@ -45,16 +45,27 @@ Merge the code to the live branch.
     git merge master
     git push origin live
 
-For admin.goodcity, app.goodcity and shared.goodcity you must tag the release with the same tag as the app version. Note: you must add a 0.0.1 increment to the tag name as when the CircleCI builds run, they increment the version number before building the apps. For example, if we set `appDetails.json` to version `0.7.0`, then use the git tag `0.7.1` as this will be the mobile app version that is generated.
-
-    git tag 0.7.1
-    git push origin 0.7.1
-
 CircleCI will now begin the test and deploy process. Watch the builds to ensure that the code is deployed.
 
-## Buidling and distributing the mobile apps
+## Tagging the release
 
-Once completed CircleCI will upload the admin.goodcity and app.goodcity Android apps to the Testfairy service. Download and test the builds.
+It is important to tag all of the code repositories at this point so that it is easy to recreate the exact environment when debugging user issues. You must tag repositories even if the code has not changed since last tagged. When a user says they are using app version 0.5.1, we need to be able to bring up an 0.5.1 environment.
+
+Note: you must add a 0.0.1 increment to the current version number. This is because when CircleCI runs it increments the version number before building the mobile apps. For example, if we set `appDetails.json` to version `0.7.0` you should tag as `0.7.1` as this will be the mobile app version that is generated.
+
+The best procedure is to wait until CircleCI has built the apps and committed the version bump to git (live branch). Pull the changes and tag the repo. Then merge that commit back into the master branch so future merges back to live won't conflict.
+
+    git checkout live
+    git pull --rebase origin live
+    git tag 0.7.1
+    git push origin 0.7.1
+    git checkout master
+    git cherry-pick <commit sha from CircleCI version bump>
+    git push origin master
+
+## Building and distributing the mobile apps
+
+Once CircleCI completes its builds, it will upload the admin.goodcity and app.goodcity Android apps to the TestFairy service. Download and test the builds.
 
 If you are satisfied the apps are working correctly, upload them to the Google Play store and submit for distribution.
 
