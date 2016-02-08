@@ -6,6 +6,7 @@ class PushService
   end
 
   def send_notification(channel, is_admin_app, data)
+    data[:message] = ActionView::Base.full_sanitizer.sanitize(data[:message])
     data[:date] = Time.now.to_json.tr('"','')
     channels = [channel].flatten
     channels = Channel.add_admin_app_prefix(channels) if is_admin_app

@@ -202,7 +202,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_ready_for_schedule_message
-    send_message(I18n.t("offer.ready_for_schedule_message"), reviewed_by)
+    send_message(I18n.t("offer.ready_for_schedule_message", offer_id: id), reviewed_by)
   end
 
   def send_received_message
