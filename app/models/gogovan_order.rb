@@ -6,7 +6,8 @@ class GogovanOrder < ActiveRecord::Base
   has_one :delivery, inverse_of: :gogovan_order
 
   before_create :generate_ggv_uuid
-  after_commit :start_polling_status, on: [:create]
+  after_commit :start_polling_status, on: :create
+  after_update :notify_order_completed, if: :order_completed?
   before_destroy :cancel_order, if: :pending?
 
   def self.place_order(user, attributes)
@@ -106,5 +107,24 @@ class GogovanOrder < ActiveRecord::Base
       offer = Offer.find(attributes["offerId"])
       offer && offer.update_column(:gogovan_transport_id, attributes["gogovanOptionId"])
     end
+  end
+
+  def notify_order_completed
+    message = I18n.t("gogovan.notify_completed", license: driver_license, location: pick_up_location)
+
+    PushService.new.send_notification Channel.supervisors, true, {
+      category: 'offer_delivery',
+      message:   message,
+      offer_id:  offer.id,
+      author_id: User.system_user
+    }
+  end
+
+  def order_completed?
+    changes.has_key?("status") && changes["status"].last == "completed"
+  end
+
+  def pick_up_location
+    delivery.try(:contact).try(:address).try(:district).try(:name)
   end
 end
