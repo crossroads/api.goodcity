@@ -160,9 +160,9 @@ class Ability
   end
 
   def version_abilities
-    can :index, Version, related_type: "Offer", related_id: @user_offer_ids
-    can :index, Version, item_type: "Offer", item_id: @user_offer_ids
-    can :index, Version if staff?
+    can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
+    can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
+    can [:index, :show], Version if staff?
   end
 
   private
