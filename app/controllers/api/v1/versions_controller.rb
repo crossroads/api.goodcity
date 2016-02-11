@@ -17,6 +17,11 @@ module Api::V1
       render json: { versions: @versions.items_and_calls_log }.to_json
     end
 
+    api :GET, '/v1/versions/1', "List a version"
+    def show
+      render json: @version, serializer: serializer
+    end
+
     private
 
     def serializer

@@ -1,3 +1,5 @@
+require "goodcity/offer_utils"
+
 module Api::V1
   class OffersController < Api::V1::ApiController
 
@@ -111,6 +113,11 @@ module Api::V1
       @offer.update_attributes({ state_event: 'mark_inactive' })
       @offer.send_message(params["offer"]["inactive_message"], User.system_user)
       render json: @offer, serializer: serializer
+    end
+
+    def merge_offer
+      status = Goodcity::OfferUtils.merge_offer!(offer_id: params["base_offer_id"], other_offer_id: @offer.id)
+      render json: { status: status }.to_json
     end
 
     private
