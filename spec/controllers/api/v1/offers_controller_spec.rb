@@ -178,6 +178,32 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "PUT offer/1/merge_offer" do
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+
+      let(:donor) { create :user }
+      let(:merge_offer) { create :offer, :submitted, :with_items, created_by: donor }
+      let(:base_offer) { create :offer, :submitted, :with_items, created_by: donor }
+      let(:scheduled_offer) { create :offer, :scheduled, :with_items, created_by: donor }
+
+      it "can merge offer", :show_in_doc do
+        put :merge_offer, id: merge_offer.id, base_offer_id: base_offer.id
+        expect(response.status).to eq(200)
+        expect(JSON.parse(response.body)["status"]).to eq(true)
+        expect{
+          Offer.find(merge_offer.id)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "can not merge offer when scheduled", :show_in_doc do
+        put :merge_offer, id: scheduled_offer.id, base_offer_id: base_offer.id
+        expect(response.status).to eq(200)
+        expect(JSON.parse(response.body)["status"]).to eq(false)
+      end
+    end
+  end
+
   describe "DELETE offer/1" do
     context "donor" do
       before { generate_and_set_token(user) }
