@@ -178,6 +178,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "PUT offer/1/receive_offer" do
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+      it "can close offer", :show_in_doc do
+        expect(in_review_offer).to be_under_review
+        expect {
+          put :receive_offer, id: in_review_offer.id, close_offer_message: "test"
+        }.to change(in_review_offer.messages, :count).by(1)
+        expect(response.status).to eq(200)
+        expect(in_review_offer.reload).to be_received
+      end
+    end
+  end
+
   describe "PUT offer/1/merge_offer" do
     context "reviewer" do
       before { generate_and_set_token(reviewer) }
