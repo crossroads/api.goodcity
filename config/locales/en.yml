@@ -42,7 +42,6 @@ en:
       complete you will be able to arrange transport for any accepted items.
       If you have questions feel free to reply to this message.
     ggv_cancel_message: A van booking for %{time} was cancelled via GoGoVan. Please choose new transport arrangements.
-    received_message: Your offer was received, thank you.
     item_add_message: "%{donor_name} added a new item to their offer. Please review it."
     ready_for_schedule_message: "Your offer has been reviewed. Please <a href='/offers/%{offer_id}/plan_delivery'>click here</a> to arrange transportation."
   gogovan:

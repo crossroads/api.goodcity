@@ -156,7 +156,6 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_alert
     end
 
-    after_transition on: :receive, do: :send_received_message
     after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
     after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, transition|
@@ -205,17 +204,13 @@ class Offer < ActiveRecord::Base
     send_message(I18n.t("offer.ready_for_schedule_message", offer_id: id), reviewed_by)
   end
 
-  def send_received_message
-    send_message(I18n.t("offer.received_message"), User.system_user)
-  end
-
   def send_item_add_message
     text = I18n.t("offer.item_add_message", donor_name: created_by.full_name)
     messages.create(sender: User.system_user, is_private: true, body: text)
   end
 
   def send_message(body, user)
-    messages.create(body: body, sender: user)
+    messages.create(body: body, sender: user) if(body.strip.length > 0)
   end
 
   def update_saleable_items
