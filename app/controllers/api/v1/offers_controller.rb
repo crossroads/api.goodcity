@@ -108,6 +108,13 @@ module Api::V1
       render json: @offer, serializer: serializer
     end
 
+    api :PUT, '/v1/offers/1/receive_offer', "Mark Offer as received."
+    def receive_offer
+      @offer.update_attributes({ state_event: 'receive' })
+      @offer.send_message(params["close_offer_message"], User.current_user)
+      render json: @offer, serializer: serializer
+    end
+
     api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
     def mark_inactive
       @offer.update_attributes({ state_event: 'mark_inactive' })
