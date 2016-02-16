@@ -14,6 +14,8 @@ Rails.application.routes.draw do
       post "auth/register_device", to: "authentication#register_device"
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
+      get "braintree/generate_token", to: "braintree#generate_token"
+      post "braintree/make_transaction", to: "braintree#make_transaction"
 
       resources :districts, only: [:index, :show]
       resources :package_types, only: [:index]
