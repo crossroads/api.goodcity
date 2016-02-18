@@ -9,6 +9,9 @@ module Api::V1
       render json: { braintree_token: token }.to_json
     end
 
+    api :POST, '/v1/braintree/make_transaction', "Get braintree token"
+    param :amount, String, desc: "The donation amount donor wants to donate."
+    param :payment_method_nonce, String, desc: "The token(nonce) returned by braintree server."
     def make_transaction
       response = @braintree.create_transaction(params["amount"], params["payment_method_nonce"])
       render json: { response: response }.to_json
