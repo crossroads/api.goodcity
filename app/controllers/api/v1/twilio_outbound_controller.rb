@@ -81,7 +81,7 @@ module Api::V1
     param :SequenceNumber, String
     def call_status
       tcm = TwilioOutboundCallManager.new(to: child_call.to)
-      SendOutboundCallStatus.new(tcm.user_id, tcm.offer_id, child_call.status).notify
+      tcm.log_outgoing_call
       tcm.remove
       render json: {}
     end

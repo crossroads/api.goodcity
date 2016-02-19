@@ -86,6 +86,7 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
     before {
       allow_any_instance_of(described_class).to receive_message_chain(:child_call, :to).and_return(user.mobile)
       allow_any_instance_of(described_class).to receive_message_chain(:child_call, :status).and_return("completed")
+      allow_any_instance_of(TwilioOutboundCallManager).to receive(:log_outgoing_call)
     }
 
     it "called from Twilio when outbound call completed", :show_in_doc do
