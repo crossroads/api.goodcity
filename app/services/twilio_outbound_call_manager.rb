@@ -26,6 +26,15 @@ class TwilioOutboundCallManager
     redis.del(key)
   end
 
+  def log_outgoing_call
+    Version.create(
+      event:     'admin_called',
+      item_type: 'Offer',
+      item_id:   offer_id,
+      whodunnit: user_id
+    )
+  end
+
   private
 
   def data
