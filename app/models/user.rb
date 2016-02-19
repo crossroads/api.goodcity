@@ -119,6 +119,10 @@ class User < ActiveRecord::Base
     Version.for_offers.by_user(id).last.try(:item_id_or_related_id)
   end
 
+  def has_payment_info?
+    braintree_customer_id
+  end
+
   private
 
   def generate_auth_token
