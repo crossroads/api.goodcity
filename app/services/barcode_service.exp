@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+
+# made prompt for password optional in case it's not enabled on CUPS server
+# http://stackoverflow.com/a/26295971
+
+spawn lp -d $env(NAME) -h $env(HOST) -U $env(USER) -o raw $env(FILE)
+expect {
+  "Password" { send -- "$env(PWD)\r\n"; exp_continue }
+  eof { exit }
+}

@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: https://github.com/crossroads/easyzpl.git
-  revision: f4f806042826106c86b1c0ac3d6a16c81f11f072
+  revision: e8a7e680950335a0818ac91342dba3d76858c512
   specs:
     easyzpl (0.5.2)
       barby (>= 0.6.1)
