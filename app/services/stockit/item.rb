@@ -14,15 +14,15 @@ module Stockit
 
     class << self
       def create(package)
-        # new(package).create
+        new(package).create
       end
 
       def update(package)
-        # new(package).update
+        new(package).update
       end
 
       def delete(package)
-        # new(package).delete
+        new(package).delete
       end
     end
 
