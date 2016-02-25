@@ -119,7 +119,7 @@ module Api::V1
     api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
     def mark_inactive
       @offer.update_attributes({ state_event: 'mark_inactive' })
-      @offer.send_message(params["offer"]["inactive_message"], User.system_user)
+      @offer.send_message(params["offer"]["inactive_message"], User.current_user)
       render json: @offer, serializer: serializer
     end
 
