@@ -58,10 +58,16 @@ class BarcodeService
       'FILE' => f.path
     }
 
-    print_id, errors, status = Open3.capture3(options, './app/services/barcode_service.exp')
-    Rails.logger.info print_id
-    Rails.logger.info errors
-    Rails.logger.info status
+    print_id, errors, status = Open3.capture3(options, Rails.root.join('app', 'services', 'barcode_service.exp').to_s)
+    
+    log_hash = { printer_name: "\"#{options['NAME']}\"",
+        printer_host: "\"#{options['HOST']}\"",
+        printer_user: "\"#{options['USER']}\"",
+        # print_job_id: "\"#{print_id}\"",
+        print_job_errors: "\"#{errors}\"",
+        print_job_status: "\"#{status}\""
+    }
+    Rails.logger.info(log_hash.collect{|k,v| "#{k}=#{v}"}.join(" "))
 
     f.delete
 
