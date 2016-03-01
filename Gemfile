@@ -48,7 +48,7 @@ gem 'nestful', git: "https://github.com/maccman/nestful.git"
 gem 'nokogiri'
 gem 'sidekiq'
 gem 'sinatra', :require => nil # for sidekiq reporting console
-gem 'airbrake'
+gem 'airbrake', "~> 4" # peg to v4 until we figure out if we can support v5 in Errbit
 gem 'lograge'
 gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
