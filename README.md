@@ -14,6 +14,7 @@ It provides a set of database models, validations, relationships, tests and JSON
 * [socket.io-webservice](https://github.com/crossroads/socket.io-webservice)
 * [redis](http://redis.io/)
 * [expect](http://expect.sourceforge.net/) (required for barcode printing)
+* [cups-client] (required for barcode printing)
 
 ## Installation
 
