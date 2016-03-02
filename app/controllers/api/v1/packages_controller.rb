@@ -16,9 +16,9 @@ module Api::V1
     def_param_group :package do
       param :package, Hash, required: true do
         param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
-        param :length, Integer, desc: "Package length", allow_nil: true
-        param :width, Integer, desc: "Package width", allow_nil: true
-        param :height, Integer, desc: "Package height", allow_nil: true
+        param :length, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package length", allow_nil: true
+        param :width, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package width", allow_nil: true
+        param :height, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package height", allow_nil: true
         param :notes, String, desc: "Comment mentioned by customer", allow_nil: true
         param :item_id, String, desc: "Item for which package is created", allow_nil: true
         param :state_event, Package.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this package."
