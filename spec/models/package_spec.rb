@@ -19,6 +19,8 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:received_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:rejected_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:designation_name).of_type(:string)}
+    it{ is_expected.to have_db_column(:grade).of_type(:string)}
+    it{ is_expected.to have_db_column(:donor_condition_id).of_type(:integer)}
   end
 
   describe "validations" do
@@ -104,5 +106,16 @@ RSpec.describe Package, type: :model do
 
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
+  end
+
+  describe "before_save" do
+    it "should set grade and donor_condition value" do
+      item = create :item
+      package = build :package, item: item
+      expect {
+        package.save
+      }.to change(package, :donor_condition).from(nil).to(item.donor_condition)
+      expect(package.grade).to eq("B")
+    end
   end
 end
