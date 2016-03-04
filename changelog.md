@@ -42,3 +42,4 @@ Add follwing environment variables in `.env` file
 Rake tasks to run:
 
     rake goodcity:update_offers_cancelled_with_unwanted_reason
+    rake goodcity:update_packages
