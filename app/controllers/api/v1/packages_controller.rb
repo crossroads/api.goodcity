@@ -49,7 +49,6 @@ module Api::V1
       if package_record
         @package.offer_id = offer_id
         if @package.save
-          save_item_details
           render json: @package, serializer: serializer, status: 201
         else
           render json: {errors: @package.errors.full_messages}.to_json , status: 422
@@ -105,6 +104,7 @@ module Api::V1
     end
 
     def package_params
+      get_donor_condition_value
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
@@ -112,21 +112,11 @@ module Api::V1
       params.require(:package).permit(attributes)
     end
 
-    def item_attributes
-      if (item = item_params)
-        item["donor_condition_id"] = DonorCondition.find_by(name_en: item["donor_condition_id"]).try(:id)
-        item
+    def get_donor_condition_value
+      if(condition = params["package"]["donor_condition"])
+        params["package"]["donor_condition_id"] = DonorCondition.
+          find_by(name_en: condition).try(:id)
       end
-    end
-
-    def item_params
-      params["package"].require(:item).permit(:donor_condition_id)
-    end
-
-    def save_item_details
-      params["package"]["item"] &&
-      (attributes = item_attributes) &&
-      @package.item.update_attributes(attributes)
     end
 
     def serializer
