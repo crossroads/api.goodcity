@@ -66,7 +66,8 @@ module Stockit
         quantity: package.quantity,
         code_id: package.package_type.code,
         inventory_number: add_stockit_prefix(package.inventory_number),
-        condition: item_condition,
+        condition: package_condition,
+        grade: package.grade,
         description: package.notes,
         location_id: package.location.try(:stockit_id)
       }
@@ -81,8 +82,9 @@ module Stockit
       }
     end
 
-    def item_condition
-      case package.item.donor_condition.name_en
+    def package_condition
+      condition = package.donor_condition.name_en || package.item.donor_condition.name_en
+      case condition
       when "New" then "N"
       when "Lightly Used" then "M"
       when "Heavily Used" then "U"
