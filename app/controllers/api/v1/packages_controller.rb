@@ -43,6 +43,7 @@ module Api::V1
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
+      @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
       if package_record
         @package.offer_id = offer_id
         if @package.save
@@ -97,6 +98,10 @@ module Api::V1
 
     private
 
+    def remove_stockit_prefix(stockit_inventory_number)
+      stockit_inventory_number.gsub(/^x/i, '') unless stockit_inventory_number.blank?
+    end
+
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
@@ -130,8 +135,9 @@ module Api::V1
     end
 
     def package_record
-      if package_params[:inventory_number]
-        @package = Package.find_by(inventory_number: package_params[:inventory_number])
+      inventory_number = remove_stockit_prefix(@package.inventory_number)
+      if inventory_number
+        @package = Package.find_by(inventory_number: inventory_number)
         if @package
           GoodcitySync.request_from_stockit = true
           @package.assign_attributes(package_params)

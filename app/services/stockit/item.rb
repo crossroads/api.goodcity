@@ -44,11 +44,15 @@ module Stockit
       inventory_number = package # package is actually inventory_number
       if inventory_number.present?
         url = url_for("/api/v1/items/destroy")
-        put(url, {inventory_number: inventory_number})
+        put(url, {inventory_number: add_stockit_prefix(inventory_number)})
       end
     end
 
     private
+
+    def add_stockit_prefix(inventory_number)
+      "X#{inventory_number}"
+    end
 
     def stockit_params
       {
@@ -61,7 +65,7 @@ module Stockit
       {
         quantity: package.quantity,
         code_id: package.package_type.code,
-        inventory_number: package.inventory_number,
+        inventory_number: add_stockit_prefix(package.inventory_number),
         condition: item_condition,
         description: package.notes,
         location_id: package.location.try(:stockit_id)

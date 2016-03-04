@@ -3,6 +3,7 @@ require "rails_helper"
 describe Stockit::Item do
   let(:package)  { create :package, :stockit_package, :with_item }
   let(:inventory_number) { package.inventory_number }
+  let(:stockit_inventory_number) { "X#{inventory_number}" }
   let(:stockit)  { described_class.new(package) }
   let(:endpoint) { "http://www.example.com" }
   let(:options)  { stockit.send(:default_options) }
@@ -53,7 +54,7 @@ describe Stockit::Item do
 
     let(:stockit) { described_class.new(inventory_number) }
     let(:url) { "#{endpoint}/api/v1/items/destroy" }
-    let(:delete_request_params) { {inventory_number: inventory_number} }
+    let(:delete_request_params) { {inventory_number: stockit_inventory_number} }
     let(:error_response) { { "errors" => { "dispatched" => "Designated or dispatched items cannot be marked missing." } } }
     let(:mock_error_response) { double( as_json: error_response ) }
 
