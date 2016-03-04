@@ -26,6 +26,8 @@ module Api::V1
         param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
         param :package_type_id, String, desc: "Category of the package", allow_nil: true
         param :image_id, Integer, desc: "The id of the item image that represents this package", allow_nil: true
+        param :donor_condition_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of donor-condition", allow_nil: true
+        param :grade, String, allow_nil: true
       end
     end
 
@@ -105,7 +107,8 @@ module Api::V1
     def package_params
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
-        :inventory_number, :location_id, :designation_name]
+        :inventory_number, :designation_name, :donor_condition_id, :grade,
+        :location_id]
       params.require(:package).permit(attributes)
     end
 
