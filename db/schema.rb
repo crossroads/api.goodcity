@@ -236,8 +236,10 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.string   "name_zh_tw"
     t.string   "other_terms_en"
     t.string   "other_terms_zh_tw"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.boolean  "visible_in_selects", default: false
+    t.integer  "stockit_id"
   end
 
   create_table "packages", force: :cascade do |t|
