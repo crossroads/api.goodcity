@@ -38,5 +38,9 @@ class Channel
       User.supervisors.map{ |user| "user_#{user.id}" }
     end
 
+    def staff
+      User.staff.map{ |user| "user_#{user.id}" }
+    end
+
   end
 end

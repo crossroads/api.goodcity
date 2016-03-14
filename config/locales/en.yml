@@ -46,7 +46,7 @@ en:
     ready_for_schedule_message: "Your offer has been reviewed. Please <a href='/offers/%{offer_id}/plan_delivery'>click here</a> to arrange transportation."
   gogovan:
     driver_note: "Ensure you deliver all the items listed: See details \nEnglish %{link} \nChinese %{ch_link}"
-    notify_completed: "GoGoVan %{license} is on it's way from %{location}."
+    notify_completed: "GoGoVan %{license} has marked Booking ID %{booking_id} as complete."
   delivery:
     gogovan_message: "%{name} booked a GoGoVan for %{time}, %{date}"
     drop_off_message: "%{name} will deliver the items between %{time}, %{date}"
