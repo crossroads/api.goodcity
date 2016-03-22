@@ -118,6 +118,10 @@ class User < ActiveRecord::Base
     User.system.pluck(:id).include?(self.id)
   end
 
+  def self.stockit_user
+    find_by(first_name: "Stockit", last_name: "User")
+  end
+
   def recent_active_offer_id
     Version.for_offers.by_user(id).last.try(:item_id_or_related_id)
   end

@@ -57,7 +57,9 @@ module Api::V1
       states = params["states"]
       if states.present?
         @offers = if User.current_user.staff?
-          @offers.in_states(states).union(User.current_user.offers_with_unread_messages)
+          @offers.in_states(states)
+            .union(User.current_user.offers_with_unread_messages)
+            .union(Offer.active_from_past_fortnight)
         else
           @offers.in_states(states)
         end
