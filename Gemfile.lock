@@ -70,6 +70,8 @@ GEM
       rotp
     active_model_serializers (0.8.3)
       activemodel (>= 3.0)
+    active_record_union (1.1.1)
+      activerecord (>= 4.0)
     activejob (4.2.5.2)
       activesupport (= 4.2.5.2)
       globalid (>= 0.3.0)
@@ -365,6 +367,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_otp (~> 1.1.0)
   active_model_serializers (~> 0.8.0)
+  active_record_union
   airbrake (~> 4)
   annotate
   apipie-rails!

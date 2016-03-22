@@ -55,7 +55,13 @@ module Api::V1
     param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
     def index
       states = params["states"]
-      @offers = @offers.in_states(states) if states.present?
+      if states.present?
+        @offers = if User.current_user.staff?
+          @offers.in_states(states).union(User.current_user.offers_with_unread_messages)
+        else
+          @offers.in_states(states)
+        end
+      end
       @offers = @offers.created_by(params["created_by_id"]) if params["created_by_id"].present?
       @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
       render json: @offers.with_eager_load, each_serializer: serializer, exclude_messages: params["exclude_messages"] == "true"

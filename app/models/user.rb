@@ -11,6 +11,9 @@ class User < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
+  has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
+  has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
+
   belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
 
