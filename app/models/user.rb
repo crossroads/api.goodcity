@@ -123,7 +123,7 @@ class User < ActiveRecord::Base
   end
 
   def recent_active_offer_id
-    Version.for_offers.by_user(id).last.try(:item_id_or_related_id)
+    Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
   end
 
   def has_payment_info?
