@@ -98,7 +98,7 @@ class Ability
     can [:index, :show, :update], Offer if staff?
 
     can :destroy, Offer, created_by_id: @user_id, state: ['draft',
-      'submitted', 'reviewed', 'scheduled', 'under_review']
+      'submitted', 'reviewed', 'scheduled', 'under_review', 'inactive']
     can [:complete_review, :close_offer, :finished, :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer if staff?
   end
 
