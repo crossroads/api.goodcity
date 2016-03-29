@@ -11,6 +11,9 @@ class User < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
+  has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
+  has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
+
   belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
 
@@ -115,8 +118,12 @@ class User < ActiveRecord::Base
     User.system.pluck(:id).include?(self.id)
   end
 
+  def self.stockit_user
+    find_by(first_name: "Stockit", last_name: "User")
+  end
+
   def recent_active_offer_id
-    Version.for_offers.by_user(id).last.try(:item_id_or_related_id)
+    Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
   end
 
   def has_payment_info?

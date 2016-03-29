@@ -55,6 +55,7 @@ gem 'paper_trail', '~> 4.0.0.beta'
 gem 'request_store'
 gem 'easyzpl', :git => 'https://github.com/crossroads/easyzpl.git'
 gem 'braintree'
+gem 'active_record_union'
 
 group :development do
   unless ENV["CI"]
