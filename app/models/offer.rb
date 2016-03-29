@@ -35,6 +35,9 @@ class Offer < ActiveRecord::Base
     )
   }
 
+  scope :active_from_past_fortnight, -> {
+    where("id IN (?)", Version.active_offer_ids_in_past_fortnight)
+  }
   scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
   scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
   scope :non_draft, -> { where("state NOT IN (?)", 'draft') }
