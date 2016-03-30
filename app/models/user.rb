@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
   scope :system,      -> { where( permissions: { name: 'System' } ).joins(:permission) }
   scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
+  scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
