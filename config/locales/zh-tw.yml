@@ -19,8 +19,8 @@ zh-tw:
     sms_verification_pin: |
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
       （如你並沒有要求驗證碼，請忽略此信息）
-    input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
-    thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
+    input_offer_id_message: "請輸入捐獻號碼，提取捐贈人士的號碼。"
+    thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
   activerecord:
     attributes:
       user:
@@ -38,11 +38,11 @@ zh-tw:
     thank_message: 感謝您的捐獻，我們的團隊很快就會開始審查。假如審查員有任何關於捐獻物資的疑問，他們會以訊息向您查詢。由於儲存空間有限，社區的需要亦經常改變，我們可能無法接收部分物資。為此，我們深感遺憾，並先就此道歉。當審查完成時，您就能立刻安排已接受的物資的運輸。假如您有任何疑問，請隨時回覆此信息。
     ggv_cancel_message: GoGoVan已取消預約於 %{time} 的貨車，請重新安排運輸。
     item_add_message: "%{donor_name} 捐獻了一件新物品。請審查。"
-    ready_for_schedule_message: "Your offer has been reviewed. Please <a href='/offers/%{offer_id}/plan_delivery'>click here</a> to arrange transportation."
+    ready_for_schedule_message: "閣下捐獻的物資已經審查完畢，請 <a href='/offers/%{offer_id}/plan_delivery'>按此</a> 安排運送細節。"
   gogovan:
     driver_note: "請確保您運送以下所有物件：詳情請參見 \nEnglish %{link} \nChinese %{ch_link}"
-    notify_completed: "GoGoVan %{license} has marked Booking ID %{booking_id} as complete."
+    notify_completed: "GoGoVan %{license} 已經將預約號碼 %{booking_id} 列為完成"
   delivery:
-    gogovan_message: "%{name} booked a GoGoVan for %{time}, %{date}"
-    drop_off_message: "%{name} will deliver the items between %{time}, %{date}"
+    gogovan_message: "%{name} 已預約 GoGoVan，時間為 %{time}, %{date}"
+    drop_off_message: "%{name} 將會在以下時間 %{time}, %{date} 送抵物資。"
 
