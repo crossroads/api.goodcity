@@ -24,7 +24,7 @@ module Api::V1
         param :state_event, Package.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this package."
         param :received_at, String, desc: "Date on which package is received", allow_nil: true
         param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
-        param :package_type_id, String, desc: "Category of the package", allow_nil: true
+        param :package_type_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "Category of the package", allow_nil: true
         param :image_id, Integer, desc: "The id of the item image that represents this package", allow_nil: true
         param :donor_condition_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of donor-condition", allow_nil: true
         param :grade, String, allow_nil: true
@@ -105,11 +105,19 @@ module Api::V1
 
     def package_params
       get_donor_condition_value
+      assign_package_type_id
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id]
       params.require(:package).permit(attributes)
+    end
+
+    def assign_package_type_id
+      if(code_id = params["package"]["code_id"])
+        params["package"]["package_type_id"] = PackageType.
+          find_by(stockit_id: code_id).try(:id)
+      end
     end
 
     def get_donor_condition_value
@@ -135,6 +143,7 @@ module Api::V1
           GoodcitySync.request_from_stockit = true
           @package.assign_attributes(package_params)
           @package.location_id = location_id
+          @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
           @package
         end
       else
