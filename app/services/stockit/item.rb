@@ -65,7 +65,7 @@ module Stockit
     def item_params
       {
         quantity: package.quantity,
-        code_id: package.package_type.code,
+        code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         condition: package_condition,
         grade: package.grade,
