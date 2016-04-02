@@ -31,11 +31,12 @@ GIT
 
 GIT
   remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: 79e29b38544217e0038efddb8f87150d2b083366
+  revision: d3a97a8b91e99df41d5bf440bc7b42c67cae7046
+  branch: sanitize-input-params
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
-      postgres_ext (~> 2.1)
+      postgres_ext (>= 2.1, < 4)
 
 GIT
   remote: https://github.com/maccman/nestful.git
