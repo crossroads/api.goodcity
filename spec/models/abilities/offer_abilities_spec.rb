@@ -96,7 +96,7 @@ describe "Offer abilities" do
       end
 
       it "destroy" do
-        valid = ['draft', 'submitted', 'reviewed', 'scheduled', 'under_review']
+        valid = ['draft', 'submitted', 'reviewed', 'scheduled', 'under_review', 'inactive']
         valid.each do |state|
           offer = create :offer, state: state, created_by: user
           is_expected.to be_able_to(:destroy, offer)

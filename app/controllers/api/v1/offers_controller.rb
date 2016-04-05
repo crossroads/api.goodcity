@@ -1,3 +1,5 @@
+require "goodcity/offer_utils"
+
 module Api::V1
   class OffersController < Api::V1::ApiController
 
@@ -53,7 +55,15 @@ module Api::V1
     param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
     def index
       states = params["states"]
-      @offers = @offers.in_states(states) if states.present?
+      if states.present?
+        @offers = if User.current_user.staff?
+          @offers.in_states(states)
+            .union(User.current_user.offers_with_unread_messages)
+            .union(Offer.active_from_past_fortnight)
+        else
+          @offers.in_states(states)
+        end
+      end
       @offers = @offers.created_by(params["created_by_id"]) if params["created_by_id"].present?
       @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
       render json: @offers.with_eager_load, each_serializer: serializer, exclude_messages: params["exclude_messages"] == "true"
@@ -103,14 +113,27 @@ module Api::V1
     api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
     def close_offer
       @offer.update_attributes({ state_event: 'mark_unwanted' })
+      @offer.send_message(params["close_offer_message"], User.current_user)
+      render json: @offer, serializer: serializer
+    end
+
+    api :PUT, '/v1/offers/1/receive_offer', "Mark Offer as received."
+    def receive_offer
+      @offer.update_attributes({ state_event: 'receive' })
+      @offer.send_message(params["close_offer_message"], User.current_user)
       render json: @offer, serializer: serializer
     end
 
     api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
     def mark_inactive
       @offer.update_attributes({ state_event: 'mark_inactive' })
-      @offer.send_message(params["offer"]["inactive_message"], User.system_user)
+      @offer.send_message(params["offer"]["inactive_message"], User.current_user)
       render json: @offer, serializer: serializer
+    end
+
+    def merge_offer
+      status = Goodcity::OfferUtils.merge_offer!(offer_id: params["base_offer_id"], other_offer_id: @offer.id)
+      render json: { status: status }.to_json
     end
 
     private

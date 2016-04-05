@@ -11,7 +11,7 @@ gem 'pg'
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'postgres_ext', '~> 2.4.0.beta.1'
-gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git'
+gem 'postgres_ext-serializers', git: 'https://github.com/DockYard/postgres_ext-serializers.git'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
 gem 'paranoia', '~> 2.1.0'
@@ -48,12 +48,14 @@ gem 'nestful', git: "https://github.com/maccman/nestful.git"
 gem 'nokogiri'
 gem 'sidekiq'
 gem 'sinatra', :require => nil # for sidekiq reporting console
-gem 'airbrake'
+gem 'airbrake', "~> 4" # peg to v4 until we figure out if we can support v5 in Errbit
 gem 'lograge'
 gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
 gem 'request_store'
 gem 'easyzpl', :git => 'https://github.com/crossroads/easyzpl.git'
+gem 'braintree'
+gem 'active_record_union'
 
 group :development do
   unless ENV["CI"]

@@ -98,8 +98,8 @@ class Ability
     can [:index, :show, :update], Offer if staff?
 
     can :destroy, Offer, created_by_id: @user_id, state: ['draft',
-      'submitted', 'reviewed', 'scheduled', 'under_review']
-    can [:complete_review, :close_offer, :finished, :destroy, :review, :mark_inactive], Offer if staff?
+      'submitted', 'reviewed', 'scheduled', 'under_review', 'inactive']
+    can [:complete_review, :close_offer, :finished, :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer if staff?
   end
 
   def package_abilities
@@ -160,9 +160,9 @@ class Ability
   end
 
   def version_abilities
-    can :index, Version, related_type: "Offer", related_id: @user_offer_ids
-    can :index, Version, item_type: "Offer", item_id: @user_offer_ids
-    can :index, Version if staff?
+    can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
+    can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
+    can [:index, :show], Version if staff?
   end
 
   private

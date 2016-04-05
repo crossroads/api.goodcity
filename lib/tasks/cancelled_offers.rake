@@ -40,4 +40,16 @@ namespace :goodcity do
       end
     end
   end
+
+  # rake goodcity:update_offers_cancelled_with_unwanted_reason
+  desc 'Update unwanted offers'
+  task update_offers_cancelled_with_unwanted_reason: :environment do
+    cancellation_reason = CancellationReason.unwanted
+    cancellation_reason.offers.find_in_batches(batch_size: 50).each do |offers|
+      offers.each do |offer|
+        offer.update_column(:state, 'closed')
+        puts "updated offer #{offer.id}"
+      end
+    end
+  end
 end

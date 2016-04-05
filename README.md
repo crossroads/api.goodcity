@@ -12,7 +12,9 @@ It provides a set of database models, validations, relationships, tests and JSON
 * ruby 2.2 ([rvm](http://rvm.io/) can make this easy)
 * [postgresql](http://www.postgresql.org/) (v9.4 or greater)
 * [socket.io-webservice](https://github.com/crossroads/socket.io-webservice)
-* redis
+* [redis](http://redis.io/)
+* [expect](http://expect.sourceforge.net/) (required for barcode printing)
+* cups-client (required for barcode printing)
 
 ## Installation
 
@@ -23,7 +25,7 @@ Clone this repository and run the following commands:
 
 Then bootup your rails console and you should have a DB with data.
 
-In production mode, you will also need a local [redis](http://redis.io/) server, type one of the following:
+In production mode, you will also need a local redis server, type one of the following:
 
     yum install redis (RedHat)
     apt-get install redis (Debian)

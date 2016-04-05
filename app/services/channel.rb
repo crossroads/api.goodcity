@@ -34,5 +34,13 @@ class Channel
       User.reviewers.map{ |user| "user_#{user.id}" }
     end
 
+    def supervisors
+      User.supervisors.map{ |user| "user_#{user.id}" }
+    end
+
+    def staff
+      User.staff.map{ |user| "user_#{user.id}" }
+    end
+
   end
 end

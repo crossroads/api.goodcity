@@ -60,6 +60,22 @@ RSpec.describe GogovanOrder, type: :model do
     end
   end
 
+  describe "notify_order_completed" do
+    let(:order) { create :gogovan_order, :with_delivery }
+
+    it "notify supervisors about GGV order completed" do
+      expect(order).to receive(:notify_order_completed)
+      order.status = "completed"
+      order.save
+    end
+
+    it "do not notify supervisors about GGV order status changed to other than completed" do
+      expect(order).to_not receive(:notify_order_completed)
+      order.status = "cancelled"
+      order.save
+    end
+  end
+
   describe 'callbacks' do
     it { is_expected.to callback(:cancel_order).before(:destroy) }
   end

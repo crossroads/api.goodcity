@@ -12,10 +12,6 @@ class BarcodeService
     label_height             = 1
     label_fields_orientation = :landscape
 
-    # print settings
-    printer_name = Rails.application.secrets.barcode['printer_name']
-    printer_host = Rails.application.secrets.barcode['printer_host']
-
     # Generate the new label
     label = Easyzpl::Label.new( dots: dots,
                                 width: label_width,
@@ -47,7 +43,34 @@ class BarcodeService
                       :width       => 0.3,
                       :height      => 0.4 )
 
-    # Generate the label code (returns print_id, errors, status)
-    Open3.capture3("lp -h #{printer_host} -d #{printer_name} -o raw", stdin_data: label.to_s)
+    # generate label and save to temp file
+    f = Tempfile.new("cupsjob")
+    f.write label.to_s
+    f.close
+
+    # Print label
+    barcode = Rails.application.secrets.barcode
+    options = {
+      'NAME' => barcode['printer_name'],
+      'HOST' => barcode['printer_host'],
+      'USER' => barcode['printer_user'],
+      'PWD' => barcode['printer_pwd'],
+      'FILE' => f.path
+    }
+
+    print_id, errors, status = Open3.capture3(options, Rails.root.join('app', 'services', 'barcode_service.exp').to_s)
+    
+    log_hash = { printer_name: "\"#{options['NAME']}\"",
+        printer_host: "\"#{options['HOST']}\"",
+        printer_user: "\"#{options['USER']}\"",
+        # print_job_id: "\"#{print_id}\"",
+        print_job_errors: "\"#{errors}\"",
+        print_job_status: "\"#{status}\""
+    }
+    Rails.logger.info(log_hash.collect{|k,v| "#{k}=#{v}"}.join(" "))
+
+    f.delete
+
+    return print_id, errors, status
   end
 end

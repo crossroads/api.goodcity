@@ -171,9 +171,51 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       before { generate_and_set_token(reviewer) }
       it "can close offer", :show_in_doc do
         expect(in_review_offer).to be_under_review
-        put :close_offer, id: in_review_offer.id
+        expect {
+          put :close_offer, id: in_review_offer.id, close_offer_message: "test"
+          }.to change(in_review_offer.messages, :count).by(1)
         expect(response.status).to eq(200)
-        expect(in_review_offer.reload).to be_cancelled
+        expect(in_review_offer.reload).to be_closed
+      end
+    end
+  end
+
+  describe "PUT offer/1/receive_offer" do
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+      it "can close offer", :show_in_doc do
+        expect(in_review_offer).to be_under_review
+        expect {
+          put :receive_offer, id: in_review_offer.id, close_offer_message: "test"
+        }.to change(in_review_offer.messages, :count).by(1)
+        expect(response.status).to eq(200)
+        expect(in_review_offer.reload).to be_received
+      end
+    end
+  end
+
+  describe "PUT offer/1/merge_offer" do
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+
+      let(:donor) { create :user }
+      let(:merge_offer) { create :offer, :submitted, :with_items, created_by: donor }
+      let(:base_offer) { create :offer, :submitted, :with_items, created_by: donor }
+      let(:scheduled_offer) { create :offer, :scheduled, :with_items, created_by: donor }
+
+      it "can merge offer", :show_in_doc do
+        put :merge_offer, id: merge_offer.id, base_offer_id: base_offer.id
+        expect(response.status).to eq(200)
+        expect(JSON.parse(response.body)["status"]).to eq(true)
+        expect{
+          Offer.find(merge_offer.id)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "can not merge offer when scheduled", :show_in_doc do
+        put :merge_offer, id: scheduled_offer.id, base_offer_id: base_offer.id
+        expect(response.status).to eq(200)
+        expect(JSON.parse(response.body)["status"]).to eq(false)
       end
     end
   end

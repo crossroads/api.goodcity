@@ -14,6 +14,7 @@ module Api::V1
 
     has_many :items, serializer: ItemSerializer
     has_many :messages, serializer: MessageSerializer
+    has_one  :closed_by, serializer: UserSerializer, root: :user
     has_one  :created_by, serializer: UserSerializer, root: :user
     has_one  :reviewed_by, serializer: UserSerializer, root: :user
     has_one  :delivery, serializer: DeliverySerializer

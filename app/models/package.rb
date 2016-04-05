@@ -7,8 +7,10 @@ class Package < ActiveRecord::Base
   belongs_to :item
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
+  belongs_to :donor_condition
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
+  before_create :set_donor_condition_and_grade
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
 
   validates :package_type_id, :quantity, presence: true
@@ -79,6 +81,11 @@ class Package < ActiveRecord::Base
   end
 
   private
+
+  def set_donor_condition_and_grade
+    self.donor_condition ||= item.try(:donor_condition)
+    self.grade ||= "B"
+  end
 
   def delete_item_from_stockit
     StockitDeleteJob.perform_later(self.inventory_number)

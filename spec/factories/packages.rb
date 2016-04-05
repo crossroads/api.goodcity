@@ -20,13 +20,13 @@ FactoryGirl.define do
     end
 
     trait :stockit_package do
-      inventory_number "H12345"
+      inventory_number "123456"
     end
 
     trait :received do
       state "received"
       received_at { Time.now }
-      inventory_number "H12345"
+      inventory_number "123456"
     end
   end
 end
