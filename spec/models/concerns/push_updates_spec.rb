@@ -35,10 +35,11 @@ describe Offer do
   end
 
   it 'should not include private reviewer details when sending to donor' do
-    User.current_user = create :user, :reviewer
+    reviewer = create :user, :reviewer
+    User.current_user = reviewer
     json_checked = false
     expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
-      if !channel.include?("reviewer")
+      unless (channel.include?("reviewer") || channel.include?("user_#{reviewer.id}"))
         expect(data[:sender].to_json.include?("mobile")).to eq(false)
         expect(data[:sender].to_json.include?("address")).to eq(false)
         json_checked = true
@@ -52,7 +53,7 @@ describe Offer do
   it 'should include private donor details when sending to reviewer' do
     json_checked = false
     expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
-      if channel.include?("reviewer")
+      if channel.include?("reviewer") || channel.exclude?("user_#{offer.created_by_id}")
         expect(data[:sender].to_json.include?("mobile")).to eq(true)
         expect(data[:sender].to_json.include?("address")).to eq(true)
         json_checked = true

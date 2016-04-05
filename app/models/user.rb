@@ -11,6 +11,9 @@ class User < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
 
+  has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
+  has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
+
   belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
 
@@ -25,6 +28,7 @@ class User < ActiveRecord::Base
   scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
   scope :system,      -> { where( permissions: { name: 'System' } ).joins(:permission) }
   scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
+  scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
@@ -115,8 +119,16 @@ class User < ActiveRecord::Base
     User.system.pluck(:id).include?(self.id)
   end
 
+  def self.stockit_user
+    find_by(first_name: "Stockit", last_name: "User")
+  end
+
   def recent_active_offer_id
-    Version.for_offers.by_user(id).last.try(:item_id_or_related_id)
+    Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
+  end
+
+  def has_payment_info?
+    braintree_customer_id
   end
 
   private

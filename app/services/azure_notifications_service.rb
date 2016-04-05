@@ -62,6 +62,9 @@ class AzureNotificationsService
     id = Digest::MD5.new
     id.update "o#{data[:offer_id]}i#{data[:item_id]}#{data[:is_private]}"
     data[:notId] = id.hexdigest.gsub(/[a-zA-Z]/, "")[0..6]
+
+    # strip html tags
+    data[:message] = ActionView::Base.full_sanitizer.sanitize(data[:message])
     data
   end
 

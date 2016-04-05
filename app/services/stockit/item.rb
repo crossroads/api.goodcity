@@ -14,15 +14,15 @@ module Stockit
 
     class << self
       def create(package)
-        # new(package).create
+        new(package).create
       end
 
       def update(package)
-        # new(package).update
+        new(package).update
       end
 
       def delete(package)
-        # new(package).delete
+        new(package).delete
       end
     end
 
@@ -44,11 +44,15 @@ module Stockit
       inventory_number = package # package is actually inventory_number
       if inventory_number.present?
         url = url_for("/api/v1/items/destroy")
-        put(url, {inventory_number: inventory_number})
+        put(url, {inventory_number: add_stockit_prefix(inventory_number)})
       end
     end
 
     private
+
+    def add_stockit_prefix(inventory_number)
+      "X#{inventory_number}"
+    end
 
     def stockit_params
       {
@@ -61,8 +65,9 @@ module Stockit
       {
         quantity: package.quantity,
         code_id: package.package_type.code,
-        inventory_number: package.inventory_number,
-        condition: item_condition,
+        inventory_number: add_stockit_prefix(package.inventory_number),
+        condition: package_condition,
+        grade: package.grade,
         description: package.notes,
         location_id: package.location.try(:stockit_id)
       }
@@ -77,8 +82,9 @@ module Stockit
       }
     end
 
-    def item_condition
-      case package.item.donor_condition.name_en
+    def package_condition
+      condition = package.donor_condition.name_en || package.item.donor_condition.name_en
+      case condition
       when "New" then "N"
       when "Lightly Used" then "M"
       when "Heavily Used" then "U"

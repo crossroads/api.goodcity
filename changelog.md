@@ -31,8 +31,15 @@ Add `Stockit User`
     rake goodcity:add_stockit_user
 
   Copy the `token` returned from above task to `stockit/config/secrets.yml`
-  
+
 Add follwing environment variables in `.env` file
 
     STOCKIT_API_TOKEN=
     JWT_VALIDITY_FOR_API=
+
+## Version 0.6
+
+Rake tasks to run:
+
+    rake goodcity:update_offers_cancelled_with_unwanted_reason
+    rake goodcity:update_packages

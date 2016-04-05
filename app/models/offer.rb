@@ -35,6 +35,9 @@ class Offer < ActiveRecord::Base
     )
   }
 
+  scope :active_from_past_fortnight, -> {
+    where("id IN (?)", Version.active_offer_ids_in_past_fortnight)
+  }
   scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
   scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
   scope :non_draft, -> { where("state NOT IN (?)", 'draft') }
@@ -90,7 +93,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :mark_unwanted do
-      transition [:under_review, :reviewed, :scheduled] => :cancelled
+      transition [:under_review, :reviewed, :scheduled] => :closed
     end
 
     event :receive do
@@ -156,7 +159,6 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_alert
     end
 
-    after_transition on: :receive, do: :send_received_message
     after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
     after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, transition|
@@ -202,11 +204,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_ready_for_schedule_message
-    send_message(I18n.t("offer.ready_for_schedule_message"), reviewed_by)
-  end
-
-  def send_received_message
-    send_message(I18n.t("offer.received_message"), User.system_user)
+    send_message(I18n.t("offer.ready_for_schedule_message", offer_id: id), reviewed_by)
   end
 
   def send_item_add_message
@@ -215,7 +213,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_message(body, user)
-    messages.create(body: body, sender: user)
+    messages.create(body: body, sender: user) if(body.strip.length > 0)
   end
 
   def update_saleable_items

@@ -12,9 +12,9 @@ namespace :goodcity do
     offer_id = (ENV['OFFER_ID'] || "").strip
     merge_offer_ids = (ENV['MERGE_OFFER_IDS'] || "").strip.split(",").compact.map(&:strip).uniq
     if offer_id.blank?
-      log_and_exit("Please specify an OFFER_ID.")
+      raise ArgumentError, "Please specify an OFFER_ID."
     elsif merge_offer_ids.blank?
-     log_and_exit("Please specify MERGE_OFFER_IDS.")
+      raise ArgumentError, "Please specify MERGE_OFFER_IDS."
     else
       Goodcity::OfferUtils.merge_offers!(offer_id, merge_offer_ids)
     end

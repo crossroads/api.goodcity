@@ -52,12 +52,20 @@ class Version < PaperTrail::Version
     "id:#{id} #{item_type}##{item_id} #{event}"
   end
 
-  def item_id_or_related_id
+  def related_id_or_item_id
     related_id || item_id
   end
 
   def self.past_month_activities(objects, donor_id)
     past_month.related_to_multiple(objects).except_user(donor_id)
+  end
+
+  def self.active_offer_ids_in_past_fortnight
+    stockit_user_id = User.stockit_user.try(:id).try(:to_s)
+    except_user(stockit_user_id)
+      .past_fortnight.for_offers
+      .select("DISTINCT COALESCE(related_id, item_id) related_offer")
+      .map(&:related_offer)
   end
 
   # required by PushUpdates and PaperTrail modules

@@ -14,6 +14,8 @@ Rails.application.routes.draw do
       post "auth/register_device", to: "authentication#register_device"
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
+      get "braintree/generate_token", to: "braintree#generate_token"
+      post "braintree/make_transaction", to: "braintree#make_transaction"
 
       resources :districts, only: [:index, :show]
       resources :package_types, only: [:index]
@@ -33,7 +35,9 @@ Rails.application.routes.draw do
           put :review
           put :complete_review
           put :close_offer
+          put :receive_offer
           put :mark_inactive
+          put :merge_offer
         end
       end
 
@@ -49,6 +53,7 @@ Rails.application.routes.draw do
       resources :users, only: [:index, :show, :update]
       resources :addresses, only: [:create, :show]
       resources :contacts, only: [:create]
+      resources :versions, only: [:index, :show]
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]
@@ -64,7 +69,6 @@ Rails.application.routes.draw do
       get "timeslots", to: "timeslots#index"
       get "gogovan_transports", to: "gogovan_transports#index"
       get "crossroads_transports", to: "crossroads_transports#index"
-      get "versions", to: "versions#index"
 
       post "twilio_inbound/voice", to: "twilio_inbound#voice"
       post "twilio_inbound/hold_donor", to: "twilio_inbound#hold_donor"
