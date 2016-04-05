@@ -11,7 +11,7 @@ gem 'pg'
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'postgres_ext', '~> 2.4.0.beta.1'
-gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git', branch: 'sanitize-input-params'
+gem 'postgres_ext-serializers', git: 'https://github.com/DockYard/postgres_ext-serializers.git'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
 gem 'paranoia', '~> 2.1.0'

@@ -22,21 +22,20 @@ GIT
       json
 
 GIT
+  remote: https://github.com/DockYard/postgres_ext-serializers.git
+  revision: 9a3599cb50d2d8a45e051c37f3c21c94e100f525
+  specs:
+    postgres_ext-serializers (0.0.3)
+      active_model_serializers (~> 0.8.0)
+      postgres_ext (>= 2.1, < 4)
+
+GIT
   remote: https://github.com/crossroads/easyzpl.git
   revision: e8a7e680950335a0818ac91342dba3d76858c512
   specs:
     easyzpl (0.5.2)
       barby (>= 0.6.1)
       prawn (>= 1.0.0)
-
-GIT
-  remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: d3a97a8b91e99df41d5bf440bc7b42c67cae7046
-  branch: sanitize-input-params
-  specs:
-    postgres_ext-serializers (0.0.3)
-      active_model_serializers (~> 0.8.0)
-      postgres_ext (>= 2.1, < 4)
 
 GIT
   remote: https://github.com/maccman/nestful.git
