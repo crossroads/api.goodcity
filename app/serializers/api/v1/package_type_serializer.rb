@@ -3,7 +3,7 @@ module Api::V1
   class PackageTypeSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :name, :code, :other_child_packages,
-      :default_child_packages
+      :default_child_packages, :other_terms
 
     def include_attribute?
       User.current_user.present?
@@ -13,6 +13,10 @@ module Api::V1
 
     def name__sql
       "coalesce(NULLIF(name_#{current_language}, ''), name_en)"
+    end
+
+    def other_terms__sql
+      "coalesce(NULLIF(other_terms_#{current_language}, ''), other_terms_en)"
     end
 
     def other_child_packages
