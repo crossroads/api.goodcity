@@ -192,6 +192,22 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe "#send_message" do
+    let(:user) { create :user }
+    it 'should send message to donor' do
+      expect(offer).to receive_message_chain(:messages, :create).with({body: "test message", sender: user})
+      offer.send_message("test message", user)
+    end
+    it 'should not send message to donor if message is empty' do
+      expect(offer).not_to receive(:messages)
+      offer.send_message("", user)
+    end
+    it 'should not send message to donor if message is nil' do
+      expect(offer).not_to receive(:messages)
+      offer.send_message(nil, user)
+    end
+  end
+
   describe "send_new_offer_notification" do
 
     it "should send notification for new message" do
