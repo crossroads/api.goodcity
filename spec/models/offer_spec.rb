@@ -103,6 +103,11 @@ RSpec.describe Offer, type: :model do
       offer = create :offer, :under_review
       expect{ offer.mark_unwanted }.to change(offer, :cancelled_at)
     end
+
+    it 'should set inactive_at' do
+      offer = create :offer, :under_review
+      expect{ offer.mark_inactive }.to change(offer, :inactive_at)
+    end
   end
 
   describe "should set cancellation_reason" do
