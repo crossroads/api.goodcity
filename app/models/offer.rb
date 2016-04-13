@@ -101,7 +101,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :start_receiving do
-      transition [:under_review, :reviewed, :scheduled] => :receiving
+      transition [:under_review, :reviewed, :scheduled, :cancelled, :received, :inactive] => :receiving
     end
 
     event :re_review do
