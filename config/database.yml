@@ -91,3 +91,11 @@ production:
   pool: <%= ENV['MAX_THREADS'] || 25 %>
   #username: goodcity_server
   #password: <%= ENV['GOODCITY_SERVER_DATABASE_PASSWORD'] %>
+
+stockit_development:
+  database: stockit_server_development
+  host: localhost
+  adapter: postgresql
+  encoding: unicode
+  username: postgres
+  password: password
