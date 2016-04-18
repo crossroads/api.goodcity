@@ -15,7 +15,7 @@ module Api::V1
 
     api :GET, '/v1/browse/fetch_items', "List all items"
     def fetch_items
-      render json: @items.accepted, each_serializer: serializer
+      render json: @items.accepted, each_serializer: serializer, is_browse_request: true, root: "items"
     end
 
     private
