@@ -35,6 +35,7 @@ class Ability
       taxonomies
       user_abilities
       version_abilities
+      designation_abilities
     end
   end
 
@@ -180,6 +181,10 @@ class Ability
     can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
     can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
     can [:index, :show], Version if staff?
+  end
+
+  def designation_abilities
+    can [:index], Stockit::Designation if staff?
   end
 
   private
