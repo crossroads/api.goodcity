@@ -99,3 +99,11 @@ stockit_development:
   encoding: unicode
   username: postgres
   password: password
+
+stockit_test:
+  database: stockit_server_test
+  host: localhost
+  adapter: postgresql
+  encoding: unicode
+  username: postgres
+  password: password
