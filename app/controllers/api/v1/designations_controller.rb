@@ -15,7 +15,7 @@ module Api::V1
     api :GET, '/v1/designations', "List all designations"
     def index
 
-      render json: @designations, each_serializer: serializer
+      render json: @designations, each_serializer: serializer, root: "orders"
 
     end
 
