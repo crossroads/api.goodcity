@@ -1,6 +1,7 @@
 module Api::V1
   class DesignationsController < Api::V1::ApiController
 
+    skip_before_action :validate_token
     load_and_authorize_resource :designation, class: ::Stockit::Designation, parent: false
 
     resource_description do
@@ -14,9 +15,8 @@ module Api::V1
 
     api :GET, '/v1/designations', "List all designations"
     def index
-
-      render json: @designations, each_serializer: serializer, root: "orders"
-
+      render json: @designations.search(params['searchText']).latest.limit(30),
+        each_serializer: serializer
     end
 
     def serializer
