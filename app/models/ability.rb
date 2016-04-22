@@ -8,6 +8,7 @@ class Ability
 
   def initialize(user)
     public_ability
+    designation_abilities
 
     if user.present?
 
@@ -35,7 +36,6 @@ class Ability
       taxonomies
       user_abilities
       version_abilities
-      designation_abilities
     end
   end
 
@@ -184,7 +184,7 @@ class Ability
   end
 
   def designation_abilities
-    can [:index], Stockit::Designation if staff?
+    can [:index], Stockit::Designation# if staff?
   end
 
   private
