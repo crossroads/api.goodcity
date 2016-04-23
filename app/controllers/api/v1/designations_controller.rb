@@ -20,7 +20,7 @@ module Api::V1
     end
 
     def serializer
-      Api::V1::Stockit::DesignationSerializer
+      ::Api::V1::Stockit::DesignationSerializer
     end
   end
 end
