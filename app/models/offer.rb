@@ -235,7 +235,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_new_offer_notification
-    PushService.new.send_notification Channel.reviewers, true, {
+    PushService.new.send_notification Channel.staff, true, {
       category:   'new_offer',
       message:    I18n.t("notification.new_offer", name: created_by.full_name),
       offer_id:   id,
