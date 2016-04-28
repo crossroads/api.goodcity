@@ -7,28 +7,26 @@ class BraintreeService
   end
 
   def client_token
-    Braintree::ClientToken.generate(customer_id: user.braintree_customer_id)
+    token_id = has_transactions_details? ? user.id : nil
+    Braintree::ClientToken.generate(customer_id: token_id)
   end
 
   def create_transaction(amount, nonce_token)
-    result = if user.has_payment_info?
+    result = if has_transactions_details?
       new_transaction(amount, nonce_token)
     else
       new_transaction_with_customer(amount, nonce_token)
     end
 
-    if result.success?
-      save_customer_id(result.transaction)
-      add_transaction(result.transaction)
-    end
+    add_transaction(result.transaction) if result.success?
 
-    result.success?
+    result
   end
 
   private
 
-  def save_customer_id(transaction)
-    user.update(braintree_customer_id: transaction.customer_details.id) unless user.has_payment_info?
+  def has_transactions_details?
+    user.braintree_transactions.present?
   end
 
   def add_transaction(transaction)
@@ -43,6 +41,7 @@ class BraintreeService
   def new_transaction_with_customer(amount, nonce_token)
     options = {
       customer: {
+        id: user.id,
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.mobile
@@ -57,8 +56,11 @@ class BraintreeService
   def new_transaction(amount, nonce_token, options = {})
     Braintree::Transaction.sale(
       { amount: amount,
-        payment_method_nonce: nonce_token
-      }.merge(options)
+        payment_method_nonce: nonce_token,
+        options: {
+          submit_for_settlement: true
+        }
+      }.deep_merge(options)
     )
   end
 
