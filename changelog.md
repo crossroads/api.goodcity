@@ -43,3 +43,10 @@ Rake tasks to run:
 
     rake goodcity:update_offers_cancelled_with_unwanted_reason
     rake goodcity:update_packages
+
+## Version 0.8
+
+Rake tasks to run:
+
+    rake goodcity:update_timeslots
+    rake goodcity:update_delivery_schedule_slotname
