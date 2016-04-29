@@ -20,6 +20,11 @@ module Api::V1
       render json: designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
     end
 
+    api :GET, '/v1/designations/1', "Get a designation"
+    def show
+      render json: @designation, serializer: serializer
+    end
+
     def serializer
       ::Api::V1::Stockit::DesignationSerializer
     end
