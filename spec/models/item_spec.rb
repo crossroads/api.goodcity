@@ -176,4 +176,21 @@ RSpec.describe Item, type: :model do
       expect(item.not_received_packages?).to be false
     end
   end
+
+  describe "assign_saleable" do
+    let(:offer) { create :offer }
+
+    it "assign saleable value if offer is not draft" do
+      item = create :item, saleable: true, offer: offer
+      offer.submit
+      new_item = create :item, offer: offer
+      expect(new_item).to be_saleable
+    end
+
+    it "does not assign saleable value if offer is draft" do
+      item = create :item, saleable: true, offer: offer
+      new_item = create :item, offer: offer
+      expect(new_item).to_not be_saleable
+    end
+  end
 end
