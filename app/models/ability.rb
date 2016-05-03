@@ -8,7 +8,6 @@ class Ability
 
   def initialize(user)
     public_ability
-    designation_abilities
 
     if user.present?
 
@@ -25,6 +24,7 @@ class Ability
       address_abilities
       contact_abilities
       delivery_abilities
+      designation_abilities
       gogovan_order_abilities
       item_abilities
       image_abilities
@@ -50,6 +50,10 @@ class Ability
     else
       can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
     end
+  end
+
+  def designation_abilities
+    can [:index], Stockit::Designation if staff?
   end
 
   def item_abilities
@@ -181,10 +185,6 @@ class Ability
     can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
     can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
     can [:index, :show], Version if staff?
-  end
-
-  def designation_abilities
-    can [:index], Stockit::Designation# if staff?
   end
 
   private

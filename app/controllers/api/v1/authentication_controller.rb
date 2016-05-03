@@ -178,7 +178,8 @@ module Api::V1
     end
 
     def valid_user
-      @user && (app_name != ADMIN_APP || @user.staff? && app_name == ADMIN_APP)
+      @user && (STAFF_APPS.exclude?(app_name) ||
+        (STAFF_APPS.include?(app_name) && @user.staff?))
     end
 
     def current_user_channels
