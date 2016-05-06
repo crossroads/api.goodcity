@@ -36,7 +36,7 @@ module Api::V1
 
     def order_params
       params.permit(["pickupTime", "districtId", "needEnglish", "needCart",
-        "needCarry", "offerId", "gogovanOptionId"])
+        "needCarry", "offerId", "gogovanOptionId", "needOver6ft", "removeNet"])
     end
 
     def serializer
