@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160412070145) do
+ActiveRecord::Schema.define(version: 20160503103214) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -318,17 +318,16 @@ ActiveRecord::Schema.define(version: 20160412070145) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "first_name",            limit: 255
-    t.string   "last_name",             limit: 255
-    t.string   "mobile",                limit: 255
+    t.string   "first_name",        limit: 255
+    t.string   "last_name",         limit: 255
+    t.string   "mobile",            limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "permission_id"
     t.integer  "image_id"
     t.datetime "last_connected"
     t.datetime "last_disconnected"
-    t.boolean  "disabled",                          default: false
-    t.integer  "braintree_customer_id"
+    t.boolean  "disabled",                      default: false
   end
 
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
