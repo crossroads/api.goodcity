@@ -14,7 +14,8 @@ module Api::V1
     param :payment_method_nonce, String, desc: "The token(nonce) returned by braintree server."
     def make_transaction
       response = @braintree.create_transaction(params["amount"], params["payment_method_nonce"])
-      render json: { response: response }.to_json
+      render json: { response: response.success?,
+        error: response.try(:errors).try(:first).try(:message) }.to_json
     end
 
     private

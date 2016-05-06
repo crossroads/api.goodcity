@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
 
   has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
+  has_many :braintree_transactions, class_name: "BraintreeTransaction", foreign_key: :customer_id
 
   belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
@@ -125,10 +126,6 @@ class User < ActiveRecord::Base
 
   def recent_active_offer_id
     Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
-  end
-
-  def has_payment_info?
-    braintree_customer_id
   end
 
   private
