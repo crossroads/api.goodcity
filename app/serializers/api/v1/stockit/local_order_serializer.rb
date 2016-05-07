@@ -6,7 +6,7 @@ module Api::V1::Stockit
       if object.hkid_number.blank?
         ""
       else
-        "****#{object.hkid_number[-6..-1]}"
+        "****#{object.hkid_number[-4..-1]}"
       end
     end
 
