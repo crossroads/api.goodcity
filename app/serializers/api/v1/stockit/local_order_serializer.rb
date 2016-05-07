@@ -12,7 +12,7 @@ module Api::V1::Stockit
 
     def hkid_number__sql
       "case when hkid_number is null or hkid_number = '' \
-        then '*****' || substr(hkid_number, 5) \
+        then '*****' || substr(hkid_number, 4) \
         else '' \
       end"
     end
