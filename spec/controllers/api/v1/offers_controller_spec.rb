@@ -158,7 +158,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       before { generate_and_set_token(reviewer) }
       it "can complete review", :show_in_doc do
         expect(in_review_offer).to be_under_review
-        put :complete_review, id: in_review_offer.id, offer: offer_attributes
+        put :complete_review, id: in_review_offer.id, offer: offer_attributes, complete_review_message: "test"
         expect(response.status).to eq(200)
         expect(in_review_offer.reload).to be_reviewed
         expect(in_review_offer.crossroads_transport).to eq(crossroads_transport)
