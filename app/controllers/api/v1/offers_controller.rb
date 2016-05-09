@@ -107,6 +107,7 @@ module Api::V1
     end
     def complete_review
       @offer.update_attributes(review_offer_params)
+      @offer.send_message(params["complete_review_message"], User.current_user)
       render json: @offer, serializer: serializer
     end
 
