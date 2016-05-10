@@ -160,8 +160,6 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_alert
     end
 
-    after_transition on: :finish_review, do: :send_ready_for_schedule_message
-
     after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, transition|
       ggv_order = offer.try(:gogovan_order)
       ggv_order.try(:cancel_order) if ggv_order.try(:status) != 'cancelled'
@@ -202,10 +200,6 @@ class Offer < ActiveRecord::Base
 
   def send_thank_you_message
     send_message(I18n.t("offer.thank_message"), User.system_user)
-  end
-
-  def send_ready_for_schedule_message
-    send_message(I18n.t("offer.ready_for_schedule_message", offer_id: id), reviewed_by)
   end
 
   def send_item_add_message
