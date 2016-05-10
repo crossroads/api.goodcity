@@ -4,9 +4,9 @@ module Api::V1::Stockit
     attributes :status, :created_at, :code, :detail_type, :id, :detail_id,
       :local_order_id
 
-    has_one :contact, serializer: ContactSerializer
-    has_one :organisation, serializer: OrganisationSerializer
-    has_one :local_order, serializer: LocalOrderSerializer
+    has_one :contact, serializer: Api::V1::Stockit::ContactSerializer
+    has_one :organisation, serializer: Api::V1::Stockit::OrganisationSerializer
+    has_one :local_order, serializer: Api::V1::Stockit::LocalOrderSerializer
 
     def local_order_id
       object.local_order_id
