@@ -161,9 +161,9 @@ class Ability
   end
 
   def contact_abilities
-    # can [:create, :destroy], Contact, delivery: { offer_id: @user_offer_ids }
-    # can [:create, :destroy], Contact if staff?
-    can [:create, :destroy], Contact
+    can :destroy, Contact, delivery: { offer_id: @user_offer_ids }
+    can :destroy, Contact if staff?
+    can :create, Contact
   end
 
   def taxonomies
