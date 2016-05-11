@@ -54,6 +54,7 @@ Rails.application.routes.draw do
       resources :addresses, only: [:create, :show]
       resources :contacts, only: [:create]
       resources :versions, only: [:index, :show]
+      resources :holidays, only: [:index, :create, :destroy, :update]
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]
