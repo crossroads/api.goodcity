@@ -1,7 +1,8 @@
 class Gogovan
 
-  attr_accessor :user, :name, :mobile, :time, :need_english,
-    :need_cart, :need_carry, :district_id, :vehicle, :ggv_uuid, :offer
+  attr_accessor :user, :name, :mobile, :time, :need_english, :cart_count,
+    :need_cart, :need_carry, :district_id, :vehicle, :ggv_uuid, :offer,
+    :need_over_6ft, :remove_net
 
   def initialize(user = nil, options = {})
     @user         = user
@@ -10,11 +11,14 @@ class Gogovan
     @time         = options['pickupTime'] || get_pickup_date
     @need_english = options['needEnglish']
     @need_cart    = options['needCart']
+    @cart_count   = 1 if options['needCart']
     @need_carry   = options['needCarry']
     @district_id  = options['districtId']
     @vehicle      = options['vehicle']
     @ggv_uuid     = options['ggv_uuid']
     @offer        = Offer.find_by(id: options['offerId'])
+    @need_over_6ft = options["needOver6ft"]
+    @remove_net    = options["removeNet"] if @need_over_6ft
   end
 
   def confirm_order
@@ -54,8 +58,11 @@ class Gogovan
         extra_requirements: {
           need_english: @need_english,
           need_cart:    @need_cart,
+          cart_count:   @cart_count,
           need_carry:   @need_carry,
-          remark:       ggv_driver_notes
+          remark:       ggv_driver_notes,
+          need_over_6ft: @need_over_6ft,
+          remove_net:   @remove_net
         }
       }
     }

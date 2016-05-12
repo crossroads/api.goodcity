@@ -101,7 +101,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :start_receiving do
-      transition [:under_review, :reviewed, :scheduled] => :receiving
+      transition [:under_review, :reviewed, :scheduled, :cancelled, :received, :inactive] => :receiving
     end
 
     event :re_review do
@@ -151,6 +151,7 @@ class Offer < ActiveRecord::Base
 
     before_transition on: :mark_inactive do |offer, transition|
       offer.reviewed_by = nil
+      offer.inactive_at = Time.now
     end
 
     after_transition on: :submit do |offer, transition|
@@ -158,8 +159,6 @@ class Offer < ActiveRecord::Base
       offer.send_new_offer_notification
       offer.send_new_offer_alert
     end
-
-    after_transition on: :finish_review, do: :send_ready_for_schedule_message
 
     after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, transition|
       ggv_order = offer.try(:gogovan_order)
@@ -203,10 +202,6 @@ class Offer < ActiveRecord::Base
     send_message(I18n.t("offer.thank_message"), User.system_user)
   end
 
-  def send_ready_for_schedule_message
-    send_message(I18n.t("offer.ready_for_schedule_message", offer_id: id), reviewed_by)
-  end
-
   def send_item_add_message
     text = I18n.t("offer.item_add_message", donor_name: created_by.full_name)
     messages.create(sender: User.system_user, is_private: true, body: text)
@@ -234,7 +229,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_new_offer_notification
-    PushService.new.send_notification Channel.reviewers, true, {
+    PushService.new.send_notification Channel.staff, true, {
       category:   'new_offer',
       message:    I18n.t("notification.new_offer", name: created_by.full_name),
       offer_id:   id,

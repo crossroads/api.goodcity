@@ -15,7 +15,9 @@ describe Gogovan do
       'districtId' => districtId,
       'vehicle' => vehicle,
       'offerId' => offer_id,
-      'ggv_uuid' => "1234"
+      'ggv_uuid' => "1234",
+      'needOver6ft' => needOver6ft,
+      'removeNet' => removeNet
     }
   }
 
@@ -29,6 +31,8 @@ describe Gogovan do
   let(:districtId)  { (create :district).id }
   let(:vehicle)     { "van" }
   let(:offer_id)    { create(:delivery).offer.id }
+  let(:needOver6ft) { "true" }
+  let(:removeNet)   { ["full", "half"].sample }
 
   context "initialization" do
     it "user" do
@@ -45,6 +49,13 @@ describe Gogovan do
     end
     it "needEnglish" do
       expect(gogovan.need_english).to eql(needEnglish)
+    end
+    it "needOver6ft" do
+
+      expect(gogovan.need_over_6ft).to eql(needOver6ft)
+    end
+    it "removeNet" do
+      expect(gogovan.remove_net).to eql(removeNet)
     end
     it "needCarry" do
       expect(gogovan.need_carry).to eql(needCarry)

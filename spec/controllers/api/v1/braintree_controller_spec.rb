@@ -19,7 +19,9 @@ RSpec.describe Api::V1::BraintreeController, type: :controller do
   describe "POST braintree/make_transaction" do
     before { generate_and_set_token(user) }
     it "returns 200", :show_in_doc do
-      allow_any_instance_of(BraintreeService).to receive(:create_transaction).and_return(true)
+      braintree_response = {}
+      allow_any_instance_of(BraintreeService).to receive(:create_transaction).and_return(braintree_response)
+      expect(braintree_response).to receive(:success?).and_return(true)
       post :make_transaction, amount: 200, payment_method_nonce: token
       expect(response.status).to eq(200)
       expect(JSON.parse(response.body)["response"]).to eq(true)

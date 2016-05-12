@@ -28,6 +28,7 @@ class Item < ActiveRecord::Base
   # refer - https://github.com/pluginaweek/state_machine/issues/334
   after_initialize :set_initial_state
   before_save :set_description
+  before_create :assign_saleable, unless: "offer.draft?"
   after_commit :update_stockit_item, on: :update, unless: "GoodcitySync.request_from_stockit"
 
   def set_initial_state
@@ -119,5 +120,12 @@ class Item < ActiveRecord::Base
         StockitUpdateJob.perform_later(package.id)
       end
     end
+  end
+
+  private
+
+  def assign_saleable
+    self.saleable = offer.items.first.try(:saleable)
+    true
   end
 end

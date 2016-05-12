@@ -103,6 +103,11 @@ RSpec.describe Offer, type: :model do
       offer = create :offer, :under_review
       expect{ offer.mark_unwanted }.to change(offer, :cancelled_at)
     end
+
+    it 'should set inactive_at' do
+      offer = create :offer, :under_review
+      expect{ offer.mark_inactive }.to change(offer, :inactive_at)
+    end
   end
 
   describe "should set cancellation_reason" do
@@ -214,15 +219,6 @@ RSpec.describe Offer, type: :model do
       donor_offer = create :offer
       expect(donor_offer).to receive(:send_new_offer_notification)
       donor_offer.submit
-    end
-  end
-
-  describe "#send_ready_for_schedule_message" do
-    it 'should send ready_for_schedule message to donor on offer after review-completion' do
-      offer = create :offer, :under_review
-      offer.finish_review
-      expect(offer.messages.count).to eq(1)
-      expect(offer.messages.last.sender).to eq(offer.reviewed_by)
     end
   end
 
