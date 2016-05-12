@@ -208,7 +208,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_message(body, user)
-    messages.create(body: body, sender: user) if(body.strip.length > 0)
+    messages.create(body: body, sender: user) unless body.blank?
   end
 
   def update_saleable_items
