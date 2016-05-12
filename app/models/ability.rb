@@ -21,16 +21,21 @@ class Ability
 
       can(:manage, :all) if admin
 
+      address_abilities
+      contact_abilities
       delivery_abilities
+      designation_abilities
+      gogovan_order_abilities
       item_abilities
-      version_abilities
       image_abilities
       message_abilities
       offer_abilities
       package_abilities
-      user_abilities
       location_abilities
+      schedule_abilities
       taxonomies
+      user_abilities
+      version_abilities
     end
   end
 
@@ -45,6 +50,10 @@ class Ability
     else
       can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
     end
+  end
+
+  def designation_abilities
+    can [:index], Stockit::Designation if staff?
   end
 
   def item_abilities
@@ -125,11 +134,36 @@ class Ability
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], Territory
-    can [:index, :show, :availableTimeSlots], Schedule
     can :available_dates, Holiday
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+  end
+
+  def address_abilities
+    # User address
+    can [:create, :show], Address, addressable_type: "User", addressable_id: @user_id
+
+    # Offer delivery address
+    can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
+    can [:create, :show, :destroy], Address, addressable_type: "Contact" if staff?
+  end
+
+  def schedule_abilities
+    can [:create, :availableTimeSlots], Schedule
+    can [:index, :show], Schedule, deliveries: { offer_id: @user_offer_ids }
+    can [:index, :show], Schedule if staff?
+  end
+
+  def gogovan_order_abilities
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder, delivery: { offer_id: @user_offer_ids }
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder if staff?
+  end
+
+  def contact_abilities
+    can :destroy, Contact, delivery: { offer_id: @user_offer_ids }
+    can :destroy, Contact if staff?
+    can :create, Contact
   end
 
   def taxonomies
@@ -139,18 +173,6 @@ class Ability
     can [:index, :show], RejectionReason
     can [:index, :show], Permission
     can [:index, :show], CancellationReason
-
-    # TODO
-    can [:create, :show], Address
-    can [:create, :destroy], Contact
-
-    # Schedule
-    # TODO - only for offers owned by user
-    can :create, Schedule
-
-    # GogovanOrder
-    # TODO - only for offers owned by user
-    can [:calculate_price, :confirm_order, :destroy], GogovanOrder
   end
 
   def user_abilities
