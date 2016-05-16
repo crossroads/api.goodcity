@@ -26,6 +26,7 @@ class Ability
       delivery_abilities
       designation_abilities
       gogovan_order_abilities
+      holiday_abilities
       item_abilities
       image_abilities
       message_abilities
@@ -54,6 +55,11 @@ class Ability
 
   def designation_abilities
     can [:index], Stockit::Designation if staff?
+  end
+
+  def holiday_abilities
+    can [:available_dates], Holiday
+    can [:index, :destroy, :create, :update], Holiday if staff?
   end
 
   def item_abilities
@@ -134,7 +140,6 @@ class Ability
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], Territory
-    can :available_dates, Holiday
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
