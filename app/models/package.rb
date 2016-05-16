@@ -8,6 +8,8 @@ class Package < ActiveRecord::Base
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
+  belongs_to :pallet
+  belongs_to :box
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_donor_condition_and_grade
