@@ -105,7 +105,7 @@ module Api::V1
 
     def package_params
       get_donor_condition_value
-      assign_package_type_id
+      get_package_type_id_value
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
@@ -113,17 +113,16 @@ module Api::V1
       params.require(:package).permit(attributes)
     end
 
-    def assign_package_type_id
-      if(code_id = params["package"]["code_id"])
-        params["package"]["package_type_id"] = PackageType.
-          find_by(stockit_id: code_id).try(:id)
-      end
-    end
-
     def get_donor_condition_value
       if(condition = params["package"]["donor_condition"])
         params["package"]["donor_condition_id"] = DonorCondition.
           find_by(name_en: condition).try(:id)
+      end
+    end
+
+    def get_package_type_id_value
+      if(params["package"]["package_type_id"].blank? || code_id = params["package"]["code_id"])
+        params["package"]["package_type_id"] = PackageType.find_by(stockit_id: code_id).try(:id)
       end
     end
 
@@ -138,14 +137,12 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if inventory_number
-        @package = Package.find_by(inventory_number: inventory_number)
-        if @package
-          GoodcitySync.request_from_stockit = true
-          @package.assign_attributes(package_params)
-          @package.location_id = location_id
+        @package = Package.find_by(inventory_number: inventory_number) || Package.new(package_params)
+        GoodcitySync.request_from_stockit = true
+        @package.assign_attributes(package_params)
+        @package.location_id = location_id
           @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-          @package
-        end
+        @package
       else
         @package = Package.new(package_params)
       end
