@@ -73,7 +73,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :submit do
-      transition [:draft, :inactive] => :submitted
+      transition [:draft, :inactive, :cancelled] => :submitted
     end
 
     event :start_review do
