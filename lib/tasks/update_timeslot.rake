@@ -13,10 +13,10 @@ namespace :goodcity do
   # rake goodcity:update_delivery_schedule_slotname
   desc 'Update timeslots'
   task update_delivery_schedule_slotname: :environment do
-    drop_off_deliveries = Delivery.where(delivery_type: "Drop Off")
+    drop_off_deliveries = Delivery.with_deleted.where(delivery_type: "Drop Off")
     timeslot = Timeslot.find_by(name_en: "10:30AM-1PM")
 
-    drop_off_deliveries.find_in_batches(batch_size: 10).each do |deliveries|
+    drop_off_deliveries.find_in_batches(batch_size: 100).each do |deliveries|
       deliveries.each do |delivery|
         if schedule = delivery.schedule
           schedule.slot_name = case schedule.slot_name
