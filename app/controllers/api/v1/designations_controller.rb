@@ -14,8 +14,10 @@ module Api::V1
 
     api :GET, '/v1/designations', "List all designations"
     def index
-      render json: @designations.search(params['searchText']).latest.limit(30),
-        each_serializer: serializer
+      records = @designations.search(params['searchText']).latest.
+        page(params["page"]).per(params["per_page"])
+      designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
+      render json: designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
     end
 
     def serializer
