@@ -1,6 +1,7 @@
 module Api::V1
   class DesignationsController < Api::V1::ApiController
 
+    before_action :eager_load_designation, only: :show
     load_and_authorize_resource :designation, class: ::Stockit::Designation, parent: false
 
     resource_description do
@@ -14,8 +15,8 @@ module Api::V1
 
     api :GET, '/v1/designations', "List all designations"
     def index
-      records = @designations.search(params['searchText']).latest.
-        page(params["page"]).per(params["per_page"])
+      records = @designations.with_eager_load.search(params['searchText']).
+        latest.page(params["page"]).per(params["per_page"])
       designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
       render json: designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
     end
@@ -27,6 +28,10 @@ module Api::V1
 
     def serializer
       ::Api::V1::Stockit::DesignationSerializer
+    end
+
+    def eager_load_designation
+      @designation = ::Stockit::Designation.with_eager_load.find(params[:id])
     end
   end
 end
