@@ -1,7 +1,7 @@
 require 'stockit/base'
 
 module Stockit
-  class Item
+  class ItemSync
 
     include Stockit::Base
 
