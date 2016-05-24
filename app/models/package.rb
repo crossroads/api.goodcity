@@ -53,7 +53,7 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    response = Stockit::Item.create(self)
+    response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
@@ -61,7 +61,7 @@ class Package < ActiveRecord::Base
 
   def remove_from_stockit
     if self.inventory_number.present?
-      response = Stockit::Item.delete(inventory_number)
+      response = Stockit::ItemSync.delete(inventory_number)
       if response && (errors = response["errors"]).present?
         errors.each{|key, value| self.errors.add(key, value) }
       else
