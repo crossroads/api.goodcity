@@ -104,25 +104,18 @@ module Api::V1
     end
 
     def package_params
-      get_donor_condition_value
       get_package_type_id_value
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
-        :location_id]
+        :location_id, :box_id, :pallet_id]
       params.require(:package).permit(attributes)
-    end
-
-    def get_donor_condition_value
-      if(condition = params["package"]["donor_condition"])
-        params["package"]["donor_condition_id"] = DonorCondition.
-          find_by(name_en: condition).try(:id)
-      end
     end
 
     def get_package_type_id_value
       if(params["package"]["package_type_id"].blank? || code_id = params["package"]["code_id"])
         params["package"]["package_type_id"] = PackageType.find_by(stockit_id: code_id).try(:id)
+        params["package"].delete("code_id")
       end
     end
 
