@@ -7,13 +7,14 @@ module Api::V1::Stockit
     has_one :contact, serializer: Api::V1::Stockit::ContactSerializer
     has_one :organisation, serializer: Api::V1::Stockit::OrganisationSerializer
     has_one :local_order, serializer: Api::V1::Stockit::LocalOrderSerializer
+    has_many :items, serializer: Api::V1::Stockit::ItemSerializer
 
     def local_order_id
       object.local_order_id
     end
 
     def local_order_id__sql
-      object.local_order_id.blank? ? "null" : "'#{object.local_order_id}'"
+      "case when detail_type = 'LocalOrder' then detail_id end"
     end
   end
 end

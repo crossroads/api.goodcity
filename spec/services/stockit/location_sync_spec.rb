@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe Stockit::Location do
+describe Stockit::LocationSync do
   let(:endpoint) { "http://www.example.com" }
 
   let(:params) { {} }
@@ -18,7 +18,7 @@ describe Stockit::Location do
 
     it "should send successful get request" do
       expect(Nestful).to receive(:get).with(url, params, options).and_return(mock_response)
-      expect(Stockit::Location.index).to eql(success_response)
+      expect(Stockit::LocationSync.index).to eql(success_response)
     end
 
   end

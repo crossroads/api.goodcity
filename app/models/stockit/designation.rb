@@ -3,6 +3,13 @@ class Stockit::Designation < Stockit::BaseModel
   belongs_to :country
   belongs_to :organisation
   belongs_to :local_order, -> { joins("inner join designations on designations.detail_id = local_orders.id and designations.detail_type = 'LocalOrder'") }, foreign_key: 'detail_id'
+  has_many :items
+
+  scope :with_eager_load, -> {
+    includes ([
+      { items: :location }
+    ])
+  }
 
   scope :latest, -> { order('id desc') }
 
