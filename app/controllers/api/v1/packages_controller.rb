@@ -130,42 +130,15 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if inventory_number
-        @package = Package.find_by(inventory_number: inventory_number) || Package.new(package_params)
         GoodcitySync.request_from_stockit = true
+        @package = Package.find_by(inventory_number: inventory_number) || Package.new()
         @package.assign_attributes(package_params)
         @package.location_id = location_id
-        @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-        @package.pallet_id = pallet_id
-        @package.box_id = box_id
+        @package.inventory_number = inventory_number
         @package
       else
         @package = Package.new(package_params)
       end
-    end
-
-    def box_id
-      if (box = params["package"]["box"].presence)
-        package_box(box["stockit_id"]).try(:id) ||
-          Box.create(box_attributes).id
-      end
-    end
-
-    def pallet_id
-      if (pallet = params["package"]["pallet"].presence)
-        package_pallet(pallet["stockit_id"]).try(:id) ||
-          Pallet.create(pallet_attributes).id
-      end
-    end
-
-    def pallet_attributes
-      params["package"].require(:pallet).permit(:pallet_number,
-        :stockit_id, :description, :comments)
-    end
-
-    def box_attributes
-      params["package"]["box"]["pallet_id"] = pallet_id
-      params["package"].require(:box).permit(:box_number,
-        :stockit_id, :description, :comments, :pallet_id)
     end
 
     def location_id
@@ -174,14 +147,6 @@ module Api::V1
 
     def barcode_service
       BarcodeService.new
-    end
-
-    def package_box(stockit_id)
-      Box.find_by(stockit_id: stockit_id)
-    end
-
-    def package_pallet(stockit_id)
-      Pallet.find_by(stockit_id: stockit_id)
     end
   end
 end
