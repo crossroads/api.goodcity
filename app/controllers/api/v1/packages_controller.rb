@@ -135,6 +135,8 @@ module Api::V1
         @package.assign_attributes(package_params)
         @package.location_id = location_id
         @package.inventory_number = inventory_number
+        @package.box_id = box_id
+        @package.pallet_id = pallet_id
         @package
       else
         @package = Package.new(package_params)
@@ -143,6 +145,14 @@ module Api::V1
 
     def location_id
       Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+    end
+
+    def box_id
+      Box.find_by(stockit_id: package_params[:box_id]).try(:id)
+    end
+
+    def pallet_id
+      Pallet.find_by(stockit_id: package_params[:pallet_id]).try(:id)
     end
 
     def barcode_service
