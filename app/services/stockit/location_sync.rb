@@ -1,7 +1,7 @@
 require 'stockit/base'
 
 module Stockit
-  class Location
+  class LocationSync
 
     include Stockit::Base
 

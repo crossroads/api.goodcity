@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe Stockit::Item do
+describe Stockit::ItemSync do
   let(:package)  { create :package, :stockit_package, :with_item }
   let(:inventory_number) { package.inventory_number }
   let(:stockit_inventory_number) { "X#{inventory_number}" }

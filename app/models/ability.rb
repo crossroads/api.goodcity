@@ -54,7 +54,7 @@ class Ability
   end
 
   def designation_abilities
-    can [:index], Stockit::Designation if staff?
+    can [:index, :show], Stockit::Designation if staff?
   end
 
   def holiday_abilities

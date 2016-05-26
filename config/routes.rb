@@ -93,7 +93,7 @@ Rails.application.routes.draw do
       resources :package_categories, only: [:index, :show]
       resources :locations, only: [:index, :create]
 
-      get "designations", to: "designations#index"
+      resources :designations, only: [:index, :show]
     end
   end
 end
