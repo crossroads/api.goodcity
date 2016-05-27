@@ -1,4 +1,4 @@
-module Api::V1
+module Api::V1::Stockit
   class DesignationsController < Api::V1::ApiController
 
     before_action :eager_load_designation, only: :show

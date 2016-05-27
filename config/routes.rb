@@ -7,6 +7,11 @@ Rails.application.routes.draw do
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
 
+      namespace "stockit" do
+        resources :designations, only: [:index, :show]
+        resources :items, only: [:index]
+      end
+
       get "browse/fetch_items", to: "browse#fetch_items"
       post "auth/signup", to: "authentication#signup"
       post "auth/verify", to: "authentication#verify"
@@ -92,8 +97,6 @@ Rails.application.routes.draw do
 
       resources :package_categories, only: [:index, :show]
       resources :locations, only: [:index, :create]
-
-      resources :designations, only: [:index, :show]
     end
   end
 end
