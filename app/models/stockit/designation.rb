@@ -7,7 +7,7 @@ class Stockit::Designation < Stockit::BaseModel
 
   scope :with_eager_load, -> {
     includes ([
-      { items: :location }
+      { items: [:location, :code] }
     ])
   }
 
