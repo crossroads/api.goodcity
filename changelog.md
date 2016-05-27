@@ -51,3 +51,9 @@ Rake tasks to run:
     rake goodcity:update_timeslots
     rake goodcity:update_delivery_schedule_slotname
     rake goodcity:update_items_saleable_field
+
+## Version 0.9
+
+Rake tasks to run:
+
+    rake goodcity:add_stockit_codes
