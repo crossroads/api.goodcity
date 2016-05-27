@@ -14,10 +14,14 @@ module Api::V1::Stockit
 
     api :GET, '/v1/items', "List all items"
     def index
-      records = @items.exclude_designated(params["orderId"]).
-        search(params['searchText']).latest.
+      records = @items.undispatched.exclude_designated(params["orderId"]).
+        latest.search(params['searchText']).
         page(params["page"]).per(params["per_page"])
-      items = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "items").to_json
+      items = ActiveModel::ArraySerializer.new(records,
+        each_serializer: serializer,
+        root: "items",
+        include_designation: true
+      ).to_json
       render json: items.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
     end
 
