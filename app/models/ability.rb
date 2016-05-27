@@ -24,7 +24,6 @@ class Ability
       address_abilities
       contact_abilities
       delivery_abilities
-      designation_abilities
       gogovan_order_abilities
       holiday_abilities
       item_abilities
@@ -34,6 +33,8 @@ class Ability
       package_abilities
       location_abilities
       schedule_abilities
+      stockit_designation_abilities
+      stockit_item_abilities
       taxonomies
       user_abilities
       version_abilities
@@ -53,8 +54,12 @@ class Ability
     end
   end
 
-  def designation_abilities
+  def stockit_designation_abilities
     can [:index, :show], Stockit::Designation if staff?
+  end
+
+  def stockit_item_abilities
+    can [:index], Stockit::Item if staff?
   end
 
   def holiday_abilities
