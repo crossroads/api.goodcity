@@ -3,7 +3,7 @@ namespace :goodcity do
   # rake goodcity:add_stockit_codes
   desc 'Load code details from stockit'
   task add_stockit_codes: :environment do
-    codes_json = Stockit::Code.index
+    codes_json = Stockit::CodeSync.index
     stockit_codes = JSON.parse(codes_json["codes"])
 
     if stockit_codes

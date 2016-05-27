@@ -1,7 +1,7 @@
 require 'stockit/base'
 
 module Stockit
-  class Code
+  class CodeSync
 
     include Stockit::Base
 
