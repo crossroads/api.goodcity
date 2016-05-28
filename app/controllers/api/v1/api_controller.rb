@@ -10,10 +10,6 @@ module Api::V1
 
     private
 
-    def not_found
-      render json: {}, status: 404
-    end
-
     def access_denied
       throw(:warden, { status: 403, message: I18n.t("warden.unauthorized") } ) if request.format.json?
       render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
@@ -23,5 +19,8 @@ module Api::V1
       render json: { error: e.message }, status: 422
     end
 
+    def not_found
+      render json: {}, status: 404
+    end
   end
 end
