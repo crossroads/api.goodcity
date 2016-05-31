@@ -132,7 +132,7 @@ module Api::V1
     end
 
     def offer_id
-      @package.item.offer_id
+      @package.try(:item).try(:offer_id)
     end
 
     def package_record
