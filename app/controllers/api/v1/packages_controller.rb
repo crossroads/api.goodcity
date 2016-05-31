@@ -108,7 +108,7 @@ module Api::V1
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
-        :location_id, :box_id, :pallet_id]
+        :location_id, :box_id, :pallet_id, :stockit_id]
       params.require(:package).permit(attributes)
     end
 
@@ -131,7 +131,7 @@ module Api::V1
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if inventory_number
         GoodcitySync.request_from_stockit = true
-        @package = Package.find_by(inventory_number: inventory_number) || Package.new()
+        @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
         @package.location_id = location_id
         @package.inventory_number = inventory_number
@@ -157,6 +157,10 @@ module Api::V1
 
     def barcode_service
       BarcodeService.new
+    end
+
+    def existing_package
+      Package.find_by(stockit_id: package_params[:stockit_id])
     end
   end
 end

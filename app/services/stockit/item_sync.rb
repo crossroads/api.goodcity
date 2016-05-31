@@ -42,9 +42,10 @@ module Stockit
 
     def delete
       inventory_number = package # package is actually inventory_number
-      if inventory_number.present?
+      existing_package = inventory_number.present? && Package.find_by(inventory_number: inventory_number)
+      if inventory_number.present? && existing_package
         url = url_for("/api/v1/items/destroy")
-        put(url, {inventory_number: add_stockit_prefix(inventory_number)})
+        put(url, { id: existing_package.stockit_id })
       end
     end
 
@@ -70,7 +71,8 @@ module Stockit
         condition: package_condition,
         grade: package.grade,
         description: package.notes,
-        location_id: package.location.try(:stockit_id)
+        location_id: package.location.try(:stockit_id),
+        id: package.stockit_id
       }
     end
 
@@ -79,7 +81,7 @@ module Stockit
         length: package.length,
         width: package.width,
         height: package.height,
-        description: package.notes,
+        description: package.notes
       }
     end
 
