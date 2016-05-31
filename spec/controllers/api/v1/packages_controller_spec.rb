@@ -56,7 +56,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           inventory_number: package.inventory_number,
           location_id: location.stockit_id,
           donor_condition: item.donor_condition.name,
-          grade: "C" }
+          grade: "C",
+          stockit_id: package.stockit_id }
       }
 
       it "update designation_name, location, donor_condition, grade", :show_in_doc do

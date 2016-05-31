@@ -16,4 +16,21 @@ namespace :goodcity do
     end
 
   end
+
+  # rake goodcity:sync_packages_with_stockit_items
+  desc 'Update package with stockit_id'
+  task sync_packages_with_stockit_items: :environment do
+
+    inventorized_packages = Package.where("inventory_number <> ''")
+
+    inventorized_packages.find_in_batches(batch_size: 100).each do |packages|
+      packages.each do |package|
+        stockit_item = Stockit::Item.find_by(inventory_number: package.inventory_number)
+        if stockit_item
+          package.update_column(:stockit_id, stockit_item.id)
+          puts "Updated package: #{package.id}"
+        end
+      end
+    end
+  end
 end
