@@ -31,7 +31,7 @@ class Ability
       message_abilities
       offer_abilities
       package_abilities
-      location_abilities
+      stockit_abilities
       schedule_abilities
       stockit_designation_abilities
       stockit_item_abilities
@@ -41,8 +41,10 @@ class Ability
     end
   end
 
-  def location_abilities
+  def stockit_abilities
     can [:index, :create], Location if @api_user || staff?
+    can :create, Box if @api_user
+    can :create, Pallet if @api_user
   end
 
   def delivery_abilities

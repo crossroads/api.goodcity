@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160503103214) do
+ActiveRecord::Schema.define(version: 20160531083859) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,16 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "otp_auth_key",    limit: 30
+  end
+
+  create_table "boxes", force: :cascade do |t|
+    t.string   "box_number"
+    t.string   "description"
+    t.text     "comments"
+    t.integer  "pallet_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
   end
 
   create_table "braintree_transactions", force: :cascade do |t|
@@ -257,12 +267,24 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "image_id"
-    t.integer  "offer_id",                       default: 0, null: false
+    t.integer  "offer_id",                       default: 0
     t.string   "inventory_number"
     t.integer  "location_id"
     t.string   "designation_name"
     t.integer  "donor_condition_id"
     t.string   "grade"
+    t.integer  "box_id"
+    t.integer  "pallet_id"
+    t.integer  "stockit_id"
+  end
+
+  create_table "pallets", force: :cascade do |t|
+    t.string   "pallet_number"
+    t.string   "description"
+    t.text     "comments"
+    t.integer  "stockit_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "permissions", force: :cascade do |t|

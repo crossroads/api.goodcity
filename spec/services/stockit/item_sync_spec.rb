@@ -54,7 +54,7 @@ describe Stockit::ItemSync do
 
     let(:stockit) { described_class.new(inventory_number) }
     let(:url) { "#{endpoint}/api/v1/items/destroy" }
-    let(:delete_request_params) { {inventory_number: stockit_inventory_number} }
+    let(:delete_request_params) { {id: package.stockit_id} }
     let(:error_response) { { "errors" => { "dispatched" => "Designated or dispatched items cannot be marked missing." } } }
     let(:mock_error_response) { double( as_json: error_response ) }
 
