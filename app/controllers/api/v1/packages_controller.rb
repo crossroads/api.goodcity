@@ -104,26 +104,18 @@ module Api::V1
     end
 
     def package_params
-      get_donor_condition_value
-      assign_package_type_id
+      get_package_type_id_value
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
-        :location_id]
+        :location_id, :box_id, :pallet_id, :stockit_id]
       params.require(:package).permit(attributes)
     end
 
-    def assign_package_type_id
-      if(code_id = params["package"]["code_id"])
-        params["package"]["package_type_id"] = PackageType.
-          find_by(stockit_id: code_id).try(:id)
-      end
-    end
-
-    def get_donor_condition_value
-      if(condition = params["package"]["donor_condition"])
-        params["package"]["donor_condition_id"] = DonorCondition.
-          find_by(name_en: condition).try(:id)
+    def get_package_type_id_value
+      if(params["package"]["package_type_id"].blank? || code_id = params["package"]["code_id"])
+        params["package"]["package_type_id"] = PackageType.find_by(stockit_id: code_id).try(:id)
+        params["package"].delete("code_id")
       end
     end
 
@@ -138,14 +130,14 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if inventory_number
-        @package = Package.find_by(inventory_number: inventory_number)
-        if @package
-          GoodcitySync.request_from_stockit = true
-          @package.assign_attributes(package_params)
-          @package.location_id = location_id
-          @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-          @package
-        end
+        GoodcitySync.request_from_stockit = true
+        @package = existing_package || Package.new()
+        @package.assign_attributes(package_params)
+        @package.location_id = location_id
+        @package.inventory_number = inventory_number
+        @package.box_id = box_id
+        @package.pallet_id = pallet_id
+        @package
       else
         @package = Package.new(package_params)
       end
@@ -155,8 +147,20 @@ module Api::V1
       Location.find_by(stockit_id: package_params[:location_id]).try(:id)
     end
 
+    def box_id
+      Box.find_by(stockit_id: package_params[:box_id]).try(:id)
+    end
+
+    def pallet_id
+      Pallet.find_by(stockit_id: package_params[:pallet_id]).try(:id)
+    end
+
     def barcode_service
       BarcodeService.new
+    end
+
+    def existing_package
+      Package.find_by(stockit_id: package_params[:stockit_id])
     end
   end
 end

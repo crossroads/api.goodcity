@@ -25,6 +25,8 @@ Rails.application.routes.draw do
       resources :districts, only: [:index, :show]
       resources :package_types, only: [:index]
       resources :permissions, only: [:index, :show]
+      resources :boxes, only: [:create]
+      resources :pallets, only: [:create]
 
       resources :images, only: [:create, :update, :destroy] do
         get :generate_signature, on: :collection
