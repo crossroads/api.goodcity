@@ -7,7 +7,7 @@ module Stockit
 
     attr_accessor :package, :errors
 
-    def initialize(package)
+    def initialize(package = nil)
       @package = package
       @errors = {}
     end
@@ -24,6 +24,15 @@ module Stockit
       def delete(package)
         new(package).delete
       end
+
+      def index
+        new.index
+      end
+    end
+
+    def index
+      url = url_for("/api/v1/items")
+      get(url)
     end
 
     def create
