@@ -31,8 +31,8 @@ module Api::V1
 
     api :PUT, '/v1/users/1', "Update user"
     param :user, Hash, required: true do
-      param :last_connected, String, desc: "Time when user last connected to server."
-      param :last_disconnected, String, desc: "Time when user disconnected from server."
+      param :last_connected, String, desc: "Time when user last connected to server.", allow_nil: true
+      param :last_disconnected, String, desc: "Time when user disconnected from server.", allow_nil: true
     end
     def update
       @user.update_attributes(user_params)
