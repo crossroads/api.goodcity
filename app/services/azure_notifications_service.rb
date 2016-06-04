@@ -5,8 +5,9 @@ class AzureNotificationsService
   end
 
   def notify(tags, data)
-    tags = tags.join(' || ') if tags.instance_of?(Array)
-    execute :post, 'messages', body: update_data(data).to_json, headers: notify_headers(tags)
+    [tags].flatten.each_slice(20) do |tags|
+      execute :post, 'messages', body: update_data(data).to_json, headers: notify_headers(tags.join(' || '))
+    end
   end
 
   def delete_existing_registration(platform, handle)
