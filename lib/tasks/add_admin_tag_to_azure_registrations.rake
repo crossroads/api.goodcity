@@ -4,33 +4,29 @@ namespace :goodcity do
     svc = AzureNotificationsService.new
 
     User.staff.each do |user|
-      res = svc.send(:execute, :get, "tags/#{Channel.private(user)}/registrations")
+      res = svc.send(:execute, :get, "tags/user_#{user.id}_admin/registrations")
 
-      doc = Nokogiri::XML(res.decoded)
-
+      doc = res.body
       newtag = user.permission.name.downcase
       oldtag = Channel.private(user)
       oldtag = Channel.add_admin_app_suffix(oldtag)
-      tags = [newtag,oldtag]
+      tags = [newtag,oldtag].flatten
 
       platform = ""
-      handle = (doc.at_css "GcmRegistrationId")
+      handle = (doc.match(/GcmRegistrationId>(.*)</)|| [])[1]
       if handle.present?
         platform = "gcm"
       else
-        handle = (doc.at_css "DeviceToken")
+        handle = (doc.match(/DeviceToken>(.*)</) || [])[1]
         if handle.present?
           platform = "aps"
         else
-          handle = (doc.at_css "ChannelUri")
-          if handle.present?
-            platform = "wns"
-          end
+          handle = (doc.match(/ChannelUri>(.*)</) || [])[1]
+          platform = "wns" if handle.present?
         end
       end
-      handle = handle.content.to_s
 
-      svc.send(:register_device, handle, tags, platform)
+      svc.send(:register_device, handle, tags, platform) if platform && handle
     end
   end
 
