@@ -76,7 +76,7 @@ class AzureNotificationsService
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
         <GcmTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
-          <Tags>#{tags.join(', ')}</Tags>
+          <Tags>#{tags.join(',')}</Tags>
           <GcmRegistrationId>#{handle}</GcmRegistrationId>
           <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
         </GcmTemplateRegistrationDescription>
@@ -90,7 +90,7 @@ class AzureNotificationsService
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
         <AppleTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
-          <Tags>#{tags.join(', ')}</Tags>
+          <Tags>#{tags.join(',')}</Tags>
           <DeviceToken>#{handle}</DeviceToken>
           <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
         </AppleTemplateRegistrationDescription>
@@ -115,7 +115,7 @@ class AzureNotificationsService
     <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
         <WindowsTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
-          <Tags>#{tags.join(', ')}</Tags>
+          <Tags>#{tags.join(',')}</Tags>
           <ChannelUri>#{handle}</ChannelUri>
           <BodyTemplate><![CDATA[#{template}]]></BodyTemplate>
           <WnsHeaders>
