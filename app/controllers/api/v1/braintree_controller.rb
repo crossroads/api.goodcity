@@ -15,7 +15,7 @@ module Api::V1
     def make_transaction
       response = @braintree.create_transaction(params["amount"], params["payment_method_nonce"])
       render json: { response: response.success?,
-        error: response.try(:errors).try(:first).try(:message) }.to_json
+        error: response_error_message(response) }.to_json
     end
 
     private
@@ -26,6 +26,10 @@ module Api::V1
 
     def braintree_object
       @braintree = BraintreeService.new(User.current_user)
+    end
+
+    def response_error_message(response)
+      response.try(:errors).try(:first).try(:message) || response.try(:transaction).try(:processor_response_text)
     end
 
   end
