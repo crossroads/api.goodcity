@@ -36,6 +36,7 @@ class Ability
       stockit_designation_abilities
       stockit_item_abilities
       stockit_organisation_abilities
+      stockit_contact_abilities
       taxonomies
       user_abilities
       version_abilities
@@ -67,6 +68,10 @@ class Ability
 
   def stockit_organisation_abilities
     can [:create], StockitOrganisation if @api_user
+  end
+
+  def stockit_contact_abilities
+    can [:create], StockitContact if @api_user
   end
 
   def holiday_abilities
