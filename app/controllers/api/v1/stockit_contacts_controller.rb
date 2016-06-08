@@ -14,8 +14,11 @@ module Api::V1
 
     def_param_group :stockit_contact do
       param :stockit_contact, Hash, required: true do
-        param :name, String, desc: "Name of organisation"
-        param :stockit_id, String, desc: "stockit organisation record id"
+        param :first_name, String
+        param :last_name, String
+        param :mobile_phone_number, String
+        param :phone_number, String
+        param :stockit_id, String, desc: "stockit contact record id"
       end
     end
 
