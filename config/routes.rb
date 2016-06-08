@@ -100,6 +100,7 @@ Rails.application.routes.draw do
       resources :package_categories, only: [:index, :show]
       resources :locations, only: [:index, :create]
       resources :stockit_organisations, only: [:create]
+      resources :stockit_contacts, only: [:create]
     end
   end
 end
