@@ -5,6 +5,7 @@ module Api::V1
     load_and_authorize_resource :stockit_designation, parent: false
 
     resource_description do
+      short 'Retrieve a list of designations, information about stock items that have been designated to a group or person.'
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
@@ -32,6 +33,20 @@ module Api::V1
       else
         render json: @stockit_designation.errors.to_json, status: 422
       end
+    end
+
+    api :GET, '/v1/stockit_designations', "List all stockit_designations"
+    def index
+      records = @stockit_designations.
+        search(params['searchText']).latest.
+        page(params["page"]).per(params["per_page"])
+      stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
+      render json: stockit_designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
+    end
+
+    api :GET, '/v1/designations/1', "Get a stockit_designation"
+    def show
+      render json: @stockit_designation, serializer: serializer, root: "designation"
     end
 
     private

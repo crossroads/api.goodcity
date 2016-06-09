@@ -34,7 +34,6 @@ class Ability
       stockit_abilities
       schedule_abilities
       stockit_designation_abilities
-      stockit_item_abilities
       stockit_organisation_abilities
       stockit_contact_abilities
       stockit_local_order_abilities
@@ -59,12 +58,8 @@ class Ability
     end
   end
 
-  def stockit_item_abilities
-    can [:index], Stockit::Item if staff?
-  end
-
   def stockit_designation_abilities
-    can [:create], StockitDesignation if @api_user
+    can [:create, :index, :show], StockitDesignation if @api_user || staff?
   end
 
   def stockit_organisation_abilities
