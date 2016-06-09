@@ -58,5 +58,8 @@ Rake tasks to run:
 
     rake goodcity:add_stockit_codes
     rake goodcity:add_stockit_pallets_boxes
-    rake goodcity:sync_packages_with_stockit_items
     rake goodcity:add_stockit_items
+    rake goodcity:add_stockit_organisations
+    rake goodcity:add_stockit_contacts
+    rake goodcity:add_stockit_local_orders
+    rake goodcity:add_stockit_designations
