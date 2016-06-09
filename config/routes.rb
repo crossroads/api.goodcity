@@ -102,6 +102,7 @@ Rails.application.routes.draw do
       resources :stockit_organisations, only: [:create]
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
+      resources :stockit_designations, only: [:create]
     end
   end
 end

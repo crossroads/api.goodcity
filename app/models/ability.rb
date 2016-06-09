@@ -59,12 +59,12 @@ class Ability
     end
   end
 
-  def stockit_designation_abilities
-    can [:index, :show], Stockit::Designation if staff?
-  end
-
   def stockit_item_abilities
     can [:index], Stockit::Item if staff?
+  end
+
+  def stockit_designation_abilities
+    can [:create], StockitDesignation if @api_user
   end
 
   def stockit_organisation_abilities

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160608142632) do
+ActiveRecord::Schema.define(version: 20160609075943) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -319,6 +319,18 @@ ActiveRecord::Schema.define(version: 20160608142632) do
     t.integer  "stockit_id"
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
+  end
+
+  create_table "stockit_designations", force: :cascade do |t|
+    t.string   "status"
+    t.string   "code"
+    t.string   "detail_type"
+    t.integer  "detail_id"
+    t.integer  "stockit_contact_id"
+    t.integer  "stockit_organisation_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   create_table "stockit_local_orders", force: :cascade do |t|
