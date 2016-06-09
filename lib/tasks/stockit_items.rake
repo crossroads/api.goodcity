@@ -8,9 +8,9 @@ namespace :goodcity do
 
     if stockit_items
       stockit_items.each do |value|
-        package = Package.where(stockit_id: value["id"]).first_or_initialize
+        package = Package.where(inventory_number: value["inventory_number"]).first_or_initialize
+        package.stockit_id = value["id"]
         package.quantity = value["quantity"]
-        package.inventory_number = value["inventory_number"]
         package.notes = value["description"]
         package.length = value["length"]
         package.width = value["width"]
