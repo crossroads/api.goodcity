@@ -5,7 +5,6 @@ machine:
 database:
   override:
     - bundle exec rake db:create:all db:schema:load --trace
-    - bundle exec rake stock:load_stockit_schema --trace
 
 deployment:
   staging:
