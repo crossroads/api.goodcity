@@ -102,6 +102,7 @@ Rails.application.routes.draw do
       # routes used in stock app
       get "designations", to: "stockit_designations#index"
       get "designations/:id", to: "stockit_designations#show"
+      get "items", to: "packages#search_stockit_items"
     end
   end
 end

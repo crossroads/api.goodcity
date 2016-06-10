@@ -6,7 +6,11 @@ module Api::V1
     has_one :stockit_contact, serializer: StockitContactSerializer, root: :contact
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
     has_one :stockit_local_order, serializer: StockitLocalOrderSerializer, root: :local_order
-    # has_many :items, serializer: Stockit::ItemSerializer
+    has_many :packages, serializer: StockitItemSerializer, root: :items
+
+    def include_packages?
+      !@options[:include_stockit_designation]
+    end
 
     def local_order_id
       object.detail_type == "StockitLocalOrder" ? object.detail_id : nil
