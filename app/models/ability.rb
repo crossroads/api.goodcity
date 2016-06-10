@@ -34,7 +34,9 @@ class Ability
       stockit_abilities
       schedule_abilities
       stockit_designation_abilities
-      stockit_item_abilities
+      stockit_organisation_abilities
+      stockit_contact_abilities
+      stockit_local_order_abilities
       taxonomies
       user_abilities
       version_abilities
@@ -57,11 +59,19 @@ class Ability
   end
 
   def stockit_designation_abilities
-    can [:index, :show], Stockit::Designation if staff?
+    can [:create, :index, :show], StockitDesignation if @api_user || staff?
   end
 
-  def stockit_item_abilities
-    can [:index], Stockit::Item if staff?
+  def stockit_organisation_abilities
+    can [:create], StockitOrganisation if @api_user
+  end
+
+  def stockit_contact_abilities
+    can [:create], StockitContact if @api_user
+  end
+
+  def stockit_local_order_abilities
+    can [:create], StockitLocalOrder if @api_user
   end
 
   def holiday_abilities
@@ -126,7 +136,7 @@ class Ability
 
   def package_abilities
     if staff?
-      can [:index, :show, :create, :update, :destroy, :print_barcode], Package
+      can [:index, :show, :create, :update, :destroy, :print_barcode, :search_stockit_items], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
