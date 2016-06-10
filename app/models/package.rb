@@ -10,6 +10,7 @@ class Package < ActiveRecord::Base
   belongs_to :donor_condition
   belongs_to :pallet
   belongs_to :box
+  belongs_to :stockit_designation
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_donor_condition_and_grade
@@ -24,6 +25,16 @@ class Package < ActiveRecord::Base
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where("state = 'received'") }
+
+  scope :latest, -> { order('id desc') }
+  scope :undispatched, -> { where(stockit_sent_on: nil) }
+  scope :exclude_designated, ->(designation_id) {
+    where("stockit_designation_id <> ?", designation_id)
+  }
+
+  def self.search(search_text)
+    where("inventory_number LIKE :query", query: "%#{search_text}%")
+  end
 
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default

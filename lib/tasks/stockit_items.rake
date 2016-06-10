@@ -16,6 +16,8 @@ namespace :goodcity do
         package.width = value["width"]
         package.height = value["height"]
         package.grade = value["grade"]
+        package.stockit_sent_on = value["sent_on"]
+        package.stockit_designation = package_designation(value["designation_id"])
         package.designation_name = value["designation_code"]
         package.donor_condition = package_condition(value["condition"])
         package.location = package_location(value["location_id"])
@@ -51,5 +53,9 @@ namespace :goodcity do
 
   def package_type_record(code_id)
     PackageType.find_by(stockit_id: code_id)
+  end
+
+  def package_designation(designation_id)
+    StockitDesignation.find_by(stockit_id: designation_id)
   end
 end
