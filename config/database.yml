@@ -21,11 +21,3 @@ production:
   <<: *default
   database: goodcity_server_production
   pool: <%= ENV['MAX_THREADS'] || 25 %>
-
-stockit_development:
-  <<: *default
-  database: stockit_server_development
-
-stockit_test:
-  <<: *default
-  database: stockit_server_development

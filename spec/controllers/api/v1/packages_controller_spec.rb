@@ -61,7 +61,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
 
       it "update designation_name, location, donor_condition, grade", :show_in_doc do
-        expect(Stockit::Item).to_not receive(:update)
         post :create, format: :json, package: stockit_item_params
         expect(package.reload.designation_name).to eq("HK")
         expect(package.reload.location).to eq(location)
@@ -109,7 +108,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "should send delete-item request to stockit if package has inventory_number" do
-      expect(Stockit::Item).to_not receive(:delete)
       delete :destroy, id: (create :package, :stockit_package).id
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)

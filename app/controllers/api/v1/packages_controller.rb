@@ -97,6 +97,18 @@ module Api::V1
       }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
     end
 
+    def search_stockit_items
+      records = @packages.undispatched.exclude_designated(params["orderId"]).
+        latest.search(params['searchText']).
+        page(params["page"]).per(params["per_page"])
+      packages = ActiveModel::ArraySerializer.new(records,
+        each_serializer: Api::V1::StockitItemSerializer,
+        root: "items",
+        include_stockit_designation: true
+      ).to_json
+      render json: packages.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
+    end
+
     private
 
     def remove_stockit_prefix(stockit_inventory_number)

@@ -8,14 +8,16 @@ namespace :goodcity do
 
     if stockit_items
       stockit_items.each do |value|
-        package = Package.where(stockit_id: value["id"]).first_or_initialize
+        package = Package.where(inventory_number: value["inventory_number"]).first_or_initialize
+        package.stockit_id = value["id"]
         package.quantity = value["quantity"]
-        package.inventory_number = value["inventory_number"]
         package.notes = value["description"]
         package.length = value["length"]
         package.width = value["width"]
         package.height = value["height"]
         package.grade = value["grade"]
+        package.stockit_sent_on = value["sent_on"]
+        package.stockit_designation = package_designation(value["designation_id"])
         package.designation_name = value["designation_code"]
         package.donor_condition = package_condition(value["condition"])
         package.location = package_location(value["location_id"])
@@ -51,5 +53,9 @@ namespace :goodcity do
 
   def package_type_record(code_id)
     PackageType.find_by(stockit_id: code_id)
+  end
+
+  def package_designation(designation_id)
+    StockitDesignation.find_by(stockit_id: designation_id)
   end
 end
