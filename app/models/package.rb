@@ -11,6 +11,7 @@ class Package < ActiveRecord::Base
   belongs_to :pallet
   belongs_to :box
   belongs_to :stockit_designation
+  belongs_to :stockit_designated_by, class_name: 'User'
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_donor_condition_and_grade
@@ -29,7 +30,7 @@ class Package < ActiveRecord::Base
   scope :latest, -> { order('id desc') }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :exclude_designated, ->(designation_id) {
-    where("stockit_designation_id <> ?", designation_id)
+    where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
   }
 
   def self.search(search_text)
@@ -94,6 +95,16 @@ class Package < ActiveRecord::Base
   def updated_received_package?
     !self.previous_changes.has_key?("state") && received? &&
     !GoodcitySync.request_from_stockit
+  end
+
+  def designate_to_stockit_order(order_id)
+    self.stockit_designation = StockitDesignation.find_by(id: order_id)
+    self.stockit_designated_on = Date.today
+    self.stockit_designated_by = User.current_user
+    response = Stockit::ItemSync.update(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
   end
 
   private
