@@ -3,6 +3,7 @@ module Api::V1
 
     skip_before_action :validate_token, only: [:create]
     load_and_authorize_resource :stockit_designation, parent: false
+    before_action :eager_load_designation, only: :show
 
     resource_description do
       short 'Retrieve a list of designations, information about stock items that have been designated to a group or person.'
@@ -37,7 +38,7 @@ module Api::V1
 
     api :GET, '/v1/stockit_designations', "List all stockit_designations"
     def index
-      records = @stockit_designations.
+      records = @stockit_designations.with_eager_load.
         search(params['searchText']).latest.
         page(params["page"]).per(params["per_page"])
       stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
@@ -46,7 +47,7 @@ module Api::V1
 
     api :GET, '/v1/designations/1', "Get a stockit_designation"
     def show
-      render json: @stockit_designation, serializer: serializer, root: "designation"
+      render json: @stockit_designation, serializer: serializer, root: "designation", exclude_code_details: true
     end
 
     private
@@ -78,6 +79,10 @@ module Api::V1
 
     def stockit_local_order
       StockitLocalOrder.find_by(stockit_id: params["stockit_designation"]["detail_id"])
+    end
+
+    def eager_load_designation
+      @stockit_designation = StockitDesignation.with_eager_load.find(params[:id])
     end
 
   end

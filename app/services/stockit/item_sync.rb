@@ -81,7 +81,9 @@ module Stockit
         grade: package.grade,
         description: package.notes,
         location_id: package.location.try(:stockit_id),
-        id: package.stockit_id
+        id: package.stockit_id,
+        designation_id: package.stockit_designation.try(:stockit_id),
+        designated_on: package.stockit_designated_on
       }
     end
 

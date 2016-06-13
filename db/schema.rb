@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160610072201) do
+ActiveRecord::Schema.define(version: 20160611063247) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -260,7 +260,7 @@ ActiveRecord::Schema.define(version: 20160610072201) do
     t.integer  "height"
     t.text     "notes"
     t.integer  "item_id"
-    t.string   "state",                  limit: 255
+    t.string   "state",                    limit: 255
     t.datetime "received_at"
     t.datetime "rejected_at"
     t.integer  "package_type_id"
@@ -268,7 +268,7 @@ ActiveRecord::Schema.define(version: 20160610072201) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "image_id"
-    t.integer  "offer_id",                           default: 0
+    t.integer  "offer_id",                             default: 0
     t.string   "inventory_number"
     t.integer  "location_id"
     t.string   "designation_name"
@@ -279,6 +279,8 @@ ActiveRecord::Schema.define(version: 20160610072201) do
     t.integer  "stockit_id"
     t.integer  "stockit_designation_id"
     t.date     "stockit_sent_on"
+    t.date     "stockit_designated_on"
+    t.integer  "stockit_designated_by_id"
   end
 
   create_table "pallets", force: :cascade do |t|
