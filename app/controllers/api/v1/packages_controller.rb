@@ -97,19 +97,34 @@ module Api::V1
       }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
     end
 
+    api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
     def search_stockit_items
       records = @packages.undispatched.exclude_designated(params["orderId"]).
         latest.search(params['searchText']).
         page(params["page"]).per(params["per_page"])
       packages = ActiveModel::ArraySerializer.new(records,
-        each_serializer: Api::V1::StockitItemSerializer,
+        each_serializer: stock_serializer,
         root: "items",
         include_stockit_designation: true
       ).to_json
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
     end
 
+    def designate_stockit_item
+      @package.designate_to_stockit_order(params["order_id"])
+      if @package.valid? and @package.save
+        render json: @package, serializer: stock_serializer, root: "item",
+          include_stockit_designation: true
+      else
+        render json: {errors: @package.errors.full_messages}.to_json , status: 422
+      end
+    end
+
     private
+
+    def stock_serializer
+      Api::V1::StockitItemSerializer
+    end
 
     def remove_stockit_prefix(stockit_inventory_number)
       stockit_inventory_number.gsub(/^x/i, '') unless stockit_inventory_number.blank?
