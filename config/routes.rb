@@ -103,6 +103,7 @@ Rails.application.routes.draw do
       get "designations", to: "stockit_designations#index"
       get "designations/:id", to: "stockit_designations#show"
       get "items", to: "packages#search_stockit_items"
+      put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
     end
   end
 end

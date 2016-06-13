@@ -6,7 +6,7 @@ module Api::V1
       :default_child_packages, :other_terms
 
     def include_attribute?
-      User.current_user.present?
+      User.current_user.present? && !@options[:exclude_code_details]
     end
     alias_method :include_other_child_packages?, :include_attribute?
     alias_method :include_default_child_packages?, :include_attribute?
