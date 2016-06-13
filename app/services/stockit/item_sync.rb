@@ -5,11 +5,13 @@ module Stockit
 
     include Stockit::Base
 
-    attr_accessor :package, :errors
+    attr_accessor :package, :errors, :offset, :per_page
 
-    def initialize(package = nil)
+    def initialize(package = nil, offset = nil, per_page = nil)
       @package = package
       @errors = {}
+      @offset = offset
+      @per_page = per_page
     end
 
     class << self
@@ -25,14 +27,14 @@ module Stockit
         new(package).delete
       end
 
-      def index
-        new.index
+      def index(package, offset, per_page)
+        new(package, offset, per_page).index
       end
     end
 
     def index
       url = url_for("/api/v1/items")
-      get(url)
+      get(url, { offset: offset, per_page: per_page })
     end
 
     def create

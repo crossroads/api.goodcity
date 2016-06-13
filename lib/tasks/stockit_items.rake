@@ -3,28 +3,37 @@ namespace :goodcity do
   # rake goodcity:add_stockit_items
   desc 'Load all item details from stockit'
   task add_stockit_items: :environment do
-    items_json = Stockit::ItemSync.index
-    stockit_items = JSON.parse(items_json["items"])
 
-    if stockit_items
-      stockit_items.each do |value|
-        package = Package.where(inventory_number: value["inventory_number"]).first_or_initialize
-        package.stockit_id = value["id"]
-        package.quantity = value["quantity"]
-        package.notes = value["description"]
-        package.length = value["length"]
-        package.width = value["width"]
-        package.height = value["height"]
-        package.grade = value["grade"]
-        package.stockit_sent_on = value["sent_on"]
-        package.stockit_designation = package_designation(value["designation_id"])
-        package.designation_name = value["designation_code"]
-        package.donor_condition = package_condition(value["condition"])
-        package.location = package_location(value["location_id"])
-        package.package_type = package_type_record(value["code_id"])
-        package.box = box_record(value["box_id"])
-        package.pallet = pallet_record(value["pallet_id"])
-        package.save
+    offset = 0
+    per_page = 1000
+
+    loop do
+      items_json = Stockit::ItemSync.new(nil, offset, per_page).index
+      offset = offset + per_page
+      stockit_items = JSON.parse(items_json["items"])
+
+      if stockit_items
+        stockit_items.each do |value|
+          package = Package.where(inventory_number: value["inventory_number"]).first_or_initialize
+          package.stockit_id = value["id"]
+          package.quantity = value["quantity"]
+          package.notes = value["description"]
+          package.length = value["length"]
+          package.width = value["width"]
+          package.height = value["height"]
+          package.grade = value["grade"]
+          package.stockit_sent_on = value["sent_on"]
+          package.stockit_designation = package_designation(value["designation_id"])
+          package.designation_name = value["designation_code"]
+          package.donor_condition = package_condition(value["condition"])
+          package.location = package_location(value["location_id"])
+          package.package_type = package_type_record(value["code_id"])
+          package.box = box_record(value["box_id"])
+          package.pallet = pallet_record(value["pallet_id"])
+          package.save
+        end
+      else
+        break
       end
     end
   end
