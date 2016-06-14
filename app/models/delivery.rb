@@ -72,7 +72,7 @@ class Delivery < ActiveRecord::Base
   end
 
   def notify_reviewers
-    PushService.new.send_notification Channel.reviewers, true, {
+    PushService.new.send_notification Channel.reviewer, true, {
       category: 'offer_delivery',
       message:   delivery_notify_message,
       offer_id:  offer.id,
