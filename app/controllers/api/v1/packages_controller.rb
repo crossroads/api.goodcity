@@ -135,7 +135,8 @@ module Api::V1
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
-        :location_id, :box_id, :pallet_id, :stockit_id]
+        :location_id, :box_id, :pallet_id, :stockit_id,
+        :stockit_designation_id, :stockit_designated_on, :stockit_sent_on]
       params.require(:package).permit(attributes)
     end
 
@@ -161,6 +162,7 @@ module Api::V1
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
         @package.location_id = location_id
+        @package.stockit_designation_id = stockit_designation_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id
         @package.pallet_id = pallet_id
@@ -180,6 +182,10 @@ module Api::V1
 
     def pallet_id
       Pallet.find_by(stockit_id: package_params[:pallet_id]).try(:id)
+    end
+
+    def stockit_designation_id
+      StockitDesignation.find_by(stockit_id: package_params[:stockit_designation_id]).try(:id)
     end
 
     def barcode_service
