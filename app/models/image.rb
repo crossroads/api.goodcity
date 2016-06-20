@@ -8,6 +8,7 @@ class Image < ActiveRecord::Base
   belongs_to :item, inverse_of: :images
   before_destroy :delete_image_from_cloudinary,
     unless: "Rails.env.test? || has_multiple_items"
+  after_update :clear_unused_transformed_images, unless: "Rails.env.test?"
 
   scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
 
@@ -21,6 +22,12 @@ class Image < ActiveRecord::Base
   end
 
   private
+
+  def clear_unused_transformed_images
+    image_id = public_image_id
+    CloudinaryCleanTransformedImagesJob.perform_later(image_id, self.id) if image_id
+    true
+  end
 
   def delete_image_from_cloudinary
     image_id = public_image_id
