@@ -98,7 +98,7 @@ class Ability
     if staff?
       can [:index, :show, :create, :update], Image
     else
-      can [:index, :show, :create, :update], Image, Image.donor_images(@user_id) do |record|
+      can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
         record.item.offer.created_by_id == @user_id
       end
     end
