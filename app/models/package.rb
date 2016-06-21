@@ -33,8 +33,12 @@ class Package < ActiveRecord::Base
     where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
   }
 
-  def self.search(search_text)
-    where("inventory_number LIKE :query", query: "%#{search_text}%")
+  def self.search(search_text, item_id)
+    if item_id.presence
+      where("item_id = ?", item_id)
+    else
+      where("inventory_number LIKE :query", query: "%#{search_text}%")
+    end
   end
 
   # Workaround to set initial state for the state_machine
