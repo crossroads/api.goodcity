@@ -8,7 +8,7 @@ module Api::V1
     has_one :stockit_designation, serializer: Api::V1::StockitDesignationSerializer, root: :designation, include_items: false
 
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
-      :inventory_number, :created_at, :updated_at,
+      :inventory_number, :created_at, :updated_at, :item_id, :is_set,
       :designation_name, :designation_id, :sent_on, :code_id
 
     def include_stockit_designation?
@@ -37,6 +37,14 @@ module Api::V1
 
     def code_id__sql
       "package_type_id"
+    end
+
+    def is_set
+      Package.where("item_id IS NOT NULL and item_id = ?", object.item_id).length > 1
+    end
+
+    def is_set__sql
+      "(SELECT EXISTS (SELECT 1 FROM packages v WHERE v.item_id IS NOT NULL AND packages.item_id IS NOT NULL AND v.item_id = packages.item_id HAVING COUNT(*) > 1))"
     end
   end
 
