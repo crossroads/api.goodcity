@@ -28,6 +28,7 @@ class Package < ActiveRecord::Base
   scope :received, -> { where("state = 'received'") }
 
   scope :latest, -> { order('id desc') }
+  scope :stockit_items, -> { where("stockit_id IS NOT NULL") }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :exclude_designated, ->(designation_id) {
     where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)

@@ -40,11 +40,18 @@ module Api::V1
     end
 
     def is_set
-      Package.where("item_id IS NOT NULL and item_id = ?", object.item_id).length > 1
+      Package.where("inventory_number IS NOT NULL AND
+        item_id IS NOT NULL and item_id = ?", object.item_id).length > 1
     end
 
     def is_set__sql
-      "(SELECT EXISTS (SELECT 1 FROM packages v WHERE v.item_id IS NOT NULL AND packages.item_id IS NOT NULL AND v.item_id = packages.item_id HAVING COUNT(*) > 1))"
+      "(SELECT EXISTS (
+        SELECT 1 FROM packages v
+        WHERE
+          v.item_id IS NOT NULL AND
+          v.inventory_number IS NOT NULL AND
+          v.item_id = packages.item_id
+        HAVING COUNT(*) > 1))"
     end
   end
 
