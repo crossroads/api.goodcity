@@ -100,7 +100,6 @@ module Api::V1
     api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
     def search_stockit_items
       records = @packages.stockit_items.undispatched.
-        exclude_designated(params["orderId"]).
         search(params['searchText'], params["itemId"]).latest.
         page(params["page"]).per(params["per_page"])
       packages = ActiveModel::ArraySerializer.new(records,
