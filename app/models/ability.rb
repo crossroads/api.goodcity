@@ -137,7 +137,8 @@ class Ability
   def package_abilities
     if staff?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :designate_stockit_item], Package
+        :search_stockit_items, :designate_stockit_item,
+        :undesignate_stockit_item], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
