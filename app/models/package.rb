@@ -112,6 +112,16 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def undesignate_from_stockit_order
+    self.stockit_designation = nil
+    self.stockit_designated_on = nil
+    self.stockit_designated_by = nil
+    response = Stockit::ItemSync.update(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
   private
 
   def set_donor_condition_and_grade
