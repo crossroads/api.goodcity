@@ -120,6 +120,16 @@ module Api::V1
       end
     end
 
+    def undesignate_stockit_item
+      @package.undesignate_from_stockit_order
+      if @package.valid? and @package.save
+        render json: @package, serializer: stock_serializer, root: "item",
+          include_stockit_designation: true
+      else
+        render json: {errors: @package.errors.full_messages}.to_json , status: 422
+      end
+    end
+
     private
 
     def stock_serializer
