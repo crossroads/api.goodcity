@@ -19,4 +19,26 @@ RSpec.describe Delivery, type: :model do
     end
   end
 
+  describe "push_back_offer_state" do
+    it "revert offer state on delivery deletion" do
+      delivery = create :drop_off_delivery
+      offer = delivery.offer
+      expect{
+        delivery.destroy
+      }.to change(offer,:state).from("scheduled").to("reviewed")
+    end
+  end
+
+  describe "update_offer_state" do
+    it "updates offer-state to 'scheduled'" do
+      offer = create :offer, :reviewed
+      drop_off_delivery = create :drop_off_delivery, offer: offer, schedule: nil
+      schedule = create :drop_off_schedule
+      expect {
+        drop_off_delivery.schedule = schedule
+        drop_off_delivery.save
+      }.to change(offer, :state).to("scheduled")
+    end
+  end
+
 end
