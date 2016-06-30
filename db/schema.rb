@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160617144957) do
+ActiveRecord::Schema.define(version: 20160630131417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -282,6 +282,7 @@ ActiveRecord::Schema.define(version: 20160617144957) do
     t.date     "stockit_sent_on"
     t.date     "stockit_designated_on"
     t.integer  "stockit_designated_by_id"
+    t.integer  "stockit_sent_by_id"
   end
 
   create_table "pallets", force: :cascade do |t|
