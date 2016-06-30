@@ -23,6 +23,14 @@ module Stockit
         new(package).update
       end
 
+      def dispatch(package)
+        new(package).dispatch
+      end
+
+      def undispatch(package)
+        new(package).undispatch
+      end
+
       def delete(package)
         new(package).delete
       end
@@ -47,6 +55,20 @@ module Stockit
     def update
       if package.inventory_number.present?
         url = url_for("/api/v1/items/update")
+        put(url, stockit_params)
+      end
+    end
+
+    def dispatch
+      if package.inventory_number.present?
+        url = url_for("/api/v1/items/dispatch")
+        put(url, stockit_params)
+      end
+    end
+
+    def undispatch
+      if package.inventory_number.present?
+        url = url_for("/api/v1/items/undispatch")
         put(url, stockit_params)
       end
     end
