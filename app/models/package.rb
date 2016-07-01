@@ -12,6 +12,7 @@ class Package < ActiveRecord::Base
   belongs_to :box
   belongs_to :stockit_designation
   belongs_to :stockit_designated_by, class_name: 'User'
+  belongs_to :stockit_sent_by, class_name: 'User'
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_donor_condition_and_grade
@@ -117,6 +118,29 @@ class Package < ActiveRecord::Base
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def dispatch_stockit_item
+    self.stockit_sent_on = Date.today
+    self.stockit_sent_by = User.current_user
+    self.box = nil
+    self.pallet = nil
+    self.location = Location.dispatch_location
+    response = Stockit::ItemSync.dispatch(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def undispatch_stockit_item
+    self.stockit_sent_on = nil
+    self.stockit_sent_by = nil
+    self.pallet = nil
+    self.box = nil
+    response = Stockit::ItemSync.undispatch(self)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
