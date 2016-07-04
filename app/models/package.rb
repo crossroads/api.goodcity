@@ -5,6 +5,7 @@ class Package < ActiveRecord::Base
   include PushUpdates
 
   belongs_to :item
+  belongs_to :favourite_image, class_name: 'Image'
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
@@ -29,6 +30,7 @@ class Package < ActiveRecord::Base
   scope :received, -> { where("state = 'received'") }
 
   scope :latest, -> { order('id desc') }
+  scope :without_images, -> { where(favourite_image_id: nil) }
   scope :stockit_items, -> { where("stockit_id IS NOT NULL") }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :exclude_designated, ->(designation_id) {
@@ -151,6 +153,7 @@ class Package < ActiveRecord::Base
   def set_donor_condition_and_grade
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
+    self.favourite_image ||= item && item.images.find_by(favourite: true)
   end
 
   def delete_item_from_stockit

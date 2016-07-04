@@ -16,4 +16,20 @@ namespace :goodcity do
     end
 
   end
+
+  # rake goodcity:update_package_image
+  desc 'Update package with favourite_image'
+  task update_package_image: :environment do
+
+    Package.find_in_batches(batch_size: 100).each do |packages|
+      packages.each do |package|
+        if(package.item)
+          image = package.item.images.find_by(favourite: true)
+          package.update_column(:favourite_image_id, image.try(:id))
+          puts "Updated package: #{package.id}"
+        end
+      end
+    end
+
+  end
 end
