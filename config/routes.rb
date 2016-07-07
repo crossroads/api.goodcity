@@ -98,6 +98,7 @@ Rails.application.routes.draw do
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
       resources :stockit_designations, only: [:create]
+      resources :stockit_activities, only: [:create]
 
       # routes used in stock app
       get "designations", to: "stockit_designations#index"
