@@ -41,7 +41,7 @@ module Api::V1
 
     def stockit_local_order_params
       params.require(:stockit_local_order).permit(:stockit_id, :client_name,
-        :hkid_number, :reference_number)
+        :hkid_number, :reference_number, :purpose_of_goods)
     end
 
     def serializer

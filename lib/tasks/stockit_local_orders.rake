@@ -14,7 +14,8 @@ namespace :goodcity do
           stockit_id: value["id"],
           client_name: value["client_name"],
           hkid_number: value["hkid_number"],
-          reference_number: value["reference_number"]
+          reference_number: value["reference_number"],
+          purpose_of_goods: value["purpose_of_goods"]
         ).first_or_create
       end
     end
