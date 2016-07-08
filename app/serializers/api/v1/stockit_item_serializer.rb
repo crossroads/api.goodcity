@@ -36,7 +36,7 @@ module Api::V1
     end
 
     def code_id__sql
-      "package_type_id"
+      "packages.package_type_id"
     end
 
     def is_set
