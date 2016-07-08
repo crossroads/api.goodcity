@@ -108,6 +108,7 @@ Rails.application.routes.draw do
       put "items/:id/undesignate_stockit_item", to: "packages#undesignate_stockit_item"
       put "items/:id/dispatch_stockit_item", to: "packages#dispatch_stockit_item"
       put "items/:id/undispatch_stockit_item", to: "packages#undispatch_stockit_item"
+      put "items/:id/move_stockit_item", to: "packages#move_stockit_item"
     end
   end
 end

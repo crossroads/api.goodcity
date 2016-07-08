@@ -14,6 +14,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_designation
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
+  belongs_to :stockit_moved_by, class_name: 'User'
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_donor_condition_and_grade
@@ -143,6 +144,16 @@ class Package < ActiveRecord::Base
     self.pallet = nil
     self.box = nil
     response = Stockit::ItemSync.undispatch(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def move_stockit_item(location_id)
+    self.location_id = location_id
+    self.stockit_moved_on = Date.today
+    self.stockit_moved_by = User.current_user
+    response = Stockit::ItemSync.move(self)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
