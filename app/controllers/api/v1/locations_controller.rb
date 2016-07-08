@@ -23,6 +23,7 @@ module Api::V1
     api :GET, '/v1/locations', "List all locations"
     param :ids, Array, of: Integer, desc: "Filter by location ids e.g. ids = [1,2,3,4]"
     def index
+      return search if params['searchText'].present?
       if params[:ids].blank?
         render json: Location.cached_json
         return
@@ -40,6 +41,13 @@ module Api::V1
       else
         render json: @location.errors.to_json, status: 422
       end
+    end
+
+    def search
+      records = @locations.search(params['searchText']).
+        page(params["page"]).per(params["per_page"])
+      locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").to_json
+      render json: locations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
     end
 
     private
