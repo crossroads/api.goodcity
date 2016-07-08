@@ -47,6 +47,7 @@ class Ability
     can [:index, :create], Location if @api_user || staff?
     can :create, Box if @api_user
     can :create, Pallet if @api_user
+    can :create, StockitActivity if @api_user
   end
 
   def delivery_abilities

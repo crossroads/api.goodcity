@@ -55,6 +55,7 @@ module Api::V1
     def stockit_designation_record
       @stockit_designation = StockitDesignation.where(stockit_id: stockit_designation_params[:stockit_id]).first_or_initialize
       @stockit_designation.assign_attributes(stockit_designation_params)
+      @stockit_designation.stockit_activity = stockit_activity
       @stockit_designation.stockit_contact = stockit_contact
       @stockit_designation.stockit_organisation = stockit_organisation
       @stockit_designation.detail = stockit_local_order
@@ -62,11 +63,15 @@ module Api::V1
     end
 
     def stockit_designation_params
-      params.require(:stockit_designation).permit(:stockit_id, :code, :status, :created_at, :stockit_contact_id, :detail_id, :detail_type, :stockit_organisation_id)
+      params.require(:stockit_designation).permit(:stockit_id, :code, :status, :created_at, :stockit_contact_id, :detail_id, :detail_type, :stockit_organisation_id, :description, :stockit_activity_id)
     end
 
     def serializer
       Api::V1::StockitDesignationSerializer
+    end
+
+    def stockit_activity
+      StockitActivity.find_by(stockit_id: params["stockit_designation"]["stockit_activity_id"])
     end
 
     def stockit_contact
