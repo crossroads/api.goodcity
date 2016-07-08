@@ -60,6 +60,7 @@ Rake tasks to run:
     rake goodcity:add_stockit_pallets_boxes
     rake goodcity:add_stockit_organisations
     rake goodcity:add_stockit_contacts
+    rake goodcity:add_stockit_activities
     rake goodcity:add_stockit_local_orders
     rake goodcity:add_stockit_designations
     rake goodcity:add_stockit_items
