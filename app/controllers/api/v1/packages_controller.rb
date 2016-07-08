@@ -99,15 +99,22 @@ module Api::V1
 
     api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
     def search_stockit_items
-      records = @packages.stockit_items.undispatched.
-        search(params['searchText'], params["itemId"]).latest.
-        page(params["page"]).per(params["per_page"])
+      records = {}; pages = 0
+      if params['searchText'].present?
+        records = params["orderId"].present? ?
+          @packages.stockit_items.undispatched : @packages.stockit_items
+        records = records.search(params['searchText'], params["itemId"]).
+          select("nth_value(packages.updated_at,1) OVER (PARTITION BY packages.item_id ORDER BY packages.updated_at DESC) AS key").
+          order("key desc").page(params["page"]).per(params["per_page"])
+        pages = records.total_pages
+      end
+
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
         include_stockit_designation: true
       ).to_json
-      render json: packages.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
+      render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}}}"
     end
 
     def designate_stockit_item
