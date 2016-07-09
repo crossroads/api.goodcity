@@ -167,7 +167,8 @@ module Api::V1
     end
 
     def get_package_type_id_value
-      if(params["package"]["package_type_id"].blank? || code_id = params["package"]["code_id"])
+      code_id = params["package"]["code_id"]
+      if params["package"]["package_type_id"].blank? and code_id.present?
         params["package"]["package_type_id"] = PackageType.find_by(stockit_id: code_id).try(:id)
         params["package"].delete("code_id")
       end
