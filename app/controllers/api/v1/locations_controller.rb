@@ -24,6 +24,7 @@ module Api::V1
     param :ids, Array, of: Integer, desc: "Filter by location ids e.g. ids = [1,2,3,4]"
     def index
       return search if params['searchText'].present?
+      return recent_locations if params['recently_used'].present?
       if params[:ids].blank?
         render json: Location.cached_json
         return
@@ -48,6 +49,11 @@ module Api::V1
         page(params["page"]).per(params["per_page"])
       locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").to_json
       render json: locations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
+    end
+
+    def recent_locations
+      @locations = User.current_user.used_locations
+      render json: @locations, each_serializer: serializer
     end
 
     private
