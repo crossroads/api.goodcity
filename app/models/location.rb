@@ -10,4 +10,8 @@ class Location < ActiveRecord::Base
   def offer
     nil
   end
+
+  def self.search(key)
+    where("building LIKE :query OR area LIKE :query", query: "%#{key}%")
+  end
 end

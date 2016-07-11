@@ -27,6 +27,10 @@ module Stockit
         new(package).dispatch
       end
 
+      def move(package)
+        new(package).move
+      end
+
       def undispatch(package)
         new(package).undispatch
       end
@@ -69,6 +73,13 @@ module Stockit
     def undispatch
       if package.inventory_number.present?
         url = url_for("/api/v1/items/undispatch")
+        put(url, stockit_params)
+      end
+    end
+
+    def move
+      if package.inventory_number.present?
+        url = url_for("/api/v1/items/move")
         put(url, stockit_params)
       end
     end

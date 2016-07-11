@@ -137,6 +137,11 @@ module Api::V1
       send_stock_item_response
     end
 
+    def move_stockit_item
+      @package.move_stockit_item(params["location_id"])
+      send_stock_item_response
+    end
+
     def send_stock_item_response
       if @package.valid? and @package.save
         render json: @package, serializer: stock_serializer, root: "item",
