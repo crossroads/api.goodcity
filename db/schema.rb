@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160707064711) do
+ActiveRecord::Schema.define(version: 20160708145151) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -283,6 +283,8 @@ ActiveRecord::Schema.define(version: 20160707064711) do
     t.integer  "stockit_designated_by_id"
     t.integer  "stockit_sent_by_id"
     t.integer  "favourite_image_id"
+    t.date     "stockit_moved_on"
+    t.integer  "stockit_moved_by_id"
   end
 
   create_table "pallets", force: :cascade do |t|
