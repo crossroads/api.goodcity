@@ -17,6 +17,8 @@ class User < ActiveRecord::Base
 
   belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
+  has_many :moved_packages, class_name: "Package", foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
+  has_many :used_locations, -> { order 'packages.stockit_moved_on DESC' }, class_name: "Location", through: :moved_packages, source: :location
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
