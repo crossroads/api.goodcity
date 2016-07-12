@@ -14,4 +14,14 @@ class Location < ActiveRecord::Base
   def self.search(key)
     where("building LIKE :query OR area LIKE :query", query: "%#{key}%")
   end
+
+  def self.recently_used(user_id)
+    select("DISTINCT ON (locations.id) locations.id, building, area, versions.created_at").
+    joins("INNER JOIN versions ON ((object_changes -> 'location_id' ->> 1) = CAST(locations.id AS TEXT))").
+    joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')").
+    where(" versions.event = 'update' AND
+      (object_changes ->> 'location_id') IS NOT NULL AND
+      CAST(whodunnit AS integer) = ?", user_id).
+    order("locations.id, versions.created_at DESC")
+  end
 end
