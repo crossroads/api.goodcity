@@ -52,7 +52,7 @@ module Api::V1
     end
 
     def recent_locations
-      @locations = User.current_user.used_locations
+      @locations = Location.recently_used(User.current_user.id)
       render json: @locations, each_serializer: serializer
     end
 
