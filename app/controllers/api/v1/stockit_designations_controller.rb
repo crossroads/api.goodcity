@@ -38,6 +38,7 @@ module Api::V1
 
     api :GET, '/v1/stockit_designations', "List all stockit_designations"
     def index
+      return recent_designations if params['recently_used'].present?
       records = @stockit_designations.with_eager_load.
         search(params['searchText']).latest.
         page(params["page"]).per(params["per_page"])
@@ -48,6 +49,12 @@ module Api::V1
     api :GET, '/v1/designations/1', "Get a stockit_designation"
     def show
       render json: @stockit_designation, serializer: serializer, root: "designation", exclude_code_details: true
+    end
+
+    def recent_designations
+      records = StockitDesignation.recently_used(User.current_user.id)
+      stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
+      render json: stockit_designations
     end
 
     private
