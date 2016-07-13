@@ -31,6 +31,6 @@ class StockitDesignation < ActiveRecord::Base
     where(" versions.event = 'update' AND
       (object_changes ->> 'stockit_designation_id') IS NOT NULL AND
       CAST(whodunnit AS integer) = ?", user_id).
-    order("stockit_designations.id, versions.created_at DESC")
+    order("key, versions.created_at DESC")
   end
 end
