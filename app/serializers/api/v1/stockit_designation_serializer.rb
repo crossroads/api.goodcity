@@ -1,7 +1,8 @@
 module Api::V1
   class StockitDesignationSerializer < ApplicationSerializer
     embed :ids, include: true
-    attributes :status, :created_at, :code, :detail_type, :id, :detail_id, :contact_id, :local_order_id, :organisation_id, :description, :activity
+    attributes :status, :code, :detail_type, :id, :detail_id, :contact_id, :local_order_id, :organisation_id, 
+      :description, :activity
 
     has_one :stockit_contact, serializer: StockitContactSerializer, root: :contact
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
