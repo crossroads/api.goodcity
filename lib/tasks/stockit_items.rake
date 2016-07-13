@@ -12,7 +12,7 @@ namespace :goodcity do
       offset = offset + per_page
       stockit_items = JSON.parse(items_json["items"])
 
-      if stockit_items
+      if stockit_items.present?
         stockit_items.each do |value|
           package = Package.where(inventory_number: value["inventory_number"]).first_or_initialize
           package.stockit_id = value["id"]
