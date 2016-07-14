@@ -112,7 +112,7 @@ module Api::V1
         root: "items",
         include_stockit_designation: true
       ).to_json
-      render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}}}"
+      render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
     def designate_stockit_item

@@ -43,7 +43,7 @@ module Api::V1
         search(params['searchText']).latest.
         page(params["page"]).per(params["per_page"])
       stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
-      render json: stockit_designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}}}"
+      render json: stockit_designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
     api :GET, '/v1/designations/1', "Get a stockit_designation"
