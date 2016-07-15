@@ -25,12 +25,13 @@ class StockitDesignation < ActiveRecord::Base
   end
 
   def self.recently_used(user_id)
-    select("DISTINCT ON (stockit_designations.id) stockit_designations.id AS key,  versions.created_at").
+    select("DISTINCT ON (stockit_designations.id) stockit_designations.id AS key,  versions.created_at AS recently_used_at").
     joins("INNER JOIN versions ON ((object_changes -> 'stockit_designation_id' ->> 1) = CAST(stockit_designations.id AS TEXT))").
     joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')").
     where(" versions.event = 'update' AND
       (object_changes ->> 'stockit_designation_id') IS NOT NULL AND
-      CAST(whodunnit AS integer) = ?", user_id).
-    order("key, versions.created_at DESC")
+      CAST(whodunnit AS integer) = ? AND
+      versions.created_at >= ? ", user_id, 15.days.ago).
+    order("key, recently_used_at DESC")
   end
 end
