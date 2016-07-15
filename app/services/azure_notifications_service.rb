@@ -33,7 +33,15 @@ class AzureNotificationsService
     options[:method] = method
     options[:headers] ||= {}
     options[:headers]['Authorization'] = sas_token(url)
-    Nestful::Request.new(url, options).execute
+    begin
+      Nestful::Request.new(url, options).execute
+    rescue Nestful::StandardError => ex
+      {
+        "errors" => {
+          azure_notification_error: "An error has occured. #{ex.class}: #{ex.backtrace}"
+        }
+      }
+    end
   end
 
   def encoded_url(platform, handle)
