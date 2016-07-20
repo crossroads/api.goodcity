@@ -19,6 +19,7 @@ class Package < ActiveRecord::Base
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_donor_condition_and_grade
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
+  before_save :save_inventory_number, if: :inventory_number_changed?
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -169,9 +170,26 @@ class Package < ActiveRecord::Base
 
   def delete_item_from_stockit
     StockitDeleteJob.perform_later(self.inventory_number)
+    remove_inventory_number
   end
 
   def update_stockit_item
     StockitUpdateJob.perform_later(id)
+  end
+
+  def save_inventory_number
+    if gc_inventory_number
+      InventoryNumber.where(code: inventory_number).first_or_create
+    end
+  end
+
+  def remove_inventory_number
+    if gc_inventory_number
+      InventoryNumber.find_by(code: inventory_number).try(:destroy)
+    end
+  end
+
+  def gc_inventory_number
+    inventory_number && inventory_number.match(/^[0-9]/)
   end
 end
