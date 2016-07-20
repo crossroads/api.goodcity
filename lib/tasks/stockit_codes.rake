@@ -26,5 +26,12 @@ namespace :goodcity do
         end
       end
     end
+
+    new_gc_codes = PackageType.where("stockit_id IS NULL")
+    new_gc_codes.each do |code|
+      response = Stockit::CodeSync.create(code)
+      code.update_column(:stockit_id, response["code_id"]) if response["code_id"].present?
+    end
+
   end
 end
