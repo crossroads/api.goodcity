@@ -11,10 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160708145151) do
+ActiveRecord::Schema.define(version: 20160719095224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "btree_gin"
+  enable_extension "pg_trgm"
 
   create_table "addresses", force: :cascade do |t|
     t.string   "flat",             limit: 255
@@ -286,6 +288,8 @@ ActiveRecord::Schema.define(version: 20160708145151) do
     t.date     "stockit_moved_on"
     t.integer  "stockit_moved_by_id"
   end
+
+  add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
 
   create_table "pallets", force: :cascade do |t|
     t.string   "pallet_number"
