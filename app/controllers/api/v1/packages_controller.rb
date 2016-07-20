@@ -85,8 +85,7 @@ module Api::V1
         return render json: {errors:"Package not found with supplied package_id"}, status: 400
       end
       if package.inventory_number.blank?
-        i = InventoryNumber.create
-        package.inventory_number = i.id.to_s.rjust(6, "0")
+        package.inventory_number = InventoryNumber.available_code
         package.save
       end
       print_id, errors, status = barcode_service.print package.inventory_number
