@@ -22,29 +22,7 @@ namespace :goodcity do
     puts "Copy locations: END"
 
     puts "Copy codes: START"
-    codes_json = Stockit::CodeSync.index
-    stockit_codes = JSON.parse(codes_json["codes"])
-
-    if stockit_codes
-
-      stockit_codes.each do |value|
-        is_new_code = false
-
-        code = PackageType.where(code: value["code"]).first_or_initialize
-        code.name_en = value["description_en"]
-        code.name_zh_tw = value["description_zht"]
-        code.stockit_id = value["id"]
-        is_new_code = code.new_record?
-        code.save
-
-        if is_new_code && code.default_child_package_types.count.zero?
-          SubpackageType.create(
-            package_type: code,
-            child_package_type: code,
-            is_default: true)
-        end
-      end
-    end
+    Rake::Task["goodcity:add_stockit_codes"].execute
     puts "Copy codes: END"
 
     puts "Copy pallets and boxes: START"
