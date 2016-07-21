@@ -38,8 +38,6 @@ namespace :goodcity do
             package.box = box_record(value["box_id"])
             package.pallet = pallet_record(value["pallet_id"])
             package.save
-
-            puts "package Stockit: #{value['id']} => GC: #{package.id}"
           end
         end
       else
