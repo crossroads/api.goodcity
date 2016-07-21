@@ -132,7 +132,8 @@ module Stockit
     end
 
     def package_condition
-      condition = package.donor_condition.name_en || package.item.donor_condition.name_en
+      condition = package.try(:donor_condition).try(:name_en) ||
+        package.try(:item).try(:donor_condition).try(:name_en)
       case condition
       when "New" then "N"
       when "Lightly Used" then "M"
