@@ -12,7 +12,7 @@ class Location < ActiveRecord::Base
   end
 
   def self.search(key)
-    where("building LIKE :query OR area LIKE :query", query: "%#{key}%")
+    where("building ILIKE :query OR area ILIKE :query", query: "%#{key}%")
   end
 
   def self.recently_used(user_id)
