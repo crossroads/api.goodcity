@@ -24,7 +24,13 @@ cancellation_reasons.each do |name_en, value|
 end
 
 # Load Locations from Stockit
-Rake::Task["goodcity:add_stockit_locations"].invoke
+locations = YAML.load_file("#{Rails.root}/db/locations.yml")
+locations.each do |value|
+  FactoryGirl.create(:location,
+    building: value["building"],
+    area: value["area"],
+    stockit_id: nil )
+end
 
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
