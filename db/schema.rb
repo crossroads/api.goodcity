@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160720103535) do
+ActiveRecord::Schema.define(version: 20160722111406) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -171,7 +171,6 @@ ActiveRecord::Schema.define(version: 20160720103535) do
     t.string   "reject_reason",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "saleable",                        default: false
     t.integer  "donor_condition_id"
     t.datetime "deleted_at"
     t.text     "rejection_comments"
@@ -223,6 +222,7 @@ ActiveRecord::Schema.define(version: 20160720103535) do
     t.integer  "cancellation_reason_id"
     t.string   "cancel_reason"
     t.datetime "inactive_at"
+    t.boolean  "saleable",                            default: false
   end
 
   create_table "package_categories", force: :cascade do |t|
@@ -288,6 +288,7 @@ ActiveRecord::Schema.define(version: 20160720103535) do
     t.integer  "favourite_image_id"
     t.date     "stockit_moved_on"
     t.integer  "stockit_moved_by_id"
+    t.boolean  "saleable",                             default: false
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin

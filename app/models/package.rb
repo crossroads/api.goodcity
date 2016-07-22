@@ -17,7 +17,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_moved_by, class_name: 'User'
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
-  before_create :set_donor_condition_and_grade
+  before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
 
@@ -162,10 +162,12 @@ class Package < ActiveRecord::Base
 
   private
 
-  def set_donor_condition_and_grade
+  def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
     self.favourite_image ||= item && item.images.find_by(favourite: true)
+    self.saleable = offer.try(:saleable) || false
+    true
   end
 
   def delete_item_from_stockit
