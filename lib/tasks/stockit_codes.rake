@@ -33,5 +33,10 @@ namespace :goodcity do
       code.update_column(:stockit_id, response["code_id"]) if response["code_id"].present?
     end
 
+    package_type = PackageType.find_by(code: "VXX")
+    if package_type
+      package_type.update_column(:name_en, "Other types of computer equipment")
+    end
+
   end
 end
