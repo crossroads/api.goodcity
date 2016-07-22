@@ -78,7 +78,6 @@ module Api::V1
     param_group :offer
     param :saleable, [true, false], desc: "Can these items be sold?"
     def update
-      @offer.update_saleable_items if params[:offer][:saleable]
       @offer.update_attributes(offer_params)
       render json: @offer, serializer: serializer
     end
@@ -146,7 +145,7 @@ module Api::V1
     def offer_params
       attributes = [:language, :origin, :stairs, :parking, :estimated_size,
         :notes, :delivered_by, :state_event, :cancel_reason,
-        :cancellation_reason_id]
+        :cancellation_reason_id, :saleable]
       params.require(:offer).permit(attributes)
     end
 
