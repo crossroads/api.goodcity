@@ -211,10 +211,6 @@ class Offer < ActiveRecord::Base
     messages.create(body: body, sender: user) unless body.blank?
   end
 
-  def update_saleable_items
-    items.map(&:update_saleable)
-  end
-
   def subscribed_users(is_private)
     Message.unscoped.joins(:subscriptions)
       .select("distinct subscriptions.user_id as user_id")

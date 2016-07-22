@@ -21,6 +21,7 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:designation_name).of_type(:string)}
     it{ is_expected.to have_db_column(:grade).of_type(:string)}
     it{ is_expected.to have_db_column(:donor_condition_id).of_type(:integer)}
+    it{ is_expected.to have_db_column(:saleable).of_type(:boolean)}
   end
 
   describe "validations" do
@@ -109,13 +110,14 @@ RSpec.describe Package, type: :model do
   end
 
   describe "before_save" do
-    it "should set grade and donor_condition value" do
+    it "should set default values" do
       item = create :item
       package = build :package, item: item
       expect {
         package.save
       }.to change(package, :donor_condition).from(nil).to(item.donor_condition)
       expect(package.grade).to eq("B")
+      expect(package.saleable).to eq(item.offer.saleable)
     end
   end
 end

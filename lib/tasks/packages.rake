@@ -32,4 +32,21 @@ namespace :goodcity do
     end
 
   end
+
+  # rake goodcity:update_salable_for_offers_and_packages
+  desc 'update_salable_for_offers_and_packages'
+  task update_salable_for_offers_and_packages: :environment do
+    puts "Updated Offer--START"
+    Offer.with_deleted.find_in_batches(batch_size: 100).each do |offers|
+      offers.each do |offer|
+        saleable_value = offer.items.first.try(:saleable)
+        if saleable_value
+          offer.update_column(:saleable, saleable_value)
+          Package.where(offer_id: offer.id).update_all(saleable: saleable_value)
+          puts "Offer-#{offer.id}"
+        end
+      end
+    end
+    puts "Updated Offer--END"
+  end
 end
