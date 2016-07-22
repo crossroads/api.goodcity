@@ -43,7 +43,7 @@ class Package < ActiveRecord::Base
     if item_id.presence
       where("item_id = ?", item_id)
     else
-      where("inventory_number LIKE :query", query: "%#{search_text}%")
+      where("inventory_number ILIKE :query", query: "%#{search_text}%")
     end
   end
 
