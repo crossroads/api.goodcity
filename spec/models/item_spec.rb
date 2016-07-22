@@ -22,21 +22,6 @@ RSpec.describe Item, type: :model do
     it { is_expected.to have_db_column(:rejection_reason_id).of_type(:integer) }
     it { is_expected.to have_db_column(:reject_reason).of_type(:string) }
     it { is_expected.to have_db_column(:rejection_comments).of_type(:text) }
-    it { is_expected.to have_db_column(:saleable).of_type(:boolean) }
-  end
-
-  describe 'Scope Methods' do
-    let!(:item)    { create :item }
-    let!(:an_item) { create :item } # this item should not be changed
-
-    describe 'update_saleable' do
-      it 'should update all items of offer' do
-        expect{
-          item.update_saleable
-        }.to change(Item.where(saleable: true), :count).by(1)
-        expect(an_item).to_not be_saleable
-      end
-    end
   end
 
   describe "Instance Methods" do
@@ -174,23 +159,6 @@ RSpec.describe Item, type: :model do
     it "should return true for non-received packages" do
       item = create :item, :with_received_packages, state: :accepted
       expect(item.not_received_packages?).to be false
-    end
-  end
-
-  describe "assign_saleable" do
-    let(:offer) { create :offer }
-
-    it "assign saleable value if offer is not draft" do
-      item = create :item, saleable: true, offer: offer
-      offer.submit
-      new_item = create :item, offer: offer
-      expect(new_item).to be_saleable
-    end
-
-    it "does not assign saleable value if offer is draft" do
-      item = create :item, saleable: true, offer: offer
-      new_item = create :item, offer: offer
-      expect(new_item).to_not be_saleable
     end
   end
 end
