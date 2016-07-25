@@ -4,7 +4,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :donor_description, :state, :offer_id, :reject_reason,
-      :created_at, :updated_at, :package_type_id, :message_ids,
+      :created_at, :updated_at, :package_type_id, :message_ids, :saleable,
       :rejection_comments, :donor_condition_id, :rejection_reason_id
 
     has_many :packages, serializer: PackageSerializer
@@ -23,6 +23,14 @@ module Api::V1
         item_id = items.id #{need_private}), '{}'::int[])"
     end
 
+    def saleable
+      object.offer.try(:saleable)
+    end
+
+    def saleable__sql
+      "(select offers.saleable from offers where offers.id = items.offer_id)"
+    end
+
     def include_message_ids?
       @options[:exclude_messages] != true
     end
@@ -36,5 +44,6 @@ module Api::V1
     alias_method :include_reject_reason?, :include_attribute?
     alias_method :include_rejection_comments?, :include_attribute?
     alias_method :include_message_ids?, :include_attribute?
+    alias_method :include_saleable?, :include_attribute?
   end
 end
