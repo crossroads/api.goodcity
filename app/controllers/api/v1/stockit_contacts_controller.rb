@@ -1,7 +1,6 @@
 module Api::V1
   class StockitContactsController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:create]
     load_and_authorize_resource :stockit_contact, parent: false
 
     resource_description do
