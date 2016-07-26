@@ -1,7 +1,6 @@
 module Api::V1
   class LocationsController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:index, :create]
     load_and_authorize_resource :location, parent: false
 
     resource_description do
