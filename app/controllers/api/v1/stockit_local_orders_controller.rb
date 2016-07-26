@@ -1,7 +1,6 @@
 module Api::V1
   class StockitLocalOrdersController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:create]
     load_and_authorize_resource :stockit_local_order, parent: false
 
     resource_description do

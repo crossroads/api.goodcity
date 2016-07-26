@@ -1,7 +1,6 @@
 module Api::V1
   class StockitDesignationsController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:create]
     load_and_authorize_resource :stockit_designation, parent: false
     before_action :eager_load_designation, only: :show
 
