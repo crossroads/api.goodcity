@@ -21,6 +21,7 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:designation_name).of_type(:string)}
     it{ is_expected.to have_db_column(:grade).of_type(:string)}
     it{ is_expected.to have_db_column(:donor_condition_id).of_type(:integer)}
+    it{ is_expected.to have_db_column(:saleable).of_type(:boolean)}
   end
 
   describe "validations" do
@@ -49,7 +50,7 @@ RSpec.describe Package, type: :model do
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
-        expect(Stockit::Item).to receive(:create).with(package)
+        expect(Stockit::ItemSync).to receive(:create).with(package)
         expect{
           package.mark_received
         }.to change(package, :received_at)
@@ -60,7 +61,7 @@ RSpec.describe Package, type: :model do
     describe "#mark_missing" do
       let(:package) { create :package, :received }
       it "should set received_at value" do
-        expect(Stockit::Item).to receive(:delete).with(package.inventory_number)
+        expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number)
         expect{
           package.mark_missing
         }.to change(package, :received_at).to(nil)
@@ -72,7 +73,7 @@ RSpec.describe Package, type: :model do
   describe "add_to_stockit" do
     it "should add API errors to package.errors" do
       api_response = {"errors" => {"code" => "can't be blank"}}
-      expect(Stockit::Item).to receive(:create).with(package).and_return(api_response)
+      expect(Stockit::ItemSync).to receive(:create).with(package).and_return(api_response)
       package.add_to_stockit
       expect(package.errors).to include(:code)
     end
@@ -82,7 +83,7 @@ RSpec.describe Package, type: :model do
     it "should add API errors to package.errors" do
       package.inventory_number = "F12345"
       api_response = {"errors" => {"base" => "already designated"}}
-      expect(Stockit::Item).to receive(:delete).with(package.inventory_number).and_return(api_response)
+      expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number).and_return(api_response)
       package.remove_from_stockit
       expect(package.errors).to include(:base)
       expect(package.inventory_number).to_not be_nil
@@ -90,7 +91,7 @@ RSpec.describe Package, type: :model do
 
     it "should add set inventory_number to nil" do
       package.inventory_number = "F12345"
-      expect(Stockit::Item).to receive(:delete).with(package.inventory_number).and_return({})
+      expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number).and_return({})
       package.remove_from_stockit
       expect(package.errors.full_messages).to eq([])
       expect(package.inventory_number).to be_nil
@@ -109,13 +110,14 @@ RSpec.describe Package, type: :model do
   end
 
   describe "before_save" do
-    it "should set grade and donor_condition value" do
+    it "should set default values" do
       item = create :item
       package = build :package, item: item
       expect {
         package.save
       }.to change(package, :donor_condition).from(nil).to(item.donor_condition)
       expect(package.grade).to eq("B")
+      expect(package.saleable).to eq(item.offer.saleable)
     end
   end
 end

@@ -90,16 +90,17 @@ class Message < ActiveRecord::Base
   def send_new_message_notification
     return if is_call_log
     subscribed_user_channels = subscribed_user_channels()
+    current_channel = Channel.private(sender)
 
     # notify subscribed users except sender
-    sender_channel = Channel.private(sender)
+    sender_channel = current_channel
     channels = subscribed_user_channels - sender_channel - donor_channel
 
     send_notification donor_channel, false unless is_private || offer.cancelled? || donor_channel == sender_channel
     send_notification channels, true
 
     # notify all supervisors if no supervisor is subscribed in private thread
-    if is_private && (supervisors_channel & subscribed_user_channels).empty?
+    if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
       send_notification Channel.supervisor, true
     end
   end

@@ -56,11 +56,11 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           inventory_number: package.inventory_number,
           location_id: location.stockit_id,
           donor_condition: item.donor_condition.name,
-          grade: "C" }
+          grade: "C",
+          stockit_id: package.stockit_id }
       }
 
       it "update designation_name, location, donor_condition, grade", :show_in_doc do
-        expect(Stockit::Item).to_not receive(:update)
         post :create, format: :json, package: stockit_item_params
         expect(package.reload.designation_name).to eq("HK")
         expect(package.reload.location).to eq(location)
@@ -70,12 +70,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(GoodcitySync.request_from_stockit).to eq(true)
       end
 
-      it "should not create new package for unknown inventory_number" do
-        expect {
-          post :create, format: :json, package: { designation_name: "HK", inventory_number: "F12345" }
-        }.to_not change(Package, :count)
-        expect(response.status).to eq(204)
-      end
+      # it "should not create new package for unknown inventory_number" do
+      #   expect {
+      #     post :create, format: :json, package: { designation_name: "HK", inventory_number: "F12345" }
+      #   }.to_not change(Package, :count)
+      #   expect(response.status).to eq(204)
+      # end
     end
   end
 
@@ -108,7 +108,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "should send delete-item request to stockit if package has inventory_number" do
-      expect(Stockit::Item).to_not receive(:delete)
       delete :destroy, id: (create :package, :stockit_package).id
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)
