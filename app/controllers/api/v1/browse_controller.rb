@@ -2,7 +2,7 @@ module Api::V1
   class BrowseController < Api::V1::ApiController
 
     load_and_authorize_resource :item, parent: false
-    skip_before_action :validate_token
+    skip_before_action :validate_token, unless: -> { Rails.env.production? }
 
     resource_description do
       short 'Get items list.'
