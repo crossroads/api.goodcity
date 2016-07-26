@@ -184,7 +184,7 @@ module Api::V1
 
     def current_user_channels
       channels = current_user.channels
-      channels = Channel.add_admin_app_prefix(channels) if is_admin_app
+      channels = Channel.add_admin_app_suffix(channels) if is_admin_app
       channels
     end
 
@@ -219,9 +219,12 @@ module Api::V1
     end
 
     def register_device_for_notifications
+      channels = current_user.channels
+      channels = Channel.add_admin_app_suffix(channels) if is_admin_app
+
       AzureRegisterJob.perform_later(
         params[:handle],
-        Channel.my_channel(current_user, is_admin_app),
+        channels,
         params[:platform],
         is_admin_app )
     end

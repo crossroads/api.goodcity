@@ -11,10 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160503103214) do
+ActiveRecord::Schema.define(version: 20160725142942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "btree_gin"
+  enable_extension "pg_trgm"
 
   create_table "addresses", force: :cascade do |t|
     t.string   "flat",             limit: 255
@@ -38,6 +40,16 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.string   "otp_auth_key",    limit: 30
   end
 
+  create_table "boxes", force: :cascade do |t|
+    t.string   "box_number"
+    t.string   "description"
+    t.text     "comments"
+    t.integer  "pallet_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "braintree_transactions", force: :cascade do |t|
     t.string   "transaction_id"
     t.integer  "customer_id"
@@ -45,6 +57,7 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.string   "status"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.boolean  "is_success"
   end
 
   create_table "cancellation_reasons", force: :cascade do |t|
@@ -142,21 +155,22 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.integer  "angle",                     default: 0
   end
 
   create_table "inventory_numbers", force: :cascade do |t|
+    t.string "code"
   end
 
   create_table "items", force: :cascade do |t|
     t.text     "donor_description"
     t.string   "state",               limit: 255
-    t.integer  "offer_id",                                        null: false
+    t.integer  "offer_id",                        null: false
     t.integer  "package_type_id"
     t.integer  "rejection_reason_id"
     t.string   "reject_reason",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "saleable",                        default: false
     t.integer  "donor_condition_id"
     t.datetime "deleted_at"
     t.text     "rejection_comments"
@@ -208,6 +222,7 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.integer  "cancellation_reason_id"
     t.string   "cancel_reason"
     t.datetime "inactive_at"
+    t.boolean  "saleable",                            default: false
   end
 
   create_table "package_categories", force: :cascade do |t|
@@ -236,8 +251,10 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.string   "name_zh_tw"
     t.string   "other_terms_en"
     t.string   "other_terms_zh_tw"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.boolean  "visible_in_selects", default: false
+    t.integer  "stockit_id"
   end
 
   create_table "packages", force: :cascade do |t|
@@ -247,20 +264,42 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.integer  "height"
     t.text     "notes"
     t.integer  "item_id"
-    t.string   "state",              limit: 255
+    t.string   "state",                    limit: 255
     t.datetime "received_at"
     t.datetime "rejected_at"
     t.integer  "package_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.integer  "image_id"
-    t.integer  "offer_id",                       default: 0, null: false
+    t.integer  "offer_id",                             default: 0
     t.string   "inventory_number"
     t.integer  "location_id"
     t.string   "designation_name"
     t.integer  "donor_condition_id"
     t.string   "grade"
+    t.integer  "box_id"
+    t.integer  "pallet_id"
+    t.integer  "stockit_id"
+    t.integer  "stockit_designation_id"
+    t.date     "stockit_sent_on"
+    t.date     "stockit_designated_on"
+    t.integer  "stockit_designated_by_id"
+    t.integer  "stockit_sent_by_id"
+    t.integer  "favourite_image_id"
+    t.date     "stockit_moved_on"
+    t.integer  "stockit_moved_by_id"
+    t.boolean  "saleable",                             default: false
+  end
+
+  add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
+
+  create_table "pallets", force: :cascade do |t|
+    t.string   "pallet_number"
+    t.string   "description"
+    t.text     "comments"
+    t.integer  "stockit_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "permissions", force: :cascade do |t|
@@ -285,6 +324,65 @@ ActiveRecord::Schema.define(version: 20160503103214) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "stockit_activities", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "stockit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "stockit_contacts", force: :cascade do |t|
+    t.string   "first_name"
+    t.string   "last_name"
+    t.string   "mobile_phone_number"
+    t.string   "phone_number"
+    t.integer  "stockit_id"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+  end
+
+  add_index "stockit_contacts", ["first_name"], name: "st_contacts_first_name_idx", using: :gin
+  add_index "stockit_contacts", ["last_name"], name: "st_contacts_last_name_idx", using: :gin
+  add_index "stockit_contacts", ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", using: :gin
+  add_index "stockit_contacts", ["phone_number"], name: "st_contacts_phone_number_idx", using: :gin
+
+  create_table "stockit_designations", force: :cascade do |t|
+    t.string   "status"
+    t.string   "code"
+    t.string   "detail_type"
+    t.integer  "detail_id"
+    t.integer  "stockit_contact_id"
+    t.integer  "stockit_organisation_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.text     "description"
+    t.integer  "stockit_activity_id"
+  end
+
+  add_index "stockit_designations", ["code"], name: "st_designations_code_idx", using: :gin
+
+  create_table "stockit_local_orders", force: :cascade do |t|
+    t.string   "client_name"
+    t.string   "hkid_number"
+    t.string   "reference_number"
+    t.integer  "stockit_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.text     "purpose_of_goods"
+  end
+
+  add_index "stockit_local_orders", ["client_name"], name: "st_local_orders_client_name_idx", using: :gin
+
+  create_table "stockit_organisations", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "stockit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "stockit_organisations", ["name"], name: "st_organisations_name_idx", using: :gin
 
   create_table "subpackage_types", force: :cascade do |t|
     t.integer  "package_type_id"

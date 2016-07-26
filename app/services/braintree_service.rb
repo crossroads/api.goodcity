@@ -18,8 +18,7 @@ class BraintreeService
       new_transaction_with_customer(amount, nonce_token)
     end
 
-    add_transaction(result.transaction) if result.success?
-
+    add_transaction(result.transaction, result.success?) if result.transaction
     result
   end
 
@@ -29,12 +28,13 @@ class BraintreeService
     user.braintree_transactions.present?
   end
 
-  def add_transaction(transaction)
+  def add_transaction(transaction, success)
     BraintreeTransaction.create(
       transaction_id: transaction.id,
       customer_id: transaction.customer_details.id,
       amount: transaction.amount,
-      status: transaction.status
+      status: transaction.status,
+      is_success: success
     )
   end
 

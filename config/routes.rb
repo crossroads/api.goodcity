@@ -20,6 +20,8 @@ Rails.application.routes.draw do
       resources :districts, only: [:index, :show]
       resources :package_types, only: [:index]
       resources :permissions, only: [:index, :show]
+      resources :boxes, only: [:create]
+      resources :pallets, only: [:create]
 
       resources :images, only: [:create, :update, :destroy] do
         get :generate_signature, on: :collection
@@ -54,6 +56,7 @@ Rails.application.routes.draw do
       resources :addresses, only: [:create, :show]
       resources :contacts, only: [:create]
       resources :versions, only: [:index, :show]
+      resources :holidays, only: [:index, :create, :destroy, :update]
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]
@@ -91,8 +94,22 @@ Rails.application.routes.draw do
 
       resources :package_categories, only: [:index, :show]
       resources :locations, only: [:index, :create]
+      resources :stockit_organisations, only: [:create]
+      resources :stockit_contacts, only: [:create]
+      resources :stockit_local_orders, only: [:create]
+      resources :stockit_designations, only: [:create]
+      resources :stockit_activities, only: [:create]
 
-      get "designations", to: "designations#index"
+      # routes used in stock app
+      get "designations", to: "stockit_designations#index"
+      get "designations/:id", to: "stockit_designations#show"
+      get "items", to: "packages#search_stockit_items"
+      put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
+      put "items/:id/undesignate_stockit_item", to: "packages#undesignate_stockit_item"
+      put "items/:id/dispatch_stockit_item", to: "packages#dispatch_stockit_item"
+      put "items/:id/undispatch_stockit_item", to: "packages#undispatch_stockit_item"
+      put "items/:id/move_stockit_item", to: "packages#move_stockit_item"
+      get "stockit_items/:id", to: "packages#stockit_item_details"
     end
   end
 end

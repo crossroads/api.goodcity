@@ -16,4 +16,37 @@ namespace :goodcity do
     end
 
   end
+
+  # rake goodcity:update_package_image
+  desc 'Update package with favourite_image'
+  task update_package_image: :environment do
+
+    Package.find_in_batches(batch_size: 100).each do |packages|
+      packages.each do |package|
+        if(package.item)
+          image = package.item.images.find_by(favourite: true)
+          package.update_column(:favourite_image_id, image.try(:id))
+          puts "Updated package: #{package.id}"
+        end
+      end
+    end
+
+  end
+
+  # rake goodcity:update_salable_for_offers_and_packages
+  desc 'update_salable_for_offers_and_packages'
+  task update_salable_for_offers_and_packages: :environment do
+    puts "Updated Offer--START"
+    Offer.with_deleted.find_in_batches(batch_size: 100).each do |offers|
+      offers.each do |offer|
+        saleable_value = offer.items.first.try(:saleable)
+        if saleable_value
+          offer.update_column(:saleable, saleable_value)
+          Package.where(offer_id: offer.id).update_all(saleable: saleable_value)
+          puts "Offer-#{offer.id}"
+        end
+      end
+    end
+    puts "Updated Offer--END"
+  end
 end

@@ -73,7 +73,7 @@ class Offer < ActiveRecord::Base
     end
 
     event :submit do
-      transition [:draft, :inactive] => :submitted
+      transition [:draft, :inactive, :cancelled] => :submitted
     end
 
     event :start_review do
@@ -209,10 +209,6 @@ class Offer < ActiveRecord::Base
 
   def send_message(body, user)
     messages.create(body: body, sender: user) unless body.blank?
-  end
-
-  def update_saleable_items
-    items.map(&:update_saleable)
   end
 
   def subscribed_users(is_private)

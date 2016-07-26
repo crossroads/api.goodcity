@@ -24,7 +24,7 @@ module Api::V1
         param :state_event, Package.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this package."
         param :received_at, String, desc: "Date on which package is received", allow_nil: true
         param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
-        param :package_type_id, String, desc: "Category of the package", allow_nil: true
+        param :package_type_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "Category of the package", allow_nil: true
         param :image_id, Integer, desc: "The id of the item image that represents this package", allow_nil: true
         param :donor_condition_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of donor-condition", allow_nil: true
         param :grade, String, allow_nil: true
@@ -40,6 +40,12 @@ module Api::V1
     api :GET, '/v1/packages/1', "Details of a package"
     def show
       render json: @package, serializer: serializer
+    end
+
+    api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
+    def stockit_item_details
+      render json: @package, serializer: stock_serializer, root: "item",
+        include_stockit_designation: true
     end
 
     api :POST, "/v1/packages", "Create a package"
@@ -85,8 +91,7 @@ module Api::V1
         return render json: {errors:"Package not found with supplied package_id"}, status: 400
       end
       if package.inventory_number.blank?
-        i = InventoryNumber.create
-        package.inventory_number = i.id.to_s.rjust(6, "0")
+        package.inventory_number = InventoryNumber.available_code
         package.save
       end
       print_id, errors, status = barcode_service.print package.inventory_number
@@ -97,25 +102,83 @@ module Api::V1
       }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
     end
 
+    api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
+    def search_stockit_items
+      records = {}; pages = 0
+      if params['searchText'].present?
+        records = params["orderId"].present? ?
+          @packages.stockit_items.undispatched : @packages.stockit_items
+        records = records.search(params['searchText'], params["itemId"]).page(params["page"]).per(params["per_page"])
+        pages = records.total_pages
+      end
+
+      packages = ActiveModel::ArraySerializer.new(records,
+        each_serializer: stock_serializer,
+        root: "items",
+        include_stockit_designation: true
+      ).to_json
+      render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
+    end
+
+    def designate_stockit_item
+      @package.designate_to_stockit_order(params["order_id"])
+      send_stock_item_response
+    end
+
+    def undesignate_stockit_item
+      @package.undesignate_from_stockit_order
+      send_stock_item_response
+    end
+
+    def dispatch_stockit_item
+      @package.dispatch_stockit_item
+      send_stock_item_response
+    end
+
+    def undispatch_stockit_item
+      @package.undispatch_stockit_item
+      send_stock_item_response
+    end
+
+    def move_stockit_item
+      @package.move_stockit_item(params["location_id"])
+      send_stock_item_response
+    end
+
+    def send_stock_item_response
+      if @package.valid? and @package.save
+        render json: @package, serializer: stock_serializer, root: "item",
+          include_stockit_designation: true
+      else
+        render json: {errors: @package.errors.full_messages}.to_json , status: 422
+      end
+    end
+
     private
+
+    def stock_serializer
+      Api::V1::StockitItemSerializer
+    end
 
     def remove_stockit_prefix(stockit_inventory_number)
       stockit_inventory_number.gsub(/^x/i, '') unless stockit_inventory_number.blank?
     end
 
     def package_params
-      get_donor_condition_value
+      get_package_type_id_value
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event, :image_id,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
-        :location_id]
+        :location_id, :box_id, :pallet_id, :stockit_id, :favourite_image_id,
+        :stockit_designation_id, :stockit_designated_on, :stockit_sent_on]
       params.require(:package).permit(attributes)
     end
 
-    def get_donor_condition_value
-      if(condition = params["package"]["donor_condition"])
-        params["package"]["donor_condition_id"] = DonorCondition.
-          find_by(name_en: condition).try(:id)
+    def get_package_type_id_value
+      code_id = params["package"]["code_id"]
+      if params["package"]["package_type_id"].blank? and code_id.present?
+        params["package"]["package_type_id"] = PackageType.find_by(stockit_id: code_id).try(:id)
+        params["package"].delete("code_id")
       end
     end
 
@@ -124,19 +187,21 @@ module Api::V1
     end
 
     def offer_id
-      @package.item.offer_id
+      @package.try(:item).try(:offer_id)
     end
 
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if inventory_number
-        @package = Package.find_by(inventory_number: inventory_number)
-        if @package
-          GoodcitySync.request_from_stockit = true
-          @package.assign_attributes(package_params)
-          @package.location_id = location_id
-          @package
-        end
+        GoodcitySync.request_from_stockit = true
+        @package = existing_package || Package.new()
+        @package.assign_attributes(package_params)
+        @package.location_id = location_id
+        @package.stockit_designation_id = stockit_designation_id
+        @package.inventory_number = inventory_number
+        @package.box_id = box_id
+        @package.pallet_id = pallet_id
+        @package
       else
         @package = Package.new(package_params)
       end
@@ -146,8 +211,24 @@ module Api::V1
       Location.find_by(stockit_id: package_params[:location_id]).try(:id)
     end
 
+    def box_id
+      Box.find_by(stockit_id: package_params[:box_id]).try(:id)
+    end
+
+    def pallet_id
+      Pallet.find_by(stockit_id: package_params[:pallet_id]).try(:id)
+    end
+
+    def stockit_designation_id
+      StockitDesignation.find_by(stockit_id: package_params[:stockit_designation_id]).try(:id)
+    end
+
     def barcode_service
       BarcodeService.new
+    end
+
+    def existing_package
+      Package.find_by(stockit_id: package_params[:stockit_id])
     end
   end
 end

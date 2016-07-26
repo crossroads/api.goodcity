@@ -56,6 +56,7 @@ gem 'request_store'
 gem 'easyzpl', :git => 'https://github.com/crossroads/easyzpl.git'
 gem 'braintree'
 gem 'active_record_union'
+gem 'kaminari'
 
 group :development do
   unless ENV["CI"]

@@ -5,13 +5,21 @@ class Package < ActiveRecord::Base
   include PushUpdates
 
   belongs_to :item
+  belongs_to :favourite_image, class_name: 'Image'
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
+  belongs_to :pallet
+  belongs_to :box
+  belongs_to :stockit_designation
+  belongs_to :stockit_designated_by, class_name: 'User'
+  belongs_to :stockit_sent_by, class_name: 'User'
+  belongs_to :stockit_moved_by, class_name: 'User'
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
-  before_create :set_donor_condition_and_grade
+  before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
+  before_save :save_inventory_number, if: :inventory_number_changed?
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -22,6 +30,22 @@ class Package < ActiveRecord::Base
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where("state = 'received'") }
+
+  scope :latest, -> { order('id desc') }
+  scope :without_images, -> { where(favourite_image_id: nil) }
+  scope :stockit_items, -> { where("stockit_id IS NOT NULL") }
+  scope :undispatched, -> { where(stockit_sent_on: nil) }
+  scope :exclude_designated, ->(designation_id) {
+    where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
+  }
+
+  def self.search(search_text, item_id)
+    if item_id.presence
+      where("item_id = ?", item_id)
+    else
+      where("inventory_number ILIKE :query", query: "%#{search_text}%")
+    end
+  end
 
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
@@ -53,19 +77,22 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    response = Stockit::Item.create(self)
+    response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
+    else response && (item_id = response["item_id"]).present?
+      self.stockit_id = item_id
     end
   end
 
   def remove_from_stockit
     if self.inventory_number.present?
-      response = Stockit::Item.delete(inventory_number)
+      response = Stockit::ItemSync.delete(inventory_number)
       if response && (errors = response["errors"]).present?
         errors.each{|key, value| self.errors.add(key, value) }
       else
         self.inventory_number = nil
+        self.stockit_id = nil
       end
     end
   end
@@ -80,18 +107,91 @@ class Package < ActiveRecord::Base
     !GoodcitySync.request_from_stockit
   end
 
+  def designate_to_stockit_order(order_id)
+    self.stockit_designation = StockitDesignation.find_by(id: order_id)
+    self.stockit_designated_on = Date.today
+    self.stockit_designated_by = User.current_user
+    response = Stockit::ItemSync.update(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def undesignate_from_stockit_order
+    self.stockit_designation = nil
+    self.stockit_designated_on = nil
+    self.stockit_designated_by = nil
+    response = Stockit::ItemSync.update(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def dispatch_stockit_item
+    self.stockit_sent_on = Date.today
+    self.stockit_sent_by = User.current_user
+    self.box = nil
+    self.pallet = nil
+    self.location = Location.dispatch_location
+    response = Stockit::ItemSync.dispatch(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def undispatch_stockit_item
+    self.stockit_sent_on = nil
+    self.stockit_sent_by = nil
+    self.pallet = nil
+    self.box = nil
+    response = Stockit::ItemSync.undispatch(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
+  def move_stockit_item(location_id)
+    self.location_id = location_id
+    self.stockit_moved_on = Date.today
+    self.stockit_moved_by = User.current_user
+    response = Stockit::ItemSync.move(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    end
+  end
+
   private
 
-  def set_donor_condition_and_grade
+  def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
+    self.favourite_image ||= item && item.images.find_by(favourite: true)
+    self.saleable = offer.try(:saleable) || false
+    true
   end
 
   def delete_item_from_stockit
     StockitDeleteJob.perform_later(self.inventory_number)
+    remove_inventory_number
   end
 
   def update_stockit_item
     StockitUpdateJob.perform_later(id)
+  end
+
+  def save_inventory_number
+    if gc_inventory_number
+      InventoryNumber.where(code: inventory_number).first_or_create
+    end
+  end
+
+  def remove_inventory_number
+    if gc_inventory_number
+      InventoryNumber.find_by(code: inventory_number).try(:destroy)
+    end
+  end
+
+  def gc_inventory_number
+    inventory_number && inventory_number.match(/^[0-9]/)
   end
 end

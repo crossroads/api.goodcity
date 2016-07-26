@@ -24,23 +24,30 @@ class Ability
       address_abilities
       contact_abilities
       delivery_abilities
-      designation_abilities
       gogovan_order_abilities
+      holiday_abilities
       item_abilities
       image_abilities
       message_abilities
       offer_abilities
       package_abilities
-      location_abilities
+      stockit_abilities
       schedule_abilities
+      stockit_designation_abilities
+      stockit_organisation_abilities
+      stockit_contact_abilities
+      stockit_local_order_abilities
       taxonomies
       user_abilities
       version_abilities
     end
   end
 
-  def location_abilities
+  def stockit_abilities
     can [:index, :create], Location if @api_user || staff?
+    can :create, Box if @api_user
+    can :create, Pallet if @api_user
+    can :create, StockitActivity if @api_user
   end
 
   def delivery_abilities
@@ -52,8 +59,25 @@ class Ability
     end
   end
 
-  def designation_abilities
-    can [:index], Stockit::Designation if staff?
+  def stockit_designation_abilities
+    can [:create, :index, :show], StockitDesignation if @api_user || staff?
+  end
+
+  def stockit_organisation_abilities
+    can [:create], StockitOrganisation if @api_user
+  end
+
+  def stockit_contact_abilities
+    can [:create], StockitContact if @api_user
+  end
+
+  def stockit_local_order_abilities
+    can [:create], StockitLocalOrder if @api_user
+  end
+
+  def holiday_abilities
+    can [:available_dates], Holiday
+    can [:index, :destroy, :create, :update], Holiday if staff?
   end
 
   def item_abilities
@@ -75,7 +99,7 @@ class Ability
     if staff?
       can [:index, :show, :create, :update], Image
     else
-      can [:index, :show, :create, :update], Image, Image.donor_images(@user_id) do |record|
+      can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
         record.item.offer.created_by_id == @user_id
       end
     end
@@ -113,7 +137,10 @@ class Ability
 
   def package_abilities
     if staff?
-      can [:index, :show, :create, :update, :destroy, :print_barcode], Package
+      can [:index, :show, :create, :update, :destroy, :print_barcode,
+        :search_stockit_items, :designate_stockit_item,
+        :undesignate_stockit_item, :dispatch_stockit_item,
+        :undispatch_stockit_item, :move_stockit_item, :stockit_item_details], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
@@ -134,7 +161,6 @@ class Ability
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], Territory
-    can :available_dates, Holiday
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport

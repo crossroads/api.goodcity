@@ -18,28 +18,12 @@ class Channel
       [users].flatten.map{ |user| "user_#{user.is_a?(User) ? user.id : user}" }
     end
 
-    def my_channel(user, is_admin_app)
-      ["user_#{user.id}" + (is_admin_app ? "_admin" : "")]
-    end
-
     def user_channel?(channel_name)
       [channel_name].flatten.any? {|n| n.include?('user_')}
     end
 
-    def add_admin_app_prefix(channel_name)
+    def add_admin_app_suffix(channel_name)
       [channel_name].flatten.map {|c| user_channel?(c) ? "#{c}_admin" : c}
-    end
-
-    def reviewers
-      User.reviewers.map{ |user| "user_#{user.id}" }
-    end
-
-    def supervisors
-      User.supervisors.map{ |user| "user_#{user.id}" }
-    end
-
-    def staff
-      User.staff.map{ |user| "user_#{user.id}" }
     end
 
   end

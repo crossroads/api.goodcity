@@ -1,7 +1,6 @@
 module Api::V1
   class LocationsController < Api::V1::ApiController
 
-    skip_before_action :validate_token, only: [:index, :create]
     load_and_authorize_resource :location, parent: false
 
     resource_description do
@@ -23,6 +22,8 @@ module Api::V1
     api :GET, '/v1/locations', "List all locations"
     param :ids, Array, of: Integer, desc: "Filter by location ids e.g. ids = [1,2,3,4]"
     def index
+      return search if params['searchText'].present?
+      return recent_locations if params['recently_used'].present?
       if params[:ids].blank?
         render json: Location.cached_json
         return
@@ -40,6 +41,18 @@ module Api::V1
       else
         render json: @location.errors.to_json, status: 422
       end
+    end
+
+    def search
+      records = @locations.search(params['searchText']).
+        page(params["page"]).per(params["per_page"])
+      locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").to_json
+      render json: locations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
+    end
+
+    def recent_locations
+      @locations = Location.recently_used(User.current_user.id)
+      render json: @locations, each_serializer: serializer
     end
 
     private
