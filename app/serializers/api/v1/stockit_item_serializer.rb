@@ -5,11 +5,14 @@ module Api::V1
 
     has_one :package_type, serializer: PackageTypeSerializer, root: :code
     has_one :location, serializer: LocationSerializer
+    has_one :donor_condition, serializer: DonorConditionSerializer
+    has_one :favourite_image, serializer: ImageSerializer, root: :image
     has_one :stockit_designation, serializer: Api::V1::StockitDesignationSerializer, root: :designation, include_items: false
 
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
-      :inventory_number, :created_at, :updated_at, :item_id, :is_set,
-      :designation_name, :designation_id, :sent_on, :code_id
+      :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
+      :designation_name, :designation_id, :sent_on, :code_id, :image_id,
+      :donor_condition_id
 
     def include_stockit_designation?
       @options[:include_stockit_designation]
@@ -37,6 +40,14 @@ module Api::V1
 
     def code_id__sql
       "packages.package_type_id"
+    end
+
+    def image_id
+      object.favourite_image_id
+    end
+
+    def image_id__sql
+      "packages.favourite_image_id"
     end
 
     def is_set
