@@ -91,6 +91,7 @@ class Package < ActiveRecord::Base
       if response && (errors = response["errors"]).present?
         errors.each{|key, value| self.errors.add(key, value) }
       else
+        remove_inventory_number
         self.inventory_number = nil
         self.stockit_id = nil
       end
