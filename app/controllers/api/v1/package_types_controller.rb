@@ -15,7 +15,7 @@ module Api::V1
     api :GET, "/v1/package_types", "get all package_types"
     def index
       @package_types = @package_types.find( params[:ids].split(",") ) if params[:ids].present?
-      render json: @package_types, each_serializer: serializer
+      render json: @package_types.visible, each_serializer: serializer
     end
 
     private
