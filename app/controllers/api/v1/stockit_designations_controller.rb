@@ -41,7 +41,7 @@ module Api::V1
       records = @stockit_designations.with_eager_load.
         search(params['searchText']).latest.
         page(params["page"]).per(params["per_page"])
-      stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
+      stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", exclude_stockit_set_item: true).to_json
       render json: stockit_designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 

@@ -69,4 +69,7 @@ Rake tasks to run:
 
 ## Version 0.10
 
+Rake tasks to run:
+
     rake goodcity:update_package_type_description
+    rake goodcity:update_set_item_id_for_packages
