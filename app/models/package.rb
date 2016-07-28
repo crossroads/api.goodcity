@@ -20,6 +20,7 @@ class Package < ActiveRecord::Base
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
+  after_commit :update_set_item_id
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -30,10 +31,10 @@ class Package < ActiveRecord::Base
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where("state = 'received'") }
-
+  scope :inventorized, -> { where.not(inventory_number: nil) }
   scope :latest, -> { order('id desc') }
   scope :without_images, -> { where(favourite_image_id: nil) }
-  scope :stockit_items, -> { where("stockit_id IS NOT NULL") }
+  scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :exclude_designated, ->(designation_id) {
     where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
@@ -93,6 +94,7 @@ class Package < ActiveRecord::Base
       else
         self.inventory_number = nil
         self.stockit_id = nil
+        self.set_item_id = nil
       end
     end
   end
@@ -193,5 +195,13 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]/)
+  end
+
+  def update_set_item_id
+    if item
+      all_packages = item.packages.inventorized
+      value = all_packages.length > 1 ? item.id : nil
+      all_packages.update_all(set_item_id: value)
+    end
   end
 end
