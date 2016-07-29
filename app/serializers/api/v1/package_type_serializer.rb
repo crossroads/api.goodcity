@@ -3,7 +3,7 @@ module Api::V1
   class PackageTypeSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :name, :code, :other_child_packages,
-      :default_child_packages, :other_terms
+      :default_child_packages, :other_terms, :visible_in_selects
 
     def include_attribute?
       User.current_user.present? && !@options[:exclude_code_details]
