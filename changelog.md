@@ -66,3 +66,7 @@ Rake tasks to run:
     rake goodcity:add_stockit_items
     rake goodcity:update_package_image
     rake goodcity:copy_inventory_numbers_used_in_stockit
+
+## Version 0.10
+
+    rake goodcity:update_package_type_description
