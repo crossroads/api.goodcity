@@ -115,7 +115,8 @@ module Api::V1
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
-        include_stockit_designation: true
+        include_stockit_designation: true,
+        exclude_stockit_set_item: true
       ).to_json
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
     end

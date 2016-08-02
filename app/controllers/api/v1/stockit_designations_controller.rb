@@ -52,7 +52,7 @@ module Api::V1
 
     def recent_designations
       records = StockitDesignation.recently_used(User.current_user.id)
-      stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations").to_json
+      stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", exclude_stockit_set_item: true).to_json
       render json: stockit_designations
     end
 
