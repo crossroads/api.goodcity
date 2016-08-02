@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160725142942) do
+ActiveRecord::Schema.define(version: 20160728122938) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -289,6 +289,7 @@ ActiveRecord::Schema.define(version: 20160725142942) do
     t.date     "stockit_moved_on"
     t.integer  "stockit_moved_by_id"
     t.boolean  "saleable",                             default: false
+    t.integer  "set_item_id"
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
