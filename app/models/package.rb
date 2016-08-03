@@ -20,7 +20,7 @@ class Package < ActiveRecord::Base
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
-  after_commit :update_set_item_id
+  after_commit :update_set_item_id, on: :destroy
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -32,9 +32,11 @@ class Package < ActiveRecord::Base
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where("state = 'received'") }
   scope :inventorized, -> { where.not(inventory_number: nil) }
+  scope :non_set_items, -> { where(set_item_id: nil) }
   scope :latest, -> { order('id desc') }
   scope :without_images, -> { where(favourite_image_id: nil) }
   scope :stockit_items, -> { where.not(stockit_id: nil) }
+  scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :exclude_designated, ->(designation_id) {
     where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
@@ -69,6 +71,10 @@ class Package < ActiveRecord::Base
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
       package.add_to_stockit
+    end
+
+    after_transition on: [:mark_received, :mark_missing] do |package|
+      package.update_set_item_id
     end
 
     before_transition on: :mark_missing do |package|
@@ -162,6 +168,26 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def update_set_item_id(all_packages = nil)
+    if item
+      all_packages ||= inventory_package_set
+      if all_packages.length == 1
+        all_packages.update_all(set_item_id: nil)
+      else
+        all_packages.non_set_items.update_all(set_item_id: item.id)
+      end
+    end
+  end
+
+  def remove_from_set
+    update(set_item_id: nil)
+    update_set_item_id(inventory_package_set.except_package(id))
+  end
+
+  def inventory_package_set
+    item.packages.inventorized
+  end
+
   private
 
   def set_default_values
@@ -195,13 +221,5 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]/)
-  end
-
-  def update_set_item_id
-    if item
-      all_packages = item.packages.inventorized
-      value = all_packages.length > 1 ? item.id : nil
-      all_packages.update_all(set_item_id: value)
-    end
   end
 end

@@ -146,6 +146,11 @@ module Api::V1
       send_stock_item_response
     end
 
+    def remove_from_set
+      @package.remove_from_set
+      send_stock_item_response
+    end
+
     def send_stock_item_response
       if @package.valid? and @package.save
         render json: @package, serializer: stock_serializer, root: "item",
