@@ -138,7 +138,7 @@ class Ability
   def package_abilities
     if staff?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :designate_stockit_item,
+        :search_stockit_items, :designate_stockit_item, :remove_from_set,
         :undesignate_stockit_item, :dispatch_stockit_item,
         :undispatch_stockit_item, :move_stockit_item, :stockit_item_details], Package
     else
