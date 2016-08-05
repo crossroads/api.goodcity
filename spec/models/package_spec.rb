@@ -160,4 +160,24 @@ RSpec.describe Package, type: :model do
       end
     end
   end
+
+  describe 'dispatch_stockit_item' do
+    let(:package) { create :package, :with_set_item }
+    let!(:location) { create :location, :dispatched }
+    before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
+
+    it 'set dispatch related details' do
+      package.dispatch_stockit_item
+      expect(package.location).to eq(location)
+      expect(package.stockit_sent_on).to_not be_nil
+    end
+
+    it 'update set relation on dispatching single package' do
+      sibling_package = create :package, :with_set_item, item: package.item
+      package.dispatch_stockit_item
+      package.save
+      expect(package.set_item_id).to be_nil
+      expect(sibling_package.reload.set_item_id).to be_nil
+    end
+  end
 end

@@ -20,6 +20,7 @@ class Package < ActiveRecord::Base
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
+  before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
 
   validates :package_type_id, :quantity, presence: true
@@ -135,6 +136,13 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def update_set_relation
+    if set_item_id.present? && stockit_sent_on.present?
+      self.set_item_id = nil
+      update_set_item_id(inventory_package_set.except_package(id))
+    end
+  end
+
   def dispatch_stockit_item
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
@@ -185,7 +193,7 @@ class Package < ActiveRecord::Base
   end
 
   def inventory_package_set
-    item.packages.inventorized
+    item.packages.inventorized.undispatched
   end
 
   private
