@@ -148,7 +148,8 @@ module Api::V1
 
     def remove_from_set
       @package.remove_from_set
-      send_stock_item_response
+      render json: @package, serializer: stock_serializer, root: "item",
+        include_stockit_designation: true
     end
 
     def send_stock_item_response
