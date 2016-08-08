@@ -82,7 +82,7 @@ class Ability
 
   def item_abilities
     if staff?
-      can [:index, :show, :create, :update, :messages], Item
+      can [:index, :show, :create, :update, :messages, :designate_stockit_item_set], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
         item.offer.created_by_id == @user_id
