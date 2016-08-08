@@ -34,6 +34,7 @@ class Package < ActiveRecord::Base
   scope :received, -> { where("state = 'received'") }
   scope :inventorized, -> { where.not(inventory_number: nil) }
   scope :non_set_items, -> { where(set_item_id: nil) }
+  scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
   scope :without_images, -> { where(favourite_image_id: nil) }
   scope :stockit_items, -> { where.not(stockit_id: nil) }
