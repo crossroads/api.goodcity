@@ -44,6 +44,8 @@ class Package < ActiveRecord::Base
     where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
   }
 
+  attr_accessor :skip_set_relation_update
+
   def self.search(search_text, item_id)
     if item_id.presence
       where("item_id = ?", item_id)
@@ -138,13 +140,14 @@ class Package < ActiveRecord::Base
   end
 
   def update_set_relation
-    if set_item_id.present? && stockit_sent_on.present?
+    if set_item_id.present? && stockit_sent_on.present? && !skip_set_relation_update
       self.set_item_id = nil
       update_set_item_id(inventory_package_set.except_package(id))
     end
   end
 
-  def dispatch_stockit_item
+  def dispatch_stockit_item(skip_set_relation_update=false)
+    self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
