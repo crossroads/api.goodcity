@@ -18,6 +18,12 @@ FactoryGirl.define do
       packages { create_list(:package, 2) }
     end
 
+    trait :with_inventory_packages do
+      after(:create) do |item|
+        create_list(:package, 2, :with_set_item, item: item)
+      end
+    end
+
     trait :with_received_packages do
       packages { create_list(:package, 2, state: :received) }
     end
