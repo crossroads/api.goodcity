@@ -106,6 +106,7 @@ Rails.application.routes.draw do
       get "items", to: "packages#search_stockit_items"
       put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
       put "items/:id/designate_stockit_item_set", to: "items#designate_stockit_item_set"
+      put "items/:id/dispatch_stockit_item_set", to: "items#dispatch_stockit_item_set"
       put "items/:id/undesignate_stockit_item", to: "packages#undesignate_stockit_item"
       put "items/:id/dispatch_stockit_item", to: "packages#dispatch_stockit_item"
       put "items/:id/undispatch_stockit_item", to: "packages#undispatch_stockit_item"
