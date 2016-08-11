@@ -124,4 +124,11 @@ class Item < ActiveRecord::Base
       package.valid? and package.save
     end
   end
+
+  def dispatch_set_to_stockit_order
+    inventory_packages.set_items.each do |package|
+      package.dispatch_stockit_item(true)
+      package.valid? and package.save
+    end
+  end
 end
