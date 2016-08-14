@@ -124,9 +124,7 @@ class Package < ActiveRecord::Base
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     response = Stockit::ItemSync.update(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def undesignate_from_stockit_order
@@ -134,9 +132,7 @@ class Package < ActiveRecord::Base
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def update_set_relation
@@ -154,9 +150,7 @@ class Package < ActiveRecord::Base
     self.pallet = nil
     self.location = Location.dispatch_location
     response = Stockit::ItemSync.dispatch(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def undispatch_stockit_item
@@ -165,16 +159,35 @@ class Package < ActiveRecord::Base
     self.pallet = nil
     self.box = nil
     response = Stockit::ItemSync.undispatch(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def move_stockit_item(location_id)
-    self.location_id = location_id
-    self.stockit_moved_on = Date.today
-    self.stockit_moved_by = User.current_user
-    response = Stockit::ItemSync.move(self)
+    response = if box_id? || pallet_id?
+      has_box_or_pallet_error
+    else
+      self.location_id = location_id
+      self.stockit_moved_on = Date.today
+      self.stockit_moved_by = User.current_user
+      Stockit::ItemSync.move(self)
+    end
+    add_errors(response)
+  end
+
+  def has_box_or_pallet_error
+    error = if pallet_id?
+      I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
+    else
+      I18n.t("package.has_box_error", box_number: box.box_number)
+    end
+    {
+      "errors" => {
+        error: "#{error} #{I18n.t('package.move_stockit')}"
+      }
+    }
+  end
+
+  def add_errors(response)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
