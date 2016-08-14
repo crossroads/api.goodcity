@@ -153,7 +153,7 @@ module Api::V1
     end
 
     def send_stock_item_response
-      if @package.valid? and @package.save
+      if @package.errors.blank? && @package.valid? && @package.save
         render json: @package, serializer: stock_serializer, root: "item",
           include_stockit_designation: true
       else
