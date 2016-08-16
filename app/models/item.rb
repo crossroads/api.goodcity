@@ -131,4 +131,11 @@ class Item < ActiveRecord::Base
       package.valid? and package.save
     end
   end
+
+  def move_set_to_location(location_id)
+    inventory_packages.set_items.each do |package|
+      package.move_stockit_item(location_id)
+      package.valid? and package.save
+    end
+  end
 end
