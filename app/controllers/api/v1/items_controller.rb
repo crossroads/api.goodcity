@@ -83,6 +83,11 @@ module Api::V1
       render json: @item, serializer: stockit_serializer
     end
 
+    def move_stockit_item_set
+      @item.move_set_to_location(params["location_id"])
+      render json: @item, serializer: stockit_serializer
+    end
+
     private
 
     def stockit_serializer

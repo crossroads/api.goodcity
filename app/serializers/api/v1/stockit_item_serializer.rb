@@ -13,7 +13,7 @@ module Api::V1
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
-      :donor_condition_id, :set_item_id
+      :donor_condition_id, :set_item_id, :has_box_pallet
 
     def include_item?
       !@options[:exclude_stockit_set_item]
@@ -59,8 +59,19 @@ module Api::V1
       object.set_item_id.present?
     end
 
+    def has_box_pallet
+      object.box_id.present? || object.pallet_id.present?
+    end
+
     def is_set__sql
       "(CASE WHEN set_item_id IS NOT NULL
+        THEN true
+        ELSE false
+        END)"
+    end
+
+    def has_box_pallet__sql
+      "(CASE WHEN box_id IS NOT NULL OR pallet_id IS NOT NULL
         THEN true
         ELSE false
         END)"
