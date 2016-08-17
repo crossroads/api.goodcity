@@ -14,8 +14,13 @@ module Api::V1
 
     api :GET, "/v1/package_types", "get all package_types"
     def index
+      return stock_codes if params['stock'].present?
       @package_types = @package_types.find( params[:ids].split(",") ) if params[:ids].present?
       render json: @package_types.visible, each_serializer: serializer
+    end
+
+    def stock_codes
+      render json: @package_types.visible, each_serializer: serializer, root: :codes
     end
 
     private
