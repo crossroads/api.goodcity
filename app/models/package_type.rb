@@ -1,6 +1,7 @@
 class PackageType < ActiveRecord::Base
   include CacheableJson
 
+  belongs_to :location
   has_many :subpackage_types
   has_many :child_package_types, through: :subpackage_types,
     source: :child_package_type
