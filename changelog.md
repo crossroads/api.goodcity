@@ -71,5 +71,5 @@ Rake tasks to run:
 
 Rake tasks to run:
 
-    rake goodcity:update_package_type_description
     rake goodcity:update_set_item_id_for_packages
+    rake goodcity:update_package_type_default_location

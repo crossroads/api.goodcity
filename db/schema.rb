@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160728122938) do
+ActiveRecord::Schema.define(version: 20160817101116) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -255,6 +255,7 @@ ActiveRecord::Schema.define(version: 20160728122938) do
     t.datetime "updated_at",                         null: false
     t.boolean  "visible_in_selects", default: false
     t.integer  "stockit_id"
+    t.integer  "location_id"
   end
 
   create_table "packages", force: :cascade do |t|
