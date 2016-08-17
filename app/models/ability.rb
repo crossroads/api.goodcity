@@ -200,6 +200,7 @@ class Ability
     can [:index, :show], RejectionReason
     can [:index, :show], Permission
     can [:index, :show], CancellationReason
+    can :create, PackageType if @api_user || staff?
   end
 
   def user_abilities
