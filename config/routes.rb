@@ -18,7 +18,7 @@ Rails.application.routes.draw do
       post "braintree/make_transaction", to: "braintree#make_transaction"
 
       resources :districts, only: [:index, :show]
-      resources :package_types, only: [:index]
+      resources :package_types, only: [:index, :create]
       resources :permissions, only: [:index, :show]
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
