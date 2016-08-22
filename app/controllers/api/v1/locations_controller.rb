@@ -43,6 +43,11 @@ module Api::V1
       end
     end
 
+    def destroy
+      Location.find_by(stockit_id: params[:id]).try(:destroy)
+      render json: {}
+    end
+
     def search
       records = @locations.search(params['searchText']).
         page(params["page"]).per(params["per_page"])
@@ -70,6 +75,5 @@ module Api::V1
     def serializer
       Api::V1::LocationSerializer
     end
-
   end
 end
