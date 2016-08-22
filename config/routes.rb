@@ -99,6 +99,9 @@ Rails.application.routes.draw do
       resources :stockit_local_orders, only: [:create]
       resources :stockit_designations, only: [:create]
       resources :stockit_activities, only: [:create]
+      resources :inventory_numbers, only: [:create] do
+        put :remove_number, on: :collection
+      end
 
       # routes used in stock app
       get "designations", to: "stockit_designations#index"
