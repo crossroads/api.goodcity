@@ -93,7 +93,7 @@ Rails.application.routes.draw do
       post "packages/print_barcode", to: "packages#print_barcode"
 
       resources :package_categories, only: [:index, :show]
-      resources :locations, only: [:index, :create]
+      resources :locations, only: [:index, :create, :destroy]
       resources :stockit_organisations, only: [:create]
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
