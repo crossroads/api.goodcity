@@ -20,6 +20,8 @@ class Package < ActiveRecord::Base
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
+  before_save :update_set_relation, if: :stockit_sent_on_changed?
+  after_commit :update_set_item_id, on: :destroy
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -30,14 +32,19 @@ class Package < ActiveRecord::Base
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where("state = 'received'") }
-
+  scope :inventorized, -> { where.not(inventory_number: nil) }
+  scope :non_set_items, -> { where(set_item_id: nil) }
+  scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
   scope :without_images, -> { where(favourite_image_id: nil) }
-  scope :stockit_items, -> { where("stockit_id IS NOT NULL") }
+  scope :stockit_items, -> { where.not(stockit_id: nil) }
+  scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :exclude_designated, ->(designation_id) {
     where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
   }
+
+  attr_accessor :skip_set_relation_update
 
   def self.search(search_text, item_id)
     if item_id.presence
@@ -70,6 +77,10 @@ class Package < ActiveRecord::Base
       package.add_to_stockit
     end
 
+    after_transition on: [:mark_received, :mark_missing] do |package|
+      package.update_set_item_id
+    end
+
     before_transition on: :mark_missing do |package|
       package.received_at = nil
       package.remove_from_stockit
@@ -93,6 +104,7 @@ class Package < ActiveRecord::Base
       else
         self.inventory_number = nil
         self.stockit_id = nil
+        self.set_item_id = nil
       end
     end
   end
@@ -112,9 +124,7 @@ class Package < ActiveRecord::Base
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     response = Stockit::ItemSync.update(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def undesignate_from_stockit_order
@@ -122,21 +132,25 @@ class Package < ActiveRecord::Base
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+    add_errors(response)
+  end
+
+  def update_set_relation
+    if set_item_id.present? && stockit_sent_on.present? && !skip_set_relation_update
+      self.set_item_id = nil
+      update_set_item_id(inventory_package_set.except_package(id))
     end
   end
 
-  def dispatch_stockit_item
+  def dispatch_stockit_item(skip_set_relation_update=false)
+    self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
     self.location = Location.dispatch_location
     response = Stockit::ItemSync.dispatch(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def undispatch_stockit_item
@@ -145,19 +159,58 @@ class Package < ActiveRecord::Base
     self.pallet = nil
     self.box = nil
     response = Stockit::ItemSync.undispatch(self)
+    add_errors(response)
+  end
+
+  def move_stockit_item(location_id)
+    response = if box_id? || pallet_id?
+      has_box_or_pallet_error
+    else
+      self.location_id = location_id
+      self.stockit_moved_on = Date.today
+      self.stockit_moved_by = User.current_user
+      Stockit::ItemSync.move(self)
+    end
+    add_errors(response)
+  end
+
+  def has_box_or_pallet_error
+    error = if pallet_id?
+      I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
+    else
+      I18n.t("package.has_box_error", box_number: box.box_number)
+    end
+    {
+      "errors" => {
+        error: "#{error} #{I18n.t('package.move_stockit')}"
+      }
+    }
+  end
+
+  def add_errors(response)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
   end
 
-  def move_stockit_item(location_id)
-    self.location_id = location_id
-    self.stockit_moved_on = Date.today
-    self.stockit_moved_by = User.current_user
-    response = Stockit::ItemSync.move(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+  def update_set_item_id(all_packages = nil)
+    if item
+      all_packages ||= inventory_package_set
+      if all_packages.length == 1
+        all_packages.update_all(set_item_id: nil)
+      else
+        all_packages.non_set_items.update_all(set_item_id: item.id)
+      end
     end
+  end
+
+  def remove_from_set
+    update(set_item_id: nil)
+    update_set_item_id(inventory_package_set.except_package(id))
+  end
+
+  def inventory_package_set
+    item.packages.inventorized.undispatched
   end
 
   private

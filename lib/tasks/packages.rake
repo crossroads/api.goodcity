@@ -49,4 +49,17 @@ namespace :goodcity do
     end
     puts "Updated Offer--END"
   end
+
+  # rake goodcity:update_set_item_id_for_packages
+  desc "update set_item_id for packages"
+  task update_set_item_id_for_packages: :environment do
+    Item.find_in_batches(batch_size: 100).each do |items|
+      items.each do |item|
+        packages = item.packages.inventorized
+        if packages.length > 1
+          packages.update_all(set_item_id: item.id)
+        end
+      end
+    end
+  end
 end

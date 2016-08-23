@@ -13,4 +13,12 @@ RSpec.describe PackageType, type: :model do
     it { is_expected.to have_many :subpackage_types }
     it { is_expected.to have_many :child_package_types }
   end
+
+  describe 'scope' do
+    describe "visible" do
+      it "returns records with visible_in_selects true value" do
+        expect(PackageType.visible.to_sql).to include("WHERE \"package_types\".\"visible_in_selects\" = 't'")
+      end
+    end
+  end
 end

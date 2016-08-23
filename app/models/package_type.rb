@@ -1,6 +1,7 @@
 class PackageType < ActiveRecord::Base
   include CacheableJson
 
+  belongs_to :location
   has_many :subpackage_types
   has_many :child_package_types, through: :subpackage_types,
     source: :child_package_type
@@ -22,4 +23,6 @@ class PackageType < ActiveRecord::Base
   has_many :package_categories, through: :package_categories_package_types
 
   translates :name, :other_terms
+
+  scope :visible, -> { where(visible_in_selects: true) }
 end

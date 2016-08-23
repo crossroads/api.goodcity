@@ -18,7 +18,7 @@ Rails.application.routes.draw do
       post "braintree/make_transaction", to: "braintree#make_transaction"
 
       resources :districts, only: [:index, :show]
-      resources :package_types, only: [:index]
+      resources :package_types, only: [:index, :create]
       resources :permissions, only: [:index, :show]
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
@@ -99,16 +99,23 @@ Rails.application.routes.draw do
       resources :stockit_local_orders, only: [:create]
       resources :stockit_designations, only: [:create]
       resources :stockit_activities, only: [:create]
+      resources :inventory_numbers, only: [:create] do
+        put :remove_number, on: :collection
+      end
 
       # routes used in stock app
       get "designations", to: "stockit_designations#index"
       get "designations/:id", to: "stockit_designations#show"
       get "items", to: "packages#search_stockit_items"
       put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
+      put "items/:id/designate_stockit_item_set", to: "items#designate_stockit_item_set"
+      put "items/:id/dispatch_stockit_item_set", to: "items#dispatch_stockit_item_set"
       put "items/:id/undesignate_stockit_item", to: "packages#undesignate_stockit_item"
       put "items/:id/dispatch_stockit_item", to: "packages#dispatch_stockit_item"
       put "items/:id/undispatch_stockit_item", to: "packages#undispatch_stockit_item"
       put "items/:id/move_stockit_item", to: "packages#move_stockit_item"
+      put "items/:id/move_stockit_item_set", to: "items#move_stockit_item_set"
+      put "items/:id/remove_from_set", to: "packages#remove_from_set"
       get "stockit_items/:id", to: "packages#stockit_item_details"
     end
   end

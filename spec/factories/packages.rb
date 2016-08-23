@@ -24,6 +24,14 @@ FactoryGirl.define do
       sequence(:stockit_id) { |n| n }
     end
 
+    trait :with_set_item do
+      inventory_number "123456"
+      sequence(:stockit_id) { |n| n }
+      item
+      set_item_id { item.id }
+      state "received"
+    end
+
     trait :received do
       state "received"
       received_at { Time.now }
