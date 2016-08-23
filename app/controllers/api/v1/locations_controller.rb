@@ -43,6 +43,14 @@ module Api::V1
       end
     end
 
+    api :DELETE, "/v1/locations/1", "Delete Location"
+    description "If request comes from stockit, find record by matching it with stockit_id."
+    def destroy
+      @location = Location.find_by(stockit_id: params[:id]) if is_stockit_request
+      @location.try(:destroy)
+      render json: {}
+    end
+
     def search
       records = @locations.search(params['searchText']).
         page(params["page"]).per(params["per_page"])
@@ -70,6 +78,5 @@ module Api::V1
     def serializer
       Api::V1::LocationSerializer
     end
-
   end
 end
