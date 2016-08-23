@@ -13,6 +13,10 @@ class ApplicationController < ActionController::API
     current_user.try(:staff?) && app_name == ADMIN_APP
   end
 
+  def is_stockit_request
+    app_name == STOCKIT_APP
+  end
+
   protected
 
   def app_name
