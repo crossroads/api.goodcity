@@ -120,4 +120,64 @@ RSpec.describe Package, type: :model do
       expect(package.saleable).to eq(item.offer.saleable)
     end
   end
+
+  describe 'set_item_id' do
+
+    let(:item) { create :item }
+
+    it 'update set_item_id value on receiving sibling package' do
+      package = create :package, :stockit_package, item: item
+      sibling_package = create :package, :stockit_package, item: item
+      expect(Stockit::ItemSync).to receive(:create).with(sibling_package)
+
+      expect {
+        sibling_package.mark_received
+        package.reload
+      }.to change(package, :set_item_id).from(nil).to(item.id)
+    end
+
+    describe 'removing set_item_id from package' do
+      let!(:package) { create :package, :with_set_item, item: item }
+      let!(:sibling_package) { create :package, :with_set_item, item: item }
+
+      it 'update set_item_id value on missing sibling package' do
+        expect(Stockit::ItemSync).to receive(:delete).with(sibling_package.inventory_number)
+
+        expect {
+          sibling_package.mark_missing
+          package.reload
+        }.to change(package, :set_item_id).from(item.id).to(nil)
+      end
+
+      describe 'remove_from_set' do
+        it 'removes package from set' do
+          expect {
+            sibling_package.remove_from_set
+            package.reload
+          }.to change(package, :set_item_id).from(item.id).to(nil)
+          expect(sibling_package.set_item_id).to be_nil
+        end
+      end
+    end
+  end
+
+  describe 'dispatch_stockit_item' do
+    let(:package) { create :package, :with_set_item }
+    let!(:location) { create :location, :dispatched }
+    before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
+
+    it 'set dispatch related details' do
+      package.dispatch_stockit_item
+      expect(package.location).to eq(location)
+      expect(package.stockit_sent_on).to_not be_nil
+    end
+
+    it 'update set relation on dispatching single package' do
+      sibling_package = create :package, :with_set_item, item: package.item
+      package.dispatch_stockit_item
+      package.save
+      expect(package.set_item_id).to be_nil
+      expect(sibling_package.reload.set_item_id).to be_nil
+    end
+  end
 end

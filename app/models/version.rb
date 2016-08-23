@@ -24,18 +24,21 @@ class Version < PaperTrail::Version
 
   scope :item_logs, -> {
     joins("INNER JOIN items ON (items.id = versions.item_id
-      AND versions.item_type = 'Item')")
+      AND versions.item_type = 'Item' AND items.deleted_at IS NULL)")
   }
 
   scope :package_logs, -> {
-    joins("INNER JOIN packages ON (packages.id = versions.item_id
-      AND versions.item_type = 'Package')")
+    joins("INNER JOIN packages ON packages.id = versions.item_id
+      AND versions.item_type = 'Package'
+      AND packages.item_id IS NOT NULL
+      AND packages.deleted_at IS NULL")
   }
 
   scope :call_logs, -> {
     joins("INNER JOIN offers ON versions.item_id = offers.id
       AND versions.item_type = 'Offer'
-      AND versions.event IN ('call_Accepted', 'donor_called', 'admin_called')")
+      AND versions.event IN ('call_Accepted', 'donor_called', 'admin_called')
+      AND offers.deleted_at IS NULL")
   }
 
   scope :union_all_logs, -> {

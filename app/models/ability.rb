@@ -82,7 +82,8 @@ class Ability
 
   def item_abilities
     if staff?
-      can [:index, :show, :create, :update, :messages], Item
+      can [:index, :show, :create, :update, :messages, :move_stockit_item_set,
+        :designate_stockit_item_set, :dispatch_stockit_item_set], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
         item.offer.created_by_id == @user_id
@@ -138,7 +139,7 @@ class Ability
   def package_abilities
     if staff?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :designate_stockit_item,
+        :search_stockit_items, :designate_stockit_item, :remove_from_set,
         :undesignate_stockit_item, :dispatch_stockit_item,
         :undispatch_stockit_item, :move_stockit_item, :stockit_item_details], Package
     else
@@ -199,6 +200,8 @@ class Ability
     can [:index, :show], RejectionReason
     can [:index, :show], Permission
     can [:index, :show], CancellationReason
+    can :create, PackageType if @api_user || staff?
+    can [:create, :remove_number], InventoryNumber if @api_user || staff?
   end
 
   def user_abilities

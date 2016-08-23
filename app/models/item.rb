@@ -12,6 +12,7 @@ class Item < ActiveRecord::Base
   has_many   :messages, dependent: :destroy
   has_many   :images, dependent: :destroy
   has_many   :packages, dependent: :destroy
+  has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 
   scope :with_eager_load, -> {
     eager_load( [:package_type, :rejection_reason, :donor_condition, :images,
@@ -114,6 +115,27 @@ class Item < ActiveRecord::Base
       packages.received.each do |package|
         StockitUpdateJob.perform_later(package.id)
       end
+    end
+  end
+
+  def designate_set_to_stockit_order(order_id)
+    inventory_packages.set_items.each do |package|
+      package.designate_to_stockit_order(order_id)
+      package.valid? and package.save
+    end
+  end
+
+  def dispatch_set_to_stockit_order
+    inventory_packages.set_items.each do |package|
+      package.dispatch_stockit_item(true)
+      package.valid? and package.save
+    end
+  end
+
+  def move_set_to_location(location_id)
+    inventory_packages.set_items.each do |package|
+      package.move_stockit_item(location_id)
+      package.valid? and package.save
     end
   end
 end
