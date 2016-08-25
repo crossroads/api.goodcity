@@ -182,7 +182,8 @@ module Api::V1
         :received_at, :rejected_at, :package_type_id, :state_event,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id, :favourite_image_id,
-        :stockit_designation_id, :stockit_designated_on, :stockit_sent_on]
+        :stockit_designation_id, :stockit_designated_on, :stockit_sent_on,
+        :case_number]
       params.require(:package).permit(attributes)
     end
 
