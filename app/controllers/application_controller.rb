@@ -17,6 +17,10 @@ class ApplicationController < ActionController::API
     app_name == STOCKIT_APP
   end
 
+  def is_stock_app
+    app_name == STOCK_APP
+  end
+
   protected
 
   def app_name
