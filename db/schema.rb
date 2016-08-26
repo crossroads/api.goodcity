@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160825062828) do
+ActiveRecord::Schema.define(version: 20160826115033) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,14 @@ ActiveRecord::Schema.define(version: 20160825062828) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "countries", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.integer  "stockit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "crossroads_transports", force: :cascade do |t|
@@ -358,10 +366,11 @@ ActiveRecord::Schema.define(version: 20160825062828) do
     t.integer  "stockit_contact_id"
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
-    t.datetime "created_at",              null: false
+    t.datetime "created_at"
     t.datetime "updated_at",              null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
+    t.integer  "country_id"
   end
 
   add_index "stockit_designations", ["code"], name: "st_designations_code_idx", using: :gin
