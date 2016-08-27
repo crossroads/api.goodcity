@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Image, type: :model do
 
   describe 'Associations' do
-    it { is_expected.to belong_to :item }
+    it { is_expected.to belong_to :imageable }
   end
 
   describe 'Database Columns' do

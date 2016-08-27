@@ -10,7 +10,7 @@ class Item < ActiveRecord::Base
   belongs_to :rejection_reason
   belongs_to :donor_condition
   has_many   :messages, dependent: :destroy
-  has_many   :images, dependent: :destroy
+  has_many   :images, as: :imageable, dependent: :destroy
   has_many   :packages, dependent: :destroy
   has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 

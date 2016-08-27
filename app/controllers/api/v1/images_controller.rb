@@ -74,7 +74,16 @@ module Api::V1
     end
 
     def image_params
-      params.require(:image).permit(:favourite,:cloudinary_id,:item_id, :angle)
+      assign_imageable
+      params.require(:image).permit(:favourite,:cloudinary_id,:item_id, :angle,:imageable_type, :imageable_id)
+    end
+
+    def assign_imageable
+      item_id = params["image"]["item_id"]
+      if item_id.present?
+        params["image"]["imageable_type"] = "Item"
+        params["image"]["imageable_id"] = item_id
+      end
     end
 
     def serializer
