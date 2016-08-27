@@ -5,8 +5,10 @@ class Image < ActiveRecord::Base
   include PushUpdates
 
   has_one :user, inverse_of: :image
-  belongs_to :item, inverse_of: :images
+  # belongs_to :item, inverse_of: :images
   has_many :packages, foreign_key: :favourite_image_id, inverse_of: :favourite_image, dependent: :nullify
+
+  belongs_to :imageable, polymorphic: true
 
   before_destroy :delete_image_from_cloudinary,
     unless: "Rails.env.test? || has_multiple_items"
@@ -22,7 +24,7 @@ class Image < ActiveRecord::Base
 
   # required by PushUpdates and PaperTrail modules
   def offer
-    item.try(:offer)
+    imageable.try(:offer)
   end
 
   private
