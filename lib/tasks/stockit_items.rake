@@ -75,4 +75,33 @@ namespace :goodcity do
   def package_designation(designation_id)
     StockitDesignation.find_by(stockit_id: designation_id) if designation_id.present?
   end
+
+
+  # rake goodcity:update_stockit_items
+  desc 'Update stockit designation of items'
+  task update_stockit_items: :environment do
+
+    offset = 0
+    per_page = 1000
+
+    loop do
+      items_json = Stockit::ItemSync.new(nil, offset, per_page).index
+      offset = offset + per_page
+      stockit_items = JSON.parse(items_json["items"])
+
+      if stockit_items.present?
+        stockit_items.each do |value|
+          if value["id"].present?
+            package = Package.find_by(stockit_id: value["id"])
+            if package
+              package.update_column(:stockit_designation_id, package_designation(value["designation_id"]))
+            end
+          end
+        end
+      else
+        break
+      end
+    end
+  end
+
 end
