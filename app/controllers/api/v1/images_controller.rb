@@ -13,7 +13,7 @@ module Api::V1
     def_param_group :image do
       param :image, Hash do
         param :cloudinary_id, String, desc: "The cloudinary image id for the image"
-        param :favourite, [true, false], desc: "This image will be used as default image for item"
+        param :favourite, [true, false, "true", "false"], desc: "This image will be used as default image for item"
         param :item_id, String, desc: "The offer item the image belongs to"
       end
     end
@@ -59,7 +59,7 @@ module Api::V1
     def update
       if @image.update_attributes(image_params)
         if @image.favourite
-          @image.item.images.where.not(id: @image.id).update_all(favourite: false)
+          @image.imageable.images.where.not(id: @image.id).update_all(favourite: false)
         end
         render json: @image, serializer: serializer
       else

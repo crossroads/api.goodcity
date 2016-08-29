@@ -10,6 +10,8 @@ module Api::V1
     has_one :stockit_designation, serializer: Api::V1::StockitDesignationSerializer, root: :designation, include_items: false
     has_one :item, serializer: Api::V1::StockitSetItemSerializer, root: :set_item
 
+    has_many :images, serializer: ImageSerializer
+
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
