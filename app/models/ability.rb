@@ -99,7 +99,7 @@ class Ability
 
   def image_abilities
     if staff?
-      can [:index, :show, :create, :update], Image
+      can [:index, :show, :create, :update, :destroy], Image
     else
       can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
         record.imageable.offer.created_by_id == @user_id
