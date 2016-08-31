@@ -13,7 +13,8 @@ module Api::V1
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
-      :donor_condition_id, :set_item_id, :has_box_pallet, :case_number
+      :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
+      :allow_web_publish
 
     def include_item?
       !@options[:exclude_stockit_set_item]
