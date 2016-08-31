@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160817101116) do
+ActiveRecord::Schema.define(version: 20160831054754) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,14 @@ ActiveRecord::Schema.define(version: 20160817101116) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "countries", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.integer  "stockit_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "crossroads_transports", force: :cascade do |t|
@@ -149,13 +157,15 @@ ActiveRecord::Schema.define(version: 20160817101116) do
   end
 
   create_table "images", force: :cascade do |t|
-    t.string   "cloudinary_id", limit: 255
-    t.boolean  "favourite",                 default: false
+    t.string   "cloudinary_id",  limit: 255
+    t.boolean  "favourite",                  default: false
     t.integer  "item_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.integer  "angle",                     default: 0
+    t.integer  "angle",                      default: 0
+    t.integer  "imageable_id"
+    t.string   "imageable_type"
   end
 
   create_table "inventory_numbers", force: :cascade do |t|
@@ -291,6 +301,8 @@ ActiveRecord::Schema.define(version: 20160817101116) do
     t.integer  "stockit_moved_by_id"
     t.boolean  "saleable",                             default: false
     t.integer  "set_item_id"
+    t.string   "case_number"
+    t.boolean  "allow_web_publish"
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
@@ -357,10 +369,11 @@ ActiveRecord::Schema.define(version: 20160817101116) do
     t.integer  "stockit_contact_id"
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
-    t.datetime "created_at",              null: false
+    t.datetime "created_at"
     t.datetime "updated_at",              null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
+    t.integer  "country_id"
   end
 
   add_index "stockit_designations", ["code"], name: "st_designations_code_idx", using: :gin

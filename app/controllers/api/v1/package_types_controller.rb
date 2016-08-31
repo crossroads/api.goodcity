@@ -45,7 +45,7 @@ module Api::V1
     def fetch_package_type
       values = params["package_type"]
       @package_type = PackageType.find_by(stockit_id: values["stockit_id"]) || @package_type
-      @package_type.location_id = fetch_location_id(values["location_id"]) if values["location_id"].present?
+      @package_type.location_id = values["location_id"].present? ? fetch_location_id(values["location_id"]) : nil
       @package_type
     end
 
