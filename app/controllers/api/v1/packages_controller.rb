@@ -75,7 +75,11 @@ module Api::V1
       @package.assign_attributes(package_params)
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
-        render json: @package, serializer: serializer
+        if is_stock_app
+          stockit_item_details
+        else
+          render json: @package, serializer: serializer
+        end
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
@@ -183,7 +187,7 @@ module Api::V1
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id, :favourite_image_id,
         :stockit_designation_id, :stockit_designated_on, :stockit_sent_on,
-        :case_number]
+        :case_number, :allow_web_publish]
       params.require(:package).permit(attributes)
     end
 
