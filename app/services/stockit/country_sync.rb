@@ -1,7 +1,7 @@
 require 'stockit/base'
 
 module Stockit
-  class DesignationSync
+  class CountrySync
 
     include Stockit::Base
 
@@ -10,7 +10,7 @@ module Stockit
     end
 
     def index
-      url = url_for("/api/v1/designations")
+      url = url_for("/api/v1/countries")
       get(url)
     end
 

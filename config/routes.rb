@@ -93,12 +93,13 @@ Rails.application.routes.draw do
       post "packages/print_barcode", to: "packages#print_barcode"
 
       resources :package_categories, only: [:index, :show]
-      resources :locations, only: [:index, :create]
+      resources :locations, only: [:index, :create, :destroy]
       resources :stockit_organisations, only: [:create]
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
       resources :stockit_designations, only: [:create]
       resources :stockit_activities, only: [:create]
+      resources :countries, only: [:create]
       resources :inventory_numbers, only: [:create] do
         put :remove_number, on: :collection
       end

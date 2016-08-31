@@ -54,8 +54,13 @@ module Api::V1
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
       if package_record
         @package.offer_id = offer_id
-        if @package.save
-          render json: @package, serializer: serializer, status: 201
+        if @package.valid? && @package.save
+          if is_stock_app
+            render json: @package, serializer: stock_serializer, root: "item",
+          include_stockit_designation: true
+          else
+            render json: @package, serializer: serializer, status: 201
+          end
         else
           render json: {errors: @package.errors.full_messages}.to_json , status: 422
         end
@@ -70,7 +75,11 @@ module Api::V1
       @package.assign_attributes(package_params)
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
-        render json: @package, serializer: serializer
+        if is_stock_app
+          stockit_item_details
+        else
+          render json: @package, serializer: serializer
+        end
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
@@ -177,7 +186,8 @@ module Api::V1
         :received_at, :rejected_at, :package_type_id, :state_event,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id, :favourite_image_id,
-        :stockit_designation_id, :stockit_designated_on, :stockit_sent_on]
+        :stockit_designation_id, :stockit_designated_on, :stockit_sent_on,
+        :case_number, :allow_web_publish]
       params.require(:package).permit(attributes)
     end
 
@@ -199,7 +209,12 @@ module Api::V1
 
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
-      if inventory_number
+      if is_stock_app
+        @package.assign_attributes(package_params)
+        @package.donor_condition_id = donor_condition_id
+        @package.inventory_number = inventory_number
+        @package
+      elsif inventory_number
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
@@ -235,7 +250,18 @@ module Api::V1
     end
 
     def existing_package
-      Package.find_by(stockit_id: package_params[:stockit_id])
+      if(stockit_id = package_params[:stockit_id])
+        Package.find_by(stockit_id: stockit_id)
+      end
+    end
+
+    def donor_condition_id
+      case package_params[:donor_condition_id]
+      when "N" then 1
+      when "M" then 2
+      when "U" then 3
+      when "B" then 4
+      end
     end
   end
 end
