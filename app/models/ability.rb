@@ -159,7 +159,7 @@ class Ability
     # Anonymous and all users
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
-    can [:fetch_items], Item # for BrowseController
+    can [:fetch_packages], Package # for BrowseController
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], Territory
