@@ -182,7 +182,7 @@ class Offer < ActiveRecord::Base
       valid_states - not_active_states
     end
     def nondraft_states
-      active_states - ["draft"]
+      valid_states - ["draft"]
     end
   end
 
