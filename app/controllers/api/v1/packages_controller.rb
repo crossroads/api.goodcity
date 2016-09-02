@@ -25,7 +25,7 @@ module Api::V1
         param :received_at, String, desc: "Date on which package is received", allow_nil: true
         param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
         param :package_type_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "Category of the package", allow_nil: true
-        param :favourite_image_id, String, desc: "The id of the item image that represents this package", allow_nil: true
+        param :favourite_image_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of the item image that represents this package", allow_nil: true
         param :donor_condition_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of donor-condition", allow_nil: true
         param :grade, String, allow_nil: true
       end
@@ -182,13 +182,30 @@ module Api::V1
 
     def package_params
       get_package_type_id_value
+      set_favourite_image if @package && !@package.new_record?
       attributes = [:quantity, :length, :width, :height, :notes, :item_id,
         :received_at, :rejected_at, :package_type_id, :state_event,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
-        :location_id, :box_id, :pallet_id, :stockit_id, :favourite_image_id,
+        :location_id, :box_id, :pallet_id, :stockit_id,
         :stockit_designation_id, :stockit_designated_on, :stockit_sent_on,
         :case_number, :allow_web_publish]
       params.require(:package).permit(attributes)
+    end
+
+    def set_favourite_image
+      if(image_id = params["package"]["favourite_image_id"]).present?
+        if @package.images.pluck(:id).include?(image_id)
+          @package.update_favourite_image(image_id)
+        end
+        params["package"].delete("favourite_image_id")
+      end
+    end
+
+    def add_favourite_image
+      image = Image.find_by(id: params["package"]["favourite_image_id"])
+      @package.images.build(favourite: true,
+        cloudinary_id: image.cloudinary_id) if image
+      params["package"].delete("favourite_image_id")
     end
 
     def get_package_type_id_value
@@ -225,8 +242,10 @@ module Api::V1
         @package.pallet_id = pallet_id
         @package
       else
-        @package = Package.new(package_params)
+        @package.assign_attributes(package_params)
       end
+      add_favourite_image if params["package"]["favourite_image_id"]
+      @package
     end
 
     def location_id
