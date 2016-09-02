@@ -34,5 +34,17 @@ module Api::V1
     def include_message_ids?
       @options[:exclude_messages] != true
     end
+
+    def include_attribute?
+      !User.current_user.try(:donor?)
+    end
+
+    alias_method :include_packages?, :include_attribute?
+    alias_method :include_package_type?, :include_attribute?
+    alias_method :include_package_type?, :include_attribute?
+    alias_method :include_rejection_reason_id?, :include_attribute?
+    alias_method :include_rejection_reason?, :include_attribute?
+    alias_method :include_reject_reason?, :include_attribute?
+    alias_method :include_rejection_comments?, :include_attribute?
   end
 end
