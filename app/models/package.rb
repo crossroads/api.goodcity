@@ -31,8 +31,10 @@ class Package < ActiveRecord::Base
     allow_blank: true, greater_than: 0, less_than: 100000 }
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
-  scope :received, -> { where("state = 'received'") }
+  scope :received, -> { where(state: 'received') }
+  scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
+  scope :published, -> { where(allow_web_publish: true) }
   scope :non_set_items, -> { where(set_item_id: nil) }
   scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
@@ -40,6 +42,7 @@ class Package < ActiveRecord::Base
   scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
+  scope :undesignated, -> { where(stockit_designation_id: nil) }
   scope :exclude_designated, ->(designation_id) {
     where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
   }
@@ -211,6 +214,16 @@ class Package < ActiveRecord::Base
 
   def inventory_package_set
     item.packages.inventorized.undispatched
+  end
+
+  def self.browse_inventorized
+    inventorized.published.undispatched.undesignated
+  end
+
+  def self.browse_non_inventorized
+    joins(item: [:offer]).published.expecting.
+      where(items: { state: ['accepted', 'submitted'] }).
+      where.not(offers: {state: ['cancelled', 'inactive', 'closed', 'draft']})
   end
 
   private

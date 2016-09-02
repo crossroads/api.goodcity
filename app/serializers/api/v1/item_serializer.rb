@@ -34,16 +34,5 @@ module Api::V1
     def include_message_ids?
       @options[:exclude_messages] != true
     end
-
-    def include_attribute?
-      !@options[:is_browse_request]
-    end
-
-    alias_method :include_rejection_reason_id?, :include_attribute?
-    alias_method :include_rejection_reason?, :include_attribute?
-    alias_method :include_reject_reason?, :include_attribute?
-    alias_method :include_rejection_comments?, :include_attribute?
-    alias_method :include_message_ids?, :include_attribute?
-    alias_method :include_saleable?, :include_attribute?
   end
 end
