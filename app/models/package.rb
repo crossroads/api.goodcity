@@ -5,7 +5,6 @@ class Package < ActiveRecord::Base
   include PushUpdates
 
   belongs_to :item
-  belongs_to :favourite_image, class_name: 'Image'
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
@@ -40,7 +39,6 @@ class Package < ActiveRecord::Base
   scope :non_set_items, -> { where(set_item_id: nil) }
   scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
-  scope :without_images, -> { where(favourite_image_id: nil) }
   scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
@@ -228,12 +226,17 @@ class Package < ActiveRecord::Base
       where.not(offers: {state: ['cancelled', 'inactive', 'closed', 'draft']})
   end
 
+  def update_favourite_image(image_id)
+    image = images.find_by(id: image_id)
+    image.update(favourite: true)
+    image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+  end
+
   private
 
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.favourite_image ||= item && item.images.find_by(favourite: true)
     self.saleable = offer.try(:saleable) || false
     true
   end

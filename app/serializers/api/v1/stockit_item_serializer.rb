@@ -6,11 +6,10 @@ module Api::V1
     has_one :package_type, serializer: PackageTypeSerializer, root: :code
     has_one :location, serializer: LocationSerializer
     has_one :donor_condition, serializer: DonorConditionSerializer
-    has_one :favourite_image, serializer: ImageSerializer, root: :image
     has_one :stockit_designation, serializer: Api::V1::StockitDesignationSerializer, root: :designation, include_items: false
     has_one :item, serializer: Api::V1::StockitSetItemSerializer, root: :set_item
 
-    has_many :images, serializer: ImageSerializer
+    has_many :images, serializer: StockitImageSerializer, root: :images
 
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,

@@ -38,7 +38,7 @@ module Api::V1
     def create
       @image.attributes = image_params
       if @image.save
-        render json: @image, serializer: serializer, status: 201
+        serialized_response(201)
       else
         render json: @image.errors.to_json, status: 422
       end
@@ -61,13 +61,26 @@ module Api::V1
         if @image.favourite
           @image.imageable.images.where.not(id: @image.id).update_all(favourite: false)
         end
-        render json: @image, serializer: serializer
+        serialized_response
       else
         render json: @image.errors.to_json, status: 422
       end
     end
 
+    def show
+      serialized_response
+    end
+
     private
+
+    def serialized_response(status = 200)
+      if is_stock_app
+        render json: @image, serializer: StockitImageSerializer,
+          status: status, root: :image
+      else
+        render json: @image, serializer: serializer, status: status
+      end
+    end
 
     def cloudinary_config
       Rails.application.secrets.cloudinary
