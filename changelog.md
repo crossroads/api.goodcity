@@ -73,11 +73,6 @@ Rake tasks to run:
 
     rake goodcity:update_set_item_id_for_packages
     rake goodcity:update_package_type_default_location
-
-## Version 0.11
-
-Rake tasks to run:
-
     rake goodcity:add_stockit_countries
     rake goodcity:add_stockit_designations
     rake goodcity:update_stockit_items
