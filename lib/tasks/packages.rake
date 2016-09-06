@@ -55,7 +55,7 @@ namespace :goodcity do
   task update_set_item_id_for_packages: :environment do
     Item.find_in_batches(batch_size: 100).each do |items|
       items.each do |item|
-        packages = item.packages.inventorized
+        packages = item.packages.inventorized.non_set_items
         if packages.length > 1
           packages.update_all(set_item_id: item.id)
         end
