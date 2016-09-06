@@ -13,7 +13,7 @@ module Api::V1
     def_param_group :image do
       param :image, Hash do
         param :cloudinary_id, String, desc: "The cloudinary image id for the image"
-        param :favourite, [true, false], desc: "This image will be used as default image for item"
+        param :favourite, [true, false, "true", "false"], desc: "This image will be used as default image for item"
         param :item_id, String, desc: "The offer item the image belongs to"
       end
     end
@@ -38,7 +38,7 @@ module Api::V1
     def create
       @image.attributes = image_params
       if @image.save
-        render json: @image, serializer: serializer, status: 201
+        serialized_response(201)
       else
         render json: @image.errors.to_json, status: 422
       end
@@ -59,22 +59,44 @@ module Api::V1
     def update
       if @image.update_attributes(image_params)
         if @image.favourite
-          @image.item.images.where.not(id: @image.id).update_all(favourite: false)
+          @image.imageable.images.where.not(id: @image.id).update_all(favourite: false)
         end
-        render json: @image, serializer: serializer
+        serialized_response
       else
         render json: @image.errors.to_json, status: 422
       end
     end
 
+    def show
+      serialized_response
+    end
+
     private
+
+    def serialized_response(status = 200)
+      if is_stock_app
+        render json: @image, serializer: StockitImageSerializer,
+          status: status, root: :image
+      else
+        render json: @image, serializer: serializer, status: status
+      end
+    end
 
     def cloudinary_config
       Rails.application.secrets.cloudinary
     end
 
     def image_params
-      params.require(:image).permit(:favourite,:cloudinary_id,:item_id, :angle)
+      assign_imageable
+      params.require(:image).permit(:favourite,:cloudinary_id,:item_id, :angle,:imageable_type, :imageable_id)
+    end
+
+    def assign_imageable
+      item_id = params["image"]["item_id"]
+      if item_id.present?
+        params["image"]["imageable_type"] = "Item"
+        params["image"]["imageable_id"] = item_id
+      end
     end
 
     def serializer

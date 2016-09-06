@@ -62,4 +62,26 @@ namespace :goodcity do
       end
     end
   end
+
+  # rake goodcity:update_package_favourite_image
+  desc "update favourite_image of packages"
+  task update_package_favourite_image: :environment do
+    Item.find_in_batches(batch_size: 100).each do |items|
+      items.each do |item|
+        item.packages.each do |package|
+          image = if package.favourite_image_id
+            Image.find_by(id: package.favourite_image_id)
+          else
+            item.images.where(favourite: true).first
+          end
+          if image
+            package.images.create(
+              cloudinary_id: image.cloudinary_id,
+              favourite: true,
+              angle: image.angle)
+          end
+        end
+      end
+    end
+  end
 end
