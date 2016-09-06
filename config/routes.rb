@@ -24,7 +24,7 @@ Rails.application.routes.draw do
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
 
-      resources :images, only: [:create, :update, :destroy] do
+      resources :images, only: [:create, :update, :destroy, :show] do
         get :generate_signature, on: :collection
       end
 

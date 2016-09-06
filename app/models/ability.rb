@@ -99,15 +99,15 @@ class Ability
 
   def image_abilities
     if staff?
-      can [:index, :show, :create, :update], Image
+      can [:index, :show, :create, :update, :destroy], Image
     else
       can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
-        record.item.offer.created_by_id == @user_id
+        record.imageable.offer.created_by_id == @user_id
       end
     end
-    can :destroy, Image, item: { offer: { created_by_id: @user_id },
+    can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
       state: ['draft', 'submitted', 'scheduled'] }
-    can :destroy, Image, item: {
+    can :destroy, Image, imageable: {
       state: ['draft', 'submitted', 'accepted', 'rejected', 'scheduled'] } if @reviewer
     can :destroy, Image if @supervisor
   end
