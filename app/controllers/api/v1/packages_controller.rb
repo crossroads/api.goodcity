@@ -203,7 +203,7 @@ module Api::V1
 
     def add_favourite_image
       image = Image.find_by(id: params["package"]["favourite_image_id"])
-      @package.images.build(favourite: true,
+      @package.images.build(favourite: true, angle: image.angle,
         cloudinary_id: image.cloudinary_id) if image
       params["package"].delete("favourite_image_id")
     end
