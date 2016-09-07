@@ -48,7 +48,9 @@ Rails.application.routes.draw do
         get :messages, on: :member
       end
 
-      resources :packages, only: [:index, :show, :create, :update, :destroy]
+      resources :packages, only: [:index, :show, :create, :update, :destroy] do
+        get :print_inventory_label, on: :member
+      end
       resources :rejection_reasons, only: [:index, :show]
       resources :cancellation_reasons, only: [:index, :show]
       resources :territories, only: [:index, :show]
