@@ -39,7 +39,7 @@ module Api::V1
     def index
       return recent_designations if params['recently_used'].present?
       records = @stockit_designations.with_eager_load.
-        search(params['searchText']).latest.
+        search(params['searchText'], params['toDesignateItem'].presence).latest.
         page(params["page"]).per(params["per_page"])
       stockit_designations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", exclude_stockit_set_item: true).to_json
       render json: stockit_designations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
