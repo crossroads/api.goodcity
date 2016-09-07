@@ -12,11 +12,18 @@ module Api::V1
       :donor_condition_id
 
     def item_id
-      object.set_item_id.present?
+      if object.inventory_number.present?
+        object.set_item_id
+      else
+        object.set_item_id || object.item_id
+      end
     end
 
     def item_id__sql
-      "(COALESCE(set_item_id, item_id))"
+      "(CASE WHEN inventory_number IS NOT NULL
+        THEN set_item_id
+        ELSE (COALESCE(set_item_id, item_id))
+        END)"
     end
 
   end
