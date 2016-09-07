@@ -8,6 +8,8 @@ class StockitDesignation < ActiveRecord::Base
 
   has_many :packages
 
+  INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
+
   scope :with_eager_load, -> {
     includes ([
       { packages: [:location, :package_type] }
@@ -16,13 +18,23 @@ class StockitDesignation < ActiveRecord::Base
 
   scope :latest, -> { order('id desc') }
 
-  def self.search(search_text)
-    join_order_associations
-    .where("code LIKE :query OR stockit_organisations.name LIKE :query OR
+  scope :active_orders, -> { where('status NOT IN (?)', INACTIVE_STATUS) }
+
+  def self.search(search_text, to_designate_item)
+    fetch_orders(to_designate_item)
+    .where(" code LIKE :query OR stockit_organisations.name LIKE :query OR
       stockit_local_orders.client_name LIKE :query OR
       stockit_contacts.first_name LIKE :query OR stockit_contacts.last_name LIKE :query OR
       stockit_contacts.mobile_phone_number LIKE :query OR
       stockit_contacts.phone_number LIKE :query", query: "%#{search_text}%")
+  end
+
+  def self.fetch_orders(to_designate_item)
+    if to_designate_item
+      join_order_associations.active_orders
+    else
+      join_order_associations
+    end
   end
 
   def self.join_order_associations
@@ -30,7 +42,8 @@ class StockitDesignation < ActiveRecord::Base
   end
 
   def self.recently_used(user_id)
-    select("DISTINCT ON (stockit_designations.id) stockit_designations.id AS key,  versions.created_at AS recently_used_at").
+    active_orders
+    .select("DISTINCT ON (stockit_designations.id) stockit_designations.id AS key,  versions.created_at AS recently_used_at").
     joins("INNER JOIN versions ON ((object_changes -> 'stockit_designation_id' ->> 1) = CAST(stockit_designations.id AS TEXT))").
     joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')").
     where(" versions.event = 'update' AND
