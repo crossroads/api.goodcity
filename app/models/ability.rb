@@ -141,8 +141,9 @@ class Ability
     if staff?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :designate_stockit_item, :remove_from_set,
-        :undesignate_stockit_item, :dispatch_stockit_item,
-        :undispatch_stockit_item, :move_stockit_item, :stockit_item_details], Package
+        :undesignate_stockit_item, :dispatch_stockit_item, :move_stockit_item,
+        :print_inventory_label, :undispatch_stockit_item,
+        :stockit_item_details], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false

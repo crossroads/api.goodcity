@@ -95,20 +95,15 @@ module Api::V1
     api :POST, "/v1/packages/print_barcode", "Print barcode"
     def print_barcode
       begin
-        package = Package.find params[:package_id]
+        @package = Package.find params[:package_id]
       rescue ActiveRecord::RecordNotFound
         return render json: {errors:"Package not found with supplied package_id"}, status: 400
       end
-      if package.inventory_number.blank?
-        package.inventory_number = InventoryNumber.available_code
-        package.save
+      if @package.inventory_number.blank?
+        @package.inventory_number = InventoryNumber.available_code
+        @package.save
       end
-      print_id, errors, status = barcode_service.print package.inventory_number
-      render json: {
-        status: status,
-        errors: errors,
-        inventory_number: package.inventory_number
-      }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
+      print_inventory_label
     end
 
     api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
@@ -168,6 +163,15 @@ module Api::V1
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
+    end
+
+    def print_inventory_label
+      print_id, errors, status = barcode_service.print @package.inventory_number
+      render json: {
+        status: status,
+        errors: errors,
+        inventory_number: @package.inventory_number
+      }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
     end
 
     private
