@@ -25,7 +25,10 @@ Rails.application.routes.draw do
       resources :pallets, only: [:create]
 
       resources :images, only: [:create, :update, :destroy, :show] do
-        get :generate_signature, on: :collection
+        collection do
+          get :generate_signature
+          put :delete_cloudinary_image
+        end
       end
 
       resources :messages, only: [:create, :update, :index, :show] do
