@@ -14,7 +14,7 @@ module Api::V1
       param :image, Hash do
         param :cloudinary_id, String, desc: "The cloudinary image id for the image"
         param :favourite, [true, false, "true", "false"], desc: "This image will be used as default image for item"
-        param :item_id, String, desc: "The offer item the image belongs to"
+        param :item_id, String, desc: "The offer item the image belongs to", allow_nil: true
       end
     end
 
@@ -69,6 +69,12 @@ module Api::V1
 
     def show
       serialized_response
+    end
+
+    def delete_cloudinary_image
+      key = params["cloudinary_id"].split("/").last.split(".").first rescue nil
+      CloudinaryImageCleanupJob.perform_later(key) if key
+      render nothing: true, status: 204
     end
 
     private
