@@ -34,6 +34,27 @@ class Version < PaperTrail::Version
       AND packages.deleted_at IS NULL")
   }
 
+  scope :offer_logs, -> (offer_id) {
+    joins("INNER JOIN offers ON versions.item_id = offers.id
+      AND offers.id = #{offer_id}
+      AND versions.item_type = 'Offer'
+      AND versions.event IN ('call_Accepted', 'donor_called', 'admin_called')
+      AND offers.deleted_at IS NULL")
+  }
+
+  scope :item_versions, -> (item_id) {
+    joins("INNER JOIN items ON (items.id = versions.item_id AND
+      items.id = #{item_id} AND versions.item_type = 'Item' AND
+      items.deleted_at IS NULL)")
+  }
+
+  scope :package_versions, -> (item_id) {
+    joins("INNER JOIN packages ON packages.id = versions.item_id
+      AND versions.item_type = 'Package'
+      AND packages.item_id = #{item_id}
+      AND packages.deleted_at IS NULL")
+  }
+
   scope :call_logs, -> {
     joins("INNER JOIN offers ON versions.item_id = offers.id
       AND versions.item_type = 'Offer'
@@ -49,6 +70,10 @@ class Version < PaperTrail::Version
     find_by_sql("
       SELECT ver.id, event, item_id, item_type, whodunnit, object_changes, ver.created_at, concat(users.first_name,' ', users.last_name) as whodunnit_name, (object_changes -> 'state' -> 1) as state
       from (#{union_all_logs}) as ver INNER JOIN users ON users.id = CAST(ver.whodunnit AS integer)")
+  }
+
+  scope :join_users, -> {
+    joins("inner join users ON users.id = CAST(versions.whodunnit AS integer)")
   }
 
   def to_s
