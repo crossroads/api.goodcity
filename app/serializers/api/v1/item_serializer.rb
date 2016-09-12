@@ -11,6 +11,7 @@ module Api::V1
     has_many :images,   serializer: ImageSerializer
     has_one  :package_type, serializer: PackageTypeSerializer
     has_one  :rejection_reason, serializer: RejectionReasonSerializer
+    has_one  :donor_condition, serializer: DonorConditionSerializer
 
     def message_ids
       User.current_user.try(:donor?) ? object.messages.non_private.pluck(:id) : object.messages.pluck(:id)
