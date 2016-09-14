@@ -21,6 +21,10 @@ class ApplicationController < ActionController::API
     app_name == STOCK_APP
   end
 
+  def is_browse_app
+    app_name == BROWSE_APP
+  end
+
   protected
 
   def app_name

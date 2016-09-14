@@ -28,6 +28,14 @@ module PushUpdates
     end
     user.options[:user_summary] = false
     service.send_update_store(Channel.staff, true, data)
+    browse_updates(operation) if type == "Package"
+  end
+
+  def browse_updates(operation)
+    operation = is_browse? ? operation : "delete"
+    json = Api::V1::BrowsePackageSerializer.new(self).as_json[:browse_package]
+    data = { item: { package: json }, operation: operation }
+    service.send_update_store(Channel.browse, false, data)
   end
 
   def data_updates(type, operation)
