@@ -45,7 +45,7 @@ module Api::V1
     api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
     def stockit_item_details
       render json: @package, serializer: stock_serializer, root: "item",
-        include_stockit_designation: true
+        include_stockit_designation: true, include_stock_condition: is_stock_app
     end
 
     api :POST, "/v1/packages", "Create a package"
@@ -73,6 +73,7 @@ module Api::V1
     param_group :package
     def update
       @package.assign_attributes(package_params)
+      @package.donor_condition_id = donor_condition_id if is_stock_app
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
         if is_stock_app
@@ -120,7 +121,8 @@ module Api::V1
         each_serializer: stock_serializer,
         root: "items",
         include_stockit_designation: true,
-        exclude_stockit_set_item: true
+        exclude_stockit_set_item: true,
+        include_stock_condition: is_stock_app
       ).to_json
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
     end
