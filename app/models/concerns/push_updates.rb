@@ -62,7 +62,7 @@ module PushUpdates
   def serialized_object(object)
     serializer_name = "Api::V1::#{self.class}Serializer".constantize
     object_key = object.keys[0].downcase.to_sym
-    serializer_name.new(serializer.object).as_json[object_key]
+    serializer_name.new(serializer.object).as_json[object_key] || {}
   end
 
   def service
