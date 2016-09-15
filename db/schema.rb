@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160831054754) do
+ActiveRecord::Schema.define(version: 20160916071946) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -233,6 +233,15 @@ ActiveRecord::Schema.define(version: 20160831054754) do
     t.string   "cancel_reason"
     t.datetime "inactive_at"
     t.boolean  "saleable",                            default: false
+  end
+
+  create_table "organisation_types", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.string   "category_en"
+    t.string   "category_zh_tw"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "package_categories", force: :cascade do |t|
