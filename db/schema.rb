@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160916080826) do
+ActiveRecord::Schema.define(version: 20160916102800) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -262,6 +262,17 @@ ActiveRecord::Schema.define(version: 20160916080826) do
   add_index "organisations", ["district_id"], name: "index_organisations_on_district_id", using: :btree
   add_index "organisations", ["organisation_type_id"], name: "index_organisations_on_organisation_type_id", using: :btree
 
+  create_table "organisations_users", force: :cascade do |t|
+    t.integer  "organisation_id"
+    t.integer  "user_id"
+    t.string   "role"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "organisations_users", ["organisation_id"], name: "index_organisations_users_on_organisation_id", using: :btree
+  add_index "organisations_users", ["user_id"], name: "index_organisations_users_on_user_id", using: :btree
+
   create_table "package_categories", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
@@ -491,4 +502,6 @@ ActiveRecord::Schema.define(version: 20160916080826) do
   add_foreign_key "organisations", "countries"
   add_foreign_key "organisations", "districts"
   add_foreign_key "organisations", "organisation_types"
+  add_foreign_key "organisations_users", "organisations"
+  add_foreign_key "organisations_users", "users"
 end
