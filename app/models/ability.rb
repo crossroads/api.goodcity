@@ -33,7 +33,7 @@ class Ability
       package_abilities
       stockit_abilities
       schedule_abilities
-      stockit_designation_abilities
+      order_abilities
       stockit_organisation_abilities
       stockit_contact_abilities
       stockit_local_order_abilities
@@ -60,8 +60,8 @@ class Ability
     end
   end
 
-  def stockit_designation_abilities
-    can [:create, :index, :show], StockitDesignation if @api_user || staff?
+  def order_abilities
+    can [:create, :index, :show], Order if @api_user || staff?
   end
 
   def stockit_organisation_abilities

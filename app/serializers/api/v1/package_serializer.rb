@@ -12,11 +12,11 @@ module Api::V1
       :offer_id, :designation_name, :grade, :donor_condition_id
 
     def designation_id
-      object.stockit_designation_id
+      object.order_id
     end
 
     def designation_id__sql
-      "stockit_designation_id"
+      "order_id"
     end
 
     def sent_on

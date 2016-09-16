@@ -45,7 +45,7 @@ module Api::V1
     api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
     def stockit_item_details
       render json: @package, serializer: stock_serializer, root: "item",
-        include_stockit_designation: true, include_stock_condition: is_stock_app
+        include_order: true, include_stock_condition: is_stock_app
     end
 
     api :POST, "/v1/packages", "Create a package"
@@ -57,7 +57,7 @@ module Api::V1
         if @package.valid? && @package.save
           if is_stock_app
             render json: @package, serializer: stock_serializer, root: "item",
-          include_stockit_designation: true
+          include_order: true
           else
             render json: @package, serializer: serializer, status: 201
           end
@@ -120,7 +120,7 @@ module Api::V1
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
-        include_stockit_designation: true,
+        include_order: true,
         exclude_stockit_set_item: true,
         include_stock_condition: is_stock_app
       ).to_json
@@ -155,13 +155,13 @@ module Api::V1
     def remove_from_set
       @package.remove_from_set
       render json: @package, serializer: stock_serializer, root: "item",
-        include_stockit_designation: true
+        include_order: true
     end
 
     def send_stock_item_response
       if @package.errors.blank? && @package.valid? && @package.save
         render json: @package, serializer: stock_serializer, root: "item",
-          include_stockit_designation: true
+          include_order: true
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
@@ -193,7 +193,7 @@ module Api::V1
         :received_at, :rejected_at, :package_type_id, :state_event,
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id,
-        :stockit_designation_id, :stockit_designated_on, :stockit_sent_on,
+        :order_id, :stockit_designated_on, :stockit_sent_on,
         :case_number, :allow_web_publish]
       params.require(:package).permit(attributes)
     end
@@ -242,7 +242,7 @@ module Api::V1
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
         @package.location_id = location_id
-        @package.stockit_designation_id = stockit_designation_id
+        @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id
         @package.pallet_id = pallet_id
@@ -266,8 +266,8 @@ module Api::V1
       Pallet.find_by(stockit_id: package_params[:pallet_id]).try(:id)
     end
 
-    def stockit_designation_id
-      StockitDesignation.find_by(stockit_id: package_params[:stockit_designation_id]).try(:id)
+    def order_id
+      Order.find_by(stockit_id: package_params[:order_id]).try(:id)
     end
 
     def barcode_service

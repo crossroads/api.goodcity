@@ -44,9 +44,9 @@ namespace :goodcity do
     Rake::Task["goodcity:add_stockit_local_orders"].execute
     puts "Copy stockit_local_orders: END"
 
-    puts "Copy stockit_designations: START"
-    Rake::Task["goodcity:add_stockit_designations"].execute
-    puts "Copy stockit_designations: END"
+    puts "Copy orders: START"
+    Rake::Task["goodcity:add_orders"].execute
+    puts "Copy orders: END"
 
     puts "Copy stockit_items: START"
     Rake::Task["goodcity:add_stockit_items"].execute
