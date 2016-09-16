@@ -1,3 +1,3 @@
 class StockitLocalOrder < ActiveRecord::Base
-  has_one :stockit_designation, as: :detail
+  has_one :order, as: :detail
 end

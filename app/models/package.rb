@@ -10,7 +10,7 @@ class Package < ActiveRecord::Base
   belongs_to :donor_condition
   belongs_to :pallet
   belongs_to :box
-  belongs_to :stockit_designation
+  belongs_to :order
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
@@ -42,9 +42,9 @@ class Package < ActiveRecord::Base
   scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
-  scope :undesignated, -> { where(stockit_designation_id: nil) }
+  scope :undesignated, -> { where(order_id: nil) }
   scope :exclude_designated, ->(designation_id) {
-    where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
+    where("order_id <> ? OR order_id IS NULL", designation_id)
   }
 
   attr_accessor :skip_set_relation_update
@@ -123,7 +123,7 @@ class Package < ActiveRecord::Base
   end
 
   def designate_to_stockit_order(order_id)
-    self.stockit_designation = StockitDesignation.find_by(id: order_id)
+    self.order = Order.find_by(id: order_id)
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     response = Stockit::ItemSync.update(self)
@@ -131,7 +131,7 @@ class Package < ActiveRecord::Base
   end
 
   def undesignate_from_stockit_order
-    self.stockit_designation = nil
+    self.order = nil
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
