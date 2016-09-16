@@ -103,7 +103,7 @@ Rails.application.routes.draw do
       resources :stockit_organisations, only: [:create]
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
-      resources :stockit_designations, only: [:create]
+      resources :orders, only: [:create]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
       resources :inventory_numbers, only: [:create] do
@@ -111,8 +111,8 @@ Rails.application.routes.draw do
       end
 
       # routes used in stock app
-      get "designations", to: "stockit_designations#index"
-      get "designations/:id", to: "stockit_designations#show"
+      get "designations", to: "orders#index"
+      get "designations/:id", to: "orders#show"
       get "items", to: "packages#search_stockit_items"
       put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
       put "items/:id/designate_stockit_item_set", to: "items#designate_stockit_item_set"
