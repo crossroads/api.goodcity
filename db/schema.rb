@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160916071946) do
+ActiveRecord::Schema.define(version: 20160916080826) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -244,6 +244,24 @@ ActiveRecord::Schema.define(version: 20160916071946) do
     t.datetime "updated_at",     null: false
   end
 
+  create_table "organisations", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.integer  "organisation_type_id"
+    t.text     "description_en"
+    t.text     "description_zh_tw"
+    t.string   "registration"
+    t.string   "website"
+    t.integer  "country_id"
+    t.integer  "district_id"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "organisations", ["country_id"], name: "index_organisations_on_country_id", using: :btree
+  add_index "organisations", ["district_id"], name: "index_organisations_on_district_id", using: :btree
+  add_index "organisations", ["organisation_type_id"], name: "index_organisations_on_organisation_type_id", using: :btree
+
   create_table "package_categories", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
@@ -470,4 +488,7 @@ ActiveRecord::Schema.define(version: 20160916071946) do
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
   add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
 
+  add_foreign_key "organisations", "countries"
+  add_foreign_key "organisations", "districts"
+  add_foreign_key "organisations", "organisation_types"
 end
