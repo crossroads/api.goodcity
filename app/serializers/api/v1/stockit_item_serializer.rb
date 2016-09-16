@@ -6,7 +6,7 @@ module Api::V1
     has_one :package_type, serializer: PackageTypeSerializer, root: :code
     has_one :location, serializer: LocationSerializer
     has_one :donor_condition, serializer: DonorConditionSerializer
-    has_one :stockit_designation, serializer: Api::V1::StockitDesignationSerializer, root: :designation, include_items: false
+    has_one :order, serializer: Api::V1::OrderSerializer, root: :designation, include_items: false
     has_one :item, serializer: Api::V1::StockitSetItemSerializer, root: :set_item
 
     has_many :images, serializer: StockitImageSerializer, root: :images
@@ -21,16 +21,16 @@ module Api::V1
       !@options[:exclude_stockit_set_item]
     end
 
-    def include_stockit_designation?
-      @options[:include_stockit_designation]
+    def include_order?
+      @options[:include_order]
     end
 
     def designation_id
-      object.stockit_designation_id
+      object.order_id
     end
 
     def designation_id__sql
-      "stockit_designation_id"
+      "order_id"
     end
 
     def sent_on

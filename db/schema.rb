@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160831054754) do
+ActiveRecord::Schema.define(version: 20160916115951) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -235,6 +235,23 @@ ActiveRecord::Schema.define(version: 20160831054754) do
     t.boolean  "saleable",                            default: false
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.string   "status"
+    t.string   "code"
+    t.string   "detail_type"
+    t.integer  "detail_id"
+    t.integer  "stockit_contact_id"
+    t.integer  "stockit_organisation_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at"
+    t.datetime "updated_at",              null: false
+    t.text     "description"
+    t.integer  "stockit_activity_id"
+    t.integer  "country_id"
+  end
+
+  add_index "orders", ["code"], name: "orders_code_idx", using: :gin
+
   create_table "package_categories", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
@@ -291,7 +308,7 @@ ActiveRecord::Schema.define(version: 20160831054754) do
     t.integer  "box_id"
     t.integer  "pallet_id"
     t.integer  "stockit_id"
-    t.integer  "stockit_designation_id"
+    t.integer  "order_id"
     t.date     "stockit_sent_on"
     t.date     "stockit_designated_on"
     t.integer  "stockit_designated_by_id"
@@ -360,23 +377,6 @@ ActiveRecord::Schema.define(version: 20160831054754) do
   add_index "stockit_contacts", ["last_name"], name: "st_contacts_last_name_idx", using: :gin
   add_index "stockit_contacts", ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", using: :gin
   add_index "stockit_contacts", ["phone_number"], name: "st_contacts_phone_number_idx", using: :gin
-
-  create_table "stockit_designations", force: :cascade do |t|
-    t.string   "status"
-    t.string   "code"
-    t.string   "detail_type"
-    t.integer  "detail_id"
-    t.integer  "stockit_contact_id"
-    t.integer  "stockit_organisation_id"
-    t.integer  "stockit_id"
-    t.datetime "created_at"
-    t.datetime "updated_at",              null: false
-    t.text     "description"
-    t.integer  "stockit_activity_id"
-    t.integer  "country_id"
-  end
-
-  add_index "stockit_designations", ["code"], name: "st_designations_code_idx", using: :gin
 
   create_table "stockit_local_orders", force: :cascade do |t|
     t.string   "client_name"
