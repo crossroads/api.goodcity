@@ -4,6 +4,9 @@ class Order < ActiveRecord::Base
   belongs_to :country
   belongs_to :stockit_contact
   belongs_to :stockit_organisation
+  belongs_to :organisation
+  belongs_to :created_by, class_name: 'User'
+  belongs_to :processed_by, class_name: 'User'
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'") }, foreign_key: 'detail_id'
 
   has_many :packages
@@ -19,6 +22,22 @@ class Order < ActiveRecord::Base
   scope :latest, -> { order('id desc') }
 
   scope :active_orders, -> { where('status NOT IN (?)', INACTIVE_STATUS) }
+
+  def set_initial_state
+    self.state ||= :draft
+  end
+
+  state_machine :state, initial: :draft do
+    state :submitted, :processing, :closed, :cancelled
+
+    event :submit do
+      transition :draft => :submitted
+    end
+
+    event :start_processing do
+      transition :submitted => :processing
+    end
+  end
 
   def self.search(search_text, to_designate_item)
     fetch_orders(to_designate_item)
