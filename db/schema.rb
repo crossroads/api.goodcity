@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160919120241) do
+ActiveRecord::Schema.define(version: 20160919134728) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -252,9 +252,20 @@ ActiveRecord::Schema.define(version: 20160919120241) do
     t.integer  "processed_by_id"
     t.integer  "organisation_id"
     t.string   "state"
+    t.text     "purpose_description"
   end
 
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
+
+  create_table "orders_packages", force: :cascade do |t|
+    t.integer  "package_id"
+    t.integer  "order_id"
+    t.string   "state"
+    t.integer  "quantity"
+    t.integer  "reviewed_by_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
 
   create_table "organisation_types", force: :cascade do |t|
     t.string   "name_en"

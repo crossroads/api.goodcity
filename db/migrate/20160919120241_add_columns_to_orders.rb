@@ -4,5 +4,6 @@ class AddColumnsToOrders < ActiveRecord::Migration
     add_column :orders, :processed_by_id, :integer
     add_column :orders, :organisation_id, :integer
     add_column :orders, :state, :string
+    add_column :orders, :purpose_description, :text
   end
 end
