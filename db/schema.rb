@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160916115951) do
+ActiveRecord::Schema.define(version: 20160919120241) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -248,6 +248,10 @@ ActiveRecord::Schema.define(version: 20160916115951) do
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
+    t.integer  "created_by_id"
+    t.integer  "processed_by_id"
+    t.integer  "organisation_id"
+    t.string   "state"
   end
 
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
