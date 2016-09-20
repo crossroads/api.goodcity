@@ -4,6 +4,7 @@ CROSSROADS_TRUCK_COST = 600
 DONOR_APP = "app.goodcity"
 ADMIN_APP = "admin.goodcity"
 STOCK_APP = "stock.goodcity"
+BROWSE_APP = "browse.goodcity"
 STOCKIT_APP = "stockit"
 STAFF_APPS = [ADMIN_APP, STOCK_APP, STOCKIT_APP]
 GGV_POLL_JOB_WAIT_TIME = 60.seconds
