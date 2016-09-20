@@ -59,7 +59,7 @@ module Api::V1
     private
 
     def order_record
-      @order = Order.where(stockit_id: order_params[:stockit_id]).first_or_initialize
+      @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
       @order.assign_attributes(order_params)
       @order.stockit_activity = stockit_activity
       @order.stockit_contact = stockit_contact
@@ -77,23 +77,23 @@ module Api::V1
     end
 
     def stockit_activity
-      StockitActivity.find_by(stockit_id: params["order"]["stockit_activity_id"])
+      StockitActivity.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_activity_id"])
     end
 
     def stockit_contact
-      StockitContact.find_by(stockit_id: params["order"]["stockit_contact_id"])
+      StockitContact.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_contact_id"])
     end
 
     def stockit_organisation
-      StockitOrganisation.find_by(stockit_id: params["order"]["stockit_organisation_id"])
+      StockitOrganisation.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_organisation_id"])
     end
 
     def stockit_local_order
-      StockitLocalOrder.find_by(stockit_id: params["order"]["detail_id"])
+      StockitLocalOrder.accessible_by(current_ability).find_by(stockit_id: params["order"]["detail_id"])
     end
 
     def eager_load_designation
-      @order = Order.with_eager_load.find(params[:id])
+      @order = Order.accessible_by(current_ability).with_eager_load.find(params[:id])
     end
 
   end
