@@ -30,7 +30,7 @@ namespace :goodcity do
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
             package.height = value["height"].to_i.zero? ? "" : value["height"].to_i
 
-            package.stockit_designation = package_designation(value["designation_id"])
+            package.order = package_designation(value["designation_id"])
             package.designation_name = value["designation_code"]
             package.donor_condition = package_condition(value["condition"])
             package.location = package_location(value["location_id"])
@@ -73,7 +73,7 @@ namespace :goodcity do
   end
 
   def package_designation(designation_id)
-    StockitDesignation.find_by(stockit_id: designation_id) if designation_id.present?
+    Order.find_by(stockit_id: designation_id) if designation_id.present?
   end
 
 
@@ -94,7 +94,7 @@ namespace :goodcity do
           if value["id"].present?
             package = Package.find_by(stockit_id: value["id"])
             if package
-              package.update_column(:stockit_designation_id, package_designation(value["designation_id"]))
+              package.update_column(:order_id, package_designation(value["designation_id"]))
             end
           end
         end

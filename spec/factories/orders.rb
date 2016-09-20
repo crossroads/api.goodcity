@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :stockit_designation do
+  factory :order do
     status "MyString"
     code "MyString"
     detail_type "MyString"
