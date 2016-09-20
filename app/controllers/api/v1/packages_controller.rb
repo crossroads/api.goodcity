@@ -45,7 +45,7 @@ module Api::V1
     api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
     def stockit_item_details
       render json: @package, serializer: stock_serializer, root: "item",
-        include_order: true, include_stock_condition: is_stock_app
+        include_order: false, include_stock_condition: is_stock_app
     end
 
     api :POST, "/v1/packages", "Create a package"
@@ -57,7 +57,7 @@ module Api::V1
         if @package.valid? && @package.save
           if is_stock_app
             render json: @package, serializer: stock_serializer, root: "item",
-          include_order: true
+          include_order: false
           else
             render json: @package, serializer: serializer, status: 201
           end
@@ -120,7 +120,7 @@ module Api::V1
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
-        include_order: true,
+        include_order: false,
         exclude_stockit_set_item: true,
         include_stock_condition: is_stock_app
       ).to_json
@@ -155,13 +155,13 @@ module Api::V1
     def remove_from_set
       @package.remove_from_set
       render json: @package, serializer: stock_serializer, root: "item",
-        include_order: true
+        include_order: false
     end
 
     def send_stock_item_response
       if @package.errors.blank? && @package.valid? && @package.save
         render json: @package, serializer: stock_serializer, root: "item",
-          include_order: true
+          include_order: false
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
