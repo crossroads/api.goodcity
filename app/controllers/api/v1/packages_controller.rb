@@ -267,7 +267,7 @@ module Api::V1
     end
 
     def order_id
-      Order.find_by(stockit_id: package_params[:order_id]).try(:id)
+      Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
     end
 
     def barcode_service
