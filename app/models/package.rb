@@ -4,6 +4,9 @@ class Package < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
+  BROWSE_ITEM_STATES = ['accepted', 'submitted']
+  BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
+
   belongs_to :item
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
@@ -222,14 +225,22 @@ class Package < ActiveRecord::Base
 
   def self.browse_non_inventorized
     joins(item: [:offer]).published.expecting.
-      where(items: { state: ['accepted', 'submitted'] }).
-      where.not(offers: {state: ['cancelled', 'inactive', 'closed', 'draft']})
+      where(items: { state: BROWSE_ITEM_STATES }).
+      where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
   end
 
   def update_favourite_image(image_id)
     image = images.find_by(id: image_id)
     image.update(favourite: true)
     image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+  end
+
+  def is_browse?
+    (inventory_number.present? && allow_web_publish? &&
+      stockit_sent_on.blank? && stockit_designation_id.blank?) ||
+    (allow_web_publish? && state == "expecting" &&
+      BROWSE_ITEM_STATES.include?(item.try(:state)) &&
+      !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
   end
 
   private
