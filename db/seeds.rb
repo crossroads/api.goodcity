@@ -109,6 +109,14 @@ package_types.each do |code, value|
   end
 end
 
+purposes = YAML.load_file("#{Rails.root}/db/purposes.yml")
+purposes.each do |key, value|
+  holiday = Purpose.where(
+    name_en: value[:name_en],
+    name_zh_tw: value[:name_zh_tw],
+  ).first_or_create
+end
+
 # Create System User
 FactoryGirl.create(:user, :system)
 
