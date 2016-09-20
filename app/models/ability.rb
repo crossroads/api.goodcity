@@ -61,6 +61,8 @@ class Ability
   end
 
   def order_abilities
+    can :create, Order
+    can [:index, :show], Order, created_by_id: @user_id
     can [:create, :index, :show], Order if @api_user || staff?
   end
 

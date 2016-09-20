@@ -11,6 +11,10 @@ class Order < ActiveRecord::Base
 
   has_many :packages
   has_and_belongs_to_many :purposes
+  has_many :orders_packages
+  has_and_belongs_to_many :cart_packages, class_name: 'Package'
+
+  before_create :assign_code
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
@@ -71,5 +75,17 @@ class Order < ActiveRecord::Base
       CAST(whodunnit AS integer) = ? AND
       versions.created_at >= ? ", user_id, 15.days.ago).
     order("key, recently_used_at DESC")
+  end
+
+  def self.generate_gc_code
+    record = where(detail_type: "GoodCity").order("id desc").first
+    code = record ? record.code.gsub(/\D/, '').to_i + 1 : 1
+    "GC-" + code.to_s.rjust(5, "0")
+  end
+
+  private
+
+  def assign_code
+    self.code = Order.generate_gc_code if detail_type == "GoodCity"
   end
 end
