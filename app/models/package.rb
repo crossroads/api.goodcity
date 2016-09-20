@@ -237,7 +237,7 @@ class Package < ActiveRecord::Base
 
   def is_browse?
     (inventory_number.present? && allow_web_publish? &&
-      stockit_sent_on.blank? && stockit_designation_id.blank?) ||
+      stockit_sent_on.blank? && order_id.blank?) ||
     (allow_web_publish? && state == "expecting" &&
       BROWSE_ITEM_STATES.include?(item.try(:state)) &&
       !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
