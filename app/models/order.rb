@@ -10,6 +10,7 @@ class Order < ActiveRecord::Base
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'") }, foreign_key: 'detail_id'
 
   has_many :packages
+  has_and_belongs_to_many :purposes
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
