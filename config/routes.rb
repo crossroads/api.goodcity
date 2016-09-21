@@ -7,7 +7,8 @@ Rails.application.routes.draw do
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
 
-      get "browse/fetch_items", to: "browse#fetch_items"
+      get "browse/fetch_packages", to: "browse#fetch_packages"
+
       post "auth/signup", to: "authentication#signup"
       post "auth/verify", to: "authentication#verify"
       post "auth/send_pin", to: "authentication#send_pin"
@@ -23,8 +24,11 @@ Rails.application.routes.draw do
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
 
-      resources :images, only: [:create, :update, :destroy] do
-        get :generate_signature, on: :collection
+      resources :images, only: [:create, :update, :destroy, :show] do
+        collection do
+          get :generate_signature
+          put :delete_cloudinary_image
+        end
       end
 
       resources :messages, only: [:create, :update, :index, :show] do
@@ -47,7 +51,9 @@ Rails.application.routes.draw do
         get :messages, on: :member
       end
 
-      resources :packages, only: [:index, :show, :create, :update, :destroy]
+      resources :packages, only: [:index, :show, :create, :update, :destroy] do
+        get :print_inventory_label, on: :member
+      end
       resources :rejection_reasons, only: [:index, :show]
       resources :cancellation_reasons, only: [:index, :show]
       resources :territories, only: [:index, :show]
@@ -97,7 +103,7 @@ Rails.application.routes.draw do
       resources :stockit_organisations, only: [:create]
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
-      resources :stockit_designations, only: [:create]
+      resources :orders, only: [:create]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
       resources :inventory_numbers, only: [:create] do
@@ -105,8 +111,8 @@ Rails.application.routes.draw do
       end
 
       # routes used in stock app
-      get "designations", to: "stockit_designations#index"
-      get "designations/:id", to: "stockit_designations#show"
+      get "designations", to: "orders#index"
+      get "designations/:id", to: "orders#show"
       get "items", to: "packages#search_stockit_items"
       put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
       put "items/:id/designate_stockit_item_set", to: "items#designate_stockit_item_set"
