@@ -4,17 +4,21 @@ class Package < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
+  BROWSE_ITEM_STATES = ['accepted', 'submitted']
+  BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
+
   belongs_to :item
-  belongs_to :favourite_image, class_name: 'Image'
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
   belongs_to :pallet
   belongs_to :box
-  belongs_to :stockit_designation
+  belongs_to :order
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
+
+  has_many   :images, as: :imageable, dependent: :destroy
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
@@ -31,17 +35,19 @@ class Package < ActiveRecord::Base
     allow_blank: true, greater_than: 0, less_than: 100000 }
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
-  scope :received, -> { where("state = 'received'") }
+  scope :received, -> { where(state: 'received') }
+  scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
+  scope :published, -> { where(allow_web_publish: true) }
   scope :non_set_items, -> { where(set_item_id: nil) }
   scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
-  scope :without_images, -> { where(favourite_image_id: nil) }
   scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
+  scope :undesignated, -> { where(order_id: nil) }
   scope :exclude_designated, ->(designation_id) {
-    where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
+    where("order_id <> ? OR order_id IS NULL", designation_id)
   }
 
   attr_accessor :skip_set_relation_update
@@ -120,7 +126,7 @@ class Package < ActiveRecord::Base
   end
 
   def designate_to_stockit_order(order_id)
-    self.stockit_designation = StockitDesignation.find_by(id: order_id)
+    self.order = Order.find_by(id: order_id)
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     response = Stockit::ItemSync.update(self)
@@ -128,7 +134,7 @@ class Package < ActiveRecord::Base
   end
 
   def undesignate_from_stockit_order
-    self.stockit_designation = nil
+    self.order = nil
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
@@ -213,12 +219,35 @@ class Package < ActiveRecord::Base
     item.packages.inventorized.undispatched
   end
 
+  def self.browse_inventorized
+    inventorized.published.undispatched.undesignated
+  end
+
+  def self.browse_non_inventorized
+    joins(item: [:offer]).published.expecting.
+      where(items: { state: BROWSE_ITEM_STATES }).
+      where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
+  end
+
+  def update_favourite_image(image_id)
+    image = images.find_by(id: image_id)
+    image.update(favourite: true)
+    image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+  end
+
+  def is_browse?
+    (inventory_number.present? && allow_web_publish? &&
+      stockit_sent_on.blank? && order_id.blank?) ||
+    (allow_web_publish? && state == "expecting" &&
+      BROWSE_ITEM_STATES.include?(item.try(:state)) &&
+      !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
+  end
+
   private
 
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.favourite_image ||= item && item.images.find_by(favourite: true)
     self.saleable = offer.try(:saleable) || false
     true
   end

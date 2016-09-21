@@ -1,7 +1,8 @@
 module Api::V1
   class AuthenticationController < Api::V1::ApiController
-    skip_before_action :validate_token, only: [:signup, :verify, :send_pin]
-    skip_authorization_check only: [:signup, :verify, :send_pin]
+    skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
+      :current_user_rooms]
+    skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms]
 
     resource_description do
       short "Handle user login and registration"
@@ -163,7 +164,8 @@ module Api::V1
     error 401, "Unauthorized"
     error 500, "Internal Server Error"
     def current_user_rooms
-      authorize!(:current_user_profile, User)
+      return render json: ["browse"], root: false if is_browse_app
+      validate_token && authorize!(:current_user_profile, User)
       render json: current_user_channels, root: false
     end
 

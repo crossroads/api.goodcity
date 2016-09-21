@@ -1,15 +1,15 @@
 namespace :goodcity do
 
-  # rake goodcity:add_stockit_designations
+  # rake goodcity:add_orders
   desc 'Load designation details from stockit'
-  task add_stockit_designations: :environment do
+  task add_orders: :environment do
 
     designations_json = Stockit::DesignationSync.index
-    stockit_designations = JSON.parse(designations_json["designations"])
+    orders = JSON.parse(designations_json["designations"])
 
-    if stockit_designations
-      stockit_designations.each do |value|
-        designation = StockitDesignation.where(stockit_id: value["id"]).first_or_create
+    if orders
+      orders.each do |value|
+        designation = Order.where(stockit_id: value["id"]).first_or_create
 
         detail_id = if (value["detail_type"] === "LocalOrder") && value["detail_id"].present?
           StockitLocalOrder.find_by(stockit_id: value["detail_id"]).try(:id)

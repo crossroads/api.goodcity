@@ -28,6 +28,14 @@ module PushUpdates
     end
     user.options[:user_summary] = false
     service.send_update_store(Channel.staff, true, data)
+    browse_updates(operation) if type == "Package"
+  end
+
+  def browse_updates(operation)
+    operation = is_browse? ? operation : "delete"
+    json = Api::V1::BrowsePackageSerializer.new(self).as_json[:browse_package]
+    data = { item: { package: json }, operation: operation }
+    service.send_update_store(Channel.browse, false, data)
   end
 
   def data_updates(type, operation)
@@ -49,6 +57,7 @@ module PushUpdates
       .find_all{|i| serializer.respond_to?(i) || serializer.respond_to?(i.sub('_id', ''))}
       .map{|i| i.to_sym}
       .each{|i| object[type][i] = self[i]}
+    object.values.first.merge!(serialized_object(object))
     object
   end
 
@@ -56,6 +65,12 @@ module PushUpdates
     name = self.class
     exclude_relationships = {exclude: name.reflections.keys.map(&:to_sym)}
     "Api::V1::#{name}Serializer".constantize.new(self, exclude_relationships)
+  end
+
+  def serialized_object(object)
+    serializer_name = "Api::V1::#{self.class}Serializer".constantize
+    object_key = object.keys[0].downcase.to_sym
+    serializer_name.new(serializer.object).as_json[object_key] || {}
   end
 
   def service

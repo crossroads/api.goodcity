@@ -11,6 +11,7 @@ module Api::V1
     has_many :images,   serializer: ImageSerializer
     has_one  :package_type, serializer: PackageTypeSerializer
     has_one  :rejection_reason, serializer: RejectionReasonSerializer
+    has_one  :donor_condition, serializer: DonorConditionSerializer
 
     def message_ids
       User.current_user.try(:donor?) ? object.messages.non_private.pluck(:id) : object.messages.pluck(:id)
@@ -36,14 +37,15 @@ module Api::V1
     end
 
     def include_attribute?
-      !@options[:is_browse_request]
+      !User.current_user.try(:donor?)
     end
 
+    alias_method :include_packages?, :include_attribute?
+    alias_method :include_package_type?, :include_attribute?
+    alias_method :include_package_type?, :include_attribute?
     alias_method :include_rejection_reason_id?, :include_attribute?
     alias_method :include_rejection_reason?, :include_attribute?
     alias_method :include_reject_reason?, :include_attribute?
     alias_method :include_rejection_comments?, :include_attribute?
-    alias_method :include_message_ids?, :include_attribute?
-    alias_method :include_saleable?, :include_attribute?
   end
 end
