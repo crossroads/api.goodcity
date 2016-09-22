@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160920063021) do
+ActiveRecord::Schema.define(version: 20160922141820) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -233,6 +233,18 @@ ActiveRecord::Schema.define(version: 20160920063021) do
     t.string   "cancel_reason"
     t.datetime "inactive_at"
     t.boolean  "saleable",                            default: false
+  end
+
+  create_table "order_transports", force: :cascade do |t|
+    t.date     "scheduled_at"
+    t.string   "timeslot"
+    t.string   "transport_type"
+    t.string   "vehicle_type"
+    t.integer  "contact_id"
+    t.integer  "gogovan_order_id"
+    t.integer  "order_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
   end
 
   create_table "orders", force: :cascade do |t|

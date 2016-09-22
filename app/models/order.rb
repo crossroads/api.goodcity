@@ -13,6 +13,7 @@ class Order < ActiveRecord::Base
   has_and_belongs_to_many :purposes
   has_many :orders_packages
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
+  has_one :order_transport
 
   before_create :assign_code
 

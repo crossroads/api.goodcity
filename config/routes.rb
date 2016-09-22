@@ -104,6 +104,7 @@ Rails.application.routes.draw do
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
       resources :orders, only: [:create, :show, :index]
+      resources :order_transports, only: [:create, :show, :index]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
       resources :inventory_numbers, only: [:create] do
