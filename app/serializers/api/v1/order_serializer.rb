@@ -3,15 +3,18 @@ module Api::V1
     embed :ids, include: true
     attributes :status, :created_at, :code, :detail_type, :id, :detail_id,
       :contact_id, :local_order_id, :organisation_id, :description, :activity,
-      :country_name
+      :country_name, :state, :purpose_description
 
     has_one :stockit_contact, serializer: StockitContactSerializer, root: :contact
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
     has_one :stockit_local_order, serializer: StockitLocalOrderSerializer, root: :local_order
+    has_one :order_transport, serializer: OrderTransportSerializer
     has_many :packages, serializer: StockitItemSerializer, root: :items
+    has_many :cart_packages, serializer: BrowsePackageSerializer, root: :packages
+    has_many :orders_packages, serializer: OrdersPackageSerializer
 
     def include_packages?
-      !@options[:include_order]
+      @options[:include_order]
     end
 
     def local_order_id
