@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160922141820) do
+ActiveRecord::Schema.define(version: 20160923141615) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -239,12 +239,17 @@ ActiveRecord::Schema.define(version: 20160922141820) do
     t.date     "scheduled_at"
     t.string   "timeslot"
     t.string   "transport_type"
-    t.string   "vehicle_type"
     t.integer  "contact_id"
     t.integer  "gogovan_order_id"
     t.integer  "order_id"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.boolean  "need_english",         default: false
+    t.boolean  "need_cart",            default: false
+    t.boolean  "need_carry",           default: false
+    t.boolean  "need_over_6ft",        default: false
+    t.integer  "gogovan_transport_id"
+    t.string   "remove_net"
   end
 
   create_table "orders", force: :cascade do |t|
