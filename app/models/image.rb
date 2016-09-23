@@ -5,7 +5,7 @@ class Image < ActiveRecord::Base
   include PushUpdates
 
   has_one :user, inverse_of: :image
-  belongs_to :imageable, polymorphic: true
+  belongs_to :imageable, polymorphic: true, touch: true
 
   before_destroy :delete_image_from_cloudinary,
     unless: "Rails.env.test? || has_multiple_items"

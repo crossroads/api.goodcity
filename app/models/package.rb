@@ -26,6 +26,7 @@ class Package < ActiveRecord::Base
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
+  after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
