@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160916115951) do
+ActiveRecord::Schema.define(version: 20160922141820) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -235,6 +235,18 @@ ActiveRecord::Schema.define(version: 20160916115951) do
     t.boolean  "saleable",                            default: false
   end
 
+  create_table "order_transports", force: :cascade do |t|
+    t.date     "scheduled_at"
+    t.string   "timeslot"
+    t.string   "transport_type"
+    t.string   "vehicle_type"
+    t.integer  "contact_id"
+    t.integer  "gogovan_order_id"
+    t.integer  "order_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
   create_table "orders", force: :cascade do |t|
     t.string   "status"
     t.string   "code"
@@ -248,9 +260,67 @@ ActiveRecord::Schema.define(version: 20160916115951) do
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
+    t.integer  "created_by_id"
+    t.integer  "processed_by_id"
+    t.integer  "organisation_id"
+    t.string   "state"
+    t.text     "purpose_description"
   end
 
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
+
+  create_table "orders_packages", force: :cascade do |t|
+    t.integer  "package_id"
+    t.integer  "order_id"
+    t.string   "state"
+    t.integer  "quantity"
+    t.integer  "reviewed_by_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  create_table "orders_purposes", force: :cascade do |t|
+    t.integer "order_id"
+    t.integer "purpose_id"
+  end
+
+  create_table "organisation_types", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.string   "category_en"
+    t.string   "category_zh_tw"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  create_table "organisations", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.integer  "organisation_type_id"
+    t.text     "description_en"
+    t.text     "description_zh_tw"
+    t.string   "registration"
+    t.string   "website"
+    t.integer  "country_id"
+    t.integer  "district_id"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "organisations", ["country_id"], name: "index_organisations_on_country_id", using: :btree
+  add_index "organisations", ["district_id"], name: "index_organisations_on_district_id", using: :btree
+  add_index "organisations", ["organisation_type_id"], name: "index_organisations_on_organisation_type_id", using: :btree
+
+  create_table "organisations_users", force: :cascade do |t|
+    t.integer  "organisation_id"
+    t.integer  "user_id"
+    t.string   "role"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "organisations_users", ["organisation_id"], name: "index_organisations_users_on_organisation_id", using: :btree
+  add_index "organisations_users", ["user_id"], name: "index_organisations_users_on_user_id", using: :btree
 
   create_table "package_categories", force: :cascade do |t|
     t.string   "name_en"
@@ -337,6 +407,13 @@ ActiveRecord::Schema.define(version: 20160916115951) do
     t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "purposes", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "rejection_reasons", force: :cascade do |t|
@@ -461,4 +538,9 @@ ActiveRecord::Schema.define(version: 20160916115951) do
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
   add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
 
+  add_foreign_key "organisations", "countries"
+  add_foreign_key "organisations", "districts"
+  add_foreign_key "organisations", "organisation_types"
+  add_foreign_key "organisations_users", "organisations"
+  add_foreign_key "organisations_users", "users"
 end

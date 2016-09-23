@@ -34,6 +34,7 @@ class Ability
       stockit_abilities
       schedule_abilities
       order_abilities
+      order_transport_abilities
       stockit_organisation_abilities
       stockit_contact_abilities
       stockit_local_order_abilities
@@ -61,7 +62,17 @@ class Ability
   end
 
   def order_abilities
+    can :create, Order
+    can [:index, :show], Order, created_by_id: @user_id
     can [:create, :index, :show], Order if @api_user || staff?
+  end
+
+  def order_transport_abilities
+    can :create, OrderTransport
+    can [:index, :show], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
+        transport.order.created_by_id == @user_id
+      end
+    can [:create, :index, :show], OrderTransport if staff?
   end
 
   def stockit_organisation_abilities

@@ -1,0 +1,11 @@
+---
+1:
+  :name_en: 'ABC'
+  :name_zh_tw: 'ABC'
+  :category_en: 'XYZ'
+  :category_zh_tw: 'XYZ'
+2:
+  :name_en: 'PQR'
+  :name_zh_tw: 'PQR'
+  :category_en: 'GZY'
+  :category_zh_tw: 'GZY'
