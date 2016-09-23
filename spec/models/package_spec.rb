@@ -1,6 +1,11 @@
 require 'rails_helper'
+require "rspec/mocks/standalone"
 
 RSpec.describe Package, type: :model do
+
+  before(:all) do
+    allow_any_instance_of(Package).to receive(:update_client_store)
+  end
 
   let(:package) { create :package }
 
