@@ -63,8 +63,8 @@ class Ability
 
   def order_abilities
     can :create, Order
-    can [:index, :show], Order, created_by_id: @user_id
-    can [:create, :index, :show], Order if @api_user || staff?
+    can [:index, :show, :update], Order, created_by_id: @user_id
+    can [:create, :index, :show, :update], Order if @api_user || staff?
   end
 
   def order_transport_abilities
