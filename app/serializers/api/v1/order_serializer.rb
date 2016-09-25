@@ -58,5 +58,12 @@ module Api::V1
       "(select a.name_#{current_language} from countries a
         where a.id = orders.country_id LIMIT 1)"
     end
+
+    def include_non_browse_details?
+      !@options[:browse_order]
+    end
+    alias_method :include_stockit_contact?, :include_non_browse_details?
+    alias_method :include_stockit_local_order?, :include_non_browse_details?
+
   end
 end

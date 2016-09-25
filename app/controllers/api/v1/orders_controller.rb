@@ -61,7 +61,7 @@ module Api::V1
 
     def my_orders
       render json: @orders, each_serializer: serializer, root: "orders",
-        include_order: false
+        include_order: false, browse_order: true
     end
 
     private
