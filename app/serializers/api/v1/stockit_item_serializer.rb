@@ -25,6 +25,8 @@ module Api::V1
       @options[:include_order]
     end
 
+    alias_method :include_designation_id?, :include_order?
+
     def designation_id
       object.order_id
     end
