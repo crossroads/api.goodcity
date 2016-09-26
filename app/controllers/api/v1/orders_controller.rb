@@ -53,6 +53,11 @@ module Api::V1
         exclude_code_details: true
     end
 
+    def update
+      @order.update_attributes(order_params)
+      render json: @order, serializer: serializer
+    end
+
     def recent_designations
       records = Order.recently_used(User.current_user.id)
       orders = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", exclude_stockit_set_item: true).to_json
@@ -84,8 +89,7 @@ module Api::V1
 
     def order_params
       params.require(:order).permit(:stockit_id, :code, :status, :created_at,
-        :stockit_contact_id, :detail_id, :detail_type, :description, :state,
-        :stockit_organisation_id, :stockit_activity_id, :purpose_description,
+        :stockit_contact_id, :detail_id, :detail_type, :description, :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :purpose_description,
         purpose_ids: [], cart_package_ids: [])
     end
 
