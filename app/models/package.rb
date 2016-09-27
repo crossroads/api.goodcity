@@ -236,13 +236,6 @@ class Package < ActiveRecord::Base
     image.imageable.images.where.not(id: image_id).update_all(favourite: false)
   end
 
-  def is_browse?
-    (inventory_number.present? && allow_web_publish?) ||
-    (allow_web_publish? && state == "expecting" &&
-      BROWSE_ITEM_STATES.include?(item.try(:state)) &&
-      !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
-  end
-
   private
 
   def set_default_values
