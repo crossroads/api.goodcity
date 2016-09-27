@@ -221,7 +221,7 @@ class Package < ActiveRecord::Base
   end
 
   def self.browse_inventorized
-    inventorized.published.undispatched.undesignated
+    inventorized.published
   end
 
   def self.browse_non_inventorized
@@ -237,8 +237,7 @@ class Package < ActiveRecord::Base
   end
 
   def is_browse?
-    (inventory_number.present? && allow_web_publish? &&
-      stockit_sent_on.blank? && order_id.blank?) ||
+    (inventory_number.present? && allow_web_publish?) ||
     (allow_web_publish? && state == "expecting" &&
       BROWSE_ITEM_STATES.include?(item.try(:state)) &&
       !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
