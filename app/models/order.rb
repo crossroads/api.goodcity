@@ -43,6 +43,19 @@ class Order < ActiveRecord::Base
     event :start_processing do
       transition :submitted => :processing
     end
+
+    before_transition on: :submit do |order|
+      order.add_to_stockit
+    end
+  end
+
+  def add_to_stockit
+    response = Stockit::DesignationSync.create(self)
+    if response && (errors = response["errors"]).present?
+      errors.each{|key, value| self.errors.add(key, value) }
+    else response && (designation_id = response["designation_id"]).present?
+      self.stockit_id = designation_id
+    end
   end
 
   def self.search(search_text, to_designate_item)

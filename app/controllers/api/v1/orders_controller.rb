@@ -54,8 +54,13 @@ module Api::V1
     end
 
     def update
-      @order.update_attributes(order_params)
-      render json: @order, serializer: serializer
+      @order.assign_attributes(order_params)
+      # use valid? to ensure submit event errors get caught
+      if @order.valid? and @order.save
+        render json: @order, serializer: serializer
+      else
+        render json: {errors: @order.errors.full_messages}.to_json , status: 422
+      end
     end
 
     def recent_designations
