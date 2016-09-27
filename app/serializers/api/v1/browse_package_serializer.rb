@@ -9,7 +9,7 @@ module Api::V1
 
     attributes :id, :quantity, :length, :width, :height, :notes, :item_id,
       :created_at, :updated_at, :package_type_id, :grade,
-      :donor_condition_id
+      :donor_condition_id, :stockit_sent_on, :order_id
 
     def item_id
       if object.inventory_number.present?
