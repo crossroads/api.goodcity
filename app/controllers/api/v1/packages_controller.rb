@@ -161,7 +161,7 @@ module Api::V1
     def send_stock_item_response
       if @package.errors.blank? && @package.valid? && @package.save
         render json: @package, serializer: stock_serializer, root: "item",
-          include_order: false
+          include_order: true
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end

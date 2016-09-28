@@ -221,7 +221,7 @@ class Package < ActiveRecord::Base
   end
 
   def self.browse_inventorized
-    inventorized.published.undispatched.undesignated
+    inventorized.published
   end
 
   def self.browse_non_inventorized
@@ -234,14 +234,6 @@ class Package < ActiveRecord::Base
     image = images.find_by(id: image_id)
     image.update(favourite: true)
     image.imageable.images.where.not(id: image_id).update_all(favourite: false)
-  end
-
-  def is_browse?
-    (inventory_number.present? && allow_web_publish? &&
-      stockit_sent_on.blank? && order_id.blank?) ||
-    (allow_web_publish? && state == "expecting" &&
-      BROWSE_ITEM_STATES.include?(item.try(:state)) &&
-      !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
   end
 
   private
