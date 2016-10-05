@@ -267,6 +267,6 @@ class Package < ActiveRecord::Base
   end
 
   def gc_inventory_number
-    inventory_number && inventory_number.match(/^[0-9]/)
+    inventory_number && inventory_number.match(/^[0-9]+$/)
   end
 end
