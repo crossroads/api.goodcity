@@ -58,9 +58,6 @@ module Api::V1
     param_group :image
     def update
       if @image.update_attributes(image_params)
-        if @image.favourite
-          @image.imageable.images.where.not(id: @image.id).update_all(favourite: false)
-        end
         serialized_response
       else
         render json: @image.errors.to_json, status: 422
