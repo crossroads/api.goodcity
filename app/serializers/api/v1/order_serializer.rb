@@ -15,7 +15,7 @@ module Api::V1
     has_many :orders_packages, serializer: OrdersPackageSerializer
 
     def include_packages?
-      @options[:include_order]
+      @options[:include_packages]
     end
 
     def local_order_id
@@ -65,6 +65,8 @@ module Api::V1
     end
     alias_method :include_stockit_contact?, :include_non_browse_details?
     alias_method :include_stockit_local_order?, :include_non_browse_details?
+    alias_method :include_cart_packages?, :include_packages?
+    alias_method :include_orders_packages?, :include_packages?
 
   end
 end
