@@ -69,9 +69,9 @@ organisation_types = YAML.load_file("#{Rails.root}/db/organisation_types.yml")
 organisation_types.each do |key, value|
   OrganisationType.create(
     name_en: value[:name_en],
-    name_zh: value[:name_zh_tw],
+    name_zh_tw: value[:name_zh_tw],
     category_en: value[:category_en],
-    category_zh: value[:category_zh_tw] )
+    category_zh_tw: value[:category_zh_tw] )
 end
 
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")

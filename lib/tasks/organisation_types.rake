@@ -7,9 +7,9 @@ namespace :goodcity do
     organisation_types.each do |key, value|
       organisation_type = OrganisationType.where(
         name_en: value[:name_en],
-        name_zh: value[:name_zh],
+        name_zh_tw: value[:name_zh_tw],
         category_en: value[:category_en],
-        category_zh: value[:category_zh]
+        category_zh_tw: value[:category_zh_tw]
       ).first_or_create
     end
   end
