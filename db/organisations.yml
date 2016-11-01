@@ -1,11 +1,11 @@
 ---
 1: 
-  :name_en: "abc"
-  :name_zh_tw: "abc"
+  :name_en: "oraganisation 1"
+  :name_zh_tw: "oraganisation 1"
   :organisation_type_id: 1
-  :description_en: "abc"
-  :description_zh_tw: "abc"
-  :registration: "abc"
-  :website: "abc"
+  :description_en: "oraganisation 1"
+  :description_zh_tw: "oraganisation 1"
+  :registration: "registration"
+  :website: "website"
   :country_id: 1
   :district_id: 1
