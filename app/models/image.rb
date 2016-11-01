@@ -11,6 +11,8 @@ class Image < ActiveRecord::Base
     unless: "Rails.env.test? || has_multiple_items"
   after_update :clear_unused_transformed_images, unless: "Rails.env.test?"
 
+  after_update :reset_favourite,  if: :favourite_changed?
+
   scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
 
   def public_image_id
@@ -20,6 +22,10 @@ class Image < ActiveRecord::Base
   # required by PushUpdates and PaperTrail modules
   def offer
     imageable.try(:offer)
+  end
+
+  def reset_favourite
+    favourite and imageable.images.where.not(id: id).update_all(favourite: false)
   end
 
   private
