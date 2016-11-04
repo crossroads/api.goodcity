@@ -130,6 +130,7 @@ class Package < ActiveRecord::Base
     self.order = Order.find_by(id: order_id)
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
+    self.donor_condition_id = 3 unless self.donor_condition_id.present?
     response = Stockit::ItemSync.update(self)
     add_errors(response)
   end
