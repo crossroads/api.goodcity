@@ -127,7 +127,6 @@ class Package < ActiveRecord::Base
   end
 
   def designate_to_stockit_order(order_id)
-    debugger
     self.order = Order.find_by(id: order_id)
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
