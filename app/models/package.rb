@@ -127,10 +127,11 @@ class Package < ActiveRecord::Base
   end
 
   def designate_to_stockit_order(order_id)
+    debugger
     self.order = Order.find_by(id: order_id)
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
-    self.donor_condition_id = 3 unless self.donor_condition_id.present?
+    self.donor_condition_id =  donor_condition_id.presence || 3
     response = Stockit::ItemSync.update(self)
     add_errors(response)
   end
