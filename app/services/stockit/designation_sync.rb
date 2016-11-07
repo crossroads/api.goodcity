@@ -11,7 +11,7 @@ module Stockit
 
     def index
       url = url_for("/api/v1/designations")
-      get(url, { designation: { detail_type: "LocalOrder" } })
+      get(url)
     end
 
   end

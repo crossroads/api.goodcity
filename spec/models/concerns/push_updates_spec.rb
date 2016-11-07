@@ -10,9 +10,9 @@ describe Offer do
   }
   let(:service) {PushService.new}
 
-  it 'update - only changed properties are included' do
+  it 'update - changed properties are included' do
     expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
-      expect(data[:item]['Offer'].to_json).to eq("{\"id\":#{offer.id},\"notes\":\"New test note\"}")
+      expect(data[:item]['Offer'].to_json).to include("\"id\":#{offer.id},\"notes\":\"New test note\"")
     end
     offer.notes = 'New test note'
     offer.update_client_store(:update)
@@ -20,7 +20,7 @@ describe Offer do
 
   it 'update - foreign key property changes are handled' do
     expect(service).to receive(:send_update_store).at_least(:once) do |channel, is_admin_app, data|
-      expect(data[:item]['Offer'].to_json).to eq("{\"id\":#{offer.id},\"reviewed_by_id\":#{user.id}}")
+      expect(data[:item]['Offer'].to_json).to include("\"id\":#{offer.id},\"reviewed_by_id\":#{user.id}")
     end
     offer.reviewed_by_id = user.id
     offer.update_client_store(:update)

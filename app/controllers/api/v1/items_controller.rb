@@ -73,7 +73,26 @@ module Api::V1
       end
     end
 
+    def designate_stockit_item_set
+      @item.designate_set_to_stockit_order(params["order_id"])
+      render json: @item, serializer: stockit_serializer
+    end
+
+    def dispatch_stockit_item_set
+      @item.dispatch_set_to_stockit_order
+      render json: @item, serializer: stockit_serializer
+    end
+
+    def move_stockit_item_set
+      @item.move_set_to_location(params["location_id"])
+      render json: @item, serializer: stockit_serializer
+    end
+
     private
+
+    def stockit_serializer
+      Api::V1::StockitSetItemSerializer
+    end
 
     def update_offer_state(offer)
       offer.items.reload
