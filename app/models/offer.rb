@@ -49,6 +49,7 @@ class Offer < ActiveRecord::Base
     states.push(*Offer.nondraft_states) if states.delete('nondraft')
     states.push(*Offer.active_states) if states.delete('active')
     states.push(*Offer.donor_valid_states) if states.delete('for_donor')
+    states.push(*Offer.donor_states) if states.delete('donor_non_draft')
     where(state: states.uniq)
   }
 
@@ -183,6 +184,9 @@ class Offer < ActiveRecord::Base
     end
     def nondraft_states
       active_states - ["draft"]
+    end
+    def donor_states
+      valid_states - ["draft"]
     end
   end
 

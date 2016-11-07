@@ -9,6 +9,10 @@ class Channel
       ["supervisor"]
     end
 
+    def browse
+      ["browse"]
+    end
+
     def staff
      [reviewer, supervisor].flatten
     end

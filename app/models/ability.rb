@@ -33,7 +33,7 @@ class Ability
       package_abilities
       stockit_abilities
       schedule_abilities
-      stockit_designation_abilities
+      order_abilities
       stockit_organisation_abilities
       stockit_contact_abilities
       stockit_local_order_abilities
@@ -44,10 +44,11 @@ class Ability
   end
 
   def stockit_abilities
-    can [:index, :create], Location if @api_user || staff?
-    can :create, Box if @api_user
-    can :create, Pallet if @api_user
-    can :create, StockitActivity if @api_user
+    can [:index, :create, :destroy], Location if @api_user || staff?
+    can [:create, :index], Box if @api_user
+    can [:create, :index], Pallet if @api_user
+    can [:create, :index], Country if @api_user
+    can [:create, :index], StockitActivity if @api_user
   end
 
   def delivery_abilities
@@ -59,20 +60,20 @@ class Ability
     end
   end
 
-  def stockit_designation_abilities
-    can [:create, :index, :show], StockitDesignation if @api_user || staff?
+  def order_abilities
+    can [:create, :index, :show], Order if @api_user || staff?
   end
 
   def stockit_organisation_abilities
-    can [:create], StockitOrganisation if @api_user
+    can [:create, :index], StockitOrganisation if @api_user
   end
 
   def stockit_contact_abilities
-    can [:create], StockitContact if @api_user
+    can [:create, :index], StockitContact if @api_user
   end
 
   def stockit_local_order_abilities
-    can [:create], StockitLocalOrder if @api_user
+    can [:create, :index], StockitLocalOrder if @api_user
   end
 
   def holiday_abilities
@@ -82,7 +83,8 @@ class Ability
 
   def item_abilities
     if staff?
-      can [:index, :show, :create, :update, :messages], Item
+      can [:index, :show, :create, :update, :messages, :move_stockit_item_set,
+        :designate_stockit_item_set, :dispatch_stockit_item_set], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
         item.offer.created_by_id == @user_id
@@ -97,15 +99,15 @@ class Ability
 
   def image_abilities
     if staff?
-      can [:index, :show, :create, :update], Image
+      can [:index, :show, :create, :update, :destroy, :delete_cloudinary_image], Image
     else
       can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
-        record.item.offer.created_by_id == @user_id
+        record.imageable.offer.created_by_id == @user_id
       end
     end
-    can :destroy, Image, item: { offer: { created_by_id: @user_id },
+    can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
       state: ['draft', 'submitted', 'scheduled'] }
-    can :destroy, Image, item: {
+    can :destroy, Image, imageable: {
       state: ['draft', 'submitted', 'accepted', 'rejected', 'scheduled'] } if @reviewer
     can :destroy, Image if @supervisor
   end
@@ -138,9 +140,10 @@ class Ability
   def package_abilities
     if staff?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :designate_stockit_item,
-        :undesignate_stockit_item, :dispatch_stockit_item,
-        :undispatch_stockit_item, :move_stockit_item, :stockit_item_details], Package
+        :search_stockit_items, :designate_stockit_item, :remove_from_set,
+        :undesignate_stockit_item, :dispatch_stockit_item, :move_stockit_item,
+        :print_inventory_label, :undispatch_stockit_item,
+        :stockit_item_details], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
@@ -157,7 +160,7 @@ class Ability
     # Anonymous and all users
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
-    can [:fetch_items], Item # for BrowseController
+    can [:fetch_packages], Package # for BrowseController
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], Territory
@@ -199,6 +202,8 @@ class Ability
     can [:index, :show], RejectionReason
     can [:index, :show], Permission
     can [:index, :show], CancellationReason
+    can :create, PackageType if @api_user || staff?
+    can [:create, :remove_number], InventoryNumber if @api_user || staff?
   end
 
   def user_abilities

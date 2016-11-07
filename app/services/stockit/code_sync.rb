@@ -36,11 +36,11 @@ module Stockit
         code: {
           code: code.code,
           description_en: code.name_en,
-          description_zht: code.name_zh_tw
+          description_zht: code.name_zh_tw,
+          location_id: code.location.try(:stockit_id)
         }
       }
     end
 
   end
-
 end

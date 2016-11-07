@@ -6,7 +6,7 @@ FactoryGirl.define do
     favourite false
 
     trait :with_item do
-      association :item
+      association :imageable, factory: :item
     end
   end
 end

@@ -15,8 +15,8 @@ describe "PackageType abilities" do
   context "when Supervisor" do
     let(:user)     { create(:user, :supervisor) }
     let(:package_type) { create :package_type }
-    let(:can)      { [:index, :show] }
-    let(:cannot)   { [:create, :update, :destroy, :manage] }
+    let(:can)      { [:index, :show, :create] }
+    let(:cannot)   { [:update, :destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, package_type)
     end}
@@ -28,8 +28,8 @@ describe "PackageType abilities" do
   context "when Reviewer" do
     let(:user)     { create(:user, :reviewer) }
     let(:package_type) { create :package_type }
-    let(:can)      { [:index, :show] }
-    let(:cannot)   { [:create, :update, :destroy, :manage] }
+    let(:can)      { [:index, :show, :create] }
+    let(:cannot)   { [:update, :destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, package_type)
     end}

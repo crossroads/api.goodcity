@@ -7,7 +7,7 @@ describe "Image abilities" do
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
-  let(:image)       { create :image, item: item }
+  let(:image)       { create :image, imageable: item }
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }

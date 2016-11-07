@@ -1,4 +1,4 @@
 require 'rails_helper'
 
-RSpec.describe StockitDesignation, type: :model do
+RSpec.describe Order, type: :model do
 end

@@ -5,22 +5,32 @@ module Api::V1
 
     has_one :package_type, serializer: PackageTypeSerializer, root: :code
     has_one :location, serializer: LocationSerializer
-    has_one :stockit_designation, serializer: Api::V1::StockitDesignationSerializer, root: :designation, include_items: false
+    has_one :donor_condition, serializer: DonorConditionSerializer
+    has_one :order, serializer: Api::V1::OrderSerializer, root: :designation, include_items: false
+    has_one :item, serializer: Api::V1::StockitSetItemSerializer, root: :set_item
+
+    has_many :images, serializer: StockitImageSerializer, root: :images
 
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
-      :inventory_number, :created_at, :updated_at, :item_id, :is_set,
-      :designation_name, :designation_id, :sent_on, :code_id
+      :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
+      :designation_name, :designation_id, :sent_on, :code_id, :image_id,
+      :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
+      :allow_web_publish
 
-    def include_stockit_designation?
-      @options[:include_stockit_designation]
+    def include_item?
+      !@options[:exclude_stockit_set_item]
+    end
+
+    def include_order?
+      @options[:include_order]
     end
 
     def designation_id
-      object.stockit_designation_id
+      object.order_id
     end
 
     def designation_id__sql
-      "stockit_designation_id"
+      "order_id"
     end
 
     def sent_on
@@ -39,23 +49,34 @@ module Api::V1
       "packages.package_type_id"
     end
 
+    def image_id
+      object.favourite_image_id
+    end
+
+    def image_id__sql
+      "packages.favourite_image_id"
+    end
+
     def is_set
-      Package.where("
-        stockit_sent_on IS NULL AND
-        inventory_number IS NOT NULL AND
-        item_id IS NOT NULL and item_id = ?",
-        object.item_id).length > 1
+      object.set_item_id.present?
+    end
+
+    def has_box_pallet
+      object.box_id.present? || object.pallet_id.present?
     end
 
     def is_set__sql
-      "(SELECT EXISTS (
-        SELECT 1 FROM packages v
-        WHERE
-          v.stockit_sent_on IS NULL AND
-          v.item_id IS NOT NULL AND
-          v.inventory_number IS NOT NULL AND
-          v.item_id = packages.item_id
-        HAVING COUNT(*) > 1))"
+      "(CASE WHEN set_item_id IS NOT NULL
+        THEN true
+        ELSE false
+        END)"
+    end
+
+    def has_box_pallet__sql
+      "(CASE WHEN box_id IS NOT NULL OR pallet_id IS NOT NULL
+        THEN true
+        ELSE false
+        END)"
     end
   end
 

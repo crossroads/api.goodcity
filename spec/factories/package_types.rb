@@ -5,6 +5,7 @@ FactoryGirl.define do
     name_zh_tw         { FFaker::Lorem.characters(5) }
     other_terms_en     { FFaker::Lorem.characters(5) }
     other_terms_zh_tw  { FFaker::Lorem.characters(5) }
+    visible_in_selects { true }
   end
 
   factory :package_type, parent: :base_package_type do

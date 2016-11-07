@@ -4,22 +4,28 @@ class Package < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
+  BROWSE_ITEM_STATES = ['accepted', 'submitted']
+  BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
+
   belongs_to :item
-  belongs_to :favourite_image, class_name: 'Image'
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
   belongs_to :pallet
   belongs_to :box
-  belongs_to :stockit_designation
+  belongs_to :order
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
+
+  has_many   :images, as: :imageable, dependent: :destroy
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
+  before_save :update_set_relation, if: :stockit_sent_on_changed?
+  after_commit :update_set_item_id, on: :destroy
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -29,15 +35,22 @@ class Package < ActiveRecord::Base
     allow_blank: true, greater_than: 0, less_than: 100000 }
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
-  scope :received, -> { where("state = 'received'") }
-
+  scope :received, -> { where(state: 'received') }
+  scope :expecting, -> { where(state: 'expecting') }
+  scope :inventorized, -> { where.not(inventory_number: nil) }
+  scope :published, -> { where(allow_web_publish: true) }
+  scope :non_set_items, -> { where(set_item_id: nil) }
+  scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
-  scope :without_images, -> { where(favourite_image_id: nil) }
-  scope :stockit_items, -> { where("stockit_id IS NOT NULL") }
+  scope :stockit_items, -> { where.not(stockit_id: nil) }
+  scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
+  scope :undesignated, -> { where(order_id: nil) }
   scope :exclude_designated, ->(designation_id) {
-    where("stockit_designation_id <> ? OR stockit_designation_id IS NULL", designation_id)
+    where("order_id <> ? OR order_id IS NULL", designation_id)
   }
+
+  attr_accessor :skip_set_relation_update
 
   def self.search(search_text, item_id)
     if item_id.presence
@@ -70,6 +83,10 @@ class Package < ActiveRecord::Base
       package.add_to_stockit
     end
 
+    after_transition on: [:mark_received, :mark_missing] do |package|
+      package.update_set_item_id
+    end
+
     before_transition on: :mark_missing do |package|
       package.received_at = nil
       package.remove_from_stockit
@@ -93,6 +110,7 @@ class Package < ActiveRecord::Base
       else
         self.inventory_number = nil
         self.stockit_id = nil
+        self.set_item_id = nil
       end
     end
   end
@@ -108,35 +126,37 @@ class Package < ActiveRecord::Base
   end
 
   def designate_to_stockit_order(order_id)
-    self.stockit_designation = StockitDesignation.find_by(id: order_id)
+    self.order = Order.find_by(id: order_id)
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     response = Stockit::ItemSync.update(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def undesignate_from_stockit_order
-    self.stockit_designation = nil
+    self.order = nil
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+    add_errors(response)
+  end
+
+  def update_set_relation
+    if set_item_id.present? && stockit_sent_on.present? && !skip_set_relation_update
+      self.set_item_id = nil
+      update_set_item_id(inventory_package_set.except_package(id))
     end
   end
 
-  def dispatch_stockit_item
+  def dispatch_stockit_item(skip_set_relation_update=false)
+    self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
     self.location = Location.dispatch_location
     response = Stockit::ItemSync.dispatch(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    end
+    add_errors(response)
   end
 
   def undispatch_stockit_item
@@ -145,19 +165,82 @@ class Package < ActiveRecord::Base
     self.pallet = nil
     self.box = nil
     response = Stockit::ItemSync.undispatch(self)
+    add_errors(response)
+  end
+
+  def move_stockit_item(location_id)
+    response = if box_id? || pallet_id?
+      has_box_or_pallet_error
+    else
+      self.location_id = location_id
+      self.stockit_moved_on = Date.today
+      self.stockit_moved_by = User.current_user
+      Stockit::ItemSync.move(self)
+    end
+    add_errors(response)
+  end
+
+  def has_box_or_pallet_error
+    error = if pallet_id?
+      I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
+    else
+      I18n.t("package.has_box_error", box_number: box.box_number)
+    end
+    {
+      "errors" => {
+        error: "#{error} #{I18n.t('package.move_stockit')}"
+      }
+    }
+  end
+
+  def add_errors(response)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
     end
   end
 
-  def move_stockit_item(location_id)
-    self.location_id = location_id
-    self.stockit_moved_on = Date.today
-    self.stockit_moved_by = User.current_user
-    response = Stockit::ItemSync.move(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+  def update_set_item_id(all_packages = nil)
+    if item
+      all_packages ||= inventory_package_set
+      if all_packages.length == 1
+        all_packages.update_all(set_item_id: nil)
+      else
+        all_packages.non_set_items.update_all(set_item_id: item.id)
+      end
     end
+  end
+
+  def remove_from_set
+    update(set_item_id: nil)
+    update_set_item_id(inventory_package_set.except_package(id))
+  end
+
+  def inventory_package_set
+    item.packages.inventorized.undispatched
+  end
+
+  def self.browse_inventorized
+    inventorized.published.undispatched.undesignated
+  end
+
+  def self.browse_non_inventorized
+    joins(item: [:offer]).published.expecting.
+      where(items: { state: BROWSE_ITEM_STATES }).
+      where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
+  end
+
+  def update_favourite_image(image_id)
+    image = images.find_by(id: image_id)
+    image.update(favourite: true)
+    image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+  end
+
+  def is_browse?
+    (inventory_number.present? && allow_web_publish? &&
+      stockit_sent_on.blank? && order_id.blank?) ||
+    (allow_web_publish? && state == "expecting" &&
+      BROWSE_ITEM_STATES.include?(item.try(:state)) &&
+      !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
   end
 
   private
@@ -165,7 +248,6 @@ class Package < ActiveRecord::Base
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.favourite_image ||= item && item.images.find_by(favourite: true)
     self.saleable = offer.try(:saleable) || false
     true
   end

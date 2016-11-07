@@ -4,20 +4,19 @@ module Api::V1
     embed :ids, include: true
 
     has_one :package_type, serializer: PackageTypeSerializer
-    has_one :favourite_image, serializer: ImageSerializer, root: :image
+    has_many :images, serializer: ImageSerializer, root: :package_images
 
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
       :item_id, :state, :received_at, :rejected_at, :inventory_number,
-      :created_at, :updated_at, :package_type_id, :favourite_image_id, :offer_id,
-      :designation_name, :grade, :donor_condition_id,
-      :designation_id, :sent_on
+      :created_at, :updated_at, :package_type_id, :designation_id, :sent_on,
+      :offer_id, :designation_name, :grade, :donor_condition_id
 
     def designation_id
-      object.stockit_designation_id
+      object.order_id
     end
 
     def designation_id__sql
-      "stockit_designation_id"
+      "order_id"
     end
 
     def sent_on
