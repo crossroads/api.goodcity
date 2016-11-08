@@ -82,3 +82,11 @@ Rake tasks to run:
 Rake tasks to run:
 
     rake goodcity:update_package_favourite_image
+
+## Version 0.12
+
+Rake tasks to run:
+
+  rake goodcity:add_organisation_types
+  rake goodcity:add_organisations
+  rake goodcity:add_purposes

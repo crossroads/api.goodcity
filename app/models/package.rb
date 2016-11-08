@@ -26,6 +26,7 @@ class Package < ActiveRecord::Base
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
+  after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -220,7 +221,7 @@ class Package < ActiveRecord::Base
   end
 
   def self.browse_inventorized
-    inventorized.published.undispatched.undesignated
+    inventorized.published
   end
 
   def self.browse_non_inventorized
@@ -233,14 +234,6 @@ class Package < ActiveRecord::Base
     image = images.find_by(id: image_id)
     image.update(favourite: true)
     image.imageable.images.where.not(id: image_id).update_all(favourite: false)
-  end
-
-  def is_browse?
-    (inventory_number.present? && allow_web_publish? &&
-      stockit_sent_on.blank? && order_id.blank?) ||
-    (allow_web_publish? && state == "expecting" &&
-      BROWSE_ITEM_STATES.include?(item.try(:state)) &&
-      !BROWSE_OFFER_EXCLUDE_STATE.include?(item.try(:offer).try(:state)))
   end
 
   private

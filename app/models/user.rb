@@ -14,6 +14,8 @@ class User < ActiveRecord::Base
   has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
   has_many :braintree_transactions, class_name: "BraintreeTransaction", foreign_key: :customer_id
+  has_many :organisations_users
+  has_many :organisations, through: :organisations_users
 
   belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy

@@ -37,6 +37,7 @@ module Api::V1
 
     api :GET, '/v1/orders', "List all orders"
     def index
+      return my_orders if is_browse_app
       return recent_designations if params['recently_used'].present?
       records = @orders.with_eager_load.
         search(params['searchText'], params['toDesignateItem'].presence).latest.
@@ -47,7 +48,19 @@ module Api::V1
 
     api :GET, '/v1/designations/1', "Get a order"
     def show
-      render json: @order, serializer: serializer, root: "designation", exclude_code_details: true
+      root = is_browse_app ? "order" : "designation"
+      render json: @order, serializer: serializer, root: root,
+        exclude_code_details: true
+    end
+
+    def update
+      @order.assign_attributes(order_params)
+      # use valid? to ensure submit event errors get caught
+      if @order.valid? and @order.save
+        render json: @order, serializer: serializer
+      else
+        render json: {errors: @order.errors.full_messages}.to_json , status: 422
+      end
     end
 
     def recent_designations
@@ -56,20 +69,33 @@ module Api::V1
       render json: orders
     end
 
+    def my_orders
+      render json: @orders, each_serializer: serializer, root: "orders",
+        include_packages: false, browse_order: true
+    end
+
     private
 
     def order_record
-      @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
-      @order.assign_attributes(order_params)
-      @order.stockit_activity = stockit_activity
-      @order.stockit_contact = stockit_contact
-      @order.stockit_organisation = stockit_organisation
-      @order.detail = stockit_local_order
+      if order_params[:stockit_id]
+        @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
+        @order.assign_attributes(order_params)
+        @order.stockit_activity = stockit_activity
+        @order.stockit_contact = stockit_contact
+        @order.stockit_organisation = stockit_organisation
+        @order.detail = stockit_local_order
+      elsif is_browse_app
+        @order.assign_attributes(order_params)
+        @order.created_by = current_user
+        @order.detail_type = "GoodCity"
+      end
       @order
     end
 
     def order_params
-      params.require(:order).permit(:stockit_id, :code, :status, :created_at, :stockit_contact_id, :detail_id, :detail_type, :stockit_organisation_id, :description, :stockit_activity_id)
+      params.require(:order).permit(:stockit_id, :code, :status, :created_at,
+        :stockit_contact_id, :detail_id, :detail_type, :description, :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :purpose_description,
+        purpose_ids: [], cart_package_ids: [])
     end
 
     def serializer

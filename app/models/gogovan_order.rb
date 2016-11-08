@@ -98,6 +98,8 @@ class GogovanOrder < ActiveRecord::Base
       GogovanTransport.get_vehicle_tag(attributes["gogovanOptionId"])
     elsif(attributes['offerId'])
       Offer.find(attributes["offerId"]).try(:gogovan_transport).try(:vehicle_tag)
+    else
+      GogovanTransport.first.try(:vehicle_tag)
     end
     attributes
   end

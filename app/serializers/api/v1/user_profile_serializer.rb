@@ -25,5 +25,13 @@ module Api::V1
     def donation_amount
       recent_donation.try(:amount)
     end
+
+    def donation_date__sql
+      "null"
+    end
+
+    def donation_amount__sql
+      "null"
+    end
   end
 end
