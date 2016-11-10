@@ -77,6 +77,16 @@ Using capistrano, commit all changes to master branch and push to github. Then t
 
 This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure your ssh keys are loaded)
 
+## Local Deployment using Docker
+
+For local development and testing, the server can be deployed using docker. Check out the repo and run `docker-compose up`
+
+The go_go_van repository is private. The docker deployment expects the git hub key with access to the repo in the root directory.
+Other configurations can be changes in the docker/.env file.
+
+The setup currently brings up the web server, postgres database, redis and fake-twilio using docker-compose.
+
+
 ## Documentation
 
 * API documentation is available online at http://api.goodcity.hk/api/docs

@@ -41,6 +41,7 @@ module TwilioConfig
   end
 
   def twilio_client
+    @options = {host: ENV['TWILIO_HOST'] || 'api.twilio.com', port: ENV['TWILIO_PORT'] || '443', use_ssl: ENV['TWILIO_USE_SSL'] || true}
     Twilio::REST::Client.new(twilio_creds["account_sid"],
       twilio_creds["auth_token"])
   end

@@ -1,0 +1,43 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.4.1
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  twilio:
+    image: wuest/fake-twilio
+    ports:
+      - "4444:4444"
+    environment:
+      TWILIO_HOST: localhost 
+      TWILIO_PORT: 4444
+      TWILIO_USE_SSL: "no"
+
+  web:
+    build: .
+    command: ./docker/init.sh
+    volumes:
+      - .:/api.goodcity
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+      - twilio
+    environment:
+      # PostgreSQL database
+      DATABASE_HOST: postgres
+
+      # Redis database
+      REDIS_URL: redis://redis:6379
+
+      # development mode
+      RACK_ENV: development
+      RAILS_ENV: development
+    env_file: ./docker/.env

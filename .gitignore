@@ -17,3 +17,6 @@
 
 coverage/
 .env*
+
+id_rsa
+!docker/.env
