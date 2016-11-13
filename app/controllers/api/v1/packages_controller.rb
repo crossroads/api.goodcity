@@ -44,8 +44,11 @@ module Api::V1
 
     api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
     def stockit_item_details
-      render json: @package, serializer: stock_serializer, root: "item",
-        include_order: true, include_stock_condition: is_stock_app
+      render json: @package,
+        serializer: stock_serializer,
+        root: "item",
+        include_order: true,
+        include_stock_condition: is_stock_app
     end
 
     api :POST, "/v1/packages", "Create a package"
