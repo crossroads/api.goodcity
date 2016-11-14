@@ -87,6 +87,6 @@ Rake tasks to run:
 
 Rake tasks to run:
 
-  rake goodcity:add_organisation_types
-  rake goodcity:add_organisations
-  rake goodcity:add_purposes
+    rake goodcity:add_organisation_types
+    rake goodcity:add_organisations
+    rake goodcity:add_purposes
