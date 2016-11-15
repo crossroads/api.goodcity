@@ -92,7 +92,7 @@ class Order < ActiveRecord::Base
   end
 
   def self.generate_gc_code
-    record = where(detail_type: "GoodCity").unscoped.order("id desc").first
+    record = where(detail_type: "GoodCity").order("id desc").first
     code = record ? record.code.gsub(/\D/, '').to_i + 1 : 1
     "GC-" + code.to_s.rjust(5, "0")
   end
