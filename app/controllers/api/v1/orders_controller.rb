@@ -42,7 +42,13 @@ module Api::V1
       records = @orders.with_eager_load.
         search(params['searchText'], params['toDesignateItem'].presence).latest.
         page(params["page"]).per(params["per_page"])
-      orders = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", include_packages: true, include_order: false, exclude_stockit_set_item: true).to_json
+      orders = ActiveModel::ArraySerializer.new(records,
+        each_serializer: serializer,
+        root: "designations",
+        include_packages: true,
+        include_order: false,
+        exclude_stockit_set_item: true
+      ).to_json
       render json: orders.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 

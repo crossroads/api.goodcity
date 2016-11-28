@@ -23,7 +23,8 @@ GIT
 
 GIT
   remote: https://github.com/DockYard/postgres_ext-serializers.git
-  revision: 9a3599cb50d2d8a45e051c37f3c21c94e100f525
+  revision: 0c2d483806becd1ef7f8c9336286158cfdda1cc3
+  ref: 0c2d483806becd1ef7f8c9336286158cfdda1cc3
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
