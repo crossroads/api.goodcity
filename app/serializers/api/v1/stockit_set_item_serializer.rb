@@ -4,7 +4,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :description, :code_id
-    has_many :inventory_packages, serializer: StockitItemSerializer, root: :items
+    has_many :inventory_packages, serializer: StockitSetItemPackageSerializer, root: :items
     has_one  :package_type, serializer: PackageTypeSerializer, root: :code
 
     def code_id
