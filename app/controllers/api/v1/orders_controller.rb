@@ -47,6 +47,7 @@ module Api::V1
         root: "designations",
         include_packages: true,
         include_order: false,
+        include_images: true,
         exclude_stockit_set_item: true
       ).to_json
       render json: orders.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
@@ -61,6 +62,7 @@ module Api::V1
         exclude_code_details: true,
         include_packages: true,
         include_order: false,
+        include_images: true,
         exclude_stockit_set_item: true
     end
 
@@ -76,7 +78,14 @@ module Api::V1
 
     def recent_designations
       records = Order.recently_used(User.current_user.id)
-      orders = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", exclude_stockit_set_item: true).to_json
+      orders = ActiveModel::ArraySerializer.new(records,
+        each_serializer: serializer,
+        root: "designations",
+        include_packages: true,
+        include_order: false,
+        include_images: true,
+        exclude_stockit_set_item: true
+        ).to_json
       render json: orders
     end
 
