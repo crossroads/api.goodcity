@@ -127,6 +127,7 @@ module Api::V1
         include_order: true,
         include_packages: false,
         exclude_stockit_set_item: true,
+        include_images: true,
         include_stock_condition: is_stock_app
       ).to_json
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
