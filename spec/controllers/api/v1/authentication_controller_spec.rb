@@ -134,11 +134,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       get :current_user_profile
       expect(response.status).to eq(200)
     end
-
-    it "returns serialized user", :show_in_doc do
-      get :current_user_profile
-      expect(response.body).to eq(serialized_user)
-    end
   end
 
 end
