@@ -8,6 +8,7 @@ class Package < ActiveRecord::Base
   BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
 
   belongs_to :item
+  belongs_to :set_item, class_name: 'Item'
   belongs_to :location
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition

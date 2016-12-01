@@ -42,15 +42,28 @@ module Api::V1
       records = @orders.with_eager_load.
         search(params['searchText'], params['toDesignateItem'].presence).latest.
         page(params["page"]).per(params["per_page"])
-      orders = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", exclude_stockit_set_item: true).to_json
+      orders = ActiveModel::ArraySerializer.new(records,
+        each_serializer: serializer,
+        root: "designations",
+        include_packages: true,
+        include_order: false,
+        include_images: true,
+        exclude_stockit_set_item: true
+      ).to_json
       render json: orders.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
     api :GET, '/v1/designations/1', "Get a order"
     def show
       root = is_browse_app ? "order" : "designation"
-      render json: @order, serializer: serializer, root: root,
-        exclude_code_details: true
+      render json: @order,
+        serializer: serializer,
+        root: root,
+        exclude_code_details: true,
+        include_packages: true,
+        include_order: false,
+        include_images: true,
+        exclude_stockit_set_item: true
     end
 
     def update
@@ -65,7 +78,14 @@ module Api::V1
 
     def recent_designations
       records = Order.recently_used(User.current_user.id)
-      orders = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "designations", exclude_stockit_set_item: true).to_json
+      orders = ActiveModel::ArraySerializer.new(records,
+        each_serializer: serializer,
+        root: "designations",
+        include_packages: true,
+        include_order: false,
+        include_images: true,
+        exclude_stockit_set_item: true
+        ).to_json
       render json: orders
     end
 

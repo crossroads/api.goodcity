@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: git@github.com:crossroads/go_go_van_api.git
-  revision: 76c3c868d3846dec9b65ffb92d936312aa3d0435
+  revision: 8ef97a3774911b8e4bb5822152f08d73f610dc02
   branch: master
   specs:
     go_go_van_api (0.0.1)
@@ -23,7 +23,8 @@ GIT
 
 GIT
   remote: https://github.com/DockYard/postgres_ext-serializers.git
-  revision: 9a3599cb50d2d8a45e051c37f3c21c94e100f525
+  revision: 0c2d483806becd1ef7f8c9336286158cfdda1cc3
+  ref: 0c2d483806becd1ef7f8c9336286158cfdda1cc3
   specs:
     postgres_ext-serializers (0.0.3)
       active_model_serializers (~> 0.8.0)
@@ -128,6 +129,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     diff-lcs (1.2.5)
+    docile (1.1.5)
     domain_name (0.5.20160216)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (0.11.1)
@@ -323,6 +325,11 @@ GEM
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
       redis (~> 3.2, >= 3.2.1)
+    simplecov (0.10.0)
+      docile (~> 1.1.0)
+      json (~> 1.8)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.0)
     sinatra (1.4.7)
       rack (~> 1.5)
       rack-protection (~> 1.4)
@@ -421,6 +428,7 @@ DEPENDENCIES
   shoulda-callback-matchers
   shoulda-matchers
   sidekiq
+  simplecov
   sinatra
   spring
   spring-commands-rspec
@@ -429,6 +437,3 @@ DEPENDENCIES
   twilio-ruby
   warden
   webmock
-
-BUNDLED WITH
-   1.11.2
