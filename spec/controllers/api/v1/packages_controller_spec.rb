@@ -31,15 +31,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
-  describe "GET package" do
-    before { generate_and_set_token(user) }
-    it "return serialized package", :show_in_doc do
-      get :show, id: package.id
-      expect(response.status).to eq(200)
-      expect(subject).to eq(serialized_package_json)
-    end
-  end
-
   describe "POST package/1" do
    before { generate_and_set_token(user) }
     it "reviewer can create", :show_in_doc do

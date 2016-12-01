@@ -11,15 +11,6 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   subject { JSON.parse(response.body) }
 
-  describe "GET item" do
-    before { generate_and_set_token(user) }
-    it "return serialized item", :show_in_doc do
-      get :show, id: item.id
-      expect(response.status).to eq(200)
-      expect(subject).to eq(serialized_item_json)
-    end
-  end
-
   describe "DELETE item/1" do
     before { generate_and_set_token(user) }
     let(:item)  { create :item, offer: offer, state: "draft" }
