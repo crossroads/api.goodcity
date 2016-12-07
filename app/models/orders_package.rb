@@ -10,7 +10,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   state_machine :state, initial: :requested do
-    state :cancelled, :designated, :received
+    state :cancelled, :designated, :received, :dispatched
 
     event :reject do
       transition :requested => :cancelled
