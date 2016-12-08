@@ -11,12 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 20161208115855) do
-=======
-ActiveRecord::Schema.define(version: 20161207064453) do
->>>>>>> GCW-1258-populate orders_packages with designated and dispatched packages
-
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "btree_gin"
@@ -473,6 +468,18 @@ ActiveRecord::Schema.define(version: 20161207064453) do
   add_index "stockit_contacts", ["last_name"], name: "st_contacts_last_name_idx", using: :gin
   add_index "stockit_contacts", ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", using: :gin
   add_index "stockit_contacts", ["phone_number"], name: "st_contacts_phone_number_idx", using: :gin
+
+  create_table "stockit_designations", force: :cascade do |t|
+    t.string   "status"
+    t.string   "code"
+    t.string   "detail_type"
+    t.integer  "detail_id"
+    t.integer  "stockit_contact_id"
+    t.integer  "stockit_organisation_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
 
   create_table "stockit_local_orders", force: :cascade do |t|
     t.string   "client_name"
