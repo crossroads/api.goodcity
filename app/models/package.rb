@@ -9,7 +9,8 @@ class Package < ActiveRecord::Base
 
   belongs_to :item
   belongs_to :set_item, class_name: 'Item'
-  belongs_to :location
+  has_many :locations, through: :packages_locations
+
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
   belongs_to :pallet
@@ -19,6 +20,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
 
+  has_many   :packages_locations
   has_many   :images, as: :imageable, dependent: :destroy
   has_many :orders_packages
 
@@ -159,7 +161,7 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    self.location = Location.dispatch_location
+    self.locations << Location.dispatch_location
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
   end
