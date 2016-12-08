@@ -30,7 +30,8 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
+  validates :quantity,  numericality: { greater_than: -1, less_than: 100000000 }
+  validates :received_quantity,  numericality: { greater_than: -1, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
   validates :width, :height, numericality: {
