@@ -6,7 +6,6 @@ namespace :goodcity do
     packages = Package.where("order_id is not null or stockit_sent_on is not null")
     packages.find_each(batch_size: 100).each do |package|
       orders_package_state = package.stockit_sent_on ? "dispatched" : "designated"
-      debugger
       orders_package_updated_by_id = orders_package_state == "designated" ? package.stockit_designated_by_id : package.stockit_sent_by_id
 
       OrdersPackage.create(
