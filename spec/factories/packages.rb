@@ -26,7 +26,6 @@ FactoryGirl.define do
       end
     end
 
-
     trait :stockit_package do
       inventory_number "123456"
       sequence(:stockit_id) { |n| n }
