@@ -173,7 +173,7 @@ RSpec.describe Package, type: :model do
 
     it 'set dispatch related details' do
       package.dispatch_stockit_item
-      expect(package.location).to eq(location)
+      expect(package.locations.first).to eq(location)
       expect(package.stockit_sent_on).to_not be_nil
     end
 
