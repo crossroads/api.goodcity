@@ -3,6 +3,7 @@ class Location < ActiveRecord::Base
   include PushUpdates
 
   has_many :packages
+  has_many :packages_locations
 
   scope :dispatch_location, -> { find_by(building: 'Dispatched') }
 
