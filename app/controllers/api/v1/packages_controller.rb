@@ -16,6 +16,7 @@ module Api::V1
     def_param_group :package do
       param :package, Hash, required: true do
         param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
+        param :received_quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
         param :length, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package length", allow_nil: true
         param :width, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package width", allow_nil: true
         param :height, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package height", allow_nil: true
@@ -204,7 +205,7 @@ module Api::V1
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id,
         :order_id, :stockit_designated_on, :stockit_sent_on,
-        :case_number, :allow_web_publish]
+        :case_number, :allow_web_publish, :received_quantity]
       params.require(:package).permit(attributes)
     end
 

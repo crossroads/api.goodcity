@@ -37,7 +37,7 @@ RSpec.describe Package, type: :model do
 
     it do
       [:quantity, :length].each do |attribute|
-        is_expected.to_not allow_value(0).for(attribute)
+        is_expected.to_not allow_value(-1).for(attribute)
         is_expected.to_not allow_value(100000000).for(attribute)
         is_expected.to allow_value(rand(1..99999999)).for(attribute)
       end
