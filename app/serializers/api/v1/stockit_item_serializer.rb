@@ -9,6 +9,7 @@ module Api::V1
     has_one :order, serializer: Api::V1::OrderSerializer, root: :designation, include_items: false
     has_one :set_item, serializer: Api::V1::StockitSetItemSerializer, include_items: false
     has_many :images, serializer: StockitImageSerializer
+    has_many :orders_packages, serializer: OrdersPackageSerializer
 
     attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,

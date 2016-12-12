@@ -20,4 +20,14 @@ class OrdersPackage < ActiveRecord::Base
       transition :requested => :designated
     end
   end
+
+  def self.add_partially_designated_item(package)
+    self.create(
+      order_id: package[:order_id].to_i,
+      package_id: package[:package_id].to_i,
+      quantity: package[:quantity].to_i,
+      updated_by: User.current_user,
+      state: "designated"
+      )
+  end
 end
