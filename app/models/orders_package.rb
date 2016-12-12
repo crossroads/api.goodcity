@@ -34,12 +34,10 @@ class OrdersPackage < ActiveRecord::Base
 
   private
   def recalculte_quantity
-    debugger
     total_quantity = 0
     OrdersPackage.where("package_id = (?) and state = (?)", package_id, "designated").each do |orders_package|
       total_quantity += orders_package.quantity
     end
-    debugger
     Package.update_in_stock_quantity(package_id, total_quantity)
   end
 end
