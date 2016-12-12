@@ -56,6 +56,7 @@ module Api::V1
     param_group :package
     def create
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
+      @package.assign_location
       if package_record
         @package.offer_id = offer_id
         if @package.valid? && @package.save
@@ -251,7 +252,7 @@ module Api::V1
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
-        @package.location_id = location_id
+        @package.locations << Location.where(id: location_id).first
         @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id

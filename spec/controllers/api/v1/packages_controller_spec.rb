@@ -54,7 +54,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "update designation_name, location, donor_condition, grade", :show_in_doc do
         post :create, format: :json, package: stockit_item_params
         expect(package.reload.designation_name).to eq("HK")
-        expect(package.reload.location).to eq(location)
+        expect(package.reload.locations.first).to eq(location)
         expect(package.donor_condition).to eq(item.donor_condition)
         expect(package.grade).to eq("C")
         expect(response.status).to eq(201)

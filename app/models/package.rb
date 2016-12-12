@@ -106,6 +106,14 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def assign_location
+    if location_id and !stockit_id
+      self.locations << Location.find_by(id: location_id)
+    elsif location_id
+      self.locations << Location.find_by(stockit_id: location_id)
+    end
+  end
+
   def remove_from_stockit
     if self.inventory_number.present?
       response = Stockit::ItemSync.delete(inventory_number)
@@ -177,7 +185,7 @@ class Package < ActiveRecord::Base
     response = if box_id? || pallet_id?
       has_box_or_pallet_error
     else
-      self.location_id = location_id
+      self.locations << Location.find_by(id: location_id)
       self.stockit_moved_on = Date.today
       self.stockit_moved_by = User.current_user
       Stockit::ItemSync.move(self)
