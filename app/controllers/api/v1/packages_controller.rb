@@ -57,6 +57,7 @@ module Api::V1
     param_group :package
     def create
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
+      @package.assign_location
       if package_record
         @package.offer_id = offer_id
         if @package.valid? && @package.save
