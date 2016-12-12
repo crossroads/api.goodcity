@@ -4,6 +4,7 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :updated_by, class_name: 'User'
 
   after_initialize :set_initial_state
+  after_create :recalculte_quantity
 
   def set_initial_state
     self.state ||= :requested
@@ -29,5 +30,16 @@ class OrdersPackage < ActiveRecord::Base
       updated_by: User.current_user,
       state: "designated"
       )
+  end
+
+  private
+  def recalculte_quantity
+    debugger
+    total_quantity = 0
+    OrdersPackage.where("package_id = (?) and state = (?)", package_id, "designated").each do |orders_package|
+      total_quantity += orders_package.quantity
+    end
+    debugger
+    Package.update_in_stock_quantity(package_id, total_quantity)
   end
 end
