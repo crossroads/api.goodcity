@@ -234,6 +234,13 @@ class Package < ActiveRecord::Base
       where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
   end
 
+  def self.update_in_stock_quantity(package_id, quantity)
+    debugger
+    package = Package.find_by(id: package_id)
+    updated_quantity = package.received_quantity - quantity
+    package.update(quantity: updated_quantity)
+  end
+
   def update_favourite_image(image_id)
     image = images.find_by(id: image_id)
     image.update(favourite: true)
