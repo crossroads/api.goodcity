@@ -235,7 +235,6 @@ class Package < ActiveRecord::Base
   end
 
   def self.update_in_stock_quantity(package_id, quantity)
-    debugger
     package = Package.find_by(id: package_id)
     updated_quantity = package.received_quantity - quantity
     package.update(quantity: updated_quantity)
