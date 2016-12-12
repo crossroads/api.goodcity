@@ -159,6 +159,11 @@ module Api::V1
       send_stock_item_response
     end
 
+    def undesignate_stockit_item
+      @package.undesignate_from_stockit_order
+      send_stock_item_response
+    end
+
     def dispatch_stockit_item
       @orders_package = OrdersPackage.find_by_id(params[:package][:order_package_id])
       @orders_package.dispatch_orders_package
@@ -168,11 +173,6 @@ module Api::V1
 
     def undispatch_stockit_item
       @package.undispatch_stockit_item
-      send_stock_item_response
-    end
-
-    def undesignate_stockit_item
-      @package.undesignate_from_stockit_order
       send_stock_item_response
     end
 
