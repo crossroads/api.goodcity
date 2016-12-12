@@ -20,6 +20,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_moved_by, class_name: 'User'
 
   has_many   :images, as: :imageable, dependent: :destroy
+  has_many :orders_packages
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values

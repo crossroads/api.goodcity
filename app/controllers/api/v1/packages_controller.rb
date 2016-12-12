@@ -139,6 +139,11 @@ module Api::V1
       send_stock_item_response
     end
 
+    def designate_partial_item
+      OrdersPackage.add_partially_designated_item(params[:package])
+      render json: 200
+    end
+
     def undesignate_stockit_item
       @package.undesignate_from_stockit_order
       send_stock_item_response
