@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Location, type: :model do
   describe 'Associations' do
-    it { is_expected.to have_many :packages }
+    it { is_expected.to have_many(:packages).through(:packages_locations) }
   end
 
   describe 'Database Columns' do
