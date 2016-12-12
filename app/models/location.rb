@@ -2,8 +2,8 @@ class Location < ActiveRecord::Base
   include CacheableJson
   include PushUpdates
 
-  has_many :packages
   has_many :packages_locations
+  has_many :packages, through: :packages_locations
 
   scope :dispatch_location, -> { find_by(building: 'Dispatched') }
 
