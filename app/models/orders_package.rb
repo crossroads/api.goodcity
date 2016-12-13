@@ -35,9 +35,13 @@ class OrdersPackage < ActiveRecord::Base
   private
   def recalculte_quantity
     total_quantity = 0
-    OrdersPackage.where("package_id = (?) and state = (?)", package_id, "designated").each do |orders_package|
+    OrdersPackage.filter_packages_by_state(package_id, "designated").each do |orders_package|
       total_quantity += orders_package.quantity
     end
     Package.update_in_stock_quantity(package_id, total_quantity)
+  end
+
+  def self.filter_packages_by_state(package_id, state)
+    where("package_id = (?) and state = (?)", package_id, state)
   end
 end
