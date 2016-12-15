@@ -5,6 +5,7 @@ class OrdersPackage < ActiveRecord::Base
 
   after_initialize :set_initial_state
   after_create :recalculte_quantity
+  after_update :recalculte_quantity
 
   def set_initial_state
     self.state ||= :requested
@@ -20,6 +21,12 @@ class OrdersPackage < ActiveRecord::Base
     event :designate do
       transition :requested => :designated
     end
+  end
+
+  def self.update_partially_designated_item(package)
+    orders_package = OrdersPackage.find(package[:orders_package_id].to_i)
+    total_quantity = orders_package.quantity + package[:quantity].to_i
+    orders_package.update(quantity: total_quantity)
   end
 
   def self.add_partially_designated_item(package)
