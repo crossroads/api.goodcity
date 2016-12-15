@@ -139,6 +139,11 @@ module Api::V1
       send_stock_item_response
     end
 
+    def update_partial_quantity_of_same_designation
+      OrdersPackage.update_partially_designated_item(params[:package])
+      send_stock_item_response
+    end
+
     def designate_partial_item
       OrdersPackage.add_partially_designated_item(params[:package])
       send_stock_item_response
