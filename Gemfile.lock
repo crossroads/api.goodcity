@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: git@github.com:crossroads/go_go_van_api.git
-  revision: 8ef97a3774911b8e4bb5822152f08d73f610dc02
+  revision: 3cbc5590e2a11a7903483de276bc668be88843cb
   branch: master
   specs:
     go_go_van_api (0.0.1)
@@ -437,3 +437,6 @@ DEPENDENCIES
   twilio-ruby
   warden
   webmock
+
+BUNDLED WITH
+   1.13.5
