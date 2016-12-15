@@ -146,11 +146,6 @@ module Api::V1
       send_stock_item_response
     end
 
-    def undesignate_partial_item
-      orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
-      send_stock_item_response
-    end
-
     def designate_partial_item
       designate_stockit_item(params[:package][:order_id])
       OrdersPackage.add_partially_designated_item(params[:package])
