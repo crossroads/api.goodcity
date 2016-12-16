@@ -185,12 +185,19 @@ class Package < ActiveRecord::Base
     response = if box_id? || pallet_id?
       has_box_or_pallet_error
     else
-      self.locations << Location.find_by(id: location_id)
+      add_location(location_id)
       self.stockit_moved_on = Date.today
       self.stockit_moved_by = User.current_user
       Stockit::ItemSync.move(self)
     end
     add_errors(response)
+  end
+
+  def add_location(location_id)
+    location = Location.find_by(id: location_id)
+    unless locations.include?(location)
+      self.locations << location
+    end
   end
 
   def has_box_or_pallet_error
