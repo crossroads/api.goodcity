@@ -115,6 +115,7 @@ Rails.application.routes.draw do
       get "designations", to: "orders#index"
       get "designations/:id", to: "orders#show"
       get "items", to: "packages#search_stockit_items"
+      put "items/:id/undesignate_partial_item", to: "packages#undesignate_partial_item"
       put "items/:id/designate_partial_item", to: "packages#designate_partial_item"
       put "items/:id/update_partial_quantity_of_same_designation", to: "packages#update_partial_quantity_of_same_designation"
       put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
