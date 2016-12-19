@@ -59,7 +59,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.update_orders_package_state(orders_package, total_quantity)
-   if total_quantity == 0
+    if total_quantity == 0
       orders_package.update(quantity: total_quantity, state: "cancelled")
     else
       orders_package.update(quantity: total_quantity, state: "designated")
