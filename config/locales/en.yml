@@ -45,7 +45,8 @@ en:
     item_add_message: "%{donor_name} added a new item to their offer. Please review it."
     ready_for_schedule_message: "Your offer has been reviewed. Please <a href='/offers/%{offer_id}/plan_delivery'>click here</a> to arrange transportation."
   gogovan:
-    driver_note: "Ensure you deliver all the items listed: See details \nEnglish %{link} \nChinese %{ch_link}"
+    driver_note: "Ensure you deliver all the items listed: See details \nEnglish %{link}"
+    driver_note_with_discount: "Note: $50 of the fare paid by GOGOVAN. Ensure you deliver all the items listed: See details \nEnglish %{link}"
     notify_completed: "GoGoVan %{license} has marked Booking ID %{booking_id} as complete."
   delivery:
     gogovan_message: "%{name} booked a GoGoVan for %{time}, %{date}"
