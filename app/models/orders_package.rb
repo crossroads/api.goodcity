@@ -33,14 +33,16 @@ class OrdersPackage < ActiveRecord::Base
     end
   end
 
-  def self.undesignate_partially_designated_item(package)
-    quantity_to_reduce = package[:quantity].to_i
-    orders_package = OrdersPackage.find(package[:orders_package_id].to_i)
-    total_quantity = orders_package.quantity - quantity_to_reduce
-    if total_quantity == 0
-      orders_package.update(quantity: total_quantity, state: "cancelled")
-    else
-      orders_package.update(quantity: total_quantity)
+  def self.undesignate_partially_designated_item(packages)
+    packages.each do |package|
+      quantity_to_reduce = package.last[:quantity].to_i
+      orders_package = OrdersPackage.find(package.last[:orders_package_id].to_i)
+      total_quantity = orders_package.quantity - quantity_to_reduce
+      if total_quantity == 0
+        orders_package.update(quantity: total_quantity, state: "cancelled")
+      else
+        orders_package.update(quantity: total_quantity)
+      end
     end
   end
 
