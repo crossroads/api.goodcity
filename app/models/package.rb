@@ -130,7 +130,7 @@ class Package < ActiveRecord::Base
   end
 
   def designate_to_stockit_order(order_id)
-    self.order = Order.find_by(id: order_id)
+    self.update(order_id:Order.find_by(id: order_id)) if self.order_id.blank?
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     self.donor_condition_id =  donor_condition_id.presence || 3
