@@ -56,6 +56,7 @@ module Api::V1
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
+      @package.received_quantity = params[:package][:quantity]
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
       if package_record
         @package.offer_id = offer_id
@@ -138,6 +139,12 @@ module Api::V1
       @package.designate_to_stockit_order(order_id)
     end
 
+    def designate_partial_item
+      designate_stockit_item(params[:package][:order_id])
+      OrdersPackage.add_partially_designated_item(params[:package])
+      send_stock_item_response
+    end
+
     def update_partial_quantity_of_same_designation
       designate_stockit_item(params[:package][:order_id])
       OrdersPackage.update_partially_designated_item(params[:package])
@@ -146,12 +153,6 @@ module Api::V1
 
     def undesignate_partial_item
       orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
-      send_stock_item_response
-    end
-
-    def designate_partial_item
-      designate_stockit_item(params[:package][:order_id])
-      OrdersPackage.add_partially_designated_item(params[:package])
       send_stock_item_response
     end
 

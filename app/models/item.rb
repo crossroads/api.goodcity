@@ -118,9 +118,15 @@ class Item < ActiveRecord::Base
     end
   end
 
-  def designate_set_to_stockit_order(order_id)
+  def designate_set_to_stockit_order(params)
     inventory_packages.set_items.each do |package|
-      package.designate_to_stockit_order(order_id)
+      orders_packages = OrdersPackage.find_packages(params[:order_id], package.id)
+      if orders_packages.exists?
+        OrdersPackage.update_partially_designated_item({"orders_package_id": orders_packages[0].id, "quantity": params[:quantity] })
+      else
+        OrdersPackage.add_partially_designated_item({ "order_id": params[:order_id], "package_id": package.id, "quantity": params[:quantity] })
+      end
+      package.designate_to_stockit_order(params[:order_id])
       package.valid? and package.save
     end
   end
