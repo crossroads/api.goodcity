@@ -56,6 +56,10 @@ class OrdersPackage < ActiveRecord::Base
       )
   end
 
+  def self.find_packages(order_id, package_id)
+    OrdersPackage.where("order_id = ? and package_id = ?", order_id, package_id)
+  end
+
   private
   def recalculte_quantity
     total_quantity = 0

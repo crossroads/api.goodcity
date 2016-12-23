@@ -74,7 +74,7 @@ module Api::V1
     end
 
     def designate_stockit_item_set
-      @item.designate_set_to_stockit_order(params["order_id"])
+      @item.designate_set_to_stockit_order(params[:package])
       render json: @item, serializer: stockit_serializer
     end
 
