@@ -154,6 +154,11 @@ module Api::V1
       send_stock_item_response
     end
 
+    def move_partial_quantity
+      @package.move_partial_quantity(params["location_id"], params["package"], params["total_qty"])
+      send_stock_item_response
+    end
+
     def move_stockit_item
       @package.move_stockit_item(params["location_id"])
       send_stock_item_response

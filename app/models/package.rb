@@ -30,6 +30,7 @@ class Package < ActiveRecord::Base
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
   after_touch { update_client_store :update }
+  after_create :update_packages_location_qty
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
@@ -179,6 +180,33 @@ class Package < ActiveRecord::Base
     self.box = nil
     response = Stockit::ItemSync.undispatch(self)
     add_errors(response)
+  end
+
+  def move_partial_quantity(location_id, package_qty_changes, total_qty)
+    package_qty_params = JSON.parse(package_qty_changes)
+    package_qty_params.each do |pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
+    end
+    update_or_create_qty_moved_to_location(location_id, total_qty)
+  end
+
+  def update_or_create_qty_moved_to_location(location_id, total_qty)
+    if packages_location = packages_locations.find_by(location_id: location_id)
+      packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
+    else
+      packages_locations.create(location_id: location_id, package_id: id, quantity: total_qty)
+    end
+  end
+
+  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
+    if packages_location = packages_locations.find_by(id: packages_location_id)
+      new_qty = packages_location.quantity - quantity_to_move.to_i
+      new_qty == 0 ? packages_location.destroy : packages_location.update(quantity: new_qty)
+    end
+  end
+
+  def update_packages_location_qty
+    packages_locations.presence and packages_locations.first.update(quantity: quantity)
   end
 
   def move_stockit_item(location_id)
