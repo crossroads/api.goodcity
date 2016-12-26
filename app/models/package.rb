@@ -31,6 +31,7 @@ class Package < ActiveRecord::Base
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
   after_touch { update_client_store :update }
+  after_create :update_packages_location_qty
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: -1, less_than: 100000000 }
@@ -217,6 +218,10 @@ class Package < ActiveRecord::Base
       new_qty = packages_location.quantity - quantity_to_move.to_i
       new_qty == 0 ? packages_location.destroy : packages_location.update_column(:quantity, new_qty)
     end
+  end
+
+  def update_packages_location_qty
+    packages_locations.presence and packages_locations.first.update(quantity: quantity)
   end
 
   def move_stockit_item(location_id)
