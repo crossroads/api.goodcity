@@ -26,7 +26,7 @@ class OrdersPackage < ActiveRecord::Base
   def self.update_partially_designated_item(package)
     orders_package = OrdersPackage.find(package[:orders_package_id].to_i)
     total_quantity = orders_package.quantity + package[:quantity].to_i
-    if(package[:state] == "cancelled")
+    if(orders_package.state == "cancelled")
       orders_package.update(quantity: total_quantity, state: "designated")
     else
       orders_package.update(quantity: total_quantity)
@@ -41,7 +41,7 @@ class OrdersPackage < ActiveRecord::Base
       if total_quantity == 0
         orders_package.update(quantity: total_quantity, state: "cancelled")
       else
-        orders_package.update(quantity: total_quantity)
+        orders_package.update(quantity: total_quantity, state: "designated")
       end
     end
   end
