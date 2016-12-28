@@ -63,7 +63,13 @@ class OrdersPackage < ActiveRecord::Base
   private
   def recalculte_quantity
     total_quantity = 0
-    OrdersPackage.filter_packages_by_state(package_id, "designated").each do |orders_package|
+    orders_packages = OrdersPackage.filter_packages_by_state(package_id, "designated")
+    if(orders_packages.length == 1)
+      Package.update_designation(orders_packages.first.package_id, orders_packages.first.order_id)
+    elsif(orders_packages.length == 0)
+      Package.remove_designation(package_id)
+    end
+    orders_packages.each do |orders_package|
       total_quantity += orders_package.quantity
     end
     Package.update_in_stock_quantity(package_id, total_quantity)
