@@ -240,6 +240,16 @@ class Package < ActiveRecord::Base
     package.update(quantity: in_hand_quantity)
   end
 
+  def self.update_designation(package_id, order_id)
+    package = find_by(id: package_id)
+    package.update(order_id: order_id)
+  end
+
+  def self.remove_designation(package_id)
+    package = find_by(id: package_id)
+    package.update(order_id: nil)
+  end
+
   def update_favourite_image(image_id)
     image = images.find_by(id: image_id)
     image.update(favourite: true)
