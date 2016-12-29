@@ -192,6 +192,12 @@ class Package < ActiveRecord::Base
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
 
+  def move_full_quantity(location_id)
+    packages_location = packages_locations.where(location_id: location_id).first_or_create
+    packages_locations.where.not(location_id: location_id).destroy_all
+    packages_location.update(quantity: quantity)
+  end
+
   def update_or_create_qty_moved_to_location(location_id, total_qty)
     if packages_location = packages_locations.find_by(location_id: location_id)
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
