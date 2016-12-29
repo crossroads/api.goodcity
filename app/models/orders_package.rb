@@ -60,6 +60,11 @@ class OrdersPackage < ActiveRecord::Base
     OrdersPackage.where("order_id = ? and package_id = ?", order_id, package_id)
   end
 
+  def self.dispatch_orders_package(orders_package_id)
+    orders_package = OrdersPackage.find(orders_package_id)
+    orders_package.update(sent_on: Date.today)
+  end
+
   private
   def recalculte_quantity
     total_quantity = 0

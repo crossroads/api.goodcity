@@ -131,8 +131,12 @@ class Item < ActiveRecord::Base
     end
   end
 
-  def dispatch_set_to_stockit_order
+  def dispatch_set_to_stockit_order(params)
     inventory_packages.set_items.each do |package|
+      orders_packages = OrdersPackage.find_packages(params[:order_id], package.id)
+      if orders_packages.exists?
+        OrdersPackage.dispatch_orders_package(orders_packages[0].id)
+      end
       package.dispatch_stockit_item(true)
       package.valid? and package.save
     end
