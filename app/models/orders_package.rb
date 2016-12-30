@@ -60,15 +60,28 @@ class OrdersPackage < ActiveRecord::Base
     OrdersPackage.where("order_id = ? and package_id = ?", order_id, package_id)
   end
 
+  def self.find_records(order_id)
+    OrdersPackage.where(order_id: order_id)
+  end
+
+  def self.get_total_dispatched_qty(package_id)
+    packages = OrdersPackage.where("package_id = ? and state = ?", package_id, "dispatched")
+    total_dispatched_qty = 0
+    packages.each do |orders_package|
+      total_dispatched_qty += orders_package.quantity
+    end
+    total_dispatched_qty
+  end
+
   def self.dispatch_orders_package(orders_package_id)
     orders_package = OrdersPackage.find(orders_package_id)
-    orders_package.update(sent_on: Date.today)
+    orders_package.update(sent_on: Date.today, state: "dispatched")
   end
 
   private
   def recalculte_quantity
     total_quantity = 0
-    orders_packages = OrdersPackage.filter_packages_by_state(package_id, "designated")
+    orders_packages = OrdersPackage.get_designated_and_dispatched_packages(package_id)
     if(orders_packages.length == 1)
       Package.update_designation(orders_packages.first.package_id, orders_packages.first.order_id)
     elsif(orders_packages.length == 0)
@@ -78,6 +91,10 @@ class OrdersPackage < ActiveRecord::Base
       total_quantity += orders_package.quantity
     end
     Package.update_in_stock_quantity(package_id, total_quantity)
+  end
+
+  def self.get_designated_and_dispatched_packages(package_id)
+    where("package_id = (?) and (state = (?) or state = (?))", package_id, "designated", "dispatched")
   end
 
   def self.filter_packages_by_state(package_id, state)
