@@ -154,8 +154,9 @@ class Package < ActiveRecord::Base
   end
 
   def dispatch_stockit_item(skip_set_relation_update=false)
+    total_dispatched_order_package_qty = OrdersPackage.get_total_dispatched_qty(self.id)
     self.skip_set_relation_update = skip_set_relation_update
-    self.stockit_sent_on = Date.today
+    self.stockit_sent_on = Date.today if(total_dispatched_order_package_qty == self.received_quantity)
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
