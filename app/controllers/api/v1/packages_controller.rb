@@ -84,6 +84,7 @@ module Api::V1
       @package.donor_condition_id = donor_condition_id if is_stock_app
 
       # use valid? to ensure mark_received errors get caught
+      @package.assign_location
       if @package.valid? and @package.save
         if is_stock_app
           stockit_item_details
