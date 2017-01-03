@@ -82,15 +82,20 @@ class OrdersPackage < ActiveRecord::Base
   def recalculte_quantity
     total_quantity = 0
     orders_packages = OrdersPackage.get_designated_and_dispatched_packages(package_id)
-    if(orders_packages.length == 1)
-      Package.update_designation(orders_packages.first.package_id, orders_packages.first.order_id)
-    elsif(orders_packages.length == 0)
+    designate_orders_packages = OrdersPackage.get_designated_packages(package_id)
+    if(designate_orders_packages.length == 1)
+      Package.update_designation(designate_orders_packages.first.package_id, designate_orders_packages.first.order_id)
+    elsif(designate_orders_packages.length == 0)
       Package.remove_designation(package_id)
     end
     orders_packages.each do |orders_package|
       total_quantity += orders_package.quantity
     end
     Package.update_in_stock_quantity(package_id, total_quantity)
+  end
+
+  def self.get_designated_packages(package_id)
+    where("package_id = (?) and state = (?)", package_id, "designated")
   end
 
   def self.get_designated_and_dispatched_packages(package_id)
