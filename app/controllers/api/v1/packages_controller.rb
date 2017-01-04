@@ -79,6 +79,7 @@ module Api::V1
     def update
       @package.assign_attributes(package_params)
       @package.donor_condition_id = donor_condition_id if is_stock_app
+      @package.assign_location
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
         if is_stock_app
