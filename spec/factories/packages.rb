@@ -18,6 +18,13 @@ FactoryGirl.define do
       association :item
     end
 
+    trait :package_with_locations do
+      before(:create) do |package|
+        location = create :location
+        package.locations << location
+      end
+    end
+
 
     trait :stockit_package do
       inventory_number "123456"
