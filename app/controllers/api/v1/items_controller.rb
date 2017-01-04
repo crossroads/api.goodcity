@@ -78,6 +78,11 @@ module Api::V1
       render json: @item, serializer: stockit_serializer
     end
 
+    def update_designation_of_set
+      @item.update_designation(params[:package])
+      render json: @item, serializer: stockit_serializer
+    end
+
     def dispatch_stockit_item_set
       @item.dispatch_set_to_stockit_order(params[:package])
       render json: @item, serializer: stockit_serializer

@@ -57,7 +57,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.find_packages(order_id, package_id)
-    OrdersPackage.where("order_id = ? and package_id = ?", order_id, package_id)
+    orders_packages = OrdersPackage.where("order_id = ? and package_id = ?", order_id, package_id)
   end
 
   def self.find_records(order_id)
@@ -71,6 +71,14 @@ class OrdersPackage < ActiveRecord::Base
       total_dispatched_qty += orders_package.quantity
     end
     total_dispatched_qty
+  end
+
+  def self.update_designation(orders_package, order_id)
+    orders_package.first.update(order_id: order_id)
+  end
+
+  def self.delete_unwanted_cancelled_packages(orders_package, order_id)
+    orders_package.where("order_id = ? and package_id = ? and state = ?", orders_package.first.order_id, orders_package.first.package_id, "cancelled").destroy_all
   end
 
   def self.dispatch_orders_package(orders_package_id)
