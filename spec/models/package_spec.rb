@@ -52,6 +52,18 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  describe "callbacks" do
+    describe "#update_packages_location_qty" do
+
+      it { is_expected.to callback(:update_packages_location_qty).after(:create) }
+
+      it 'assigns package quantity to its first packages_locations record' do
+        package = create :package, :package_with_locations, quantity: 125
+        expect(package.reload.packages_locations.first.quantity).to eq package.quantity
+      end
+    end
+  end
+
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
@@ -203,6 +215,11 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#update_or_create_qty_moved_to_location' do
+    it 'adds up total qty to existing qty and updates associated packages_location quantity if we already have packages_location record with provided location_id' do
+      package = create :package, :package_with_locations, quantity: 2
+      package.update_or_create_qty_moved_to_location(package.packages_locations.first.id, 10)
+      expect(package.packages_locations.first.reload.quantity).to eq 12
+    end
 
     it 'creates associated packages_location record with quantity to move if we do not have packages_location record with provided location_id' do
       package = create :package
