@@ -130,6 +130,7 @@ Rails.application.routes.draw do
       put "items/:id/move_partial_quantity", to: "packages#move_partial_quantity"
       put "items/:id/move_full_quantity", to: "packages#move_full_quantity"
       put "items/:id/move_stockit_item_set", to: "items#move_stockit_item_set"
+      put "items/:id/move_set_partial_qty", to: "items#move_set_partial_qty"
       put "items/:id/remove_from_set", to: "packages#remove_from_set"
       get "stockit_items/:id", to: "packages#stockit_item_details"
     end
