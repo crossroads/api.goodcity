@@ -138,4 +138,15 @@ class Item < ActiveRecord::Base
       package.valid? and package.save
     end
   end
+
+  def move_partial_set_qty(location_id, package_qty_changes, total_qty)
+    package_qty_params = JSON.parse(package_qty_changes)
+    package_ids = package_qty_params.map{|package_param| package_param["package_id"]}.uniq
+    package_ids.each do |pckg_id|
+      if package = Package.find_by_id(pckg_id)
+        package_specific_params = package_qty_params.select{|package_param| package_param['package_id'] == pckg_id}
+        package.move_partial_quantity(location_id, package_specific_params)
+      end
+    end
+  end
 end
