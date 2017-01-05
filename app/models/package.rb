@@ -184,11 +184,11 @@ class Package < ActiveRecord::Base
     add_errors(response)
   end
 
-  def move_partial_quantity(location_id, package_qty_changes, total_qty)
-    package_qty_params = JSON.parse(package_qty_changes)
-    package_qty_params.each do |pckg_qty_param|
+  def move_partial_quantity(location_id, package_qty_changes, total_qty=nil)
+    package_qty_changes.each do |pckg_qty_param|
       update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
     end
+    total_qty = total_qty || package_qty_changes.inject(0) {|sum, package| sum + package["new_qty"]}
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
 
@@ -202,7 +202,7 @@ class Package < ActiveRecord::Base
     if packages_location = packages_locations.find_by(location_id: location_id)
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
-      packages_locations.create(location_id: location_id, package_id: id, quantity: total_qty)
+      total_qty != 0 and packages_locations.create(location_id: location_id, package_id: id, quantity: total_qty)
     end
   end
 
