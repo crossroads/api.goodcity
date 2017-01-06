@@ -154,9 +154,8 @@ class Package < ActiveRecord::Base
   end
 
   def dispatch_stockit_item(skip_set_relation_update=false)
-    #total_dispatched_order_package_qty = OrdersPackage.get_total_dispatched_qty(self.id)
     self.skip_set_relation_update = skip_set_relation_update
-    self.stockit_sent_on = Date.today #if(total_dispatched_order_package_qty == self.received_quantity)
+    self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
@@ -221,6 +220,19 @@ class Package < ActiveRecord::Base
     update_set_item_id(inventory_package_set.except_package(id))
   end
 
+  def update_designation(order_id)
+    update(order_id: order_id)
+  end
+
+  def remove_designation
+    update(order_id: nil)
+  end
+
+  def update_in_stock_quantity(qty)
+    in_hand_quantity = received_quantity - qty
+    update(quantity: in_hand_quantity)
+  end
+
   def inventory_package_set
     item.packages.inventorized.undispatched
   end
@@ -233,22 +245,6 @@ class Package < ActiveRecord::Base
     joins(item: [:offer]).published.expecting.
       where(items: { state: BROWSE_ITEM_STATES }).
       where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
-  end
-
-  def self.update_in_stock_quantity(package_id, quantity)
-    package = find_by(id: package_id)
-    in_hand_quantity = package.received_quantity - quantity
-    package.update(quantity: in_hand_quantity)
-  end
-
-  def self.update_designation(package_id, order_id)
-    package = find_by(id: package_id)
-    package.update(order_id: order_id)
-  end
-
-  def self.remove_designation(package_id)
-    package = find_by(id: package_id)
-    package.update(order_id: nil)
   end
 
   def update_favourite_image(image_id)
