@@ -120,19 +120,19 @@ class Item < ActiveRecord::Base
 
   def update_designation(params)
     inventory_packages.set_items.each do |package|
-      orders_package_with_package_id = OrdersPackage.find_packages(package.order_id, package.id)
-      orders_package_with_params_id = OrdersPackage.find_packages(params[:order_id], package.id)
-      OrdersPackage.update_designation(orders_package_with_package_id, params[:order_id])
-      OrdersPackage.delete_unwanted_cancelled_packages(orders_package_with_params_id, params[:order_id])
+      orders_package_with_package_id = OrdersPackage.get_records_associated_with_package_and_order(package.order_id, package.id)
+      orders_package_with_params_id = OrdersPackage.get_records_associated_with_package_and_order(params[:order_id], package.id)
+      orders_package_with_params_id.first.update_designation(params[:order_id])
+      orders_package_with_params_id.first.delete_unwanted_cancelled_packages(params[:order_id])
       package.designate_to_stockit_order(params[:order_id])
     end
   end
 
   def designate_set_to_stockit_order(params)
     inventory_packages.set_items.each do |package|
-      orders_packages = OrdersPackage.find_packages(params[:order_id], package.id)
+      orders_packages = OrdersPackage.get_records_associated_with_package_and_order(params[:order_id], package.id)
       if orders_packages.exists?
-        OrdersPackage.update_partially_designated_item({"orders_package_id": orders_packages[0].id, "quantity": params[:quantity] })
+        orders_packages.first.update_partially_designated_item({"orders_package_id": orders_packages.first.id, "quantity": params[:quantity] })
       else
         OrdersPackage.add_partially_designated_item({ "order_id": params[:order_id], "package_id": package.id, "quantity": params[:quantity] })
       end
@@ -143,9 +143,9 @@ class Item < ActiveRecord::Base
 
   def dispatch_set_to_stockit_order(params)
     inventory_packages.set_items.each do |package|
-      orders_packages = OrdersPackage.find_packages(params[:order_id], package.id)
+      orders_packages = OrdersPackage.get_records_associated_with_package_and_order(params[:order_id], package.id)
       if orders_packages.exists?
-        OrdersPackage.dispatch_orders_package(orders_packages[0].id)
+        orders_packages.first.dispatch_orders_package
       end
       package.dispatch_stockit_item(true)
       package.valid? and package.save

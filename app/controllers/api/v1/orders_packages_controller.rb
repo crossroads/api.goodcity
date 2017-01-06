@@ -26,7 +26,7 @@ module Api::V1
     end
 
     def search
-      @orders_packages = OrdersPackage.find_records(params["search_by_order_id"])
+      @orders_packages = OrdersPackage.get_records_associated_with_order_id(params["search_by_order_id"])
       render json: @orders_packages, each_serializer: serializer
     end
 
