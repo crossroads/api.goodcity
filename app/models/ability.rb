@@ -29,6 +29,7 @@ class Ability
       item_abilities
       image_abilities
       message_abilities
+      orders_package_abilities
       offer_abilities
       package_abilities
       stockit_abilities
@@ -90,6 +91,10 @@ class Ability
   def holiday_abilities
     can [:available_dates], Holiday
     can [:index, :destroy, :create, :update], Holiday if staff?
+  end
+
+  def orders_package_abilities
+    can [:index, :search], OrdersPackage if @api_user || staff?
   end
 
   def item_abilities
