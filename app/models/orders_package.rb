@@ -88,7 +88,7 @@ class OrdersPackage < ActiveRecord::Base
     change_package_designation(designate_orders_packages, package) if package.present?
   end
 
-  def change_package_designation(designate_orders_packages, present)
+  def change_package_designation(designate_orders_packages, package)
     if(designate_orders_packages.length == 1)
       package.update_designation(designate_orders_packages.first.order_id)
     elsif(designate_orders_packages.length == 0)
