@@ -53,11 +53,15 @@ class OrdersPackage < ActiveRecord::Base
       quantity_to_reduce = package.last[:quantity].to_i
       orders_package = find_by_id(package.last[:orders_package_id])
       total_quantity = orders_package.quantity - quantity_to_reduce
-      if total_quantity == 0
-        orders_package.update(quantity: total_quantity, state: "cancelled")
-      else
-        orders_package.update(quantity: total_quantity, state: "designated")
-      end
+      update_orders_package_state(orders_package, total_quantity)
+    end
+  end
+
+  def self.update_orders_package_state(orders_package, total_quantity)
+   if total_quantity == 0
+      orders_package.update(quantity: total_quantity, state: "cancelled")
+    else
+      orders_package.update(quantity: total_quantity, state: "designated")
     end
   end
 
@@ -78,6 +82,20 @@ class OrdersPackage < ActiveRecord::Base
     package.update_in_stock_quantity(get_total_quantity)
   end
 
+  def update_designation_of_package
+    designate_orders_packages = OrdersPackage.get_records_by_state(package_id, "designated")
+    package = Package.find_by_id(designate_orders_packages.first.package_id) if designate_orders_packages.first.present?
+    change_package_designation(designate_orders_packages, package) if package.present?
+  end
+
+  def change_package_designation(designate_orders_packages, present)
+    if(designate_orders_packages.length == 1)
+      package.update_designation(designate_orders_packages.first.order_id)
+    elsif(designate_orders_packages.length == 0)
+      package.remove_designation
+    end
+  end
+
   def get_total_quantity
     total_quantity = 0
     orders_packages = OrdersPackage.get_designated_and_dispatched_packages(package_id, "designated", "dispatched")
@@ -85,15 +103,5 @@ class OrdersPackage < ActiveRecord::Base
       total_quantity += orders_package.quantity
     end
     total_quantity
-  end
-
-  def update_designation_of_package
-    designate_orders_packages = OrdersPackage.get_records_by_state(package_id, "designated")
-    package = Package.find_by_id(designate_orders_packages.first.package_id) if designate_orders_packages.first.present?
-    if(designate_orders_packages.length == 1 && package.present?)
-      package.update_designation(designate_orders_packages.first.order_id)
-    elsif(designate_orders_packages.length == 0 && package.present?)
-      package.remove_designation
-    end
   end
 end
