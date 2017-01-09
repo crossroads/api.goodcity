@@ -1,6 +1,6 @@
 module Api::V1
   class OrdersPackagesController < Api::V1::ApiController
-    skip_authorization_check
+    load_and_authorize_resource :orders_package, parent: false
 
     resource_description do
       formats ['json']
@@ -26,12 +26,11 @@ module Api::V1
     end
 
     def search
-      @orders_packages = OrdersPackage.get_records_associated_with_order_id(params["search_by_order_id"])
+      @orders_packages = @orders_packages.get_records_associated_with_order_id(params["search_by_order_id"])
       render json: @orders_packages, each_serializer: serializer
     end
 
     private
-
     def orders_packages_params
       params.require(:orders_packages).permit(:package_id, :order_id, :state, :quantity, :sent_on)
     end

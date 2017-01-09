@@ -89,10 +89,10 @@ class OrdersPackage < ActiveRecord::Base
 
   def update_designation_of_package
     designate_orders_packages = OrdersPackage.get_records_by_state(package_id, "designated")
-    package = Package.find_by_id(designate_orders_packages.first.package_id)
-    if(designate_orders_packages.length == 1)
+    package = Package.find_by_id(designate_orders_packages.first.package_id) if designate_orders_packages.first.present?
+    if(designate_orders_packages.length == 1 && package.present?)
       package.update_designation(designate_orders_packages.first.order_id)
-    elsif(designate_orders_packages.length == 0)
+    elsif(designate_orders_packages.length == 0 && package.present?)
       package.remove_designation
     end
   end
