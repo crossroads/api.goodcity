@@ -93,11 +93,6 @@ module Api::V1
       render json: @item, serializer: stockit_serializer
     end
 
-    def move_set_partial_qty
-      @item.move_partial_set_qty(params["location_id"], params["package"], params["total_qty"])
-      render json: @item, serializer: stockit_serializer
-    end
-
     private
 
     def stockit_serializer
