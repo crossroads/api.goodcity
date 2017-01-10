@@ -56,7 +56,6 @@ module Api::V1
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
-      @package.received_quantity = params[:package][:quantity]
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
       if package_record
         @package.offer_id = offer_id
@@ -79,6 +78,7 @@ module Api::V1
     param_group :package
     def update
       @package.assign_attributes(package_params)
+      @package.received_quantity = params[:package][:quantity]
       @package.donor_condition_id = donor_condition_id if is_stock_app
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
@@ -282,6 +282,7 @@ module Api::V1
         @package.assign_attributes(package_params)
       end
       add_favourite_image if params["package"]["favourite_image_id"]
+      @package.received_quantity = params[:package][:quantity]
       @package
     end
 
