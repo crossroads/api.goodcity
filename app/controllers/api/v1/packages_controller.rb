@@ -57,7 +57,6 @@ module Api::V1
     param_group :package
     def create
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-      @package.assign_location
       if package_record
         @package.offer_id = offer_id
         if @package.valid? && @package.save
@@ -82,9 +81,8 @@ module Api::V1
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
-      @package.assign_location
+
       # use valid? to ensure mark_received errors get caught
-      @package.assign_location
       if @package.valid? and @package.save
         if is_stock_app
           stockit_item_details
