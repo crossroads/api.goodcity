@@ -94,7 +94,7 @@ class Ability
   end
 
   def orders_package_abilities
-    can [:index, :search], OrdersPackage if @api_user || staff?
+    can [:index, :search, :show], OrdersPackage if @api_user || staff?
   end
 
   def item_abilities

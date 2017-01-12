@@ -4,8 +4,9 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :updated_by, class_name: 'User'
 
   after_initialize :set_initial_state
-  after_create :recalculate_quantity
-  after_update :recalculate_quantity
+  after_create -> { recalculate_quantity("create") }
+  after_update -> { recalculate_quantity("update") }
+  after_destroy -> { destroy_stockit_record("destroy") }
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
   scope :get_records_by_state, -> (package_id, state) { where("package_id = (?) and state = (?)", package_id, state) }
   scope :get_designated_and_dispatched_packages, -> (package_id, state1, state2) { where("package_id = (?) and (state = (?) or state = (?))", package_id, state1, state2) }
@@ -32,7 +33,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def delete_unwanted_cancelled_packages(order_to_delete)
-    where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
+    OrdersPackage.where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
   end
 
   def update_partially_designated_item(package)
@@ -76,10 +77,11 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   private
-  def recalculate_quantity
+  def recalculate_quantity(operation)
     update_designation_of_package
     package = Package.find_by_id(package_id)
     package.update_in_stock_quantity(get_total_quantity)
+    StockitSyncOrdersPackageJob.perform_now(package.id, self, operation)
   end
 
   def update_designation_of_package
@@ -103,5 +105,9 @@ class OrdersPackage < ActiveRecord::Base
       total_quantity += orders_package.quantity
     end
     total_quantity
+  end
+
+  def destroy_stockit_record(operation)
+    StockitSyncOrdersPackageJob.perform_now(package.id, self, operation)
   end
 end
