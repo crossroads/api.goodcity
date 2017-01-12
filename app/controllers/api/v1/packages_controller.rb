@@ -57,7 +57,6 @@ module Api::V1
     param_group :package
     def create
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-      @package.assign_location
       if package_record
         @package.offer_id = offer_id
         if @package.valid? && @package.save
@@ -82,9 +81,8 @@ module Api::V1
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
-      @package.assign_location
+
       # use valid? to ensure mark_received errors get caught
-      @package.assign_location
       if @package.valid? and @package.save
         if is_stock_app
           stockit_item_details
@@ -239,7 +237,8 @@ module Api::V1
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id,
         :order_id, :stockit_designated_on, :stockit_sent_on,
-        :case_number, :allow_web_publish, :received_quantity]
+        :case_number, :allow_web_publish, :received_quantity,
+        packages_locations_attributes: [:id, :location_id, :quantity]]
       params.require(:package).permit(attributes)
     end
 
@@ -278,7 +277,6 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if is_stock_app
-        @package.assign_attributes(package_params)
         @package.donor_condition_id = donor_condition_id
         @package.inventory_number = inventory_number
         @package

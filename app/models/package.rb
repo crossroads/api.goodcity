@@ -20,7 +20,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
 
-  has_many   :packages_locations
+  has_many   :packages_locations, inverse_of: :package
   has_many   :images, as: :imageable, dependent: :destroy
   has_many :orders_packages
 
@@ -31,7 +31,6 @@ class Package < ActiveRecord::Base
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
   after_touch { update_client_store :update }
-  after_create :update_packages_location_qty
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than: -1, less_than: 100000000 }
@@ -56,6 +55,9 @@ class Package < ActiveRecord::Base
   scope :exclude_designated, ->(designation_id) {
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
+
+  accepts_nested_attributes_for :packages_locations, allow_destroy: true
+
 
   attr_accessor :skip_set_relation_update
 
@@ -111,9 +113,9 @@ class Package < ActiveRecord::Base
 
   def assign_location
     if location_id and !stockit_id
-      self.locations << Location.find_by(id: location_id)
+      self.locations << Location.find_by_id(location_id)
     elsif location_id
-      self.locations << Location.find_by(stockit_id: location_id)
+      self.locations << Location.find_by_stockit_id(location_id)
     end
   end
 
@@ -211,10 +213,6 @@ class Package < ActiveRecord::Base
       new_qty = packages_location.quantity - quantity_to_move.to_i
       new_qty == 0 ? packages_location.destroy : packages_location.update(quantity: new_qty)
     end
-  end
-
-  def update_packages_location_qty
-    packages_locations.presence and packages_locations.first.update(quantity: quantity)
   end
 
   def move_stockit_item(location_id)
