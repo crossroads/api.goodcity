@@ -30,6 +30,10 @@ module Api::V1
       render json: @orders_packages, each_serializer: serializer
     end
 
+    def show
+      render json: @orders_package, serializer: serializer
+    end
+
     private
     def orders_packages_params
       params.require(:orders_packages).permit(:package_id, :order_id, :state, :quantity, :sent_on)

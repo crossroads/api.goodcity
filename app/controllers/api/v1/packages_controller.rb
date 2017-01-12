@@ -77,8 +77,9 @@ module Api::V1
     api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
+      qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
-      @package.received_quantity = params[:package][:quantity]
+      @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
