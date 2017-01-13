@@ -51,7 +51,7 @@ module Stockit
     private
 
     def add_stockit_prefix(inventory_number)
-      return "X#{inventory_number}" if !!((inventory_number || "")[0..0] =~ /[0-9]/)
+      return "#{STOCKIT_PREFIX}#{inventory_number}" if !!((inventory_number || "")[0..0] =~ /[0-9]/)
       inventory_number
     end
 
