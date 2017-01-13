@@ -52,18 +52,6 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe "callbacks" do
-    describe "#update_packages_location_qty" do
-
-      it { is_expected.to callback(:update_packages_location_qty).after(:create) }
-
-      it 'assigns package quantity to its first packages_locations record' do
-        package = create :package, :package_with_locations, quantity: 125
-        expect(package.reload.packages_locations.first.quantity).to eq package.quantity
-      end
-    end
-  end
-
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
