@@ -23,6 +23,12 @@ module Api::V1
     api :GET, '/v1/orders_packages', "List all orders_packages"
     def index
       return search if params['search_by_order_id'].present?
+      return search_by_package_id if params['search_by_package_id'].present?
+    end
+
+    def search_by_package_id
+      @orders_packages = @orders_packages.get_designated_and_dispatched_packages(params["search_by_package_id"], "designated", "dispatched")
+      render json: @orders_packages, each_serializer: serializer
     end
 
     def search
