@@ -209,9 +209,9 @@ class Package < ActiveRecord::Base
   end
 
   def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if packages_location = packages_locations.find_by(id: packages_location_id)
+    if packages_location = packages_locations.find_by_id(packages_location_id)
       new_qty = packages_location.quantity - quantity_to_move.to_i
-      new_qty == 0 ? packages_location.destroy : packages_location.update(quantity: new_qty)
+      new_qty == 0 ? packages_location.destroy : packages_location.update_column(:quantity, new_qty)
     end
   end
 
