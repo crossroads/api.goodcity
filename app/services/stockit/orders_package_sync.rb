@@ -5,9 +5,9 @@ module Stockit
 
     include Stockit::Base
 
-    attr_accessor :package, :errors, :offset, :per_page
+    attr_accessor :package, :errors, :offset, :per_page, :orders_package
 
-    def initialize(package = nil, orders_package = nil, offset = nil, per_page = nil)
+    def initialize(package, orders_package, offset = nil, per_page = nil)
       @package = package
       @orders_package = orders_package
       @errors = {}
