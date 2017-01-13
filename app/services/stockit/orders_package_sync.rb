@@ -67,7 +67,7 @@ module Stockit
         quantity: @orders_package.quantity,
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
-        case_number: package.case_number.blank? ? nil : package.case_number,
+        case_number: package.case_number.presence,
         condition: package_condition,
         grade: package.grade,
         description: package.notes,
