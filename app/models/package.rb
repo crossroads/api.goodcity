@@ -195,9 +195,13 @@ class Package < ActiveRecord::Base
   end
 
   def move_full_quantity(location_id)
+    location = Location.dispatch_location
+    orders_packages.where(state: "disptached").update_all(state: "designated")
+    packages_locations = self.packages_locations.where(location: location)
+    packages_locations_quanity = packages_locations.sum(:quantity)
     packages_location = packages_locations.where(location_id: location_id).first_or_create
-    packages_locations.where.not(location_id: location_id).destroy_all
-    packages_location.update(quantity: quantity)
+    packages_locations.destroy_all
+    packages_location.update(quantity: packages_locations_quanity)
   end
 
   def update_or_create_qty_moved_to_location(location_id, total_qty)
