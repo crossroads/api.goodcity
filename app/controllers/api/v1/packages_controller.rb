@@ -283,7 +283,7 @@ module Api::V1
         @package.assign_attributes(package_params)
       end
       add_favourite_image if params["package"]["favourite_image_id"]
-      @package.received_quantity = params[:package][:quantity]
+      @package.received_quantity = params[:package][:quantity] if params[:package][:quantity]
       @package
     end
 
