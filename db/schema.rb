@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161110142220) do
+ActiveRecord::Schema.define(version: 20161208082219) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -279,9 +279,10 @@ ActiveRecord::Schema.define(version: 20161110142220) do
     t.integer  "order_id"
     t.string   "state"
     t.integer  "quantity"
-    t.integer  "reviewed_by_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.integer  "updated_by_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.datetime "sent_on"
   end
 
   create_table "orders_purposes", force: :cascade do |t|
@@ -395,6 +396,7 @@ ActiveRecord::Schema.define(version: 20161110142220) do
     t.integer  "set_item_id"
     t.string   "case_number"
     t.boolean  "allow_web_publish"
+    t.integer  "received_quantity"
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
@@ -459,6 +461,18 @@ ActiveRecord::Schema.define(version: 20161110142220) do
   add_index "stockit_contacts", ["last_name"], name: "st_contacts_last_name_idx", using: :gin
   add_index "stockit_contacts", ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", using: :gin
   add_index "stockit_contacts", ["phone_number"], name: "st_contacts_phone_number_idx", using: :gin
+
+  create_table "stockit_designations", force: :cascade do |t|
+    t.string   "status"
+    t.string   "code"
+    t.string   "detail_type"
+    t.integer  "detail_id"
+    t.integer  "stockit_contact_id"
+    t.integer  "stockit_organisation_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
 
   create_table "stockit_local_orders", force: :cascade do |t|
     t.string   "client_name"

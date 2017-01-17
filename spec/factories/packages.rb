@@ -8,6 +8,7 @@ FactoryGirl.define do
     height      { rand(199) + 1 }
     notes       { FFaker::Lorem.paragraph }
     state       'expecting'
+    received_quantity 1
 
     received_at nil
     rejected_at nil
