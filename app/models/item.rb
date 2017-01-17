@@ -122,8 +122,8 @@ class Item < ActiveRecord::Base
     inventory_packages.set_items.each do |package|
       orders_package_with_package_id = OrdersPackage.get_records_associated_with_package_and_order(package.order_id, package.id)
       orders_package_with_params_id = OrdersPackage.get_records_associated_with_package_and_order(params[:order_id], package.id)
-      orders_package_with_package_id.first.update_designation(params[:order_id])
-      orders_package_with_params_id.first.delete_unwanted_cancelled_packages(params[:order_id])
+      orders_package_with_package_id.first.update_designation(params[:order_id]) if orders_package_with_package_id.first
+      orders_package_with_params_id.first.delete_unwanted_cancelled_packages(params[:order_id]) if orders_package_with_params_id.first
       package.designate_to_stockit_order(params[:order_id])
     end
   end
