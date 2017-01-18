@@ -43,6 +43,9 @@ class OrdersPackage < ActiveRecord::Base
     )
   end
 
+  def undispatch_orders_package
+    update(state: "designated", sent_on: nil)
+  end
 
   def update_designation(order_id_to_update)
     update(order_id: order_id_to_update)
