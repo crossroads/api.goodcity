@@ -3,7 +3,8 @@ namespace :goodcity do
   # rake goodcity:update_orders_packages_data
   desc 'Update orders_packages'
   task update_orders_packages_data: :environment do
-    packages = Package.where("order_id is not null or stockit_sent_on is not null")
+    exclude_ids = OrdersPackage.pluck(:package_id)
+    packages = Package.where("order_id is not null or stockit_sent_on is not null").except_package(exclude_ids)
     packages.find_each(batch_size: 100).each do |package|
       orders_package_state = package.stockit_sent_on ? "dispatched" : "designated"
       orders_package_updated_by_id = orders_package_state == "designated" ? package.stockit_designated_by_id : package.stockit_sent_by_id

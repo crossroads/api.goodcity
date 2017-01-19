@@ -81,7 +81,7 @@ class OrdersPackage < ActiveRecord::Base
     update_designation_of_package
     package = Package.find_by_id(package_id)
     package.update_in_stock_quantity(get_total_quantity)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_later(package.id, self.id, operation)
   end
 
   def update_designation_of_package
@@ -108,6 +108,6 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def destroy_stockit_record(operation)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_later(package.id, self.id, operation)
   end
 end
