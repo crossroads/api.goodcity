@@ -6,6 +6,7 @@ class Location < ActiveRecord::Base
   has_many :packages, through: :packages_locations
 
   scope :dispatch_location, -> { find_by(building: 'Dispatched') }
+  scope :multiple_location, -> { find_by(building: 'Multiple') }
 
   # to satisfy PushUpdate module
   def offer
