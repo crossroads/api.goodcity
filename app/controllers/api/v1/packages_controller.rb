@@ -194,7 +194,7 @@ module Api::V1
     def move_full_quantity
       orders_package = OrdersPackage.find_by_id(params["ordersPackageId"])
       orders_package.undispatch_orders_package
-      @package.move_full_quantity(params["location_id"])
+      @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
       send_stock_item_response
     end
 
