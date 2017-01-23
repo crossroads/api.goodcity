@@ -39,7 +39,8 @@ class OrdersPackage < ActiveRecord::Base
     location = Location.dispatch_location
     package.packages_locations.create(
       location: location,
-      quantity: quantity
+      quantity: quantity,
+      reference_to_orders_package: id
     )
   end
 
