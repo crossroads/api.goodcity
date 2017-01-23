@@ -32,17 +32,20 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     after_transition on: :dispatch, do: :assign_dispatched_location
-
   end
 
   def assign_dispatched_location
     location = Location.dispatch_location
     package.packages_locations.create(
       location: location,
-      quantity: quantity
+      quantity: quantity,
+      reference_to_orders_package: id
     )
   end
 
+  def undispatch_orders_package
+    update(state: "designated", sent_on: nil)
+  end
 
   def update_designation(order_id_to_update)
     update(order_id: order_id_to_update)
