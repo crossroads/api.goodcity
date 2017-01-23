@@ -71,6 +71,19 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_messages_body do
+      message=["Thank you for this", "What an excellent thing.", "Thanks for your reply", "We thank you for choosing to donate.", "The item is in good condition"].sample
+      transient do
+        messages_count 1
+      end
+
+      after(:create) do |offer, evaluator|
+        create_list(:message, evaluator.messages_count, body: message ,sender: offer.created_by, offer: offer)
+      end
+
+    end
+
+
     trait :paranoid do
       state      "submitted"
       items      { [create(:item)] }

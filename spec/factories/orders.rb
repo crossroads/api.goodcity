@@ -7,5 +7,6 @@ FactoryGirl.define do
     stockit_contact_id 1
     stockit_organisation_id 1
     stockit_id 1
+    association :detail, factory: :stockit_local_order  , strategy: :create
   end
 end
