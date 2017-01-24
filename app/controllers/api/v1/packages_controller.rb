@@ -16,6 +16,7 @@ module Api::V1
     def_param_group :package do
       param :package, Hash, required: true do
         param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
+        param :received_quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
         param :length, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package length", allow_nil: true
         param :width, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package width", allow_nil: true
         param :height, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package height", allow_nil: true
@@ -76,7 +77,9 @@ module Api::V1
     api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
+      qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
+      @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
@@ -133,23 +136,42 @@ module Api::V1
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
-    def designate_stockit_item
-      @package.designate_to_stockit_order(params["order_id"])
+    def designate_stockit_item(order_id)
+      @package.designate_to_stockit_order(order_id)
+    end
+
+    def designate_partial_item
+      designate_stockit_item(params[:package][:order_id])
+      OrdersPackage.add_partially_designated_item(params[:package])
       send_stock_item_response
     end
 
-    def undesignate_stockit_item
-      @package.undesignate_from_stockit_order
+    def update_partial_quantity_of_same_designation
+      designate_stockit_item(params[:package][:order_id])
+      @orders_package = OrdersPackage.find_by(id: params[:package][:orders_package_id])
+      @orders_package.update_partially_designated_item(params[:package])
+      send_stock_item_response
+    end
+
+    def undesignate_partial_item
+      orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
       send_stock_item_response
     end
 
     def dispatch_stockit_item
+      @orders_package = OrdersPackage.find_by_id(params[:package][:order_package_id])
+      @orders_package.dispatch_orders_package
       @package.dispatch_stockit_item
       send_stock_item_response
     end
 
     def undispatch_stockit_item
       @package.undispatch_stockit_item
+      send_stock_item_response
+    end
+
+    def undesignate_stockit_item
+      @package.undesignate_from_stockit_order
       send_stock_item_response
     end
 
@@ -204,7 +226,7 @@ module Api::V1
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id,
         :order_id, :stockit_designated_on, :stockit_sent_on,
-        :case_number, :allow_web_publish]
+        :case_number, :allow_web_publish, :received_quantity]
       params.require(:package).permit(attributes)
     end
 
@@ -261,6 +283,7 @@ module Api::V1
         @package.assign_attributes(package_params)
       end
       add_favourite_image if params["package"]["favourite_image_id"]
+      @package.received_quantity = params[:package][:quantity] if params[:package][:quantity]
       @package
     end
 

@@ -90,3 +90,10 @@ Rake tasks to run:
     rake goodcity:add_organisation_types
     rake goodcity:add_organisations
     rake goodcity:add_purposes
+
+## Version 0.13
+
+Rake tasks to run:
+
+    rake goodcity:packages_add_received_quantity_data
+    rake goodcity:update_orders_packages_data
