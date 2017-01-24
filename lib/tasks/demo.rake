@@ -6,7 +6,7 @@ namespace :demo do
   # require File.expand_path("spec/factories.rb")
   unless ENV['LIVE'] == "true"
     task load: :environment do
-      #specify number of test cases to produce
+      specify number of test cases to produce
       count=10
       @number="+8525"
       #Create 10 user accounts (donors, reviewers, supervisors)
@@ -92,56 +92,59 @@ namespace :demo do
                            )
       end
 
-      # #create OrdersPackages
-      # count=10
-      # count.times do
-      #   @contact=FactoryGirl.create(:stockit_contact)
-      #   @country= FactoryGirl.create( :country , name: ["China","USA", "India","Australia"].sample)
-      #   @district= FactoryGirl.create(:district)
-      #   @organisation=FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)), country: @country, district: @district)
-      #   @stockit_organisation= FactoryGirl.create(:stockit_organisation)
-      #   @status=["draft", "submitted", "processing", "closed", "cancelled"].sample
-      #   @activity=FactoryGirl.create(:stockit_activity)
-      #   @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
-      #   @creator= FactoryGirl.create(:user, mobile: @number)
-
-      #   @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
-      #   @processor=FactoryGirl.create(:user, :reviewer, mobile: @number )
-      #   @orders=FactoryGirl.create(:order,  stockit_contact: @contact,                          stockit_organisation: @stockit_organisation,
-      #                               description: FFaker::Lorem.sentence,
-      #                               stockit_activity: @activity,
-      #                               country: @country,
-      #                               created_by: @creator,
-      #                               processed_by: @processor,
-      #                               organisation: @organisation,
-      #                               state: @status
-      #                      )
-
-      #   @package=FactoryGirl.create(:package, :with_item)
-      #   @status=["draft", "submitted", "processing", "closed", "cancelled"].sample
-      #   debugger
-      #   FactoryGirl.create( :orders_package,
-      #                         package: @package,
-      #                         order: @orders,
-      #                         state: @status,
-      #                         quantity: Random.rand(15),
-      #                         reviewed_by: @processor
-      #                       )
-      # end
-
       #create Packages
       count=10
-      count-3.times do
+      count_package=count/5
+      count_package*2.times do
         FactoryGirl.create(:package, :with_item)
       end
-      count-3.times do
+      count_package.times do
         FactoryGirl.create(:package, :stockit_package)
       end
-      count-3.times do
+      count_package.times do
         FactoryGirl.create(:package, :with_set_item)
       end
-      FactoryGirl.create(:package, :received)
+      count_package.times do
+        FactoryGirl.create(:package, :received)
+      end
 
+
+      #create OrdersPackages
+      count=10
+      count.times do
+        @contact=FactoryGirl.create(:stockit_contact)
+        @country= FactoryGirl.create( :country , name: ["China","USA", "India","Australia"].sample)
+        @district= FactoryGirl.create(:district)
+        @organisation=FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)), country: @country, district: @district)
+        @stockit_organisation= FactoryGirl.create(:stockit_organisation)
+        @status=["draft", "submitted", "processing", "closed", "cancelled"].sample
+        @activity=FactoryGirl.create(:stockit_activity)
+        @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
+        @creator= FactoryGirl.create(:user, mobile: @number)
+
+        @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
+        @processor=FactoryGirl.create(:user, :reviewer, mobile: @number )
+        @orders=FactoryGirl.create(:order,  stockit_contact: @contact,                          stockit_organisation: @stockit_organisation,
+                                    description: FFaker::Lorem.sentence,
+                                    stockit_activity: @activity,
+                                    country: @country,
+                                    created_by: @creator,
+                                    processed_by: @processor,
+                                    organisation: @organisation,
+                                    state: @status
+                           )
+
+        @package=FactoryGirl.create(:package, :with_item)
+        @status=["draft", "submitted", "processing", "closed", "cancelled"].sample
+
+        FactoryGirl.create( :orders_package,
+                              package: @package,
+                              order: @orders,
+                              state: @status,
+                              quantity: Random.rand(15),
+                              reviewed_by: @processor
+                            )
+      end
 
     end
   end
