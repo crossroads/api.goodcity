@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161208115855) do
+ActiveRecord::Schema.define(version: 20170119144255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -405,8 +405,9 @@ ActiveRecord::Schema.define(version: 20161208115855) do
     t.integer  "package_id"
     t.integer  "location_id"
     t.integer  "quantity"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "reference_to_orders_package"
   end
 
   create_table "pallets", force: :cascade do |t|
