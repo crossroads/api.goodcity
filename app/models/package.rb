@@ -20,6 +20,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_moved_by, class_name: 'User'
 
   has_many   :images, as: :imageable, dependent: :destroy
+  has_many :orders_packages
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
@@ -30,7 +31,8 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than: 0, less_than: 100000000 }
+  validates :quantity,  numericality: { greater_than: -1, less_than: 100000000 }
+  validates :received_quantity,  numericality: { greater_than: 0, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
   validates :width, :height, numericality: {
@@ -128,7 +130,7 @@ class Package < ActiveRecord::Base
   end
 
   def designate_to_stockit_order(order_id)
-    self.order = Order.find_by(id: order_id)
+    self.update(order_id: order_id) if Order.find_by(id: order_id)
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     self.donor_condition_id =  donor_condition_id.presence || 3
@@ -216,6 +218,19 @@ class Package < ActiveRecord::Base
   def remove_from_set
     update(set_item_id: nil)
     update_set_item_id(inventory_package_set.except_package(id))
+  end
+
+  def update_designation(order_id)
+    update(order_id: order_id)
+  end
+
+  def remove_designation
+    update(order_id: nil)
+  end
+
+  def update_in_stock_quantity(qty)
+    in_hand_quantity = received_quantity - qty
+    update(quantity: in_hand_quantity)
   end
 
   def inventory_package_set

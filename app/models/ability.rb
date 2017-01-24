@@ -29,6 +29,7 @@ class Ability
       item_abilities
       image_abilities
       message_abilities
+      orders_package_abilities
       offer_abilities
       package_abilities
       stockit_abilities
@@ -92,10 +93,14 @@ class Ability
     can [:index, :destroy, :create, :update], Holiday if staff?
   end
 
+  def orders_package_abilities
+    can [:index, :search, :show], OrdersPackage if @api_user || staff?
+  end
+
   def item_abilities
     if staff?
       can [:index, :show, :create, :update, :messages, :move_stockit_item_set,
-        :designate_stockit_item_set, :dispatch_stockit_item_set], Item
+        :designate_stockit_item_set, :dispatch_stockit_item_set, :update_designation_of_set], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
         item.offer.created_by_id == @user_id
@@ -152,7 +157,7 @@ class Ability
     if staff?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :designate_stockit_item, :remove_from_set,
-        :undesignate_stockit_item, :dispatch_stockit_item, :move_stockit_item,
+        :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,:undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
         :print_inventory_label, :undispatch_stockit_item,
         :stockit_item_details], Package
     else

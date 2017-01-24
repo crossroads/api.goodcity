@@ -168,7 +168,7 @@ RSpec.describe Item, type: :model do
     it "dispatches all inventory packages of item" do
       expect(Stockit::ItemSync).to receive(:dispatch).twice
       item = create :item, :with_inventory_packages
-      item.dispatch_set_to_stockit_order
+      item.dispatch_set_to_stockit_order({ order_id: 1 })
       expect(item.inventory_packages.undispatched.length).to eq(0)
       expect(item.inventory_packages.non_set_items.length).to eq(0)
     end

@@ -44,6 +44,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let(:location) { create :location }
       let(:stockit_item_params) {
         { designation_name: "HK",
+          quantity: 1,
           inventory_number: package.inventory_number,
           location_id: location.stockit_id,
           donor_condition: item.donor_condition.name,
