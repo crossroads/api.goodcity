@@ -1,12 +1,11 @@
 
 require 'factory_girl'
 
-
 namespace :demo do
-  # require File.expand_path("spec/factories.rb")
   unless ENV['LIVE'] == "true"
     task load: :environment do
-      specify number of test cases to produce
+
+      #specify number of test cases to produce
       count=10
       @number="+8525"
       #Create 10 user accounts (donors, reviewers, supervisors)
@@ -52,47 +51,7 @@ namespace :demo do
         offer=FactoryGirl.create(:offer, :closed, :with_transport, :with_items, :with_messages_body)
       end
 
-      #create contact
-      count=10
-      count.times do
-        FactoryGirl.create(:contact)
-      end
-
-      #create organization
-      count=10
-      count.times do
-        @country= FactoryGirl.create :country , name: ["China","USA", "India","Australia"].sample
-        @district= FactoryGirl.create :district
-        FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)), country: @country, district: @district)
-      end
-
-      #create Orders
-      count=10
-      count.times do
-        @contact=FactoryGirl.create(:stockit_contact)
-        @country= FactoryGirl.create :country , name: ["China","USA", "India","Australia"].sample
-        @district= FactoryGirl.create :district
-        @organisation=FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)), country: @country, district: @district)
-        @stockit_organisation= FactoryGirl.create(:stockit_organisation)
-        @status=["draft", "submitted", "processing", "closed", "cancelled"].sample
-        @activity=FactoryGirl.create(:stockit_activity)
-        @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
-        @creator= FactoryGirl.create(:user, mobile: @number)
-
-        @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
-        @processor=FactoryGirl.create(:user, :reviewer, mobile: @number )
-        FactoryGirl.create(:order,  stockit_contact: @contact,                          stockit_organisation: @stockit_organisation,
-                                    description: FFaker::Lorem.sentence,
-                                    stockit_activity: @activity,
-                                    country: @country,
-                                    created_by: @creator,
-                                    processed_by: @processor,
-                                    organisation: @organisation,
-                                    state: @status
-                           )
-      end
-
-      #create Packages
+      #create Packages for Goodcity and Items for Stockit
       count=10
       count_package=count/5
       count_package*2.times do
@@ -107,7 +66,6 @@ namespace :demo do
       count_package.times do
         FactoryGirl.create(:package, :received)
       end
-
 
       #create OrdersPackages
       count=10
@@ -146,7 +104,45 @@ namespace :demo do
                             )
       end
 
+      #create Orders along with StockitLocalOrder
+      count=10
+      count.times do
+        @contact=FactoryGirl.create(:stockit_contact)
+        @country= FactoryGirl.create :country , name: ["China","USA", "India","Australia"].sample
+        @district= FactoryGirl.create :district
+        @organisation=FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)), country: @country, district: @district)
+        @stockit_organisation= FactoryGirl.create(:stockit_organisation)
+        @status=["draft", "submitted", "processing", "closed", "cancelled"].sample
+        @activity=FactoryGirl.create(:stockit_activity)
+        @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
+        @creator= FactoryGirl.create(:user, mobile: @number)
+
+        @number="+8525"+Random.rand(1000000).to_s.rjust(7,'0')
+        @processor=FactoryGirl.create(:user, :reviewer, mobile: @number )
+        FactoryGirl.create(:order,  stockit_contact: @contact,                          stockit_organisation: @stockit_organisation,
+                                    description: FFaker::Lorem.sentence,
+                                    stockit_activity: @activity,
+                                    country: @country,
+                                    created_by: @creator,
+                                    processed_by: @processor,
+                                    organisation: @organisation,
+                                    state: @status
+                           )
+      end
+
+      #create contact
+      count=10
+      count.times do
+        FactoryGirl.create(:contact)
+      end
+
+      #create organization
+      count=10
+      count.times do
+        @country= FactoryGirl.create :country , name: ["China","USA", "India","Australia"].sample
+        @district= FactoryGirl.create :district
+        FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)), country: @country, district: @district)
+      end
     end
   end
-
 end
