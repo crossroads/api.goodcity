@@ -13,10 +13,6 @@ FactoryGirl.define do
 
     association :image
 
-    trait :mobile_number do
-       mobile { "+8525"+Random.rand(1000000).to_s.rjust(7,'0') }
-    end
-
     trait :reviewer do
       association :permission, factory: :reviewer_permission
     end
