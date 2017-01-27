@@ -143,9 +143,9 @@ class Item < ActiveRecord::Base
 
   def dispatch_set_to_stockit_order(params)
     inventory_packages.set_items.each do |package|
-      orders_packages = OrdersPackage.get_records_associated_with_package_and_order(params[:order_id], package.id)
+      orders_packages = package.orders_packages.find_by(order_id: params[:order_id])
       if orders_packages.exists?
-        orders_packages.first.dispatch_orders_package
+        orders_packages.dispatch_orders_package
       end
       package.dispatch_stockit_item(true)
       package.valid? and package.save
