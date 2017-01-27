@@ -4,7 +4,6 @@ module Api::V1
     embed :ids, include: true
 
     has_one :package_type, serializer: PackageTypeSerializer, root: :code
-    # has_many :locations, serializer: PackagesLocationSerializer
     has_one :donor_condition, serializer: DonorConditionSerializer
     has_many :images, serializer: StockitImageSerializer, root: :package_images
 
