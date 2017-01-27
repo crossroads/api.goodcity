@@ -34,7 +34,7 @@ class Package < ActiveRecord::Base
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
-  validates :received_quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
+  validates :received_quantity,  numericality: { greater_than: 0, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
   validates :width, :height, numericality: {
@@ -57,7 +57,6 @@ class Package < ActiveRecord::Base
   }
 
   accepts_nested_attributes_for :packages_locations, allow_destroy: true
-
 
   attr_accessor :skip_set_relation_update
 

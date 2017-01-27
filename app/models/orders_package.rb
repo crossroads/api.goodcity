@@ -32,7 +32,6 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     after_transition on: :dispatch, do: :assign_dispatched_location
-
   end
 
   def assign_dispatched_location
