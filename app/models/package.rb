@@ -33,8 +33,8 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than: -1, less_than: 100000000 }
-  validates :received_quantity,  numericality: { greater_than: -1, less_than: 100000000 }
+  validates :quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
+  validates :received_quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
   validates :width, :height, numericality: {
@@ -108,14 +108,6 @@ class Package < ActiveRecord::Base
       errors.each{|key, value| self.errors.add(key, value) }
     else response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
-    end
-  end
-
-  def assign_location
-    if location_id and !stockit_id
-      self.locations << Location.find_by_id(location_id)
-    elsif location_id
-      self.locations << Location.find_by_stockit_id(location_id)
     end
   end
 
