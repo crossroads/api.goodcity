@@ -7,7 +7,7 @@ namespace :goodcity do
       PackagesLocation.create(
         location_id: package.location_id,
         package_id: package.id,
-        quantity: package.quantity
+        quantity: package.received_quantity
         )
     end
   end

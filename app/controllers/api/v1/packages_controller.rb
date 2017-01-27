@@ -164,11 +164,6 @@ module Api::V1
       send_stock_item_response
     end
 
-    def undesignate_partial_item
-      orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
-      send_stock_item_response
-    end
-
     def undesignate_stockit_item
       @package.undesignate_from_stockit_order
       send_stock_item_response
@@ -296,7 +291,7 @@ module Api::V1
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
-        @package.locations << Location.where(id: location_id).first
+        @package.locations << Location.find_by_id(location_id)
         @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id
