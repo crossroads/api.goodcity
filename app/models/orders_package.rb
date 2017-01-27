@@ -28,7 +28,7 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     event :dispatch do
-      transition :designated => :dispatched
+      transition designated: :dispatched
     end
 
     after_transition on: :dispatch, do: :assign_dispatched_location

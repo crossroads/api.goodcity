@@ -170,7 +170,7 @@ module Api::V1
     end
 
     def dispatch_stockit_item
-      @orders_package = OrdersPackage.find_by_id(params[:package][:order_package_id])
+      @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
       @orders_package.dispatch_orders_package
       @package.dispatch_stockit_item(@orders_package)
       send_stock_item_response
@@ -187,7 +187,7 @@ module Api::V1
     end
 
     def move_full_quantity
-      orders_package = OrdersPackage.find_by_id(params["ordersPackageId"])
+      orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
       orders_package.undispatch_orders_package
       @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
       send_stock_item_response
@@ -291,7 +291,7 @@ module Api::V1
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
-        @package.locations << Location.find_by_id(location_id)
+        @package.build_packages_location(location_id)
         @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id
