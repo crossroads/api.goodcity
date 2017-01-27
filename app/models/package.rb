@@ -101,6 +101,16 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def add_location(location_id)
+    location = Location.find_by(id: location_id)
+    unless locations.include?(location)
+      packages_locations.create(
+        location: location,
+        quantity: received_quantity
+      )
+    end
+  end
+
   def add_to_stockit
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
@@ -108,6 +118,13 @@ class Package < ActiveRecord::Base
     else response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
     end
+  end
+
+  def build_packages_location(location_id)
+    packages_locations.build(
+      location: Location.find_by(id: location_id),
+      quantity: received_quantity
+    )
   end
 
   def remove_from_stockit
@@ -208,7 +225,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if packages_location = packages_locations.find_by_id(packages_location_id)
+    if packages_location = packages_locations.find_by(id: packages_location_id)
       new_qty = packages_location.quantity - quantity_to_move.to_i
       new_qty == 0 ? packages_location.destroy : packages_location.update_column(:quantity, new_qty)
     end
@@ -224,13 +241,6 @@ class Package < ActiveRecord::Base
       Stockit::ItemSync.move(self)
     end
     add_errors(response)
-  end
-
-  def add_location(location_id)
-    location = Location.find_by(id: location_id)
-    unless locations.include?(location)
-      self.locations << location
-    end
   end
 
   def has_box_or_pallet_error
