@@ -20,9 +20,8 @@ FactoryGirl.define do
     end
 
     trait :package_with_locations do
-      before(:create) do |package|
-        location = create :location
-        package.locations << location
+      after(:create) do |package|
+        create :packages_location, package: package, quantity: package.quantity
       end
     end
 
