@@ -106,6 +106,7 @@ module Api::V1
         @order.detail = stockit_local_order
       elsif is_browse_app
         @order.assign_attributes(order_params)
+        @order.state = "draft"
         @order.created_by = current_user
         @order.detail_type = "GoodCity"
       end
