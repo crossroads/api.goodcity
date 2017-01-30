@@ -349,3 +349,4 @@ class Package < ActiveRecord::Base
     inventory_number && inventory_number.match(/^[0-9]+$/)
   end
 end
+
