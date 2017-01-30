@@ -126,3 +126,4 @@ class OrdersPackage < ActiveRecord::Base
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
   end
 end
+
