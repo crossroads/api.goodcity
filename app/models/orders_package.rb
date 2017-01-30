@@ -96,9 +96,12 @@ class OrdersPackage < ActiveRecord::Base
 
   private
   def recalculate_quantity(operation)
-    update_designation_of_package
-    package.update_in_stock_quantity(get_total_quantity)
-    StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation)
+    unless(state == "requested")
+      update_designation_of_package
+      package = Package.find_by_id(package_id)
+      package.update_in_stock_quantity(get_total_quantity)
+      StockitSyncOrdersPackageJob.perform_later(package.id, self.id, operation)
+    end
   end
 
   def update_designation_of_package

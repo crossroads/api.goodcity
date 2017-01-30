@@ -111,6 +111,10 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def update_allow_web_publish
+    update(allow_web_publish: false)
+  end
+
   def add_to_stockit
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
