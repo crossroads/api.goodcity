@@ -22,7 +22,7 @@ class Package < ActiveRecord::Base
 
   has_many   :packages_locations, inverse_of: :package
   has_many   :images, as: :imageable, dependent: :destroy
-  has_many :orders_packages
+  has_many   :orders_packages
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
