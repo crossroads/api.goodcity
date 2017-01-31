@@ -12,6 +12,7 @@ RSpec.describe Package, type: :model do
   describe "Associations" do
     it { is_expected.to belong_to :item }
     it { is_expected.to belong_to :package_type }
+    it { is_expected.to have_many :orders_packages }
   end
 
   describe 'Database columns' do
@@ -27,6 +28,7 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:grade).of_type(:string)}
     it{ is_expected.to have_db_column(:donor_condition_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:saleable).of_type(:boolean)}
+    it{ is_expected.to have_db_column(:received_quantity).of_type(:integer)}
   end
 
   describe "validations" do
@@ -41,6 +43,13 @@ RSpec.describe Package, type: :model do
         is_expected.to_not allow_value(100000000).for(attribute)
         is_expected.to allow_value(rand(1..99999999)).for(attribute)
       end
+    end
+
+    it do
+      is_expected.to_not allow_value(-1).for(:received_quantity)
+      is_expected.to_not allow_value(0).for(:received_quantity)
+      is_expected.to_not allow_value(100000000).for(:received_quantity)
+      is_expected.to allow_value(rand(1..99999999)).for(:received_quantity)
     end
 
     it do
@@ -191,22 +200,6 @@ RSpec.describe Package, type: :model do
       package.save
       expect(package.set_item_id).to be_nil
       expect(sibling_package.reload.set_item_id).to be_nil
-    end
-  end
-
-  describe '#add_location' do
-    it 'adds location to package if not added' do
-      location = create :location
-      package  = create :package
-      package.add_location(location.id)
-      expect(package.locations).to include(location)
-    end
-
-    it 'do not add location to package if same location already exist' do
-      package = create :package, :package_with_locations
-      location = package.packages_locations.first.location
-      expect(package.add_location(location.id)).to be_nil
-      expect(package.locations).to include(location)
     end
   end
 
@@ -438,6 +431,44 @@ RSpec.describe Package, type: :model do
         }.to change(PackagesLocation, :count).by(1)
         expect(package.packages_locations.reload.last.quantity).to eq total_qty
       end
+    end
+  end
+
+  describe '#update_designation' do
+    let!(:package) { create :package }
+    let!(:order) { create :order, state: 'submitted' }
+
+    it 'adds order id to package' do
+      package.update_designation(order.id)
+      expect(package.reload.order_id).to eq order.id
+    end
+  end
+
+  describe '#remove_designation' do
+    let!(:package) { create :package, order_id: 1 }
+
+    it 'removes order_id from package record' do
+      package.remove_designation
+      expect(package.reload.order_id).to eq nil
+    end
+  end
+
+  describe '#update_in_stock_quantity' do
+    let!(:package) { create :package, received_quantity: 10 }
+
+    it 'subtracts provided qty from received_quantity to calculate in hand quantity and updates package quantity with it' do
+      quantity = 3
+      in_hand_quantity = package.received_quantity - quantity
+      package.update_in_stock_quantity(quantity)
+      expect(package.reload.quantity).to eq in_hand_quantity
+    end
+
+    it 'do not change received_quantity' do
+      quantity = 3
+      in_hand_quantity  = package.received_quantity - quantity
+      received_quantity = package.received_quantity
+      package.update_in_stock_quantity(quantity)
+      expect(package.reload.received_quantity).to eq received_quantity
     end
   end
 end

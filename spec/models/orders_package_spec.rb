@@ -4,6 +4,7 @@ RSpec.describe OrdersPackage, type: :model do
   describe "Associations" do
     it { is_expected.to belong_to :order }
     it { is_expected.to belong_to :package }
+    it { is_expected.to belong_to(:updated_by).class_name('User') }
   end
 
   describe 'Database columns' do
@@ -29,5 +30,4 @@ RSpec.describe OrdersPackage, type: :model do
       expect(@orders_package.quantity).to match(@orders_package.package.quantity)
     end
   end
-
 end
