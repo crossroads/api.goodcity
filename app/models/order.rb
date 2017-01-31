@@ -15,7 +15,11 @@ class Order < ActiveRecord::Base
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport
 
+<<<<<<< 2f2ceaf8e5094038ad8ee806bec3dd125a9a3a9a
   after_create :update_packages_quantity
+=======
+  after_commit :update_packages_quantity, on: :create
+>>>>>>> Added quantity to OrdersPackage and OrderId to Packages after submission
   before_create :assign_code
   after_update :update_packages
 
@@ -42,7 +46,11 @@ class Order < ActiveRecord::Base
   def update_packages_quantity
     if(state == "draft" && detail_type == "GoodCity")
       orders_packages.each do |orders_package|
+<<<<<<< 2f2ceaf8e5094038ad8ee806bec3dd125a9a3a9a
         orders_package.update_quantity
+=======
+        orders_package.update(quantity: orders_package.package.quantity)
+>>>>>>> Added quantity to OrdersPackage and OrderId to Packages after submission
       end
     end
   end
