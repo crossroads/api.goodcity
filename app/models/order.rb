@@ -17,6 +17,7 @@ class Order < ActiveRecord::Base
 
   after_create :update_packages_quantity
   before_create :assign_code
+  after_update :update_packages
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
