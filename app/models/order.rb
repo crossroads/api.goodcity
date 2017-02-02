@@ -49,11 +49,7 @@ class Order < ActiveRecord::Base
   def update_packages_quantity
     if(state == "draft" && detail_type == "GoodCity")
       orders_packages.each do |orders_package|
-<<<<<<< 2f2ceaf8e5094038ad8ee806bec3dd125a9a3a9a
         orders_package.update_quantity
-=======
-        orders_package.update(quantity: orders_package.package.quantity)
->>>>>>> Added quantity to OrdersPackage and OrderId to Packages after submission
       end
     end
   end
