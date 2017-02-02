@@ -15,15 +15,7 @@ class Order < ActiveRecord::Base
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport
 
-<<<<<<< 42225d8be08be4fd2307232a9d704401e0395400
-<<<<<<< 2f2ceaf8e5094038ad8ee806bec3dd125a9a3a9a
   after_create :update_packages_quantity
-=======
-  after_commit :update_packages_quantity, on: :create
->>>>>>> Added quantity to OrdersPackage and OrderId to Packages after submission
-=======
-  after_create :update_packages_quantity
->>>>>>> add package quantity to orders_package
   before_create :assign_code
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
