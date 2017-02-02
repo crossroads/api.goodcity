@@ -16,6 +16,11 @@ class OrdersPackage < ActiveRecord::Base
     self.state ||= :requested
   end
 
+  def update_state_to_designated
+    package.update_allow_web_publish
+    update(state: 'designated')
+  end
+
   state_machine :state, initial: :requested do
     state :cancelled, :designated, :received, :dispatched
 
