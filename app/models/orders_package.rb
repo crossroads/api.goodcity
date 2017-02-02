@@ -79,15 +79,17 @@ class OrdersPackage < ActiveRecord::Base
   private
   def recalculate_quantity(operation)
     update_designation_of_package
-    package = Package.find_by_id(package_id)
     package.update_in_stock_quantity(get_total_quantity)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_later(package.id, self.id, operation)
   end
 
   def update_designation_of_package
-    designate_orders_packages = OrdersPackage.get_records_by_state(package_id, "designated")
-    package = Package.find_by_id(designate_orders_packages.first.package_id) if designate_orders_packages.first.present?
-    change_package_designation(designate_orders_packages, package) if package.present?
+    orders_packages = package.orders_packages.where(state: 'designated')
+    if package && orders_packages.count == 1
+      package.update_designation(orders_packages.first.order_id)
+    elsif orders_packages.count == 0
+      package.remove_designation
+    end
   end
 
   def change_package_designation(designate_orders_packages, package)
@@ -108,6 +110,6 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def destroy_stockit_record(operation)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_later(package.id, self.id, operation)
   end
 end
