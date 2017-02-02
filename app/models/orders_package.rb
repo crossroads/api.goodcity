@@ -8,7 +8,6 @@ class OrdersPackage < ActiveRecord::Base
   after_update -> { recalculate_quantity("update") }
   after_destroy -> { destroy_stockit_record("destroy") }
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
-  scope :get_records_by_state, -> (package_id, state) { where("package_id = (?) and state = (?)", package_id, state) }
   scope :get_designated_and_dispatched_packages, -> (package_id, state1, state2) { where("package_id = (?) and (state = (?) or state = (?))", package_id, state1, state2) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
 
@@ -80,7 +79,7 @@ class OrdersPackage < ActiveRecord::Base
   def recalculate_quantity(operation)
     update_designation_of_package
     package.update_in_stock_quantity(get_total_quantity)
-    StockitSyncOrdersPackageJob.perform_later(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_later(package_id, self.id, operation)
   end
 
   def update_designation_of_package
