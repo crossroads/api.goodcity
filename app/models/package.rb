@@ -286,9 +286,19 @@ class Package < ActiveRecord::Base
     update(order_id: nil)
   end
 
-  def update_in_stock_quantity(qty)
-    in_hand_quantity = received_quantity - qty
+  def update_in_stock_quantity
+    in_hand_quantity = received_quantity - total_assigned_quantity
     update(quantity: in_hand_quantity)
+  end
+
+  def total_assigned_quantity
+    total_qty = 0
+    if associated_orders_packages = orders_packages.get_designated_and_dispatched_packages.presence
+      associated_orders_packages.each do |orders_package|
+        total_quantity += orders_package.quantity
+      end
+    end
+    total_quantity
   end
 
   def inventory_package_set
