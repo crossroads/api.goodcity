@@ -9,7 +9,7 @@ class OrdersPackage < ActiveRecord::Base
   after_destroy -> { destroy_stockit_record("destroy") }
 
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
-  scope :get_designated_and_dispatched_packages, -> (package_id, state1, state2) { where("package_id = (?) and (state = (?) or state = (?))", package_id, state1, state2) }
+  scope :get_designated_and_dispatched_packages, -> { where('state IN (?)', ['designated', 'dispatched']) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
 
   scope :with_eager_load, -> {
@@ -126,15 +126,6 @@ class OrdersPackage < ActiveRecord::Base
     elsif orders_packages.count == 0
       package.remove_designation
     end
-  end
-
-  def get_total_quantity
-    total_quantity = 0
-    orders_packages = OrdersPackage.get_designated_and_dispatched_packages(package_id, "designated", "dispatched")
-    orders_packages.each do |orders_package|
-      total_quantity += orders_package.quantity
-    end
-    total_quantity
   end
 
   def destroy_stockit_record(operation)
