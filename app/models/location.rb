@@ -24,7 +24,7 @@ class Location < ActiveRecord::Base
     where("versions.event IN (?) AND
       (object_changes ->> 'location_id') IS NOT NULL AND
       CAST(whodunnit AS integer) = ? AND
-      versions.created_at >= ? ", ['create', 'update'], user_id, 15.days.ago).
+      (object_changes ->> 'created_at') >= (?)", ['create', 'update'], user_id, 15.days.ago).
     order("locations.id, recently_used_at DESC")
   end
 end
