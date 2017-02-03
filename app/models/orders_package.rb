@@ -8,7 +8,6 @@ class OrdersPackage < ActiveRecord::Base
   after_update -> { recalculate_quantity("update") }
   after_destroy -> { destroy_stockit_record("destroy") }
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
-  scope :get_records_by_state, -> (package_id, state) { where("package_id = (?) and state = (?)", package_id, state) }
   scope :get_designated_and_dispatched_packages, -> (package_id, state1, state2) { where("package_id = (?) and (state = (?) or state = (?))", package_id, state1, state2) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
 
@@ -79,21 +78,15 @@ class OrdersPackage < ActiveRecord::Base
   private
   def recalculate_quantity(operation)
     update_designation_of_package
-    package = Package.find_by_id(package_id)
     package.update_in_stock_quantity(get_total_quantity)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_later(package_id, self.id, operation)
   end
 
   def update_designation_of_package
-    designate_orders_packages = OrdersPackage.get_records_by_state(package_id, "designated")
-    package = Package.find_by_id(designate_orders_packages.first.package_id) if designate_orders_packages.first.present?
-    change_package_designation(designate_orders_packages, package) if package.present?
-  end
-
-  def change_package_designation(designate_orders_packages, package)
-    if(designate_orders_packages.length == 1)
-      package.update_designation(designate_orders_packages.first.order_id)
-    elsif(designate_orders_packages.length == 0)
+    orders_packages = package.orders_packages.where(state: 'designated')
+    if package && orders_packages.count == 1
+      package.update_designation(orders_packages.first.order_id)
+    elsif orders_packages.count == 0
       package.remove_designation
     end
   end
@@ -108,6 +101,6 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def destroy_stockit_record(operation)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_later(package.id, self.id, operation)
   end
 end
