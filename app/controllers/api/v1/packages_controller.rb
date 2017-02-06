@@ -136,12 +136,12 @@ module Api::V1
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
-    def designate_stockit_item(order_id)
-      @package.designate_to_stockit_order(order_id)
+    def designate_stockit_item
+      @package.designate_to_stockit_order(params[:package][:order_id])
     end
 
     def designate_partial_item
-      designate_stockit_item(params[:package][:order_id])
+      designate_stockit_item
       OrdersPackage.add_partially_designated_item(params[:package])
       send_stock_item_response
     end
