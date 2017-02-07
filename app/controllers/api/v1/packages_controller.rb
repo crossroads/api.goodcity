@@ -147,7 +147,7 @@ module Api::V1
     end
 
     def update_partial_quantity_of_same_designation
-      designate_stockit_item(params[:package][:order_id])
+      designate_stockit_item
       @orders_package = OrdersPackage.find_by(id: params[:package][:orders_package_id])
       @orders_package.update_partially_designated_item(params[:package])
       send_stock_item_response
