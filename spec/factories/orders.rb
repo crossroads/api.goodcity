@@ -3,7 +3,7 @@ FactoryGirl.define do
     status   ["draft", "submitted", "processing", "closed", "cancelled"].sample
     state    ["draft", "submitted", "processing", "closed", "cancelled"].sample
 
-    code          generate(:code)
+    code          { generate(:code) }
     detail_type   ["CarryOut", "Shipment", "StockitLocalOrder", "Goodcity"].sample
 
     description     FFaker::Lorem.sentence

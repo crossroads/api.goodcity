@@ -69,7 +69,7 @@ namespace :demo do
 
     def create_package count_number
       #create Packages for Goodcity and Items for Stockit
-      puts "Package:\t\t\tCreating #{count_number} Packages for Goodcity and Items for Stockit(with_item, with_set, with_set_item, received & stockit_package"
+      puts "Package:\t\tCreating #{count_number} Packages for Goodcity and Items for Stockit(with_item, with_set, with_set_item, received & stockit_package"
       count=count_number
       count_package=count/5
       count_package*2.times do
@@ -93,21 +93,18 @@ namespace :demo do
     end
 
     def create_orders_packages count_number
-      puts "OrdersPackage:\t\t\tCreating #{count_number} OrdersPackages"
+      puts "OrdersPackage:\t\tCreating #{count_number} OrdersPackages"
       #create OrdersPackages
       count=count_number
       count.times do
-        @processor=FactoryGirl.create(:user, :reviewer)
-        @orders=create_single_order
+        @updated_by=FactoryGirl.create(:user, :reviewer)
+        @order=create_single_order
         @package=FactoryGirl.create(:package, :with_item)
-        @status=["draft", "submitted", "processing", "closed", "cancelled"].sample
-
         FactoryGirl.create(:orders_package,
                               package: @package,
-                              order: @orders,
-                              state: @status,
+                              order: @order,
                               quantity: Random.rand(15),
-                              reviewed_by: @processor
+                              updated_by: @updated_by
                             )
       end
     end
@@ -123,7 +120,7 @@ namespace :demo do
 
 
     def create_contacts count_number
-      puts "Contacts:\t\t\tCreating #{count_number} contacts"
+      puts "Contacts:\t\tCreating #{count_number} contacts"
       #create contact
       count=count_number
       count.times do
@@ -132,7 +129,7 @@ namespace :demo do
     end
 
     def create_organizations count_number
-      puts "Organisation:\t\t\tCreating #{count_number} organizations"
+      puts "Organisation:\t\tCreating #{count_number} organizations"
       #create organization
       count=count_number
       count.times do
