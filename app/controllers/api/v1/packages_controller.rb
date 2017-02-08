@@ -81,6 +81,7 @@ module Api::V1
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
+
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
         if is_stock_app
@@ -140,6 +141,16 @@ module Api::V1
       @package.designate_to_stockit_order(order_id)
     end
 
+    def update_partial_quantity_of_same_designation
+      OrdersPackage.update_partially_designated_item(params[:package])
+      send_stock_item_response
+    end
+
+    def undesignate_partial_item
+      orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
+      send_stock_item_response
+    end
+
     def designate_partial_item
       designate_stockit_item(params[:package][:order_id])
       OrdersPackage.add_partially_designated_item(params[:package])
@@ -153,15 +164,15 @@ module Api::V1
       send_stock_item_response
     end
 
-    def undesignate_partial_item
-      orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
+    def undesignate_stockit_item
+      @package.undesignate_from_stockit_order
       send_stock_item_response
     end
 
     def dispatch_stockit_item
-      @orders_package = OrdersPackage.find_by_id(params[:package][:order_package_id])
+      @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
       @orders_package.dispatch_orders_package
-      @package.dispatch_stockit_item
+      @package.dispatch_stockit_item(@orders_package)
       send_stock_item_response
     end
 
@@ -170,8 +181,15 @@ module Api::V1
       send_stock_item_response
     end
 
-    def undesignate_stockit_item
-      @package.undesignate_from_stockit_order
+    def move_partial_quantity
+      @package.move_partial_quantity(params["location_id"], params["package"], params["total_qty"])
+      send_stock_item_response
+    end
+
+    def move_full_quantity
+      orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
+      orders_package.undispatch_orders_package
+      @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
       send_stock_item_response
     end
 
@@ -226,7 +244,8 @@ module Api::V1
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id,
         :order_id, :stockit_designated_on, :stockit_sent_on,
-        :case_number, :allow_web_publish, :received_quantity]
+        :case_number, :allow_web_publish, :received_quantity,
+        packages_locations_attributes: [:id, :location_id, :quantity]]
       params.require(:package).permit(attributes)
     end
 
@@ -265,7 +284,6 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if is_stock_app
-        @package.assign_attributes(package_params)
         @package.donor_condition_id = donor_condition_id
         @package.inventory_number = inventory_number
         @package
@@ -273,7 +291,7 @@ module Api::V1
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
-        @package.location_id = location_id
+        @package.build_packages_location(location_id)
         @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id

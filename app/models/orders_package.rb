@@ -25,6 +25,25 @@ class OrdersPackage < ActiveRecord::Base
     event :designate do
       transition :requested => :designated
     end
+
+    event :dispatch do
+      transition designated: :dispatched
+    end
+
+    after_transition on: :dispatch, do: :assign_dispatched_location
+  end
+
+  def assign_dispatched_location
+    location = Location.dispatch_location
+    package.packages_locations.create(
+      location: location,
+      quantity: quantity,
+      reference_to_orders_package: id
+    )
+  end
+
+  def undispatch_orders_package
+    update(state: "designated", sent_on: nil)
   end
 
   def update_designation(order_id_to_update)
@@ -45,7 +64,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def dispatch_orders_package
-    update(sent_on: Date.today, state: "dispatched")
+    update(sent_on: Date.today, state_event: "dispatch")
   end
 
   def self.undesignate_partially_designated_item(packages)
@@ -58,7 +77,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.update_orders_package_state(orders_package, total_quantity)
-   if total_quantity == 0
+    if total_quantity == 0
       orders_package.update(quantity: total_quantity, state: "cancelled")
     else
       orders_package.update(quantity: total_quantity, state: "designated")
