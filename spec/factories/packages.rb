@@ -14,10 +14,15 @@ FactoryGirl.define do
     rejected_at nil
 
     association :package_type
-    association :location
 
     trait :with_item do
       association :item
+    end
+
+    trait :package_with_locations do
+      after(:create) do |package|
+        create :packages_location, package: package, quantity: package.received_quantity
+      end
     end
 
     trait :stockit_package do
