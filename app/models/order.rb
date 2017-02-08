@@ -15,6 +15,7 @@ class Order < ActiveRecord::Base
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport
 
+  after_create :update_packages_quantity
   before_create :assign_code
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
@@ -28,6 +29,22 @@ class Order < ActiveRecord::Base
   scope :latest, -> { order('id desc') }
 
   scope :active_orders, -> { where('status NOT IN (?)', INACTIVE_STATUS) }
+
+  def update_packages
+    if(detail_type == "GoodCity")
+      orders_packages.each do |orders_package|
+        orders_package.update_state_to_designated
+      end
+    end
+  end
+
+  def update_packages_quantity
+    if(state == "draft" && detail_type == "GoodCity")
+      orders_packages.each do |orders_package|
+        orders_package.update_quantity
+      end
+    end
+  end
 
   def set_initial_state
     self.state ||= :draft
@@ -46,6 +63,10 @@ class Order < ActiveRecord::Base
 
     before_transition on: :submit do |order|
       order.add_to_stockit
+    end
+
+    after_transition on: :submit do |order|
+      order.update_packages
     end
   end
 

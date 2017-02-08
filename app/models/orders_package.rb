@@ -7,6 +7,7 @@ class OrdersPackage < ActiveRecord::Base
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
   after_destroy -> { destroy_stockit_record("destroy") }
+
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, -> (package_id, state1, state2) { where("package_id = (?) and (state = (?) or state = (?))", package_id, state1, state2) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
@@ -44,6 +45,24 @@ class OrdersPackage < ActiveRecord::Base
 
   def undispatch_orders_package
     update(state: "designated", sent_on: nil)
+  end
+
+  def update_state_to_designated
+    package.update_allow_web_publish
+    update(state: 'designated')
+  end
+
+  def update_quantity
+    update(quantity: package.quantity)
+  end
+
+  def update_state_to_designated
+    package.update_allow_web_publish
+    update(state: 'designated')
+  end
+
+  def update_quantity
+    update(quantity: package.quantity)
   end
 
   def update_designation(order_id_to_update)
@@ -96,9 +115,11 @@ class OrdersPackage < ActiveRecord::Base
 
   private
   def recalculate_quantity(operation)
-    update_designation_of_package
-    package.update_in_stock_quantity(get_total_quantity)
-    StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation)
+    unless(state == "requested")
+      update_designation_of_package
+      package.update_in_stock_quantity(get_total_quantity)
+      StockitSyncOrdersPackageJob.perform_later(package_id, self.id, operation)
+    end
   end
 
   def update_designation_of_package
@@ -123,3 +144,4 @@ class OrdersPackage < ActiveRecord::Base
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
   end
 end
+
