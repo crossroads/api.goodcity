@@ -9,7 +9,8 @@ class Package < ActiveRecord::Base
 
   belongs_to :item
   belongs_to :set_item, class_name: 'Item'
-  belongs_to :location
+  has_many :locations, through: :packages_locations
+
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
   belongs_to :pallet
@@ -19,6 +20,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
 
+  has_many   :packages_locations, inverse_of: :package
   has_many   :images, as: :imageable, dependent: :destroy
   has_many :orders_packages
 
@@ -31,7 +33,7 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than: -1, less_than: 100000000 }
+  validates :quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
   validates :received_quantity,  numericality: { greater_than: 0, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
@@ -53,6 +55,8 @@ class Package < ActiveRecord::Base
   scope :exclude_designated, ->(designation_id) {
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
+
+  accepts_nested_attributes_for :packages_locations, allow_destroy: true
 
   attr_accessor :skip_set_relation_update
 
@@ -97,6 +101,16 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def add_location(location_id)
+    location = Location.find_by(id: location_id)
+    unless locations.include?(location)
+      packages_locations.create(
+        location: location,
+        quantity: received_quantity
+      )
+    end
+  end
+
   def add_to_stockit
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
@@ -104,6 +118,13 @@ class Package < ActiveRecord::Base
     else response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
     end
+  end
+
+  def build_packages_location(location_id)
+    packages_locations.build(
+      location: Location.find_by(id: location_id),
+      quantity: received_quantity
+    )
   end
 
   def remove_from_stockit
@@ -153,13 +174,13 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatch_stockit_item(skip_set_relation_update=false)
+  def dispatch_stockit_item(orders_package=nil, skip_set_relation_update=false)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    self.location = Location.dispatch_location
+    update_existing_package_location_qty(packages_locations.first.id, orders_package.try(:quantity))
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
   end
@@ -173,11 +194,48 @@ class Package < ActiveRecord::Base
     add_errors(response)
   end
 
+  def move_partial_quantity(location_id, package_qty_changes, total_qty)
+    package_qty_params = JSON.parse(package_qty_changes)
+    package_qty_params.each do |pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
+    end
+    update_or_create_qty_moved_to_location(location_id, total_qty)
+  end
+
+  def move_full_quantity(location_id, orders_package_id)
+    orders_package              = orders_packages.find_by(id: orders_package_id)
+    referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
+
+    if packages_location_record = self.packages_locations.find_by(location_id: location_id)
+      new_qty = orders_package.quantity + packages_location_record.quantity
+      packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
+      referenced_package_location.destroy
+    else
+      referenced_package_location.update(location_id: location_id, quantity: orders_package.quantity,
+        reference_to_orders_package: nil)
+    end
+  end
+
+  def update_or_create_qty_moved_to_location(location_id, total_qty)
+    if packages_location = packages_locations.find_by(location_id: location_id)
+      packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
+    else
+      packages_locations.create(location_id: location_id, package_id: id, quantity: total_qty)
+    end
+  end
+
+  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
+    if packages_location = packages_locations.find_by(id: packages_location_id)
+      new_qty = packages_location.quantity - quantity_to_move.to_i
+      new_qty == 0 ? packages_location.destroy : packages_location.update_column(:quantity, new_qty)
+    end
+  end
+
   def move_stockit_item(location_id)
     response = if box_id? || pallet_id?
       has_box_or_pallet_error
     else
-      self.location_id = location_id
+      add_location(location_id)
       self.stockit_moved_on = Date.today
       self.stockit_moved_by = User.current_user
       Stockit::ItemSync.move(self)

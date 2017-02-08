@@ -21,7 +21,7 @@ class Order < ActiveRecord::Base
 
   scope :with_eager_load, -> {
     includes ([
-      { packages: [:location, :package_type] }
+      { packages: [:locations, :package_type] }
     ])
   }
 

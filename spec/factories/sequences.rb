@@ -4,6 +4,14 @@ FactoryGirl.define do
     @donor_conditions ||= YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
   end
 
+  sequence :code do |n|
+    "#{(65 + Random.rand(26)).chr}#{Random.rand(5)}"
+  end
+
+  sequence :inventory_number do |n|
+    rand(1000000).to_s.rjust(6,'0')
+  end
+
   sequence :timeslots do |n|
     [["9AM-11AM", "上午9時至上午11時"], ["11AM-1PM", "午11時至下午1時"],
       ["2PM-4PM", "下午2時至下午4時"], ["4PM-6PM", "下午4時至下午6時"]].sample
