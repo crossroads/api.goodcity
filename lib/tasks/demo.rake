@@ -4,9 +4,7 @@ require 'factory_girl'
 namespace :demo do
   unless ENV['LIVE'] == "true"
     task load: :environment do
-
       ARGV.each { |a| task a.to_sym do ; end }
-
       #specify number of test cases to produce
       count_number= Integer(ARGV[1]) rescue 0 >0 ? ARGV[1].to_i : 10
       puts "This will generate #{count_number} record of Users, Offers, Packages, OrdersPackages, Orders, Contacts & Organisations"
@@ -17,8 +15,6 @@ namespace :demo do
       create_orders (count_number)
       create_contacts (count_number)
       create_organizations (count_number)
-
-
     end
 
     def create_users count_number
@@ -39,7 +35,7 @@ namespace :demo do
 
     def create_offers count_number
       #Create 10 draft offers, 10 submitted, 10 under_review, 10 reviewed, 10 scheduled (with_transport), 10 closed(with_transport)
-      puts "Offers:\t\t\tCreating #{count_number} draft offers, #{count_number} submitted, #{count_number} under_review, #{count_number} reviewed, #{count_number} scheduled (with_transport), #{count_number} closed(with_transport) "
+      puts "Offers:\t\t\tCreating #{count_number} draft offers, #{count_number} submitted, #{count_number} under_review, #{count_number} reviewed, #{count_number} scheduled (with_transport), #{count_number} closed(with_transport)"
 
       count=count_number
       count.times do
@@ -108,7 +104,7 @@ namespace :demo do
                             )
         if(@orders_package.state == "designated")
           @package.order_id = @order_id
-
+        end
       end
     end
 
@@ -141,4 +137,3 @@ namespace :demo do
     end
   end
 end
-

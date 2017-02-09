@@ -15,7 +15,7 @@ class Order < ActiveRecord::Base
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport
 
-  after_create :update_packages_quantity
+  after_create :update_orders_packages_quantity, if: :if_state_is_draft_and_detail_type_is_quantity
   before_create :assign_code
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
@@ -30,19 +30,19 @@ class Order < ActiveRecord::Base
 
   scope :active_orders, -> { where('status NOT IN (?)', INACTIVE_STATUS) }
 
-  def update_packages
-    if(detail_type == "GoodCity")
-      orders_packages.each do |orders_package|
-        orders_package.update_state_to_designated
-      end
+  def designate_orders_packages
+    orders_packages.each do |orders_package|
+      orders_package.update_state_to_designated
     end
   end
 
-  def update_packages_quantity
-    if(state == "draft" && detail_type == "GoodCity")
-      self.reload.orders_packages.each do |orders_package|
-        orders_package.update_quantity
-      end
+  def if_state_is_draft_and_detail_type_is_quantity
+    state == "draft" && detail_type == "GoodCity"
+  end
+
+  def update_orders_packages_quantity
+    orders_packages.each do |orders_package|
+      orders_package.update_quantity
     end
   end
 
@@ -66,7 +66,7 @@ class Order < ActiveRecord::Base
     end
 
     after_transition on: :submit do |order|
-      order.update_packages
+      order.designate_orders_packages if (order.detail_type == "GoodCity")
     end
   end
 

@@ -111,7 +111,7 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def update_allow_web_publish
+  def update_allow_web_publish_to_false
     update(allow_web_publish: false)
   end
 
