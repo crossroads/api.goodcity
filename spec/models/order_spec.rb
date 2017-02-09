@@ -46,7 +46,7 @@ RSpec.describe Order, type: :model do
   end
 
   describe "Update OrdersPackages state" do
-    let(:order) { create :order, :with_detail_type_goodcity,:with_orders_packages  }
+    let(:order) { create :order, :with_orders_packages  }
     it "Updates state to designated" do
       order.orders_packages.each do |orders_package|
         orders_package.update_state_to_designated
