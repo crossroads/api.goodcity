@@ -41,19 +41,19 @@ gem 'oj', '2.10.2' # 2.10.3 causes a 'too deeply nested' error
 gem 'oj_mimic_json'
 gem 'redis'
 gem 'redis-rails'
-gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails", branch: 'master'
+gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
-gem 'by_star', git: "git://github.com/radar/by_star"
+gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
 gem 'nokogiri'
 gem 'sidekiq'
-gem 'sinatra', :require => nil # for sidekiq reporting console
+gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'airbrake', "~> 4" # peg to v4 until we figure out if we can support v5 in Errbit
 gem 'lograge'
 gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
 gem 'request_store'
-gem 'easyzpl', :git => 'https://github.com/crossroads/easyzpl.git'
+gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'braintree'
 gem 'active_record_union'
 gem 'kaminari'
