@@ -1,3 +1,7 @@
+dependencies:
+  pre:
+    - bundle-audit --version || gem install bundler-audit
+
 machine:
   services:
     - redis
@@ -6,6 +10,9 @@ database:
   override:
     - bundle exec rake db:create:all db:schema:load --trace
 
+test:
+  post:
+    - bundle-audit -v --update
 deployment:
   staging:
     branch: master
