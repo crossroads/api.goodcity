@@ -100,12 +100,15 @@ namespace :demo do
         @updated_by=FactoryGirl.create(:user, :reviewer)
         @order=create_single_order
         @package=FactoryGirl.create(:package, :with_item)
-        FactoryGirl.create(:orders_package,
+        @orders_package=FactoryGirl.build(:orders_package,
                               package: @package,
                               order: @order,
-                              quantity: Random.rand(15),
+                              quantity: @package.quantity,
                               updated_by: @updated_by
                             )
+        if(@orders_package.state == "designated")
+          @package.order_id = @order_id
+
       end
     end
 
