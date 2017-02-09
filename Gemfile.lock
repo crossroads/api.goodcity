@@ -1,11 +1,4 @@
 GIT
-  remote: git://github.com/radar/by_star
-  revision: eaf25d75c78ebd56e8c68e94c6d4b2e0153d951a
-  specs:
-    by_star (2.2.1)
-      activesupport
-
-GIT
   remote: git@github.com:crossroads/go_go_van_api.git
   revision: 3cbc5590e2a11a7903483de276bc668be88843cb
   branch: master
@@ -14,11 +7,11 @@ GIT
       nestful (~> 1)
 
 GIT
-  remote: https://github.com/Apipie/apipie-rails
-  revision: 296c097f9acb951149d3a67db69b84eb216bdd7e
+  remote: https://github.com/Apipie/apipie-rails.git
+  revision: 529eb91b2a4ef30ff5ce251684f5030e1a20929e
   branch: master
   specs:
-    apipie-rails (0.3.6)
+    apipie-rails (0.3.7)
       json
 
 GIT
@@ -43,6 +36,13 @@ GIT
   revision: 4cfd929ee0a396aff0d5170a893599e59fded934
   specs:
     nestful (1.1.1)
+
+GIT
+  remote: https://github.com/radar/by_star.git
+  revision: 3fe3ef33e98aebcc226cbfea51d1e5101f948c78
+  specs:
+    by_star (2.2.1)
+      activesupport
 
 GEM
   remote: https://rubygems.org/
