@@ -38,7 +38,7 @@ RSpec.describe Order, type: :model do
       expect(order.code).to include("GC-")
     end
 
-    it "Updates state to designated" do
+    it "Updates orders_packages quantity" do
       order.orders_packages.each do |orders_package|
         expect(orders_package.reload.quantity).to eq(orders_package.package.quantity)
       end
