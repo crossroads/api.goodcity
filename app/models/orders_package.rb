@@ -62,15 +62,6 @@ class OrdersPackage < ActiveRecord::Base
     update(quantity: package.quantity)
   end
 
-  def update_state_to_designated
-    package.update_allow_web_publish_to_false
-    update(state: 'designated')
-  end
-
-  def update_quantity
-    update(quantity: package.quantity)
-  end
-
   def update_designation(order_id_to_update)
     update(order_id: order_id_to_update)
   end
