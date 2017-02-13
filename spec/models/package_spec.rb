@@ -65,6 +65,9 @@ RSpec.describe Package, type: :model do
     describe "#mark_missing" do
       let(:package) { create :package, :received }
       it "should set received_at value" do
+        stub_request(:put, "http://www.example.com/api/v1/items/destroy").
+         with(:body => "{\"id\":1}").
+         to_return(:status => 200, :body => "", :headers => {})
         expect{
           package.mark_missing
         }.to change(package, :received_at).to(nil)
