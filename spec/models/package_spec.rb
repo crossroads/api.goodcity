@@ -455,19 +455,18 @@ RSpec.describe Package, type: :model do
 
   describe '#update_in_stock_quantity' do
     let!(:package) { create :package, received_quantity: 10 }
+    let!(:orders_package) { create :orders_package, quantity: 3, package: package, state: 'designated' }
 
-    it 'subtracts provided qty from received_quantity to calculate in hand quantity and updates package quantity with it' do
-      quantity = 3
-      in_hand_quantity = package.received_quantity - quantity
-      package.update_in_stock_quantity(quantity)
+    it 'subtracts assigned qty from received_quantity to calculate in hand quantity and updates package quantity with it' do
+      in_hand_quantity = package.received_quantity - orders_package.quantity
+      package.reload.update_in_stock_quantity
       expect(package.reload.quantity).to eq in_hand_quantity
     end
 
     it 'do not change received_quantity' do
-      quantity = 3
-      in_hand_quantity  = package.received_quantity - quantity
+      in_hand_quantity  = package.received_quantity - orders_package.quantity
       received_quantity = package.received_quantity
-      package.update_in_stock_quantity(quantity)
+      package.update_in_stock_quantity
       expect(package.reload.received_quantity).to eq received_quantity
     end
   end
