@@ -23,16 +23,8 @@ module Stockit
         new(package).update
       end
 
-      def dispatch(package)
-        new(package).dispatch
-      end
-
       def move(package)
         new(package).move
-      end
-
-      def undispatch(package)
-        new(package).undispatch
       end
 
       def delete(package)
@@ -59,20 +51,6 @@ module Stockit
     def update
       if package.inventory_number.present?
         url = url_for("/api/v1/items/update")
-        put(url, stockit_params)
-      end
-    end
-
-    def dispatch
-      if package.inventory_number.present?
-        url = url_for("/api/v1/items/dispatch")
-        put(url, stockit_params)
-      end
-    end
-
-    def undispatch
-      if package.inventory_number.present?
-        url = url_for("/api/v1/items/undispatch")
         put(url, stockit_params)
       end
     end
@@ -117,9 +95,7 @@ module Stockit
         grade: package.grade,
         description: package.notes,
         location_id: item_location_id,
-        id: package.stockit_id,
-        designation_id: package.order.try(:stockit_id),
-        designated_on: package.stockit_designated_on
+        id: package.stockit_id
       }
     end
 
