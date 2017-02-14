@@ -185,8 +185,6 @@ class Package < ActiveRecord::Base
     self.box = nil
     self.pallet = nil
     update_existing_package_location_qty(packages_locations.first.id, orders_package.try(:quantity))
-    response = Stockit::ItemSync.dispatch(self)
-    add_errors(response)
   end
 
   def undispatch_stockit_item
@@ -194,8 +192,6 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = nil
     self.pallet = nil
     self.box = nil
-    response = Stockit::ItemSync.undispatch(self)
-    add_errors(response)
   end
 
   def move_partial_quantity(location_id, package_qty_changes, total_qty)
