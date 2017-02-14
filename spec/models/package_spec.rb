@@ -55,7 +55,6 @@ RSpec.describe Package, type: :model do
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
-        expect(Stockit::ItemSync).to receive(:create).with(package)
         expect{
           package.mark_received
         }.to change(package, :received_at)
@@ -66,7 +65,9 @@ RSpec.describe Package, type: :model do
     describe "#mark_missing" do
       let(:package) { create :package, :received }
       it "should set received_at value" do
-        expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number)
+        stub_request(:put, "http://www.example.com/api/v1/items/destroy").
+         with(:body => "{\"id\":1}").
+         to_return(:status => 200, :body => "", :headers => {})
         expect{
           package.mark_missing
         }.to change(package, :received_at).to(nil)
@@ -170,7 +171,6 @@ RSpec.describe Package, type: :model do
     let(:package) { create :package, :with_set_item }
     let!(:location) { create :location, :dispatched }
     let!(:packages_location) { create :packages_location, location: location, package: package}
-    before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
 
     it 'set dispatch related details' do
       package.dispatch_stockit_item
