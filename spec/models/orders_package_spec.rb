@@ -117,6 +117,11 @@ RSpec.describe OrdersPackage, type: :model do
         orders_package.dispatch_orders_package
         }.to change(orders_package, :state).to eq 'dispatched'
     end
+
+    it 'adds dispatched location for associate package' do
+      orders_package.dispatch_orders_package
+      expect(orders_package.package.reload.locations).to include(dispatched_location)
+    end
   end
 
   describe '.update_orders_package_state' do
@@ -168,6 +173,22 @@ RSpec.describe OrdersPackage, type: :model do
       expect(OrdersPackage.last.order_id).to eq(package_params[:order_id])
       expect(OrdersPackage.last.package_id).to eq(package_params[:package_id])
       expect(OrdersPackage.last.quantity).to eq(package_params[:quantity])
+    end
+  end
+
+  describe '#undispatch_orders_package' do
+    let!(:orders_package) { create :orders_package, :with_state_requested, sent_on: Date.today }
+
+    it 'sets state as designated' do
+      expect{
+        orders_package.undispatch_orders_package
+      }.to change(orders_package, :state).to('designated')
+    end
+
+    it 'sent_on to nil' do
+      expect{
+        orders_package.undispatch_orders_package
+      }.to change(orders_package, :sent_on).to(nil)
     end
   end
 end

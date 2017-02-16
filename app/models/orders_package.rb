@@ -86,7 +86,7 @@ class OrdersPackage < ActiveRecord::Base
   def self.undesignate_partially_designated_item(packages)
     packages.each do |package|
       quantity_to_reduce = package.last[:quantity].to_i
-      orders_package = find_by_id(package.last[:orders_package_id])
+      orders_package = find_by(id: package.last[:orders_package_id])
       total_quantity = orders_package.quantity - quantity_to_reduce
       update_orders_package_state(orders_package, total_quantity)
     end
@@ -132,4 +132,5 @@ class OrdersPackage < ActiveRecord::Base
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
   end
 end
+
 
