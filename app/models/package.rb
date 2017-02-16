@@ -292,7 +292,7 @@ class Package < ActiveRecord::Base
   end
 
   def total_assigned_quantity
-    total_qty = 0
+    total_quantity = 0
     if associated_orders_packages = orders_packages.get_designated_and_dispatched_packages.presence
       associated_orders_packages.each do |orders_package|
         total_quantity += orders_package.quantity
