@@ -1,6 +1,7 @@
 module Api::V1
   class OrdersPackagesController < Api::V1::ApiController
     load_and_authorize_resource :orders_package, parent: false
+    before_action :eager_load_orders_package, only: :show
 
     resource_description do
       formats ['json']
@@ -38,6 +39,10 @@ module Api::V1
 
     def show
       render json: @orders_package, serializer: serializer
+    end
+
+    def eager_load_orders_package
+      @orders_package = OrdersPackage.accessible_by(current_ability).with_eager_load.find(params[:id])
     end
 
     private
