@@ -132,13 +132,13 @@ RSpec.describe OrdersPackage, type: :model do
 
       it 'updates quantity with total_qty' do
         expect{
-          OrdersPackage.update_orders_package_state(orders_package, total_qty)
+          orders_package.update_orders_package_state(total_qty)
         }.to change(orders_package, :quantity).to(0)
       end
 
       it "updates state to 'cancelled'" do
         expect{
-          OrdersPackage.update_orders_package_state(orders_package, total_qty)
+          orders_package.update_orders_package_state(total_qty)
         }.to change(orders_package, :state).to('cancelled')
       end
     end
@@ -148,13 +148,13 @@ RSpec.describe OrdersPackage, type: :model do
 
       it 'updates quantity with total_qty' do
         expect{
-          OrdersPackage.update_orders_package_state(orders_package, total_qty)
+          orders_package.update_orders_package_state(total_qty)
         }.to change(orders_package, :quantity).to(total_qty)
       end
 
       it "updates state to 'designated'" do
         expect{
-          OrdersPackage.update_orders_package_state(orders_package, total_qty)
+          orders_package.update_orders_package_state(total_qty)
         }.to change(orders_package, :state).to('designated')
       end
     end
@@ -189,6 +189,17 @@ RSpec.describe OrdersPackage, type: :model do
       expect{
         orders_package.undispatch_orders_package
       }.to change(orders_package, :sent_on).to(nil)
+    end
+  end
+
+  describe '#delete_unwanted_cancelled_packages' do
+    let!(:order) { create :order }
+    let!(:orders_package) { create :orders_package, :with_state_cancelled, order: order }
+
+    it 'deletes unwanted records with provided order id and state cancelled' do
+      expect{
+        orders_package.delete_unwanted_cancelled_packages(order.id)
+      }.to change(OrdersPackage, :count).by(-1)
     end
   end
 end
