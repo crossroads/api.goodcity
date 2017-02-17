@@ -4,17 +4,27 @@ FactoryGirl.define do
     state    ["draft", "submitted", "processing", "closed", "cancelled"].sample
 
     code          { generate(:code) }
-    detail_type   ["CarryOut", "Shipment", "StockitLocalOrder", "Goodcity"].sample
-
     description     FFaker::Lorem.sentence
     purpose_description FFaker::Lorem.sentence
     stockit_id      nil
-    association     :detail, factory: :stockit_local_order  , strategy: :create
+    detail_type     "GoodCity"
     association     :stockit_organisation
     association     :stockit_activity
     association     :organisation
     association     :stockit_contact
     association     :country
+
+    trait :with_orders_packages do
+      orders_packages { create_list :orders_package, 3, :with_state_requested}
+    end
+
+    trait :with_state_submitted do
+      state "submitted"
+    end
+
+    trait :with_state_draft do
+      state "draft"
+    end
 
     trait :with_created_by do
       association :created_by, factory: :user, strategy: :build

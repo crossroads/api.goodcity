@@ -13,4 +13,21 @@ RSpec.describe OrdersPackage, type: :model do
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:sent_on).of_type(:datetime)}
   end
+
+  describe "update_state_to_designated" do
+    it "set state='designated'"do
+      @orders_package = create :orders_package, :with_state_requested
+      @orders_package.update_state_to_designated
+      expect(@orders_package.state).to match("designated")
+    end
+  end
+
+  describe "update_quantity" do
+    it "Updates orders_packages quantity" do
+      @orders_package = create :orders_package, :with_state_requested
+      @orders_package.update_quantity
+      expect(@orders_package.quantity).to match(@orders_package.package.quantity)
+    end
+  end
+
 end

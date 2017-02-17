@@ -54,7 +54,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def update_state_to_designated
-    package.update_allow_web_publish
+    package.update_allow_web_publish_to_false
     update(state: 'designated')
   end
 
