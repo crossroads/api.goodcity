@@ -114,6 +114,8 @@ GEM
     capistrano-rails (1.1.6)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
+    capistrano-rake (0.1.0)
+      capistrano (>= 3.0)
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
@@ -387,6 +389,7 @@ DEPENDENCIES
   cancancan
   capistrano-bundler
   capistrano-rails
+  capistrano-rake
   capistrano-rvm
   capistrano-sidekiq
   cloudinary
