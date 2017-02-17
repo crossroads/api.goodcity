@@ -15,7 +15,7 @@ class Order < ActiveRecord::Base
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport
 
-  after_create :update_orders_packages_quantity, if: :if_state_is_draft_and_detail_type_is_quantity
+  after_create :update_orders_packages_quantity, if: :state_is_draft_and_detail_type_is_goodcity?
   before_create :assign_code
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
@@ -36,7 +36,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def if_state_is_draft_and_detail_type_is_quantity
+  def state_is_draft_and_detail_type_is_goodcity?
     state == "draft" && detail_type == "GoodCity"
   end
 

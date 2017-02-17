@@ -26,6 +26,7 @@ RSpec.describe OrdersPackage, type: :model do
     it "Updates orders_packages quantity" do
       @orders_package = create :orders_package, :with_state_requested
       @orders_package.update_quantity
+      expect(@orders_package.quantity).to match(@orders_package.package.quantity)
     end
   end
 
