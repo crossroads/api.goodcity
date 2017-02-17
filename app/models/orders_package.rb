@@ -88,15 +88,15 @@ class OrdersPackage < ActiveRecord::Base
       quantity_to_reduce = package.last[:quantity].to_i
       orders_package = find_by(id: package.last[:orders_package_id])
       total_quantity = orders_package.quantity - quantity_to_reduce
-      update_orders_package_state(orders_package, total_quantity)
+      orders_package.update_orders_package_state(total_quantity)
     end
   end
 
-  def self.update_orders_package_state(orders_package, total_quantity)
+  def update_orders_package_state(total_quantity)
     if total_quantity == 0
-      orders_package.update(quantity: total_quantity, state: "cancelled")
+      update(quantity: total_quantity, state: "cancelled")
     else
-      orders_package.update(quantity: total_quantity, state: "designated")
+      update(quantity: total_quantity, state: "designated")
     end
   end
 
