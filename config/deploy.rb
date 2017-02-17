@@ -42,7 +42,6 @@ set :sidekiq_processes, 2
 set :rvm_ruby_version, '2.2.2'
 
 namespace :deploy do
-
   desc 'Restart application'
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
@@ -51,20 +50,6 @@ namespace :deploy do
   end
 
   after :publishing, :restart
-
-end
-
-# cap production invoke[db:migrate]
-# cap production invoke[db:reset] to load schema and seed data
-desc "Invoke a rake command on the remote server: cap production invoke[db:migrate]"
-task :invoke, [:command] => 'deploy:set_rails_env' do |task, args|
-  on primary(:app) do
-    within current_path do
-      with :rails_env => fetch(:rails_env) do
-        rake args[:command]
-      end
-    end
-  end
 end
 
 namespace :redis do
