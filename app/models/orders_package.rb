@@ -12,6 +12,12 @@ class OrdersPackage < ActiveRecord::Base
   scope :get_designated_and_dispatched_packages, -> (package_id, state1, state2) { where("package_id = (?) and (state = (?) or state = (?))", package_id, state1, state2) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
 
+  scope :with_eager_load, -> {
+    includes ([
+      { package: [:locations, :package_type] }
+    ])
+  }
+
   def set_initial_state
     self.state ||= :requested
   end
@@ -45,15 +51,6 @@ class OrdersPackage < ActiveRecord::Base
 
   def undispatch_orders_package
     update(state: "designated", sent_on: nil)
-  end
-
-  def update_state_to_designated
-    package.update_allow_web_publish
-    update(state: 'designated')
-  end
-
-  def update_quantity
-    update(quantity: package.quantity)
   end
 
   def update_state_to_designated
@@ -118,7 +115,7 @@ class OrdersPackage < ActiveRecord::Base
     unless(state == "requested")
       update_designation_of_package
       package.update_in_stock_quantity(get_total_quantity)
-      StockitSyncOrdersPackageJob.perform_later(package_id, self.id, operation)
+      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation)
     end
   end
 

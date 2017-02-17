@@ -40,7 +40,7 @@ class Order < ActiveRecord::Base
 
   def update_packages_quantity
     if(state == "draft" && detail_type == "GoodCity")
-      orders_packages.each do |orders_package|
+      self.reload.orders_packages.each do |orders_package|
         orders_package.update_quantity
       end
     end
