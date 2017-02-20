@@ -84,10 +84,10 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.undesignate_partially_designated_item(packages)
-    packages.each do |package|
-      quantity_to_reduce = package.last[:quantity].to_i
-      orders_package = find_by(id: package.last[:orders_package_id])
-      total_quantity = orders_package.quantity - quantity_to_reduce
+    packages.each_pair do |_key, package|
+      quantity_to_reduce = package["quantity"].to_i
+      orders_package     = find_by(id: package["orders_package_id"])
+      total_quantity     = orders_package.quantity - quantity_to_reduce
       orders_package.update_orders_package_state(total_quantity)
     end
   end

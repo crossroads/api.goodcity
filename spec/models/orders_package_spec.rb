@@ -202,4 +202,64 @@ RSpec.describe OrdersPackage, type: :model do
       }.to change(OrdersPackage, :count).by(-1)
     end
   end
+
+  describe '#undesignate_partially_designated_item' do
+    let!(:package) { create :package, quantity: 4, received_quantity: 10}
+    let!(:order) { create :order }
+    let!(:orders_package) { create :orders_package, order_id: order.id, package_id: package.id, quantity: 6 }
+
+    context 'when quantity to undesignate is not same as quantity of designation(orders_package)' do
+      let!(:undesignate_package_params) {
+        {
+          "0" => { "orders_package_id" => "#{orders_package.id}",
+            "package_id" => "#{package.id}",
+            "quantity" => "3" }
+        }
+      }
+
+      it 'reduces quantity to undesignate from its designation(orders_package) record' do
+        new_quantity = orders_package.quantity - undesignate_package_params["0"]["quantity"].to_i
+        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
+        expect(orders_package.reload.quantity).to eq new_quantity
+      end
+
+      it "updates state to 'designated' " do
+        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
+        expect(orders_package.reload.state).to eq 'designated'
+      end
+
+      it 'adds undesignated quantity to its associated package' do
+        new_quantity = package.quantity + undesignate_package_params["0"]["quantity"].to_i
+        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
+        expect(package.reload.quantity).to eq new_quantity
+      end
+    end
+
+    context 'when undesignate total quantity of designation(orders_package) and remaining quantity of designation is zero' do
+      let!(:undesignate_package_params) {
+        {
+          "0" => { "orders_package_id" => "#{orders_package.id}",
+            "package_id" => "#{package.id}",
+            "quantity" => "#{orders_package.quantity}" }
+        }
+      }
+
+      it 'reduces quantity to undesignate from its designation(orders_package) record' do
+        new_quantity = orders_package.quantity - undesignate_package_params["0"]["quantity"].to_i
+        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
+        expect(orders_package.reload.quantity).to eq new_quantity
+      end
+
+      it "updates state to 'cancelled' " do
+        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
+        expect(orders_package.reload.state).to eq 'cancelled'
+      end
+
+      it 'adds undesignated quantity to its associated package' do
+        new_quantity = package.quantity + undesignate_package_params["0"]["quantity"].to_i
+        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
+        expect(package.reload.quantity).to eq new_quantity
+      end
+    end
+  end
 end
