@@ -28,7 +28,7 @@ module Api::V1
     end
 
     def search_by_package_id
-      @orders_packages = @orders_packages.get_designated_and_dispatched_packages(params["search_by_package_id"], "designated", "dispatched")
+      @orders_packages = @orders_packages.get_designated_and_dispatched_packages(params["search_by_package_id"])
       render json: @orders_packages, each_serializer: serializer
     end
 
