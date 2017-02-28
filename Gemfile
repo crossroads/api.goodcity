@@ -57,6 +57,7 @@ gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'braintree'
 gem 'active_record_union'
 gem 'kaminari'
+gem 'sidekiq-scheduler'
 
 group :development do
   unless ENV["CI"]
