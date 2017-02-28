@@ -9,7 +9,7 @@ class OrdersPackage < ActiveRecord::Base
   after_destroy -> { destroy_stockit_record("destroy") }
 
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
-  scope :get_designated_and_dispatched_packages, -> (package_id, state1, state2) { where("package_id = (?) and (state = (?) or state = (?))", package_id, state1, state2) }
+  scope :get_designated_and_dispatched_packages, -> (package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
 
   scope :with_eager_load, -> {
@@ -84,19 +84,19 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.undesignate_partially_designated_item(packages)
-    packages.each do |package|
-      quantity_to_reduce = package.last[:quantity].to_i
-      orders_package = find_by_id(package.last[:orders_package_id])
-      total_quantity = orders_package.quantity - quantity_to_reduce
-      update_orders_package_state(orders_package, total_quantity)
+    packages.each_pair do |_key, package|
+      quantity_to_reduce = package["quantity"].to_i
+      orders_package     = find_by(id: package["orders_package_id"])
+      total_quantity     = orders_package.quantity - quantity_to_reduce
+      orders_package.update_orders_package_state(total_quantity)
     end
   end
 
-  def self.update_orders_package_state(orders_package, total_quantity)
+  def update_orders_package_state(total_quantity)
     if total_quantity == 0
-      orders_package.update(quantity: total_quantity, state: "cancelled")
+      update(quantity: total_quantity, state: "cancelled")
     else
-      orders_package.update(quantity: total_quantity, state: "designated")
+      update(quantity: total_quantity, state: "designated")
     end
   end
 
@@ -114,7 +114,7 @@ class OrdersPackage < ActiveRecord::Base
   def recalculate_quantity(operation)
     unless(state == "requested")
       update_designation_of_package
-      package.update_in_stock_quantity(get_total_quantity)
+      package.update_in_stock_quantity
       StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation)
     end
   end
@@ -128,17 +128,9 @@ class OrdersPackage < ActiveRecord::Base
     end
   end
 
-  def get_total_quantity
-    total_quantity = 0
-    orders_packages = OrdersPackage.get_designated_and_dispatched_packages(package_id, "designated", "dispatched")
-    orders_packages.each do |orders_package|
-      total_quantity += orders_package.quantity
-    end
-    total_quantity
-  end
-
   def destroy_stockit_record(operation)
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
   end
 end
+
 

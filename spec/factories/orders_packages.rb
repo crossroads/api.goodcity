@@ -14,4 +14,12 @@ FactoryGirl.define do
       state "designated"
     end
   end
+
+  trait :with_state_requested do
+    state 'requested'
+  end
+
+  trait :with_state_cancelled do
+    state 'cancelled'
+  end
 end
