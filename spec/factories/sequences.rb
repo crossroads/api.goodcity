@@ -37,6 +37,10 @@ FactoryGirl.define do
     @item_types ||= YAML.load_file("#{Rails.root}/db/item_types.yml")
   end
 
+  sequence :package_types do |n|
+    @package_types ||= YAML.load_file("#{Rails.root}/db/package_types.yml")
+  end
+  
   sequence :gogovan_transports do |n|
     @gogovan_options = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
   end

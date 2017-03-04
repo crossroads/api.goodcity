@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :item do
-    donor_description { FFaker::Lorem.sentence }
+    donor_description { generate(:donor_descriptions) }
     state             'submitted'
 
     association :donor_condition
@@ -41,7 +41,6 @@ FactoryGirl.define do
       transient do
         messages_count 1
       end
-
       after(:create) do |item, evaluator|
         create_list(:message, evaluator.messages_count,
           sender: item.offer.created_by,
@@ -54,8 +53,23 @@ FactoryGirl.define do
       state              'rejected'
       association        :rejection_reason
       association        :offer, :under_review
-      reject_reason      { FFaker::Lorem.sentence }
+      reject_reason      { generate(:reject_reasons) }
       rejection_comments { FFaker::Lorem.sentence }
     end
+  end
+
+  sequence :reject_reasons do |n|
+    ["Sorry, this item is too large.",
+     "The item condition is not suitable for our recipients.",
+     "We are generally unable to find suitable homes for this sort of item."
+    ].sample
+  end
+
+  sequence :donor_descriptions do |n|
+    ["Washing machine. Good working order. 2 years old.",
+     "Children's bunk beds. 10 years old",
+     "Bookshelf. Slightly warped.",
+     "Camera. SLR with 3 extra lenses",
+    ].sample
   end
 end
