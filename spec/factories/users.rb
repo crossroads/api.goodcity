@@ -10,6 +10,7 @@ FactoryGirl.define do
     last_connected    { 2.days.ago }
     last_disconnected { 1.day.ago }
     disabled          { false }
+    initialize_with   { User.find_or_initialize_by(mobile: mobile) }
 
     association :image
 
@@ -34,8 +35,8 @@ FactoryGirl.define do
       last_name  "Team"
       mobile     SYSTEM_USER_MOBILE
       association :permission, factory: :system_permission
-      initialize_with { User.find_or_initialize_by(mobile: SYSTEM_USER_MOBILE) } # only create one system user
     end
+
   end
 
   factory :user_with_token, parent: :user do
