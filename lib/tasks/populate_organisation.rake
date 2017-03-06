@@ -11,9 +11,7 @@ namespace :populate_organisation do
       organisation_hash =  organisation_hash.keep_if { |k, v| data.key? v }
       organisation = Organisation.find_by(registration: data['org_id']) || Organisation.new(registration: data['org_id'])
         organisation_hash.each do |organisation_column, data_key|
-          if (organisation.try(organisation_column) != data[data_key])
-            puts data
-            puts organisation
+          unless(organisation.try(organisation_column) == data[data_key])
             organisation[organisation_column.to_sym] = data[data_key]
           end
         end
