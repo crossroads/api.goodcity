@@ -45,8 +45,6 @@ namespace :stockit do
           country_id: country_id,
           detail_id: detail_id
         )
-
-        puts "Updated designation #{designation.id}"
       end
     end
   end
