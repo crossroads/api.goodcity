@@ -1,9 +1,8 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_contacts
-  desc 'Load contact details from stockit'
+  desc 'Load contact details from Stockit'
   task add_stockit_contacts: :environment do
-    StockitContact.delete_all
+    # StockitContact.delete_all
 
     contacts_json = Stockit::ContactSync.index
     stockit_contacts = JSON.parse(contacts_json["contacts"])
