@@ -7,9 +7,8 @@ class Image < ActiveRecord::Base
   has_one :user, inverse_of: :image
   belongs_to :imageable, polymorphic: true, touch: true
 
-  before_destroy :delete_image_from_cloudinary,
-    unless: "Rails.env.test? || has_multiple_items"
-  after_update :clear_unused_transformed_images, unless: "Rails.env.test?"
+  before_destroy :delete_image_from_cloudinary, unless: "has_multiple_items"
+  after_update :clear_unused_transformed_images
 
   after_update :reset_favourite,  if: :favourite_changed?
 
