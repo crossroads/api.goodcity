@@ -1,7 +1,6 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_locations
-  desc 'Load location details from stockit'
+  desc 'Load location details from Stockit'
   task add_stockit_locations: :environment do
 
     locations_json = Stockit::LocationSync.index
