@@ -15,6 +15,7 @@ namespace :stockit do
         code.name_en = value["description_en"]
         code.name_zh_tw = value["description_zht"]
         code.stockit_id = value["id"]
+        code.location_id = Location.find_by(stockit_id:  value["location_id"]).try(:id)
         is_new_code = code.new_record?
         code.save
 
@@ -39,4 +40,5 @@ namespace :stockit do
     end
 
   end
+
 end
