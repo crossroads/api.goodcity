@@ -17,12 +17,15 @@ namespace :demo do
     def create_offers
       puts "Offers:\t\t\tCreating #{count} draft offers, #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled (with_transport), #{count} closed(with_transport)"
       count.times do
-        FactoryGirl.create(:offer, :with_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :submitted, :with_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :under_review, :with_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :reviewed, :with_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :scheduled, :with_transport, :with_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :closed, :with_transport, :with_items, :with_messages, created_by: donor)
+        FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        FactoryGirl.create(:offer, :submitted, :with_demo_items, :with_messages, created_by: donor)
+        FactoryGirl.create(:offer, :under_review, :with_demo_items, :with_messages, created_by: donor)
+        FactoryGirl.create(:offer, :reviewed, :with_demo_items, :with_messages, created_by: donor)
+        FactoryGirl.create(:offer, :scheduled, :with_transport, :with_demo_items, :with_messages, created_by: donor)
+        offer = FactoryGirl.create(:offer, :closed, :with_transport, :with_demo_items, :with_messages, created_by: donor)
+        Package.joins(item: :offer).where("offers.id = ?", offer.id).each do |package|
+          package.allow_web_publish = true
+        end
       end
     end
 
@@ -41,6 +44,9 @@ namespace :demo do
       end
       count_package.times do
         FactoryGirl.create(:package, :received)
+      end
+      count_package.times do
+        FactoryGirl.create(:package, :received, :published)
       end
     end
 

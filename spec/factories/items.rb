@@ -56,6 +56,15 @@ FactoryGirl.define do
       reject_reason      { generate(:reject_reasons) }
       rejection_comments { FFaker::Lorem.sentence }
     end
+
+    factory :demo_item, parent: :item do
+      transient do
+        demo_key { generate(:cloudinary_demo_images).keys.sample } # e.g. red_chair
+      end
+      donor_description { generate(:cloudinary_demo_images)[demo_key][:donor_description] }
+      images            { create_list(:demo_image, 1, demo_key.to_sym, favourite: true) }
+      packages          { create_list(:package, 1, notes: donor_description) }
+    end
   end
 
   sequence :reject_reasons do |n|
