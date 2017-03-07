@@ -1,6 +1,5 @@
 namespace :goodcity do
 
-  # rake goodcity:update_orders_packages_data
   desc 'Update orders_packages'
   task update_orders_packages_data: :environment do
     exclude_ids = OrdersPackage.pluck(:package_id)

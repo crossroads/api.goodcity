@@ -1,9 +1,8 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_organisations
   desc 'Load organisation details from stockit'
   task add_stockit_organisations: :environment do
-    StockitOrganisation.delete_all
+    # StockitOrganisation.delete_all
 
     organisations_json = Stockit::OrganisationSync.index
     stockit_organisations = JSON.parse(organisations_json["organisations"])

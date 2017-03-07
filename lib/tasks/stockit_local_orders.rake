@@ -1,9 +1,8 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_local_orders
-  desc 'Load local_order details from stockit'
+  desc 'Load local_order details from Stockit'
   task add_stockit_local_orders: :environment do
-    StockitLocalOrder.delete_all
+    # StockitLocalOrder.delete_all
 
     local_orders_json = Stockit::LocalOrderSync.index
     stockit_local_orders = JSON.parse(local_orders_json["local_orders"])
