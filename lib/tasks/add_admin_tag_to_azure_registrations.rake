@@ -1,4 +1,4 @@
-namespace :goodcity do
+namespace :azure do
 
   task add_admin_tag_to_azure_registrations: :environment do
     svc = AzureNotificationsService.new
