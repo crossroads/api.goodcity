@@ -1,0 +1,35 @@
+# prefix with http://res.cloudinary.com/ddoadcjjl/image/upload/v to view the image
+---
+red_chair:
+  :donor_description: "A 1 person red chair."
+  :cloudinary_id: "1487128065/demo/jnsuiph0zz06eeah5ddv.jpg"
+pots_and_pans:
+  :donor_description: "Pots and pans for use in kitchen. Never used."
+  :cloudinary_id: "1486447847/demo/irawvgyrqqdwremdupyj.jpg"
+high_chair:
+  :donor_description: "Baby high chair. 1 previous owner"
+  :cloudinary_id: "1473127324/demo/cu3ad5eqmhaevnfuoh1o.jpg"
+wooden_chair:
+  :donor_description: "Single wooden chair. Slightly broken"
+  :cloudinary_id: "1473754702/demo/d2u583csuel3ooqjalqz.jpg"
+kitchen_sink:
+  :donor_description: "Toy kitchen sink comes with plastic food"
+  :cloudinary_id: "1473608888/demo/dmpnecjhvr8tj2rjn7fj.jpg"
+couch:
+  :donor_description: "Large couch suitable for 3 persons"
+  :cloudinary_id: "1469088909/demo/hbgm9u7nvcfahfcydmdh.jpg"
+piano:
+  :donor_description: "Grand piano. Worth $500,000"
+  :cloudinary_id: "1481193649/demo/l1627pdb06guubpk2ips.jpg"
+kiprosh_mug:
+  :donor_description: "Exclusive Kiprosh mug. Limited numbers available."
+  :cloudinary_id: "1480314405/demo/qttocjzahztrtqnvipag.jpg"
+dining_table_chair_set:
+  :donor_description: "Dining table and chair set"
+  :cloudinary_id: "1480320984/demo/ujjciczamcowrsmlw3zi.jpg"
+baby_chair:
+  :donor_description: "Baby chair. Brand new"
+  :cloudinary_id: "1480520319/demo/wibzi2cvq0groajzenge.jpg"
+office_chair:
+  :donor_description: "Office chair. Black"
+  :cloudinary_id: "1486450903/demo/wntuu7qf6oxqtgr9rs4i.jpg"
