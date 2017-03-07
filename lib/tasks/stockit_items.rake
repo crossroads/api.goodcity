@@ -32,7 +32,7 @@ namespace :stockit do
             package.order = package_designation(value["designation_id"])
             package.designation_name = value["designation_code"]
             package.donor_condition = package_condition(value["condition"])
-            package.locations << package_location(value["location_id"])
+            package.packages_locations << packages_location(value["location_id"], package.quantity)
             package.package_type = package_type_record(value["code_id"])
             package.box = box_record(value["box_id"])
             package.pallet = pallet_record(value["pallet_id"])
@@ -63,8 +63,10 @@ namespace :stockit do
     DonorCondition.find_by(name_en: value) if value.present?
   end
 
-  def package_location(location_id)
-    Location.find_by(stockit_id: location_id) if location_id.present?
+  def packages_location(stockit_location_id, quantity)
+    location_id = Location.find_by(stockit_id: stockit_location_id).try(:id)
+    return [] unless (location_id and quantity)
+    PackagesLocation.new(location_id: location_id, quantity: quantity)
   end
 
   def package_type_record(code_id)
