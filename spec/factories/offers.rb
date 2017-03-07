@@ -62,6 +62,15 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_demo_items do
+      transient do
+        items_count 1
+      end
+      after(:create) do |offer, evaluator|
+        evaluator.items_count.times { create :demo_item, offer: offer }
+      end
+    end
+
     trait :with_messages do
       transient do
         messages_count 1

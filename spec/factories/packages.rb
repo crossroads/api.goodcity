@@ -1,5 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
   factory :package do
     quantity              { rand(5) + 1 }
@@ -43,6 +41,10 @@ FactoryGirl.define do
       received_at { Time.now }
       inventory_number      { generate(:inventory_number) }
       sequence(:stockit_id) { |n| n }
+    end
+
+    trait :published do
+      allow_web_publish true
     end
   end
 end
