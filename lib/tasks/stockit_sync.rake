@@ -4,32 +4,31 @@ namespace :stockit do
     Sync data from Stockit.
     This task syncs GoodCity up with Stockit data.
     It won't delete data but it will overwrite GoodCity
-    with Stockit's data.
+    with Stockit's data. Once done, it will generate
+    OrdersPackages and sync them to Stockit.
   eos
   task sync: :environment do
-    puts "Activities"
+    puts "Getting Stockit Activities"
     Rake::Task["stockit:add_stockit_activities"].execute
-    puts "Countries"
+    puts "Getting Stockit Countries"
     Rake::Task["stockit:add_stockit_countries"].execute
-    puts "Locations"
+    puts "Getting Stockit Locations"
     Rake::Task["stockit:add_stockit_locations"].execute
-    puts "Codes"
+    puts "Getting Stockit Codes"
     Rake::Task["stockit:add_stockit_codes"].execute
-    puts "Pallets and boxes"
+    puts "Getting Stockit Pallets and boxes"
     Rake::Task["stockit:add_stockit_pallets_boxes"].execute
-    puts "Organisations"
+    puts "Getting Stockit Organisations"
     Rake::Task["stockit:add_stockit_organisations"].execute
-    puts "Contacts"
+    puts "Getting Stockit Contacts"
     Rake::Task["stockit:add_stockit_contacts"].execute
-    puts "Local orders"
+    puts "Getting Stockit Local orders"
     Rake::Task["stockit:add_stockit_local_orders"].execute
-    puts "Designations"
+    puts "Getting Stockit Designations"
     Rake::Task["stockit:add_designations"].execute
-    puts "Items"
+    puts "Getting Stockit Items"
     Rake::Task["stockit:add_stockit_items"].execute
-    puts "PackageTypes"
-    Rake::Task["goodcity:update_package_type_default_location"].execute
-    puts "OrdersPackages"
+    puts "Generate OrdersPackages and sync them to Stockit"
     Rake::Task["goodcity:update_orders_packages_data"].execute
   end
 end
