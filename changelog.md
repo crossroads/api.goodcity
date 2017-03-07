@@ -22,7 +22,7 @@ Create api-write permission
 
 Rake tasks to run:
 
-    rake goodcity:add_stockit_locations
+    rake stockit:add_stockit_locations
     rake goodcity:update_cancelled_offers
     rake goodcity:update_closed_offers
 
@@ -42,7 +42,7 @@ Add follwing environment variables in `.env` file
 Rake tasks to run:
 
     rake goodcity:update_offers_cancelled_with_unwanted_reason
-    rake goodcity:update_packages
+    rake goodcity:update_packages_grade_condition
 
 ## Version 0.8
 
@@ -56,14 +56,14 @@ Rake tasks to run:
 
 Rake tasks to run:
 
-    rake goodcity:add_stockit_codes
-    rake goodcity:add_stockit_pallets_boxes
-    rake goodcity:add_stockit_organisations
-    rake goodcity:add_stockit_contacts
-    rake goodcity:add_stockit_activities
-    rake goodcity:add_stockit_local_orders
-    rake goodcity:add_stockit_designations
-    rake goodcity:add_stockit_items
+    rake stockit:add_stockit_codes
+    rake stockit:add_stockit_pallets_boxes
+    rake stockit:add_stockit_organisations
+    rake stockit:add_stockit_contacts
+    rake stockit:add_stockit_activities
+    rake stockit:add_stockit_local_orders
+    rake stockit:add_designations
+    rake stockit:add_stockit_items
     rake goodcity:update_package_image
     rake goodcity:copy_inventory_numbers_used_in_stockit
 
@@ -73,9 +73,9 @@ Rake tasks to run:
 
     rake goodcity:update_set_item_id_for_packages
     rake goodcity:update_package_type_default_location
-    rake goodcity:add_stockit_countries
-    rake goodcity:add_stockit_designations
-    rake goodcity:update_stockit_items
+    rake stockit:add_stockit_countries
+    rake stockit:add_designations
+    rake stockit:update_stockit_items
 
 ## Version 0.11
 

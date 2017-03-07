@@ -1,10 +1,9 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_countries
-  desc 'Load countries from stockit'
+  desc 'Load countries from Stockit'
   task add_stockit_countries: :environment do
-    Country.delete_all
-
+    # Country.delete_all
+    
     countries_json = Stockit::CountrySync.index
     stockit_countries = JSON.parse(countries_json["countries"])
 

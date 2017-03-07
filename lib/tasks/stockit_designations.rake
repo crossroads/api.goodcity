@@ -1,8 +1,7 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_orders
-  desc 'Load designation details from stockit'
-  task add_orders: :environment do
+  desc 'Load designation details from Stockit'
+  task add_designations: :environment do
 
     designations_json = Stockit::DesignationSync.index
     orders = JSON.parse(designations_json["designations"])

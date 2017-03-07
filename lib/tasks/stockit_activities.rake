@@ -1,9 +1,8 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_activities
-  desc 'Load activity details from stockit'
+  desc 'Load activity details from Stockit'
   task add_stockit_activities: :environment do
-    StockitActivity.delete_all
+    # StockitActivity.delete_all
 
     activities_json = Stockit::ActivitySync.index
     stockit_activities = JSON.parse(activities_json["activities"])
