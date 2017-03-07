@@ -32,7 +32,7 @@ namespace :stockit do
             package.order = package_designation(value["designation_id"])
             package.designation_name = value["designation_code"]
             package.donor_condition = package_condition(value["condition"])
-            # package.locations << package_location(value["location_id"])
+            package.locations << package_location(value["location_id"])
             package.package_type = package_type_record(value["code_id"])
             package.box = box_record(value["box_id"])
             package.pallet = pallet_record(value["pallet_id"])
