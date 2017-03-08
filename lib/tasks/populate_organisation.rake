@@ -2,7 +2,7 @@ require 'sidekiq/api'
 #use 'rake populate_organisation:organisation' to create or update organisation details
 namespace :populate_organisation do
   task organisation:  :environment do
-    organisation_hash = {
+    organisation_fields_mapping = {
       "name_en" => "name_en",
       "name_zh_tw" => "name_zh",
       "website" => "url",
@@ -18,7 +18,7 @@ namespace :populate_organisation do
 
     #for job
     stockit_id = StockitCountryAddJob.perform_now(country_name, country_name, country_code, country_region)
-    country = Country.find_by_name_en(stockit_id)|| Country.create(name_en: country_name ,name_zh_tw: country_name)
+    country = Country.find_by(stockit_id: stockit_id)|| Country.create(name_en: country_name ,name_zh_tw: country_name)
 
     begin
       file = Nestful.get("https://goodcitystorage.blob.core.windows.net/public/s88-orgs.json").response.body
@@ -29,9 +29,10 @@ namespace :populate_organisation do
     # file = File.read('app/assets/organisation.json')
     if (file.present?)
       JSON.parse(file).each do |data|
-        organisation_hash =  organisation_hash.keep_if { |k, v| data.key? v }
-        organisation = Organisation.find_by(registration: data['org_id']) || Organisation.new(registration: data['org_id'], organisation_type: organisation_type, country: country)
-          organisation_hash.each do |organisation_column, data_key|
+        organisation_fields_mapping =  organisation_fields_mapping.keep_if { |k, v| data.key? v }
+        organisation = Organisation.find_by(registration: data['org_id']) ||
+          Organisation.new(registration: data['org_id'], organisation_type: organisation_type, country: country)
+          organisation_fields_mapping.each do |organisation_column, data_key|
             unless(organisation.try(organisation_column) == data[data_key])
               organisation[organisation_column.to_sym] = data[data_key]
             end
