@@ -291,6 +291,7 @@ module Api::V1
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
+        @package.received_quantity = received_quantity
         @package.build_packages_location(location_id)
         @package.order_id = order_id
         @package.inventory_number = inventory_number
@@ -300,9 +301,13 @@ module Api::V1
       else
         @package.assign_attributes(package_params)
       end
+      @package.received_quantity ||= received_quantity
       add_favourite_image if params["package"]["favourite_image_id"]
-      @package.received_quantity = params[:package][:quantity] if params[:package][:quantity]
       @package
+    end
+
+    def received_quantity
+      params[:package][:quantity].to_i
     end
 
     def location_id
