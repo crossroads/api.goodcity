@@ -26,8 +26,6 @@ class OrganisationPopulator
       JSON.parse(@file).each do |data|
         organisation_fields_mapping =  ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
         organisation = get_organisation(data) || build_organisation(data)
-        # puts organisation
-        # puts data
         organisation_fields_mapping.each do |organisation_column, data_key|
           unless(organisation.try(organisation_column) == data[data_key])
             organisation[organisation_column.to_sym] = data[data_key]
