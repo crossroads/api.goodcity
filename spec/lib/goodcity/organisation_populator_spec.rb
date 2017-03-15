@@ -2,7 +2,7 @@ require "rails_helper"
 require "goodcity/organisation_populator"
 
 describe Goodcity::OrganisationPopulator do
-  let(:organisation_populator) { Goodcity::OrganisationPopulator.new }
+  let(:organisation_populator) { described_class.new }
   let(:file)                   { File.read("#{Rails.root}/spec/fixtures/organisation.json")}
   let!(:country)               { FactoryGirl.create(:country, name_en: "China - Hong Kong (Special Administrative Region)") }
 
@@ -19,7 +19,7 @@ describe Goodcity::OrganisationPopulator do
     end
     it ":created data" do
       JSON.parse(file).each do |data|
-        organisation_fields_mapping = Goodcity::OrganisationPopulator::ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
+        organisation_fields_mapping = described_class::ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
         organisation = Organisation.find_by_registration(data['org_id'])
         organisation_fields_mapping.each do |organisation_column, data_key|
           expect(organisation[organisation_column.to_sym]).to eq(data[data_key])
@@ -58,13 +58,13 @@ describe Goodcity::OrganisationPopulator do
 
     context "default_country" do
       it do
-        expect(organisation_populator.send(:default_country).name_en).to eq(Goodcity::OrganisationPopulator::COUNTRY_NAME_EN)
+        expect(organisation_populator.send(:default_country).name_en).to eq(described_class::COUNTRY_NAME_EN)
       end
     end
 
     context "organisation_type" do
       it do
-        expect(organisation_populator.send(:organisation_type).name_en).to eq(Goodcity::OrganisationPopulator::ORGANISATION_TYPE_NAME)
+        expect(organisation_populator.send(:organisation_type).name_en).to eq(described_class::ORGANISATION_TYPE_NAME)
       end
     end
 
