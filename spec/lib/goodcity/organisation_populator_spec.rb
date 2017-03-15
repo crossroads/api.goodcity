@@ -3,11 +3,11 @@ require "goodcity/organisation_populator"
 
 describe Goodcity::OrganisationPopulator do
   let(:organisation_populator) { Goodcity::OrganisationPopulator.new }
-  let(:success_response)    { { "status" => 201 } }
-  let(:mock_response)       { double( as_json: success_response ) }
-  let(:error_response)      { { "errors" => { "code" => "can't be blank" } } }
-  let(:mock_error_response) { double( as_json: error_response ) }
-  let(:file)                 { File.read("#{Rails.root}/spec/fixtures/organisation.json")}
+  let(:success_response)       { { "status" => 201 } }
+  let(:mock_response)          { double( as_json: success_response ) }
+  let(:error_response)         { { "errors" => { "code" => "can't be blank" } } }
+  let(:mock_error_response)    { double( as_json: error_response ) }
+  let(:file)                   { File.read("#{Rails.root}/spec/fixtures/organisation.json")}
 
   before do
     Country.create(name_en: "China - Hong Kong (Special Administrative Region)")
