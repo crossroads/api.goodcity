@@ -4,7 +4,7 @@ namespace :goodcity do
 
   # use 'rake goodcity:populate_organisations' to create or update organisation details from HK IRD database
   task populate_organisations:  :environment do
-    Goodcity::OrganisationPopulator.new.populate_organisation_db
+    Goodcity::OrganisationPopulator.new.run
   end
 
   # rake goodcity:add_organisations

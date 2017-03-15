@@ -29,7 +29,7 @@ describe Goodcity::OrganisationPopulator do
   end
 
   context "populate organisation" do
-    before { organisation_populator.populate_organisation_db }
+    before { organisation_populator.run }
     it do
       expect(organisation_populator.instance_variable_get(:@file).present?).to eq(file.present?)
     end
@@ -58,7 +58,7 @@ describe Goodcity::OrganisationPopulator do
     describe ":updated data" do
       it "Create only new records" do
         expect {
-        organisation_populator.populate_organisation_db
+        organisation_populator.run
         }.to change(Organisation, :count).by(6)
       end
 
