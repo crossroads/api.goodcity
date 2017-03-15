@@ -1,7 +1,8 @@
 require "rails_helper"
+require "goodcity/organisation_populator"
 
-describe OrganisationPopulator do
-  let(:organisation_populator) { OrganisationPopulator.new }
+describe Goodcity::OrganisationPopulator do
+  let(:organisation_populator) { Goodcity::OrganisationPopulator.new }
   let(:success_response)    { { "status" => 201 } }
   let(:mock_response)       { double( as_json: success_response ) }
   let(:error_response)      { { "errors" => { "code" => "can't be blank" } } }
@@ -15,11 +16,11 @@ describe OrganisationPopulator do
 
   context "initialization" do
     it ":set organisation_type" do
-      expect(organisation_populator.instance_variable_get(:@organisation_type).name_en).to eq(OrganisationPopulator::ORGANISATION_TYPE_NAME)
+      expect(organisation_populator.instance_variable_get(:@organisation_type).name_en).to eq(Goodcity::OrganisationPopulator::ORGANISATION_TYPE_NAME)
     end
 
     it ":set country" do
-      expect(organisation_populator.instance_variable_get(:@country).name_en).to eq(OrganisationPopulator::COUNTRY_NAME_EN)
+      expect(organisation_populator.instance_variable_get(:@country).name_en).to eq(Goodcity::OrganisationPopulator::COUNTRY_NAME_EN)
     end
 
     it ":set url" do
@@ -38,7 +39,7 @@ describe OrganisationPopulator do
     end
     it ":created data" do
       JSON.parse(file).each do |data|
-        organisation_fields_mapping = OrganisationPopulator::ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
+        organisation_fields_mapping = Goodcity::OrganisationPopulator::ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
         organisation = Organisation.find_by_registration(data['org_id'])
         organisation_fields_mapping.each do |organisation_column, data_key|
           expect(organisation[organisation_column.to_sym]).to eq(data[data_key])
