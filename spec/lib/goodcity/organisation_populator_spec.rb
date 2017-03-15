@@ -44,12 +44,13 @@ describe Goodcity::OrganisationPopulator do
       end
 
       it ":update the existing records" do
+        organisation_populator.run
         JSON.parse(file).each do |data|
           [registration_id_one, registration_id_two].each do |reg_id|
             if(data['org_id'] == reg_id)
               organisation = Organisation.find_by(registration: data['org_id'])
-              expect(organisation.name_en).to_not eq(data['name_en'])
-              expect(organisation.website).to_not eq(data['url'])
+              expect(organisation.name_en).to eq(data['name_en'])
+              expect(organisation.website).to eq(data['url'])
             end
           end
         end
