@@ -22,7 +22,7 @@ module Goodcity
     end
 
 
-    def populate_organisation_db
+    def run
       if (@file.present?)
         JSON.parse(@file).each do |data|
           organisation_fields_mapping =  ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
