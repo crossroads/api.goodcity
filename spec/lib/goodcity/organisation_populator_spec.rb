@@ -4,10 +4,12 @@ require "goodcity/organisation_populator"
 describe Goodcity::OrganisationPopulator do
   let(:organisation_populator) { Goodcity::OrganisationPopulator.new }
   let(:file)                   { File.read("#{Rails.root}/spec/fixtures/organisation.json")}
+  let!(:country)               { FactoryGirl.create(:country, name_en: "China - Hong Kong (Special Administrative Region)") }
 
   before do
-    Country.create(name_en: "China - Hong Kong (Special Administrative Region)")
-    stub_request(:get, /goodcitystorage.blob.core.windows.net/). with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}). to_return(status: 200, body: file , headers: {}).response.body
+    stub_request(:get, /goodcitystorage.blob.core.windows.net/).
+      with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(status: 200, body: file , headers: {}).response.body
   end
 
   context "populate organisation" do
@@ -54,6 +56,7 @@ describe Goodcity::OrganisationPopulator do
     end
 
     context "default_country" do
+      
       it do
         expect(organisation_populator.send(:default_country).name_en).to eq(Goodcity::OrganisationPopulator::COUNTRY_NAME_EN)
       end
