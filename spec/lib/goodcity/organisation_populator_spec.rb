@@ -19,10 +19,6 @@ describe Goodcity::OrganisationPopulator do
       expect(organisation_populator.instance_variable_get(:@organisation_type).name_en).to eq(Goodcity::OrganisationPopulator::ORGANISATION_TYPE_NAME)
     end
 
-    it ":set country" do
-      expect(organisation_populator.instance_variable_get(:@country).name_en).to eq(Goodcity::OrganisationPopulator::COUNTRY_NAME_EN)
-    end
-
     it ":set url" do
       expect(organisation_populator.instance_variable_get(:@file)).to eq(file)
     end
@@ -74,6 +70,13 @@ describe Goodcity::OrganisationPopulator do
         end
       end
     end
+
+    context "default_country" do
+      it do
+        expect(organisation_populator.send(:default_country).name_en).to eq(Goodcity::OrganisationPopulator::COUNTRY_NAME_EN)
+      end
+    end
+
   end
 
 end

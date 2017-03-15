@@ -12,7 +12,6 @@ module Goodcity
 
     def initialize
       @organisation_type = get_organisation_type
-      @country           = Country.find_by_name_en(COUNTRY_NAME_EN)
       begin
         @file            = Nestful.get(URL).response.body
       rescue Exception => e
@@ -50,7 +49,11 @@ module Goodcity
     def build_organisation (org_id)
       Organisation.new(registration: org_id,
       organisation_type: @organisation_type,
-      country: @country)
+      country: default_country)
+    end
+
+    def default_country
+      @default_country ||= Country.find_by_name_en(COUNTRY_NAME_EN)
     end
 
   end
