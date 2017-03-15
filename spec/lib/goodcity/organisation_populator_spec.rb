@@ -29,22 +29,23 @@ describe Goodcity::OrganisationPopulator do
   end
 
   context "update organisation" do
+    let(:registration_id_one) { "91/09657"}
+    let(:registration_id_two) { "91/15022" }
     before do
-      @registration_id = [ "91/09657", "91/15022" ]
-      Organisation.create(registration: @registration_id[0], website: "")
-      Organisation.create(registration: @registration_id[1], name_en: "abcd")
+      Organisation.create(registration: registration_id_one, website: "")
+      Organisation.create(registration: registration_id_two, name_en: "abcd")
     end
 
     describe ":updated data" do
       it "Create only new records" do
         expect {
-        organisation_populator.run
+         organisation_populator.run
         }.to change(Organisation, :count).by(6)
       end
 
       it ":update the existing records" do
         JSON.parse(file).each do |data|
-          @registration_id.each do |reg_id|
+          [registration_id_one, registration_id_two].each do |reg_id|
             if(data['org_id'] == reg_id)
               organisation = Organisation.find_by(registration: data['org_id'])
               expect(organisation.name_en).to_not eq(data['name_en'])
@@ -56,7 +57,6 @@ describe Goodcity::OrganisationPopulator do
     end
 
     context "default_country" do
-      
       it do
         expect(organisation_populator.send(:default_country).name_en).to eq(Goodcity::OrganisationPopulator::COUNTRY_NAME_EN)
       end
