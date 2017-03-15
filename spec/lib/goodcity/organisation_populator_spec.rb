@@ -14,18 +14,8 @@ describe Goodcity::OrganisationPopulator do
     stub_request(:get, /goodcitystorage.blob.core.windows.net/). with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}). to_return(status: 200, body: file , headers: {}).response.body
   end
 
-  context "initialization" do
-    it ":set url" do
-      expect(organisation_populator.instance_variable_get(:@file)).to eq(file)
-    end
-  end
-
   context "populate organisation" do
     before { organisation_populator.run }
-    it do
-      expect(organisation_populator.instance_variable_get(:@file).present?).to eq(file.present?)
-    end
-
     it ":count created data" do
       expect(Organisation.count).to eq(JSON.parse(file).count)
     end
