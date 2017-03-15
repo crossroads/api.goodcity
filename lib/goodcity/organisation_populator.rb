@@ -12,13 +12,11 @@ module Goodcity
 
     def initialize
       begin
-        @file            = Nestful.get(URL).response.body
+        @file = Nestful.get(URL).response.body
       rescue Exception => e
         Airbrake.notify(e, error_class: "populate_organisation", error_message: "Organisation File Error")
       end
-      # @file = File.read('app/assets/organisation.json')
     end
-
 
     def run
       if (@file.present?)
@@ -34,7 +32,6 @@ module Goodcity
         end
       end
     end
-
 
     private
 
