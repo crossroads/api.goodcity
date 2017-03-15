@@ -11,7 +11,6 @@ module Goodcity
     }
 
     def initialize
-      @organisation_type = get_organisation_type
       begin
         @file            = Nestful.get(URL).response.body
       rescue Exception => e
@@ -38,8 +37,9 @@ module Goodcity
 
 
     private
-    def get_organisation_type
-      OrganisationType.find_by_name_en(ORGANISATION_TYPE_NAME) || OrganisationType.create(name_en: ORGANISATION_TYPE_NAME)
+
+    def organisation_type
+      @organisation_type ||= OrganisationType.find_or_create_by(name_en: ORGANISATION_TYPE_NAME)
     end
 
     def get_organisation(org_id)
@@ -48,8 +48,8 @@ module Goodcity
 
     def build_organisation (org_id)
       Organisation.new(registration: org_id,
-      organisation_type: @organisation_type,
-      country: default_country)
+        organisation_type: organisation_type,
+        country: default_country)
     end
 
     def default_country
