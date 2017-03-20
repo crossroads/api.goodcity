@@ -204,15 +204,15 @@ class Package < ActiveRecord::Base
 
   def move_full_quantity(location_id, orders_package_id)
     orders_package              = orders_packages.find_by(id: orders_package_id)
-    referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
+    referenced_package_location = packages_locations.find_by(orders_package_id: orders_package_id)
 
     if packages_location_record = self.packages_locations.find_by(location_id: location_id)
       new_qty = orders_package.quantity + packages_location_record.quantity
-      packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
+      packages_location_record.update(quantity: new_qty, orders_package_id: nil)
       referenced_package_location.destroy
     else
       referenced_package_location.update(location_id: location_id, quantity: orders_package.quantity,
-        reference_to_orders_package: nil)
+        orders_package_id: nil)
     end
   end
 

@@ -275,7 +275,7 @@ RSpec.describe Package, type: :model do
     let!(:location) { create :location }
     let!(:order) { create :order, state: "submitted"}
     let!(:orders_package) { create :orders_package, package: package, state: 'designated', order: order, quantity: 10 }
-    let!(:packages_location) { create :packages_location, package: package, reference_to_orders_package: orders_package.id}
+    let!(:packages_location) { create :packages_location, package: package, orders_package_id: orders_package.id}
 
     context 'if no packages_location record exist with provided location_id' do
       it 'updates quantity of packages_location record with referenced orders package quantity' do
@@ -288,14 +288,14 @@ RSpec.describe Package, type: :model do
         expect(packages_location.reload.location).to eq location
       end
 
-      it 'clears reference_to_orders_package' do
+      it 'clears orders_package_id' do
         package.move_full_quantity(location.id, orders_package.id)
-        expect(packages_location.reload.reference_to_orders_package).to be_nil
+        expect(packages_location.reload.orders_package_id).to be_nil
       end
     end
 
     context 'if packages_location record already exist with provided location_id' do
-      let!(:packages_location_1) { create :packages_location, package: package, reference_to_orders_package: orders_package.id, location: location}
+      let!(:packages_location_1) { create :packages_location, package: package, orders_package_id: orders_package.id, location: location}
 
       it 'adds up orders_package quantity and packages_location quantity and updates packages_location quantity with new quantity' do
         new_quantity = packages_location_1.quantity + orders_package.quantity
@@ -309,9 +309,9 @@ RSpec.describe Package, type: :model do
         }.to change(PackagesLocation, :count).by(-1)
       end
 
-      it 'clears reference_to_orders_package' do
+      it 'clears orders_package_id' do
         package.move_full_quantity(location.id, orders_package.id)
-        expect(packages_location_1.reload.reference_to_orders_package).to be_nil
+        expect(packages_location_1.reload.orders_package_id).to be_nil
       end
     end
   end
