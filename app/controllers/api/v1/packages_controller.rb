@@ -166,7 +166,7 @@ module Api::V1
     def dispatch_stockit_item
       @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
       @orders_package.dispatch_orders_package
-      @package.dispatch_stockit_item(@orders_package)
+      @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"])
       send_stock_item_response
     end
 
