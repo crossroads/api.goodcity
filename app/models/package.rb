@@ -192,13 +192,19 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatch_stockit_item(orders_package=nil, skip_set_relation_update=false)
+  def dispatch_stockit_item(orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    update_existing_package_location_qty(packages_locations.first.id, orders_package.try(:quantity))
+    deduct_dispatch_quantity(package_location_changes)
+  end
+
+  def deduct_dispatch_quantity(package_qty_changes)
+    package_qty_changes.each_pair do |_key, pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
+    end
   end
 
   def undispatch_stockit_item
