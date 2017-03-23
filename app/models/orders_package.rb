@@ -87,9 +87,14 @@ class OrdersPackage < ActiveRecord::Base
     packages.each_pair do |_key, package|
       quantity_to_reduce = package["quantity"].to_i
       orders_package     = find_by(id: package["orders_package_id"])
+      orders_package.remove_designation_of_associated_package
       total_quantity     = orders_package.quantity - quantity_to_reduce
       orders_package.update_orders_package_state(total_quantity)
     end
+  end
+
+  def remove_designation_of_associated_package
+    package.undesignate_from_stockit_order if package.is_singleton_package?
   end
 
   def update_orders_package_state(total_quantity)
@@ -115,7 +120,7 @@ class OrdersPackage < ActiveRecord::Base
     unless(state == "requested")
       update_designation_of_package
       package.update_in_stock_quantity
-      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless is_singleton_package?(package)
+      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.is_singleton_package?
     end
   end
 
@@ -129,11 +134,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def destroy_stockit_record(operation)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless is_singleton_package?(package)
-  end
-
-  def is_singleton_package?(package)
-    package.received_quantity == 1
+    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.is_singleton_package?
   end
 end
 

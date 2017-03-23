@@ -321,6 +321,10 @@ class Package < ActiveRecord::Base
     image.imageable.images.where.not(id: image_id).update_all(favourite: false)
   end
 
+  def is_singleton_package?
+    received_quantity == 1
+  end
+
   private
 
   def set_default_values

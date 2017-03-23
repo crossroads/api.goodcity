@@ -96,13 +96,9 @@ module Stockit
         description: package.notes,
         location_id: item_location_id,
         id: package.stockit_id,
-        designation_id: is_singleton_item?(package) ? package.order.try(:stockit_id) : nil,
-        designated_on: is_singleton_item?(package) ? package.stockit_designated_on : nil
+        designation_id: package.is_singleton_package? ? package.order.try(:stockit_id) : nil,
+        designated_on: package.is_singleton_package? ? package.stockit_designated_on : nil
       }
-    end
-
-    def is_singleton_item?(package)
-      package.received_quantity == 1
     end
 
     def item_location_id
