@@ -115,7 +115,7 @@ class OrdersPackage < ActiveRecord::Base
     unless(state == "requested")
       update_designation_of_package
       package.update_in_stock_quantity
-      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation)
+      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless is_singleton_package?(package)
     end
   end
 
@@ -129,7 +129,11 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def destroy_stockit_record(operation)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless is_singleton_package?(package)
+  end
+
+  def is_singleton_package?(package)
+    package.received_quantity == 1
   end
 end
 
