@@ -95,7 +95,9 @@ module Stockit
         grade: package.grade,
         description: package.notes,
         location_id: item_location_id,
-        id: package.stockit_id
+        id: package.stockit_id,
+        designation_id: package.is_singleton_package? ? package.order.try(:stockit_id) : nil,
+        designated_on: package.is_singleton_package? ? package.stockit_designated_on : nil
       }
     end
 
