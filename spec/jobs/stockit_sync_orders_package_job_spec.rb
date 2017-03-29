@@ -20,12 +20,12 @@ describe StockitSyncOrdersPackageJob, :type => :job do
   end
 
   it 'deletes orders_package in stockit if delete operation' do
-    expect(Stockit::OrdersPackageSync).to receive(:delete).with(package, orders_package)
+    expect(Stockit::OrdersPackageSync).to receive(:delete).with(package, orders_package.id)
     subject.perform(package.id, orders_package.id, "destroy")
   end
 
   it "logs error messages" do
-    expect(Stockit::OrdersPackageSync).to receive(:delete).with(package, orders_package).and_return(err)
+    expect(Stockit::OrdersPackageSync).to receive(:delete).with(package, orders_package.id).and_return(err)
     err_msg = "Inventory: #{package.inventory_number} Package: #{package.id} connection_error: Error"
     expect(subject).to receive_message_chain(:logger, :error).with(err_msg)
     subject.perform(package.id, orders_package.id, "destroy")
