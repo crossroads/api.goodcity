@@ -24,8 +24,8 @@ module Stockit
         new(package, orders_package).update
       end
 
-      def delete(package, orders_package)
-        new(package, orders_package).delete
+      def delete(package, orders_package_id)
+        new(package, orders_package_id).delete
       end
     end
 
@@ -45,7 +45,7 @@ module Stockit
 
     def delete
       url = url_for("/api/v1/items/destroy")
-      put(url, { gc_orders_package_id: @orders_package.id })
+      put(url, { gc_orders_package_id: @orders_package })
     end
 
     private
