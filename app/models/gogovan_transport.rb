@@ -1,4 +1,4 @@
-class GogovanTransport < ActiveRecord::Base
+class GogovanTransport < ApplicationRecord
   translates :name
   validates :name_en, presence: true
 

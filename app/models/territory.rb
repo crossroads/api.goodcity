@@ -1,4 +1,4 @@
-class Territory < ActiveRecord::Base
+class Territory < ApplicationRecord
 
   include CacheableJson
 

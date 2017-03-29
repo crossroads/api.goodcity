@@ -1,4 +1,4 @@
-class Order < ActiveRecord::Base
+class Order < ApplicationRecord
   belongs_to :detail, polymorphic: true
   belongs_to :stockit_activity
   belongs_to :country

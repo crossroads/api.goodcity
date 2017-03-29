@@ -1,4 +1,4 @@
-class CancellationReason < ActiveRecord::Base
+class CancellationReason < ApplicationRecord
 
   include CacheableJson
 

@@ -1,4 +1,4 @@
-class DonorCondition < ActiveRecord::Base
+class DonorCondition < ApplicationRecord
 
   include CacheableJson
 

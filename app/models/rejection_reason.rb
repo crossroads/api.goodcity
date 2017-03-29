@@ -1,4 +1,4 @@
-class RejectionReason < ActiveRecord::Base
+class RejectionReason < ApplicationRecord
 
   include CacheableJson
 

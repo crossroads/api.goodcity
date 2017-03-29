@@ -1,4 +1,4 @@
-class Delivery < ActiveRecord::Base
+class Delivery < ApplicationRecord
   has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
 

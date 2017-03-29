@@ -1,4 +1,4 @@
-class Holiday < ActiveRecord::Base
+class Holiday < ApplicationRecord
   by_star_field :holiday
 
   validates :holiday, :name, presence: true

@@ -1,4 +1,4 @@
-class Schedule < ActiveRecord::Base
+class Schedule < ApplicationRecord
   has_many :deliveries, inverse_of: :schedule
 
   def formatted_date_and_slot

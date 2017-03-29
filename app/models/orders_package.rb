@@ -1,4 +1,4 @@
-class OrdersPackage < ActiveRecord::Base
+class OrdersPackage < ApplicationRecord
   belongs_to :order
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'

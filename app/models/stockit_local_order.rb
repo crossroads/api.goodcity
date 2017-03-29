@@ -1,3 +1,3 @@
-class StockitLocalOrder < ActiveRecord::Base
+class StockitLocalOrder < ApplicationRecord
   has_one :order, as: :detail
 end

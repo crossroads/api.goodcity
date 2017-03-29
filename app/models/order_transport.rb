@@ -1,4 +1,4 @@
-class OrderTransport < ActiveRecord::Base
+class OrderTransport < ApplicationRecord
 
   belongs_to :order, inverse_of: :order_transport
   belongs_to :contact

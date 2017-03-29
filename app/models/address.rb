@@ -1,4 +1,4 @@
-class Address < ActiveRecord::Base
+class Address < ApplicationRecord
   has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
 

@@ -12,8 +12,8 @@ module Api::V1
 
     before_action :validate_twilio_request, except: :accept_call
 
-    after_filter :set_header, except: [:assignment, :hold_music]
-    after_filter :set_json_header, only: :assignment
+    after_action :set_header, except: [:assignment, :hold_music]
+    after_action :set_json_header, only: :assignment
 
     resource_description do
       short "Handle Twilio Inbound Voice Calls"

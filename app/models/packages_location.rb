@@ -1,4 +1,4 @@
-class PackagesLocation < ActiveRecord::Base
+class PackagesLocation < ApplicationRecord
   belongs_to :location
   belongs_to :package
 

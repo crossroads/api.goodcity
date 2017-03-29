@@ -1,4 +1,4 @@
-class InventoryNumber < ActiveRecord::Base
+class InventoryNumber < ApplicationRecord
 
   def self.all_codes
     select("CAST(code AS integer) AS number").map(&:number)

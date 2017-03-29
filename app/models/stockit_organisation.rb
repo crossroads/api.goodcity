@@ -1,2 +1,2 @@
-class StockitOrganisation < ActiveRecord::Base
+class StockitOrganisation < ApplicationRecord
 end

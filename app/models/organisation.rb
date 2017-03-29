@@ -1,4 +1,4 @@
-class Organisation < ActiveRecord::Base
+class Organisation < ApplicationRecord
   belongs_to :organisation_type
   belongs_to :country
   belongs_to :district

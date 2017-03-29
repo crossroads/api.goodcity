@@ -1,4 +1,4 @@
-class Offer < ActiveRecord::Base
+class Offer < ApplicationRecord
   has_paper_trail class_name: 'Version'
   include Paranoid
   include StateMachineScope

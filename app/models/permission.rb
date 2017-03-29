@@ -1,4 +1,4 @@
-class Permission < ActiveRecord::Base
+class Permission < ApplicationRecord
   include CacheableJson
 
   has_many :users, inverse_of: :permission
