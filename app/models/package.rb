@@ -96,6 +96,7 @@ class Package < ActiveRecord::Base
     end
 
     before_transition on: :mark_missing do |package|
+      package.delete_associated_packages_locations
       package.received_at = nil
       package.remove_from_stockit
     end
@@ -109,6 +110,12 @@ class Package < ActiveRecord::Base
         quantity: received_quantity
       )
     end
+  end
+
+  def delete_associated_packages_locations
+    debugger
+    packages_locations = PackagesLocation.where(package_id: id)
+    packages_locations.destroy_all
   end
 
   def update_allow_web_publish_to_false
