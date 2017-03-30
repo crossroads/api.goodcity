@@ -113,9 +113,7 @@ class Package < ActiveRecord::Base
   end
 
   def delete_associated_packages_locations
-    debugger
-    packages_locations = PackagesLocation.where(package_id: id)
-    packages_locations.destroy_all
+    self.packages_locations.destroy_all
   end
 
   def update_allow_web_publish_to_false
