@@ -16,9 +16,8 @@ module Goodcity
 
     def run
       # payload = File.new('spec/fixtures/organisation.json')
-      JSON.parse(payload, object_class: OpenStruct).each do |data|
+      JSON.parse(payload).each do |data|
         organisation_fields_mapping =  ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
-        debugger
         organisation = get_organisation(data['org_id']) || build_organisation(data['org_id'])
         ORGANISATION_MAPPING.each do |organisation_column, data_key|
             organisation[organisation_column.to_sym] = data[data_key]
