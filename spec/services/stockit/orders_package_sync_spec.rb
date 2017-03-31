@@ -39,7 +39,7 @@ describe Stockit::OrdersPackageSync do
 
   describe 'delete' do
     let(:url) { "#{endpoint}/api/v1/items/destroy" }
-    let(:delete_request_params) { {gc_orders_package_id: orders_package.id} }
+    let(:delete_request_params) { {gc_orders_package_id: orders_package} }
 
     it "sends delete request and get success_response" do
       expect( Nestful ).to receive(:put).with( url, delete_request_params, options ).and_return( nil )
