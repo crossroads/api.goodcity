@@ -62,9 +62,9 @@ class Package < ActiveRecord::Base
 
   def self.search(search_text, item_id)
     if item_id.presence
-      where("item_id = ?", item_id)
+      where("item_id = ? and received_quantity = 1", item_id)
     else
-      where("inventory_number ILIKE :query", query: "%#{search_text}%")
+      where("inventory_number ILIKE :query and received_quantity = 1", query: "%#{search_text}%")
     end
   end
 

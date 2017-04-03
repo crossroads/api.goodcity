@@ -124,7 +124,6 @@ module Api::V1
         records = records.search(params['searchText'], params["itemId"]).page(params["page"]).per(params["per_page"])
         pages = records.total_pages
       end
-      records = records.where("received_quantity = 1") if is_stock_app
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
