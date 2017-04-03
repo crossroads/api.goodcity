@@ -124,7 +124,6 @@ module Api::V1
         records = records.search(params['searchText'], params["itemId"]).page(params["page"]).per(params["per_page"])
         pages = records.total_pages
       end
-
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
