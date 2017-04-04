@@ -119,7 +119,7 @@ class Package < ActiveRecord::Base
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
-    else response && (item_id = response["item_id"]).present?
+    elsif response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
     end
   end
