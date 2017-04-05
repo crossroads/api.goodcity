@@ -33,10 +33,10 @@ FactoryGirl.define do
       sequence(:stockit_id) { |n| n }
       item
       set_item_id { item.id }
-      state "received"
     end
 
     trait :received do
+      package_with_locations
       state "received"
       received_at { Time.now }
       inventory_number      { generate(:inventory_number) }
