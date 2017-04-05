@@ -74,9 +74,17 @@ class OrdersPackage < ActiveRecord::Base
     total_quantity = quantity + package[:quantity].to_i
     if(state == "cancelled")
       update(quantity: total_quantity, state: "designated")
+    elsif(state == "dispatched")
+      update_quantity_based_on_dispatch_state(total_quantity)
     else
       update(quantity: total_quantity)
     end
+  end
+
+  def update_quantity_based_on_dispatch_state(total_quantity)
+    location_id = Location.dispatch_location.id
+    package.update_location_quantity(total_quantity, location_id)
+    package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
   end
 
   def dispatch_orders_package

@@ -56,6 +56,7 @@ class Package < ActiveRecord::Base
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
 
+
   accepts_nested_attributes_for :packages_locations, allow_destroy: true
 
   attr_accessor :skip_set_relation_update
@@ -331,6 +332,14 @@ class Package < ActiveRecord::Base
 
   def is_singleton_package?
     received_quantity == 1
+  end
+
+  def update_location_quantity(total_quantity, location_id)
+    packages_locations.where(location_id: location_id).first.update_column(:quantity, total_quantity)
+  end
+
+  def destroy_other_locations(location_id)
+    packages_locations.exclude_location(location_id).destroy_all
   end
 
   private
