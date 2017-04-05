@@ -71,7 +71,7 @@ module Stockit
         condition: package_condition,
         grade: package.grade,
         description: package.notes,
-        location_id: Location.find_by(id: package.location_id).try(:stockit_id),
+        location_id: package.stockit_location_id,
         id: package.stockit_id,
         designation_id: @orders_package.order.try(:stockit_id),
         designated_on: @orders_package.created_at,
