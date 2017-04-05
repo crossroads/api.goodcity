@@ -131,6 +131,14 @@ class Package < ActiveRecord::Base
     )
   end
 
+  def stockit_location_id
+    if packages_locations.count > 1
+      Location.multiple_location.try(:stockit_id)
+    else
+      packages_locations.first.try(:location).try(:stockit_id) || Location.find_by(id: location_id).try(:stockit_id)
+    end
+  end
+
   def remove_from_stockit
     if self.inventory_number.present?
       response = Stockit::ItemSync.delete(inventory_number)
