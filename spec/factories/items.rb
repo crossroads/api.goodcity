@@ -64,6 +64,12 @@ FactoryGirl.define do
       donor_description { generate(:cloudinary_demo_images)[demo_key][:donor_description] }
       images            { create_list(:demo_image, 1, demo_key.to_sym, favourite: true) }
       packages          { create_list(:package, 1, notes: donor_description) }
+      after(:create) do |item|
+        item.packages.each do |pkg|
+          pkg.offer_id = item.offer_id
+          pkg.save
+        end
+      end
     end
   end
 
