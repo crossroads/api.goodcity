@@ -113,7 +113,6 @@ class Package < ActiveRecord::Base
   end
 
   def delete_associated_packages_locations
-    debugger
     packages_locations.destroy_all
   end
 
