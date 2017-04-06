@@ -67,7 +67,7 @@ RSpec.describe OrdersPackage, type: :model do
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it 'adds package quantity to orders_package quantity' do
-      orders_package = build :orders_package
+      orders_package = build :orders_package, state: 'designated'
       total_qty = orders_package.quantity + package.quantity
       expect{
         orders_package.update_partially_designated_item(package)
