@@ -82,7 +82,7 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     it 'do not update state of orders_package if state is designated' do
-      orders_package = create :orders_package, state: 'designated'
+      orders_package = create :orders_package, state: 'designated', package: package
       existing_state = orders_package.state
       orders_package.update_partially_designated_item(package)
       expect(orders_package.reload.state).to eq existing_state
@@ -96,9 +96,10 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     it 'do not update state of orders_package if state is dispatched' do
-      orders_package = create :orders_package, state: 'dispatched'
+      orders_package = create :orders_package, state: 'dispatched', package: package
+      packages_location = create :packages_location, quantity: 2, location: dispatched_location, package: package
       existing_state = orders_package.state
-      orders_package.update_partially_designated_item(package)
+      orders_package.reload.update_partially_designated_item(package)
       expect(orders_package.reload.state).to eq existing_state
     end
   end
