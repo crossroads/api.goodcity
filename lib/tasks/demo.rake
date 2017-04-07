@@ -31,7 +31,7 @@ namespace :demo do
 
     def create_package
       # Create Packages for Goodcity and Items for Stockit
-      puts "Package:\t\tCreating #{count} Packages for Goodcity and Items for Stockit(with_item, with_set, with_set_item, received & stockit_package"
+      puts "Package:\t\tCreating #{count} Packages for Goodcity and Items for Stockit(with_item, with_set_item, received(published and unpublished) & stockit_package"
 
       count.times do
         FactoryGirl.create(:package, :with_item, :package_with_locations, :with_inventory_number)
@@ -43,10 +43,10 @@ namespace :demo do
         FactoryGirl.create(:package, :with_set_item, :package_with_locations)
       end
       count.times do
-        FactoryGirl.create(:package, :received, :with_inventory_number, :package_with_locations)
+        FactoryGirl.create(:package, :received, :with_inventory_number)
       end
       count.times do
-        FactoryGirl.create(:package, :received, :with_inventory_number, :published, :package_with_locations)
+        FactoryGirl.create(:package, :received, :with_inventory_number, :published)
       end
     end
 

@@ -1,12 +1,12 @@
 FactoryGirl.define do
   factory :package do
-    quantity              { rand(5) + 1 }
+    quantity              { rand(10) + 1 }
     length                { rand(199) + 1 }
     width                 { rand(199) + 1 }
     height                { rand(199) + 1 }
     notes                 { FFaker::Lorem.paragraph }
     state                 'expecting'
-    received_quantity     1
+    received_quantity     10
 
     received_at nil
     rejected_at nil
