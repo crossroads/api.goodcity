@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe OrdersPackage, type: :model do
+  before do
+    stub_request(:put, /goodcitystorage.blob.core.windows.net/).
+         with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to :order }
     it { is_expected.to belong_to :package }
