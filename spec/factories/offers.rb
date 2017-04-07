@@ -55,7 +55,7 @@ FactoryGirl.define do
 
     trait :with_items do
       transient do
-        items_count 1
+        items_count { rand(3)+1 }
       end
       after(:create) do |offer, evaluator|
         evaluator.items_count.times { create :item, :with_packages, :with_images, offer: offer }
@@ -64,7 +64,7 @@ FactoryGirl.define do
 
     trait :with_demo_items do
       transient do
-        items_count 1
+        items_count { rand(3)+1 }
       end
       after(:create) do |offer, evaluator|
         evaluator.items_count.times { create :demo_item, offer: offer }

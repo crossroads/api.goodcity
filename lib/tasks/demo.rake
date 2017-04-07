@@ -32,21 +32,21 @@ namespace :demo do
     def create_package
       # Create Packages for Goodcity and Items for Stockit
       puts "Package:\t\tCreating #{count} Packages for Goodcity and Items for Stockit(with_item, with_set, with_set_item, received & stockit_package"
-      count_package = count/5
-      count_package*2.times do
-        FactoryGirl.create(:package, :with_item)
+
+      count.times do
+        FactoryGirl.create(:package, :with_item, :package_with_locations, :with_inventory_number)
       end
-      count_package.times do
-        FactoryGirl.create(:package, :stockit_package)
+      count.times do
+        FactoryGirl.create(:package, :stockit_package, :with_inventory_number , :package_with_locations)
       end
-      count_package.times do
-        FactoryGirl.create(:package, :with_set_item)
+      count.times do
+        FactoryGirl.create(:package, :with_set_item, :package_with_locations)
       end
-      count_package.times do
-        FactoryGirl.create(:package, :received)
+      count.times do
+        FactoryGirl.create(:package, :received, :with_inventory_number, :package_with_locations)
       end
-      count_package.times do
-        FactoryGirl.create(:package, :received, :published)
+      count.times do
+        FactoryGirl.create(:package, :received, :with_inventory_number, :published, :package_with_locations)
       end
     end
 
@@ -62,7 +62,7 @@ namespace :demo do
       count.times do
         @updated_by  =  FactoryGirl.create(:user, :reviewer)
         @order = create_single_order
-        @package = FactoryGirl.create(:package, :with_item)
+        @package = FactoryGirl.create(:package, :with_item, :package_with_locations)
         @orders_package = FactoryGirl.build(:orders_package,
                           package: @package,
                           order: @order,
@@ -72,6 +72,7 @@ namespace :demo do
         if(@orders_package.state == "designated")
           @package.order_id = @order_id
         end
+        @orders_package.save
       end
     end
 
