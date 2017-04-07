@@ -17,9 +17,15 @@ FactoryGirl.define do
       association :item
     end
 
+    trait :with_inventory_number do
+      inventory_number      { generate(:inventory_number) }
+    end
+
     trait :package_with_locations do
       after(:create) do |package|
-        create :packages_location, package: package, quantity: package.received_quantity
+        package_location = create :packages_location, package: package, quantity: package.received_quantity
+        package.location_id = package_location.location_id
+        package.save
       end
     end
 
