@@ -33,7 +33,7 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
+  validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity,  numericality: { greater_than: 0, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
@@ -192,13 +192,19 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatch_stockit_item(orders_package=nil, skip_set_relation_update=false)
+  def dispatch_stockit_item(orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    update_existing_package_location_qty(packages_locations.first.id, orders_package.try(:quantity))
+    deduct_dispatch_quantity(package_location_changes) if package_location_changes
+  end
+
+  def deduct_dispatch_quantity(package_qty_changes)
+    package_qty_changes.each_pair do |_key, pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
+    end
   end
 
   def undispatch_stockit_item
@@ -209,9 +215,8 @@ class Package < ActiveRecord::Base
   end
 
   def move_partial_quantity(location_id, package_qty_changes, total_qty)
-    package_qty_params = JSON.parse(package_qty_changes)
-    package_qty_params.each do |pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
+    package_qty_changes.each do |pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param[:packages_location_id],  pckg_qty_param[:new_qty])
     end
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
