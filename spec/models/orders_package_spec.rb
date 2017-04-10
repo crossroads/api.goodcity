@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe OrdersPackage, type: :model do
+
   before do
     stub_request(:put, "http://www.example.com/api/v1/items/destroy").
          with(:body => "{\"gc_orders_package_id\":#{orders_package.id}}",
