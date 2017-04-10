@@ -103,13 +103,14 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def add_location(location_id)
-    location = Location.find_by(id: location_id)
-    unless locations.include?(location)
-      packages_locations.create(
-        location: location,
+  def build_or_create_packages_location(location_id, operation)
+    if(packages_location = packages_locations.find_by(location_id: location_id))
+      packages_location.update(quantity: received_quantity)
+    else
+      packages_locations.send(operation, {
+        location_id: location_id,
         quantity: received_quantity
-      )
+      })
     end
   end
 
@@ -128,13 +129,6 @@ class Package < ActiveRecord::Base
     else response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
     end
-  end
-
-  def build_packages_location(location_id)
-    packages_locations.build(
-      location: Location.find_by(id: location_id),
-      quantity: received_quantity
-    )
   end
 
   def stockit_location_id
@@ -254,7 +248,7 @@ class Package < ActiveRecord::Base
     response = if box_id? || pallet_id?
       has_box_or_pallet_error
     else
-      add_location(location_id)
+      build_or_create_packages_location(location_id, 'create')
       self.stockit_moved_on = Date.today
       self.stockit_moved_by = User.current_user
       Stockit::ItemSync.move(self)
