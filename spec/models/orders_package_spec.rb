@@ -196,13 +196,11 @@ RSpec.describe OrdersPackage, type: :model do
     before do
       stub_request(:put, "http://www.example.com/api/v1/items/destroy").
         with(:body => "{\"gc_orders_package_id\":#{orders_package.id}}",
-          :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'
-          gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'Content-Type'=>'application/json',
           'Token'=>'jchahjfsjfvacterr6e87dfbdsbqvh3v4brrb',
           'User-Agent'=>'Ruby'}).
          to_return(:status => 200, :body => "", :headers => {})
-
     end
 
     let!(:order) { create :order }
