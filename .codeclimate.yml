@@ -1,0 +1,22 @@
+---
+engines:
+  rubocop:
+    enabled: true
+    checks:
+      Rubocop/Metrics/ClassLength:
+        enabled: false
+      Rubocop/Metrics/LineLength:
+        enabled: false
+      Rubocop/Style/Documentation:
+        enabled: false
+      Rubocop/Style/Encoding:
+        enabled: false
+      Rubocop/Style/FrozenStringLiteralComment:
+        enabled: false
+      Rubocop/Style/StringLiterals:
+        enabled: false
+languages:
+  Ruby: true
+  JavaScript: false
+  PHP: false
+  Python: false
