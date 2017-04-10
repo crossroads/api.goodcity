@@ -33,7 +33,7 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
+  validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity,  numericality: { greater_than: 0, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
@@ -215,9 +215,8 @@ class Package < ActiveRecord::Base
   end
 
   def move_partial_quantity(location_id, package_qty_changes, total_qty)
-    package_qty_params = JSON.parse(package_qty_changes)
-    package_qty_params.each do |pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
+    package_qty_changes.each do |pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param[:packages_location_id],  pckg_qty_param[:new_qty])
     end
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
