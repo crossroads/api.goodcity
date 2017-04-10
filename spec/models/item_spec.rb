@@ -65,10 +65,12 @@ RSpec.describe Item, type: :model do
   describe "#remove" do
     it "should soft-delete item and it's messages" do
       item = create :item, :with_messages, :with_packages
+      package_count = item.packages.count
+      message_count = item.messages.count
       item.remove
       expect(Item.only_deleted.count).to eql(1)
-      expect(Message.only_deleted.count).to eql(1)
-      expect(Package.only_deleted.count).to eql(2)
+      expect(Message.only_deleted.count).to eql(message_count)
+      expect(Package.only_deleted.count).to eql(package_count)
     end
 
     it "should soft-delete accepted item" do
