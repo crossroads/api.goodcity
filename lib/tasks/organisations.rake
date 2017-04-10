@@ -12,8 +12,8 @@ namespace :goodcity do
   desc 'Add Organisations list'
   task add_organisations: :environment do
     organisations = YAML.load_file("#{Rails.root}/db/organisations.yml")
-    organisations.each do |key, value|
-      organisation = Organisation.where(
+    organisations.each do |_key, value|
+      Organisation.where(
         name_en: value[:name_en],
         name_zh_tw: value[:name_zh_tw],
         description_en: value[:description_en],
