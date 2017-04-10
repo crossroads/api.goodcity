@@ -198,7 +198,7 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    deduct_dispatch_quantity(package_location_changes)
+    deduct_dispatch_quantity(package_location_changes) if package_location_changes
   end
 
   def deduct_dispatch_quantity(package_qty_changes)
