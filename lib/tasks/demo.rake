@@ -64,11 +64,11 @@ namespace :demo do
         @order = create_single_order
         @package = FactoryGirl.create(:package, :with_item, :package_with_locations)
         @orders_package = FactoryGirl.build(:orders_package,
-                          package: @package,
-                          order: @order,
-                          quantity: @package.quantity,
-                          updated_by: @updated_by
-                        )
+          package: @package,
+          order: @order,
+          quantity: @package.quantity,
+          updated_by: @updated_by
+        )
         if(@orders_package.state == "designated")
           @package.order_id = @order_id
         end
