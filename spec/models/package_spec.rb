@@ -251,20 +251,20 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe '#add_location' do
+  describe '#build_or_create_packages_location' do
     let!(:package) { create :package }
     let!(:location) { create :location }
 
     it 'creates new packages_location record with provided location id if it do not exist' do
       expect{
-        package.add_location(location.id)
+        package.build_or_create_packages_location(location.id, 'create')
       }.to change(PackagesLocation, :count).by(1)
     end
 
     it 'do not create packages_location record with provided location if already exist' do
       packages_location = create :packages_location, package: package, location: location
       expect{
-        package.add_location(location.id)
+        package.build_or_create_packages_location(location.id, 'create')
       }.to change(PackagesLocation, :count).by(0)
     end
   end
