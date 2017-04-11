@@ -210,7 +210,7 @@ class Package < ActiveRecord::Base
 
   def move_partial_quantity(location_id, package_qty_changes, total_qty)
     package_qty_changes.each do |pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param[:packages_location_id],  pckg_qty_param[:new_qty])
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"],  pckg_qty_param["new_qty"])
     end
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
