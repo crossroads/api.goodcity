@@ -1,6 +1,11 @@
 require 'factory_girl'
 
-# run rake db:seed first
+# run following rakes in sequence
+# rake db:seed first
+# rake stockit:add_stockit_locations
+# rake stockit:add_stockit_codes
+# rake goodcity:update_packages_grade_condition
+# rake goodcity:update_package_image
 # use 'rake demo:load n' to create n(only integers) record of each model
 namespace :demo do
   unless ENV['LIVE'] == "true"
