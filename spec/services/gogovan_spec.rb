@@ -100,8 +100,8 @@ describe Gogovan do
   context "ggv driver notes" do
     it "sends both chinese and english notes" do
       base_link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{attributes["ggv_uuid"]}"
-      zh = I18n.t('gogovan.driver_note', link: "#{base_link}?ln=zh-tw", locale: "zh-tw")
-      en = I18n.t('gogovan.driver_note', link: "#{base_link}?ln=en", locale: "en")
+      zh = I18n.t('gogovan.driver_note_with_discount', link: "#{base_link}?ln=zh-tw", locale: "zh-tw")
+      en = I18n.t('gogovan.driver_note_with_discount', link: "#{base_link}?ln=en", locale: "en")
       expect(gogovan.send(:ggv_driver_notes)).to eql(zh + "\n" + en)
     end
   end
