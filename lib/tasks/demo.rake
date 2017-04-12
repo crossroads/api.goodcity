@@ -1,7 +1,7 @@
 require 'factory_girl'
 
 # run following rakes in sequence
-# rake db:seed first
+# rake db:seed
 # rake goodcity:update_package_type_description
 # rake goodcity:update_package_type_default_location
 # rake stockit:add_stockit_locations
