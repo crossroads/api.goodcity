@@ -66,6 +66,7 @@ FactoryGirl.define do
       packages          { create_list(:package, rand(3)+1, notes: donor_description) }
       after(:create) do |item|
         item.packages.each do |pkg|
+          pkg.package_type = item.package_type.child_package_types.sample
           pkg.offer_id = item.offer_id
           pkg.save
         end
