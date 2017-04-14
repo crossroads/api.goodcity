@@ -22,7 +22,7 @@ class Order < ActiveRecord::Base
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
   scope :with_eager_load, -> {
-    includes ([
+    includes([
       { packages: [:locations, :package_type] }
     ])
   }
