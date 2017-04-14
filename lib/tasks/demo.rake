@@ -14,25 +14,101 @@ namespace :demo do
     task load: :environment do
       puts "This will generate #{count} record of Users, Offers, Packages, OrdersPackages, Orders, Contacts & Organisations"
       create_offers
-      create_package
-      create_orders_packages
-      create_orders
-      create_contacts
-      create_organizations
+      # create_package
+      # create_orders_packages
+      # create_orders
+      # create_contacts
+      # create_organizations
     end
 
     def create_offers
-      puts "Offers:\t\t\tCreating #{count} draft offers, #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled (with_transport), #{count} closed(with_transport)"
+      # puts "Offers:\t\t\tCreating #{count} draft offers, #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled (with_transport), #{count} closed(with_transport)"
       count.times do
-        FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :submitted, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :under_review, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :reviewed, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :scheduled, :with_transport, :with_demo_items, :with_messages, created_by: donor)
-        offer = FactoryGirl.create(:offer, :closed, :with_transport, :with_demo_items, :with_messages, created_by: donor)
-        Package.joins(item: :offer).where("offers.id = ?", offer.id).each do |package|
-          package.allow_web_publish = true
+      #   # for submit state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   puts "Created Offer in 'submitted' state"
+
+      #   # for under_review state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   offer.start_review
+      #   puts "Created Offer in 'under_review' state"
+
+      #   # for reviewed state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   offer.start_review
+      #   offer.finish_review
+      #   puts "Created Offer in 'reviewed' state"
+
+      #   # for scheduled state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   offer.start_review
+      #   offer.finish_review
+      #   offer.schedule
+      #   puts "Created Offer in 'scheduled' state"
+
+      #   #for closed state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   offer.start_review
+      #   offer.finish_review
+      #   offer.mark_unwanted
+      #   puts "Created Offer in 'closed' state"
+
+
+      #   # for inactive state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   offer.start_review
+      #   offer.mark_inactive
+      #   puts "Created Offer in 'inactive' state"
+
+
+      #   # for receiving state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   offer.start_review
+      #   offer.finish_review
+      #   offer.start_receiving
+      #   puts "Created Offer in 'submitted' state"
+
+
+      #   # for received state
+      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+      #   offer.submit
+      #   offer.start_review
+      #   offer.finish_review
+      #   offer.items.each do |item|
+      #     item.packages.each do |package|
+      #       packages.update(inventory_number: InventoryNumber.available_code, location: Location.all.to_a.sample)
+      #     end
+      #   end
+      #   offer.receive
+      #   puts "Created Offer in 'received' state"
+
+
+        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        reviewer = FactoryGirl.create(:user, :reviewer)
+        offer.submit
+        User.current_user = reviewer
+        offer.start_review
+        offer.finish_review
+        offer.items.all.each do |item|
+          debugger
+
+          item.accept
+          item.packages.all.each do |package|
+            package.update(inventory_number: InventoryNumber.available_code, location_id: Location.all.to_a.sample, allow_web_publish: true)
+            debugger
+          end
+          debugger
         end
+        offer.receive
+        puts "Created Offer in 'received' state(allow_web_publish)"
+
       end
     end
 

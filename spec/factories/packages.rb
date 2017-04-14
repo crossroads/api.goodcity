@@ -20,7 +20,7 @@ FactoryGirl.define do
     end
 
     trait :with_inventory_number do
-      inventory_number      { generate(:inventory_number) }
+      inventory_number      { InventoryNumber.available_code }
     end
 
     trait :package_with_locations do
@@ -32,23 +32,21 @@ FactoryGirl.define do
     end
 
     trait :stockit_package do
-      inventory_number      { generate(:inventory_number) }
+      with_inventory_number
       sequence(:stockit_id) { |n| n }
     end
 
     trait :with_set_item do
-      inventory_number      { generate(:inventory_number) }
-      sequence(:stockit_id) { |n| n }
+      stockit_package
       item
       set_item_id { item.id }
     end
 
     trait :received do
       package_with_locations
+      stockit_package
       state "received"
       received_at { Time.now }
-      inventory_number      { generate(:inventory_number) }
-      sequence(:stockit_id) { |n| n }
     end
 
     trait :published do
