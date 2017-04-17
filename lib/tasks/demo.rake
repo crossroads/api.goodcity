@@ -1,7 +1,7 @@
 require 'factory_girl'
 
 # run following rakes in sequence
-# rake db:seed first
+# rake db:seed
 # rake goodcity:update_package_type_description
 # rake goodcity:update_package_type_default_location
 # rake stockit:add_stockit_locations
@@ -95,17 +95,20 @@ namespace :demo do
         offer.submit
         User.current_user = reviewer
         offer.start_review
+        # trans = FactoryGirl.create(:gogovan_transport)
+
         offer.finish_review
         offer.items.all.each do |item|
-          debugger
-
           item.accept
           item.packages.all.each do |package|
-            package.update(inventory_number: InventoryNumber.available_code, location_id: Location.all.to_a.sample, allow_web_publish: true)
-            debugger
+            loc = Location.all.to_a.sample.id
+            package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: loc)
+            package.build_or_create_packages_location(loc, 'create')
+
+            package.mark_received
           end
-          debugger
         end
+        offer.update(delivered_by: ['Gogovan','Crossroads truck','Dropped off'].sample)
         offer.receive
         puts "Created Offer in 'received' state(allow_web_publish)"
 
