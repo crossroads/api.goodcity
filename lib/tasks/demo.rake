@@ -24,94 +24,81 @@ namespace :demo do
     def create_offers
       # puts "Offers:\t\t\tCreating #{count} draft offers, #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled (with_transport), #{count} closed(with_transport)"
       count.times do
-      #   # for submit state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   puts "Created Offer in 'submitted' state"
-
-      #   # for under_review state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   offer.start_review
-      #   puts "Created Offer in 'under_review' state"
-
-      #   # for reviewed state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   offer.start_review
-      #   offer.finish_review
-      #   puts "Created Offer in 'reviewed' state"
-
-      #   # for scheduled state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   offer.start_review
-      #   offer.finish_review
-      #   offer.schedule
-      #   puts "Created Offer in 'scheduled' state"
-
-      #   #for closed state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   offer.start_review
-      #   offer.finish_review
-      #   offer.mark_unwanted
-      #   puts "Created Offer in 'closed' state"
-
-
-      #   # for inactive state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   offer.start_review
-      #   offer.mark_inactive
-      #   puts "Created Offer in 'inactive' state"
-
-
-      #   # for receiving state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   offer.start_review
-      #   offer.finish_review
-      #   offer.start_receiving
-      #   puts "Created Offer in 'submitted' state"
-
-
-      #   # for received state
-      #   offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      #   offer.submit
-      #   offer.start_review
-      #   offer.finish_review
-      #   offer.items.each do |item|
-      #     item.packages.each do |package|
-      #       packages.update(inventory_number: InventoryNumber.available_code, location: Location.all.to_a.sample)
-      #     end
-      #   end
-      #   offer.receive
-      #   puts "Created Offer in 'received' state"
-
-
+        # for submit state
         offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        reviewer = FactoryGirl.create(:user, :reviewer)
         offer.submit
-        User.current_user = reviewer
+        puts "Created Offer in 'submitted' state"
+
+        # for under_review state
+        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        offer.submit
         offer.start_review
-        # trans = FactoryGirl.create(:gogovan_transport)
+        puts "Created Offer in 'under_review' state"
 
+        # for reviewed state
+        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        offer.submit
+        offer.start_review
         offer.finish_review
-        offer.items.all.each do |item|
-          item.accept
-          item.packages.all.each do |package|
-            loc = Location.all.to_a.sample.id
-            package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: loc)
-            package.build_or_create_packages_location(loc, 'create')
+        puts "Created Offer in 'reviewed' state"
 
-            package.mark_received
+        # for scheduled state
+        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        offer.submit
+        offer.start_review
+        offer.finish_review
+        offer.schedule
+        puts "Created Offer in 'scheduled' state"
+
+        #for closed state
+        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        offer.submit
+        offer.start_review
+        offer.finish_review
+        offer.mark_unwanted
+        puts "Created Offer in 'closed' state"
+
+
+        # for inactive state
+        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        offer.submit
+        offer.start_review
+        offer.mark_inactive
+        puts "Created Offer in 'inactive' state"
+
+
+        # for receiving state
+        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+        offer.submit
+        offer.start_review
+        offer.finish_review
+        offer.start_receiving
+        puts "Created Offer in 'submitted' state"
+
+
+        # for received state
+        (1..3).to_a.each do |a|
+          offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
+          reviewer = FactoryGirl.create(:user, :reviewer)
+          offer.submit
+          User.current_user = reviewer
+          offer.start_review
+          # trans = FactoryGirl.create(:gogovan_transport)
+          offer.finish_review
+          offer.items.all.each do |item|
+            item.accept
+            item.packages.all.each do |package|
+              loc = Location.all.to_a.sample.id
+              package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: loc)
+              package.build_or_create_packages_location(loc, 'create')
+
+              package.mark_received
+            end
           end
+          offer.update(delivered_by: ['Gogovan','Crossroads truck','Dropped off'].sample)
+          offer.receive
+          puts "Created Offer in 'received' state(allow_web_publish)"
         end
-        offer.update(delivered_by: ['Gogovan','Crossroads truck','Dropped off'].sample)
-        offer.receive
-        puts "Created Offer in 'received' state(allow_web_publish)"
-
       end
     end
 
