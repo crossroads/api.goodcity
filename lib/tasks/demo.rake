@@ -85,6 +85,7 @@ namespace :demo do
           offer.start_review
           # trans = FactoryGirl.create(:gogovan_transport)
           offer.finish_review
+          offer.start_receiving
           offer.items.all.each do |item|
             item.accept
             item.packages.all.each do |package|
