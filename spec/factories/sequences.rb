@@ -1,4 +1,7 @@
 FactoryGirl.define do
+  sequence :delivered_by do
+    ['Gogovan','Crossroads truck','Dropped off'].sample
+  end
 
   sequence :donor_conditions do |n|
     @donor_conditions ||= YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
@@ -40,7 +43,7 @@ FactoryGirl.define do
   sequence :package_types do |n|
     @package_types ||= YAML.load_file("#{Rails.root}/db/package_types.yml")
   end
-  
+
   sequence :gogovan_transports do |n|
     @gogovan_options = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
   end
