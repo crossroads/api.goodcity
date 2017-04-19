@@ -103,9 +103,10 @@ namespace :demo do
     end
 
     def inventory_offer_packages (offer)
-      offer.items.all.each do |item|
+      offer.reload
+      offer.items.each do |item|
         item.accept
-        item.packages.all.each do |package|
+        item.packages.each do |package|
           loc = Location.all.to_a.sample.id
           package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: loc)
           package.build_or_create_packages_location(loc, 'create')
@@ -130,8 +131,9 @@ namespace :demo do
       order.save
       offer = create_recieved_offer
       orders_packages_ids = []
-      offer.items.all.each do |item|
-        item.packages.all.each do |pkg|
+      offer.reload
+      offer.items.each do |item|
+        item.packages.each do |pkg|
           pkg.designate_to_stockit_order(order.id)
           params = {
             order_id: order.id,
