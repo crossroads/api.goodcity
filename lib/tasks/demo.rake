@@ -42,12 +42,12 @@ namespace :demo do
     end
 
     def create_orders
-      puts "Orders:\tCreating #{count} designated and #{count} dispatached order with orders_packages "
+      puts "Orders:\tCreating #{count} designated and #{count} dispatched order with orders_packages "
       count.times do
         create_designated_packages
-        puts "Orders:\t\t#{Order.last.id} Created #{count} Orders in Designated State"
+        puts "\t\tCreated Order #{Order.last.id} with packages in Designated State"
         create_dispatched_packages
-        puts "Orders:\t\t#{Order.last.id} Created #{count} Orders in Designated State"
+        puts "\t\tCreated Order #{Order.last.id} with packages in Dispatched State"
       end
     end
 
@@ -105,26 +105,25 @@ namespace :demo do
       offer.reload.items.each do |item|
         item.accept
         item.packages.each do |package|
-          loc = Location.all.to_a.sample.id
+          loc = Location.pluck(:id).sample
           package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: loc)
           package.build_or_create_packages_location(loc, 'create')
-
           package.mark_received
         end
       end
-      offer.update(delivered_by: ['Gogovan','Crossroads truck','Dropped off'].sample)
+      offer.update(delivered_by: DELIVERED_BY.sample)
       offer
     end
 
     def create_single_order
       organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
-      order = FactoryGirl.create(:order, :with_created_by, processed_by: reveiwer, organisation: organisation)
+      order = FactoryGirl.create(:order, :with_created_by, processed_by: reviewer, organisation: organisation)
       order
     end
 
+
     def create_designated_packages
       order = create_single_order
-      order.save
       offer = create_recieved_offer
       orders_packages_ids = []
       offer.reload.items.each do |item|
@@ -139,7 +138,6 @@ namespace :demo do
           orders_packages_ids << orders_package.id
         end
       end
-
       orders_packages_ids
     end
 
@@ -169,8 +167,8 @@ namespace :demo do
       end
     end
 
-    def reveiwer
-      User.where(permission_id: 3).pluck(:id).to_a.sample
+    def reviewer
+      User.where(permission_id: 3).sample
     end
 
     # Choose a donor from seed data
@@ -178,6 +176,7 @@ namespace :demo do
       mobile = ["+85251111111", "+85251111112", "+85251111113", "+85251111114"].sample
       User.find_by_mobile(mobile)
     end
+
 
     # Specify number of test cases to produce
     def count
