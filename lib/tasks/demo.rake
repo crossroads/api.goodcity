@@ -13,85 +13,114 @@ namespace :demo do
   unless ENV['LIVE'] == "true"
     task load: :environment do
       puts "This will generate #{count} record of Users, Offers, Packages, OrdersPackages, Orders, Contacts & Organisations"
-      create_offers
+      # create_offers
       create_orders
-      create_contacts
-      create_organizations
+      # create_contacts
+      # create_organizations
     end
 
     def create_offers
-      # puts "Offers:\t\t\tCreating #{count} draft offers, #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled (with_transport), #{count} closed(with_transport)"
+      puts "Offers:\tCreating #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled , #{count} closed, #{count} receiving, #{count} received Offers"
       count.times do
         # for submit state
-        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        offer.submit
-        puts "Created Offer in 'submitted' state"
+        offer = create_submitted_offer
+        puts "\t\tCreated Offer #{offer.id} in 'submitted' state"
 
         # for under_review state
-        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        offer.submit
-        offer.start_review
-        puts "Created Offer in 'under_review' state"
+        offer = create_reviewing_offer
+        puts "\t\tCreated Offer #{offer.id} in 'under_review' state"
 
         # for reviewed state
-        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        offer.submit
-        offer.start_review
-        offer.finish_review
-        puts "Created Offer in 'reviewed' state"
+        offer = create_reviewed_offer
+        puts "\t\tCreated Offer #{offer.id} in 'reviewed' state"
 
         # for scheduled state
-        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        offer.submit
-        offer.start_review
-        offer.finish_review
-        offer.schedule
-        puts "Created Offer in 'scheduled' state"
+        offer = create_scheduled_offer
+        puts "\t\tCreated Offer #{offer.id} in 'scheduled' state"
 
         #for closed state
-        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        offer.submit
-        offer.start_review
-        offer.finish_review
-        offer.mark_unwanted
-        puts "Created Offer in 'closed' state"
+        offer = create_closed_offer
+        puts "\t\tCreated Offer #{offer.id} in 'closed' state"
 
 
         # for inactive state
-        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        offer.submit
-        offer.start_review
-        offer.mark_inactive
-        puts "Created Offer in 'inactive' state"
+        offer = create_inactive_offer
+        puts "\t\tCreated Offer #{offer.id} in 'inactive' state"
 
 
         # for receiving state
-        offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        offer.submit
-        offer.start_review
-        offer.finish_review
-        offer.start_receiving
-        puts "Created Offer in 'submitted' state"
+        offer = create_receiving_offer
+        puts "\t\tCreated Offer #{offer.id} in 'receiving' state"
 
 
         # for received state
-        (1..2).to_a.each do |a|
-          create_recieved_offer
-
-        end
+        offer = create_recieved_offer
+        puts "\t\tCreated Offer #{offer.id} in 'received' state"
       end
     end
 
-    def create_recieved_offer
+    def create_orders
+      puts "Orders:\tCreating #{count} designated and #{count} dispatached order with orders_packages "
+      count.times do
+        create_designated_packages
+        puts "Orders:\t\t#{Order.last.id} Created #{count} Orders in Designated State"
+        create_dispatched_packages
+        puts "Orders:\t\t#{Order.last.id} Created #{count} Orders in Designated State"
+      end
+    end
+
+    def create_submitted_offer
       offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      reviewer = FactoryGirl.create(:user, :reviewer)
       offer.submit
+      offer
+    end
+
+    def create_reviewing_offer
+      offer = create_submitted_offer
+      reviewer = FactoryGirl.create(:user, :reviewer)
       User.current_user = reviewer
       offer.start_review
-      # trans = FactoryGirl.create(:gogovan_transport)
+      offer
+    end
+
+    def create_reviewed_offer
+      offer = create_reviewing_offer
       offer.finish_review
+      offer
+    end
+
+    def create_scheduled_offer
+      offer = create_reviewed_offer
+      offer.schedule
+      offer
+    end
+
+    def create_inactive_offer
+      offer = create_reviewing_offer
+      offer.mark_inactive
+      offer
+    end
+
+    def create_closed_offer
+      offer = create_reviewed_offer
+      offer.mark_unwanted
+      offer
+    end
+
+    def create_receiving_offer
+      offer = create_reviewed_offer
       offer.start_receiving
-      offer.reload
+      offer
+    end
+
+    def create_recieved_offer
+      offer = create_receiving_offer
+      offer = inventory_offer_packages (offer)
+      offer.receive
+      offer
+    end
+
+    def inventory_offer_packages (offer)
       offer.items.all.each do |item|
         item.accept
         item.packages.all.each do |package|
@@ -102,23 +131,21 @@ namespace :demo do
           package.mark_received
         end
       end
-
       offer.update(delivered_by: ['Gogovan','Crossroads truck','Dropped off'].sample)
-      offer.receive
-      puts "Created Offer in 'received' state(allow_web_publish)"
       offer
     end
 
     def create_single_order
-        @organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
-        @processor = FactoryGirl.create(:user, :reviewer)
-        @order = FactoryGirl.create(:order, :with_created_by, processed_by: @processor, organisation: @organisation)
-        @order
+        organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+        processor = FactoryGirl.create(:user, :reviewer)
+        order = FactoryGirl.create(:order, :with_created_by, processed_by: processor, organisation: organisation)
+        order
     end
 
 
     def create_designated_packages
       order = create_single_order
+      order.save
       offer = create_recieved_offer
       orders_packages_ids = []
       offer.items.all.each do |item|
@@ -133,7 +160,7 @@ namespace :demo do
           orders_packages_ids << orders_package.id
         end
       end
-      puts "Created Order with Packages in designated state"
+
       orders_packages_ids
     end
 
@@ -145,36 +172,10 @@ namespace :demo do
         orders_package.dispatch_orders_package
         pkg.dispatch_stockit_item(orders_package)
       end
-      puts "Created Order with Packages in dispatched state"
       orders_packages_ids
     end
 
-    def create_orders
-      puts "Orders:\t\t\tCreating #{count} Orders along with StockitLocalOrder"
-      #create Orders along with StockitLocalOrder
 
-      create_designated_packages
-      create_dispatched_packages
-
-
-
-      # count.times do
-        # create_recieved_offer
-        # order = create_single_order
-        # pkg = Package.where(state: "received", order_id: nil).first
-        # qty = pkg.quantity
-
-        # package = {
-        #   order_id: order.id,
-        #   package_id: pkg.id,
-        #   quantity: pkg.quantity
-        # }
-        #  require 'rails/commands/server'
-        #  "http://#{Rails::Server.new.options[:Host]}:#{Rails::Server.new.options[:Port]}"
-        # params = { package: package, id: pkg.id }
-        # app.put "/api/v1/items/#{pkg.id}/designate_partial_item", params
-      # end
-    end
 
 
     def create_contacts
@@ -197,6 +198,7 @@ namespace :demo do
       mobile = ["+85251111111", "+85251111112", "+85251111113", "+85251111114"].sample
       User.find_by_mobile(mobile)
     end
+
 
     # Specify number of test cases to produce
     def count
