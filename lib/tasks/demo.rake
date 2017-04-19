@@ -13,47 +13,29 @@ namespace :demo do
   unless ENV['LIVE'] == "true"
     task load: :environment do
       puts "This will generate #{count} record of Users, Offers, Packages, OrdersPackages, Orders, Contacts & Organisations"
-      # create_offers
+      create_offers
       create_orders
-      # create_contacts
-      # create_organizations
+      create_contacts
+      create_organizations
     end
 
     def create_offers
       puts "Offers:\tCreating #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled , #{count} closed, #{count} receiving, #{count} received Offers"
       count.times do
-        # for submit state
         offer = create_submitted_offer
         puts "\t\tCreated Offer #{offer.id} in 'submitted' state"
-
-        # for under_review state
         offer = create_reviewing_offer
         puts "\t\tCreated Offer #{offer.id} in 'under_review' state"
-
-        # for reviewed state
         offer = create_reviewed_offer
         puts "\t\tCreated Offer #{offer.id} in 'reviewed' state"
-
-        # for scheduled state
         offer = create_scheduled_offer
         puts "\t\tCreated Offer #{offer.id} in 'scheduled' state"
-
-        #for closed state
         offer = create_closed_offer
         puts "\t\tCreated Offer #{offer.id} in 'closed' state"
-
-
-        # for inactive state
         offer = create_inactive_offer
         puts "\t\tCreated Offer #{offer.id} in 'inactive' state"
-
-
-        # for receiving state
         offer = create_receiving_offer
         puts "\t\tCreated Offer #{offer.id} in 'receiving' state"
-
-
-        # for received state
         offer = create_recieved_offer
         puts "\t\tCreated Offer #{offer.id} in 'received' state"
       end
@@ -136,10 +118,10 @@ namespace :demo do
     end
 
     def create_single_order
-        organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
-        processor = FactoryGirl.create(:user, :reviewer)
-        order = FactoryGirl.create(:order, :with_created_by, processed_by: processor, organisation: organisation)
-        order
+      organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+      processor = FactoryGirl.create(:user, :reviewer)
+      order = FactoryGirl.create(:order, :with_created_by, processed_by: processor, organisation: organisation)
+      order
     end
 
 
@@ -174,9 +156,6 @@ namespace :demo do
       end
       orders_packages_ids
     end
-
-
-
 
     def create_contacts
       puts "Contacts:\t\tCreating #{count} contacts"
