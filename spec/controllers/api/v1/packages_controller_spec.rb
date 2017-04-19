@@ -42,6 +42,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     context "Received from Stockit" do
       let(:package) { create :package, :stockit_package, item: item }
       let(:location) { create :location }
+      let!(:packages_location) { create :packages_location, package: package, location: location, quantity: 1 }
       let(:stockit_item_params) {
         { designation_name: "HK",
           quantity: 1,
