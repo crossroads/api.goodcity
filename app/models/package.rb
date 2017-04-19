@@ -104,7 +104,9 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if(packages_location = packages_locations.find_by(location_id: location_id))
+    if GoodcitySync.request_from_stockit && received_quantity == 1
+      packages_locations.first.update_column(:location_id, location_id)
+    elsif(packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update(quantity: received_quantity)
     else
       packages_locations.send(operation, {
