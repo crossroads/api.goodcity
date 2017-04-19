@@ -52,53 +52,38 @@ namespace :demo do
     end
 
     def create_submitted_offer
-      offer = FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-      offer.submit
-      offer
+      FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor).tap(&:submit)
     end
 
     def create_reviewing_offer
-      offer = create_submitted_offer
       User.current_user = reviewer
-      offer.start_review
-      offer
+      create_submitted_offer.tap(&:start_review)
     end
 
     def create_reviewed_offer
       offer = create_reviewing_offer
-      offer.finish_review
-      offer
+      offer.update(reviewed_by: reviewer)
+      offer.tap(&:finish_review)
     end
 
     def create_scheduled_offer
-      offer = create_reviewed_offer
-      offer.schedule
-      offer
+      create_reviewed_offer.tap(&:schedule)
     end
 
     def create_inactive_offer
-      offer = create_reviewing_offer
-      offer.mark_inactive
-      offer
+      create_reviewing_offer.tap(&:mark_inactive)
     end
 
     def create_closed_offer
-      offer = create_reviewed_offer
-      offer.mark_unwanted
-      offer
+      create_reviewed_offer.tap(&:mark_unwanted)
     end
 
     def create_receiving_offer
-      offer = create_reviewed_offer
-      offer.start_receiving
-      offer
+      create_reviewed_offer.tap(&:start_receiving)
     end
 
     def create_recieved_offer
-      offer = create_receiving_offer
-      offer = inventory_offer_packages(offer)
-      offer.receive
-      offer
+      inventory_offer_packages(create_receiving_offer).tap(&:receive)
     end
 
     def inventory_offer_packages(offer)
@@ -111,7 +96,7 @@ namespace :demo do
           package.mark_received
         end
       end
-      offer.update(delivered_by: DELIVERED_BY.sample)
+      offer.update(delivered_by: FactoryGirl.generate(:delivered_by))
       offer
     end
 
