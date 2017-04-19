@@ -59,7 +59,6 @@ namespace :demo do
 
     def create_reviewing_offer
       offer = create_submitted_offer
-      reviewer = FactoryGirl.create(:user, :reviewer)
       User.current_user = reviewer
       offer.start_review
       offer
@@ -119,18 +118,15 @@ namespace :demo do
 
     def create_single_order
       organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
-      processor = FactoryGirl.create(:user, :reviewer)
-      order = FactoryGirl.create(:order, :with_created_by, processed_by: processor, organisation: organisation)
+      order = FactoryGirl.create(:order, :with_created_by, processed_by: reveiwer, organisation: organisation)
       order
     end
-
 
     def create_designated_packages
       order = create_single_order
       order.save
       offer = create_recieved_offer
       orders_packages_ids = []
-
       offer.reload.items.each do |item|
         item.packages.each do |pkg|
           pkg.designate_to_stockit_order(order.id)
@@ -173,12 +169,15 @@ namespace :demo do
       end
     end
 
+    def reveiwer
+      User.where(permission_id: 3).pluck(:id).to_a.sample
+    end
+
     # Choose a donor from seed data
     def donor
       mobile = ["+85251111111", "+85251111112", "+85251111113", "+85251111114"].sample
       User.find_by_mobile(mobile)
     end
-
 
     # Specify number of test cases to produce
     def count
