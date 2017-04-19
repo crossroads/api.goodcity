@@ -90,9 +90,9 @@ namespace :demo do
       offer.reload.items.each do |item|
         item.accept
         item.packages.each do |package|
-          loc = Location.pluck(:id).sample
-          package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: loc)
-          package.build_or_create_packages_location(loc, 'create')
+          location_id = Location.pluck(:id).sample
+          package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: location_id)
+          package.build_or_create_packages_location(location_id, 'create')
           package.mark_received
         end
       end
@@ -101,9 +101,7 @@ namespace :demo do
     end
 
     def create_single_order
-      organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
-      order = FactoryGirl.create(:order, :with_created_by, processed_by: reviewer, organisation: organisation)
-      order
+      FactoryGirl.create(:order, :with_created_by, processed_by: reviewer, organisation: create_organisation)
     end
 
 
@@ -148,12 +146,16 @@ namespace :demo do
     def create_organizations
       puts "Organisation:\t\tCreating #{count} organizations"
       count.times do
-        FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+        create_organisation
       end
     end
 
+    def create_organisation
+      FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+    end
+
     def reviewer
-      User.where(permission_id: 3).sample
+      User.where(permission_id: 3).sample||FactoryGirl.create(:user, :reviewer)
     end
 
     # Choose a donor from seed data
