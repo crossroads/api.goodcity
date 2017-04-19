@@ -97,12 +97,12 @@ namespace :demo do
 
     def create_recieved_offer
       offer = create_receiving_offer
-      offer = inventory_offer_packages (offer)
+      offer = inventory_offer_packages(offer)
       offer.receive
       offer
     end
 
-    def inventory_offer_packages (offer)
+    def inventory_offer_packages(offer)
       offer.reload.items.each do |item|
         item.accept
         item.packages.each do |package|
