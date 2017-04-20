@@ -96,5 +96,6 @@ Rake tasks to run:
 Rake tasks to run:
 
     rake goodcity:packages_add_received_quantity_data
+    rake goodcity:populate_packages_location_data
     rake goodcity:update_orders_packages_data
     rake goodcity:change_allow_web_publish_to_false
