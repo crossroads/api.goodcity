@@ -195,6 +195,8 @@ class Package < ActiveRecord::Base
     self.box = nil
     self.pallet = nil
     deduct_dispatch_quantity(package_location_changes) if package_location_changes
+    response = Stockit::ItemSync.dispatch(self)
+    add_errors(response)
   end
 
   def deduct_dispatch_quantity(package_qty_changes)
@@ -208,6 +210,8 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = nil
     self.pallet = nil
     self.box = nil
+    response = Stockit::ItemSync.undispatch(self)
+    add_errors(response)
   end
 
   def move_partial_quantity(location_id, package_qty_changes, total_qty)

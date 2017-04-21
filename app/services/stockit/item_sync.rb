@@ -27,12 +27,20 @@ module Stockit
         new(package).move
       end
 
+      def undispatch(package)
+        new(package).undispatch
+      end
+
       def delete(package)
         new(package).delete
       end
 
       def index(package, offset, per_page)
         new(package, offset, per_page).index
+      end
+
+      def dispatch(package)
+        new(package).dispatch
       end
     end
 
@@ -68,6 +76,20 @@ module Stockit
       if inventory_number.present? && existing_package
         url = url_for("/api/v1/items/destroy")
         put(url, { id: existing_package.stockit_id })
+      end
+    end
+
+    def dispatch
+      if package.inventory_number.present? && package.is_singleton_package?
+        url = url_for("/api/v1/items/dispatch")
+        put(url, stockit_params)
+      end
+    end
+
+    def undispatch
+      if package.inventory_number.present? && package.is_singleton_package?
+        url = url_for("/api/v1/items/undispatch")
+        put(url, stockit_params)
       end
     end
 
