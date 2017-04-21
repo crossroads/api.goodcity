@@ -6,7 +6,7 @@ namespace :goodcity do
     packages = Package.where("quantity = ? and allow_web_publish = ?", 0, true)
 
     # code to create log for the rake
-    x = Time.now
+    start_time = Time.now
     File.open("rake_log.txt", "a+"){|f|
       f << "\n#{'-'*80}"
       f << "\nRunning rake task 'change_allow_web_publish_to_false'...."
@@ -23,9 +23,9 @@ namespace :goodcity do
     end
 
     # code to create log for the rake
-    y=Time.now
+    end_time =Time.now
     File.open("rake_log.txt", "a+"){|f|
-      f << "\nTotal time taken: #{x-y} seconds"
+      f << "\nTotal time taken: #{start_time-end_time} seconds"
       f << "\nUpdated values"
       f << "\n\tNumber of Packages affected =#{packages.count}"
       f << "\n\tallow_web_publish of 1st Package =#{packages.first.allow_web_publish}"
