@@ -30,6 +30,8 @@ class Package < ActiveRecord::Base
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
+  after_save :create_or_update_singletone_orders_package, if: :designation_name_changed?
+
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
@@ -104,7 +106,7 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && received_quantity == 1 && self.packages_locations.exists?
+    if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
       packages_locations.first.update_column(:location_id, location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update(quantity: received_quantity)
@@ -113,6 +115,25 @@ class Package < ActiveRecord::Base
         location_id: location_id,
         quantity: received_quantity
       })
+    end
+  end
+
+  def create_or_update_singletone_orders_package
+    if is_singleton_package? && orders_packages.exists?
+      orders_packages.first.update_designation(order_id)
+    else
+      OrdersPackage.add_partially_designated_item(
+        order_id: order_id,
+        package_id: id,
+        quantity: quantity
+      )
+    end
+  end
+
+  def update_singletone_orders_package
+    if is_singleton_package? && orders_packages.exist?
+      orders_package = orders_packages.first
+      OrdersPackage.calculate_total_qunatity_and_update_state(quantity, orders_package)
     end
   end
 

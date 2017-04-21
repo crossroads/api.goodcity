@@ -63,7 +63,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def update_designation(order_id_to_update)
-    update(order_id: order_id_to_update)
+    update(order_id: order_id_to_update, updated_by: User.current_user)
   end
 
   def delete_unwanted_cancelled_packages(order_to_delete)
@@ -94,12 +94,15 @@ class OrdersPackage < ActiveRecord::Base
 
   def self.undesignate_partially_designated_item(packages)
     packages.each_pair do |_key, package|
-      quantity_to_reduce = package["quantity"].to_i
-      orders_package     = find_by(id: package["orders_package_id"])
+      orders_package = find_by(id: package["orders_package_id"])
       orders_package.remove_designation_of_associated_package
-      total_quantity     = orders_package.quantity - quantity_to_reduce
-      orders_package.update_orders_package_state(total_quantity)
+      calculate_total_qunatity_and_update_state(package['quantity'], orders_package)
     end
+  end
+
+  def self.calculate_total_qunatity_and_update_state(package_quantity, orders_package)
+    total_quantity = orders_package.quantity - package_quantity.to_i
+    orders_package.update_orders_package_state(total_quantity)
   end
 
   def remove_designation_of_associated_package
@@ -114,11 +117,11 @@ class OrdersPackage < ActiveRecord::Base
     end
   end
 
-  def self.add_partially_designated_item(params)
+  def self.add_partially_designated_item(order_id:, package_id:, quantity:)
     create(
-      order_id: params[:order_id].to_i,
-      package_id: params[:package_id].to_i,
-      quantity: params[:quantity].to_i,
+      order_id: order_id.to_i,
+      package_id: package_id.to_i,
+      quantity: quantity.to_i,
       updated_by: User.current_user,
       state: "designated"
       )
@@ -126,7 +129,7 @@ class OrdersPackage < ActiveRecord::Base
 
   private
   def recalculate_quantity(operation)
-    unless(state == "requested")
+    unless(state == "requested" || GoodcitySync.request_from_stockit)
       update_designation_of_package
       package.update_in_stock_quantity
       StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.is_singleton_package?
