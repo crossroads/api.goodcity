@@ -6,7 +6,7 @@ namespace :goodcity do
     packages = Package.where("order_id is not null or stockit_sent_on is not null").except_package(exclude_ids)
 
     # code to create log for the rake
-    x = Time.now
+    start_time = Time.now
     File.open("rake_log.txt", "a+"){|f|
       f << "\n#{'-'*80}"
       f << "\nRunning rake task 'update_orders_packages_data'...."
@@ -14,8 +14,8 @@ namespace :goodcity do
       f << "\nInitial values"
       f << "\n\tNumber of Packages used to create OrdersPackage =#{packages.count}"
       f << "\n\tOrdersPackage before rake =#{OrdersPackage.count}"
-      f << "\n\tFirst Package whose OrdersPackage will be created =#{packages.first}"
-      f << "\n\tLast Package whose OrdersPackage will be created =#{packages.last}"
+      f << "\n\tFirst Package whose OrdersPackage will be created =#{packages.first.id}"
+      f << "\n\tLast Package whose OrdersPackage will be created =#{packages.last.id}"
     }
     first_order = OrdersPackage.last.id+1
     #end of code to create log for the rake
@@ -36,13 +36,13 @@ namespace :goodcity do
     end
 
     # code to create log for the rake
-    y=Time.now
+    end_time=Time.now
     File.open("rake_log.txt", "a+"){|f|
-      f << "\nTotal time taken: #{x-y} seconds"
+      f << "\nTotal time taken: #{start_time-end_time} seconds"
       f << "\nUpdated values"
       f << "\n\tNumber of OrdersPackage created =#{OrdersPackage.where("id >= #{first_order}").count}"
-      f << "\n\tFirst OrdersPackage that was created =#{OrdersPackage.find(first_order)}"
-      f << "\n\tLast OrdersPackage that was created =#{OrdersPackage.last}"
+      f << "\n\tFirst OrdersPackage(id, order, package) that was created =#{OrdersPackage.where(id: first_order).pluck(:id, :order_id, :package_id)}"
+      f << "\n\tLast OrdersPackage(id, order, package) that was created =#{OrdersPackage.pluck(:id, :order_id, :package_id).last}"
     }
     # end of code to create log for the rake
   end

@@ -7,7 +7,7 @@ namespace :goodcity do
     packages = Package.where("stockit_sent_on is null and inventory_number is not null").except_package(exclude_ids)
 
     # code to create log for the rake
-    x = Time.now
+    start_time = Time.now
     File.open("rake_log.txt", "a+"){|f|
       f << "\n#{'-'*80}"
       f << "\nRunning rake task 'populate_packages_location_data'...."
@@ -15,8 +15,8 @@ namespace :goodcity do
       f << "\nInitial values"
       f << "\n\tNumber of Packages used to create PackagesLocation =#{packages.count}"
       f << "\n\tNumber of PackagesLocation before rake =#{PackagesLocation.count}"
-      f << "\n\tFirst Package whose PackagesLocation will be created =#{packages.first}"
-      f << "\n\tLast Package whose PackagesLocation will be created =#{packages.last}"
+      f << "\n\tFirst Package whose PackagesLocation will be created =#{packages.first.id}"
+      f << "\n\tLast Package whose PackagesLocation will be created =#{packages.last.id}"
     }
     first_id = PackagesLocation.last.id+1
     # end of code to create log for the rake
@@ -30,13 +30,13 @@ namespace :goodcity do
     end
 
     # code to create log for the rake
-    y=Time.now
+    end_time = Time.now
     File.open("rake_log.txt", "a+"){|f|
-      f << "\nTotal time taken: #{x-y} seconds"
+      f << "\nTotal time taken: #{start_time-end_time} seconds"
       f << "\nUpdated values"
       f << "\n\tNumber of OrdersPackage after rake =#{PackagesLocation.count}"
-      f << "\n\tFirst PackagesLocation created =#{PackagesLocation.find(first_id)}"
-      f << "\n\tLast PackagesLocation created =#{PackagesLocation.last}"
+      f << "\n\tFirst PackagesLocation created =#{PackagesLocation.where(id: first_id).pluck(:id, :package_id, :location_id)}"
+      f << "\n\tLast PackagesLocation created =#{PackagesLocation.pluck(:id, :package_id, :location_id).last}"
     }
 
     # end of code to create log for the rake
