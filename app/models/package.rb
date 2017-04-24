@@ -30,7 +30,7 @@ class Package < ActiveRecord::Base
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
-  after_save :create_or_update_singletone_orders_package, if: :designation_name_changed?
+  after_update :create_or_update_singletone_orders_package, if: :designation_name_changed?
 
   after_touch { update_client_store :update }
 
@@ -119,7 +119,10 @@ class Package < ActiveRecord::Base
   end
 
   def create_or_update_singletone_orders_package
-    if is_singleton_package? && (designations = orders_packages.designated).exists?
+    if is_singleton_package? && (designations = orders_packages.designated).exists? && designation_name.blank?
+      designations.first.update_designation(order_id_was)
+      designations.first.cancel!
+    elsif(is_singleton_package? && (designations = orders_packages.designated).exists?)
       designations.first.update_designation(order_id)
     else
       OrdersPackage.add_partially_designated_item(
