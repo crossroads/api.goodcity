@@ -119,8 +119,8 @@ class Package < ActiveRecord::Base
   end
 
   def create_or_update_singletone_orders_package
-    if is_singleton_package? && orders_packages.exists?
-      orders_packages.first.update_designation(order_id)
+    if is_singleton_package? && (designations = orders_packages.designated).exists?
+      designations.first.update_designation(order_id)
     else
       OrdersPackage.add_partially_designated_item(
         order_id: order_id,
