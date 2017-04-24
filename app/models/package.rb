@@ -377,6 +377,12 @@ class Package < ActiveRecord::Base
     packages_locations.exclude_location(location_id).destroy_all
   end
 
+  def stockit_order_id
+    if(orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
+      orders_packages.first.order.try(:stockit_id)
+    end
+  end
+
   private
 
   def set_default_values
