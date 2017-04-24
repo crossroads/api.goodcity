@@ -153,6 +153,7 @@ module Api::V1
         order_id: params[:package][:order_id],
         package_id: params[:package][:package_id],
         quantity: params[:package][:quantity])
+      designate_stockit_item(params[:package][:order_id])
       send_stock_item_response
     end
 
