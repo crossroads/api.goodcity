@@ -119,11 +119,12 @@ class Package < ActiveRecord::Base
   end
 
   def create_or_update_singletone_orders_package
-    if is_singleton_package? && (designations = orders_packages.designated).exists? && designation_name.blank?
-      designations.first.update_designation(order_id_was)
-      designations.first.cancel!
-    elsif(is_singleton_package? && (designations = orders_packages.designated).exists?)
-      designations.first.update_designation(order_id)
+    designation = orders_packages.designated.first
+    if is_singletone_and_has_designation?(designation) && designation_name.blank?
+      designation.update_designation(order_id_was)
+      designation.cancel!
+    elsif is_singletone_and_has_designation?(designation)
+      designation.update_designation(order_id)
     else
       OrdersPackage.add_partially_designated_item(
         order_id: order_id,
@@ -131,6 +132,10 @@ class Package < ActiveRecord::Base
         quantity: quantity
       )
     end
+  end
+
+  def is_singletone_and_has_designation?(designation)
+    is_singleton_package? && designation
   end
 
   def update_singletone_orders_package
