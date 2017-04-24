@@ -118,7 +118,7 @@ module Stockit
         description: package.notes,
         location_id: package.stockit_location_id,
         id: package.stockit_id,
-        designation_id: package.is_singleton_package? ? package.order.try(:stockit_id) : nil,
+        designation_id: package.is_singleton_package? ? package.stockit_order_id : nil,
         designated_on: package.is_singleton_package? ? package.stockit_designated_on : nil
       }
     end

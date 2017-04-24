@@ -12,6 +12,8 @@ class OrdersPackage < ActiveRecord::Base
   scope :get_designated_and_dispatched_packages, -> (package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
   scope :designated, -> { where(state: 'designated') }
+  scope :dispatched, -> { where(state: 'dispatched') }
+
   scope :with_eager_load, -> {
     includes ([
       { package: [:locations, :package_type] }
@@ -35,6 +37,15 @@ class OrdersPackage < ActiveRecord::Base
 
     event :dispatch do
       transition designated: :dispatched
+    end
+
+    event :cancel do
+      transition designated: :cancelled
+    end
+
+    before_transition on: :cancel do |orders_package, transition|
+      orders_package.quantity   = 0
+      orders_package.updated_by = User.current_user
     end
 
     after_transition on: :dispatch, do: :assign_dispatched_location
@@ -73,7 +84,7 @@ class OrdersPackage < ActiveRecord::Base
   def update_partially_designated_item(package)
     total_quantity = quantity + package[:quantity].to_i
     if(state == "cancelled")
-      update(quantity: total_quantity, state: "designated")
+      update(quantity: total_quantity, state: 'designated')
     elsif(state == "dispatched")
       update(quantity: total_quantity)
       update_quantity_based_on_dispatch_state(total_quantity)
@@ -111,7 +122,7 @@ class OrdersPackage < ActiveRecord::Base
 
   def update_orders_package_state(total_quantity)
     if total_quantity == 0
-      update(quantity: total_quantity, state: "cancelled")
+      self.cancel!
     else
       update(quantity: total_quantity, state: "designated")
     end
@@ -123,7 +134,7 @@ class OrdersPackage < ActiveRecord::Base
       package_id: package_id.to_i,
       quantity: quantity.to_i,
       updated_by: User.current_user,
-      state: "designated"
+      state: 'designated'
       )
   end
 
