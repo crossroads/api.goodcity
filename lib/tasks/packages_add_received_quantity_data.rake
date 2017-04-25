@@ -1,19 +1,15 @@
+require "goodcity/rake_logger"
 # rake goodcity:packages_add_received_quantity_data
 namespace :goodcity do
   desc 'Update packages with received_quantity'
   task packages_add_received_quantity_data: :environment do
     # code to create log for the rake
-    start_time = Time.now
-    rake_logger = Logger.new("#{Rails.root}/log/rake_log.log")
-    log = ("\n#{'-'*75}")
-    rake_logger.info(log)
-    log += ("\nRunning rake task 'packages_add_received_quantity_data'....")
-    log += ("\nCurrent time: #{start_time}")
-    log += ("\nInitial values")
-    log += ("\n\tNumber of Packages =#{Package.count}")
-    log += ("\n\tFirst Package(:id, :received_quantity, :quantity) before rake =#{Package.order(:id).limit(1).pluck(:id, :received_quantity, :quantity)}")
-    log += ("\n\tLast Package(:id, :received_quantity, :quantity) before rake =#{Package.limit(1).pluck(:id, :received_quantity, :quantity)}")
-    rake_logger.info(log)
+    log = Goodcity::RakeLogger.new("packages_add_received_quantity_data")
+    log.log_info("\nRunning rake task 'packages_add_received_quantity_data'....")
+    log.log_info("\nInitial values")
+    log.log_info("\n\tNumber of Packages =#{Package.count}")
+    log.log_info("\n\tFirst Package(:id, :received_quantity, :quantity) before rake =#{Package.order(:id).limit(1).pluck(:id, :received_quantity, :quantity)}")
+    log.log_info("\n\tLast Package(:id, :received_quantity, :quantity) before rake =#{Package.limit(1).pluck(:id, :received_quantity, :quantity)}")
     count = 0
     first_id = Package.first.id
     # end of code to create log for the rake
@@ -23,19 +19,16 @@ namespace :goodcity do
       if package.save
         count += 1
       else
-        rake_logger.info("Update Failed for: #{package.id}")
+        log.log_info("Update Failed for: #{package.id}")
       end
     end
 
     # code to create log for the rake
-    end_time = Time.now
-    log = ("\nTotal time taken: #{end_time-start_time} seconds")
-    log += ("\nUpdated values")
-    log += ("\n\tNumber of Packages affected=#{count}")
-    log += ("\n\tFirst Package(:id, :received_quantity, :quantity) after rake =#{Package.order(:id).limit(1).pluck(:id, :received_quantity, :quantity)}")
-    log += ("\n\tLast Package(:id, :received_quantity, :quantity) after rake =#{Package.limit(1).pluck(:id, :received_quantity, :quantity)}")
-    rake_logger.info(log)
-    rake_logger.close
+    log.log_info("\nUpdated values")
+    log.log_info("\n\tNumber of Packages affected=#{count}")
+    log.log_info("\n\tFirst Package(:id, :received_quantity, :quantity) after rake =#{Package.order(:id).limit(1).pluck(:id, :received_quantity, :quantity)}")
+    log.log_info("\n\tLast Package(:id, :received_quantity, :quantity) after rake =#{Package.limit(1).pluck(:id, :received_quantity, :quantity)}")
+    log.close
     # end of code to create log for the rake
   end
 end
