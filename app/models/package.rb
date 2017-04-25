@@ -225,7 +225,7 @@ class Package < ActiveRecord::Base
     orders_package              = orders_packages.find_by(id: orders_package_id)
     referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
 
-    if packages_location_record = self.packages_locations.find_by(location_id: location_id)
+    if(packages_location_record = find_packages_location_with_location_id(location_id))
       new_qty = orders_package.quantity + packages_location_record.quantity
       packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
       referenced_package_location.destroy
@@ -235,8 +235,12 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def find_packages_location_with_location_id(location_id)
+    packages_locations.find_by(location_id: location_id)
+  end
+
   def update_or_create_qty_moved_to_location(location_id, total_qty)
-    if packages_location = packages_locations.find_by(location_id: location_id)
+    if(packages_location = find_packages_location_with_location_id(location_id))
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
       packages_locations.create(location_id: location_id, package_id: id, quantity: total_qty)
@@ -244,7 +248,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if packages_location = packages_locations.find_by(id: packages_location_id)
+    if(packages_location = packages_locations.find_by(id: packages_location_id))
       new_qty = packages_location.quantity - quantity_to_move.to_i
       new_qty == 0 ? packages_location.destroy : packages_location.update_column(:quantity, new_qty)
     end
@@ -312,7 +316,7 @@ class Package < ActiveRecord::Base
 
   def total_assigned_quantity
     total_quantity = 0
-    if associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence
+    if(associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence)
       associated_orders_packages.each do |orders_package|
         total_quantity += orders_package.quantity
       end
