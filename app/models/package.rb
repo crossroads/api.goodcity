@@ -118,20 +118,35 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def blank_designation?
+    designation_name.blank?
+  end
+
   def create_or_update_singletone_orders_package
     designation = orders_packages.designated.first
-    if is_singletone_and_has_designation?(designation) && designation_name.blank? && designation_name_was == nil && designation_name == ""
-      designation.update_designation(order_id_was)
+    if is_singleton_package? && orders_package = orders_package_with_different_designation(designation)
+      designation and designation.cancel!
+      orders_package.update(state: 'designated', quantity: quantity)
+    elsif is_singletone_and_has_designation?(designation) && had_designation_name_and_changed_to_blank?
       designation.cancel!
     elsif is_singletone_and_has_designation?(designation)
       designation.update_designation(order_id)
-    else
+    elsif !blank_designation?
       OrdersPackage.add_partially_designated_item(
         order_id: order_id,
         package_id: id,
         quantity: quantity
       )
     end
+  end
+
+  def had_designation_name_and_changed_to_blank?
+    blank_designation? && !(designation_name_was == nil)
+  end
+
+  def orders_package_with_different_designation(designation)
+    orders_package = orders_packages.get_records_associated_with_order_id(order_id).first
+    orders_package unless(orders_package == designation)
   end
 
   def is_singletone_and_has_designation?(designation)
