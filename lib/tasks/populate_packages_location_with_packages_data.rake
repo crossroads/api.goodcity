@@ -1,3 +1,4 @@
+require "goodcity/rake_logger"
 #rake goodcity:populate_packages_location_data
 namespace :goodcity do
   desc 'populate packages_location with existing packages data'
@@ -6,18 +7,14 @@ namespace :goodcity do
     packages = Package.where("stockit_sent_on is null and inventory_number is not null").except_package(exclude_ids)
 
     # code to create log for the rake
-    start_time = Time.now
-    rake_logger = Logger.new("#{Rails.root}/log/rake_log.log")
-    log = ("\n#{'-'*75}")
-    rake_logger.info(log)
-    log += ("\nRunning rake task 'populate_packages_location_data'....")
-    log += ("\nCurrent time: #{start_time}")
-    log += ("\nInitial values")
-    log += ("\n\tNumber of Packages used to create PackagesLocation =#{packages.count}")
-    log += ("\n\tNumber of PackagesLocation before rake =#{PackagesLocation.count}")
-    log += ("\n\tFirst Package whose PackagesLocation will be created =#{packages.first.id}")
-    log += ("\n\tLast Package whose PackagesLocation will be created =#{packages.last.id}")
-    rake_logger.info(log)
+    log = Goodcity::RakeLogger.new("populate_packages_location_data")
+    log.log_info("\n#{'-'*75}")
+    log.log_info("\nRunning rake task 'populate_packages_location_data'....")
+    log.log_info("\nInitial values")
+    log.log_info("\n\tNumber of Packages used to create PackagesLocation =#{packages.count}")
+    log.log_info("\n\tNumber of PackagesLocation before rake =#{PackagesLocation.count}")
+    log.log_info("\n\tFirst Package whose PackagesLocation will be created =#{packages.first.id}")
+    log.log_info("\n\tLast Package whose PackagesLocation will be created =#{packages.last.id}")
     first_id = PackagesLocation.last.id + 1
     count = 0
     # end of code to create log for the rake
@@ -30,14 +27,11 @@ namespace :goodcity do
       count += 1
     end
     # code to create log for the rake
-    end_time = Time.now
-    log = ("\nTotal time taken: #{end_time-start_time} seconds")
-    log += ("\nUpdated values")
-    log += ("\n\tNumber of OrdersPackage after rake =#{count}")
-    log += ("\n\tFirst PackagesLocation (:id, :package_id, :location_id) created =#{PackagesLocation.where(id: first_id).pluck(:id, :package_id, :location_id)}")
-    log += ("\n\tLast PackagesLocation (:id, :package_id, :location_id) created =#{PackagesLocation.pluck(:id, :package_id, :location_id).last}")
-    rake_logger.info(log)
-    rake_logger.close
+    log.log_info("\nUpdated values")
+    log.log_info("\n\tNumber of OrdersPackage after rake =#{count}")
+    log.log_info("\n\tFirst PackagesLocation (:id, :package_id, :location_id) created =#{PackagesLocation.where(id: first_id).pluck(:id, :package_id, :location_id)}")
+    log.log_info("\n\tLast PackagesLocation (:id, :package_id, :location_id) created =#{PackagesLocation.pluck(:id, :package_id, :location_id).last}")
+    log.close
     # end of code to create log for the rake
   end
 end
