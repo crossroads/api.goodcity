@@ -170,7 +170,7 @@ namespace :demo do
     def count
       @count ||= begin
         ARGV.each { |a| task a.to_sym do ; end }
-        Integer(ARGV[1]) rescue 0 >0 ? ARGV[1].to_i : 1
+        Integer(ARGV[1]) rescue 0 >0 ? ARGV[1].to_i : 10
       end
       @count
     end
