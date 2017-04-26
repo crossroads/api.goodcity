@@ -27,6 +27,7 @@ class Package < ActiveRecord::Base
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
+  before_save :save_designation_name, if: :designation_name_changed?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
@@ -118,8 +119,8 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def blank_designation?
-    designation_name.blank?
+  def nil_designation_name?
+    designation_name == nil
   end
 
   def create_or_update_singletone_orders_package
@@ -127,21 +128,18 @@ class Package < ActiveRecord::Base
     if is_singleton_package? && orders_package = orders_package_with_different_designation(designation)
       designation and designation.cancel!
       orders_package.update(state: 'designated', quantity: quantity)
-    elsif is_singletone_and_has_designation?(designation) && had_designation_name_and_changed_to_blank?
-      designation.cancel!
+    elsif is_singletone_and_has_designation?(designation) && nil_designation_name?
+      designation and designation.cancel!
     elsif is_singletone_and_has_designation?(designation)
       designation.update_designation(order_id)
-    elsif !blank_designation?
+    elsif !nil_designation_name?
       OrdersPackage.add_partially_designated_item(
         order_id: order_id,
         package_id: id,
         quantity: quantity
       )
     end
-  end
-
-  def had_designation_name_and_changed_to_blank?
-    blank_designation? && !(designation_name_was == nil)
+    update_in_stock_quantity
   end
 
   def orders_package_with_different_designation(designation)
@@ -354,8 +352,15 @@ class Package < ActiveRecord::Base
   end
 
   def update_in_stock_quantity
-    in_hand_quantity = received_quantity - total_assigned_quantity
-    update(quantity: in_hand_quantity)
+    if GoodcitySync.request_from_stockit
+      update_column(:quantity, in_hand_quantity)
+    else
+      update(quantity: in_hand_quantity)
+    end
+  end
+
+  def in_hand_quantity
+    received_quantity - total_assigned_quantity
   end
 
   def total_assigned_quantity
@@ -438,6 +443,10 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
+  end
+
+  def save_designation_name
+    self.designation_name = designation_name.presence
   end
 end
 
