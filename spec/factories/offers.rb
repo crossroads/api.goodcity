@@ -15,6 +15,7 @@ FactoryGirl.define do
     reviewed_at    nil
     received_at    nil
     review_completed_at nil
+    saleable       true
 
     trait :submitted do
       submitted_at { Time.now }
@@ -41,6 +42,7 @@ FactoryGirl.define do
       state       'reviewed'
       association :reviewed_by, factory: :user
       review_completed_at { Time.now }
+
     end
 
     trait :under_review do
