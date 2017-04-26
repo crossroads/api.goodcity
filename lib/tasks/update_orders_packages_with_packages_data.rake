@@ -8,13 +8,10 @@ namespace :goodcity do
 
     # code to create log for the rake
     log = Goodcity::RakeLogger.new("update_orders_packages_data")
-    log.log_info("\n#{'-'*75}")
-    log.log_info("\nRunning rake task 'update_orders_packages_data'....")
-    log.log_info("\nInitial values")
-    log.log_info("\n\tNumber of Packages used to create OrdersPackage =#{packages.count}")
-    log.log_info("\n\tOrdersPackage before rake =#{OrdersPackage.count}")
-    log.log_info("\n\tFirst Package whose OrdersPackage will be created =#{packages.first.id}")
-    log.log_info("\n\tLast Package whose OrdersPackage will be created =#{packages.last.id}")
+    log.info("\n\tInitial Number of Packages used to create OrdersPackage =#{packages.count}")
+    log.info("\n\tInitial OrdersPackage before rake =#{OrdersPackage.count}")
+    log.debug("\n\tInitial First Package whose OrdersPackage will be created =#{packages.first.id}")
+    log.debug("\n\tInitial Last Package whose OrdersPackage will be created =#{packages.last.id}")
     first_order = OrdersPackage.last.id + 1
     count = 0
     #end of code to create log for the rake
@@ -35,10 +32,9 @@ namespace :goodcity do
     end
 
     # code to create log for the rake
-    log.log_info("\nUpdated values")
-    log.log_info("\n\tNumber of OrdersPackage created =#{count}")
-    log.log_info("\n\tFirst OrdersPackage(id, order, package) that was created =#{OrdersPackage.where(id: first_order).pluck(:id, :order_id, :package_id)}")
-    log.log_info("\n\tLast OrdersPackage(id, order, package) that was created =#{OrdersPackage.pluck(:id, :order_id, :package_id).last}")
+    log.info("\n\tUpdated Number of OrdersPackage created =#{count}")
+    log.debug("\n\tUpdated First OrdersPackage(id, order, package) that was created =#{OrdersPackage.where(id: first_order).pluck(:id, :order_id, :package_id)}")
+    log.debug("\n\tUpdated Last OrdersPackage(id, order, package) that was created =#{OrdersPackage.pluck(:id, :order_id, :package_id).last}")
     log.close
     # end of code to create log for the rake
   end
