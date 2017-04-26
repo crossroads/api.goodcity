@@ -1,16 +1,28 @@
 module Goodcity
-  class RakeLogger
+  class RakeLogger < Logger
     def initialize(task)
+      super("#{Rails.root}/log/rake_log.log")
       @task = task
-      @logger = Logger.new("#{Rails.root}/log/rake_log.log")
     end
 
-    def log_info(msg)
-      @logger.info("task=#{@task} #{msg}")
+    def info(msg)
+      super("task=#{@task} #{msg}")
+    end
+
+    def error(msg)
+      super("task=#{@task} #{msg}")
+    end
+
+    def debug(msg)
+      super("task=#{@task} #{msg}")
+    end
+
+    def warn(msg)
+      super("task=#{@task} #{msg}")
     end
 
     def close
-      @logger.close
+      super
     end
   end
 end
