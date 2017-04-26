@@ -20,7 +20,6 @@ namespace :goodcity do
         log.error("Update Failed for: #{package.id}")
       end
     end
-
     # code to create log for the rake
     log.info("\n\tUpdated Number of Packages affected=#{count}")
     log.debug("\n\tUpdated First Package(:id, :received_quantity, :quantity) after rake =#{Package.order(:id).limit(1).pluck(:id, :received_quantity, :quantity)}")

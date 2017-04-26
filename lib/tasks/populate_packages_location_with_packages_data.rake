@@ -5,7 +5,6 @@ namespace :goodcity do
   task populate_packages_location_data: :environment do
     exclude_ids = PackagesLocation.pluck(:package_id)
     packages = Package.where("stockit_sent_on is null and inventory_number is not null").except_package(exclude_ids)
-
     # code to create log for the rake
     log = Goodcity::RakeLogger.new("populate_packages_location_data")
     log.info("\n\tInitial Number of Packages used to create PackagesLocation =#{packages.count}")
