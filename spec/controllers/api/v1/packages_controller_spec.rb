@@ -40,28 +40,65 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     context "Received from Stockit" do
-      let(:package) { create :package, :stockit_package, item: item }
+      # let(:package) { create :package, :stockit_package, item: item }
       let(:location) { create :location }
       let!(:packages_location) { create :packages_location, package: package, location: location, quantity: 1 }
+      let!(:order) { create :order, :with_stockit_id }
+      let!(:code) { create :package_type, :with_stockit_id }
+      let(:donor_condition) { create :donor_condition }
       let(:stockit_item_params) {
-        { designation_name: "HK",
+        {
           quantity: 1,
-          inventory_number: package.inventory_number,
+          inventory_number: '123456',
           location_id: location.stockit_id,
-          donor_condition: item.donor_condition.name,
+          donor_condition_id: donor_condition.id,
           grade: "C",
-          stockit_id: package.stockit_id }
+          stockit_id: package.stockit_id,
+          code_id: code.stockit_id
+        }
       }
 
-      it "update designation_name, location, donor_condition, grade", :show_in_doc do
-        post :create, format: :json, package: stockit_item_params
-        expect(package.reload.designation_name).to eq("HK")
+      it "create new package with designation for newly created item from stockit", :show_in_doc do
+        stockit_item_params_with_designation = stockit_item_params.merge({
+          designation_name: order.code,
+          order_id: order.stockit_id
+        })
+        expect{
+          post :create, format: :json, package: stockit_item_params_with_designation
+        }.to change(Package, :count).by(1)
+        package = Package.where(inventory_number: stockit_item_params_with_designation[:inventory_number]).first
+        expect(package.reload.designation_name).to eq(order.code)
+        expect(package.reload.locations.first).to eq(location)
+        expect(package.reload.donor_condition).to eq(donor_condition)
+        expect(package.reload.grade).to eq("C")
+        expect(response.status).to eq(201)
+        expect(package.orders_packages.first.state).to eq 'designated'
+        expect(package.orders_packages.count).to eq 1
+        expect(package.orders_packages.first.quantity).to eq 1
+        expect(package.quantity).to eq(0)
+        expect(GoodcitySync.request_from_stockit).to eq(true)
+      end
+
+      it 'do not creates any orders_package if designation name was nil not changed' do
+        package = create :package, :stockit_package, item: item
+        stockit_item_params_without_designation = stockit_item_params.merge({designation_name: ''})
+        expect{
+          post :create, format: :json, package: stockit_item_params_without_designation
+        }.to change(OrdersPackage, :count).by(0)
+        expect(package.reload.designation_name).to eq(nil)
         expect(package.reload.locations.first).to eq(location)
         expect(package.donor_condition).to eq(item.donor_condition)
-        expect(package.grade).to eq("C")
+        expect(package.reload.grade).to eq("C")
+        expect(package.reload.orders_packages.count).to eq 0
         expect(response.status).to eq(201)
         expect(GoodcitySync.request_from_stockit).to eq(true)
       end
+
+      it 'creates orders_package for already existing item which is now designated from stockit' do
+
+      end
+
+      # it 'creates orders_package record if '
 
       # it "should not create new package for unknown inventory_number" do
       #   expect {

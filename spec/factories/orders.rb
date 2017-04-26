@@ -18,6 +18,10 @@ FactoryGirl.define do
       orders_packages { create_list :orders_package, 3, :with_state_requested}
     end
 
+    trait :with_stockit_id do
+      sequence(:stockit_id) { |n| n }
+    end
+
     trait :with_state_submitted do
       state "submitted"
     end
