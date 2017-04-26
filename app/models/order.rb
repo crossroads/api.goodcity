@@ -22,7 +22,7 @@ class Order < ActiveRecord::Base
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
   scope :with_eager_load, -> {
-    includes ([
+    includes([
       { packages: [:locations, :package_type] }
     ])
   }
@@ -75,7 +75,7 @@ class Order < ActiveRecord::Base
     response = Stockit::DesignationSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
-    else response && (designation_id = response["designation_id"]).present?
+    elsif response && (designation_id = response["designation_id"]).present?
       self.stockit_id = designation_id
     end
   end

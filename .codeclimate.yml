@@ -1,0 +1,53 @@
+---
+engines:
+  brakeman:
+    enabled: true
+  bundler-audit:
+    enabled: true
+  csslint:
+    enabled: false
+  coffeelint:
+    enabled: false
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - ruby
+  eslint:
+    enabled: false
+  fixme:
+    enabled: true
+  rubocop:
+    enabled: true
+    checks:
+      Rubocop/Metrics/ClassLength:
+        enabled: false
+      Rubocop/Metrics/LineLength:
+        enabled: false
+      Rubocop/Style/Documentation:
+        enabled: false
+      Rubocop/Style/Encoding:
+        enabled: false
+      Rubocop/Style/FrozenStringLiteralComment:
+        enabled: false
+      Rubocop/Style/StringLiterals:
+        enabled: false
+languages:
+  Ruby: true
+  JavaScript: false
+  PHP: false
+  Python: false
+ratings:
+  paths:
+  - Gemfile.lock
+  - "**.rb"
+exclude_paths:
+- bower_components/
+- config/
+- db/
+- doc/
+- log/
+- public/
+- script/
+- spec/
+- tmp/
