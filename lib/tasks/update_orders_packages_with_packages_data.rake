@@ -5,7 +5,6 @@ namespace :goodcity do
   task update_orders_packages_data: :environment do
     exclude_ids = OrdersPackage.pluck(:package_id)
     packages = Package.where("order_id is not null or stockit_sent_on is not null").except_package(exclude_ids)
-
     # code to create log for the rake
     log = Goodcity::RakeLogger.new("update_orders_packages_data")
     log.info("\n\tInitial Number of Packages used to create OrdersPackage =#{packages.count}")
@@ -30,7 +29,6 @@ namespace :goodcity do
         )
       count += 1
     end
-
     # code to create log for the rake
     log.info("\n\tUpdated Number of OrdersPackage created =#{count}")
     log.debug("\n\tUpdated First OrdersPackage(id, order, package) that was created =#{OrdersPackage.where(id: first_order).pluck(:id, :order_id, :package_id)}")

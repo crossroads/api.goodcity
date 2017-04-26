@@ -18,7 +18,6 @@ namespace :goodcity do
         log.error("Update Failed for: #{package.id}")
       end
     end
-
     # code to create log for the rake
     log.info("\n\tUpdated Number of Packages affected =#{count}")
     log.debug("\n\tUpdated allow_web_publish of 1st Package =#{packages.first.allow_web_publish}")
