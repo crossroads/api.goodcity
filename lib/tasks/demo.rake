@@ -2,6 +2,7 @@ require 'factory_girl'
 
 # run following rakes in sequence
 # rake db:seed
+# rake goodcity:populate_organisations
 # rake goodcity:update_package_type_description
 # rake goodcity:update_package_type_default_location
 # rake stockit:add_stockit_locations
@@ -14,83 +15,126 @@ namespace :demo do
     task load: :environment do
       puts "This will generate #{count} record of Users, Offers, Packages, OrdersPackages, Orders, Contacts & Organisations"
       create_offers
-      create_package
-      create_orders_packages
       create_orders
       create_contacts
       create_organizations
     end
 
     def create_offers
-      puts "Offers:\t\t\tCreating #{count} draft offers, #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled (with_transport), #{count} closed(with_transport)"
+      puts "Offers:\tCreating #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled , #{count} closed, #{count} receiving, #{count} received Offers"
       count.times do
-        FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :submitted, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :under_review, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :reviewed, :with_demo_items, :with_messages, created_by: donor)
-        FactoryGirl.create(:offer, :scheduled, :with_transport, :with_demo_items, :with_messages, created_by: donor)
-        offer = FactoryGirl.create(:offer, :closed, :with_transport, :with_demo_items, :with_messages, created_by: donor)
-        Package.joins(item: :offer).where("offers.id = ?", offer.id).each do |package|
-          package.allow_web_publish = true
-        end
-      end
-    end
-
-    def create_package
-      # Create Packages for Goodcity and Items for Stockit
-      puts "Package:\t\tCreating #{count} Packages for Goodcity and Items for Stockit(with_item, with_set_item, received(published and unpublished) & stockit_package"
-
-      count.times do
-        FactoryGirl.create(:package, :with_item, :package_with_locations, :with_inventory_number)
-      end
-      count.times do
-        FactoryGirl.create(:package, :stockit_package, :with_inventory_number , :package_with_locations)
-      end
-      count.times do
-        FactoryGirl.create(:package, :with_set_item, :package_with_locations)
-      end
-      count.times do
-        FactoryGirl.create(:package, :received, :with_inventory_number)
-      end
-      count.times do
-        FactoryGirl.create(:package, :received, :with_inventory_number, :published)
-      end
-    end
-
-    def create_single_order
-        @organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
-        @processor = FactoryGirl.create(:user, :reviewer)
-        FactoryGirl.create(:order, :with_created_by, processed_by: @processor, organisation: @organisation)
-    end
-
-    def create_orders_packages
-      puts "OrdersPackage:\t\tCreating #{count} OrdersPackages"
-      #create OrdersPackages
-      count.times do
-        @updated_by  =  FactoryGirl.create(:user, :reviewer)
-        @order = create_single_order
-        @package = FactoryGirl.create(:package, :with_item, :package_with_locations)
-        @orders_package = FactoryGirl.build(:orders_package,
-          package: @package,
-          order: @order,
-          quantity: @package.quantity,
-          updated_by: @updated_by
-        )
-        if(@orders_package.state == "designated")
-          @package.order_id = @order_id
-        end
-        @orders_package.save
+        offer = create_submitted_offer
+        puts "\t\tCreated Offer #{offer.id} in 'submitted' state"
+        offer = create_reviewing_offer
+        puts "\t\tCreated Offer #{offer.id} in 'under_review' state"
+        offer = create_reviewed_offer
+        puts "\t\tCreated Offer #{offer.id} in 'reviewed' state"
+        offer = create_scheduled_offer
+        puts "\t\tCreated Offer #{offer.id} in 'scheduled' state"
+        offer = create_closed_offer
+        puts "\t\tCreated Offer #{offer.id} in 'closed' state"
+        offer = create_inactive_offer
+        puts "\t\tCreated Offer #{offer.id} in 'inactive' state"
+        offer = create_receiving_offer
+        puts "\t\tCreated Offer #{offer.id} in 'receiving' state"
+        offer = create_recieved_offer
+        puts "\t\tCreated Offer #{offer.id} in 'received' state"
       end
     end
 
     def create_orders
-      puts "Orders:\t\t\tCreating #{count} Orders along with StockitLocalOrder"
-      #create Orders along with StockitLocalOrder
+      puts "Orders:\tCreating #{count} designated and #{count} dispatched order with orders_packages "
       count.times do
-        create_single_order
+        create_designated_packages
+        puts "\t\tCreated Order #{Order.last.id} with packages in Designated State"
+        create_dispatched_packages
+        puts "\t\tCreated Order #{Order.last.id} with packages in Dispatched State"
       end
     end
 
+    def create_submitted_offer
+      FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor).tap(&:submit)
+    end
+
+    def create_reviewing_offer
+      User.current_user = reviewer
+      create_submitted_offer.tap(&:start_review)
+    end
+
+    def create_reviewed_offer
+      offer = create_reviewing_offer
+      offer.update(reviewed_by: reviewer)
+      offer.tap(&:finish_review)
+    end
+
+    def create_scheduled_offer
+      create_reviewed_offer.tap(&:schedule)
+    end
+
+    def create_inactive_offer
+      create_reviewing_offer.tap(&:mark_inactive)
+    end
+
+    def create_closed_offer
+      create_reviewed_offer.tap(&:mark_unwanted)
+    end
+
+    def create_receiving_offer
+      create_reviewed_offer.tap(&:start_receiving)
+    end
+
+    def create_recieved_offer
+      inventory_offer_packages(create_receiving_offer).tap(&:receive)
+    end
+
+    def inventory_offer_packages(offer)
+      offer.reload.items.each do |item|
+        item.accept
+        item.packages.each do |package|
+          location_id = Location.pluck(:id).sample
+          package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: location_id)
+          package.build_or_create_packages_location(location_id, 'create')
+          package.mark_received
+        end
+      end
+      offer.update(delivered_by: FactoryGirl.generate(:delivered_by))
+      offer
+    end
+
+    def create_single_order
+      FactoryGirl.create(:order, :with_created_by, processed_by: reviewer, organisation: create_organisation)
+    end
+
+
+    def create_designated_packages
+      order = create_single_order
+      offer = create_recieved_offer
+      orders_packages_ids = []
+      offer.reload.items.each do |item|
+        item.packages.each do |pkg|
+          pkg.designate_to_stockit_order(order.id)
+          params = {
+            order_id: order.id,
+            package_id: pkg.id,
+            quantity: pkg.quantity
+          }
+          orders_package = OrdersPackage.add_partially_designated_item(params)
+          orders_packages_ids << orders_package.id
+        end
+      end
+      orders_packages_ids
+    end
+
+    def create_dispatched_packages
+      orders_packages_ids = create_designated_packages
+      orders_packages_ids.each do |orders_pkg|
+        orders_package = OrdersPackage.find(orders_pkg)
+        pkg = orders_package.package
+        orders_package.dispatch_orders_package
+        pkg.dispatch_stockit_item(orders_package)
+      end
+      orders_packages_ids
+    end
 
     def create_contacts
       puts "Contacts:\t\tCreating #{count} contacts"
@@ -103,8 +147,16 @@ namespace :demo do
     def create_organizations
       puts "Organisation:\t\tCreating #{count} organizations"
       count.times do
-        FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+        create_organisation
       end
+    end
+
+    def create_organisation
+      FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+    end
+
+    def reviewer
+      User.where(permission_id: 3).sample||FactoryGirl.create(:user, :reviewer)
     end
 
     # Choose a donor from seed data
@@ -112,6 +164,7 @@ namespace :demo do
       mobile = ["+85251111111", "+85251111112", "+85251111113", "+85251111114"].sample
       User.find_by_mobile(mobile)
     end
+
 
     # Specify number of test cases to produce
     def count
