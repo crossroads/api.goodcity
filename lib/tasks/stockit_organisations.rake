@@ -9,7 +9,7 @@ namespace :stockit do
 
     if stockit_organisations
       stockit_organisations.each do |value|
-        organisation = StockitOrganisation.where(
+        StockitOrganisation.where(
           name: value["name"],
           stockit_id: value["id"]
         ).first_or_create
