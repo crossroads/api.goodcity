@@ -49,6 +49,7 @@ module Api::V1
         serializer: stock_serializer,
         root: "item",
         include_order: true,
+        exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
         include_images: @package.set_item_id.blank?,
         include_stock_condition: is_stock_app
     end
