@@ -17,7 +17,6 @@ namespace :demo do
       create_offers
       create_orders
       create_contacts
-      create_organizations
     end
 
     def create_offers
@@ -144,15 +143,8 @@ namespace :demo do
       end
     end
 
-    def create_organizations
-      puts "Organisation:\t\tCreating #{count} organizations"
-      count.times do
-        create_organisation
-      end
-    end
-
     def create_organisation
-      FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+      Organisation.find(rand(Organisation.count))
     end
 
     def reviewer
