@@ -22,6 +22,10 @@ FactoryGirl.define do
       state "submitted"
     end
 
+    trait :with_status_processing do
+      status "processing"
+    end
+
     trait :with_state_draft do
       state "draft"
     end

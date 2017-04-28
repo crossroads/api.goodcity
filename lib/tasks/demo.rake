@@ -102,7 +102,7 @@ namespace :demo do
     end
 
     def create_single_order
-      FactoryGirl.create(:order, :with_state_submitted, :with_created_by, processed_by: reviewer, organisation: create_organisation)
+      FactoryGirl.create(:order, :with_status_processing, :with_created_by, processed_by: reviewer, organisation: create_organisation)
     end
 
 
