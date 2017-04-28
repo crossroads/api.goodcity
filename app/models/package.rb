@@ -29,6 +29,7 @@ class Package < ActiveRecord::Base
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
+  after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
   after_commit :update_set_item_id, on: :destroy
   after_touch { update_client_store :update }
 
@@ -103,11 +104,19 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def received_quantity_changed_and_locations_exists?
+    received_quantity_changed? && locations.exists?
+  end
+
+  def update_packages_location_quantity
+    packages_locations.first.update_quantity(received_quantity)
+  end
+
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && received_quantity == 1 && self.packages_locations.exists?
       packages_locations.first.update_column(:location_id, location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
-      packages_location.update(quantity: received_quantity)
+      packages_location.update_quantity(received_quantity)
     else
       packages_locations.send(operation, {
         location_id: location_id,
