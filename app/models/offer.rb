@@ -151,7 +151,6 @@ class Offer < ActiveRecord::Base
     end
 
     before_transition on: :mark_inactive do |offer, transition|
-      offer.reviewed_by = nil
       offer.inactive_at = Time.now
     end
 
