@@ -85,13 +85,18 @@ module Api::V1
 
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
-        location_id = params[:package][:packages_locations_attributes]['0'][:location_id]
-        p = PackagesLocation.where(package: @package, location_id: location_id )
-        if (p.exists?)
-          p.first.update(quantity: qty)
-          x = p.first.id
-          p.where.not(id: x).delete_all
+        # code to remove redundant PackagesLocation record
+        pkg_locations = params[:package][:packages_locations_attributes]
+        pkg_locations.values.each do |pkg_location|
+          location_id = pkg_location["location_id"]
+          qty = pkg_location["quantity"]
+          pkg = PackagesLocation.where(package: @package, location_id: location_id )
+          if (pkg.exists?)
+            pkg.first.update(quantity: qty)
+            pkg.where.not(id: pkg.first.id).delete_all
+          end
         end
+
         if is_stock_app
           stockit_item_details
         else
