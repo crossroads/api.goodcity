@@ -9,4 +9,8 @@ class PackagesLocation < ActiveRecord::Base
   scope :exclude_location, -> (location_id) {
     where.not(location_id: location_id)
   }
+
+  def update_quantity(received_quantity)
+    update(quantity: received_quantity)
+  end
 end
