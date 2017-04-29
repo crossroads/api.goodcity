@@ -8,6 +8,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:item)  { create :item, offer: offer }
   let(:package_type)  { create :package_type }
   let(:package) { create :package, item: item }
+  let(:package_with_stockit_id) { create :package, :stockit_package, item: item }
+  let(:stockit_package_with_designation_name) { }
+  let(:orders_package) { create :orders_package, package: package, order: order_id }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package) }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
 
@@ -67,7 +70,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
 
       let(:stockit_item_params_without_designation){
-        stockit_item_params.merge({designation_name: ''})
+        stockit_item_params.merge({ designation_name: '', stockit_id: package_with_stockit_id.stockit_id })
       }
 
       it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
@@ -88,15 +91,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       it 'do not creates any orders_package if designation name was nil and not changed' do
-        package = create :package, :stockit_package, item: item
         expect{
           post :create, format: :json, package: stockit_item_params_without_designation
         }.to change(OrdersPackage, :count).by(0)
-        expect(package.reload.designation_name).to eq(nil)
-        expect(package.reload.locations.first).to eq(location)
-        expect(package.donor_condition).to eq(donor_condition)
-        expect(package.reload.grade).to eq("C")
-        expect(package.reload.orders_packages.count).to eq 0
+        expect(package_with_stockit_id.reload.designation_name).to eq(nil)
+        expect(package_with_stockit_id.reload.locations.first).to eq(location)
+        expect(package_with_stockit_id.donor_condition).to eq(donor_condition)
+        expect(package_with_stockit_id.reload.grade).to eq("C")
+        expect(package_with_stockit_id.reload.orders_packages.count).to eq 0
         expect(response.status).to eq(201)
         expect(GoodcitySync.request_from_stockit).to eq(true)
       end
@@ -168,6 +170,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       it 'designates item to cancelled designation if again designated to same and if it has another active designation with some other order_id then it cancels it' do
+
       end
     end
   end
