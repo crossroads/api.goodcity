@@ -11,7 +11,6 @@ namespace :goodcity do
     log.info("\n\tInitial Number of PackagesLocation before rake =#{PackagesLocation.count}")
     log.debug("\n\tInitial First Package whose PackagesLocation will be created =#{packages.first.id}")
     log.debug("\n\tInitial Last Package whose PackagesLocation will be created =#{packages.last.id}")
-    first_id = PackagesLocation.last.id + 1
     count = 0
     # end of code to create log for the rake
     packages.find_each do |package|
@@ -24,7 +23,7 @@ namespace :goodcity do
     end
     # code to create log for the rake
     log.info("\n\tUpdated Number of OrdersPackage after rake =#{count}")
-    log.debug("\n\tUpdated First PackagesLocation (:id, :package_id, :location_id) created =#{PackagesLocation.where(id: first_id).pluck(:id, :package_id, :location_id)}")
+    log.debug("\n\tUpdated First PackagesLocation (:id, :package_id, :location_id) created =#{PackagesLocation.pluck(:id, :package_id, :location_id).first}")
     log.debug("\n\tUpdated Last PackagesLocation (:id, :package_id, :location_id) created =#{PackagesLocation.pluck(:id, :package_id, :location_id).last}")
     log.close
     # end of code to create log for the rake
