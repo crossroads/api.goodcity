@@ -37,7 +37,7 @@ namespace :stockit do
             package.package_type = package_type_record(value["code_id"])
             package.box = box_record(value["box_id"])
             package.pallet = pallet_record(value["pallet_id"])
-            package.save
+            package.save!
           end
         end
       else
