@@ -214,7 +214,7 @@ module Api::V1
     end
 
     def print_inventory_label
-      print_id, errors, status = barcode_service.print @package.inventory_number
+      _print_id, errors, status = barcode_service.print @package.inventory_number
       render json: {
         status: status,
         errors: errors,

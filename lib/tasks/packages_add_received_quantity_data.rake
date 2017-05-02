@@ -9,7 +9,6 @@ namespace :goodcity do
     log.debug("\n\tInitial First Package(:id, :received_quantity, :quantity) before rake =#{Package.order(:id).limit(1).pluck(:id, :received_quantity, :quantity)}")
     log.debug("\n\tInitial Last Package(:id, :received_quantity, :quantity) before rake =#{Package.limit(1).pluck(:id, :received_quantity, :quantity)}")
     count = 0
-    first_id = Package.first.id
     # end of code to create log for the rake
     Package.find_each(batch_size: 100) do |package|
       package.received_quantity = package.quantity
