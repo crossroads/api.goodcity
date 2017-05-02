@@ -1,5 +1,5 @@
 namespace :stockit do
-
+  # rake stockit:add_stockit_items
   desc 'Load all item details from Stockit'
   task add_stockit_items: :environment do
 
