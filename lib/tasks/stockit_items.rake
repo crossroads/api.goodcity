@@ -24,7 +24,7 @@ namespace :stockit do
             package.stockit_sent_on = value["sent_on"]
 
             package.quantity = value["quantity"].to_i.zero? ? 1 : value["quantity"].to_i
-            package.recieved_quantity = package.quantity
+            package.received_quantity = package.quantity
 
             package.length = value["length"].to_i.zero? ? "" : value["length"].to_i
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
