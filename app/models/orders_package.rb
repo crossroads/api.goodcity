@@ -43,7 +43,7 @@ class OrdersPackage < ActiveRecord::Base
       transition designated: :cancelled
     end
 
-    before_transition on: :cancel do |orders_package, transition|
+    before_transition on: :cancel do |orders_package, _transition|
       orders_package.quantity   = 0
       orders_package.updated_by = User.current_user
     end
