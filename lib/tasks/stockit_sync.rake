@@ -29,7 +29,7 @@ namespace :stockit do
     Rake::Task["stockit:add_stockit_local_orders"].execute
     puts "Getting Stockit Designations"
     Rake::Task["stockit:add_designations"].execute
-    puts "Getting Stockit Items"
+    puts "Getting Stockit Items (takes a long time)"
     Rake::Task["stockit:add_stockit_items"].execute
     puts "Generate OrdersPackages and sync them to Stockit"
     Rake::Task["goodcity:update_orders_packages_data"].execute
