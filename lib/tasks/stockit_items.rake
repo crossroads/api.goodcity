@@ -9,7 +9,6 @@ namespace :stockit do
     loop do
       items_json = Stockit::ItemSync.new(nil, offset, per_page).index
       offset = offset + per_page
-      puts "Processing #{offset} items"
       stockit_items = JSON.parse(items_json["items"])
 
       if stockit_items.present?
@@ -25,6 +24,7 @@ namespace :stockit do
             package.stockit_sent_on = value["sent_on"]
 
             package.quantity = value["quantity"].to_i.zero? ? 1 : value["quantity"].to_i
+            package.recieved_quantity = package.quantity
 
             package.length = value["length"].to_i.zero? ? "" : value["length"].to_i
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
