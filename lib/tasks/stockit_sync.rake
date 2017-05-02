@@ -16,6 +16,9 @@ namespace :stockit do
     Rake::Task["stockit:add_stockit_locations"].execute
     puts "Getting Stockit Codes"
     Rake::Task["stockit:add_stockit_codes"].execute
+    puts "Update PackageType default locations"
+    Rake::Task["goodcity:update_package_type_default_location"].execute
+    
     puts "Getting Stockit Pallets and boxes"
     Rake::Task["stockit:add_stockit_pallets_boxes"].execute
     puts "Getting Stockit Organisations"
@@ -26,7 +29,7 @@ namespace :stockit do
     Rake::Task["stockit:add_stockit_local_orders"].execute
     puts "Getting Stockit Designations"
     Rake::Task["stockit:add_designations"].execute
-    puts "Getting Stockit Items"
+    puts "Getting Stockit Items (takes a long time)"
     Rake::Task["stockit:add_stockit_items"].execute
     puts "Generate OrdersPackages and sync them to Stockit"
     Rake::Task["goodcity:update_orders_packages_data"].execute

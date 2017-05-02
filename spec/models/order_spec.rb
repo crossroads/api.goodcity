@@ -3,6 +3,13 @@ require "rspec/mocks/standalone"
 
 RSpec.describe Order, type: :model do
 
+  context "create an order" do
+    let(:order) { Order.new }
+    it "state should not be blank" do
+      expect(order.state).to eql('draft')
+    end
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to :detail  }
     it { is_expected.to belong_to :stockit_activity }

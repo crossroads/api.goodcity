@@ -9,7 +9,7 @@ namespace :stockit do
 
     if stockit_contacts
       stockit_contacts.each do |value|
-        contact = StockitContact.where(
+        StockitContact.where(
           first_name: value["first_name"],
           last_name: value["last_name"],
           mobile_phone_number: value["mobile_phone_number"],

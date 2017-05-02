@@ -6,7 +6,7 @@ class OrdersPackage < ActiveRecord::Base
   after_initialize :set_initial_state
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
-  after_destroy -> { destroy_stockit_record("destroy") }
+  before_destroy -> { destroy_stockit_record("destroy") }
 
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, -> (package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
@@ -74,9 +74,18 @@ class OrdersPackage < ActiveRecord::Base
     total_quantity = quantity + package[:quantity].to_i
     if(state == "cancelled")
       update(quantity: total_quantity, state: "designated")
+    elsif(state == "dispatched")
+      update(quantity: total_quantity)
+      update_quantity_based_on_dispatch_state(total_quantity)
     else
       update(quantity: total_quantity)
     end
+  end
+
+  def update_quantity_based_on_dispatch_state(total_quantity)
+    location_id = Location.dispatch_location.id
+    package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
+    package.update_location_quantity(total_quantity, location_id)
   end
 
   def dispatch_orders_package
@@ -87,9 +96,14 @@ class OrdersPackage < ActiveRecord::Base
     packages.each_pair do |_key, package|
       quantity_to_reduce = package["quantity"].to_i
       orders_package     = find_by(id: package["orders_package_id"])
+      orders_package.remove_designation_of_associated_package
       total_quantity     = orders_package.quantity - quantity_to_reduce
       orders_package.update_orders_package_state(total_quantity)
     end
+  end
+
+  def remove_designation_of_associated_package
+    package.undesignate_from_stockit_order if package.is_singleton_package?
   end
 
   def update_orders_package_state(total_quantity)
@@ -100,11 +114,11 @@ class OrdersPackage < ActiveRecord::Base
     end
   end
 
-  def self.add_partially_designated_item(package)
+  def self.add_partially_designated_item(params)
     create(
-      order_id: package[:order_id].to_i,
-      package_id: package[:package_id].to_i,
-      quantity: package[:quantity].to_i,
+      order_id: params[:order_id].to_i,
+      package_id: params[:package_id].to_i,
+      quantity: params[:quantity].to_i,
       updated_by: User.current_user,
       state: "designated"
       )
@@ -115,7 +129,7 @@ class OrdersPackage < ActiveRecord::Base
     unless(state == "requested")
       update_designation_of_package
       package.update_in_stock_quantity
-      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation)
+      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.is_singleton_package?
     end
   end
 
@@ -129,7 +143,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def destroy_stockit_record(operation)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation)
+    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.is_singleton_package?
   end
 end
 
