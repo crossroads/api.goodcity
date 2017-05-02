@@ -9,6 +9,7 @@ namespace :stockit do
     loop do
       items_json = Stockit::ItemSync.new(nil, offset, per_page).index
       offset = offset + per_page
+      puts "Processing #{offset} items"
       stockit_items = JSON.parse(items_json["items"])
 
       if stockit_items.present?
