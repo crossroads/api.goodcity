@@ -15,17 +15,17 @@ FactoryGirl.define do
     end
 
     trait :with_packages do
-      packages { create_list(:package, 2) }
+      packages { create_list(:package, rand(3)+1) }
     end
 
     trait :with_inventory_packages do
       after(:create) do |item|
-        create_list(:package, 2, :with_set_item, :package_with_locations, item: item)
+        create_list(:package, rand(3)+1, :with_set_item, :package_with_locations, item: item)
       end
     end
 
     trait :with_received_packages do
-      packages { create_list(:package, 2, state: :received) }
+      packages { create_list(:package, rand(3)+1, state: :received) }
     end
 
     trait :with_images do
@@ -34,7 +34,7 @@ FactoryGirl.define do
 
     trait :paranoid do
       state  { ["submitted", "accepted", "rejected"].sample }
-      images { create_list(:image, 2) }
+      images { create_list(:image, rand(3)+1) }
     end
 
     trait :with_messages do
@@ -62,8 +62,15 @@ FactoryGirl.define do
         demo_key { generate(:cloudinary_demo_images).keys.sample } # e.g. red_chair
       end
       donor_description { generate(:cloudinary_demo_images)[demo_key][:donor_description] }
-      images            { create_list(:demo_image, 1, demo_key.to_sym, favourite: true) }
-      packages          { create_list(:package, 1, notes: donor_description) }
+      images            { create_list(:demo_image, rand(3)+1, demo_key.to_sym, favourite: true) }
+      packages          { create_list(:package, rand(3)+1, notes: donor_description) }
+      after(:create) do |item|
+        item.packages.each do |pkg|
+          pkg.package_type = item.package_type.child_package_types.sample
+          pkg.offer_id = item.offer_id
+          pkg.save
+        end
+      end
     end
   end
 

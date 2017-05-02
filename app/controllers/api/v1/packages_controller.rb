@@ -49,6 +49,7 @@ module Api::V1
         serializer: stock_serializer,
         root: "item",
         include_order: true,
+        exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
         include_images: @package.set_item_id.blank?,
         include_stock_condition: is_stock_app
     end
@@ -124,7 +125,6 @@ module Api::V1
         records = records.search(params['searchText'], params["itemId"]).page(params["page"]).per(params["per_page"])
         pages = records.total_pages
       end
-
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
@@ -141,13 +141,8 @@ module Api::V1
       @package.designate_to_stockit_order(order_id)
     end
 
-    def update_partial_quantity_of_same_designation
-      OrdersPackage.update_partially_designated_item(params[:package])
-      send_stock_item_response
-    end
-
     def undesignate_partial_item
-      orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
+      OrdersPackage.undesignate_partially_designated_item(params[:package])
       send_stock_item_response
     end
 
@@ -172,7 +167,7 @@ module Api::V1
     def dispatch_stockit_item
       @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
       @orders_package.dispatch_orders_package
-      @package.dispatch_stockit_item(@orders_package)
+      @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
       send_stock_item_response
     end
 
@@ -182,7 +177,8 @@ module Api::V1
     end
 
     def move_partial_quantity
-      @package.move_partial_quantity(params["location_id"], params["package"], params["total_qty"])
+      package_params = JSON.parse(params["package"])
+      @package.move_partial_quantity(params["location_id"], package_params, params["total_qty"])
       send_stock_item_response
     end
 
@@ -291,7 +287,8 @@ module Api::V1
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
-        @package.build_packages_location(location_id)
+        @package.received_quantity = received_quantity
+        @package.build_or_create_packages_location(location_id, 'build')
         @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id
@@ -300,9 +297,13 @@ module Api::V1
       else
         @package.assign_attributes(package_params)
       end
+      @package.received_quantity ||= received_quantity
       add_favourite_image if params["package"]["favourite_image_id"]
-      @package.received_quantity = params[:package][:quantity] if params[:package][:quantity]
       @package
+    end
+
+    def received_quantity
+      params[:package][:quantity].to_i
     end
 
     def location_id

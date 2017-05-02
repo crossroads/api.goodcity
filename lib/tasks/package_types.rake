@@ -18,7 +18,7 @@ namespace :goodcity do
   end
 
   # rake goodcity:update_package_type_default_location
-  desc 'Update package type default location'
+  desc 'Update PackageType default location from Stockit'
   task update_package_type_default_location: :environment do
 
     codes_json = Stockit::CodeSync.index

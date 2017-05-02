@@ -64,9 +64,10 @@ RSpec.describe OrdersPackage, type: :model do
 
   describe '#update_partially_designated_item' do
     let!(:package) { create :package, quantity: 10 }
+    let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it 'adds package quantity to orders_package quantity' do
-      orders_package = build :orders_package
+      orders_package = build :orders_package, state: 'designated'
       total_qty = orders_package.quantity + package.quantity
       expect{
         orders_package.update_partially_designated_item(package)
@@ -81,7 +82,7 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     it 'do not update state of orders_package if state is designated' do
-      orders_package = create :orders_package, state: 'designated'
+      orders_package = create :orders_package, state: 'designated', package: package
       existing_state = orders_package.state
       orders_package.update_partially_designated_item(package)
       expect(orders_package.reload.state).to eq existing_state
@@ -95,9 +96,10 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     it 'do not update state of orders_package if state is dispatched' do
-      orders_package = create :orders_package, state: 'dispatched'
+      orders_package = create :orders_package, state: 'dispatched', package: package
+      packages_location = create :packages_location, quantity: 2, location: dispatched_location, package: package
       existing_state = orders_package.state
-      orders_package.update_partially_designated_item(package)
+      orders_package.reload.update_partially_designated_item(package)
       expect(orders_package.reload.state).to eq existing_state
     end
   end
@@ -193,6 +195,16 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#delete_unwanted_cancelled_packages' do
+    before do
+      stub_request(:put, "http://www.example.com/api/v1/items/destroy").
+        with(:body => "{\"gc_orders_package_id\":#{orders_package.id}}",
+          :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Content-Type'=>'application/json',
+          'Token'=>'jchahjfsjfvacterr6e87dfbdsbqvh3v4brrb',
+          'User-Agent'=>'Ruby'}).
+         to_return(:status => 200, :body => "", :headers => {})
+    end
+
     let!(:order) { create :order }
     let!(:orders_package) { create :orders_package, :with_state_cancelled, order: order }
 

@@ -24,13 +24,13 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
   describe "POST location/1" do
     it "create new location if stockit_id is not present", :show_in_doc do
       expect {
-        post :create, location: (build :location).attributes
+        post :create, location: {building: "234", area: "C"}
       }.to change(Location, :count).by(1)
       expect(response.status).to eq(201)
     end
 
     it "updates location if stockit_id is already present", :show_in_doc do
-      location = create :location
+      location = create :location, stockit_id: 123
       expect {
         post :create, location: location.attributes
       }.to_not change(Location, :count)

@@ -27,12 +27,20 @@ module Stockit
         new(package).move
       end
 
+      def undispatch(package)
+        new(package).undispatch
+      end
+
       def delete(package)
         new(package).delete
       end
 
       def index(package, offset, per_page)
         new(package, offset, per_page).index
+      end
+
+      def dispatch(package)
+        new(package).dispatch
       end
     end
 
@@ -71,6 +79,20 @@ module Stockit
       end
     end
 
+    def dispatch
+      if package.inventory_number.present? && package.is_singleton_package?
+        url = url_for("/api/v1/items/dispatch")
+        put(url, stockit_params)
+      end
+    end
+
+    def undispatch
+      if package.inventory_number.present? && package.is_singleton_package?
+        url = url_for("/api/v1/items/undispatch")
+        put(url, stockit_params)
+      end
+    end
+
     private
 
     def add_stockit_prefix(inventory_number)
@@ -87,24 +109,18 @@ module Stockit
 
     def item_params
       {
-        quantity: package.quantity,
+        quantity: package.is_singleton_package? ? package.received_quantity : package.quantity,
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.blank? ? nil : package.case_number,
         condition: package_condition,
         grade: package.grade,
         description: package.notes,
-        location_id: item_location_id,
-        id: package.stockit_id
+        location_id: package.stockit_location_id,
+        id: package.stockit_id,
+        designation_id: package.is_singleton_package? ? package.order.try(:stockit_id) : nil,
+        designated_on: package.is_singleton_package? ? package.stockit_designated_on : nil
       }
-    end
-
-    def item_location_id
-      if package.packages_locations.count > 1
-        Location.multiple_location.try(:stockit_id)
-      else
-        Location.find_by(id: package.location_id).try(:stockit_id)
-      end
     end
 
     def package_params

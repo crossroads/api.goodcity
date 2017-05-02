@@ -40,7 +40,6 @@ RSpec.describe Package, type: :model do
     it do
       [:quantity, :length].each do |attribute|
         is_expected.to_not allow_value(-1).for(attribute)
-        is_expected.to_not allow_value(100000000).for(attribute)
         is_expected.to allow_value(rand(1..99999999)).for(attribute)
       end
     end
@@ -185,8 +184,9 @@ RSpec.describe Package, type: :model do
 
   describe 'dispatch_stockit_item' do
     let(:package) { create :package, :with_set_item }
-    let!(:location) { create :location, :dispatched }
-    let!(:packages_location) { create :packages_location, location: location, package: package}
+    let(:location) { create :location, :dispatched }
+    let!(:packages_location) { create :packages_location, location: location, package: package }
+    before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
 
     it 'set dispatch related details' do
       package.dispatch_stockit_item
@@ -252,28 +252,28 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe '#add_location' do
+  describe '#build_or_create_packages_location' do
     let!(:package) { create :package }
     let!(:location) { create :location }
 
     it 'creates new packages_location record with provided location id if it do not exist' do
       expect{
-        package.add_location(location.id)
+        package.build_or_create_packages_location(location.id, 'create')
       }.to change(PackagesLocation, :count).by(1)
     end
 
     it 'do not create packages_location record with provided location if already exist' do
       packages_location = create :packages_location, package: package, location: location
       expect{
-        package.add_location(location.id)
+        package.build_or_create_packages_location(location.id, 'create')
       }.to change(PackagesLocation, :count).by(0)
     end
   end
 
   describe '#move_full_quantity' do
-    let!(:package) { create :package }
-    let!(:location) { create :location }
-    let!(:order) { create :order, state: "submitted"}
+    let(:package) { create :package }
+    let(:location) { create :location }
+    let(:order) { create :order, state: "submitted"}
     let!(:orders_package) { create :orders_package, package: package, state: 'designated', order: order, quantity: 10 }
     let!(:packages_location) { create :packages_location, package: package, reference_to_orders_package: orders_package.id}
 
@@ -317,15 +317,16 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#move_partial_quantity' do
-    let!(:package) { create :package }
-    let!(:location) { create :location }
-    let!(:location_1) { create :location }
-    let!(:packages_location) { create :packages_location, quantity: 12, package: package, location: location_1 }
+    let(:package) { create :package }
+    let(:location) { create :location }
+    let(:location_1) { create :location }
+    let(:packages_location) { create :packages_location, quantity: 12, package: package, location: location_1 }
 
     context 'moving some qty to location for which associated packages_location do not exist' do
       it 'subtract quantity to move from packages_location record(current location)' do
         quantity_to_move = 5
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}]
         quantity_for_current_location = packages_location.quantity - quantity_to_move
         package.move_partial_quantity(location.id, package_qty_changes, 7)
         expect(packages_location.reload.quantity).to eq quantity_for_current_location
@@ -333,40 +334,44 @@ RSpec.describe Package, type: :model do
 
       it 'destroys packages_location record if remaining qty is zero' do
         quantity_to_move = packages_location.quantity
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}]
         package.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
         expect(PackagesLocation.find_by_id(packages_location.id)).to eq nil
       end
 
       it 'creates new packages_location record with new location id' do
         quantity_to_move = packages_location.quantity
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}]
         package.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
         expect(package.packages_locations.last.location).to eq location
       end
 
       it 'creates new packages_location record with total qty moved' do
         quantity_to_move = packages_location.quantity
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}]
         package.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
         expect(package.packages_locations.last.quantity).to eq quantity_to_move
       end
     end
 
     context 'moving qty to location for which associated packages_location record already exist' do
+      let(:packages_location_1) { create :packages_location, package: package, location: location, quantity: 10 }
+      let(:quantity_to_move) { 5 }
+
       it 'subtract quantity to move from packages_location record(current location)' do
-        packages_location_1 = create :packages_location, package: package, location: location, quantity: 10
-        quantity_to_move = 5
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}]
         quantity_for_current_location = packages_location.quantity - quantity_to_move
         package.move_partial_quantity(location.id, package_qty_changes, 7)
         expect(packages_location.reload.quantity).to eq quantity_for_current_location
       end
 
       it "updates existing packages_location quantity with new quantity which is addition of packages_location qty and qty to move" do
-        packages_location_1 = create :packages_location, package: package, location: location, quantity: 10
-        quantity_to_move = 5
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}]
         new_qty = packages_location_1.quantity + quantity_to_move
         package.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
         expect(packages_location_1.reload.quantity).to eq new_qty
@@ -374,16 +379,16 @@ RSpec.describe Package, type: :model do
     end
 
     context 'moving some quantity from multiple locations to location for which packages_location record already exist' do
-      let!(:location_2) { create :location }
-      let!(:packages_location_2) { create :packages_location, package: package, location: location_2, quantity: 14 }
+      let(:location_2) { create :location }
+      let(:packages_location_2) { create :packages_location, package: package, location: location_2, quantity: 14 }
+      let(:quantity_to_move) { 5 }
 
       it 'subtract quantity moved from original packages_location record associated with locations' do
-        quantity_to_move = 5
         resultant_package_location_qty = packages_location.quantity - quantity_to_move
         resultant_package_location_2_qty = packages_location_2.quantity - quantity_to_move
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id,
-          new_qty: quantity_to_move}, {packages_location_id: packages_location_2.id,
-          package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}, {"packages_location_id" => packages_location_2.id,
+          "package_id" => package.id, "new_qty" => quantity_to_move}]
         package.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
         expect(packages_location.reload.quantity).to eq resultant_package_location_qty
         expect(packages_location_2.reload.quantity).to eq resultant_package_location_2_qty
@@ -392,11 +397,10 @@ RSpec.describe Package, type: :model do
       it 'do not creates new packages_location record and updates existing with total qty' do
         packages_location_3 = create :packages_location, package: package, location: location, quantity: 10
         total_qty        = 10
-        quantity_to_move = 5
         new_qty          = packages_location_3.quantity + total_qty
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id,
-          new_qty: quantity_to_move}, {packages_location_id: packages_location_2.id,
-          package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}, {"packages_location_id" => packages_location_2.id,
+          "package_id" => package.id, "new_qty" => quantity_to_move}]
         expect{
           package.move_partial_quantity(location.id, package_qty_changes, total_qty)
         }.to change(PackagesLocation, :count).by(0)
@@ -405,16 +409,16 @@ RSpec.describe Package, type: :model do
     end
 
     context 'moving some quantity from multiple locations to location for which packages_location do not exist' do
-      let!(:location_2) { create :location }
-      let!(:packages_location_2) { create :packages_location, package: package, location: location_2, quantity: 14 }
+      let(:location_2) { create :location }
+      let(:packages_location_2) { create :packages_location, package: package, location: location_2, quantity: 14 }
+      let(:quantity_to_move) { 5 }
 
       it 'subtract quantity moved from original packages_location record associated with locations' do
-        quantity_to_move = 5
         resultant_package_location_qty = packages_location.quantity - quantity_to_move
         resultant_package_location_2_qty = packages_location_2.quantity - quantity_to_move
-        package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id,
-          new_qty: quantity_to_move}, {packages_location_id: packages_location_2.id,
-          package_id: package.id, new_qty: quantity_to_move}].to_json
+        package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
+          "new_qty" => quantity_to_move}, {"packages_location_id" => packages_location_2.id,
+          "package_id" => package.id, "new_qty" => quantity_to_move}]
         package.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
         expect(packages_location.reload.quantity).to eq resultant_package_location_qty
         expect(packages_location_2.reload.quantity).to eq resultant_package_location_2_qty
@@ -422,10 +426,9 @@ RSpec.describe Package, type: :model do
 
       it 'do not creates new packages_location record and updates existing with total qty' do
         total_qty        = 10
-        quantity_to_move = 5
         package_qty_changes = [{packages_location_id: packages_location.id, package_id: package.id,
           new_qty: quantity_to_move}, {packages_location_id: packages_location_2.id,
-          package_id: package.id, new_qty: quantity_to_move}].to_json
+          package_id: package.id, new_qty: quantity_to_move}]
         expect{
           package.move_partial_quantity(location.id, package_qty_changes, total_qty)
         }.to change(PackagesLocation, :count).by(1)
@@ -435,8 +438,8 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#update_designation' do
-    let!(:package) { create :package }
-    let!(:order) { create :order, state: 'submitted' }
+    let(:package) { create :package }
+    let(:order) { create :order, state: 'submitted' }
 
     it 'adds order id to package' do
       package.update_designation(order.id)
@@ -445,7 +448,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#remove_designation' do
-    let!(:package) { create :package, order_id: 1 }
+    let(:package) { create :package, order_id: 1 }
 
     it 'removes order_id from package record' do
       package.remove_designation
@@ -454,8 +457,8 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#update_in_stock_quantity' do
-    let!(:package) { create :package, received_quantity: 10 }
-    let!(:orders_package) { create :orders_package, quantity: 3, package: package, state: 'designated' }
+    let(:package) { create :package, received_quantity: 10 }
+    let(:orders_package) { create :orders_package, quantity: 3, package: package, state: 'designated' }
 
     it 'subtracts assigned qty from received_quantity to calculate in hand quantity and updates package quantity with it' do
       in_hand_quantity = package.received_quantity - orders_package.quantity

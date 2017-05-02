@@ -22,7 +22,7 @@ class Package < ActiveRecord::Base
 
   has_many   :packages_locations, inverse_of: :package
   has_many   :images, as: :imageable, dependent: :destroy
-  has_many   :orders_packages
+  has_many   :orders_packages, dependent: :destroy
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
@@ -33,7 +33,7 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than_or_equal_to: 0, less_than: 100000000 }
+  validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity,  numericality: { greater_than: 0, less_than: 100000000 }
   validates :length, numericality: {
     allow_blank: true, greater_than: 0, less_than: 100000000 }
@@ -56,15 +56,16 @@ class Package < ActiveRecord::Base
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
 
+
   accepts_nested_attributes_for :packages_locations, allow_destroy: true
 
   attr_accessor :skip_set_relation_update
 
   def self.search(search_text, item_id)
     if item_id.presence
-      where("item_id = ?", item_id)
+      where("item_id = ? and received_quantity = 1", item_id)
     else
-      where("inventory_number ILIKE :query", query: "%#{search_text}%")
+      where("inventory_number ILIKE :query and received_quantity = 1", query: "%#{search_text}%")
     end
   end
 
@@ -96,19 +97,27 @@ class Package < ActiveRecord::Base
     end
 
     before_transition on: :mark_missing do |package|
+      package.delete_associated_packages_locations
       package.received_at = nil
       package.remove_from_stockit
     end
   end
 
-  def add_location(location_id)
-    location = Location.find_by(id: location_id)
-    unless locations.include?(location)
-      packages_locations.create(
-        location: location,
+  def build_or_create_packages_location(location_id, operation)
+    if GoodcitySync.request_from_stockit && received_quantity == 1 && self.packages_locations.exists?
+      packages_locations.first.update_column(:location_id, location_id)
+    elsif (packages_location = packages_locations.find_by(location_id: location_id))
+      packages_location.update(quantity: received_quantity)
+    else
+      packages_locations.send(operation, {
+        location_id: location_id,
         quantity: received_quantity
-      )
+      })
     end
+  end
+
+  def delete_associated_packages_locations
+    packages_locations.destroy_all
   end
 
   def update_allow_web_publish_to_false
@@ -119,16 +128,17 @@ class Package < ActiveRecord::Base
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each{|key, value| self.errors.add(key, value) }
-    else response && (item_id = response["item_id"]).present?
+    elsif response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
     end
   end
 
-  def build_packages_location(location_id)
-    packages_locations.build(
-      location: Location.find_by(id: location_id),
-      quantity: received_quantity
-    )
+  def stockit_location_id
+    if packages_locations.count > 1
+      Location.multiple_location.try(:stockit_id)
+    else
+      packages_locations.first.try(:location).try(:stockit_id) || Location.find_by(id: location_id).try(:stockit_id)
+    end
   end
 
   def remove_from_stockit
@@ -178,13 +188,21 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatch_stockit_item(orders_package=nil, skip_set_relation_update=false)
+  def dispatch_stockit_item(orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    update_existing_package_location_qty(packages_locations.first.id, orders_package.try(:quantity))
+    deduct_dispatch_quantity(package_location_changes) if package_location_changes
+    response = Stockit::ItemSync.dispatch(self)
+    add_errors(response)
+  end
+
+  def deduct_dispatch_quantity(package_qty_changes)
+    package_qty_changes.each_pair do |_key, pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
+    end
   end
 
   def undispatch_stockit_item
@@ -192,12 +210,13 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = nil
     self.pallet = nil
     self.box = nil
+    response = Stockit::ItemSync.undispatch(self)
+    add_errors(response)
   end
 
   def move_partial_quantity(location_id, package_qty_changes, total_qty)
-    package_qty_params = JSON.parse(package_qty_changes)
-    package_qty_params.each do |pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
+    package_qty_changes.each do |pckg_qty_param|
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"],  pckg_qty_param["new_qty"])
     end
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
@@ -206,7 +225,7 @@ class Package < ActiveRecord::Base
     orders_package              = orders_packages.find_by(id: orders_package_id)
     referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
 
-    if packages_location_record = self.packages_locations.find_by(location_id: location_id)
+    if(packages_location_record = find_packages_location_with_location_id(location_id))
       new_qty = orders_package.quantity + packages_location_record.quantity
       packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
       referenced_package_location.destroy
@@ -216,8 +235,12 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def find_packages_location_with_location_id(location_id)
+    packages_locations.find_by(location_id: location_id)
+  end
+
   def update_or_create_qty_moved_to_location(location_id, total_qty)
-    if packages_location = packages_locations.find_by(location_id: location_id)
+    if(packages_location = find_packages_location_with_location_id(location_id))
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
       packages_locations.create(location_id: location_id, package_id: id, quantity: total_qty)
@@ -225,7 +248,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if packages_location = packages_locations.find_by(id: packages_location_id)
+    if(packages_location = packages_locations.find_by(id: packages_location_id))
       new_qty = packages_location.quantity - quantity_to_move.to_i
       new_qty == 0 ? packages_location.destroy : packages_location.update_column(:quantity, new_qty)
     end
@@ -235,7 +258,7 @@ class Package < ActiveRecord::Base
     response = if box_id? || pallet_id?
       has_box_or_pallet_error
     else
-      add_location(location_id)
+      build_or_create_packages_location(location_id, 'create')
       self.stockit_moved_on = Date.today
       self.stockit_moved_by = User.current_user
       Stockit::ItemSync.move(self)
@@ -293,7 +316,7 @@ class Package < ActiveRecord::Base
 
   def total_assigned_quantity
     total_quantity = 0
-    if associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence
+    if(associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence)
       associated_orders_packages.each do |orders_package|
         total_quantity += orders_package.quantity
       end
@@ -319,6 +342,18 @@ class Package < ActiveRecord::Base
     image = images.find_by(id: image_id)
     image.update(favourite: true)
     image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+  end
+
+  def is_singleton_package?
+    received_quantity == 1
+  end
+
+  def update_location_quantity(total_quantity, location_id)
+    packages_locations.where(location_id: location_id).first.update_column(:quantity, total_quantity)
+  end
+
+  def destroy_other_locations(location_id)
+    packages_locations.exclude_location(location_id).destroy_all
   end
 
   private

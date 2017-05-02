@@ -5,6 +5,7 @@ module Api::V1
 
     has_one :package_type, serializer: PackageTypeSerializer
     has_many :images, serializer: ImageSerializer, root: :package_images
+    has_many :packages_locations, serializer: PackagesLocationSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
 
     attributes :id, :quantity, :length, :width, :height, :notes,
