@@ -134,7 +134,7 @@ module Api::V1
     error 422, "Validation Error"
     error 500, "Internal Server Error"
     def verify
-      @user = User.where(permission_id: 3).last
+      @user = warden.authenticate(:pin)
       if authenticated_user
         render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user) }
       else
@@ -176,7 +176,7 @@ module Api::V1
     end
 
     def authenticated_user
-      true
+      warden.authenticated? && valid_user
     end
 
     def valid_user
@@ -197,9 +197,9 @@ module Api::V1
     # Note: if user is nil, we generate a fake token so as to ward off unruly hackers.
     def otp_auth_key_for(user)
       if user.present?
-        12345
+        user.most_recent_token.otp_auth_key
       else
-        12345
+        AuthToken.new.new_otp_auth_key
       end
     end
 
