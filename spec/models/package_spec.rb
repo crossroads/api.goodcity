@@ -142,6 +142,18 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  describe "after_update" do
+    it "should update packages_location quantity" do
+      @package = create(:package, :received)
+      new_quantity = rand(4)+2
+      @packages_location = @package.packages_locations.first
+      expect {
+        @package.update(received_quantity: new_quantity)
+        @packages_location.reload
+      }.to change(@packages_location, :quantity).from(@package.quantity).to(new_quantity)
+    end
+  end
+
   describe 'set_item_id' do
 
     let(:item) { create :item }
