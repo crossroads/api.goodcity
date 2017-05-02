@@ -134,10 +134,11 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def update_designation_of_package
-    orders_packages = package.orders_packages.where(state: 'designated')
-    if package && orders_packages.count == 1
-      package.update_designation(orders_packages.first.order_id)
-    elsif orders_packages.count == 0
+    designated_orders_packages = package.orders_packages.where(state: 'designated')
+    dispatched_orders_packages = package.orders_packages.where(state: 'dispatched')
+    if package && designated_orders_packages.count == 1
+      package.update_designation(designated_orders_packages.first.order_id)
+    elsif designated_orders_packages.count == 0 && dispatched_orders_packages.count == 0
       package.remove_designation
     end
   end
