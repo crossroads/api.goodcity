@@ -1,14 +1,11 @@
 require 'factory_girl'
 
-# run following rakes in sequence
-# rake db:seed
-# rake goodcity:update_package_type_description
-# rake goodcity:update_package_type_default_location
-# rake stockit:add_stockit_locations
-# rake stockit:add_stockit_codes
-# rake goodcity:update_packages_grade_condition
-# rake goodcity:update_package_image
-# use 'rake demo:load n' to create n(only integers) record of each model
+# Run following rake tasks in sequence:
+#   rake db:seed
+#   rake stockit:sync
+#   rake goodcity:add_stockit_user (paste token in to Stockit secrets.yml)
+#   rake demo:load
+#     - use 'rake demo:load n' to create n(only integers) record of each model (default n = 10)
 namespace :demo do
   unless ENV['LIVE'] == "true"
     task load: :environment do
@@ -58,9 +55,9 @@ namespace :demo do
     end
 
     def create_single_order
-        @organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
-        @processor = FactoryGirl.create(:user, :reviewer)
-        FactoryGirl.create(:order, :with_created_by, processed_by: @processor, organisation: @organisation)
+      @organisation = FactoryGirl.create(:organisation, organisation_type_id: OrganisationType.find_by_id(Random.rand(3)))
+      @processor = FactoryGirl.create(:user, :reviewer)
+      FactoryGirl.create(:order, :with_created_by, processed_by: @processor, organisation: @organisation)
     end
 
     def create_orders_packages
