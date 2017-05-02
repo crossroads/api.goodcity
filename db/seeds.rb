@@ -23,15 +23,6 @@ cancellation_reasons.each do |name_en, value|
     visible_to_admin: value[:visible_to_admin] )
 end
 
-# Load Locations from Stockit
-locations = YAML.load_file("#{Rails.root}/db/locations.yml")
-locations.each do |value|
-  FactoryGirl.create(:location,
-    building: value["building"],
-    area: value["area"],
-    stockit_id: nil )
-end
-
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
   # FactoryGirl creates the correct territory for us
