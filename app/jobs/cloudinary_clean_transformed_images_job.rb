@@ -3,7 +3,14 @@ class CloudinaryCleanTransformedImagesJob < ActiveJob::Base
 
   def perform(cloudinary_image_id, image_id)
 
-    response = Cloudinary::Api.resource(cloudinary_image_id)
+    begin
+      response = Cloudinary::Api.resource(cloudinary_image_id)
+    rescue Cloudinary::Api::NotFound
+      # don't proceed
+      Rails.logger.info("Cloudinary image #{cloudinary_image_id} not found")
+      return
+    end
+    
     derived_ids = []
     image = Image.find_by(id: image_id)
 
