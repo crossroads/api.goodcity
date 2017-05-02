@@ -7,11 +7,11 @@ default: &default
 
 development:
   <<: *default
-  database: goodcity_dev
+  database: goodcity_server_development
 
 test:
   <<: *default
-  database: goodcity_dev
+  database: goodcity_server_test
 
 staging:
   <<: *default
