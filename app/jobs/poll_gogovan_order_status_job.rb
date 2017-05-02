@@ -50,8 +50,6 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
     self.class.set(wait: wait_time).perform_later(order.id)
   end
 
-  private
-
   class ValueError < StandardError; end
 
 end

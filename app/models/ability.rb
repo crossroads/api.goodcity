@@ -8,9 +8,7 @@ class Ability
 
   def initialize(user)
     public_ability
-
     if user.present?
-
       @user = user
       @user_id = user.id
       @admin = user.admin?
@@ -20,7 +18,6 @@ class Ability
       @user_offer_ids = user.offers.pluck(:id)
 
       can(:manage, :all) if admin
-
       address_abilities
       contact_abilities
       delivery_abilities
