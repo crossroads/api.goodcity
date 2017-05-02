@@ -27,11 +27,10 @@ class Package < ActiveRecord::Base
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
-  before_save :save_designation_name, if: :designation_name_changed?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_commit :update_set_item_id, on: :destroy
-  after_save :create_or_update_singletone_orders_package, if: :designation_name_changed_and_request_from_stockit?
+  after_save :create_or_update_singletone_orders_package, if: :order_id_changed_and_request_from_stockit?
 
   after_touch { update_client_store :update }
 
@@ -119,20 +118,20 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def nil_designation_name?
-    designation_name == nil
+  def is_order_id_nil?
+    order_id.nil?
   end
 
   def create_or_update_singletone_orders_package
     designation = orders_packages.designated.first
-    if is_singleton_package? && orders_package = orders_package_with_different_designation(designation)
-      designation and designation.cancel!
+    if is_singleton_package? && (orders_package = orders_package_with_different_designation(designation))
+      cancel_designation(designation)
       orders_package.update(state: 'designated', quantity: quantity)
-    elsif is_singletone_and_has_designation?(designation) && nil_designation_name?
-      designation and designation.cancel!
+    elsif is_singletone_and_has_designation?(designation) && is_order_id_nil?
+      cancel_designation(designation)
     elsif is_singletone_and_has_designation?(designation)
       designation.update_designation(order_id)
-    elsif !nil_designation_name?
+    elsif !is_order_id_nil?
       OrdersPackage.add_partially_designated_item(
         order_id: order_id,
         package_id: id,
@@ -142,8 +141,12 @@ class Package < ActiveRecord::Base
     update_in_stock_quantity
   end
 
-  def designation_name_changed_and_request_from_stockit?
-    designation_name_changed? && GoodcitySync.request_from_stockit
+  def cancel_designation(designation)
+    designation and designation.cancel!
+  end
+
+  def order_id_changed_and_request_from_stockit?
+    order_id_changed? && GoodcitySync.request_from_stockit
   end
 
   def orders_package_with_different_designation(designation)
@@ -153,13 +156,6 @@ class Package < ActiveRecord::Base
 
   def is_singletone_and_has_designation?(designation)
     is_singleton_package? && designation
-  end
-
-  def update_singletone_orders_package
-    if is_singleton_package? && orders_packages.exist?
-      orders_package = orders_packages.first
-      OrdersPackage.calculate_total_qunatity_and_update_state(quantity, orders_package)
-    end
   end
 
   def delete_associated_packages_locations
@@ -447,10 +443,6 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
-  end
-
-  def save_designation_name
-    self.designation_name = designation_name.presence
   end
 end
 
