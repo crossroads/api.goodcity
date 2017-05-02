@@ -152,6 +152,12 @@ RSpec.describe Package, type: :model do
         @packages_location.reload
       }.to change(@packages_location, :quantity).from(@package.quantity).to(new_quantity)
     end
+
+    it "should not update packages_location quantity" do
+      new_quantity = rand(4)+2
+      package.update(received_quantity: new_quantity)
+      expect(package.received_quantity_changed_and_locations_exists?).to eq(false)
+    end
   end
 
   describe 'set_item_id' do
