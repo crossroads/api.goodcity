@@ -24,8 +24,12 @@ namespace :stockit do
             package.stockit_sent_on = value["sent_on"]
 
             package.quantity = value["quantity"].to_i.zero? ? 1 : value["quantity"].to_i
+<<<<<<< HEAD
             debugger
             package.received_quantity = package.quantity
+=======
+            package.recieved_quantity = package.quantity
+>>>>>>> 68410d8f53bf080ccb53dd525960caa997af5966
 
             package.length = value["length"].to_i.zero? ? "" : value["length"].to_i
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
