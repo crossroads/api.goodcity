@@ -32,6 +32,7 @@ class Package < ActiveRecord::Base
   after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
   after_commit :update_set_item_id, on: :destroy
   after_save :create_or_update_singleton_orders_package, if: :order_id_changed_and_request_from_stockit?
+  after_save :dispatch_orders_package, if: :dispatch_from_stockit?
 
   after_touch { update_client_store :update }
 
@@ -58,7 +59,6 @@ class Package < ActiveRecord::Base
   scope :exclude_designated, ->(designation_id) {
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
-
 
   accepts_nested_attributes_for :packages_locations, allow_destroy: true, limit: 1
 
@@ -114,6 +114,10 @@ class Package < ActiveRecord::Base
     packages_locations.first.update_quantity(received_quantity)
   end
 
+  def dispatch_from_stockit?
+    stockit_sent_on_changed? && GoodcitySync.request_from_stockit
+  end
+
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
       packages_locations.first.update_column(:location_id, location_id)
@@ -129,6 +133,23 @@ class Package < ActiveRecord::Base
 
   def is_order_id_nil?
     order_id.nil?
+  end
+
+  def dispatch_oredrs_pacakge
+    designation = orders_packages.designated.first
+    if is_singleton_package? && (orders_package = orders_package_with_different_designation(designation))
+      cancel_designation(designation)
+      orders_package.dispatch!
+    elsif is_singletone_and_has_designation?(designation) && stockit_sent_on.present?
+      designation.dispatch
+    elsif !stockit_sent_on.nil?
+      orders_packages.create(
+        order_id: order_id,
+        quantity: quantity,
+        state: 'dispatched',
+        sent_on: Time.now
+      )
+    end
   end
 
   def create_or_update_singleton_orders_package
@@ -160,7 +181,9 @@ class Package < ActiveRecord::Base
 
   def orders_package_with_different_designation(designation)
     orders_package = orders_packages.get_records_associated_with_order_id(order_id).first
-    orders_package unless(orders_package == designation)
+    unless(orders_package and (orders_package == designation && orders_package.try(:state) == 'dispatched'))
+      orders_package
+    end
   end
 
   def is_singletone_and_has_designation?(designation)
