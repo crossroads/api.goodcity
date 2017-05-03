@@ -20,7 +20,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   subject { JSON.parse(response.body) }
 
   def test_package_changes(package, response_status, designation_name)
-    debugger
     expect(package.reload.designation_name).to eq(designation_name)
     expect(package.locations.first).to eq(location)
     expect(package.donor_condition).to eq(donor_condition)
