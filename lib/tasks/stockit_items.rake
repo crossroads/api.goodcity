@@ -10,21 +10,18 @@ namespace :stockit do
       items_json = Stockit::ItemSync.new(nil, offset, per_page).index
       offset = offset + per_page
       stockit_items = JSON.parse(items_json["items"])
-      debugger
       if stockit_items.present?
         stockit_items.each do |value|
           inventory_number = (value["inventory_number"] || "").gsub(/^x/i, '')
 
           if inventory_number.present?
             package = Package.where(inventory_number: inventory_number).first_or_initialize
-            debugger
             package.stockit_id = value["id"]
             package.notes = value["description"]
             package.grade = value["grade"]
             package.stockit_sent_on = value["sent_on"]
 
             package.quantity = value["quantity"].to_i.zero? ? 1 : value["quantity"].to_i
-            debugger
             package.received_quantity = package.quantity
 
             package.length = value["length"].to_i.zero? ? "" : value["length"].to_i
