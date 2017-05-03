@@ -20,10 +20,11 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   subject { JSON.parse(response.body) }
 
   def test_package_changes(package, response_status, designation_name)
+    debugger
     expect(package.reload.designation_name).to eq(designation_name)
     expect(package.locations.first).to eq(location)
     expect(package.donor_condition).to eq(donor_condition)
-    expect(package.grade).to eq(stockit_item_params["grade"])
+    expect(package.grade).to eq("C")
     expect(response_status).to eq(201)
   end
 
@@ -42,7 +43,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       3.times{ create :package }
       get :index
       body = JSON.parse(response.body)
-      expect( body["packages"].size ).to eq(4)
+      expect( body["packages"].size ).to eq(3)
     end
   end
 
