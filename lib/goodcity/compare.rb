@@ -17,9 +17,8 @@ module Goodcity
       compare_contacts
       compare_local_orders
       compare_organisations
-      # TODO
-      # Designation / Order
-      # Item
+      compare_items
+      compare_orders
     end
 
     def compare_activities
@@ -69,6 +68,37 @@ module Goodcity
       compare_objects(StockitOrganisation, stockit_organisations, [:name])
     end
 
+    def compare_items
+      # Missing mappings
+      # Stockit : GoodCity
+      # : deleted_at
+      # code_id: :package_type_id
+      # donor_condition_id : condition
+      # designation_code :
+      # designation_id: order_id
+      # : designation_name
+      # sent_on : stockit_sent_on
+      # : stockit_sent_by_id
+      # : stockit_moved_on
+      # : stockit_moved_by_id
+      # : stockit_designated_on
+      # : stockit_designated_by_id
+      paginated_json(Stockit::ItemSync, "items", 0, 1000) do |stockit_items|
+        compare_objects(Package, stockit_items, [:box_id, :case_number, :code_id, :condition, :description, :grade, :height, :inventory_number, :length, :location_id, :pallet_id, :quantity, :sent_on, :width])
+      end
+    end
+
+    def compare_orders
+      # Not in Stockit JSON
+      # :processed_by_id, :purpose_description, :stockit_organisation_id
+      # TODO: to be mapped
+      # Stockit : GoodCity
+      # contact_id : stockit_contact_id
+      # activity_id : stockit_activity_id
+      stockit_designations = stockit_json(Stockit::DesignationSync, "designations")
+      compare_objects(StockitOrganisation, stockit_designations, [:code, :country_id, :description, :detail_id, :detail_type, :organisation_id, :status])
+    end
+
     private
 
     # compare_objects(StockitActivity, stockit_activities, [:name])
@@ -95,6 +125,20 @@ module Goodcity
     def stockit_json(klass, root)
       json_data = klass.index
       JSON.parse(json_data[root]) || []
+    end
+
+    # For API endpoints that are paginated, iterate and yield the block each time
+    def paginated_json(klass, root, offset, per_page, &block)
+      loop do
+        json = klass.index(nil, offset, per_page)
+        json_objects = JSON.parse(json[root])
+        if json_objects.present?
+          yield json_objects
+        else
+          break
+        end
+        offset = offset + per_page
+      end
     end
 
   end
