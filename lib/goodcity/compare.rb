@@ -16,8 +16,8 @@ module Goodcity
       compare_pallets
       compare_contacts
       compare_local_orders
+      compare_organisations
       # TODO
-      # StockitOrganisation
       # Designation / Order
       # Item
     end
@@ -62,6 +62,11 @@ module Goodcity
     def compare_local_orders
       stockit_local_orders = stockit_json(Stockit::LocalOrderSync, "local_orders")
       compare_objects(StockitLocalOrder, stockit_local_orders, [:purpose_of_goods, :hkid_number, :reference_number, :client_name])
+    end
+
+    def compare_organisations
+      stockit_organisations = stockit_json(Stockit::OrganisationSync, "organisations")
+      compare_objects(StockitOrganisation, stockit_organisations, [:name])
     end
 
     private
