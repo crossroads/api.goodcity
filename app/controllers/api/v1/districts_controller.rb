@@ -23,12 +23,13 @@ module Api::V1
     api :GET, '/v1/districts', "List all districts"
     param :ids, Array, of: Integer, desc: "Filter by district ids e.g. ids = [1,2,3,4]"
     def index
-      if params[:ids].blank?
-        render json: District.cached_json
-        return
-      end
-      @districts = @districts.find( params[:ids].split(",") ) if params[:ids].present?
-      render json: @districts, each_serializer: serializer
+      render_object(@districts, District, params)
+      # if params[:ids].blank?
+      #   render json: District.cached_json
+      #   return
+      # end
+      # @districts = @districts.find( params[:ids].split(",") ) if params[:ids].present?
+      # render json: @districts, each_serializer: serializer
     end
 
     api :GET, '/v1/district/1', "List a district"

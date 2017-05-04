@@ -18,6 +18,15 @@ module Api::V1
       end
     end
 
+    def render_object(data_object, model_name, params)
+      if params[:ids].blank?
+        render json: model_name.cached_json
+        return
+      end
+      data_object = data_object.find( params[:ids].split(",") ) if params[:ids].present?
+      render json: data_object, each_serializer: serializer
+    end
+
     private
 
     def access_denied
