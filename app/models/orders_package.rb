@@ -107,11 +107,11 @@ class OrdersPackage < ActiveRecord::Base
     packages.each_pair do |_key, package|
       orders_package = find_by(id: package["orders_package_id"])
       orders_package.remove_designation_of_associated_package
-      calculate_total_qunatity_and_update_state(package['quantity'], orders_package)
+      calculate_total_quantity_and_update_state(package['quantity'], orders_package)
     end
   end
 
-  def self.calculate_total_qunatity_and_update_state(package_quantity, orders_package)
+  def self.calculate_total_quantity_and_update_state(package_quantity, orders_package)
     total_quantity = orders_package.quantity - package_quantity.to_i
     orders_package.update_orders_package_state(total_quantity)
   end
