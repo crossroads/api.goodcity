@@ -40,7 +40,7 @@ class Diff
   end
 
   def <=>(other)
-    id <=> other.id
+    (id || 0) <=> (other.try(:id) || 0)
   end
 
 end
