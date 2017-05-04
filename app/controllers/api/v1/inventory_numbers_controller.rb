@@ -4,11 +4,7 @@ module Api::V1
     load_and_authorize_resource :inventory_number, parent: false
 
     resource_description do
-      formats ['json']
-      error 401, "Unauthorized"
-      error 404, "Not Found"
-      error 422, "Validation Error"
-      error 500, "Internal Server Error"
+      resource_description_errors
     end
 
     api :POST, "/v1/inventory_numbers", "Create inventory_number"

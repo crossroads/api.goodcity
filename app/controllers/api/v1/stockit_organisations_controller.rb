@@ -4,11 +4,7 @@ module Api::V1
     load_and_authorize_resource :stockit_organisation, parent: false
 
     resource_description do
-      formats ['json']
-      error 401, "Unauthorized"
-      error 404, "Not Found"
-      error 422, "Validation Error"
-      error 500, "Internal Server Error"
+      resource_description_errors
     end
 
     def_param_group :stockit_organisation do
