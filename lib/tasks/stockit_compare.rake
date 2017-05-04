@@ -3,7 +3,7 @@ require 'goodcity/compare'
 namespace :stockit do
 
   namespace :compare do
-    %w(activities boxes codes countries locations pallets contacts local_orders).each do |task_name|
+    %w(activities boxes codes countries locations pallets contacts local_orders organisations).each do |task_name|
       desc %(Are #{task_name} in sync)
       task task_name => :environment do
         Goodcity::Compare.new.send("compare_#{task_name}")
