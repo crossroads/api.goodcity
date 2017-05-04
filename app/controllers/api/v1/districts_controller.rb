@@ -6,11 +6,7 @@ module Api::V1
 
     resource_description do
       short 'Districts are sub-regions of Hong Kong territories'
-      formats ['json']
-      error 401, "Unauthorized"
-      error 404, "Not Found"
-      error 422, "Validation Error"
-      error 500, "Internal Server Error"
+      resource_description_errors
     end
 
     def_param_group :district do
@@ -24,12 +20,6 @@ module Api::V1
     param :ids, Array, of: Integer, desc: "Filter by district ids e.g. ids = [1,2,3,4]"
     def index
       render_object(@districts, District, params)
-      # if params[:ids].blank?
-      #   render json: District.cached_json
-      #   return
-      # end
-      # @districts = @districts.find( params[:ids].split(",") ) if params[:ids].present?
-      # render json: @districts, each_serializer: serializer
     end
 
     api :GET, '/v1/district/1', "List a district"

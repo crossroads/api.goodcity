@@ -5,11 +5,7 @@ module Api::V1
 
     resource_description do
       short 'List Versions of items and related packages'
-      formats ['json']
-      error 401, "Unauthorized"
-      error 404, "Not Found"
-      error 422, "Validation Error"
-      error 500, "Internal Server Error"
+     resource_description_errors
     end
 
     api :GET, '/v1/Versions', "List Versions of items and related packages"
