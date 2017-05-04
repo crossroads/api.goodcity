@@ -27,7 +27,7 @@ module Api::V1
       render json: data_object, each_serializer: serializer
     end
 
-    resource_description do
+    def resource_description_errors
       formats ['json']
       error 401, "Unauthorized"
       error 404, "Not Found"
