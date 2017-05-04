@@ -11,7 +11,7 @@ module Api::V1
 
     def assign_object(data_object, params)
       data_object.attributes = params
-      if contact.save
+      if data_object.save
         render json: data_object, serializer: serializer, status: 201
       else
         render json: data_object.errors.to_json, status: 422
