@@ -225,8 +225,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         # expect(package.donor_condition).to eq(donor_condition)
         # expect(package.grade).to eq("C")
         # expect(response.status).to eq(201)
-        expect(orders_package.state).to eq 'designated'
-        expect(orders_package_1.state).to eq('cancelled')
+        expect(orders_package.reload.state).to eq 'designated'
+        expect(orders_package_1.reload.state).to eq('cancelled')
 
         expect(GoodcitySync.request_from_stockit).to eq(true)
       end
