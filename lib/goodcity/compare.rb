@@ -14,6 +14,7 @@ module Goodcity
       compare_countries
       compare_locations
       compare_pallets
+      compare_contacts
       # TODO
       # StockitContact
       # StockitLocalOrder
@@ -23,29 +24,40 @@ module Goodcity
     end
 
     def compare_activities
+      stockit_activities = stockit_json(Stockit::ActivitySync, "activities")
       compare_objects(StockitActivity, stockit_activities, [:id, :name])
     end
 
     def compare_boxes
-      compare_objects(Box, stockit_boxes, [:pallet_id, :description, :box_number, :comments])
+      stockit_boxes = stockit_json(Stockit::BoxSync, "boxes")
+      compare_objects(Box,Box_boxes, [:pallet_id, :description, :box_number, :comments])
     end
 
     def compare_codes
       # missing :description_en, :description_zht
+      stockit_codes = stockit_json(Stockit::CodeSync, "codes")
       compare_objects(PackageType, stockit_codes, [:location_id, :code])
     end
 
     def compare_countries
       #missing name_zh_tw
+      stockit_countries = stockit_json(Stockit::CountrySync, "countries")
       compare_objects(Country, stockit_countries, [:name_en])
     end
 
     def compare_locations
+      stockit_locations = stockit_json(Stockit::LocationSync, "locations")
       compare_objects(Location, stockit_locations, [:area, :building])
     end
 
     def compare_pallets
+      stockit_pallets = stockit_json(Stockit::PalletSync, "pallets")
       compare_objects(Pallet, stockit_pallets, [:pallet_number, :description, :comments])
+    end
+
+    def compare_contacts
+      stockit_contacts = stockit_json(Stockit::ContactSync, "contacts")
+      compare_objects(StockitContact, stockit_contacts, [:first_name, :last_name, :phone_number, :mobile_phone_number])
     end
 
     private
@@ -71,46 +83,9 @@ module Goodcity
       puts diffs.reject(&:identical?).sort.map(&:in_words).join("\n")
     end
 
-    def stockit_activities
-      @stockit_activities ||= begin
-        json_data = Stockit::ActivitySync.index
-        JSON.parse(json_data["activities"]) || []
-      end
-    end
-
-    def stockit_boxes
-      @stockit_boxes ||= begin
-        json_data = Stockit::BoxSync.index
-        JSON.parse(json_data["boxes"]) || []
-      end
-    end
-
-    def stockit_codes
-      @stockit_codes ||= begin
-        json_data = Stockit::CodeSync.index
-        JSON.parse(json_data["codes"]) || []
-      end
-    end
-    
-    def stockit_countries
-      @stockit_countries ||= begin
-        json_data = Stockit::CountrySync.index
-        JSON.parse(json_data["countries"]) || []
-      end
-    end
-
-    def stockit_locations
-      @stockit_locations ||= begin
-        json_data = Stockit::LocationSync.index
-        JSON.parse(json_data["locations"]) || []
-      end
-    end
-
-    def stockit_pallets
-      @stockit_pallets ||= begin
-        json_data = Stockit::PalletSync.index
-        JSON.parse(json_data["pallets"]) || []
-      end
+    def stockit_json(klass, root)
+      json_data = klass.index
+      JSON.parse(json_data[root]) || []
     end
 
   end
