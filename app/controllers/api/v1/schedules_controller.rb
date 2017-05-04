@@ -37,12 +37,13 @@ module Api::V1
     api :POST, "/v1/schedules", "Make a booking for the pick up"
     param_group :schedule
     def create
-      @schedule.attributes = schedule_params
-      if @schedule.save
-        render json: @schedule, serializer: serializer, status: 201
-      else
-        render json: @schedule.errors.to_json, status: 422
-      end
+      assign_object(@schedule, schedule_params)
+      # @schedule.attributes = schedule_params
+      # if @schedule.save
+      #   render json: @schedule, serializer: serializer, status: 201
+      # else
+      #   render json: @schedule.errors.to_json, status: 422
+      # end
     end
 
     private
