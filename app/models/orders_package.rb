@@ -36,7 +36,7 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     event :dispatch do
-      transition designated: :dispatched
+      transition [:designated, :cancelled] => :dispatched
     end
 
     event :cancel do
