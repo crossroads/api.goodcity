@@ -184,10 +184,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       context 'Dispatch & Undispatch from stockit' do
         it 'dispatches orders_package if exists with same designation' do
+
         end
         it 'creates new desigantion and then dispatch if package is not designated before dispatch from stockit' do
         end
         it 'cancels designation and creates new orders_package with state dispatched if dispatched with another designation from stockit' do
+        end
+
+        it '' do
         end
 
       end

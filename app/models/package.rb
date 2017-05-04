@@ -145,19 +145,28 @@ class Package < ActiveRecord::Base
       cancel_designation(designation)
       orders_package.dispatch
     elsif is_singletone_and_has_designation?(designation) && is_stockit_sent_on_present?
-      designation.dispatch!
+      if designation.order_id == order_id
+        designation.dispatch!
+      else
+        cancel_designation(designation)
+        create_associated_dispatched_orders_package
+      end
     elsif stockit_sent_on.blank?
       requested_undispatch_from_stockit
     elsif is_stockit_sent_on_present?
-      orders_packages.create(
-        order_id: order_id,
-        quantity: quantity,
-        state: 'dispatched',
-        sent_on: Time.now,
-        updated_by: User.current_user
-      )
+      create_associated_dispatched_orders_package
     end
     update_in_stock_quantity
+  end
+
+  def create_associated_dispatched_orders_package
+    orders_packages.create(
+      order_id: order_id,
+      quantity: quantity,
+      state: 'dispatched',
+      sent_on: Time.now,
+      updated_by: User.current_user
+    )
   end
 
   def create_or_update_singleton_orders_package
@@ -451,9 +460,13 @@ class Package < ActiveRecord::Base
   end
 
   def requested_undispatch_from_stockit
-    if(dispatched_orders_package = orders_packages.get_dispatched_records_with_order_id(order_id).first)
+    if dispatched_orders_package
       dispatched_orders_package.undispatch_orders_package
     end
+  end
+
+  def dispatched_orders_package
+    orders_packages.get_dispatched_records_with_order_id(order_id).first
   end
 
   private
