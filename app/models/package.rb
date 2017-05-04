@@ -146,6 +146,8 @@ class Package < ActiveRecord::Base
       orders_package.dispatch
     elsif is_singletone_and_has_designation?(designation) && is_stockit_sent_on_present?
       designation.dispatch!
+    elsif stockit_sent_on.blank?
+      requested_undispatch_from_stockit
     elsif is_stockit_sent_on_present?
       orders_packages.create(
         order_id: order_id,
@@ -445,6 +447,12 @@ class Package < ActiveRecord::Base
   def stockit_order_id
     if(orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
       orders_packages.first.order.try(:stockit_id)
+    end
+  end
+
+  def requested_undispatch_from_stockit
+    if(dispatched_orders_package = orders_packages.get_dispatched_records_with_order_id(order_id).first)
+      dispatched_orders_package.undispatch_orders_package
     end
   end
 

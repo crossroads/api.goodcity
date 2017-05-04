@@ -11,8 +11,8 @@ class OrdersPackage < ActiveRecord::Base
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, -> (package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
+  scope :get_dispatched_records_with_order_id, -> (order_id) { where(order_id: order_id, state: 'dispatched') }
   scope :designated, -> { where(state: 'designated') }
-  scope :dispatched, -> { where(state: 'dispatched') }
 
   scope :with_eager_load, -> {
     includes([
