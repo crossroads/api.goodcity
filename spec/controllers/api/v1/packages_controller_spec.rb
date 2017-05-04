@@ -96,17 +96,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }.to change(Package, :count).by(1)
         package = Package.where(inventory_number: stockit_item_params_with_designation[:inventory_number]).first
         test_package_changes(package, response.status, order.code)
-
-        # expect(package.reload.designation_name).to eq(order.code)
-        # expect(package.locations.first).to eq(location)
-        # expect(package.donor_condition).to eq(donor_condition)
-        # expect(package.grade).to eq("C")
-        # expect(response.status).to eq(201)
         stockit_request = GoodcitySync.request_from_stockit
         test_orders_packages(package, stockit_request, 1)
         expect(package.orders_packages.first.state).to eq 'designated'
-        # expect(package.orders_packages.count).to eq 1
-        # expect(GoodcitySync.request_from_stockit).to eq(true)
         expect(package.orders_packages.first.quantity).to eq 1
         expect(package.quantity).to eq(0)
 
@@ -117,15 +109,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           post :create, format: :json, package: stockit_item_params_without_designation
         }.to change(OrdersPackage, :count).by(0)
         test_package_changes(package_with_stockit_id, response.status, '')
-        # expect(package_with_stockit_id.reload.designation_name).to eq('')
-        # expect(package_with_stockit_id.locations.first).to eq(location)
-        # expect(package_with_stockit_id.donor_condition).to eq(donor_condition)
-        # expect(package_with_stockit_id.grade).to eq("C")
-        # expect(response.status).to eq(201)
         stockit_request = GoodcitySync.request_from_stockit
         test_orders_packages(package, stockit_request, 0)
-        # expect(package_with_stockit_id.orders_packages.count).to eq 0
-        # expect(GoodcitySync.request_from_stockit).to eq(true)
       end
 
       it 'creates orders_package for already existing item which is now designated from stockit' do
@@ -135,16 +120,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           post :create, format: :json, package: stockit_item_params_with_designation
         }.to change(OrdersPackage, :count).by(1)
         test_package_changes(package, response.status, order.code)
-        # expect(package.reload.designation_name).to eq(order.code)
-        # expect(package.locations.first).to eq(location)
-        # expect(package.donor_condition).to eq(donor_condition)
-        # expect(package.grade).to eq("C")
-        # expect(response.status).to eq(201)
-
         stockit_request = GoodcitySync.request_from_stockit
         test_orders_packages(package, stockit_request, 1)
-        # expect(package.orders_packages.count).to eq 1
-        # expect(GoodcitySync.request_from_stockit).to eq(true)
       end
 
       it 'updates designation if item has designation in stockit and then designated to some other designation' do
@@ -156,16 +133,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           post :create, format: :json, package: stockit_item_params_with_designation
         }.to change(OrdersPackage, :count).by(0)
         test_package_changes(package, response.status, order.code)
-        # expect(package.reload.designation_name).to eq(order.code)
-        # expect(package.locations.first).to eq(location)
-        # expect(package.donor_condition).to eq(donor_condition)
-        # expect(package.grade).to eq("C")
-        # expect(response.status).to eq(201)
-
         stockit_request = GoodcitySync.request_from_stockit
         test_orders_packages(package, stockit_request, 1)
-        # expect(package.orders_packages.count).to eq 1
-        # expect(GoodcitySync.request_from_stockit).to eq(true)
         expect(package.orders_packages.first.order).to eq order
         expect(package.orders_packages.first.state).to eq 'designated'
       end
@@ -178,16 +147,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           post :create, format: :json, package: stockit_item_params_without_designation
         }.to change(OrdersPackage, :count).by(0)
         test_package_changes(package, response.status, '')
-        # expect(package.reload.designation_name).to eq('')
-        # expect(package.locations.first).to eq(location)
-        # expect(package.donor_condition).to eq(donor_condition)
-        # expect(package.grade).to eq("C")
-        # expect(response.status).to eq(201)
-
         stockit_request = GoodcitySync.request_from_stockit
         test_orders_packages(package, stockit_request, 1)
-        # expect(package.orders_packages.count).to eq 1
-        # expect(GoodcitySync.request_from_stockit).to eq(true)
         expect(package.orders_packages.first.state).to eq('cancelled')
       end
 
@@ -199,15 +160,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           post :create, format: :json, package: stockit_item_params_with_designation
         }.to change(OrdersPackage, :count).by(0)
         test_package_changes(package, response.status, order.code)
-        # expect(package.reload.designation_name).to eq(order.code)
-        # expect(package.locations.first).to eq(location)
-        # expect(package.donor_condition).to eq(donor_condition)
-        # expect(package.grade).to eq("C")
-        # expect(response.status).to eq(201)
         stockit_request = GoodcitySync.request_from_stockit
         test_orders_packages(package, stockit_request, 1)
-        # expect(GoodcitySync.request_from_stockit).to eq(true)
-        # expect(package.orders_packages.count).to eq 1
         expect(package.orders_packages.first.state).to eq('designated')
       end
 
@@ -220,14 +174,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           post :create, format: :json, package: stockit_item_params_with_designation
         }.to change(OrdersPackage, :count).by(0)
         test_package_changes(package, response.status, order.code)
-        # expect(package.reload.designation_name).to eq(order.code)
-        # expect(package.locations.first).to eq(location)
-        # expect(package.donor_condition).to eq(donor_condition)
-        # expect(package.grade).to eq("C")
-        # expect(response.status).to eq(201)
-        expect(orders_package.state).to eq 'designated'
-        expect(orders_package_1.state).to eq('cancelled')
-
+        expect(orders_package.reload.state).to eq 'designated'
+        expect(orders_package_1.reload.state).to eq('cancelled')
         expect(GoodcitySync.request_from_stockit).to eq(true)
       end
     end
@@ -305,6 +253,4 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
     end
   end
-
-
 end
