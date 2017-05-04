@@ -127,7 +127,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '.update_orders_package_state' do
-    let!(:orders_package) { create :orders_package, state: 'requested', quantity: 10 }
+    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 10 }
 
     context 'when total_qty is zero' do
       total_qty = 0
@@ -155,9 +155,8 @@ RSpec.describe OrdersPackage, type: :model do
       end
 
       it "updates state to 'designated'" do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :state).to('designated')
+        orders_package.update_orders_package_state(total_qty)
+        expect(orders_package.reload.state).to eq 'designated'
       end
     end
   end
@@ -218,7 +217,8 @@ RSpec.describe OrdersPackage, type: :model do
   describe '#undesignate_partially_designated_item' do
     let!(:package) { create :package, quantity: 4, received_quantity: 10}
     let!(:order) { create :order }
-    let!(:orders_package) { create :orders_package, order_id: order.id, package_id: package.id, quantity: 6 }
+    let!(:orders_package) { create :orders_package, order_id: order.id,
+      package_id: package.id, quantity: 6, state: 'designated' }
 
     context 'when quantity to undesignate is not same as quantity of designation(orders_package)' do
       let!(:undesignate_package_params) {
