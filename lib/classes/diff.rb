@@ -13,6 +13,11 @@ class Diff
     @id = @goodcity_struct.id
   end
 
+  # Generates a key per diff (based on id and stockit_id)
+  def key
+    "#{@goodcity_struct.id}:#{@goodcity_struct.stockit_id}:#{@stockit_struct.id}"
+  end
+
   # compares two objects and returns self to enable deeper introspection
   def compare
     @sync_attributes.each do |attr|
