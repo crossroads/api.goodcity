@@ -75,108 +75,121 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
       }
 
-      let(:stockit_item_params_with_designation){
-        stockit_item_params.merge({
-          designation_name: order.code,
-          order_id: order.stockit_id
-        })
-      }
+      context 'Designate & undesignate from stockit' do
 
-      let(:stockit_item_params_without_designation){
-        stockit_item_params.merge({
-          designation_name: '',
-          order_id: nil,
-          stockit_id: package_with_stockit_id.stockit_id
-        })
-      }
+        let(:stockit_item_params_with_designation){
+          stockit_item_params.merge({
+            designation_name: order.code,
+            order_id: order.stockit_id
+          })
+        }
 
-      it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
-        expect{
-          post :create, format: :json, package: stockit_item_params_with_designation
-        }.to change(Package, :count).by(1)
-        package = Package.where(inventory_number: stockit_item_params_with_designation[:inventory_number]).first
-        test_package_changes(package, response.status, order.code)
-        stockit_request = GoodcitySync.request_from_stockit
-        test_orders_packages(package, stockit_request, 1)
-        expect(package.orders_packages.first.state).to eq 'designated'
-        expect(package.orders_packages.first.quantity).to eq 1
-        expect(package.quantity).to eq(0)
+        let(:stockit_item_params_without_designation){
+          stockit_item_params.merge({
+            designation_name: '',
+            order_id: nil,
+            stockit_id: package_with_stockit_id.stockit_id
+          })
+        }
 
+        it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
+          expect{
+            post :create, format: :json, package: stockit_item_params_with_designation
+          }.to change(Package, :count).by(1)
+          package = Package.where(inventory_number: stockit_item_params_with_designation[:inventory_number]).first
+          test_package_changes(package, response.status, order.code)
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+          expect(package.orders_packages.first.state).to eq 'designated'
+          expect(package.orders_packages.first.quantity).to eq 1
+          expect(package.quantity).to eq(0)
+
+        end
+
+        it 'do not creates any orders_package if designation name was nil and not changed' do
+          expect{
+            post :create, format: :json, package: stockit_item_params_without_designation
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package_with_stockit_id, response.status, '')
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 0)
+        end
+
+        it 'creates orders_package for already existing item which is now designated from stockit' do
+          package = create :package, :stockit_package, item: item
+          stockit_item_params_with_designation[:stockit_id] = package.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_item_params_with_designation
+          }.to change(OrdersPackage, :count).by(1)
+          test_package_changes(package, response.status, order.code)
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+        end
+
+        it 'updates designation if item has designation in stockit and then designated to some other designation' do
+          package = create :package, :stockit_package, item: item
+          order1 = create :order
+          orders_package = create :orders_package, :with_state_designated, order: order1, package: package
+          stockit_item_params_with_designation[:stockit_id] = package.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_item_params_with_designation
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package, response.status, order.code)
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+          expect(package.orders_packages.first.order).to eq order
+          expect(package.orders_packages.first.state).to eq 'designated'
+        end
+
+        it 'cancels designation if item was previously designated and now its undesignated from stockit' do
+          package = create :package, :stockit_package, designation_name: 'abc', order: order
+          orders_package = create :orders_package, :with_state_designated, order: order, package: package
+          stockit_item_params_without_designation[:stockit_id] = package.reload.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_item_params_without_designation
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package, response.status, '')
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+          expect(package.orders_packages.first.state).to eq('cancelled')
+        end
+
+        it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do
+          package = create :package, :stockit_package, designation_name: 'abc'
+          orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
+          stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_item_params_with_designation
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package, response.status, order.code)
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+          expect(package.orders_packages.first.state).to eq('designated')
+        end
+
+        it 'designates item to cancelled designation if again designated to same and if it has another active designation with some other order_id then it cancels it' do
+          package = create :package, :stockit_package, designation_name: 'abc'
+          orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
+          orders_package_1 = create :orders_package, :with_state_designated, order: order_1, package: package
+          stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_item_params_with_designation
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package, response.status, order.code)
+          expect(orders_package.reload.state).to eq 'designated'
+          expect(orders_package_1.reload.state).to eq('cancelled')
+          expect(GoodcitySync.request_from_stockit).to eq(true)
+        end
       end
 
-      it 'do not creates any orders_package if designation name was nil and not changed' do
-        expect{
-          post :create, format: :json, package: stockit_item_params_without_designation
-        }.to change(OrdersPackage, :count).by(0)
-        test_package_changes(package_with_stockit_id, response.status, '')
-        stockit_request = GoodcitySync.request_from_stockit
-        test_orders_packages(package, stockit_request, 0)
-      end
+      context 'Dispatch & Undispatch from stockit' do
+        it 'dispatches orders_package if exists with same designation' do
+        end
+        it 'creates new desigantion and then dispatch if package is not designated before dispatch from stockit' do
+        end
+        it 'cancels designation and creates new orders_package with state dispatched if dispatched with another designation from stockit' do
+        end
 
-      it 'creates orders_package for already existing item which is now designated from stockit' do
-        package = create :package, :stockit_package, item: item
-        stockit_item_params_with_designation[:stockit_id] = package.stockit_id
-        expect{
-          post :create, format: :json, package: stockit_item_params_with_designation
-        }.to change(OrdersPackage, :count).by(1)
-        test_package_changes(package, response.status, order.code)
-        stockit_request = GoodcitySync.request_from_stockit
-        test_orders_packages(package, stockit_request, 1)
-      end
-
-      it 'updates designation if item has designation in stockit and then designated to some other designation' do
-        package = create :package, :stockit_package, item: item
-        order1 = create :order
-        orders_package = create :orders_package, :with_state_designated, order: order1, package: package
-        stockit_item_params_with_designation[:stockit_id] = package.stockit_id
-        expect{
-          post :create, format: :json, package: stockit_item_params_with_designation
-        }.to change(OrdersPackage, :count).by(0)
-        test_package_changes(package, response.status, order.code)
-        stockit_request = GoodcitySync.request_from_stockit
-        test_orders_packages(package, stockit_request, 1)
-        expect(package.orders_packages.first.order).to eq order
-        expect(package.orders_packages.first.state).to eq 'designated'
-      end
-
-      it 'cancels designation if item was previously designated and now its undesignated from stockit' do
-        package = create :package, :stockit_package, designation_name: 'abc', order: order
-        orders_package = create :orders_package, :with_state_designated, order: order, package: package
-        stockit_item_params_without_designation[:stockit_id] = package.reload.stockit_id
-        expect{
-          post :create, format: :json, package: stockit_item_params_without_designation
-        }.to change(OrdersPackage, :count).by(0)
-        test_package_changes(package, response.status, '')
-        stockit_request = GoodcitySync.request_from_stockit
-        test_orders_packages(package, stockit_request, 1)
-        expect(package.orders_packages.first.state).to eq('cancelled')
-      end
-
-      it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do
-        package = create :package, :stockit_package, designation_name: 'abc'
-        orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
-        stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
-        expect{
-          post :create, format: :json, package: stockit_item_params_with_designation
-        }.to change(OrdersPackage, :count).by(0)
-        test_package_changes(package, response.status, order.code)
-        stockit_request = GoodcitySync.request_from_stockit
-        test_orders_packages(package, stockit_request, 1)
-        expect(package.orders_packages.first.state).to eq('designated')
-      end
-
-      it 'designates item to cancelled designation if again designated to same and if it has another active designation with some other order_id then it cancels it' do
-        package = create :package, :stockit_package, designation_name: 'abc'
-        orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
-        orders_package_1 = create :orders_package, :with_state_designated, order: order_1, package: package
-        stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
-        expect{
-          post :create, format: :json, package: stockit_item_params_with_designation
-        }.to change(OrdersPackage, :count).by(0)
-        test_package_changes(package, response.status, order.code)
-        expect(orders_package.reload.state).to eq 'designated'
-        expect(orders_package_1.reload.state).to eq('cancelled')
-        expect(GoodcitySync.request_from_stockit).to eq(true)
       end
     end
   end

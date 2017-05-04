@@ -31,7 +31,7 @@ class Package < ActiveRecord::Base
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
   after_commit :update_set_item_id, on: :destroy
-  after_save :create_or_update_singleton_orders_package, if: :order_id_changed_and_request_from_stockit?
+  after_save :create_or_update_singleton_orders_package, if: :unless_dispatch_order_id_changed_and_request_from_stockit?
   after_save :dispatch_orders_package, if: :dispatch_from_stockit?
 
   after_touch { update_client_store :update }
@@ -135,21 +135,27 @@ class Package < ActiveRecord::Base
     order_id.nil?
   end
 
-  def dispatch_oredrs_pacakge
+  def is_stockit_sent_on_present?
+    stockit_sent_on.present?
+  end
+
+  def dispatch_orders_package
     designation = orders_packages.designated.first
     if is_singleton_package? && (orders_package = orders_package_with_different_designation(designation))
       cancel_designation(designation)
-      orders_package.dispatch!
-    elsif is_singletone_and_has_designation?(designation) && stockit_sent_on.present?
-      designation.dispatch
-    elsif !stockit_sent_on.nil?
+      orders_package.dispatch
+    elsif is_singletone_and_has_designation?(designation) && is_stockit_sent_on_present?
+      designation.dispatch!
+    elsif is_stockit_sent_on_present?
       orders_packages.create(
         order_id: order_id,
         quantity: quantity,
         state: 'dispatched',
-        sent_on: Time.now
+        sent_on: Time.now,
+        updated_by: User.current_user
       )
     end
+    update_in_stock_quantity
   end
 
   def create_or_update_singleton_orders_package
@@ -175,14 +181,13 @@ class Package < ActiveRecord::Base
     designation and designation.cancel!
   end
 
-  def order_id_changed_and_request_from_stockit?
-    order_id_changed? && GoodcitySync.request_from_stockit
+  def unless_dispatch_order_id_changed_and_request_from_stockit?
+    !stockit_sent_on_changed? && order_id_changed? && GoodcitySync.request_from_stockit
   end
 
   def orders_package_with_different_designation(designation)
-    orders_package = orders_packages.get_records_associated_with_order_id(order_id).first
-    unless(orders_package and (orders_package == designation && orders_package.try(:state) == 'dispatched'))
-      orders_package
+    if(orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
+      (orders_package != designation && orders_package.try(:state) != 'dispatched') and orders_package
     end
   end
 
