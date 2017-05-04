@@ -32,12 +32,13 @@ module Api::V1
     api :POST, '/v1/items', "Create an item"
     param_group :item
     def create
-      @item.attributes = item_params
-      if @item.save
-        render json: @item, serializer: serializer, status: 201
-      else
-        render json: @item.errors.to_json, status: 422
-      end
+      assign_object(@item, item_params)
+      # @item.attributes = item_params
+      # if @item.save
+      #   render json: @item, serializer: serializer, status: 201
+      # else
+      #   render json: @item.errors.to_json, status: 422
+      # end
     end
 
     api :GET, '/v1/item/1', "Get an item"
