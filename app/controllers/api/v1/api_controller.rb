@@ -8,6 +8,16 @@ module Api::V1
     rescue_from Apipie::ParamInvalid, with: :invalid_params
     rescue_from Apipie::ParamMissing, with: :invalid_params
 
+
+    def assign_object(data_object, params)
+      data_object.attributes = params
+      if contact.save
+        render json: data_object, serializer: serializer, status: 201
+      else
+        render json: data_object.errors.to_json, status: 422
+      end
+    end
+
     private
 
     def access_denied
