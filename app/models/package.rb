@@ -31,6 +31,8 @@ class Package < ActiveRecord::Base
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
   after_commit :update_set_item_id, on: :destroy
+  after_save :create_or_update_singleton_orders_package, if: :order_id_changed_and_request_from_stockit?
+
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
@@ -113,7 +115,7 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && received_quantity == 1 && self.packages_locations.exists?
+    if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
       packages_locations.first.update_column(:location_id, location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
@@ -123,6 +125,46 @@ class Package < ActiveRecord::Base
         quantity: received_quantity
       })
     end
+  end
+
+  def is_order_id_nil?
+    order_id.nil?
+  end
+
+  def create_or_update_singleton_orders_package
+    designation = orders_packages.designated.first
+    if is_singleton_package? && (orders_package = orders_package_with_different_designation(designation))
+      cancel_designation(designation)
+      orders_package.update(state: 'designated', quantity: quantity)
+    elsif is_singletone_and_has_designation?(designation) && is_order_id_nil?
+      cancel_designation(designation)
+    elsif is_singletone_and_has_designation?(designation)
+      designation.update_designation(order_id)
+    elsif !is_order_id_nil?
+      OrdersPackage.add_partially_designated_item(
+        order_id: order_id,
+        package_id: id,
+        quantity: quantity
+      )
+    end
+    update_in_stock_quantity
+  end
+
+  def cancel_designation(designation)
+    designation and designation.cancel!
+  end
+
+  def order_id_changed_and_request_from_stockit?
+    order_id_changed? && GoodcitySync.request_from_stockit
+  end
+
+  def orders_package_with_different_designation(designation)
+    orders_package = orders_packages.get_records_associated_with_order_id(order_id).first
+    orders_package unless(orders_package == designation)
+  end
+
+  def is_singletone_and_has_designation?(designation)
+    is_singleton_package? && designation
   end
 
   def delete_associated_packages_locations
@@ -319,8 +361,15 @@ class Package < ActiveRecord::Base
   end
 
   def update_in_stock_quantity
-    in_hand_quantity = received_quantity - total_assigned_quantity
-    update(quantity: in_hand_quantity)
+    if GoodcitySync.request_from_stockit
+      update_column(:quantity, in_hand_quantity)
+    else
+      update(quantity: in_hand_quantity)
+    end
+  end
+
+  def in_hand_quantity
+    received_quantity - total_assigned_quantity
   end
 
   def total_assigned_quantity
@@ -363,6 +412,12 @@ class Package < ActiveRecord::Base
 
   def destroy_other_locations(location_id)
     packages_locations.exclude_location(location_id).destroy_all
+  end
+
+  def stockit_order_id
+    if(orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
+      orders_packages.first.order.try(:stockit_id)
+    end
   end
 
   private
