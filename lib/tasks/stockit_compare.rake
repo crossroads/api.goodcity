@@ -3,14 +3,17 @@ require 'goodcity/compare'
 namespace :stockit do
 
   namespace :compare do
-
-    desc "Are GoodCity and Stockit activities in sync?"
-    task activities: :environment do
-      Goodcity::Compare.compare
+    %w(activities boxes codes countries locations pallets).each do |task_name|
+      desc %(Are #{task_name} in sync)
+      task task_name => :environment do
+        Goodcity::Compare.new.send("compare_#{task_name}")
+      end
     end
-
   end
 
-  task :compare => ["compare:activities"]
+  desc "Are all GoodCity and Stockit objects in sync?"
+  task compare: :environment do
+    Goodcity::Compare.new.compare
+  end
 
 end
