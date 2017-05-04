@@ -4,8 +4,8 @@ module Api::V1
     load_and_authorize_resource :address, parent: false
 
     resource_description do
-      super
       short 'List and create addresses for Contacts and Users'
+      resource_description_errors
     end
 
     def_param_group :address do
