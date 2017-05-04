@@ -15,7 +15,7 @@ class OrdersPackage < ActiveRecord::Base
   scope :dispatched, -> { where(state: 'dispatched') }
 
   scope :with_eager_load, -> {
-    includes ([
+    includes([
       { package: [:locations, :package_type] }
     ])
   }
