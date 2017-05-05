@@ -75,6 +75,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
       }
 
+      before(:each) do
+        allow(Date).to receive(:today).and_return Date.new(2001,2,3)
+      end
+
       context 'Designate & undesignate from stockit' do
 
         let(:stockit_item_params_with_designation){
@@ -183,17 +187,87 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Dispatch & Undispatch from stockit' do
+        let(:stockit_params_with_sent_on_and_designation){
+          stockit_item_params.merge({
+            stockit_sent_on: Date.today,
+            designation_name: order.code,
+            order_id: order.stockit_id
+          })
+        }
+
+        let(:stockit_params_without_sent_on){
+          stockit_item_params.merge({
+            stockit_sent_on: '',
+            designation_name: order.code,
+            order_id: order.stockit_id
+          })
+        }
+
         it 'dispatches orders_package if exists with same designation' do
-
+          package = create :package, :stockit_package, designation_name: 'abc'
+          orders_package = create :orders_package, package: package, order: order, state: 'designated'
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
+           expect{
+            post :create, format: :json, package: stockit_params_with_sent_on_and_designation
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package, response.status, order.code)
+          expect(package.orders_packages.first.state).to eq 'dispatched'
         end
+
         it 'creates new desigantion and then dispatch if package is not designated before dispatch from stockit' do
+          package = create :package, :stockit_package, designation_name: 'abc', quantity: 1
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
+          stockit_params_with_sent_on_and_designation[:quantity] = 1
+          expect{
+            post :create, format: :json, package: stockit_params_with_sent_on_and_designation
+          }.to change(OrdersPackage, :count).by(1)
+          test_package_changes(package, response.status, order.code)
+          expect(package.orders_packages.first.state).to eq 'dispatched'
+          expect(package.orders_packages.first.quantity).to eq 1
+          expect(package.reload.quantity).to eq 0
         end
+
         it 'cancels designation and creates new orders_package with state dispatched if dispatched with another designation from stockit' do
+          package = create :package, :stockit_package, designation_name: 'abc'
+          orders_package = create :orders_package, package: package, order: order_1, state: 'designated'
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_params_with_sent_on_and_designation
+          }.to change(OrdersPackage, :count).by(1)
+          test_package_changes(package, response.status, order.code)
+          expect(orders_package.reload.state).to eq 'cancelled'
         end
 
-        it '' do
+        it 'cancels existing designation and dispatches orders_package if available with same order id' do
+          package          = create :package, :stockit_package, quantity: 0
+          orders_package   = create :orders_package, :with_state_designated,
+            package: package, order: order_1, quantity: 1
+          orders_package_1 = create :orders_package, :with_state_cancelled,
+            package: package, order: order, quantity: 0
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
+          stockit_params_with_sent_on_and_designation[:quantity]   = 1
+          expect{
+            post :create, format: :json, package: stockit_params_with_sent_on_and_designation
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package, response.status, order.code)
+          expect(orders_package.reload.quantity).to eq 0
+          expect(orders_package.reload.state).to eq 'cancelled'
+          expect(orders_package_1.reload.quantity).to eq 1
+          expect(orders_package_1.state).to eq 'dispatched'
         end
 
+        it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
+          package = create :package, :stockit_package, stockit_sent_on: Date.today, order_id: order.id
+          orders_package = create :orders_package, package: package,
+            order: order, state: 'dispatched', sent_on: Date.today
+          stockit_params_without_sent_on[:stockit_id] = package.reload.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_params_without_sent_on
+          }.to change(OrdersPackage, :count).by(0)
+          test_package_changes(package, response.status, order.code)
+          expect(orders_package.reload.state).to eq 'designated'
+          expect(orders_package.order_id).to eq order.id
+        end
       end
     end
   end
