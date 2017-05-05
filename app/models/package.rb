@@ -60,7 +60,7 @@ class Package < ActiveRecord::Base
   }
 
 
-  accepts_nested_attributes_for :packages_locations, allow_destroy: true
+  accepts_nested_attributes_for :packages_locations, allow_destroy: true, limit: 1
 
   attr_accessor :skip_set_relation_update
 
