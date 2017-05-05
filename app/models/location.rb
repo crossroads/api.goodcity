@@ -5,12 +5,17 @@ class Location < ActiveRecord::Base
   has_many :packages_locations
   has_many :packages, through: :packages_locations
 
-  scope :dispatch_location, -> { find_by(building: 'Dispatched') }
-  scope :multiple_location, -> { find_by(building: 'Multiple') }
-
   # to satisfy PushUpdate module
   def offer
     nil
+  end
+
+  def self.multiple_location
+    find_by(building: 'Multiple')
+  end
+
+  def self.dispatch_location
+    find_by(building: 'Dispatched')
   end
 
   def self.search(key)
