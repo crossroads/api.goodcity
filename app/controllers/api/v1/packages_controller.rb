@@ -78,6 +78,7 @@ module Api::V1
     api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
+      delete_same_location_id
       qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
@@ -249,6 +250,14 @@ module Api::V1
         :case_number, :allow_web_publish, :received_quantity,
         packages_locations_attributes: [:id, :location_id, :quantity]]
       params.require(:package).permit(attributes)
+    end
+
+    def delete_same_location_id
+      id = params[:id]
+      location_id = params[:package][:packages_locations_attributes]["0"][:location_id]
+      if(Package.find(id).locations.pluck(:id).include?(location_id.to_i))
+        params[:package].delete(:packages_locations_attributes)
+      end
     end
 
     def set_favourite_image
