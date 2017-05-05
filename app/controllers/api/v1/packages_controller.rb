@@ -253,10 +253,12 @@ module Api::V1
     end
 
     def delete_same_location_id
-      id = params[:id]
-      location_id = params[:package][:packages_locations_attributes]["0"][:location_id]
-      if(Package.find(id).locations.pluck(:id).include?(location_id.to_i))
-        params[:package].delete(:packages_locations_attributes)
+      if(params[:package].include?(:packages_locations_attributes))
+        id = params[:id]
+        location_id = params[:package][:packages_locations_attributes]["0"][:location_id]
+        if(Package.find(id).locations.pluck(:id).include?(location_id.to_i))
+          params[:package].delete(:packages_locations_attributes)
+        end
       end
     end
 
