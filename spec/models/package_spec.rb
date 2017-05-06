@@ -142,6 +142,24 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  describe "after_update" do
+    it "#update_packages_location_quantity" do
+      @package = create(:package, :received)
+      new_quantity = rand(4)+2
+      @packages_location = @package.packages_locations.first
+      expect {
+        @package.update(received_quantity: new_quantity)
+        @packages_location.reload
+      }.to change(@packages_location, :quantity).from(@package.quantity).to(new_quantity)
+    end
+
+    it "#received_quantity_changed_and_locations_exists?" do
+      new_quantity = rand(4)+2
+      package.update(received_quantity: new_quantity)
+      expect(package.received_quantity_changed_and_locations_exists?).to eq(false)
+    end
+  end
+
   describe 'set_item_id' do
 
     let(:item) { create :item }

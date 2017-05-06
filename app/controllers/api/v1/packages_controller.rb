@@ -143,19 +143,24 @@ module Api::V1
 
     def undesignate_partial_item
       OrdersPackage.undesignate_partially_designated_item(params[:package])
+      @package.undesignate_from_stockit_order
       send_stock_item_response
     end
 
     def designate_partial_item
       designate_stockit_item(params[:package][:order_id])
-      OrdersPackage.add_partially_designated_item(params[:package])
+      OrdersPackage.add_partially_designated_item(
+        order_id: params[:package][:order_id],
+        package_id: params[:package][:package_id],
+        quantity: params[:package][:quantity])
+      designate_stockit_item(params[:package][:order_id])
       send_stock_item_response
     end
 
     def update_partial_quantity_of_same_designation
-      designate_stockit_item(params[:package][:order_id])
       @orders_package = OrdersPackage.find_by(id: params[:package][:orders_package_id])
       @orders_package.update_partially_designated_item(params[:package])
+      designate_stockit_item(params[:package][:order_id])
       send_stock_item_response
     end
 
@@ -186,6 +191,7 @@ module Api::V1
       orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
       orders_package.undispatch_orders_package
       @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
+      @package.undispatch_stockit_item
       send_stock_item_response
     end
 
@@ -214,7 +220,7 @@ module Api::V1
     end
 
     def print_inventory_label
-      print_id, errors, status = barcode_service.print @package.inventory_number
+      _print_id, errors, status = barcode_service.print @package.inventory_number
       render json: {
         status: status,
         errors: errors,

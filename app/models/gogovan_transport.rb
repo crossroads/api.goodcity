@@ -7,7 +7,7 @@ class GogovanTransport < ActiveRecord::Base
       when '5.5 Tonne Truck' then 'mudou'
       when 'Van' then 'van'
       when '9 Tonne Truck' then 'mudou9'
-      end
+    end
   end
 
   def self.get_vehicle_tag(gogovanOptionId)

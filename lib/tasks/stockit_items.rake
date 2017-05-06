@@ -1,5 +1,5 @@
 namespace :stockit do
-
+  # rake stockit:add_stockit_items
   desc 'Load all item details from Stockit'
   task add_stockit_items: :environment do
 
@@ -9,22 +9,20 @@ namespace :stockit do
     loop do
       items_json = Stockit::ItemSync.new(nil, offset, per_page).index
       offset = offset + per_page
-      puts "Processing #{offset} items"
       stockit_items = JSON.parse(items_json["items"])
-
       if stockit_items.present?
         stockit_items.each do |value|
           inventory_number = (value["inventory_number"] || "").gsub(/^x/i, '')
 
           if inventory_number.present?
             package = Package.where(inventory_number: inventory_number).first_or_initialize
-
             package.stockit_id = value["id"]
             package.notes = value["description"]
             package.grade = value["grade"]
             package.stockit_sent_on = value["sent_on"]
 
             package.quantity = value["quantity"].to_i.zero? ? 1 : value["quantity"].to_i
+            package.received_quantity = package.quantity
 
             package.length = value["length"].to_i.zero? ? "" : value["length"].to_i
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
@@ -37,7 +35,7 @@ namespace :stockit do
             package.package_type = package_type_record(value["code_id"])
             package.box = box_record(value["box_id"])
             package.pallet = pallet_record(value["pallet_id"])
-            package.save
+            package.save!
           end
         end
       else
