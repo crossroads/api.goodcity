@@ -10,7 +10,7 @@ class Diff
     @stockit_struct = stockit_struct
     @sync_attributes = sync_attributes
     @diff = {}
-    @id = @goodcity_struct.id
+    @id = @goodcity_struct.id || 0
   end
 
   # Generates a key per diff (based on id and stockit_id)
@@ -45,7 +45,7 @@ class Diff
   end
 
   def <=>(other)
-    (id || 0) <=> (other.try(:id) || 0)
+    id <=> other.try(:id)
   end
 
 end
