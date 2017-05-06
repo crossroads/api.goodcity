@@ -134,7 +134,11 @@ class Item < ActiveRecord::Base
       if orders_package
         orders_package.update_partially_designated_item({"orders_package_id": orders_package.id, "quantity": params[:quantity] })
       else
-        OrdersPackage.add_partially_designated_item({ "order_id": params[:order_id], "package_id": package.id, "quantity": params[:quantity] })
+        OrdersPackage.add_partially_designated_item(
+          order_id: params[:order_id],
+          package_id: package.id,
+          quantity: params[:quantity]
+        )
       end
       package.designate_to_stockit_order(params[:order_id])
       package.valid? and package.save

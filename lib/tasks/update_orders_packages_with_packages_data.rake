@@ -9,9 +9,7 @@ namespace :goodcity do
     log = Goodcity::RakeLogger.new("update_orders_packages_data")
     log.info("\n\tInitial Number of Packages used to create OrdersPackage =#{packages.count}")
     log.info("\n\tInitial OrdersPackage before rake =#{OrdersPackage.count}")
-    log.debug("\n\tInitial First Package whose OrdersPackage will be created =#{packages.first.id}")
-    log.debug("\n\tInitial Last Package whose OrdersPackage will be created =#{packages.last.id}")
-    first_order = OrdersPackage.last.id + 1
+
     count = 0
     #end of code to create log for the rake
     packages.find_each(batch_size: 100) do |package|
@@ -31,7 +29,7 @@ namespace :goodcity do
     end
     # code to create log for the rake
     log.info("\n\tUpdated Number of OrdersPackage created =#{count}")
-    log.debug("\n\tUpdated First OrdersPackage(id, order, package) that was created =#{OrdersPackage.where(id: first_order).pluck(:id, :order_id, :package_id)}")
+    log.debug("\n\tUpdated First OrdersPackage(id, order, package) that was created =#{OrdersPackage.pluck(:id, :order_id, :package_id).first}")
     log.debug("\n\tUpdated Last OrdersPackage(id, order, package) that was created =#{OrdersPackage.pluck(:id, :order_id, :package_id).last}")
     log.close
     # end of code to create log for the rake
