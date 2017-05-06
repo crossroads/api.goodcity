@@ -105,7 +105,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#dispatch_orders_package' do
-    let!(:orders_package) { create :orders_package, state: 'designated' }
+    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it "sets today's date for sent_on column" do
