@@ -34,10 +34,22 @@ context Goodcity::Compare do
     end
     context "removes identical diffs" do
       let(:diff) { double(Diff, identical?: true, klass_name: "TestClass", id: 1) }
-      before do
-        subject.instance_variable_set("@diffs", {"1" => diff})
-      end
+      before { subject.instance_variable_set("@diffs", {"1" => diff}) }
       it { expect(subject.in_words).to eql ("") }
+    end
+  end
+
+  context "sorted_diffs" do
+    before { subject.instance_variable_set("@diffs", {"2" => diff2, "1" => diff1}) }
+    context "sorts by klass name and then by id" do
+      let(:diff1) { double(Diff, klass_name: "TestClass", id: 1) }
+      let(:diff2) { double(Diff, klass_name: "TestClass", id: 2) }
+      it { expect(subject.sorted_diffs).to eql([diff1, diff2]) }
+    end
+    context "sorts by klass name" do
+      let(:diff1) { double(Diff, klass_name: "TestClassA", id: 1) }
+      let(:diff2) { double(Diff, klass_name: "TestClassB", id: 2) }
+      it { expect(subject.sorted_diffs).to eql([diff1, diff2]) }
     end
   end
 
