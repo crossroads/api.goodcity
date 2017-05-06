@@ -4,7 +4,10 @@ require 'classes/diff'
 module Goodcity
   class Compare
 
+    attr_reader :diffs
+
     def initialize
+      @diffs = {}
     end
 
     def compare
@@ -19,6 +22,10 @@ module Goodcity
       compare_organisations
       compare_items
       compare_orders
+    end
+
+    def in_words
+      @diffs.values.reject(&:identical?).sort.map(&:in_words).join("\n")
     end
 
     def compare_activities
@@ -104,14 +111,13 @@ module Goodcity
     # compare_objects(StockitActivity, stockit_activities, [:name])
     def compare_objects(goodcity_klass, stockit_objects, attributes_to_compare=[])
       attributes_to_compare |= [:id, :stockit_id] # ensure these are included if not already
-      diffs = {} # use hash with key to remove duplicate entries
       # Iterate over Stockit JSON
       stockit_objects.each do |stockit_obj|
         goodcity_obj = goodcity_klass.find_by(stockit_id: stockit_obj["id"])
         goodcity_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, goodcity_obj.try(a)]}.flatten])
         stockit_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, stockit_obj[a.to_s]]}.flatten])
         diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
-        diffs.merge!(diff.key => diff)
+        @diffs.merge!(diff.key => diff)
       end
       # Iterate over GoodCity class
       goodcity_klass.all.each do |goodcity_obj|
@@ -119,9 +125,8 @@ module Goodcity
         stockit_obj = stockit_objects.select{|a| a["id"] == goodcity_obj.stockit_id}.first || {}
         stockit_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, stockit_obj[a.to_s]]}.flatten])
         diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
-        diffs.merge!(diff.key => diff)
+        @diffs.merge!(diff.key => diff)
       end
-      puts diffs.values.reject(&:identical?).sort.map(&:in_words).join("\n")
     end
 
     def stockit_json(klass, root)

@@ -7,6 +7,10 @@ context Goodcity::Compare do
   
   subject { described_class.new }
 
+  context "initialization" do
+    it { expect(subject.diffs).to eql({})}
+  end
+
   context "compare" do
     it do
       expect(subject).to receive(:compare_activities)
@@ -21,6 +25,17 @@ context Goodcity::Compare do
       expect(subject).to receive(:compare_items)
       expect(subject).to receive(:compare_orders)
       subject.compare
+    end
+  end
+
+  context "in_words" do
+    it "when nothing to say" do
+      expect(subject.in_words).to eql("")
+    end
+    context "removes identical diffs" do
+      let(:diff) { double(Diff, "identical?" => true, "in_words" => "hi Mom") }
+      before { subject.instance_variable_set("@diffs", {"1" => diff}) }
+      it { expect(subject.in_words).to eql ("") }
     end
   end
 
@@ -113,7 +128,60 @@ context Goodcity::Compare do
 
   end
 
-  context "compare_items" do
+  context "compare_objects" do
+    let(:goodcity_klass) { StockitActivity }
+    let(:stockit_objects) { [{"name" => "Name"}] }
+    let(:attributes_to_compare) { [:name] }
+
+    context "with missing stockit object" do
+      before do
+        FactoryGirl.create(:stockit_activity, name: "Name")
+        subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
+      end
+      let(:stockit_objects) { [] }
+      it { expect(subject.diffs.values.size).to eql(1) }
+      it { expect(subject.diffs.values.first.diff[:name]).to eql( ["Name", nil] ) }
+    end
+
+    context "with missing goodcity object" do
+      before do
+        subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
+      end
+      it { expect(subject.diffs.values.size).to eql(1) }
+      it { expect(subject.diffs.values.first.diff[:name]).to eql( [nil, "Name"] ) }
+    end
+
+    context "with different stockit object" do
+      let(:stockit_objects) { [{"name" => "Name2"}] }
+      before do
+        FactoryGirl.create(:stockit_activity, name: "Name")
+        subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
+      end
+      it { expect(subject.diffs.values.size).to eql(1) }
+      it { expect(subject.diffs.values.first.diff[:name]).to eql( ["Name", "Name2"] ) }
+    end
+
+    context "with different goodcity object" do
+      before do
+        FactoryGirl.create(:stockit_activity, name: "Name2")
+        subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
+      end
+      it { expect(subject.diffs.values.size).to eql(1) }
+      it { expect(subject.diffs.values.first.diff[:name]).to eql( ["Name2", "Name"] ) }
+    end
+
+    context "with identical objects" do
+      before do
+        FactoryGirl.create(:stockit_activity, name: "Name")
+        subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
+      end
+      it { expect(subject.diffs.values.size).to eql(1) }
+      it { expect(subject.diffs.values.first.diff).to eql({}) }
+    end
+
+  end
+
+  context "compare_items / paginated_json" do
     let(:stockit_hash) { [{"box_id" => 1}] }
     let(:stockit_json) { {"items" => stockit_hash.to_json } }
     it do
@@ -124,5 +192,18 @@ context Goodcity::Compare do
     end
   end
 
+  context "stockit_json" do
+    let(:stockit_hash) { [{"box_id" => 1}] }
+    let(:stockit_json) { {"items" => stockit_hash.to_json } }
+    let(:klass) { Stockit::ItemSync }
+    it do
+      expect(klass).to receive(:index).and_return(stockit_json)
+      expect(subject.send(:stockit_json, klass, "items")).to eql(stockit_hash)
+    end
+    it "handles empty payload" do
+      expect(klass).to receive(:index).and_return("[]")
+      expect(subject.send(:stockit_json, klass, "items")).to eql([])
+    end
+  end
 
 end
