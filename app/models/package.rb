@@ -31,7 +31,8 @@ class Package < ActiveRecord::Base
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
   after_commit :update_set_item_id, on: :destroy
-  after_save :create_or_update_singleton_orders_package, if: :order_id_changed_and_request_from_stockit?
+  after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
+  after_save :dispatch_orders_package, if: :dispatch_from_stockit?
 
   after_touch { update_client_store :update }
 
@@ -58,7 +59,6 @@ class Package < ActiveRecord::Base
   scope :exclude_designated, ->(designation_id) {
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
-
 
   accepts_nested_attributes_for :packages_locations, allow_destroy: true, limit: 1
 
@@ -114,6 +114,10 @@ class Package < ActiveRecord::Base
     packages_locations.first.update_quantity(received_quantity)
   end
 
+  def dispatch_from_stockit?
+    stockit_sent_on_changed? && GoodcitySync.request_from_stockit
+  end
+
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
       packages_locations.first.update_column(:location_id, location_id)
@@ -131,14 +135,62 @@ class Package < ActiveRecord::Base
     order_id.nil?
   end
 
-  def create_or_update_singleton_orders_package
+  def is_stockit_sent_on_present?
+    stockit_sent_on.present?
+  end
+
+  def dispatch_orders_package
+    designation = orders_packages.designated.first
+    if is_singleton_package? && (orders_package = orders_package_with_different_designation(designation))
+      cancel_designation(designation)
+      orders_package.dispatch
+    else
+      handle_singleton_dispatch_undispatch_with_or_without_designation(designation)
+    end
+    update_in_stock_quantity
+  end
+
+  def handle_singleton_dispatch_undispatch_with_or_without_designation(designation)
+    if is_singleton_and_has_designation?(designation) && is_stockit_sent_on_present?
+      dispatch_for_designated_with_sent_on_present(designation)
+    elsif stockit_sent_on.blank?
+      requested_undispatch_from_stockit
+    elsif is_stockit_sent_on_present?
+      create_associated_dispatched_orders_package
+    end
+  end
+
+  def dispatch_for_designated_with_sent_on_present(designation)
+    if same_order_id_as_designation?(designation)
+      designation.dispatch!
+    else
+      cancel_designation(designation)
+      create_associated_dispatched_orders_package
+    end
+  end
+
+  def same_order_id_as_designation?(designation)
+    designation.order_id == order_id
+  end
+
+  def create_associated_dispatched_orders_package
+    orders_packages.create(
+      order_id: order_id,
+      quantity: quantity,
+      state: 'dispatched',
+      sent_on: Time.now,
+      updated_by: User.current_user
+    )
+  end
+
+  def designate_and_undesignate_from_stockit
     designation = orders_packages.designated.first
     if is_singleton_package? && (orders_package = orders_package_with_different_designation(designation))
       cancel_designation(designation)
       orders_package.update(state: 'designated', quantity: quantity)
-    elsif is_singletone_and_has_designation?(designation) && is_order_id_nil?
+    elsif is_singleton_and_has_designation?(designation) && is_order_id_nil?
       cancel_designation(designation)
-    elsif is_singletone_and_has_designation?(designation)
+    elsif is_singleton_and_has_designation?(designation)
       designation.update_designation(order_id)
     elsif !is_order_id_nil?
       OrdersPackage.add_partially_designated_item(
@@ -154,16 +206,17 @@ class Package < ActiveRecord::Base
     designation and designation.cancel!
   end
 
-  def order_id_changed_and_request_from_stockit?
-    order_id_changed? && GoodcitySync.request_from_stockit
+  def unless_dispatch_and_order_id_changed_with_request_from_stockit?
+    !stockit_sent_on_changed? && order_id_changed? && GoodcitySync.request_from_stockit
   end
 
   def orders_package_with_different_designation(designation)
-    orders_package = orders_packages.get_records_associated_with_order_id(order_id).first
-    orders_package unless(orders_package == designation)
+    if(orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
+      (orders_package != designation && orders_package.try(:state) != 'dispatched') and orders_package
+    end
   end
 
-  def is_singletone_and_has_designation?(designation)
+  def is_singleton_and_has_designation?(designation)
     is_singleton_package? && designation
   end
 
@@ -418,6 +471,16 @@ class Package < ActiveRecord::Base
     if(orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
       orders_packages.first.order.try(:stockit_id)
     end
+  end
+
+  def requested_undispatch_from_stockit
+    if dispatched_orders_package
+      dispatched_orders_package.undispatch_orders_package
+    end
+  end
+
+  def dispatched_orders_package
+    orders_packages.get_dispatched_records_with_order_id(order_id).first
   end
 
   private

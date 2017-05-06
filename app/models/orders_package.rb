@@ -11,8 +11,8 @@ class OrdersPackage < ActiveRecord::Base
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, -> (package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
   scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
+  scope :get_dispatched_records_with_order_id, -> (order_id) { where(order_id: order_id, state: 'dispatched') }
   scope :designated, -> { where(state: 'designated') }
-  scope :dispatched, -> { where(state: 'dispatched') }
 
   scope :with_eager_load, -> {
     includes([
@@ -36,7 +36,7 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     event :dispatch do
-      transition designated: :dispatched
+      transition [:designated, :cancelled] => :dispatched
     end
 
     event :cancel do
@@ -48,16 +48,24 @@ class OrdersPackage < ActiveRecord::Base
       orders_package.updated_by = User.current_user
     end
 
+    before_transition on: :dispatch do |orders_package, _transition|
+      orders_package.sent_on    =  Time.now
+      orders_package.updated_by =  User.current_user
+      orders_package.quantity   =  orders_package.package.quantity
+    end
+
     after_transition on: :dispatch, do: :assign_dispatched_location
   end
 
   def assign_dispatched_location
     location = Location.dispatch_location
-    package.packages_locations.create(
-      location: location,
-      quantity: quantity,
-      reference_to_orders_package: id
-    )
+    unless package.locations.include?(location)
+      package.packages_locations.create(
+        location: location,
+        quantity: quantity,
+        reference_to_orders_package: id
+      )
+    end
   end
 
   def undispatch_orders_package
@@ -100,7 +108,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def dispatch_orders_package
-    update(sent_on: Date.today, state_event: "dispatch")
+    self.dispatch!
   end
 
   def self.undesignate_partially_designated_item(packages)
@@ -135,7 +143,7 @@ class OrdersPackage < ActiveRecord::Base
       quantity: quantity.to_i,
       updated_by: User.current_user,
       state: 'designated'
-      )
+    )
   end
 
   private
