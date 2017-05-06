@@ -23,12 +23,12 @@ module Goodcity
 
     def compare_activities
       stockit_activities = stockit_json(Stockit::ActivitySync, "activities")
-      compare_objects(StockitActivity, stockit_activities, [:id, :name])
+      compare_objects(StockitActivity, stockit_activities, [:name])
     end
 
     def compare_boxes
       stockit_boxes = stockit_json(Stockit::BoxSync, "boxes")
-      compare_objects(Box,Box_boxes, [:pallet_id, :description, :box_number, :comments])
+      compare_objects(Box, stockit_boxes, [:pallet_id, :description, :box_number, :comments])
     end
 
     def compare_codes
@@ -96,7 +96,7 @@ module Goodcity
       # contact_id : stockit_contact_id
       # activity_id : stockit_activity_id
       stockit_designations = stockit_json(Stockit::DesignationSync, "designations")
-      compare_objects(StockitOrganisation, stockit_designations, [:code, :country_id, :description, :detail_id, :detail_type, :organisation_id, :status])
+      compare_objects(Order, stockit_designations, [:code, :country_id, :description, :detail_id, :detail_type, :organisation_id, :status])
     end
 
     private
