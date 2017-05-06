@@ -33,8 +33,10 @@ context Goodcity::Compare do
       expect(subject.in_words).to eql("")
     end
     context "removes identical diffs" do
-      let(:diff) { double(Diff, "identical?" => true, "in_words" => "hi Mom") }
-      before { subject.instance_variable_set("@diffs", {"1" => diff}) }
+      let(:diff) { double(Diff, identical?: true, klass_name: "TestClass", id: 1) }
+      before do
+        subject.instance_variable_set("@diffs", {"1" => diff})
+      end
       it { expect(subject.in_words).to eql ("") }
     end
   end

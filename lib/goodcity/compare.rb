@@ -25,7 +25,11 @@ module Goodcity
     end
 
     def in_words
-      @diffs.values.reject(&:identical?).sort.map(&:in_words).join("\n")
+      sorted_diffs.reject(&:identical?).map(&:in_words).join("\n")
+    end
+
+    def sorted_diffs
+      @diffs.values.sort_by{|d| [d.klass_name, d.id]}
     end
 
     def compare_activities
