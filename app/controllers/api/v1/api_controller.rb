@@ -8,8 +8,7 @@ module Api::V1
     rescue_from Apipie::ParamInvalid, with: :invalid_params
     rescue_from Apipie::ParamMissing, with: :invalid_params
 
-
-    def assign_object(data_object, params)
+    def assign_params_and_render_object(data_object, params)
       data_object.attributes = params
       if data_object.save
         render json: data_object, serializer: serializer, status: 201
