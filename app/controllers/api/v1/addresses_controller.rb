@@ -28,12 +28,6 @@ module Api::V1
     param_group :address
     def create
       assign_object(@address, address_params)
-      # @address.attributes = address_params
-      # if @address.save
-      #   render json: @address, serializer: serializer, status: 201
-      # else
-      #   render json: @address.errors.to_json, status: 422
-      # end
     end
 
     api :GET, '/v1/address/1', "Show an address"

@@ -38,12 +38,6 @@ module Api::V1
     param_group :schedule
     def create
       assign_object(@schedule, schedule_params)
-      # @schedule.attributes = schedule_params
-      # if @schedule.save
-      #   render json: @schedule, serializer: serializer, status: 201
-      # else
-      #   render json: @schedule.errors.to_json, status: 422
-      # end
     end
 
     private
