@@ -12,8 +12,8 @@ namespace :demo do
     task load: :environment do
       puts "This will generate #{count} record of Users, Offers, Packages, OrdersPackages, Orders, Contacts & Organisations"
       create_offers
-      create_orders
-      create_contacts
+      # create_orders
+      # create_contacts
     end
 
     def create_offers
@@ -60,11 +60,17 @@ namespace :demo do
     def create_reviewed_offer
       offer = create_reviewing_offer
       offer.update(reviewed_by: reviewer)
+      offer.items.each do |item|
+        item.submit
+      end
       offer.tap(&:finish_review)
     end
 
     def create_scheduled_offer
-      create_reviewed_offer.tap(&:schedule)
+      offer = create_reviewed_offer.tap(&:schedule)
+      delivery_type = ["crossroads_delivery", "drop_off_delivery"].sample.to_sym
+      FactoryGirl.create(delivery_type, offer: offer)
+      offer
     end
 
     def create_inactive_offer
