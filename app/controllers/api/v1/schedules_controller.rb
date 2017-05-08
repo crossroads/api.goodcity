@@ -37,7 +37,7 @@ module Api::V1
     api :POST, "/v1/schedules", "Make a booking for the pick up"
     param_group :schedule
     def create
-      assign_params_and_render_object(@schedule, schedule_params)
+      assign_params_and_render_object(@schedule, serializer, schedule_params)
     end
 
     private

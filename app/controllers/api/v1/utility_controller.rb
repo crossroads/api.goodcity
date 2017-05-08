@@ -1,6 +1,6 @@
 module Api::V1
   class UtilityController < ApplicationController
-    def assign_params_and_render_object(data_object, params)
+    def assign_params_and_render_object(data_object, serializer, params={})
       data_object.attributes = params
       if data_object.save
         render json: data_object, serializer: serializer, status: 201
