@@ -108,6 +108,7 @@ namespace :demo do
       FactoryGirl.create(:order, :with_status_processing, :with_created_by, processed_by: reviewer, organisation: create_organisation)
     end
 
+
     def create_designated_packages
       order = create_single_order
       offer = create_recieved_offer
