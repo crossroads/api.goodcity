@@ -60,11 +60,18 @@ namespace :demo do
     def create_reviewed_offer
       offer = create_reviewing_offer
       offer.update(reviewed_by: reviewer)
+      offer.reload.items.each do |item|
+        item.accept
+      end
       offer.tap(&:finish_review)
+      offer
     end
 
     def create_scheduled_offer
-      create_reviewed_offer.tap(&:schedule)
+      offer = create_reviewed_offer.tap(&:schedule)
+      delivery_type = ["crossroads_delivery", "drop_off_delivery"].sample.to_sym
+      FactoryGirl.create(delivery_type, offer: offer)
+      offer
     end
 
     def create_inactive_offer
