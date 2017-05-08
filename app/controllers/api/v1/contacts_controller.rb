@@ -23,12 +23,6 @@ module Api::V1
     param_group :contact
     def create
       assign_object(@contact, contact_params)
-      # @contact.attributes = contact_params
-      # if @contact.save
-      #   render json: @contact, serializer: serializer, status: 201
-      # else
-      #   render json: @contact.errors.to_json, status: 422
-      # end
     end
 
     private
