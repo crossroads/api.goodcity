@@ -19,22 +19,22 @@ namespace :demo do
     def create_offers
       puts "Offers:\tCreating #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled , #{count} closed, #{count} receiving, #{count} received Offers"
       count.times do
-        offer = create_submitted_offer
-        puts "\t\tCreated Offer #{offer.id} in 'submitted' state"
-        offer = create_reviewing_offer
-        puts "\t\tCreated Offer #{offer.id} in 'under_review' state"
+        # offer = create_submitted_offer
+        # puts "\t\tCreated Offer #{offer.id} in 'submitted' state"
+        # offer = create_reviewing_offer
+        # puts "\t\tCreated Offer #{offer.id} in 'under_review' state"
         offer = create_reviewed_offer
         puts "\t\tCreated Offer #{offer.id} in 'reviewed' state"
         offer = create_scheduled_offer
         puts "\t\tCreated Offer #{offer.id} in 'scheduled' state"
         offer = create_closed_offer
         puts "\t\tCreated Offer #{offer.id} in 'closed' state"
-        offer = create_inactive_offer
-        puts "\t\tCreated Offer #{offer.id} in 'inactive' state"
-        offer = create_receiving_offer
-        puts "\t\tCreated Offer #{offer.id} in 'receiving' state"
-        offer = create_recieved_offer
-        puts "\t\tCreated Offer #{offer.id} in 'received' state"
+        # offer = create_inactive_offer
+        # puts "\t\tCreated Offer #{offer.id} in 'inactive' state"
+        # offer = create_receiving_offer
+        # puts "\t\tCreated Offer #{offer.id} in 'receiving' state"
+        # offer = create_recieved_offer
+        # puts "\t\tCreated Offer #{offer.id} in 'received' state"
       end
     end
 
@@ -61,7 +61,7 @@ namespace :demo do
       offer = create_reviewing_offer
       offer.update(reviewed_by: reviewer)
       offer.items.each do |item|
-        item.submit
+        item.accept
       end
       offer.tap(&:finish_review)
     end
