@@ -4,7 +4,7 @@ namespace :goodcity do
   desc 'populate packages_location with existing packages data'
   task populate_packages_location_data: :environment do
     exclude_ids = PackagesLocation.pluck(:package_id)
-    packages = Package.where("stockit_sent_on is null and inventory_number is not null").except_package(exclude_ids)
+    packages = Package.where("inventory_number is not null").except_package(exclude_ids)
     # code to create log for the rake
     log = Goodcity::RakeLogger.new("populate_packages_location_data")
     log.info("\n\tInitial Number of Packages used to create PackagesLocation =#{packages.count}")
@@ -14,12 +14,14 @@ namespace :goodcity do
     count = 0
     # end of code to create log for the rake
     packages.find_each do |package|
-      PackagesLocation.create(
-        location_id: package.location_id,
-        package_id: package.id,
-        quantity: package.received_quantity
-        )
-      count += 1
+      if(location_id = package.location_id.presence)
+        PackagesLocation.create(
+          location_id: location_id,
+          package_id: package.id,
+          quantity: package.received_quantity
+          )
+        count += 1
+      end
     end
     # code to create log for the rake
     log.info("\n\tUpdated Number of OrdersPackage after rake =#{count}")
