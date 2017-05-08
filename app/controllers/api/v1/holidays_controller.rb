@@ -32,7 +32,7 @@ module Api::V1
     api :POST, '/v1/holidays', "Create holiday"
     param_group :holiday
     def create
-      assign_params_and_render_object(Holiday.new, holiday_params)
+      assign_params_and_render_object(Holiday.new, serializer, holiday_params)
     end
 
     api :GET, '/v1/holidays', "List all holidays"

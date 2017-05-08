@@ -43,11 +43,7 @@ module Api::V1
     param_group :message
     def create
       @message.sender_id = current_user.id
-      if @message.save
-        render json: @message, serializer: serializer, status: 201
-      else
-        render json: @message.errors.to_json, status: 422
-      end
+      assign_params_and_render_object(@message, serializer)
     end
 
     api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"

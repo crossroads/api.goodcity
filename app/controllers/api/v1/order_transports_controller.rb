@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :order_transport, parent: false
 
     def create
-      assign_params_and_render_object(@order_transport, order_transport_params)
+      assign_params_and_render_object(@order_transport, serializer, order_transport_params)
     end
 
     private
