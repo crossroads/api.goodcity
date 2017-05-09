@@ -4,7 +4,7 @@ module Api::V1
     load_and_authorize_resource :rejection_reason, parent: false
 
     def index
-      render_object(@rejection_reasons, RejectionReason, params)
+      render_object(@rejection_reasons, RejectionReason, serializer, params)
     end
 
     def show
