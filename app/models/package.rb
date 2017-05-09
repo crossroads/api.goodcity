@@ -366,8 +366,15 @@ class Package < ActiveRecord::Base
       packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
       referenced_package_location.destroy
     else
-      referenced_package_location.update(location_id: location_id, quantity: orders_package.quantity,
-        reference_to_orders_package: nil)
+      update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
+    end
+  end
+
+  def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
+    if referenced_package_location
+      referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
+    elsif(packages_location = packages_locations.first)
+      packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
     end
   end
 
