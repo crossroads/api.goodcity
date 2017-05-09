@@ -64,7 +64,6 @@ namespace :demo do
         item.accept
       end
       offer.tap(&:finish_review)
-      offer
     end
 
     def create_scheduled_offer
