@@ -94,7 +94,6 @@ namespace :demo do
         end
       end
       offer.update(delivered_by: FactoryGirl.generate(:delivered_by))
-      offer
     end
 
     def create_single_order
