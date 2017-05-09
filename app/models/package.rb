@@ -143,6 +143,7 @@ class Package < ActiveRecord::Base
     designation = orders_packages.designated.first
     if is_singleton_package? && (orders_package = orders_package_with_different_designation(designation))
       cancel_designation(designation)
+      orders_package.update_column(:quantity, quantity)
       orders_package.dispatch
     else
       handle_singleton_dispatch_undispatch_with_or_without_designation(designation)
