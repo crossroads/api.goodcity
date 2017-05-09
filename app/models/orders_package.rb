@@ -51,7 +51,6 @@ class OrdersPackage < ActiveRecord::Base
     before_transition on: :dispatch do |orders_package, _transition|
       orders_package.sent_on    =  Time.now
       orders_package.updated_by =  User.current_user
-      orders_package.quantity   =  orders_package.package.quantity
     end
 
     after_transition on: :dispatch, do: :assign_dispatched_location
