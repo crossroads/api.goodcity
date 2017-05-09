@@ -16,7 +16,7 @@ module Api::V1
     api :GET, '/v1/donor_conditions', "List all donor conditions."
     param :ids, Array, of: Integer, desc: "Filter by donor condition ids e.g. ids = [1,2,3,4]"
     def index
-      render_object(@donor_conditions, DonorCondition, params)
+      render_object(@donor_conditions, DonorCondition, serializer, params)
     end
 
     api :GET, '/v1/donor_conditions/1', "List a Donor-Condition"
