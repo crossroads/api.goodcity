@@ -9,7 +9,7 @@ module Api::V1
       end
     end
 
-    def render_object(data_object, model_name, params)
+    def render_object(data_object, model_name, serializer, params)
       if params[:ids].blank?
         render json: model_name.cached_json
         return
