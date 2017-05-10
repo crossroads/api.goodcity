@@ -4,7 +4,7 @@ namespace :goodcity do
   desc 'Add Purposes list'
   task add_purposes: :environment do
     purposes = YAML.load_file("#{Rails.root}/db/purposes.yml")
-    purposes.each do |key, value|
+    purposes.each do |_key, value|
       Purpose.where(
         name_en: value[:name_en],
         name_zh_tw: value[:name_zh_tw],
