@@ -98,18 +98,26 @@ module Api::V1
 
     def order_record
       if order_params[:stockit_id]
-        @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
-        @order.assign_attributes(order_params)
-        @order.stockit_activity = stockit_activity
-        @order.stockit_contact = stockit_contact
-        @order.stockit_organisation = stockit_organisation
-        @order.detail = stockit_local_order
+        assign_attributes_for_params_with_stockit_id
       elsif is_browse_app
         @order.assign_attributes(order_params)
         @order.created_by = current_user
         @order.detail_type = "GoodCity"
       end
       @order
+    end
+
+    def assign_attributes_for_params_with_stockit_id
+      @order = order_with_stockit_id
+      @order.assign_attributes(order_params)
+      @order.stockit_activity = stockit_activity
+      @order.stockit_contact = stockit_contact
+      @order.stockit_organisation = stockit_organisation
+      @order.detail = stockit_local_order
+    end
+
+    def order_with_stockit_id
+      Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
     end
 
     def order_params
