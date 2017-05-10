@@ -57,14 +57,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def assign_dispatched_location
-    location = Location.dispatch_location
-    unless package.locations.include?(location)
-      package.packages_locations.create(
-        location: location,
-        quantity: quantity,
-        reference_to_orders_package: id
-      )
-    end
+    package.assign_or_update_dispatched_location(id)
   end
 
   def undispatch_orders_package

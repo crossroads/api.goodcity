@@ -63,6 +63,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let(:order_1) { create :order, :with_stockit_id }
       let!(:code) { create :package_type, :with_stockit_id }
       let(:donor_condition) { create :donor_condition }
+      let!(:location) { create :location, :dispatched }
       let(:stockit_item_params) {
         {
           quantity: 1,
