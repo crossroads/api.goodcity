@@ -188,12 +188,12 @@ class Package < ActiveRecord::Base
       cancel_designation
       orders_package.update(state: 'designated', quantity: quantity)
     else
-      handle_signgleton_designate_undesignate_with_or_without_designation
+      handle_singleton_designate_undesignate_with_or_without_designation
     end
     update_in_stock_quantity
   end
 
-  def handle_signgleton_designate_undesignate_with_or_without_designation
+  def handle_singleton_designate_undesignate_with_or_without_designation
     if is_singleton_and_has_designation? && is_order_id_nil?
       cancel_designation
     else
