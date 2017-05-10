@@ -106,6 +106,37 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def assign_or_update_dispatched_location(orders_package_id)
+    location = Location.dispatch_location
+    if dispatch_from_stockit?
+      create_or_update_location_for_dispatch_from_stockit(location, orders_package_id)
+    else
+      create_dispatched_packages_location_from_gc(location, orders_package_id)
+    end
+  end
+
+  def create_dispatched_packages_location_from_gc(location, orders_package_id)
+    unless locations.include?(location)
+      create_associated_packages_location(location.id, quantity, orders_package_id)
+    end
+  end
+
+  def create_or_update_location_for_dispatch_from_stockit(location, orders_package_id)
+    if(dispatched_packages_location = find_packages_location_with_location_id(location.id))
+      dispatched_packages_location.update_referenced_orders_package(orders_package_id)
+    else
+      create_associated_packages_location(location.id, quantity, orders_package_id)
+    end
+  end
+
+  def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
+    packages_locations.create(
+      location_id: location_id,
+      quantity: quantity,
+      reference_to_orders_package: reference_to_orders_package
+    )
+  end
+
   def received_quantity_changed_and_locations_exists?
     received_quantity_changed? && locations.exists?
   end
@@ -349,8 +380,15 @@ class Package < ActiveRecord::Base
       packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
       referenced_package_location.destroy
     else
-      referenced_package_location.update(location_id: location_id, quantity: orders_package.quantity,
-        reference_to_orders_package: nil)
+      update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
+    end
+  end
+
+  def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
+    if referenced_package_location
+      referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
+    elsif(packages_location = packages_locations.first)
+      packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
     end
   end
 
@@ -362,7 +400,7 @@ class Package < ActiveRecord::Base
     if(packages_location = find_packages_location_with_location_id(location_id))
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
-      packages_locations.create(location_id: location_id, package_id: id, quantity: total_qty)
+      create_associated_packages_location(location_id, total_qty)
     end
   end
 
