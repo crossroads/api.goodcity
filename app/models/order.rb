@@ -115,8 +115,11 @@ class Order < ActiveRecord::Base
 
   def self.generate_gc_code
     record = where(detail_type: "GoodCity").order("id desc").first
-    code = record ? record.code.gsub(/\D/, '').to_i + 1 : 1
-    "GC-" + code.to_s.rjust(5, "0")
+    "GC-" + gc_code(record).to_s.rjust(5, "0")
+  end
+
+  def self.gc_code(record)
+    record ? record.code.gsub(/\D/, '').to_i + 1 : 1
   end
 
   private
