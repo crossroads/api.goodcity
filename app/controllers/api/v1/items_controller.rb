@@ -32,7 +32,8 @@ module Api::V1
     api :POST, '/v1/items', "Create an item"
     param_group :item
     def create
-      assign_params_and_render_object(@item, serializer, item_params)
+      @item.save
+      render_created_object(@item)
     end
 
     api :GET, '/v1/item/1', "Get an item"
