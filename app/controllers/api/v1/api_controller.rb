@@ -12,7 +12,7 @@ module Api::V1
       "#{object.class}Serializer".constantize
     end
 
-    def render_object(object)
+    def render_created_object(object)
       if object.errors.any?
         render json:object.errors.to_json, status: 422
       else
