@@ -9,7 +9,7 @@ module Api::V1
     rescue_from Apipie::ParamMissing, with: :invalid_params
 
     def serializer_for(object)
-      "#{object.class}Serializer".constantize
+      "Api::V1::#{object.class}Serializer".constantize
     end
 
     def render_created_object(object)
@@ -22,7 +22,8 @@ module Api::V1
 
     def render_object_with_cache(object, pid)
       if pid.blank?
-        render json: object.class.cached_json
+        debugger
+        render json: object.model.cached_json
         return
       end
       object = object.find(pid.split(",")) if pid.present?
