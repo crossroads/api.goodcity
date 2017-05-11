@@ -22,7 +22,8 @@ module Api::V1
     api :POST, '/v1/contacts', "Create a new contact"
     param_group :contact
     def create
-      assign_params_and_render_object(@contact, serializer, contact_params)
+      @contact.save
+      render_created_object(@contact)
     end
 
     private
