@@ -11,7 +11,7 @@ namespace :goodcity do
     count = 0
     # end of code to create log for the rake
     Package.find_each(batch_size: 100) do |package|
-      if(package.received_quantity == nil)
+      if(package.received_quantity.nil?)
         package.received_quantity = package.quantity
         package.quantity = 0 if (package.order_id || package.stockit_sent_on)
         if package.save
