@@ -22,7 +22,6 @@ module Api::V1
 
     def render_object_with_cache(object, pid)
       if pid.blank?
-        debugger
         render json: object.model.cached_json
         return
       end
