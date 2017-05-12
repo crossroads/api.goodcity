@@ -1,7 +1,7 @@
 class Diff
 
   include Comparable
-  attr :id, :diff
+  attr :id, :diff, :klass_name
 
   def initialize(klass_name, goodcity_struct, stockit_struct, sync_attributes)
     # klass_name and id so we can make reference to an obj in output diff
