@@ -41,7 +41,7 @@ module Api::V1
     def create
       @offer.created_by = current_user
       @offer.save
-      assign_params_and_render_object(@offer)
+      render_created_object(@offer)
     end
 
     api :GET, '/v1/offers', "List all offers"
