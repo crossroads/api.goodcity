@@ -1,18 +1,16 @@
 require "goodcity/rake_logger"
-# rake goodcity:update_orders_packages_data
+
 namespace :goodcity do
   desc 'Update orders_packages'
   task update_orders_packages_data: :environment do
-    exclude_ids = OrdersPackage.pluck(:package_id)
-    packages = Package.where("order_id is not null or stockit_sent_on is not null").except_package(exclude_ids)
-    # code to create log for the rake
-    log = Goodcity::RakeLogger.new("update_orders_packages_data")
-    log.info("\n\tInitial Number of Packages used to create OrdersPackage =#{packages.count}")
-    log.info("\n\tInitial OrdersPackage before rake =#{OrdersPackage.count}")
-
+    PaperTrail.enabled = false
+    packages = Package.where("order_id is not null or stockit_sent_on is not null")
     count = 0
-    #end of code to create log for the rake
+    bar = RakeProgressbar.new(packages.count)
     packages.find_each(batch_size: 100) do |package|
+      bar.inc
+      count += 1
+      next if OrdersPackage.where(package_id: package.id).any?
       orders_package_state = package.stockit_sent_on ? "dispatched" : "designated"
       orders_package_updated_by_id = orders_package_state == "designated" ? package.stockit_designated_by_id : package.stockit_sent_by_id
       OrdersPackage.create(
@@ -26,12 +24,14 @@ namespace :goodcity do
         updated_at: package.updated_at
         )
       count += 1
+      bar.inc
     end
-    # code to create log for the rake
+    bar.finished
+
+    log = Goodcity::RakeLogger.new("update_orders_packages_data")
     log.info("\n\tUpdated Number of OrdersPackage created =#{count}")
     log.debug("\n\tUpdated First OrdersPackage(id, order, package) that was created =#{OrdersPackage.pluck(:id, :order_id, :package_id).first}")
     log.debug("\n\tUpdated Last OrdersPackage(id, order, package) that was created =#{OrdersPackage.pluck(:id, :order_id, :package_id).last}")
     log.close
-    # end of code to create log for the rake
   end
 end
