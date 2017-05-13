@@ -11,17 +11,12 @@ namespace :goodcity do
 
     count = 0
     bar = RakeProgressbar.new(Package.count)
-    Package.find_each(batch_size: 100) do |package|
+    Package.select("id, quantity, received_quantity, state").each do |package|
       bar.inc
       next if package.quantity == 0 and package.received_quantity != nil
-      package.received_quantity = package.quantity
-      package.quantity = 0 if (package.order_id || package.stockit_sent_on)
-      if package.save
-        count += 1
-      else
-        log.error("Update Failed for: #{package.id}")
-      end
+      Package.connection.execute("UPDATE packages SET received_quantity = #{package.quantity} WHERE id = #{package.id}")
     end
+    Package.where("order_id IS NOT NULL OR stockit_sent_on IS NOT NULL").update_all(quantity: 0)
     bar.finished
 
     log.info("\n\tUpdated Number of Packages affected=#{count}")
