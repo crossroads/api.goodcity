@@ -2,11 +2,8 @@ namespace :stockit do
 
   desc 'Load activity details from Stockit'
   task add_stockit_activities: :environment do
-    # StockitActivity.delete_all
-
     activities_json = Stockit::ActivitySync.index
     stockit_activities = JSON.parse(activities_json["activities"])
-
     if stockit_activities
       stockit_activities.each do |value|
         StockitActivity.where(
@@ -15,6 +12,6 @@ namespace :stockit do
         ).first_or_create
       end
     end
-
   end
+
 end
