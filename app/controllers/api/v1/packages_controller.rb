@@ -82,6 +82,7 @@ module Api::V1
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
+      admin_package_location
 
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
@@ -89,6 +90,7 @@ module Api::V1
           stockit_item_details
         else
           render json: @package, serializer: serializer
+          # render json: Api::V1::PackageSerializer.new(@package).as_json
         end
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
@@ -306,6 +308,12 @@ module Api::V1
       @package.received_quantity ||= received_quantity
       add_favourite_image if params["package"]["favourite_image_id"]
       @package
+    end
+
+    def admin_package_location
+      if is_admin_app
+       @package.build_or_create_packages_location(params[:package][:location_id], 'create')
+      end
     end
 
     def received_quantity

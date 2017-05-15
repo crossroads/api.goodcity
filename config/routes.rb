@@ -64,6 +64,7 @@ Rails.application.routes.draw do
       resources :versions, only: [:index, :show]
       resources :holidays, only: [:index, :create, :destroy, :update]
       resources :orders_packages
+      resources :packages_locations, only: :show
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]

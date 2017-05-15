@@ -10,6 +10,10 @@ class PackagesLocation < ActiveRecord::Base
     where.not(location_id: location_id)
   }
 
+  scope :with_eager_load, -> {
+     includes([:package, :location])
+  }
+
   def update_quantity(received_quantity)
     update(quantity: received_quantity)
   end
