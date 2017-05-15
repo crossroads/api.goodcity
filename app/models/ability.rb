@@ -39,6 +39,7 @@ class Ability
       taxonomies
       user_abilities
       version_abilities
+      packages_locations_abilities
     end
   end
 
@@ -92,6 +93,10 @@ class Ability
 
   def orders_package_abilities
     can [:index, :search, :show], OrdersPackage if @api_user || staff?
+  end
+
+  def packages_locations_abilities
+    can [:show], PackagesLocation if @api_user || staff?
   end
 
   def item_abilities
