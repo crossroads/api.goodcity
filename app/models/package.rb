@@ -106,22 +106,22 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def assign_or_update_dispatched_location(orders_package_id)
+  def assign_or_update_dispatched_location(orders_package_id, quantity)
     location = Location.dispatch_location
     if dispatch_from_stockit?
-      create_or_update_location_for_dispatch_from_stockit(location, orders_package_id)
+      create_or_update_location_for_dispatch_from_stockit(location, orders_package_id, quantity)
     else
-      create_dispatched_packages_location_from_gc(location, orders_package_id)
+      create_dispatched_packages_location_from_gc(location, orders_package_id, quantity)
     end
   end
 
-  def create_dispatched_packages_location_from_gc(location, orders_package_id)
+  def create_dispatched_packages_location_from_gc(location, orders_package_id, quantity)
     unless locations.include?(location)
       create_associated_packages_location(location.id, quantity, orders_package_id)
     end
   end
 
-  def create_or_update_location_for_dispatch_from_stockit(location, orders_package_id)
+  def create_or_update_location_for_dispatch_from_stockit(location, orders_package_id, quantity)
     if(dispatched_packages_location = find_packages_location_with_location_id(location.id))
       dispatched_packages_location.update_referenced_orders_package(orders_package_id)
     else
