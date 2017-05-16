@@ -25,7 +25,6 @@ module Api::V1
     end
 
     def eager_load_packages_locations
-      debugger
       @packages_location = PackagesLocation.with_eager_load.find(params[:id])
     end
 
