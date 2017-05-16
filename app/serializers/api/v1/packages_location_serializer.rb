@@ -6,7 +6,16 @@ module Api::V1
 
     has_one :location, serializer: LocationSerializer
 
+    def package_id
+      object.package_id
+    end
+
+    def package_id__sql
+      'package_id'
+    end
+
     def item_id
+      object.package_id
     end
 
     def item_id__sql

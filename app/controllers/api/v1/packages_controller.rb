@@ -82,6 +82,7 @@ module Api::V1
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
+      packages_location_for_admin
 
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
@@ -306,6 +307,12 @@ module Api::V1
       @package.received_quantity ||= received_quantity
       add_favourite_image if params["package"]["favourite_image_id"]
       @package
+    end
+
+    def packages_location_for_admin
+      if is_admin_app
+       @package.build_or_create_packages_location(params[:package][:location_id], 'create')
+      end
     end
 
     def received_quantity
