@@ -8,6 +8,15 @@ namespace :stockit do
     count = 1
     pages = 267 # hard coded but that's current how many pages of 1000 we need to retreive
     @failed = {} # hash of failed stockit_ids
+    at_exit do
+      if @failed.any?
+        puts "#{@failed.count} failed Stockit items (stockit_id)"
+        @failed.each {|id, error| puts "#{id} : #{error}"}
+      else
+        puts "All items succeeded."
+      end
+    end
+
 
     loop do
       items_json = Stockit::ItemSync.new(nil, offset, per_page).index
@@ -52,15 +61,6 @@ namespace :stockit do
       else
         break
       end
-    end
-  end
-
-  at_exit do
-    if @failed.any?
-      puts "#{@failed.count} failed Stockit items (stockit_id)"
-      @failed.each {|id, error| puts "#{id} : #{error}"}
-    else
-      puts "All items succeeded."
     end
   end
 
