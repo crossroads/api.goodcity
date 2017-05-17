@@ -7,7 +7,7 @@ namespace :goodcity do
     packages = Package.where("order_id is not null or stockit_sent_on is not null")
     count = 0
     bar = RakeProgressbar.new(packages.count)
-    packages.find_each(batch_size: 100) do |package|
+    packages.find_each do |package|
       bar.inc
       count += 1
       next if OrdersPackage.where(package_id: package.id).any?
