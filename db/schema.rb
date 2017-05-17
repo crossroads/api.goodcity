@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170513084258) do
+ActiveRecord::Schema.define(version: 20170517090414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -400,6 +400,7 @@ ActiveRecord::Schema.define(version: 20170513084258) do
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
+  add_index "packages", ["stockit_id"], name: "index_packages_on_stockit_id", using: :btree
 
   create_table "packages_locations", force: :cascade do |t|
     t.integer  "package_id"
