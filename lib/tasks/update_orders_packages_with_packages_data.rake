@@ -7,10 +7,10 @@ namespace :goodcity do
     packages = Package.where("order_id is not null or stockit_sent_on is not null")
     count = 0
     bar = RakeProgressbar.new(packages.count)
+    orders_package_package_ids = OrdersPackage.pluck("DISTINCT package_id")
     packages.find_each do |package|
       bar.inc
-      count += 1
-      next if OrdersPackage.where(package_id: package.id).any?
+      next if orders_package_package_ids.include?(package.id)
       orders_package_state = package.stockit_sent_on ? "dispatched" : "designated"
       orders_package_updated_by_id = orders_package_state == "designated" ? package.stockit_designated_by_id : package.stockit_sent_by_id
       OrdersPackage.create(
@@ -24,7 +24,6 @@ namespace :goodcity do
         updated_at: package.updated_at
         )
       count += 1
-      bar.inc
     end
     bar.finished
 

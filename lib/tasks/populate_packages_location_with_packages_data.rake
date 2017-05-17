@@ -7,9 +7,10 @@ namespace :goodcity do
     packages = Package.where("inventory_number is not null")
     bar = RakeProgressbar.new(packages.count)
     count = 0
+    packages_location_package_ids = PackagesLocation.pluck("DISTINCT package_id")
     packages.select("id, location_id, received_quantity, state").find_each do |package|
       bar.inc
-      next if PackagesLocation.where(package_id: package.id).any?
+      next if packages_location_package_ids.include?(package.id)
       if(location_id = package.location_id.presence)
         PackagesLocation.create(
           location_id: location_id,
