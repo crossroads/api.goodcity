@@ -11,7 +11,7 @@ namespace :goodcity do
 
     count = 0
     bar = RakeProgressbar.new(Package.count)
-    Package.select("id, quantity, received_quantity, state").each do |package|
+    Package.select("id, quantity, received_quantity, state").find_each do |package|
       bar.inc
       next if package.quantity == 0 and package.received_quantity != nil
       Package.connection.execute("UPDATE packages SET received_quantity = #{package.quantity} WHERE id = #{package.id}")
