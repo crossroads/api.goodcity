@@ -110,14 +110,12 @@ module Goodcity
       # : stockit_designated_on
       # : stockit_designated_by_id
       # TODO
-      # paginated but need to memoize the gc objects in compare_objects function
-      #   as these keep being rebuilt
       # also use 'select' statements so not building AR objects
-      # rethink structure of comparision - two loops to ensure missing included
-      #   better to use ids for missing items
+      attributes = [:box_id, :case_number, :code_id, :condition, :description, :grade, :height, :inventory_number, :length, :location_id, :pallet_id, :quantity, :sent_on, :width]
       paginated_json(Stockit::ItemSync, "items", 0, 1000) do |stockit_items|
-        compare_objects(Package, stockit_items, [:box_id, :case_number, :code_id, :condition, :description, :grade, :height, :inventory_number, :length, :location_id, :pallet_id, :quantity, :sent_on, :width])
+        compare_stockit_objects(Package, stockit_items, attributes)
       end
+      compare_goodcity_objects(Package, stockit_items, attributes)
     end
 
     def compare_orders
@@ -136,40 +134,75 @@ module Goodcity
 
     private
 
-    # compare_objects(StockitActivity, stockit_activities, [:name])
-    # TODO change to loop just once and use ids (Set) to find missing items
-    def compare_objects(goodcity_klass, stockit_objects, attributes_to_compare=[])
-      attributes_to_compare |= [:id, :stockit_id] # ensure these are included if not already
-      
-      # Preloading GC objects
-      goodcity_objects_hash = {} # keyed by stockit_id
-      goodcity_objects = [] # for iterating later (includes those with empty or duplicate stockit_ids)
-      bm('Preloading GC objects') do
-        goodcity_klass.find_each do |obj|
-          goodcity_objects_hash[obj.stockit_id] = obj
-          goodcity_objects << obj
+    # Preload all GoodCity klass objects (hash key is stockit_id)
+    # Useful to avoid repeating work during paginated runs
+    def preload_goodcity_objects(klass)
+      memo_key = "preload_#{klass.to_s.underscore}"
+      memo = instance_variable_get("@#{memo_key}")
+      memo ||= begin
+        bm("Preloading #{klass.count} #{klass}") do
+          h = {}
+          klass.find_each{|obj| h[obj.stockit_id] = obj}
+          instance_variable_set("@#{memo_key}", h)
         end
       end
+    end
 
-      # Iterate over Stockit JSON
+    # Remember which stockit ids we've seen
+    def seen_stockit_ids_for(klass)
+      memo_key = "seen_stockit_ids_for_#{klass.to_s.underscore}"
+      memo = instance_variable_get("@#{memo_key}")
+      memo ||= []
+    end
+
+    def update_stockit_ids_for(klass, stockit_id)
+      memo_key = "seen_stockit_ids_for_#{klass.to_s.underscore}"
+      memo = seen_stockit_ids_for(klass)
+      instance_variable_set("@#{memo_key}", memo << stockit_id)
+    end
+
+    # compare_objects(StockitActivity, stockit_activities, [:name])
+    def compare_objects(goodcity_klass, stockit_objects, attributes_to_compare=[])
+      compare_stockit_objects(goodcity_klass, stockit_objects, attributes_to_compare)
+      compare_goodcity_objects(goodcity_klass, stockit_objects, attributes_to_compare)
+    end
+
+    # Iterate over Stockit objects and look for differences and what's missing from GoodCity
+    def compare_stockit_objects(goodcity_klass, stockit_objects, attributes_to_compare=[])
+      attributes_to_compare |= [:id, :stockit_id] # ensure these are included if not already
+      goodcity_objects_hash = preload_goodcity_objects(goodcity_klass)
       bm('stockit_objects') do
         stockit_objects.each_value do |stockit_obj|
-          goodcity_obj = goodcity_objects_hash[stockit_obj["id"]]
+          stockit_id = stockit_obj["id"]
+          update_stockit_ids_for(goodcity_klass, stockit_id)
+          goodcity_obj = goodcity_objects_hash[stockit_id] || OpenStruct.new(id: nil, stockit_id: stockit_id)
           goodcity_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, goodcity_obj.try(a)]}.flatten])
           stockit_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, stockit_obj[a.to_s]]}.flatten])
           diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
           @diffs.merge!(diff.key => diff)
         end
       end
-      # Iterate over GoodCity class
-      bm('goodcity_objects') do
-        goodcity_objects.each do |goodcity_obj|
-          goodcity_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, goodcity_obj.try(a)]}.flatten])
-          stockit_obj = stockit_objects[goodcity_obj.stockit_id] || {}
-          stockit_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, stockit_obj[a.to_s]]}.flatten])
-          diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
-          @diffs.merge!(diff.key => diff)
-        end
+    end
+
+    # must be called AFTER compare_stockit_objects
+    # Having run compare_stockit_objects, now iterate over unseen objects in GoodCity and find what's missing in Stockit
+    # Handle 2 cases where item exists in GoodCity but not in Stockit
+    def compare_goodcity_objects(goodcity_klass, stockit_objects, attributes_to_compare=[])
+      attributes_to_compare |= [:id, :stockit_id] # ensure these are included if not already
+      # 1. GoodCity objs where stockit_id is nil
+      goodcity_klass.where(stockit_id: nil).pluck(:id).each do |id|
+        goodcity_struct = OpenStruct.new(id: id, stockit_id: nil)
+        stockit_struct = OpenStruct.new(id: nil)
+        diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
+        @diffs.merge!(diff.key => diff)
+      end
+      # 2. GoodCity objs where stockit_id was not found in Stockit
+      missing_stockit_ids = goodcity_klass.pluck("DISTINCT stockit_id") - seen_stockit_ids_for(goodcity_klass)
+      goodcity_klass.select("id, stockit_id").where(stockit_id: missing_stockit_ids).find_each do |obj|
+        goodcity_struct = OpenStruct.new(id: obj.id, stockit_id: obj.stockit_id)
+        stockit_struct = OpenStruct.new(id: nil, attributes_to_compare.first => "1") # fake difference
+        diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
+        @diffs.merge!(diff.key => diff)
       end
     end
 

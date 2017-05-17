@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'classes/diff'
 
 describe Diff do
 
