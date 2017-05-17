@@ -247,7 +247,7 @@ module Api::V1
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id,
         :order_id, :stockit_designated_on, :stockit_sent_on,
-        :case_number, :allow_web_publish, :received_quantity,
+        :case_number, :allow_web_publish, :received_quantity, :state,
         packages_locations_attributes: [:id, :location_id, :quantity]]
       params.require(:package).permit(attributes)
     end
