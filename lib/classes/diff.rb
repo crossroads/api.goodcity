@@ -22,9 +22,9 @@ class Diff
   def compare
     @sync_attributes.each do |attr|
       next if [:id, :stockit_id].include?(attr)
-      if (x=@goodcity_struct[attr]) != (y=@stockit_struct[attr])
-        @diff.merge!(attr => [x,y])
-      end
+      x = @goodcity_struct[attr] || "" # treat nil as blank i.e. nil == ""
+      y = @stockit_struct[attr] || "" # treat nil as blank
+      @diff.merge!(attr => [x,y]) if x != y
     end
     self
   end
@@ -34,6 +34,10 @@ class Diff
     output = ["#{@klass_name}=#{@goodcity_struct.id}", "stockit_id=#{@stockit_struct.id}"]
     if identical?
       output << "Identical"
+    elsif @stockit_struct.id.nil?
+      output << "Missing in Stockit"
+    elsif @goodcity_struct.id.nil?
+      output << "Missing in GoodCity"
     else
       @diff.each { |attr, val| output << "#{attr}={#{val[0]} | #{val[1]}}" }
     end
@@ -45,7 +49,7 @@ class Diff
   end
 
   def <=>(other)
-    id <=> other.try(:id)
+    id <=> other.id
   end
 
 end
