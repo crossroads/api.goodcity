@@ -8,7 +8,8 @@ namespace :stockit do
       task task_name => :environment do
         diffs = Goodcity::Compare.new
         diffs.send("compare_#{task_name}")
-        puts diffs.in_words
+        diffs.each_diff{ |diff| puts diff.in_words unless diff.identical? }
+        puts diffs.summary
       end
     end
   end
