@@ -1,46 +1,66 @@
 namespace :stockit do
-  # rake stockit:add_stockit_items
   desc 'Load all item details from Stockit'
   task add_stockit_items: :environment do
+    PaperTrail.enabled = false
 
     offset = 0
     per_page = 1000
+    count = 1
+    pages = 267 # hard coded but that's current how many pages of 1000 we need to retreive
+    @failed = {} # hash of failed stockit_ids
 
     loop do
       items_json = Stockit::ItemSync.new(nil, offset, per_page).index
       offset = offset + per_page
       stockit_items = JSON.parse(items_json["items"])
       if stockit_items.present?
+        puts "Currently on page #{count} / #{pages}"; count += 1
+        bar = RakeProgressbar.new(stockit_items.size)
         stockit_items.each do |value|
-          inventory_number = (value["inventory_number"] || "").gsub(/^x/i, '')
+          bar.inc
+          stockit_id = value["id"]
 
-          if inventory_number.present?
-            package = Package.where(inventory_number: inventory_number).first_or_initialize
-            package.stockit_id = value["id"]
+          if stockit_id.present?
+            package = Package.where(stockit_id: stockit_id).first_or_initialize
             package.notes = value["description"]
             package.grade = value["grade"]
             package.stockit_sent_on = value["sent_on"]
+            package.inventory_number = (value["inventory_number"] || "").gsub(/^x/i, '')
 
-            package.quantity = value["quantity"].to_i.zero? ? 1 : value["quantity"].to_i
+            package.quantity = value["quantity"].to_i
             package.received_quantity = package.quantity
 
             package.length = value["length"].to_i.zero? ? "" : value["length"].to_i
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
             package.height = value["height"].to_i.zero? ? "" : value["height"].to_i
+            package.designation_name = value["designation_code"]
 
             package.order = package_designation(value["designation_id"])
-            package.designation_name = value["designation_code"]
             package.donor_condition = package_condition(value["condition"])
-            package.packages_locations << packages_location(value["location_id"], package.quantity)
+            package.packages_locations = packages_locations(package, value["location_id"])
             package.package_type = package_type_record(value["code_id"])
             package.box = box_record(value["box_id"])
             package.pallet = pallet_record(value["pallet_id"])
-            package.save!
+            begin
+              package.save!
+            rescue ActiveRecord::RecordInvalid => e
+              @failed.merge!(stockit_id => e)
+            end
           end
         end
+        bar.finished
       else
         break
       end
+    end
+  end
+
+  at_exit do
+    if @failed.any?
+      puts "#{@failed.count} failed Stockit items (stockit_id)"
+      @failed.each {|id, error| puts "#{id} : #{error}"}
+    else
+      puts "All items succeeded."
     end
   end
 
@@ -62,10 +82,13 @@ namespace :stockit do
     DonorCondition.find_by(name_en: value) if value.present?
   end
 
-  def packages_location(stockit_location_id, quantity)
+  def packages_locations(package, stockit_location_id)
+    quantity = package.quantity
     location_id = Location.find_by(stockit_id: stockit_location_id).try(:id)
     return [] unless (location_id and quantity)
-    PackagesLocation.new(location_id: location_id, quantity: quantity)
+    record = package.packages_locations.where(location_id: location_id).first_or_initialize
+    record.quantity = quantity
+    [record]
   end
 
   def package_type_record(code_id)
@@ -75,7 +98,6 @@ namespace :stockit do
   def package_designation(designation_id)
     Order.find_by(stockit_id: designation_id) if designation_id.present?
   end
-
 
   # rake goodcity:update_stockit_items
   desc 'Update stockit designation of items'
