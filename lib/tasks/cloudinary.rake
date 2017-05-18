@@ -2,7 +2,7 @@ namespace :cloudinary do
   # tag value can be "development"/"staging"/"offer_#{id}"/
   # list of comma seperated tags: "offer_163, offer_164"
   # rake cloudinary:delete tag=development
-  desc 'clean cloudinary images'
+  desc 'Clean cloudinary images by tag (rake cloudinary:delete tag=development)'
   task delete: :environment do
     if ENV['tag']
       tag_names = ENV['tag'].split(",").map(&:strip)

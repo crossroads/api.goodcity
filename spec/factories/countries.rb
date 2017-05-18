@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :country do
-    name_en "MyString"
-    name_zh_tw "MyString"
+    name_en    ["China","USA", "India","Australia"].sample
+    name_zh_tw {name_en}
   end
 end

@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+ruby "2.2.2"
 
 gem 'rails', '~> 4.2.0'
 # gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
@@ -11,7 +12,7 @@ gem 'pg'
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'postgres_ext', '~> 2.4.0.beta.1'
-gem 'postgres_ext-serializers', git: 'https://github.com/DockYard/postgres_ext-serializers.git'
+gem 'postgres_ext-serializers', git: 'https://github.com/DockYard/postgres_ext-serializers.git', ref: '0c2d483806becd1ef7f8c9336286158cfdda1cc3'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
 gem 'paranoia', '~> 2.1.0'
@@ -41,22 +42,24 @@ gem 'oj', '2.10.2' # 2.10.3 causes a 'too deeply nested' error
 gem 'oj_mimic_json'
 gem 'redis'
 gem 'redis-rails'
-gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails", branch: 'master'
+gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
-gem 'by_star', git: "git://github.com/radar/by_star"
+gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
-gem 'nokogiri'
+gem 'nokogiri', '~> 1.7.1'
 gem 'sidekiq'
-gem 'sinatra', :require => nil # for sidekiq reporting console
+gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'airbrake', "~> 4" # peg to v4 until we figure out if we can support v5 in Errbit
 gem 'lograge'
 gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
 gem 'request_store'
-gem 'easyzpl', :git => 'https://github.com/crossroads/easyzpl.git'
+gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'braintree'
 gem 'active_record_union'
 gem 'kaminari'
+gem 'sidekiq-scheduler'
+gem 'rake-progressbar'
 
 group :development do
   unless ENV["CI"]
@@ -77,9 +80,11 @@ group :development, :test do
   gem 'capistrano-bundler'
   gem 'capistrano-rvm'
   gem 'capistrano-sidekiq'
+  gem 'capistrano-rake', require: false
 end
 
 group :test do
+  gem "simplecov"
   gem 'webmock'
   gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"

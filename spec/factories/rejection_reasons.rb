@@ -1,5 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
   factory :rejection_reason do
     name_en         { generate(:rejection_reasons).keys.sample }

@@ -5,11 +5,12 @@ class Image < ActiveRecord::Base
   include PushUpdates
 
   has_one :user, inverse_of: :image
-  belongs_to :imageable, polymorphic: true
+  belongs_to :imageable, polymorphic: true, touch: true
 
-  before_destroy :delete_image_from_cloudinary,
-    unless: "Rails.env.test? || has_multiple_items"
-  after_update :clear_unused_transformed_images, unless: "Rails.env.test?"
+  before_destroy :delete_image_from_cloudinary, unless: "has_multiple_items"
+  after_update :clear_unused_transformed_images
+
+  after_update :reset_favourite,  if: :favourite_changed?
 
   scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
 
@@ -20,6 +21,10 @@ class Image < ActiveRecord::Base
   # required by PushUpdates and PaperTrail modules
   def offer
     imageable.try(:offer)
+  end
+
+  def reset_favourite
+    favourite and imageable.images.where.not(id: id).update_all(favourite: false)
   end
 
   private

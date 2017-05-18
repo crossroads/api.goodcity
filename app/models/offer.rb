@@ -25,7 +25,7 @@ class Offer < ActiveRecord::Base
   accepts_nested_attributes_for :subscriptions
 
   scope :with_eager_load, -> {
-    includes (
+    includes(
       [
         :created_by, :reviewed_by, :closed_by,
         { delivery: [:schedule, :contact] },
@@ -113,60 +113,59 @@ class Offer < ActiveRecord::Base
       transition [:submitted, :under_review, :reviewed, :scheduled, :inactive] => :inactive
     end
 
-    before_transition on: :submit do |offer, transition|
+    before_transition on: :submit do |offer, _transition|
       offer.submitted_at = Time.now
     end
 
-    before_transition on: :start_review do |offer, transition|
+    before_transition on: :start_review do |offer, _transition|
       offer.reviewed_at = Time.now
     end
 
-    before_transition on: [:finish_review, :mark_unwanted] do |offer, transition|
+    before_transition on: [:finish_review, :mark_unwanted] do |offer, _transition|
       offer.review_completed_at = Time.now
     end
 
-    before_transition on: [:mark_unwanted, :cancel, :receive] do |offer, transition|
+    before_transition on: [:mark_unwanted, :cancel, :receive] do |offer, _transition|
       offer.closed_by = User.current_user
     end
 
-    before_transition on: :mark_unwanted do |offer, transition|
+    before_transition on: :mark_unwanted do |offer, _transition|
       offer.cancelled_at = Time.now
       offer.cancellation_reason = CancellationReason.unwanted
     end
 
-    before_transition on: :receive do |offer, transition|
+    before_transition on: :receive do |offer, _transition|
       offer.received_at = Time.now
     end
 
-    before_transition on: :cancel do |offer, transition|
+    before_transition on: :cancel do |offer, _transition|
       offer.cancelled_at = Time.now
       if User.current_user == offer.created_by
         offer.cancellation_reason = CancellationReason.donor_cancelled
       end
     end
 
-    before_transition on: :start_receiving do |offer, transition|
+    before_transition on: :start_receiving do |offer, _transition|
       offer.received_by = User.current_user
       offer.start_receiving_at = Time.now
     end
 
-    before_transition on: :mark_inactive do |offer, transition|
-      offer.reviewed_by = nil
+    before_transition on: :mark_inactive do |offer, _transition|
       offer.inactive_at = Time.now
     end
 
-    after_transition on: :submit do |offer, transition|
+    after_transition on: :submit do |offer, _transition|
       offer.send_thank_you_message
       offer.send_new_offer_notification
       offer.send_new_offer_alert
     end
 
-    after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, transition|
+    after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, _transition|
       ggv_order = offer.try(:gogovan_order)
       ggv_order.try(:cancel_order) if ggv_order.try(:status) != 'cancelled'
     end
 
-    after_transition on: :start_receiving do |offer, transition|
+    after_transition on: :start_receiving do |offer, _transition|
       ggv_order = offer.try(:gogovan_order)
       ggv_order.try(:cancel_order) if ggv_order.try(:pending?)
     end

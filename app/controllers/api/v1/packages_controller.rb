@@ -16,6 +16,7 @@ module Api::V1
     def_param_group :package do
       param :package, Hash, required: true do
         param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
+        param :received_quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
         param :length, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package length", allow_nil: true
         param :width, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package width", allow_nil: true
         param :height, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package height", allow_nil: true
@@ -44,8 +45,13 @@ module Api::V1
 
     api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
     def stockit_item_details
-      render json: @package, serializer: stock_serializer, root: "item",
-        include_order: true, include_stock_condition: is_stock_app
+      render json: @package,
+        serializer: stock_serializer,
+        root: "item",
+        include_order: true,
+        exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
+        include_images: @package.set_item_id.blank?,
+        include_stock_condition: is_stock_app
     end
 
     api :POST, "/v1/packages", "Create a package"
@@ -57,7 +63,7 @@ module Api::V1
         if @package.valid? && @package.save
           if is_stock_app
             render json: @package, serializer: stock_serializer, root: "item",
-          include_order: true
+          include_order: false
           else
             render json: @package, serializer: serializer, status: 201
           end
@@ -72,8 +78,12 @@ module Api::V1
     api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
+      qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
+      @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
+      packages_location_for_admin
+
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
         if is_stock_app
@@ -116,19 +126,42 @@ module Api::V1
         records = records.search(params['searchText'], params["itemId"]).page(params["page"]).per(params["per_page"])
         pages = records.total_pages
       end
-
       packages = ActiveModel::ArraySerializer.new(records,
         each_serializer: stock_serializer,
         root: "items",
         include_order: true,
+        include_packages: false,
         exclude_stockit_set_item: true,
+        include_images: true,
         include_stock_condition: is_stock_app
       ).to_json
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
-    def designate_stockit_item
-      @package.designate_to_stockit_order(params["order_id"])
+    def designate_stockit_item(order_id)
+      @package.designate_to_stockit_order(order_id)
+    end
+
+    def undesignate_partial_item
+      OrdersPackage.undesignate_partially_designated_item(params[:package])
+      @package.undesignate_from_stockit_order
+      send_stock_item_response
+    end
+
+    def designate_partial_item
+      designate_stockit_item(params[:package][:order_id])
+      OrdersPackage.add_partially_designated_item(
+        order_id: params[:package][:order_id],
+        package_id: params[:package][:package_id],
+        quantity: params[:package][:quantity])
+      designate_stockit_item(params[:package][:order_id])
+      send_stock_item_response
+    end
+
+    def update_partial_quantity_of_same_designation
+      @orders_package = OrdersPackage.find_by(id: params[:package][:orders_package_id])
+      @orders_package.update_partially_designated_item(params[:package])
+      designate_stockit_item(params[:package][:order_id])
       send_stock_item_response
     end
 
@@ -138,11 +171,27 @@ module Api::V1
     end
 
     def dispatch_stockit_item
-      @package.dispatch_stockit_item
+      @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
+      @orders_package.dispatch_orders_package
+      @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
       send_stock_item_response
     end
 
     def undispatch_stockit_item
+      @package.undispatch_stockit_item
+      send_stock_item_response
+    end
+
+    def move_partial_quantity
+      package_params = JSON.parse(params["package"])
+      @package.move_partial_quantity(params["location_id"], package_params, params["total_qty"])
+      send_stock_item_response
+    end
+
+    def move_full_quantity
+      orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
+      orders_package.undispatch_orders_package
+      @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
       @package.undispatch_stockit_item
       send_stock_item_response
     end
@@ -155,20 +204,24 @@ module Api::V1
     def remove_from_set
       @package.remove_from_set
       render json: @package, serializer: stock_serializer, root: "item",
-        include_order: true
+        include_order: false
     end
 
     def send_stock_item_response
       if @package.errors.blank? && @package.valid? && @package.save
-        render json: @package, serializer: stock_serializer, root: "item",
-          include_order: true
+        render json: @package,
+          serializer: stock_serializer,
+          root: "item",
+          include_order: true,
+          include_packages: false,
+          include_images: @package.set_item_id.blank?
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
     end
 
     def print_inventory_label
-      print_id, errors, status = barcode_service.print @package.inventory_number
+      _print_id, errors, status = barcode_service.print @package.inventory_number
       render json: {
         status: status,
         errors: errors,
@@ -194,7 +247,8 @@ module Api::V1
         :inventory_number, :designation_name, :donor_condition_id, :grade,
         :location_id, :box_id, :pallet_id, :stockit_id,
         :order_id, :stockit_designated_on, :stockit_sent_on,
-        :case_number, :allow_web_publish]
+        :case_number, :allow_web_publish, :received_quantity, :state,
+        packages_locations_attributes: [:id, :location_id, :quantity]]
       params.require(:package).permit(attributes)
     end
 
@@ -233,7 +287,6 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if is_stock_app
-        @package.assign_attributes(package_params)
         @package.donor_condition_id = donor_condition_id
         @package.inventory_number = inventory_number
         @package
@@ -241,7 +294,8 @@ module Api::V1
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
         @package.assign_attributes(package_params)
-        @package.location_id = location_id
+        @package.received_quantity = received_quantity
+        @package.build_or_create_packages_location(location_id, 'build')
         @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id
@@ -250,8 +304,19 @@ module Api::V1
       else
         @package.assign_attributes(package_params)
       end
+      @package.received_quantity ||= received_quantity
       add_favourite_image if params["package"]["favourite_image_id"]
       @package
+    end
+
+    def packages_location_for_admin
+      if is_admin_app
+       @package.build_or_create_packages_location(params[:package][:location_id], 'create')
+      end
+    end
+
+    def received_quantity
+      params[:package][:quantity].to_i
     end
 
     def location_id

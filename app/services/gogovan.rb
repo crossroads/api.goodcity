@@ -80,10 +80,24 @@ class Gogovan
   end
 
   def ggv_driver_notes
+    notes = ""
     if offer && ggv_uuid
       link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{ggv_uuid}"
-      I18n.t('gogovan.driver_note', link: "#{link}?ln=en", ch_link: "#{link}?ln=zh-tw")
+      links = {"zh-tw" => "#{link}?ln=zh-tw", "en" => "#{link}?ln=en"}
+      
+      if discount_applies?
+        notes = I18n.t('gogovan.driver_note_with_discount', link: links["zh-tw"], locale: "zh-tw")
+        notes << "\n" + I18n.t('gogovan.driver_note_with_discount', link: links["en"], locale: "en")
+      else
+        notes = I18n.t('gogovan.driver_note', link: links["zh-tw"], locale: "zh-tw")
+        notes << "\n" + I18n.t('gogovan.driver_note', link: links["en"], locale: "en")
+      end
     end
+    notes
+  end
+
+  def discount_applies?
+    !!ENV['GO_GO_VAN_COUPON_CODE']
   end
 
   def parse_time

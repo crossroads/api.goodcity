@@ -15,4 +15,5 @@ module Stockit
     end
 
   end
+
 end

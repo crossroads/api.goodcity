@@ -23,15 +23,6 @@ cancellation_reasons.each do |name_en, value|
     visible_to_admin: value[:visible_to_admin] )
 end
 
-# Load Locations from Stockit
-locations = YAML.load_file("#{Rails.root}/db/locations.yml")
-locations.each do |value|
-  FactoryGirl.create(:location,
-    building: value["building"],
-    area: value["area"],
-    stockit_id: nil )
-end
-
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
   # FactoryGirl creates the correct territory for us
@@ -63,6 +54,15 @@ holidays.each do |key, value|
     year: value[:year],
     holiday: date_value
   ).first_or_create
+end
+
+organisation_types = YAML.load_file("#{Rails.root}/db/organisation_types.yml")
+organisation_types.each do |key, value|
+  OrganisationType.create(
+    name_en: value[:name_en],
+    name_zh_tw: value[:name_zh_tw],
+    category_en: value[:category_en],
+    category_zh_tw: value[:category_zh_tw] )
 end
 
 package_types = YAML.load_file("#{Rails.root}/db/package_types.yml")
@@ -98,6 +98,14 @@ package_types.each do |code, value|
         child_package_type: child_package)
     end
   end
+end
+
+purposes = YAML.load_file("#{Rails.root}/db/purposes.yml")
+purposes.each do |key, value|
+  holiday = Purpose.where(
+    name_en: value[:name_en],
+    name_zh_tw: value[:name_zh_tw],
+  ).first_or_create
 end
 
 # Create System User

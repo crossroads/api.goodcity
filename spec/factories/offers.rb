@@ -15,6 +15,7 @@ FactoryGirl.define do
     reviewed_at    nil
     received_at    nil
     review_completed_at nil
+    saleable       true
 
     trait :submitted do
       submitted_at { Time.now }
@@ -41,6 +42,7 @@ FactoryGirl.define do
       state       'reviewed'
       association :reviewed_by, factory: :user
       review_completed_at { Time.now }
+
     end
 
     trait :under_review do
@@ -55,10 +57,19 @@ FactoryGirl.define do
 
     trait :with_items do
       transient do
-        items_count 1
+        items_count { rand(3)+1 }
       end
       after(:create) do |offer, evaluator|
         evaluator.items_count.times { create :item, :with_packages, :with_images, offer: offer }
+      end
+    end
+
+    trait :with_demo_items do
+      transient do
+        items_count { rand(3)+1 }
+      end
+      after(:create) do |offer, evaluator|
+        evaluator.items_count.times { create :demo_item, offer: offer }
       end
     end
 
@@ -67,7 +78,7 @@ FactoryGirl.define do
         messages_count 1
       end
       after(:create) do |offer, evaluator|
-        create_list(:message, evaluator.messages_count, sender: offer.created_by, offer: offer)
+        create_list(:message, evaluator.messages_count, :reviewer_message, offer: offer)
       end
     end
 

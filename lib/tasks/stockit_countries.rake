@@ -1,22 +1,15 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_countries
-  desc 'Load countries from stockit'
+  desc 'Load countries from Stockit'
   task add_stockit_countries: :environment do
-    Country.delete_all
-
     countries_json = Stockit::CountrySync.index
-    stockit_countries = JSON.parse(countries_json["countries"])
-
-    if stockit_countries
-      stockit_countries.each do |value|
-        Country.where(
-          name_en: value["name_en"],
-          name_zh_tw: value["name_zh"],
-          stockit_id: value["id"]
-        ).first_or_create
-      end
+    stockit_countries = JSON.parse(countries_json["countries"]) || []
+    stockit_countries.each do |value|
+      country = Country.where(stockit_id: value["id"]).first_or_initialize
+      country.name_en = value["name_en"]
+      country.name_zh_tw = value["name_zh"]
+      country.save
     end
-
   end
+
 end
