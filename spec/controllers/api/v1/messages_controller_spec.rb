@@ -51,11 +51,6 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       get :show, id: message.id
       expect(response.status).to eq(200)
     end
-    it "return serialized message", :show_in_doc do
-      current_user = user
-      get :show, id: message.id
-      expect(response.body).to eq(serialized_message)
-    end
   end
 
   describe "POST message/1" do

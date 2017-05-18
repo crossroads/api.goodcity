@@ -118,16 +118,40 @@ class Item < ActiveRecord::Base
     end
   end
 
-  def designate_set_to_stockit_order(order_id)
+  def update_designation(params)
     inventory_packages.set_items.each do |package|
-      package.designate_to_stockit_order(order_id)
+      orders_package_with_package_id = OrdersPackage.get_records_associated_with_package_and_order(package.order_id, package.id)
+      orders_package_with_params_id = OrdersPackage.get_records_associated_with_package_and_order(params[:order_id], package.id)
+      orders_package_with_package_id.first.update_designation(params[:order_id]) if orders_package_with_package_id.first
+      orders_package_with_params_id.first.delete_unwanted_cancelled_packages(params[:order_id]) if orders_package_with_params_id.first
+      package.designate_to_stockit_order(params[:order_id])
+    end
+  end
+
+  def designate_set_to_stockit_order(params)
+    inventory_packages.set_items.each do |package|
+      orders_package = package.orders_packages.find_by(order_id: params[:order_id])
+      if orders_package
+        orders_package.update_partially_designated_item({"orders_package_id": orders_package.id, "quantity": params[:quantity] })
+      else
+        OrdersPackage.add_partially_designated_item(
+          order_id: params[:order_id],
+          package_id: package.id,
+          quantity: params[:quantity]
+        )
+      end
+      package.designate_to_stockit_order(params[:order_id])
       package.valid? and package.save
     end
   end
 
-  def dispatch_set_to_stockit_order
+  def dispatch_set_to_stockit_order(params)
     inventory_packages.set_items.each do |package|
-      package.dispatch_stockit_item(true)
+      orders_package = package.orders_packages.find_by(order_id: params[:order_id])
+      if orders_package
+        orders_package.dispatch_orders_package
+      end
+      package.dispatch_stockit_item(orders_package, nil, true)
       package.valid? and package.save
     end
   end

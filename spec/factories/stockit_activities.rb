@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :stockit_activity do
-    name "MyString"
+    name {FFaker::Name.first_name}
   end
 end

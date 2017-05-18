@@ -6,7 +6,7 @@ module Api::V1
     attributes :id, :created_at, :updated_at,
       :package_type_id, :donor_condition_id
 
-    has_one  :package_type, serializer: PackageTypeSerializer
+    has_one :package_type, serializer: PackageTypeSerializer
 
   end
 end

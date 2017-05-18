@@ -8,9 +8,7 @@ class Ability
 
   def initialize(user)
     public_ability
-
     if user.present?
-
       @user = user
       @user_id = user.id
       @admin = user.admin?
@@ -20,7 +18,6 @@ class Ability
       @user_offer_ids = user.offers.pluck(:id)
 
       can(:manage, :all) if admin
-
       address_abilities
       contact_abilities
       delivery_abilities
@@ -29,17 +26,20 @@ class Ability
       item_abilities
       image_abilities
       message_abilities
+      orders_package_abilities
       offer_abilities
       package_abilities
       stockit_abilities
       schedule_abilities
       order_abilities
+      order_transport_abilities
       stockit_organisation_abilities
       stockit_contact_abilities
       stockit_local_order_abilities
       taxonomies
       user_abilities
       version_abilities
+      packages_locations_abilities
     end
   end
 
@@ -61,7 +61,17 @@ class Ability
   end
 
   def order_abilities
-    can [:create, :index, :show], Order if @api_user || staff?
+    can :create, Order
+    can [:index, :show, :update], Order, created_by_id: @user_id
+    can [:create, :index, :show, :update], Order if @api_user || staff?
+  end
+
+  def order_transport_abilities
+    can :create, OrderTransport
+    can [:index, :show], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
+        transport.order.created_by_id == @user_id
+      end
+    can [:create, :index, :show], OrderTransport if staff?
   end
 
   def stockit_organisation_abilities
@@ -81,10 +91,18 @@ class Ability
     can [:index, :destroy, :create, :update], Holiday if staff?
   end
 
+  def orders_package_abilities
+    can [:index, :search, :show], OrdersPackage if @api_user || staff?
+  end
+
+  def packages_locations_abilities
+    can [:show], PackagesLocation if @api_user || staff?
+  end
+
   def item_abilities
     if staff?
-      can [:index, :show, :create, :update, :messages, :move_stockit_item_set,
-        :designate_stockit_item_set, :dispatch_stockit_item_set], Item
+      can [:index, :show, :create, :update, :messages, :move_stockit_item_set, :move_set_partial_qty,
+        :designate_stockit_item_set, :dispatch_stockit_item_set, :update_designation_of_set], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
         item.offer.created_by_id == @user_id
@@ -141,9 +159,10 @@ class Ability
     if staff?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :designate_stockit_item, :remove_from_set,
-        :undesignate_stockit_item, :dispatch_stockit_item, :move_stockit_item,
-        :print_inventory_label, :undispatch_stockit_item,
-        :stockit_item_details], Package
+        :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,
+        :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
+        :move_partial_quantity, :move_full_quantity, :print_inventory_label,
+        :undispatch_stockit_item, :stockit_item_details], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false

@@ -15,12 +15,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       get :show, id: user.id
       expect(response.status).to eq(200)
     end
-
-    it "return serialized user", :show_in_doc do
-      get :show, id: user.id
-      body = JSON.parse(response.body)
-      expect( body ).to eq(serialized_user_json)
-    end
   end
 
   describe "GET users" do

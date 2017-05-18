@@ -1,23 +1,20 @@
-namespace :goodcity do
+namespace :stockit do
 
-  # rake goodcity:add_stockit_local_orders
-  desc 'Load local_order details from stockit'
+  desc 'Load local_order details from Stockit'
   task add_stockit_local_orders: :environment do
-    StockitLocalOrder.delete_all
-
     local_orders_json = Stockit::LocalOrderSync.index
-    stockit_local_orders = JSON.parse(local_orders_json["local_orders"])
-
-    if stockit_local_orders
-      stockit_local_orders.each do |value|
-        local_order = StockitLocalOrder.where(
-          stockit_id: value["id"],
-          client_name: value["client_name"],
-          hkid_number: value["hkid_number"],
-          reference_number: value["reference_number"],
-          purpose_of_goods: value["purpose_of_goods"]
-        ).first_or_create
-      end
+    stockit_local_orders = JSON.parse(local_orders_json["local_orders"]) || []
+    bar = RakeProgressbar.new(stockit_local_orders.size)
+    stockit_local_orders.each do |value|
+      bar.inc
+      local_order = StockitLocalOrder.where(stockit_id: value["id"]).first_or_initialize
+      local_order.client_name = value["client_name"]
+      local_order.hkid_number = value["hkid_number"]
+      local_order.reference_number = value["reference_number"]
+      local_order.purpose_of_goods = value["purpose_of_goods"]
+      local_order.save
     end
+    bar.finished
   end
+
 end

@@ -4,26 +4,32 @@ module Api::V1
     embed :ids, include: true
 
     has_one :package_type, serializer: PackageTypeSerializer, root: :code
-    has_one :location, serializer: LocationSerializer
+    has_many :packages_locations, serializer: PackagesLocationSerializer
     has_one :donor_condition, serializer: DonorConditionSerializer
     has_one :order, serializer: Api::V1::OrderSerializer, root: :designation, include_items: false
-    has_one :item, serializer: Api::V1::StockitSetItemSerializer, root: :set_item
+    has_one :set_item, serializer: Api::V1::StockitSetItemSerializer, include_items: false
+    has_many :images, serializer: StockitImageSerializer
+    has_many :orders_packages, serializer: OrdersPackageSerializer
 
-    has_many :images, serializer: StockitImageSerializer, root: :images
-
-    attributes :id, :quantity, :length, :width, :height, :notes, :location_id,
+    attributes :id, :quantity, :length, :width, :height, :notes,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
-      :allow_web_publish
+      :allow_web_publish, :received_quantity
 
-    def include_item?
+    def include_images?
+      @options[:include_images]
+    end
+
+    def include_set_item?
       !@options[:exclude_stockit_set_item]
     end
 
     def include_order?
       @options[:include_order]
     end
+
+    alias_method :include_designation_id?, :include_order?
 
     def designation_id
       object.order_id

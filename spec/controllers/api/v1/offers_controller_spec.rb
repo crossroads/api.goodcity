@@ -104,11 +104,6 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       get :show, id: offer.id
       expect(response.status).to eq(200)
     end
-    it "return serialized offer", :show_in_doc do
-      get :show, id: offer.id
-      body = JSON.parse(response.body)
-      expect( body ).to eq(serialized_offer_json)
-    end
   end
 
   describe "POST offer/1" do

@@ -16,11 +16,11 @@ module Api::V1
 
     api :POST, '/v1/gogovan_orders/calculate_price', "Calculate Price"
     param :pickupTime, String, desc: "Scheduled time for delivery"
-    param :districtId, String, desc: "Id of the district", required: true
+    param :districtId, String, desc: "Id of the district"
     param :needEnglish, ['true', 'false'], desc: "Speak English?"
     param :needCart, ['true', 'false'], desc: "Borrow Trolley(s)?"
     param :needCarry, ['true', 'false'], desc: "Porterage?"
-    param :offerId, String, desc: "Id of the offer", required: true
+    param :offerId, String, desc: "Id of the offer"
     def calculate_price
       order_price = GogovanOrder.place_order(current_user, order_params)
       render json: order_price.to_json
@@ -35,12 +35,17 @@ module Api::V1
     private
 
     def order_params
+      set_district_id unless params["districtId"].presence
       params.permit(["pickupTime", "districtId", "needEnglish", "needCart",
         "needCarry", "offerId", "gogovanOptionId", "needOver6ft", "removeNet"])
     end
 
     def serializer
       Api::V1::GogovanOrderSerializer
+    end
+
+    def set_district_id
+      params["districtId"] = User.current_user.address.district_id
     end
   end
 end

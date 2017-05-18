@@ -98,12 +98,11 @@ describe Gogovan do
   end
 
   context "ggv driver notes" do
-    it do
-      notes = gogovan.send(:ggv_driver_notes)
-      expect(notes).to include("Ensure you deliver all the items listed: See details")
-      expect(notes).to include("English")
-      expect(notes).to include("Chinese")
-
+    it "sends both chinese and english notes" do
+      base_link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{attributes["ggv_uuid"]}"
+      zh = I18n.t('gogovan.driver_note', link: "#{base_link}?ln=zh-tw", locale: "zh-tw")
+      en = I18n.t('gogovan.driver_note', link: "#{base_link}?ln=en", locale: "en")
+      expect(gogovan.send(:ggv_driver_notes)).to eql(zh + "\n" + en)
     end
   end
 end

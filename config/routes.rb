@@ -63,6 +63,8 @@ Rails.application.routes.draw do
       resources :contacts, only: [:create]
       resources :versions, only: [:index, :show]
       resources :holidays, only: [:index, :create, :destroy, :update]
+      resources :orders_packages
+      resources :packages_locations, only: :show
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]
@@ -103,7 +105,8 @@ Rails.application.routes.draw do
       resources :stockit_organisations, only: [:create]
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
-      resources :orders, only: [:create]
+      resources :orders, only: [:create, :show, :index, :update]
+      resources :order_transports, only: [:create, :show, :index]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
       resources :inventory_numbers, only: [:create] do
@@ -114,13 +117,19 @@ Rails.application.routes.draw do
       get "designations", to: "orders#index"
       get "designations/:id", to: "orders#show"
       get "items", to: "packages#search_stockit_items"
+      put "items/:id/undesignate_partial_item", to: "packages#undesignate_partial_item"
+      put "items/:id/designate_partial_item", to: "packages#designate_partial_item"
+      put "items/:id/update_partial_quantity_of_same_designation", to: "packages#update_partial_quantity_of_same_designation"
       put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
       put "items/:id/designate_stockit_item_set", to: "items#designate_stockit_item_set"
       put "items/:id/dispatch_stockit_item_set", to: "items#dispatch_stockit_item_set"
+      put "items/:id/update_designation_of_set", to: "items#update_designation_of_set"
       put "items/:id/undesignate_stockit_item", to: "packages#undesignate_stockit_item"
       put "items/:id/dispatch_stockit_item", to: "packages#dispatch_stockit_item"
       put "items/:id/undispatch_stockit_item", to: "packages#undispatch_stockit_item"
       put "items/:id/move_stockit_item", to: "packages#move_stockit_item"
+      put "items/:id/move_partial_quantity", to: "packages#move_partial_quantity"
+      put "items/:id/move_full_quantity", to: "packages#move_full_quantity"
       put "items/:id/move_stockit_item_set", to: "items#move_stockit_item_set"
       put "items/:id/remove_from_set", to: "packages#remove_from_set"
       get "stockit_items/:id", to: "packages#stockit_item_details"

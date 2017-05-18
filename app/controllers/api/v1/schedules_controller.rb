@@ -25,7 +25,7 @@ module Api::V1
 
     api :GET, "/v1/schedules", "List of available schedules for current week"
     def availableTimeSlots
-      result_hash = HashWithIndifferentAccess.new(AVAILABLESLOTS).map {|k,v| v}
+      result_hash = HashWithIndifferentAccess.new(AVAILABLESLOTS).map {|_k,v| v}
       last_id = Schedule.last.try(:id) || 1
       @schedules  = result_hash.each_with_index do |k,i|
         k[:scheduled_at] = Time.now.utc + 1.weeks + k["scheduled_at"].day

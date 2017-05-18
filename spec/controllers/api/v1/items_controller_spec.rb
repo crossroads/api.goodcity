@@ -4,22 +4,12 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   let(:user)  { create :user_with_token }
   let(:offer) { create :offer, created_by: user }
-  let(:image) { create :image, favourite: true }
-  let(:item)  { create(:item, offer: offer, images: [image]) }
+  let(:item)  { create(:item, offer: offer) }
   let(:serialized_item) { Api::V1::ItemSerializer.new(item) }
   let(:serialized_item_json) { JSON.parse( serialized_item.to_json ) }
   let(:item_params) { item.attributes.except("id") }
 
   subject { JSON.parse(response.body) }
-
-  describe "GET item" do
-    before { generate_and_set_token(user) }
-    it "return serialized item", :show_in_doc do
-      get :show, id: item.id
-      expect(response.status).to eq(200)
-      expect(subject).to eq(serialized_item_json)
-    end
-  end
 
   describe "DELETE item/1" do
     before { generate_and_set_token(user) }

@@ -1,0 +1,11 @@
+---
+1: 
+  :name_en: "organisation 1"
+  :name_zh_tw: "organisation 1"
+  :organisation_type_id: 1
+  :description_en: "organisation 1"
+  :description_zh_tw: "organisation 1"
+  :registration: "registration"
+  :website: "website"
+  :country_id: 1
+  :district_id: 1

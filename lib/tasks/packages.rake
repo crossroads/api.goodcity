@@ -1,12 +1,12 @@
 namespace :goodcity do
 
-  # rake goodcity:update_packages
+  # rake goodcity:update_packages_grade_condition
   desc 'Update package with grade and donor_condition_id'
-  task update_packages: :environment do
+  task update_packages_grade_condition: :environment do
 
     Package.find_in_batches(batch_size: 50).each do |packages|
       packages.each do |package|
-        # using update_column to not sync with stokit for now,
+        # using update_column to not sync with stockit for now,
         # as it might update existing data in stockit.
 
         package.update_column(:grade, "B")
