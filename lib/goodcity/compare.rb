@@ -109,13 +109,16 @@ module Goodcity
       # : stockit_moved_by_id
       # : stockit_designated_on
       # : stockit_designated_by_id
+      # location_id : location.stockit_id
+      # pallet_id : pallet.stockit_id
+      # description : notes
       # TODO
       # also use 'select' statements so not building AR objects
-      attributes = [:box_id, :case_number, :code_id, :condition, :description, :grade, :height, :inventory_number, :length, :location_id, :pallet_id, :quantity, :sent_on, :width]
+      attributes = [:box_id, :case_number, :grade, :height, :inventory_number, :length, :quantity, :width]
       paginated_json(Stockit::ItemSync, "items", 0, 1000) do |stockit_items|
         compare_stockit_objects(Package, stockit_items, attributes)
       end
-      compare_goodcity_objects(Package, stockit_items, attributes)
+      compare_goodcity_objects(Package, attributes)
     end
 
     def compare_orders
@@ -164,7 +167,7 @@ module Goodcity
     # compare_objects(StockitActivity, stockit_activities, [:name])
     def compare_objects(goodcity_klass, stockit_objects, attributes_to_compare=[])
       compare_stockit_objects(goodcity_klass, stockit_objects, attributes_to_compare)
-      compare_goodcity_objects(goodcity_klass, stockit_objects, attributes_to_compare)
+      compare_goodcity_objects(goodcity_klass, attributes_to_compare)
     end
 
     # Iterate over Stockit objects and look for differences and what's missing from GoodCity
@@ -187,7 +190,7 @@ module Goodcity
     # must be called AFTER compare_stockit_objects
     # Having run compare_stockit_objects, now iterate over unseen objects in GoodCity and find what's missing in Stockit
     # Handle 2 cases where item exists in GoodCity but not in Stockit
-    def compare_goodcity_objects(goodcity_klass, stockit_objects, attributes_to_compare=[])
+    def compare_goodcity_objects(goodcity_klass, attributes_to_compare=[])
       attributes_to_compare |= [:id, :stockit_id] # ensure these are included if not already
       # 1. GoodCity objs where stockit_id is nil
       goodcity_klass.where(stockit_id: nil).pluck(:id).each do |id|
@@ -198,11 +201,13 @@ module Goodcity
       end
       # 2. GoodCity objs where stockit_id was not found in Stockit
       missing_stockit_ids = goodcity_klass.pluck("DISTINCT stockit_id") - seen_stockit_ids_for(goodcity_klass)
-      goodcity_klass.select("id, stockit_id").where(stockit_id: missing_stockit_ids).find_each do |obj|
-        goodcity_struct = OpenStruct.new(id: obj.id, stockit_id: obj.stockit_id)
-        stockit_struct = OpenStruct.new(id: nil, attributes_to_compare.first => "1") # fake difference
-        diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
-        @diffs.merge!(diff.key => diff)
+      missing_stockit_ids.in_groups_of(100) do |ids|
+        goodcity_klass.where(stockit_id: ids) do |obj|
+          goodcity_struct = OpenStruct.new(id: obj.id, stockit_id: obj.stockit_id)
+          stockit_struct = OpenStruct.new(id: nil, attributes_to_compare.first => "1") # fake difference
+          diff = Diff.new("#{goodcity_klass}", goodcity_struct, stockit_struct, attributes_to_compare).compare
+          @diffs.merge!(diff.key => diff)
+        end
       end
     end
 
