@@ -32,12 +32,12 @@ class Diff
   # StockitActivity=13 | stockit_id=23 | name={bob,steve}
   def in_words
     output = ["#{@klass_name}=#{@goodcity_struct.id}", "stockit_id=#{@stockit_struct.id}"]
-    if identical?
-      output << "Identical"
-    elsif @stockit_struct.id.nil?
+    if @stockit_struct.id.nil?
       output << "Missing in Stockit"
     elsif @goodcity_struct.id.nil?
       output << "Missing in GoodCity"
+    elsif identical?
+      output << "Identical"
     else
       @diff.each { |attr, val| output << "#{attr}={#{val[0]} | #{val[1]}}" }
     end
@@ -45,7 +45,7 @@ class Diff
   end
 
   def identical?
-    @diff.empty?
+    @stockit_struct.id.present? && @goodcity_struct.id.present? && @diff.empty?
   end
 
   def <=>(other)
