@@ -112,9 +112,10 @@ module Goodcity
       # location_id : location.stockit_id
       # pallet_id : pallet.stockit_id
       # description : notes
+      # quantity : received_quantity
       # TODO
       # also use 'select' statements so not building AR objects
-      attributes = [:box_id, :case_number, :grade, :height, :inventory_number, :length, :quantity, :width]
+      attributes = [:box_id, :case_number, :grade, :height, :inventory_number, :length, :width]
       paginated_json(Stockit::ItemSync, "items", 0, 1000) do |stockit_items|
         compare_stockit_objects(Package, stockit_items, attributes)
       end
