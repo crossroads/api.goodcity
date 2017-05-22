@@ -546,6 +546,20 @@ RSpec.describe Package, type: :model do
       }.to change(PackagesLocation, :count).by(0)
     end
   end
+
+  describe '#find_packages_location_with_location_id' do
+    let(:package) { create :package }
+    let(:location) { create :location }
+
+    it 'returns packages_location record if found with particular location_id' do
+      packages_location = create :packages_location, package: package, location: location
+      expect(package.find_packages_location_with_location_id(location.id)).to eq packages_location
+    end
+
+    it 'returns nil if packages_location record is not available with particular location_id' do
+      expect(package.find_packages_location_with_location_id(location.id)).to eq nil
+    end
+  end
 end
 
 
