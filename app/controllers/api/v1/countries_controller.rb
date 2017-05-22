@@ -14,11 +14,12 @@ module Api::V1
     private
 
     def country_record
-      @country = if (stockit_id = country_params[:stockit_id]).present?
-        Country.where(stockit_id: stockit_id).first_or_initialize
-      else
-        @country
-      end
+      @country =
+        if (stockit_id = country_params[:stockit_id]).present?
+          Country.where(stockit_id: stockit_id).first_or_initialize
+        else
+          @country
+        end
       @country.assign_attributes(country_params)
       @country
     end

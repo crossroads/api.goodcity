@@ -94,13 +94,14 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def self.set_vehicle_type(attributes)
-    attributes["vehicle"] = if(attributes["gogovanOptionId"])
-      GogovanTransport.get_vehicle_tag(attributes["gogovanOptionId"])
-    elsif(attributes['offerId'])
-      Offer.find(attributes["offerId"]).try(:gogovan_transport).try(:vehicle_tag)
-    else
-      GogovanTransport.first.try(:vehicle_tag)
-    end
+    attributes["vehicle"] =
+      if(attributes["gogovanOptionId"])
+        GogovanTransport.get_vehicle_tag(attributes["gogovanOptionId"])
+      elsif(attributes['offerId'])
+        Offer.find(attributes["offerId"]).try(:gogovan_transport).try(:vehicle_tag)
+      else
+        GogovanTransport.first.try(:vehicle_tag)
+      end
     attributes
   end
 
