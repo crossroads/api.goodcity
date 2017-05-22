@@ -412,23 +412,25 @@ class Package < ActiveRecord::Base
   end
 
   def move_stockit_item(location_id)
-    response = if box_id? || pallet_id?
-      has_box_or_pallet_error
-    else
-      build_or_create_packages_location(location_id, 'create')
-      self.stockit_moved_on = Date.today
-      self.stockit_moved_by = User.current_user
-      Stockit::ItemSync.move(self)
-    end
+    response =
+      if box_id? || pallet_id?
+        has_box_or_pallet_error
+      else
+        build_or_create_packages_location(location_id, 'create')
+        self.stockit_moved_on = Date.today
+        self.stockit_moved_by = User.current_user
+        Stockit::ItemSync.move(self)
+      end
     add_errors(response)
   end
 
   def has_box_or_pallet_error
-    error = if pallet_id?
-      I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
-    else
-      I18n.t("package.has_box_error", box_number: box.box_number)
-    end
+    error =
+      if pallet_id?
+        I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
+      else
+        I18n.t("package.has_box_error", box_number: box.box_number)
+      end
     {
       "errors" => {
         error: "#{error} #{I18n.t('package.move_stockit')}"
