@@ -56,13 +56,14 @@ module Api::V1
     def index
       states = params["states"]
       if states.present?
-        @offers = if User.current_user.staff?
-          @offers.in_states(states)
-            .union(User.current_user.offers_with_unread_messages)
-            .union(Offer.active_from_past_fortnight)
-        else
-          @offers.in_states(states)
-        end
+        @offers =
+          if User.current_user.staff?
+            @offers.in_states(states)
+              .union(User.current_user.offers_with_unread_messages)
+              .union(Offer.active_from_past_fortnight)
+          else
+            @offers.in_states(states)
+          end
       end
       @offers = @offers.created_by(params["created_by_id"]) if params["created_by_id"].present?
       @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
