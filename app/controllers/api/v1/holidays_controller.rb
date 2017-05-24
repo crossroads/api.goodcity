@@ -32,12 +32,8 @@ module Api::V1
     api :POST, '/v1/holidays', "Create holiday"
     param_group :holiday
     def create
-      @holiday = Holiday.new(holiday_params)
-      if @holiday.save
-        render json: @holiday, serializer: serializer, status: 201
-      else
-        render json: @holiday.errors.to_json, status: 422
-      end
+      @holiday.save
+      render_created_object(@holiday)
     end
 
     api :GET, '/v1/holidays', "List all holidays"
