@@ -72,7 +72,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context 'undispatch from gc' do
       it 'undispatches orders_package with matching order_id when undispatched from gc and assigns locaion aginst package' do
-        put :move_full_quantity, format: :json, id: package.id, location_id: location_1.id, ordersPackageId: orders_package.id, id: package.id
+        put :move_full_quantity, format: :json, location_id: location_1.id, ordersPackageId: orders_package.id, id: package.id
         expect(package.reload.locations).to include(location_1)
         expect(package.packages_locations.count).to eq 1
         expect(package.reload.order_id).to eq order.id
@@ -276,6 +276,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           }.to change(OrdersPackage, :count).by(1)
           test_package_changes(package, response.status, order.code)
           expect(orders_package.reload.state).to eq 'cancelled'
+          test_packages_location_changes(package)
         end
 
         it 'cancels existing designation and dispatches orders_package if available with same order id' do
@@ -294,6 +295,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(orders_package.reload.state).to eq 'cancelled'
           expect(orders_package_1.reload.quantity).to eq 1
           expect(orders_package_1.state).to eq 'dispatched'
+          test_packages_location_changes(package)
         end
 
         it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
@@ -307,6 +309,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, order.code)
           expect(orders_package.reload.state).to eq 'designated'
           expect(orders_package.order_id).to eq order.id
+          test_packages_location_changes(package)
         end
       end
     end

@@ -533,9 +533,10 @@ RSpec.describe Package, type: :model do
       expect{
         package.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
       }.to change(PackagesLocation, :count).by(1)
-      expect(package.reload.packages_locations.first.location).to eq dispatched_location
-      expect(package.reload.packages_locations.first.reference_to_orders_package).to eq orders_package.id
-      expect(package.reload.packages_locations.first.quantity).to eq 1
+      first_location = package.reload.packages_locations.first
+      expect(first_location.location).to eq dispatched_location
+      expect(first_location.reference_to_orders_package).to eq orders_package.id
+      expect(first_location.quantity).to eq 1
     end
 
     it 'do not creates dispatched packages_location record if already exists' do
