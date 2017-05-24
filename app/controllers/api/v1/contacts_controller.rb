@@ -22,12 +22,7 @@ module Api::V1
     api :POST, '/v1/contacts', "Create a new contact"
     param_group :contact
     def create
-      @contact.attributes = contact_params
-      if @contact.save
-        render json: @contact, serializer: serializer, status: 201
-      else
-        render json: @contact.errors.to_json, status: 422
-      end
+      assign_params_and_render_object(@contact, serializer, contact_params)
     end
 
     private

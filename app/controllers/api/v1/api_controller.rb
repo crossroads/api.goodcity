@@ -1,5 +1,5 @@
 module Api::V1
-  class ApiController < ApplicationController
+  class ApiController <  Api::V1::UtilityController
 
     skip_before_action :validate_token, only: [:error]
 

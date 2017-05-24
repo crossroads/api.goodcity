@@ -27,12 +27,7 @@ module Api::V1
     api :POST, '/v1/addresses', "Create an address"
     param_group :address
     def create
-      @address.attributes = address_params
-      if @address.save
-        render json: @address, serializer: serializer, status: 201
-      else
-        render json: @address.errors.to_json, status: 422
-      end
+      assign_params_and_render_object(@address, serializer, address_params)
     end
 
     api :GET, '/v1/address/1', "Show an address"

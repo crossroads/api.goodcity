@@ -39,13 +39,9 @@ module Api::V1
     api :POST, '/v1/offers', "Create an offer"
     param_group :offer
     def create
-      @offer = Offer.new(offer_params)
+      @offer = Offer.new
       @offer.created_by = current_user
-      if @offer.save
-        render json: @offer, serializer: serializer, status: 201
-      else
-        render json: @offer.errors.to_json, status: 422
-      end
+      assign_params_and_render_object(@offer, serializer, offer_params)
     end
 
     api :GET, '/v1/offers', "List all offers"
