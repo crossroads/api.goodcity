@@ -12,11 +12,11 @@ class AddChineseNamesInXl
   end
 
   def check_zh_name_and_update_cells(cell_value, row_num)
-    separate_names = ChineseNameSeparator.new(cell_value)
-    if (separate_names.find_zh_name_index)
+    get_names = ChineseNameSeparator.new(cell_value)
+    if (get_names.has_zh?)
       puts "#{row_num+1}\t cell_value before update: \t#{cell_value}"
-      en_name = separate_names.get_en_name
-      zh_name = separate_names.get_zh_name
+      en_name = get_names.en
+      zh_name = get_names.zh
       update_cell_values(row_num, en_name, zh_name)
     end
   end
