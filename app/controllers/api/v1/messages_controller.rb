@@ -43,8 +43,8 @@ module Api::V1
     param_group :message
     def create
       @message.sender_id = current_user.id
-      @message.save
-      render_created_object(@message)
+      has_saved = @message.save
+      render_created_object(@message,has_saved)
     end
 
     api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"

@@ -17,7 +17,7 @@ module Stockit::Base
   def nestful_connection(request_type, url, params , options)
     options = default_options.merge(options)
     begin
-      Nestful.send(request_type, url, params, options ).as_json
+      Nestful.send(request_type, url, params, options).as_json
     rescue Nestful::ConnectionError => ex # catches all Nestful errors
       stockit_connection_error
     end

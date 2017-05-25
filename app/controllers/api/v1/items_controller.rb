@@ -32,8 +32,8 @@ module Api::V1
     api :POST, '/v1/items', "Create an item"
     param_group :item
     def create
-      @item.save
-      render_created_object(@item)
+      has_saved = @item.save
+      render_created_object(@item, has_saved)
     end
 
     api :GET, '/v1/item/1', "Get an item"
