@@ -1,38 +1,23 @@
-require 'rubyXL'
 class ChineseNameSeparator
-  def initialize
-    @file_path = File.expand_path("path/organisation_list.xlsx")
-    @workbook = RubyXL::Parser.parse(@file_path)
-    @workbook.stream
-    @worksheet = @workbook[0]
+  def initialize(mixed_name)
+    @mixed_name = mixed_name
   end
 
-  def find_chinese_names(text)
-    text.index (/\p{Han}/)
+  def find_zh_name_index
+    # before calling getters check if this method returns true
+    @mixed_name.index (/\p{Han}/)
   end
 
-  def separate_names_and_update_cell_values(mixed_name, index, row_num)
-    puts mixed_name
-    last_index = mixed_name.size-2
-    en_name = mixed_name[0..index-3]
-    chinese_name = mixed_name[index..last_index]
-    puts "\t#{en_name}\t #{chinese_name}"
-    @worksheet.add_cell(row_num, 3, chinese_name)
-    @worksheet[row_num][1].change_contents(en_name)
+  def get_en_name
+    last_index = find_zh_name_index-3
+    # last three indexes have: a space,a parenthesis i.e ( and a chinese character
+    @mixed_name[0..last_index]
   end
 
-  def find_chinese_names_and_update_the_columns
-    row_num = 0
-    puts "find_chinese_names(@worksheet[i][1].value)"
-    while (@worksheet[row_num]&&@worksheet[row_num][1].value)
-      cell_value = @worksheet[row_num][1].value
-      index = find_chinese_names(cell_value)
-      if (index)
-        separate_names_and_update_cell_values(cell_value, index, row_num)
-      end
-        row_num += 1
-    end
-    @workbook.write(@file_path)
-    puts "separation successful"
+  def get_zh_name
+    first_index = find_zh_name_index
+    # as last character is '('
+    last_index = @mixed_name.size-2
+    @mixed_name[first_index..last_index]
   end
 end
