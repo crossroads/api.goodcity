@@ -3,27 +3,21 @@ require 'nestful'
 module Stockit::Base
 
   def post(url, params = {}, options = {})
-    options = default_options.merge(options)
-    begin
-      Nestful.post( url, params, options ).as_json
-    rescue Nestful::ConnectionError => ex # catches all Nestful errors
-      stockit_connection_error
-    end
+    nestful_connection("post", url, params , options)
   end
 
   def put(url, params = {}, options = {})
-    options = default_options.merge(options)
-    begin
-      Nestful.put( url, params, options ).as_json
-    rescue Nestful::ConnectionError => ex # catches all Nestful errors
-      stockit_connection_error
-    end
+    nestful_connection("put", url, params , options)
   end
 
   def get(url, params = {}, options = {})
+    nestful_connection("get", url, params , options)
+  end
+
+  def nestful_connection(request_type, url, params , options)
     options = default_options.merge(options)
     begin
-      Nestful.get( url, params, options ).as_json
+      Nestful.send(request_type, url, params, options ).as_json
     rescue Nestful::ConnectionError => ex # catches all Nestful errors
       stockit_connection_error
     end
