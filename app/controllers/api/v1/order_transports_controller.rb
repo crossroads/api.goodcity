@@ -4,8 +4,8 @@ module Api::V1
     load_and_authorize_resource :order_transport, parent: false
 
     def create
-      @order_transport.save
-      render_created_object(@order_transport)
+      has_saved = @order_transport.save
+      render_created_object(@order_transport, has_saved)
     end
 
     private

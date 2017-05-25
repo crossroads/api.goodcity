@@ -9,14 +9,15 @@ module Api::V1
     rescue_from Apipie::ParamMissing, with: :invalid_params
 
     def serializer_for(object)
-      "Api::V1::#{object.class}Serializer".constantize
+      # using safe_constantize as it will return nil if no object is found 
+      "Api::V1::#{object.class}Serializer".safe_constantize
     end
 
-    def render_created_object(object)
-      if object.errors.any?
-        render json:object.errors.to_json, status: 422
-      else
+    def render_created_object(object, has_saved)
+      if has_saved
         render json: object, serializer: serializer_for(object), status: 201
+      else
+        render json:object.errors.to_json, status: 422
       end
     end
 
