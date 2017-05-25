@@ -6,23 +6,26 @@ class AddChineseNamesInXl
   end
 
   def update_cell_values(worksheet, row_num, en_name, zh_name)
-    puts "updated row_num=#{row_num}"
     worksheet[row_num][1].change_contents(en_name)
     worksheet.add_cell(row_num, 3, zh_name)
+  end
+
+  def check_zh_name_and_update_cells(worksheet, cell_value, row_num)
+    separate_names = ChineseNameSeparator.new(cell_value)
+    if (separate_names.find_zh_name_index)
+      puts "#{row_num+1}\t cell_value before update: \t#{cell_value}"
+      en_name = separate_names.get_en_name
+      zh_name = separate_names.get_zh_name
+      update_cell_values(worksheet, row_num, en_name, zh_name)
+    end
   end
 
   def find_chinese_names_and_update_cells
     worksheet = open_xl_workbook
     row_num = 0
-    puts "find_chinese_names(worksheet[i][1].value)"
     while (worksheet[row_num]&&worksheet[row_num][1].value)
       cell_value = worksheet[row_num][1].value
-      separate_names = ChineseNameSeparator.new(cell_value)
-      if (separate_names.find_zh_name_index)
-        en_name = separate_names.get_en_name
-        zh_name = separate_names.get_zh_name
-        update_cell_values(worksheet, row_num, en_name, zh_name)
-      end
+      check_zh_name_and_update_cells(worksheet, cell_value, row_num)
       row_num += 1
     end
     save_workbook
