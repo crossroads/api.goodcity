@@ -10,7 +10,7 @@ namespace :stockit do
       pallet.pallet_number = value["pallet_number"]
       pallet.description = value["description"]
       pallet.comments = value["comments"]
-      pallet.save
+      pallet.save!
     end
   
     boxes_json = Stockit::BoxSync.index
@@ -21,7 +21,7 @@ namespace :stockit do
       box.description = value["description"]
       box.comments = value["comments"]
       box.pallet_id = Pallet.find_by(stockit_id: value["pallet_id"]).try(:id)
-      box.save
+      box.save!
     end
 
   end
