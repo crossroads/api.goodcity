@@ -48,6 +48,7 @@ class Package < ActiveRecord::Base
   scope :received, -> { where(state: 'received') }
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
+  scope :hasZeroQuantity, -> { where(quantity: 0) }
   scope :published, -> { where(allow_web_publish: true) }
   scope :non_set_items, -> { where(set_item_id: nil) }
   scope :set_items, -> { where("set_item_id = item_id") }
@@ -495,11 +496,11 @@ class Package < ActiveRecord::Base
   end
 
   def self.browse_inventorized
-    inventorized.published
+    inventorized.hasZeroQuantity.published
   end
 
   def self.browse_non_inventorized
-    joins(item: [:offer]).published.expecting.
+    joins(item: [:offer]).hasZeroQuantity.published.expecting.
       where(items: { state: BROWSE_ITEM_STATES }).
       where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
   end
