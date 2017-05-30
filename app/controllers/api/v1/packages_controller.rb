@@ -120,10 +120,11 @@ module Api::V1
     api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
     def search_stockit_items
       records = {}; pages = 0
+      debugger
       if params['searchText'].present?
         records = params["orderId"].present? ?
           @packages.stockit_items.undispatched : @packages.stockit_items
-        records = records.search(params['searchText'], params["itemId"]).page(params["page"]).per(params["per_page"])
+        records = records.search(params['searchText'], params["itemId"], params['showQuantityItems']).page(params["page"]).per(params["per_page"])
         pages = records.total_pages
       end
       packages = ActiveModel::ArraySerializer.new(records,

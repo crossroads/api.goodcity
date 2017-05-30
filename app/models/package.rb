@@ -64,11 +64,12 @@ class Package < ActiveRecord::Base
 
   attr_accessor :skip_set_relation_update
 
-  def self.search(search_text, item_id)
+  def self.search(search_text, item_id, show_quantity_item = false)
+    received_quantity_query = "and received_quantity = 1" unless show_quantity_item == "true"
     if item_id.presence
-      where("item_id = ? and received_quantity = 1", item_id)
+      where("item_id = ? #{received_quantity_query}", item_id)
     else
-      where("inventory_number ILIKE :query and received_quantity = 1", query: "%#{search_text}%")
+      where("inventory_number ILIKE :query #{received_quantity_query}", query: "%#{search_text}%")
     end
   end
 
