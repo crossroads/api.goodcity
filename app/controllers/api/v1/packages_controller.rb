@@ -120,7 +120,6 @@ module Api::V1
     api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
     def search_stockit_items
       records = {}; pages = 0
-      debugger
       if params['searchText'].present?
         records = params["orderId"].present? ?
           @packages.stockit_items.undispatched : @packages.stockit_items
