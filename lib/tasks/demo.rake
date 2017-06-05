@@ -14,6 +14,7 @@ namespace :demo do
       create_offers
       create_orders
       create_contacts
+      add_organisations_users(4)
     end
 
     def create_offers
@@ -143,6 +144,15 @@ namespace :demo do
       count.times do
         FactoryGirl.create(:contact)
       end
+    end
+
+    def add_organisations_users(count)
+      count.times do |i|
+        org = FactoryGirl.create(:organisation)
+        user = FactoryGirl.create(:user, mobile: "+8525500000"+(i+1).to_s)
+        FactoryGirl.create(:organisations_user, organisation: org, user: user, role: "Staff")
+      end
+
     end
 
     def create_organisation
