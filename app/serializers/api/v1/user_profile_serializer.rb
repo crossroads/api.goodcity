@@ -9,6 +9,8 @@ module Api::V1
     has_one :image, serializer: ImageSerializer
     has_one :permission, serializer: PermissionSerializer
 
+    has_many :organisations_users, serializer: OrganisationsUserSerializer
+
     def mobile
       object.try(:mobile) && object.mobile.slice(4..-1)
     end
