@@ -65,12 +65,15 @@ class Package < ActiveRecord::Base
 
   attr_accessor :skip_set_relation_update
 
-  def self.search(search_text, item_id)
-    if item_id.presence
-      where("item_id = ? and received_quantity = 1", item_id)
-    else
-      where("inventory_number ILIKE :query and received_quantity = 1", query: "%#{search_text}%")
-    end
+  def self.search(search_text, item_id, show_quantity_item = false)
+    records =
+      if item_id.presence
+        where("item_id = ?", item_id)
+      else
+        where("inventory_number ILIKE :query", query: "%#{search_text}%")
+      end
+    records = records.where(received_quantity: 1) unless show_quantity_item == "true"
+    records
   end
 
   # Workaround to set initial state for the state_machine
