@@ -243,5 +243,68 @@ module Goodcity
       result
     end
 
+    # Need to tidy this up
+    def preload_goodcity_items
+      klass_name = "Package"
+      joins = joins_for(klass_name)
+      select =  "packages.*, "
+      select << attribute_map_for(klass_name).map do |stockit, goodcity|
+        (stockit == goodcity) ? stockit : "#{goodcity} AS #{stockit}"
+      end.join(", ")
+      @packages_hash = {}
+      stockit_items_mapping
+      Package.eager_load(joins).select(select).find_each do |obj|
+        id = obj.id
+        obj_struct = Struct.new
+        goodcity_struct = OpenStruct.new(Hash[*attributes_to_compare.map{|a| [a, goodcity_obj.try(a)]}.flatten])
+        @packages_hash[id] = obj_struct
+      end
+      @packages_hash
+    end
+
+    def attribute_map_for(klass_name)
+      @attribute_map_for ||=
+        "Package" =>  {
+          "box_id" => "boxes.stockit_id",
+          "case_number" => "case_number",
+          "code_id" => "package_types.stockit_id",
+          #"condition" => "CASE WHEN donor_conditions.name_en = "New" then "N" WHEN donor_conditions.name_en = "Lightly Used" then "M" WHEN donor_conditions.name_en = "Heavily Used" then "U" WHEN donor_conditions.name_en = "Broken" then "B" END",
+          "description" => "notes",
+          "grade" => "grade",
+          "height" => "height",
+          "length" => "length",
+          "width" => "width",
+          "sent_on" => "stockit_sent_on",
+          "quantity" => "received_quantity",
+          "pallet_id" => "pallets.stockit_id",
+          "location_id" => "locations.stockit_id",
+          "inventory_number" => "inventory_number",
+          "designation_code" => "orders.code",
+          "designation_id" => "orders.stockit_id"
+        }
+      }
+      @attribute_map_for[klass_name]
+    end
+
+    def klass_name
+      @klass.
+    end
+
+    def joins_for(klass_name)
+      @joins_for ||= {
+        "Package" => [:box, :package_type, :pallet, :locations, :order]
+      }
+      @joins_for(klass_name)
+    end
+
+    def select_for(klass_name)
+      @select_for = {}
+      select =  "packages.*, "
+      select << attribute_map_for(klass_name).map do |stockit, goodcity|
+        (stockit == goodcity) ? stockit : "#{goodcity} AS #{stockit}"
+      end.join(", ")
+    end
+
+
   end
 end

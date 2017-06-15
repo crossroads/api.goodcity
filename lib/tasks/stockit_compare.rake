@@ -1,29 +1,22 @@
-require 'goodcity/compare'
+require 'goodcity/compare_v2'
 
 namespace :stockit do
 
   namespace :compare do
-    %w(activities boxes codes countries locations pallets contacts local_orders organisations items orders).each do |task_name|
+    Goodcity::CompareV2::OBJECT_NAMES.each do |task_name|
       desc %(Are #{task_name} in sync)
       task task_name => :environment do
-        diffs = Goodcity::Compare.new
-        diffs.send("compare_#{task_name}")
+        comparision = Goodcity::CompareV2.new(task_name)
+        comparision.compare
         filename = "#{Rails.root}/log/stockit_compare_#{task_name}.txt"
         File.open(filename, 'w') do |file|
-          file.puts diffs.summary
-          diffs.each_diff{ |diff| file.puts(diff.in_words) unless diff.identical? }
+          file.puts comparision.summary
+          file.puts comparision.in_words
         end
-        puts diffs.summary
+        puts comparision.summary
         puts "Detailed report saved at #{filename}"
       end
     end
-  end
-
-  desc "Are all GoodCity and Stockit objects in sync?"
-  task compare: :environment do
-    diffs = Goodcity::Compare.new
-    diffs.compare
-    puts diffs.in_words
   end
 
 end

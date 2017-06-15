@@ -60,6 +60,7 @@ gem 'active_record_union'
 gem 'kaminari'
 gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
+gem 'squeel', require: nil # load only when needed as it affects 'where'
 
 group :development do
   unless ENV["CI"]

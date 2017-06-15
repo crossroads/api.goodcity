@@ -217,6 +217,8 @@ GEM
     pdf-core (0.6.1)
     pg (0.18.4)
     pg_array_parser (0.0.9)
+    polyamorous (1.1.0)
+      activerecord (>= 3.0)
     postgres_ext (2.4.1)
       activerecord (>= 4.0.0)
       arel (>= 4.0.1)
@@ -357,6 +359,10 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    squeel (1.2.3)
+      activerecord (>= 3.0)
+      activesupport (>= 3.0)
+      polyamorous (~> 1.1.0)
     sshkit (1.8.1)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -448,6 +454,7 @@ DEPENDENCIES
   sinatra
   spring
   spring-commands-rspec
+  squeel
   state_machine
   timecop
   traco
