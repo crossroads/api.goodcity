@@ -103,21 +103,21 @@ module Goodcity
       goodcity_klass.where(stockit_id: nil).pluck(:id).each do |id|
         goodcity_struct = OpenStruct.new(id: id, stockit_id: nil)
         stockit_struct = OpenStruct.new(id: nil)
-        @diff << Diff.new(object_name, goodcity_struct, stockit_struct, attributes_to_compare).compare
+        @diffs << Diff.new(object_name, goodcity_struct, stockit_struct, attributes_to_compare).compare
       end
       # 2. GoodCity objs where stockit_id was not found in Stockit
       missing_stockit_ids = goodcity_klass.pluck("DISTINCT stockit_id") - @seen_stockit_ids
       missing_stockit_ids.in_groups_of(100) do |ids|
-      begin
+        begin
         goodcity_klass.where(stockit_id: ids) do |obj|
           goodcity_struct = OpenStruct.new(id: obj.id, stockit_id: obj.stockit_id)
           stockit_struct = OpenStruct.new(id: nil)
           @diffs << Diff.new(object_name, goodcity_struct, stockit_struct, attributes_to_compare).compare
         end
-      rescue
-        byebug
-        puts
-      end
+        rescue Exception => e
+          byebug
+          puts e
+        end
       end
     end
 
@@ -166,7 +166,7 @@ module Goodcity
     # WORKING Package.joins{box.outer}.joins{package_type.outer}.to_sql
     # WORKING Package.joins{js.map{|j| __send__(j).outer}}.to_sql
     def sql_for_goodcity_model
-      relations = join_relations # need to bring inside this function scope for squeel
+      relations = join_relations # need to bring inside this method scope for squeel
       cols = select_columns
       cols << ", #{table_name}.state" if %w(items).include?(object_name)
       goodcity_klass.joins{relations.map{|j| __send__(j).outer}}.select(cols)
