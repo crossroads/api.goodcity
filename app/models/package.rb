@@ -38,11 +38,8 @@ class Package < ActiveRecord::Base
 
   validates :package_type_id, :quantity, presence: true
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
-  validates :received_quantity,  numericality: { greater_than: 0, less_than: 100000000 }
-  validates :length, numericality: {
-    allow_blank: true, greater_than: 0, less_than: 100000000 }
-  validates :width, :height, numericality: {
-    allow_blank: true, greater_than: 0, less_than: 100000 }
+  validates :received_quantity,  numericality: { greater_than: 0 }
+  validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where(state: 'received') }
