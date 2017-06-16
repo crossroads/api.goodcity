@@ -50,21 +50,21 @@ module Stockit
     end
 
     def create
-      if package.inventory_number.present?
+      if package.inventory_number.present? && package.is_singleton_package?
         url = url_for("/api/v1/items")
         post(url, stockit_params)
       end
     end
 
     def update
-      if package.inventory_number.present?
+      if package.inventory_number.present? && package.is_singleton_package?
         url = url_for("/api/v1/items/update")
         put(url, stockit_params)
       end
     end
 
     def move
-      if package.inventory_number.present?
+      if package.inventory_number.present? && package.is_singleton_package?
         url = url_for("/api/v1/items/move")
         put(url, stockit_params)
       end
@@ -109,7 +109,8 @@ module Stockit
 
     def item_params
       {
-        quantity: package.is_singleton_package? ? package.received_quantity : package.quantity,
+        # quantity: package.is_singleton_package? ? package.received_quantity : package.quantity,
+        quantity: package.received_quantity,
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.blank? ? nil : package.case_number,
@@ -118,8 +119,10 @@ module Stockit
         description: package.notes,
         location_id: package.stockit_location_id,
         id: package.stockit_id,
-        #designation_id: package.is_singleton_package? ? package.stockit_order_id : nil,
-        #designated_on: package.is_singleton_package? ? package.stockit_designated_on : nil
+        # designation_id: package.is_singleton_package? ? package.stockit_order_id : nil,
+        # designated_on: package.is_singleton_package? ? package.stockit_designated_on : nil
+        designation_id: package.stockit_order_id,
+        designated_on: package.stockit_designated_on
       }
     end
 
