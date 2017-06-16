@@ -33,29 +33,13 @@ RSpec.describe Package, type: :model do
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:package_type_id) }
-
-    let(:attributes) { [:width, :length, :height] }
-    it { attributes.each { |attribute| is_expected.to allow_value(nil).for(attribute) } }
-
+    it { is_expected.to_not allow_value(-1).for(:quantity) }
+    it { is_expected.to_not allow_value(-1).for(:received_quantity) }
+    it { is_expected.to_not allow_value(0).for(:received_quantity) }
     it do
-      [:quantity, :length].each do |attribute|
+      [:width, :height, :length].each do |attribute|
         is_expected.to_not allow_value(-1).for(attribute)
-        is_expected.to allow_value(rand(1..99999999)).for(attribute)
-      end
-    end
-
-    it do
-      is_expected.to_not allow_value(-1).for(:received_quantity)
-      is_expected.to_not allow_value(0).for(:received_quantity)
-      is_expected.to_not allow_value(100000000).for(:received_quantity)
-      is_expected.to allow_value(rand(1..99999999)).for(:received_quantity)
-    end
-
-    it do
-      [:width, :height].each do |attribute|
-        is_expected.to_not allow_value(0).for(attribute)
-        is_expected.to_not allow_value(100000).for(attribute)
-        is_expected.to allow_value(rand(1..99999)).for(attribute)
+        is_expected.to allow_value(nil).for(attribute)
       end
     end
   end
