@@ -17,3 +17,5 @@
 
 coverage/
 .env*
+.byebug_history
+log/*.txt
