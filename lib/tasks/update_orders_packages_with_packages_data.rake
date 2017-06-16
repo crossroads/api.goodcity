@@ -6,6 +6,7 @@ namespace :goodcity do
     PaperTrail.enabled = false
     packages = Package.where("order_id is not null or stockit_sent_on is not null")
     packages = packages.where(received_quantity: 1) # singletons only
+    GoodcitySync.request_from_stockit = true # Avoid unnecessary recalculations for singletons
     count = 0
     bar = RakeProgressbar.new(packages.count)
     orders_package_package_ids = OrdersPackage.pluck("DISTINCT package_id")
