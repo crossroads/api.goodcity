@@ -4,7 +4,9 @@ module Api::V1
     load_and_authorize_resource :rejection_reason, parent: false
 
     def index
-      render_object_with_cache(@rejection_reasons, params[:ids])
+      render_and_return_cached_json(@rejection_reasons, params[:ids])
+      @rejection_reasons = @rejection_reasons.find( params[:ids].split(",") ) if params[:ids].present?
+      render json: @rejection_reasons, each_serializer: serializer
     end
 
     def show

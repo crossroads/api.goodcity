@@ -23,7 +23,9 @@ module Api::V1
     api :GET, '/v1/districts', "List all districts"
     param :ids, Array, of: Integer, desc: "Filter by district ids e.g. ids = [1,2,3,4]"
     def index
-      render_object_with_cache(@districts, params[:ids])
+      render_and_return_cached_json(@districts, params[:ids])
+      @districts = @districts.find(pid.split(",")) if params[:ids].present?
+      render json: @districts, each_serializer: @districts
     end
 
     api :GET, '/v1/district/1', "List a district"

@@ -9,7 +9,6 @@ module Api::V1
     rescue_from Apipie::ParamMissing, with: :invalid_params
 
     def serializer_for(object)
-      # using safe_constantize as it will return nil if no object is found 
       "Api::V1::#{object.class}Serializer".safe_constantize
     end
 
@@ -21,7 +20,7 @@ module Api::V1
       end
     end
 
-    def render_object_with_cache(object, pid)
+    def render_and_return_cached_json(object, pid)
       if pid.blank?
         render json: object.model.cached_json
         return
