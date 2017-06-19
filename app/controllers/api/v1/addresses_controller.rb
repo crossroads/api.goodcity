@@ -27,8 +27,7 @@ module Api::V1
     api :POST, '/v1/addresses', "Create an address"
     param_group :address
     def create
-      has_saved = @address.save
-      render_created_object(@address, has_saved)
+      save_and_render_object(@address)
     end
 
     api :GET, '/v1/address/1', "Show an address"

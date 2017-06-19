@@ -12,8 +12,8 @@ module Api::V1
       "Api::V1::#{object.class}Serializer".safe_constantize
     end
 
-    def render_created_object(object, has_saved)
-      if has_saved
+    def save_and_render_object(object)
+      if object.save
         render json: object, serializer: serializer_for(object), status: 201
       else
         render json:object.errors.to_json, status: 422
@@ -25,8 +25,6 @@ module Api::V1
         render json: object.model.cached_json
         return
       end
-      object = object.find(pid.split(",")) if pid.present?
-      render json: object, each_serializer: serializer_for(object)
     end
 
     private

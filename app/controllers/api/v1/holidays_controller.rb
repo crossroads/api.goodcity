@@ -32,8 +32,7 @@ module Api::V1
     api :POST, '/v1/holidays', "Create holiday"
     param_group :holiday
     def create
-      has_saved = @holiday.save
-      render_created_object(@holiday, has_saved)
+      save_and_render_object(@holiday)
     end
 
     api :GET, '/v1/holidays', "List all holidays"

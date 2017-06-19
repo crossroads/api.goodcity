@@ -37,8 +37,7 @@ module Api::V1
     api :POST, "/v1/schedules", "Make a booking for the pick up"
     param_group :schedule
     def create
-      has_saved = @schedule.save
-      render_created_object(@schedule, has_saved)
+      save_and_render_object(@schedule)
     end
 
     private
