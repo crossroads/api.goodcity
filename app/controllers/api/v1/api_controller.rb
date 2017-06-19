@@ -1,5 +1,5 @@
 module Api::V1
-  class ApiController < ApplicationController
+  class ApiController <  ApplicationController
 
     skip_before_action :validate_token, only: [:error]
 
@@ -7,6 +7,27 @@ module Api::V1
     rescue_from CanCan::AccessDenied, with: :access_denied
     rescue_from Apipie::ParamInvalid, with: :invalid_params
     rescue_from Apipie::ParamMissing, with: :invalid_params
+
+    def serializer_for(object)
+      "Api::V1::#{object.class}Serializer".safe_constantize
+    end
+
+    def save_and_render_object(object)
+      if object.save
+        render json: object, serializer: serializer_for(object), status: 201
+      else
+        render json:object.errors.to_json, status: 422
+      end
+    end
+
+    def render_object_with_cache(object, pid)
+      if pid.blank?
+        render json: object.model.cached_json
+        return
+      end
+      object = object.find(pid.split(",")) if pid.present?
+      render json: object, each_serializer: serializer_for(object)
+    end
 
     private
 
