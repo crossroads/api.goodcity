@@ -20,11 +20,13 @@ module Api::V1
       end
     end
 
-    def render_and_return_cached_json(object, pid)
+    def render_object_with_cache(object, pid)
       if pid.blank?
         render json: object.model.cached_json
         return
       end
+      object = object.find(pid.split(",")) if pid.present?
+      render json: object, each_serializer: serializer_for(object)
     end
 
     private
