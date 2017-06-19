@@ -29,7 +29,6 @@ class ChineseNameSeparator
   private
   def zh_index
     # before calling getters check if this method returns true
-    @mixed_name.index (/\p{Han}/)
+    @mixed_name.index(/\p{Han}/)
   end
-
 end
