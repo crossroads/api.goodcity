@@ -11,7 +11,7 @@ namespace :goodcity do
     mobile = ENV['MOBILE']
     o_name = ENV['ORGANISATION']
     if (f_name && l_name && mobile && o_name)
-      user = User.new(first_name: f_name, last_name: l_name, mobile: mobile)
+      user = create_new_user(f_name, l_name, mobile)
       add_user_to_organisation(user, o_name)
     else
       incorrect_command_prompt
@@ -31,5 +31,9 @@ namespace :goodcity do
     else
       puts "ORGANISATION not found!!!"
     end
+  end
+
+  def create_new_user(f_name, l_name, mobile)
+    User.new(first_name: f_name, last_name: l_name, mobile: mobile)
   end
 end
