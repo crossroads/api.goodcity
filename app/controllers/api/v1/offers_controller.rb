@@ -40,8 +40,7 @@ module Api::V1
     param_group :offer
     def create
       @offer.created_by = current_user
-      has_saved = @offer.save
-      render_created_object(@offer, has_saved)
+      save_and_render_object(@offer)
     end
 
     api :GET, '/v1/offers', "List all offers"
