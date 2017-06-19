@@ -4,7 +4,7 @@ module Api::V1
     def self.included(base)
       base.instance_eval do
         def self.time_attributes
-          model_name.columns_hash.select{|k,v| v.type == :datetime}.keys
+          model_name.columns_hash.select{|_k,v| v.type == :datetime}.keys
         end
 
         def self.model_name
