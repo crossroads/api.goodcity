@@ -69,8 +69,8 @@ class Ability
   def order_transport_abilities
     can :create, OrderTransport
     can [:index, :show], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
-        transport.order.created_by_id == @user_id
-      end
+      transport.order.created_by_id == @user_id
+    end
     can [:create, :index, :show], OrderTransport if staff?
   end
 
