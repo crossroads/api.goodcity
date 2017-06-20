@@ -12,7 +12,7 @@ namespace :goodcity do
     l_name = ENV['LAST_NAME']
     mobile = ENV['MOBILE']
     o_name = ENV['ORGANISATION']
-    if(all_name_exists(f_name, l_name, mobile, o_name))
+    if(all_names_exists?(f_name, l_name, mobile, o_name))
       save_user(f_name, l_name, mobile, o_name)
     else
       print_message
@@ -28,11 +28,11 @@ namespace :goodcity do
     end
   end
 
-  def all_name_exists(f_name && l_name && mobile && o_name)?
+  def all_names_exists?(f_name, l_name, mobile, o_name)
     f_name && l_name && mobile && o_name
   end
 
-  def print_message(f_name, l_name, mobile, o_name)
+  def print_message
     puts "Incorrect command:\tEnter command in one of the following format:"
     puts "\t MOBILE=+85261111111 FIRST_NAME=Steve LAST_NAME=Jobs ORGANISATION=Apple cap production invoke:rake TASK=goodcity:add_user"
     puts "\t rake goodcity:add_user MOBILE=+85261111111 FIRST_NAME=Steve LAST_NAME=Jobs ORGANISATION=Apple"
