@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe AddUser do
 
-  let(:add_user)                   {AddUser.new("Satya", "Nadella", "+85261111116", "Microsoft Corp")}
+  let(:add_user)  {AddUser.new("Satya", "Nadella", "+85261111116", "Microsoft Corp")}
 
   context "initialization" do
     it { expect(add_user.instance_variable_get("@user").first_name).to eql("Satya") }

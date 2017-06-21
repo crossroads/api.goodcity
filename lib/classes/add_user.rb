@@ -1,6 +1,6 @@
 class AddUser
   def initialize(f_name, l_name, mobile, org_name)
-    @user = User.new(first_name: f_name, last_name: l_name, mobile: mobile)
+    @user   = User.new(first_name: f_name, last_name: l_name, mobile: mobile)
     @o_name = org_name
   end
 
