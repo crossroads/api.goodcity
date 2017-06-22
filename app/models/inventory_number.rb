@@ -11,12 +11,12 @@ class InventoryNumber < ActiveRecord::Base
   end
 
   def self.available_code
-    code  = missing_code.present || where("CAST(code as INTEGER) <= ?", count).order("code").last.try(:code).try(:to_i)+1 || (latest_code + 1)
+    code  = missing_code || where("CAST(code as INTEGER) <= ?", count).order("code").last.try(:code).try(:to_i)+1 || (latest_code + 1)
     code.to_s.rjust(6, "0")
   end
 
   def self.missing_code
-    codes = ActiveRecord::Base.connection.exec_query("SELECT s.i AS missing_cmd FROM generate_series(1,#{code}) s(i) WHERE NOT EXISTS (SELECT 1 FROM inventory_numbers where CAST(code AS INTEGER) = s.i)").rows
-    codes.flatten
+    codes = ActiveRecord::Base.connection.exec_query("SELECT MIN(s.i) AS missing_cmd FROM generate_series(1,#{count}) s(i) WHERE NOT EXISTS (SELECT 1 FROM inventory_numbers where CAST(code AS INTEGER) = s.i)").rows
+    codes.flatten.size == 0 ? false: codes.flatten.first
   end
 end
