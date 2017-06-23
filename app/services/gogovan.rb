@@ -84,16 +84,20 @@ class Gogovan
     if offer && ggv_uuid
       link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{ggv_uuid}"
       links = {"zh-tw" => "#{link}?ln=zh-tw", "en" => "#{link}?ln=en"}
-      
-      if discount_applies?
-        notes = I18n.t('gogovan.driver_note_with_discount', link: links["zh-tw"], locale: "zh-tw")
-        notes << "\n" + I18n.t('gogovan.driver_note_with_discount', link: links["en"], locale: "en")
-      else
-        notes = I18n.t('gogovan.driver_note', link: links["zh-tw"], locale: "zh-tw")
-        notes << "\n" + I18n.t('gogovan.driver_note', link: links["en"], locale: "en")
-      end
+
+      notes =
+        if discount_applies?
+          form_notes('gogovan.driver_note_with_discount', links)
+        else
+          form_notes('gogovan.driver_note', links)
+        end
     end
     notes
+  end
+
+  def form_notes(translation, links)
+    notes = I18n.t(translation, link: links["zh-tw"], locale: "zh-tw")
+    notes << "\n" + I18n.t(translation, link: links["en"], locale: "en")
   end
 
   def discount_applies?
