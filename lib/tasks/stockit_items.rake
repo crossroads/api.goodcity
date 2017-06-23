@@ -70,11 +70,12 @@ namespace :stockit do
       when "U" then "Heavily Used"
       when "B" then "Broken"
     end
-    @condition ||= begin
-      h = {}
-      DonorCondition.select("id, name_en").find_each{|obj| h[obj.name_en] = obj.id}
-      h
-    end
+    @condition ||=
+      begin
+        h = {}
+        DonorCondition.select("id, name_en").find_each{|obj| h[obj.name_en] = obj.id}
+        h
+      end
     @condition[value]
   end
 

@@ -59,7 +59,7 @@ class Token
   # - exp should be in the future
   # - iat should be in the past
   def token_validation
-    if !jwt_string.blank? && !(token.all? &:blank?)
+    if(!jwt_string.blank? && !(token.all? &:blank?))
       cur_time = Time.now
       iat_time = Time.at(token[0]["iat"])
       exp_time = Time.at(token[0]["exp"])
