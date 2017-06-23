@@ -19,12 +19,13 @@ namespace :goodcity do
     drop_off_deliveries.find_in_batches(batch_size: 100).each do |deliveries|
       deliveries.each do |delivery|
         if(schedule = delivery.schedule)
-          schedule.slot_name = case schedule.slot_name
-            when "9AM-11AM" then "10:30AM-1PM"
-            when "11AM-1PM" then "10:30AM-1PM"
-            when "上午9時至上午11時" then "上午10:30時至下午1時"
-            when "上午11時至下午1時" then "上午10:30時至下午1時"
-            else schedule.slot_name
+          schedule.slot_name =
+            case schedule.slot_name
+              when "9AM-11AM" then "10:30AM-1PM"
+              when "11AM-1PM" then "10:30AM-1PM"
+              when "上午9時至上午11時" then "上午10:30時至下午1時"
+              when "上午11時至下午1時" then "上午10:30時至下午1時"
+              else schedule.slot_name
             end
           schedule.slot = timeslot.id if schedule.slot_name_changed?
           schedule.save
