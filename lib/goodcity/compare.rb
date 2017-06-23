@@ -113,7 +113,7 @@ module Goodcity
       # pallet_id : pallet.stockit_id
       # description : notes
       # quantity : received_quantity
-      # TODO
+      # TO DO
       # also use 'select' statements so not building AR objects
       attributes = [:box_id, :case_number, :grade, :height, :inventory_number, :length, :width]
       paginated_json(Stockit::ItemSync, "items", 0, 1000) do |stockit_items|
@@ -123,10 +123,10 @@ module Goodcity
     end
 
     def compare_orders
-      # TODO: pagination
+      # TO DO: pagination
       # Not in Stockit JSON
       # :processed_by_id, :purpose_description, :stockit_organisation_id
-      # TODO: to be mapped
+      # TO DO: to be mapped
       # Stockit : GoodCity
       # contact_id : stockit_contact_id
       # activity_id : stockit_activity_id
