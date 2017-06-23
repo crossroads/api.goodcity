@@ -64,12 +64,13 @@ namespace :stockit do
 
   # lookup hash of DonorCondition condition -> id
   def lookup_donor_condition_id(condition)
-    value = case condition
-      when "N" then "New"
-      when "M" then "Lightly Used"
-      when "U" then "Heavily Used"
-      when "B" then "Broken"
-    end
+    value =
+      case condition
+        when "N" then "New"
+        when "M" then "Lightly Used"
+        when "U" then "Heavily Used"
+        when "B" then "Broken"
+      end
     @condition ||=
       begin
         h = {}

@@ -82,13 +82,13 @@ module Goodcity
       compare_objects(StockitContact, stockit_contacts, [:first_name, :last_name, :phone_number, :mobile_phone_number])
     end
 
-    # TODO pagination
+    #TO DO pagination
     def compare_local_orders
       stockit_local_orders = stockit_json(Stockit::LocalOrderSync, "local_orders")
       compare_objects(StockitLocalOrder, stockit_local_orders, [:purpose_of_goods, :hkid_number, :reference_number, :client_name])
     end
 
-    # TODO pagination
+    #TO DO pagination
     def compare_organisations
       stockit_organisations = stockit_json(Stockit::OrganisationSync, "organisations")
       compare_objects(StockitOrganisation, stockit_organisations, [:name])
