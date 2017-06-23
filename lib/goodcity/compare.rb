@@ -156,7 +156,7 @@ module Goodcity
     def seen_stockit_ids_for(klass)
       memo_key = "seen_stockit_ids_for_#{klass.to_s.underscore}"
       memo = instance_variable_get("@#{memo_key}")
-      memo ||= []
+      memo || []
     end
 
     def update_stockit_ids_for(klass, stockit_id)
