@@ -1,28 +1,29 @@
 class InventoryNumber < ActiveRecord::Base
-  validates :code, presence: true
-  validates :code, uniqueness: true
 
-  def self.all_codes
-    select("CAST(code AS integer) AS number").map(&:number)
+  validates :code, presence: true, uniqueness: true
+
+  def self.create_with_next_code!
+    self.create!(code: next_code)
   end
 
-  def self.latest_code
-    select("CAST(code AS integer)").order("code desc").
-      first.try(:code).try(:to_i) || 1
-  end
-
-  def self.available_code
-    code  = missing_code || recent_code || (latest_code + 1)
-    code.to_s.rjust(6, "0")
-  end
-
-  def self.recent_code
-    code = where("CAST(code as INTEGER) <= ?", count).order("code").last.try(:code).try(:to_i)
-    code ? code + 1 : code
+  def self.next_code
+    number = missing_code || (max_code + 1)
+    number.to_s.rjust(6, "0")
   end
 
   def self.missing_code
-    codes = ActiveRecord::Base.connection.exec_query("SELECT MIN(s.i) AS missing_cmd FROM generate_series(1,#{count}) s(i) WHERE NOT EXISTS (SELECT 1 FROM inventory_numbers where CAST(code AS INTEGER) = s.i)").rows
-    codes.flatten.size == 0 ? false : codes.flatten.first
+    sql_for_missing_code =
+      "SELECT s.i AS first_missing_code
+        FROM generate_series(1,#{max_code}) s(i)
+        WHERE NOT EXISTS (SELECT 1 FROM inventory_numbers WHERE CAST(code AS INTEGER) = s.i)
+        ORDER BY first_missing_code
+        LIMIT 1;"
+    missing_number = ActiveRecord::Base.connection.exec_query(sql_for_missing_code).first || {}
+    (missing_number["first_missing_code"] || 0).to_i
   end
+
+  def self.max_code
+    InventoryNumber.maximum('code').to_i || 0
+  end
+
 end
