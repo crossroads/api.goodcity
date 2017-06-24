@@ -20,7 +20,7 @@ FactoryGirl.define do
     end
 
     trait :with_inventory_number do
-      inventory_number      { InventoryNumber.available_code }
+      inventory_number      { InventoryNumber.next_code }
     end
 
     trait :package_with_locations do
