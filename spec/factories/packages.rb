@@ -52,5 +52,9 @@ FactoryGirl.define do
     trait :published do
       allow_web_publish true
     end
+
+    trait :with_lightly_used_donor_condition do
+      donor_condition { create(:donor_condition, name_en: "Lightly Used") }
+    end
   end
 end
