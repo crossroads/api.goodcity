@@ -114,7 +114,7 @@ module Stockit
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.blank? ? nil : package.case_number,
-        condition: package_condition,
+        condition: PackageCondition.new(package).get_condition,
         grade: package.grade,
         description: package.notes,
         location_id: package.stockit_location_id,
@@ -133,17 +133,6 @@ module Stockit
         height: package.height,
         description: package.notes
       }
-    end
-
-    def package_condition
-      condition = package.try(:donor_condition).try(:name_en) ||
-        package.try(:item).try(:donor_condition).try(:name_en)
-      case condition
-      when "New" then "N"
-      when "Lightly Used" then "M"
-      when "Heavily Used" then "U"
-      when "Broken" then "B"
-      end
     end
 
   end
