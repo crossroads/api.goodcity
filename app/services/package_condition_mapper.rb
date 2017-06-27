@@ -1,10 +1,16 @@
 class PackageConditionMapper
-  CONDITIONS_HASH = { "New" => 'N', "Lightly Used" => 'M', "Heavily Used" => 'U', "Broken" => 'B' }
+  CONDITIONS_MAPPING = {
+                          "New" => 'N',
+                          "Lightly Used" => 'M',
+                          "Heavily Used" => 'U',
+                          "Broken" => 'B'
+                        }
+
   def self.to_stockit(condition)
-    CONDITIONS_HASH[condition]
+    CONDITIONS_MAPPING[condition]
   end
 
-  def self.to_condition(stockit)
-    CONDITIONS_HASH.key(stockit)
+  def self.to_condition(stockit_condition_name)
+    CONDITIONS_MAPPING.key(stockit_condition_name)
   end
 end
