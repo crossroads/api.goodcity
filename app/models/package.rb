@@ -539,6 +539,10 @@ class Package < ActiveRecord::Base
     orders_packages.get_dispatched_records_with_order_id(order_id).first
   end
 
+  def donor_condition_name
+    try(:donor_condition).try(:name_en) || try(:item).try(:donor_condition).try(:name_en)
+  end
+
   private
 
   def set_default_values
@@ -572,5 +576,6 @@ class Package < ActiveRecord::Base
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
   end
+
 end
 
