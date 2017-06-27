@@ -12,7 +12,6 @@ module Stockit
       @errors = {}
       @offset = offset
       @per_page = per_page
-      @donor_condition =  @package.try(:donor_condition).try(:name_en) || @package.try(:item).try(:donor_condition).try(:name_en)
     end
 
     class << self
@@ -115,7 +114,7 @@ module Stockit
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.blank? ? nil : package.case_number,
-        condition: PackageConditionMapper.to_stockit(@donor_condition),
+        condition: PackageConditionMapper.to_stockit(@package.donor_condition_name),
         grade: package.grade,
         description: package.notes,
         location_id: package.stockit_location_id,
