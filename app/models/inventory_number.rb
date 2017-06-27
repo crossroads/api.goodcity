@@ -12,12 +12,12 @@ class InventoryNumber < ActiveRecord::Base
   end
 
   def self.missing_code
-    sql_for_missing_code =
+    sql_for_missing_code = sanitize_sql_array([
       "SELECT s.i AS first_missing_code
-        FROM generate_series(1,#{count}) s(i)
+        FROM generate_series(1,?) s(i)
         WHERE NOT EXISTS (SELECT 1 FROM inventory_numbers WHERE CAST(code AS INTEGER) = s.i)
         ORDER BY first_missing_code
-        LIMIT 1;"
+        LIMIT 1", count])
     missing_number = ActiveRecord::Base.connection.exec_query(sql_for_missing_code).first || {}
     (missing_number["first_missing_code"] || 0).to_i
   end
