@@ -14,7 +14,7 @@ class InventoryNumber < ActiveRecord::Base
   def self.missing_code
     sql_for_missing_code =
       "SELECT s.i AS first_missing_code
-        FROM generate_series(1,#{max_code}) s(i)
+        FROM generate_series(1,#{count}) s(i)
         WHERE NOT EXISTS (SELECT 1 FROM inventory_numbers WHERE CAST(code AS INTEGER) = s.i)
         ORDER BY first_missing_code
         LIMIT 1;"
