@@ -13,23 +13,15 @@ module Api::V1
 
     api :POST, "/v1/inventory_numbers", "Create inventory_number"
     def create
-      render json: { inventory_number: generate_inventory_number }
+      inventory_number = InventoryNumber.create_with_next_code!
+      render json: { inventory_number: inventory_number.code }
     end
 
     api :PUT, "/v1/inventory_numbers", "Delete inventory_number"
     def remove_number
-      fetch_inventory_number.try(:destroy)
+      InventoryNumber.find_by(code: params[:code]).destroy
       render json: {}
     end
 
-    private
-
-    def generate_inventory_number
-      InventoryNumber.create(code: InventoryNumber.available_code).try(:code)
-    end
-
-    def fetch_inventory_number
-      InventoryNumber.find_by(code: params[:code])
-    end
   end
 end
