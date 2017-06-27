@@ -14,6 +14,14 @@ RSpec.describe InventoryNumber, type: :model do
       InventoryNumber.create_with_next_code!
       expect(InventoryNumber.first.code).to_not be_nil
     end
+
+    it "assigns count of inventory code during create" do
+      InventoryNumber.create(code: 1)
+      InventoryNumber.create(code: 2)
+      InventoryNumber.create(code: 3)
+      InventoryNumber.create_with_next_code!
+      expect(InventoryNumber.last.code).to eql(InventoryNumber.count.to_s.rjust(6, "0"))
+    end
   end
 
   context "max_code" do
