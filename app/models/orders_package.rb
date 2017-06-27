@@ -100,7 +100,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def dispatch_orders_package
-    self.dispatch!
+    self.dispatch
   end
 
   def self.undesignate_partially_designated_item(packages)
@@ -122,7 +122,7 @@ class OrdersPackage < ActiveRecord::Base
 
   def update_orders_package_state(total_quantity)
     if total_quantity == 0
-      self.cancel!
+      self.cancel
     else
       update(quantity: total_quantity, state: "designated")
     end
