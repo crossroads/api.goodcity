@@ -26,7 +26,6 @@ namespace :stockit do
         stockit_items.each do |value|
           bar.inc
           stockit_id = value["id"]
-
           if stockit_id.present?
             package = Package.where(stockit_id: stockit_id).first_or_initialize
             package.notes = value["description"]
@@ -41,7 +40,6 @@ namespace :stockit do
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
             package.height = value["height"].to_i.zero? ? "" : value["height"].to_i
             package.designation_name = value["designation_code"]
-
             package.order_id = lookup_order_id(value["designation_id"])
             package.donor_condition_id = lookup_donor_condition_id(value["condition"])
             package.packages_locations = packages_locations(package, value["location_id"])
@@ -80,55 +78,66 @@ namespace :stockit do
     @condition[value]
   end
 
-  # lookup hash of Box stockit_id -> id
-  def lookup_box_id(stockit_id)
-    @boxes ||= begin
-      h = {}
-      Box.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
-      h
+  [:box, :pallet, :package_type, :order, :location].each do |class_name|
+    define_method :"lookup_#{class_name}_id" do |stockit_id|
+      @object ||= begin
+        h = {}
+        class_name.to_s.classify.safe_constantize.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
+        h
+      end
+      @object[stockit_id]
     end
-    @boxes[stockit_id]
   end
+
+  # lookup hash of Box stockit_id -> id
+  # def lookup_box_id(stockit_id)
+  #   @boxes ||= begin
+  #     h = {}
+  #     Box.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
+  #     h
+  #   end
+  #   @boxes[stockit_id]
+  # end
 
   # lookup hash of Pallet stockit_id -> id
-  def lookup_pallet_id(stockit_id)
-    @pallets ||= begin
-      h = {}
-      Pallet.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
-      h
-    end
-    @pallets[stockit_id]
-  end
+  # def lookup_pallet_id(stockit_id)
+  #   @pallets ||= begin
+  #     h = {}
+  #     Pallet.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
+  #     h
+  #   end
+  #   @pallets[stockit_id]
+  # end
 
   # lookup hash of PackageType stockit_id -> id
-  def lookup_package_type_id(stockit_id)
-    @package_types ||= begin
-      h = {}
-      PackageType.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
-      h
-    end
-    @package_types[stockit_id]
-  end
+  # def lookup_package_type_id(stockit_id)
+  #   @package_types ||= begin
+  #     h = {}
+  #     PackageType.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
+  #     h
+  #   end
+  #   @package_types[stockit_id]
+  # end
 
   # lookup hash of Orders stockit_id -> id
-  def lookup_order_id(stockit_id)
-    @orders ||= begin
-      h = {}
-      Order.select("id, stockit_id, state").find_each{|obj| h[obj.stockit_id] = obj.id}
-      h
-    end
-    @orders[stockit_id]
-  end
+  # def lookup_order_id(stockit_id)
+  #   @orders ||= begin
+  #     h = {}
+  #     Order.select("id, stockit_id, state").find_each{|obj| h[obj.stockit_id] = obj.id}
+  #     h
+  #   end
+  #   @orders[stockit_id]
+  # end
 
   # lookup hash of Locations stockit_id -> id
-  def lookup_location_id(stockit_id)
-    @locations ||= begin
-      h = {}
-      Location.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
-      h
-    end
-    @locations[stockit_id]
-  end
+  # def lookup_location_id(stockit_id)
+  #   @locations ||= begin
+  #     h = {}
+  #     Location.select("id, stockit_id").find_each{|obj| h[obj.stockit_id] = obj.id}
+  #     h
+  #   end
+  #   @locations[stockit_id]
+  # end
 
   # lookup hash of PackagesLocations indexed by package and location_id
   # returns the equivalent of first_or_initialize
