@@ -540,7 +540,7 @@ class Package < ActiveRecord::Base
   end
 
   def donor_condition_name
-    (:donor_condition).try(:name_en) || (:item).try(:donor_condition).try(:name_en)
+    donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
   end
 
   private
