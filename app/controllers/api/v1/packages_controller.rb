@@ -172,9 +172,13 @@ module Api::V1
 
     def dispatch_stockit_item
       @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
-      @orders_package.dispatch_orders_package
-      @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
-      send_stock_item_response
+      if @orders_package.state == "dispatched"
+        send_error_msg_response
+      else
+        @orders_package.dispatch_orders_package
+        @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
+        send_stock_item_response
+      end
     end
 
     def undispatch_stockit_item
@@ -218,6 +222,10 @@ module Api::V1
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
+    end
+
+    def send_error_msg_response
+      render json: {error: 'Item already dispatched!'}.to_json , status: 422
     end
 
     def print_inventory_label
