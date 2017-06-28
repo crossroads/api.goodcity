@@ -161,13 +161,6 @@ module Api::V1
         params[:package][:order_id],
         params[:package][:quantity]
       ).designate_partial_item
-# =======
-#       OrdersPackage.add_partially_designated_item(
-#         order_id: params[:package][:order_id],
-#         package_id: params[:package][:package_id],
-#         quantity: params[:package][:quantity])
-#       designate_stockit_item(params[:package][:order_id])
-# >>>>>>> removed designate_stockit_item()
       send_stock_item_response
     end
 
