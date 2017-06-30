@@ -3,6 +3,7 @@ class Package < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include PushUpdates
+  include StockitAdder
 
   BROWSE_ITEM_STATES = ['accepted', 'submitted']
   BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
@@ -275,14 +276,14 @@ class Package < ActiveRecord::Base
     update(allow_web_publish: false)
   end
 
-  def add_to_stockit
-    response = Stockit::ItemSync.create(self)
-    if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
-    elsif response && (item_id = response["item_id"]).present?
-      self.stockit_id = item_id
-    end
-  end
+  # def add_to_stockit
+  #   response = Stockit::ItemSync.create(self)
+  #   if response && (errors = response["errors"]).present?
+  #     errors.each{|key, value| self.errors.add(key, value) }
+  #   elsif response && (item_id = response["item_id"]).present?
+  #     self.stockit_id = item_id
+  #   end
+  # end
 
   def stockit_location_id
     if packages_locations.count > 1
