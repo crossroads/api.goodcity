@@ -4,7 +4,7 @@ FactoryGirl.define do
     association  :package
     association :updated_by, factory: :user, strategy: :build
     state         ["requested", "cancelled", "designated", "received", "dispatched"].sample
-    quantity      Random.rand(5)
+    quantity      5
 
     trait :with_state_requested do
       state "requested"
