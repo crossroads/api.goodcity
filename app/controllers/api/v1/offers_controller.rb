@@ -110,7 +110,13 @@ module Api::V1
 
       api :PUT, "/v1/offers/1/#{method_name}_offer", "Mark Offer as #{method_name}d."
       define_method :"#{method_name}_offer" do
-        state_event , message = (method_name == 'close') ? 'mark_unwanted' , 'complete_review_message' : 'receive' , 'close_offer_message'
+
+        if (method_name == 'close')
+          state_event , message = 'mark_unwanted' , 'complete_review_message'
+        else
+          state_event, message = 'receive' , 'close_offer_message'
+        end
+
         @offer.update_attributes({ state_event: state_event })
         @offer.send_message(params[message], User.current_user)
         render json: @offer, serializer: serializer
