@@ -3,7 +3,7 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
 
-  validate :check_quantity
+  validates_with PackageQuantityValidator
   after_initialize :set_initial_state
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
@@ -161,11 +161,5 @@ class OrdersPackage < ActiveRecord::Base
 
   def destroy_stockit_record(operation)
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.is_singleton_package?
-  end
-
-  def check_quantity
-    if(package.present? && package.orders_packages.where.not(id: id).pluck(:quantity).sum + quantity > package.received_quantity)
-      self.errors.add(:quantity, "cannot be greater than package received_quantity")
-    end
   end
 end
