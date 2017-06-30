@@ -49,10 +49,13 @@ class Ability
 
   def stockit_abilities
     can [:index, :create, :destroy], Location if @api_user || staff?
-    can [:create, :index], Box if @api_user
-    can [:create, :index], Pallet if @api_user
-    can [:create, :index], Country if @api_user
-    can [:create, :index], StockitActivity if @api_user
+
+    if @api_user
+      can [:create, :index], Box
+      can [:create, :index], Pallet
+      can [:create, :index], Country
+      can [:create, :index], StockitActivity
+    end
   end
 
   def delivery_abilities
