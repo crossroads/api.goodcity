@@ -545,6 +545,14 @@ RSpec.describe Package, type: :model do
       expect(package.find_packages_location_with_location_id(location.id)).to eq nil
     end
   end
+
+  describe '#donor_condition_name' do
+    let(:package){ create :package, :with_lightly_used_donor_condition}
+    it 'returns name of package donor condition' do
+      expect(package.donor_condition_name).to eq package.donor_condition.name_en
+    end
+  end
+
 end
 
 
