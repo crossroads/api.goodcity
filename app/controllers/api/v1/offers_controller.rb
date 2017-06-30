@@ -106,18 +106,16 @@ module Api::V1
       render json: @offer, serializer: serializer
     end
 
-    api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
-    def close_offer
-      @offer.update_attributes({ state_event: 'mark_unwanted' })
-      @offer.send_message(params["complete_review_message"], User.current_user)
-      render json: @offer, serializer: serializer
-    end
+    ["close", "receive"].each do |method_name|
 
-    api :PUT, '/v1/offers/1/receive_offer', "Mark Offer as received."
-    def receive_offer
-      @offer.update_attributes({ state_event: 'receive' })
-      @offer.send_message(params["close_offer_message"], User.current_user)
-      render json: @offer, serializer: serializer
+      api :PUT, "/v1/offers/1/#{method_name}_offer", "Mark Offer as #{method_name}d."
+      define_method :"#{method_name}_offer" do
+        state_event , message = (method_name == 'close') ? 'mark_unwanted' , 'complete_review_message' : 'receive' , 'close_offer_message'
+        @offer.update_attributes({ state_event: state_event })
+        @offer.send_message(params[message], User.current_user)
+        render json: @offer, serializer: serializer
+      end
+
     end
 
     api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
