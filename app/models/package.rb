@@ -276,15 +276,6 @@ class Package < ActiveRecord::Base
     update(allow_web_publish: false)
   end
 
-  # def add_to_stockit
-  #   response = Stockit::ItemSync.create(self)
-  #   if response && (errors = response["errors"]).present?
-  #     errors.each{|key, value| self.errors.add(key, value) }
-  #   elsif response && (item_id = response["item_id"]).present?
-  #     self.stockit_id = item_id
-  #   end
-  # end
-
   def stockit_location_id
     if packages_locations.count > 1
       Location.multiple_location.try(:stockit_id)

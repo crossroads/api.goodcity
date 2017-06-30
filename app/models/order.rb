@@ -73,15 +73,6 @@ class Order < ActiveRecord::Base
     end
   end
 
-  # def add_to_stockit
-  #   response = Stockit::DesignationSync.create(self)
-  #   if response && (errors = response["errors"]).present?
-  #     errors.each{|key, value| self.errors.add(key, value) }
-  #   elsif response && (designation_id = response["designation_id"]).present?
-  #     self.stockit_id = designation_id
-  #   end
-  # end
-
   def self.search(search_text, to_designate_item)
     fetch_orders(to_designate_item)
     .where(" code LIKE :query OR stockit_organisations.name LIKE :query OR
