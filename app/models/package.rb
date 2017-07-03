@@ -528,7 +528,11 @@ class Package < ActiveRecord::Base
   end
 
   def update_location_quantity(total_quantity, location_id)
-    packages_locations.where(location_id: location_id).first.update(quantity: total_quantity)
+    get_packages_location_with_location_id(location_id).update_quantity(total_quantity)
+  end
+
+  def get_packages_location_with_location_id
+    packages_locations.where(location_id: location_id).first
   end
 
   def destroy_other_locations(location_id)

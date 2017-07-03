@@ -16,7 +16,7 @@ class PackagesLocation < ActiveRecord::Base
   }
 
   def update_quantity(received_quantity)
-    update(quantity: received_quantity)
+    update_column(quantity: received_quantity)
   end
 
   def update_referenced_orders_package(orders_package_id)
