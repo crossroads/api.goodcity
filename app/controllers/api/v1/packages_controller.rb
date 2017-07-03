@@ -149,18 +149,19 @@ module Api::V1
     end
 
     def designate_partial_item
-      Designate.new(@package,
+      Designation::Designate.new(@package,
         params[:package][:order_id],
-        params[:package][:package_id],
         params[:package][:quantity]
       ).designate_partial_item
       send_stock_item_response
     end
 
     def update_partial_quantity_of_same_designation
-      @orders_package = OrdersPackage.find_by(id: params[:package][:orders_package_id])
-      @orders_package.update_partially_designated_item(params[:package])
-      designate_stockit_item(params[:package][:order_id])
+      Designation::SameDesignation.new(
+        @package, params[:package][:order_id],
+        params[:package][:quantity],
+        params[:package][:orders_package_id]
+      ).update_partial_quantity_of_same_designation
       send_stock_item_response
     end
 

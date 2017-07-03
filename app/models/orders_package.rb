@@ -4,8 +4,8 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :updated_by, class_name: 'User'
 
   after_initialize :set_initial_state
-  after_create -> { recalculate_quantity("create") }
-  after_update -> { recalculate_quantity("update") }
+  # after_create -> { recalculate_quantity("create") }
+  # after_update -> { recalculate_quantity("update") }
   before_destroy -> { destroy_stockit_record("destroy") }
 
   scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
@@ -81,23 +81,23 @@ class OrdersPackage < ActiveRecord::Base
     OrdersPackage.where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
   end
 
-  def update_partially_designated_item(package)
-    total_quantity = quantity + package[:quantity].to_i
-    if(state == "cancelled")
-      update(quantity: total_quantity, state: 'designated')
-    elsif(state == "dispatched")
-      update(quantity: total_quantity)
-      update_quantity_based_on_dispatch_state(total_quantity)
-    else
-      update(quantity: total_quantity)
-    end
-  end
+  # def update_partially_designated_item(quantity_to_designate)
+  #   total_quantity = quantity + quantity_to_designate.to_i
+  #   if(state == "cancelled")
+  #     update(quantity: total_quantity, state: 'designated')
+  #   elsif(state == "dispatched")
+  #     update(quantity: total_quantity)
+  #     update_quantity_based_on_dispatch_state(total_quantity)
+  #   else
+  #     update(quantity: total_quantity)
+  #   end
+  # end
 
-  def update_quantity_based_on_dispatch_state(total_quantity)
-    location_id = Location.dispatch_location.id
-    package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
-    package.update_location_quantity(total_quantity, location_id)
-  end
+  # def update_quantity_based_on_dispatch_state(total_quantity)
+  #   location_id = Location.dispatch_location.id
+  #   package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
+  #   package.update_location_quantity(total_quantity, location_id)
+  # end
 
   def dispatch_orders_package
     self.dispatch
