@@ -97,7 +97,7 @@ class OrdersPackage < ActiveRecord::Base
     updated_by = User.current_user
     save
   end
-
+  
   private
   def recalculate_quantity(operation)
     unless(self.requested? || GoodcitySync.request_from_stockit)
