@@ -138,10 +138,6 @@ module Api::V1
       render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
-    def designate_stockit_item(order_id)
-      @package.designate_to_stockit_order(order_id)
-    end
-
     def undesignate_partial_item
       OrdersPackage.undesignate_partially_designated_item(params[:package])
       @package.undesignate_from_stockit_order
