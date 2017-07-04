@@ -46,7 +46,7 @@ gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
-gem 'nokogiri', '~> 1.7.1'
+gem 'nokogiri', '~> 1.7.2'
 gem 'sidekiq'
 gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'airbrake', "~> 4" # peg to v4 until we figure out if we can support v5 in Errbit
@@ -90,4 +90,5 @@ group :test do
   gem "shoulda-callback-matchers"
   gem "codeclimate-test-reporter", require: nil if ENV["CI"]
   gem 'rspec_junit_formatter'
+  gem 'timecop'
 end

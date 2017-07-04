@@ -82,13 +82,13 @@ module Goodcity
       compare_objects(StockitContact, stockit_contacts, [:first_name, :last_name, :phone_number, :mobile_phone_number])
     end
 
-    # TODO pagination
+    #TO DO pagination
     def compare_local_orders
       stockit_local_orders = stockit_json(Stockit::LocalOrderSync, "local_orders")
       compare_objects(StockitLocalOrder, stockit_local_orders, [:purpose_of_goods, :hkid_number, :reference_number, :client_name])
     end
 
-    # TODO pagination
+    #TO DO pagination
     def compare_organisations
       stockit_organisations = stockit_json(Stockit::OrganisationSync, "organisations")
       compare_objects(StockitOrganisation, stockit_organisations, [:name])
@@ -112,9 +112,10 @@ module Goodcity
       # location_id : location.stockit_id
       # pallet_id : pallet.stockit_id
       # description : notes
-      # TODO
+      # quantity : received_quantity
+      # TO DO
       # also use 'select' statements so not building AR objects
-      attributes = [:box_id, :case_number, :grade, :height, :inventory_number, :length, :quantity, :width]
+      attributes = [:box_id, :case_number, :grade, :height, :inventory_number, :length, :width]
       paginated_json(Stockit::ItemSync, "items", 0, 1000) do |stockit_items|
         compare_stockit_objects(Package, stockit_items, attributes)
       end
@@ -122,10 +123,10 @@ module Goodcity
     end
 
     def compare_orders
-      # TODO: pagination
+      # TO DO: pagination
       # Not in Stockit JSON
       # :processed_by_id, :purpose_description, :stockit_organisation_id
-      # TODO: to be mapped
+      # TO DO: to be mapped
       # Stockit : GoodCity
       # contact_id : stockit_contact_id
       # activity_id : stockit_activity_id
@@ -154,8 +155,7 @@ module Goodcity
     # Remember which stockit ids we've seen
     def seen_stockit_ids_for(klass)
       memo_key = "seen_stockit_ids_for_#{klass.to_s.underscore}"
-      memo = instance_variable_get("@#{memo_key}")
-      memo ||= []
+      instance_variable_get("@#{memo_key}") || []
     end
 
     def update_stockit_ids_for(klass, stockit_id)

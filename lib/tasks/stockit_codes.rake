@@ -2,12 +2,11 @@ namespace :stockit do
 
   desc 'Load code details from Stockit'
   task add_stockit_codes: :environment do
-    
+
     codes_json = Stockit::CodeSync.index
     stockit_codes = JSON.parse(codes_json["codes"]) || []
 
     stockit_codes.each do |value|
-      is_new_code = false
       code = PackageType.find_by_stockit_id(value["id"])
       code = PackageType.find_by_code(value["code"]) unless code.present?
       code.name_en = value["description_en"]

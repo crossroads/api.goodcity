@@ -39,13 +39,8 @@ module Api::V1
     api :POST, '/v1/offers', "Create an offer"
     param_group :offer
     def create
-      @offer = Offer.new(offer_params)
       @offer.created_by = current_user
-      if @offer.save
-        render json: @offer, serializer: serializer, status: 201
-      else
-        render json: @offer.errors.to_json, status: 422
-      end
+      save_and_render_object(@offer)
     end
 
     api :GET, '/v1/offers', "List all offers"
@@ -56,13 +51,14 @@ module Api::V1
     def index
       states = params["states"]
       if states.present?
-        @offers = if User.current_user.staff?
-          @offers.in_states(states)
-            .union(User.current_user.offers_with_unread_messages)
-            .union(Offer.active_from_past_fortnight)
-        else
-          @offers.in_states(states)
-        end
+        @offers =
+          if User.current_user.staff?
+            @offers.in_states(states)
+              .union(User.current_user.offers_with_unread_messages)
+              .union(Offer.active_from_past_fortnight)
+          else
+            @offers.in_states(states)
+          end
       end
       @offers = @offers.created_by(params["created_by_id"]) if params["created_by_id"].present?
       @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
