@@ -7,6 +7,7 @@ module Designation
       self.orders_package = OrdersPackage.find_by(id: orders_package_id)
       self.total_quantity = total_designated_quantity
       self.orders_package_state = orders_package.state
+      self.is_new_orders_package = false
     end
 
     def update_partial_quantity_of_same_designation
@@ -15,14 +16,9 @@ module Designation
     end
 
     def update_partially_designated_item
-      if(orders_package_state == "cancelled")
-        update_state_and_quantity('designated')
-      elsif(orders_package_state == "dispatched")
-        update_state_and_quantity(orders_package_state)
-        update_dispatched_packages_location_quantity(total_quantity)
-      else
-        update_state_and_quantity(orders_package_state)
-      end
+      state = orders_package.is_cancelled? ? "designated" : orders_package_state
+      update_state_and_quantity(state)
+      update_dispatched_packages_location_quantity(total_quantity) if orders_package.is_dispatched?
     end
 
     def update_dispatched_location_quantity
@@ -43,7 +39,9 @@ module Designation
     end
 
     def update_state_and_quantity(state)
-      orders_package.update(quantity: total_quantity, state: state)
+      orders_package.quantity = total_quantity
+      orders_package.state = state
+      orders_package.save and recalculate_package_quantity
     end
 
     def all_quantity_dispatched?
