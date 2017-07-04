@@ -81,24 +81,6 @@ class OrdersPackage < ActiveRecord::Base
     OrdersPackage.where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
   end
 
-  # def update_partially_designated_item(quantity_to_designate)
-  #   total_quantity = quantity + quantity_to_designate.to_i
-  #   if(state == "cancelled")
-  #     update(quantity: total_quantity, state: 'designated')
-  #   elsif(state == "dispatched")
-  #     update(quantity: total_quantity)
-  #     update_quantity_based_on_dispatch_state(total_quantity)
-  #   else
-  #     update(quantity: total_quantity)
-  #   end
-  # end
-
-  # def update_quantity_based_on_dispatch_state(total_quantity)
-  #   location_id = Location.dispatch_location.id
-  #   package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
-  #   package.update_location_quantity(total_quantity, location_id)
-  # end
-
   def dispatch_orders_package
     self.dispatch
   end
@@ -138,9 +120,21 @@ class OrdersPackage < ActiveRecord::Base
     )
   end
 
+  def is_dispatched?
+    state == "dispatched"
+  end
+
+  def is_cancelled?
+    state == "cancelled"
+  end
+
+  def is_requested?
+    state == "requested"
+  end
+
   private
   def recalculate_quantity(operation)
-    unless(state == "requested" || GoodcitySync.request_from_stockit)
+    unless(is_requested? || GoodcitySync.request_from_stockit)
       update_designation_of_package
       package.update_in_stock_quantity
       StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.is_singleton_package?
