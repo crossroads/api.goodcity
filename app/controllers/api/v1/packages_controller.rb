@@ -145,15 +145,9 @@ module Api::V1
     end
 
     def undesignate_partial_item
-# <<<<<<< HEAD
       DesignationAndUndesignation::Undesignate.new(params[:package]
         ).undesignate_partially_designated_item
       send_stock_item_response
-# =======
-#       OrdersPackage.undesignate_partially_designated_item(params[:package])
-#       @package.undesignate_from_stockit_order
-#       send_stock_item_response
-# >>>>>>> Revert "Gcw 1566 restrict negative values for quantity"
     end
 
     def designate_partial_item
