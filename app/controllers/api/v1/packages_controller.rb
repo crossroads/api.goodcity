@@ -111,7 +111,7 @@ module Api::V1
         return render json: {errors:"Package not found with supplied package_id"}, status: 400
       end
       if @package.inventory_number.blank?
-        @package.inventory_number = InventoryNumber.available_code
+        @package.inventory_number = InventoryNumber.next_code
         @package.save
       end
       print_inventory_label
@@ -123,7 +123,7 @@ module Api::V1
       if params['searchText'].present?
         records = params["orderId"].present? ?
           @packages.stockit_items.undispatched : @packages.stockit_items
-        records = records.search(params['searchText'], params["itemId"]).page(params["page"]).per(params["per_page"])
+        records = records.search(params['searchText'], params["itemId"], params['showQuantityItems']).page(params["page"]).per(params["per_page"])
         pages = records.total_pages
       end
       packages = ActiveModel::ArraySerializer.new(records,

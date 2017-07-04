@@ -45,6 +45,7 @@ class Package < ActiveRecord::Base
   scope :received, -> { where(state: 'received') }
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
+  scope :not_zero_quantity, -> { where.not(quantity: 0) }
   scope :published, -> { where(allow_web_publish: true) }
   scope :non_set_items, -> { where(set_item_id: nil) }
   scope :set_items, -> { where("set_item_id = item_id") }
@@ -61,12 +62,15 @@ class Package < ActiveRecord::Base
 
   attr_accessor :skip_set_relation_update
 
-  def self.search(search_text, item_id)
-    if item_id.presence
-      where("item_id = ? and received_quantity = 1", item_id)
-    else
-      where("inventory_number ILIKE :query and received_quantity = 1", query: "%#{search_text}%")
-    end
+  def self.search(search_text, item_id, show_quantity_item = false)
+    records =
+      if item_id.presence
+        where("item_id = ?", item_id)
+      else
+        where("inventory_number ILIKE :query", query: "%#{search_text}%")
+      end
+    records = records.where(received_quantity: 1) unless show_quantity_item == "true"
+    records
   end
 
   # Workaround to set initial state for the state_machine
@@ -104,25 +108,25 @@ class Package < ActiveRecord::Base
   end
 
   def assign_or_update_dispatched_location(orders_package_id, quantity)
-    location = Location.dispatch_location
+    dispatched_location = Location.dispatch_location
     if dispatch_from_stockit?
-      create_or_update_location_for_dispatch_from_stockit(location, orders_package_id, quantity)
+      create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
     else
-      create_dispatched_packages_location_from_gc(location, orders_package_id, quantity)
+      create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
     end
   end
 
-  def create_dispatched_packages_location_from_gc(location, orders_package_id, quantity)
-    unless locations.include?(location)
-      create_associated_packages_location(location.id, quantity, orders_package_id)
+  def create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
+    unless locations.include?(dispatched_location)
+      create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
     end
   end
 
-  def create_or_update_location_for_dispatch_from_stockit(location, orders_package_id, quantity)
-    if(dispatched_packages_location = find_packages_location_with_location_id(location.id))
+  def create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
+    if(dispatched_packages_location = find_packages_location_with_location_id(dispatched_location.id))
       dispatched_packages_location.update_referenced_orders_package(orders_package_id)
     else
-      create_associated_packages_location(location.id, quantity, orders_package_id)
+      create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
     end
   end
 
@@ -409,23 +413,25 @@ class Package < ActiveRecord::Base
   end
 
   def move_stockit_item(location_id)
-    response = if box_id? || pallet_id?
-      has_box_or_pallet_error
-    else
-      build_or_create_packages_location(location_id, 'create')
-      self.stockit_moved_on = Date.today
-      self.stockit_moved_by = User.current_user
-      Stockit::ItemSync.move(self)
-    end
+    response =
+      if box_id? || pallet_id?
+        has_box_or_pallet_error
+      else
+        build_or_create_packages_location(location_id, 'create')
+        self.stockit_moved_on = Date.today
+        self.stockit_moved_by = User.current_user
+        Stockit::ItemSync.move(self)
+      end
     add_errors(response)
   end
 
   def has_box_or_pallet_error
-    error = if pallet_id?
-      I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
-    else
-      I18n.t("package.has_box_error", box_number: box.box_number)
-    end
+    error =
+      if pallet_id?
+        I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
+      else
+        I18n.t("package.has_box_error", box_number: box.box_number)
+      end
     {
       "errors" => {
         error: "#{error} #{I18n.t('package.move_stockit')}"
@@ -490,11 +496,11 @@ class Package < ActiveRecord::Base
   end
 
   def self.browse_inventorized
-    inventorized.published
+    inventorized.not_zero_quantity.published
   end
 
   def self.browse_non_inventorized
-    joins(item: [:offer]).published.expecting.
+    joins(item: [:offer]).not_zero_quantity.published.expecting.
       where(items: { state: BROWSE_ITEM_STATES }).
       where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
   end
@@ -533,6 +539,10 @@ class Package < ActiveRecord::Base
     orders_packages.get_dispatched_records_with_order_id(order_id).first
   end
 
+  def donor_condition_name
+    donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
+  end
+
   private
 
   def set_default_values
@@ -566,5 +576,6 @@ class Package < ActiveRecord::Base
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
   end
+
 end
 

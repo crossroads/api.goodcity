@@ -20,7 +20,7 @@ FactoryGirl.define do
     end
 
     trait :with_inventory_number do
-      inventory_number      { InventoryNumber.available_code }
+      inventory_number      { InventoryNumber.next_code }
     end
 
     trait :package_with_locations do
@@ -51,6 +51,10 @@ FactoryGirl.define do
 
     trait :published do
       allow_web_publish true
+    end
+
+    trait :with_lightly_used_donor_condition do
+      donor_condition { create(:donor_condition, name_en: "Lightly Used") }
     end
   end
 end

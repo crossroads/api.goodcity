@@ -4,12 +4,7 @@ module Api::V1
     load_and_authorize_resource :order_transport, parent: false
 
     def create
-      @order_transport.attributes = order_transport_params
-      if @order_transport.save
-        render json: @order_transport, serializer: serializer, status: 201
-      else
-        render json: @order_transport.errors.to_json, status: 422
-      end
+      save_and_render_object(@order_transport)
     end
 
     private

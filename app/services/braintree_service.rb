@@ -12,11 +12,12 @@ class BraintreeService
   end
 
   def create_transaction(amount, nonce_token)
-    result = if has_transactions_details?
-      new_transaction(amount, nonce_token)
-    else
-      new_transaction_with_customer(amount, nonce_token)
-    end
+    result =
+      if has_transactions_details?
+        new_transaction(amount, nonce_token)
+      else
+        new_transaction_with_customer(amount, nonce_token)
+      end
 
     add_transaction(result.transaction, result.success?) if result.transaction
     result

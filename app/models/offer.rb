@@ -271,7 +271,7 @@ class Offer < ActiveRecord::Base
   def cancel_message(time)
     text = I18n.t("offer.ggv_cancel_message", time: time, locale: "en")
     text += "<br/>"
-    text += I18n.t("offer.ggv_cancel_message", time: time, locale: "zh-tw")
+    text + I18n.t("offer.ggv_cancel_message", time: time, locale: "zh-tw")
   end
 
   # Set a default offer language if it hasn't been set already
