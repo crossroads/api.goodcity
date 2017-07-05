@@ -62,48 +62,6 @@ RSpec.describe OrdersPackage, type: :model do
     end
   end
 
-  describe '#update_partially_designated_item' do
-    let!(:package) { create :package, quantity: 10 }
-    let!(:dispatched_location) { create :location,  building: "Dispatched" }
-
-    it 'adds package quantity to orders_package quantity' do
-      orders_package = build :orders_package, state: 'designated'
-      total_qty = orders_package.quantity + package.quantity
-      expect{
-        orders_package.update_partially_designated_item(package)
-      }.to change(orders_package, :quantity).to(total_qty)
-    end
-
-    it "updates state of orders_package to designated if state is 'cancelled'" do
-      orders_package = build :orders_package, state: 'cancelled'
-      expect{
-        orders_package.update_partially_designated_item(package)
-      }.to change(orders_package, :state).to('designated')
-    end
-
-    it 'do not update state of orders_package if state is designated' do
-      orders_package = create :orders_package, state: 'designated', package: package
-      existing_state = orders_package.state
-      orders_package.update_partially_designated_item(package)
-      expect(orders_package.reload.state).to eq existing_state
-    end
-
-    it 'do not update state of orders_package if state is received' do
-      orders_package = create :orders_package, state: 'received'
-      existing_state = orders_package.state
-      orders_package.update_partially_designated_item(package)
-      expect(orders_package.reload.state).to eq existing_state
-    end
-
-    it 'do not update state of orders_package if state is dispatched' do
-      orders_package = create :orders_package, state: 'dispatched', package: package
-      packages_location = create :packages_location, quantity: 2, location: dispatched_location, package: package
-      existing_state = orders_package.state
-      orders_package.reload.update_partially_designated_item(package)
-      expect(orders_package.reload.state).to eq existing_state
-    end
-  end
-
   describe '#dispatch_orders_package' do
     let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
@@ -123,41 +81,6 @@ RSpec.describe OrdersPackage, type: :model do
     it 'adds dispatched location for associate package' do
       orders_package.dispatch_orders_package
       expect(orders_package.package.reload.locations).to include(dispatched_location)
-    end
-  end
-
-  describe '.update_orders_package_state' do
-    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 10 }
-
-    context 'when total_qty is zero' do
-      total_qty = 0
-
-      it 'updates quantity with total_qty' do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :quantity).to(0)
-      end
-
-      it "updates state to 'cancelled'" do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :state).to('cancelled')
-      end
-    end
-
-    context 'when total_qty is not zero' do
-      total_qty = 12
-
-      it 'updates quantity with total_qty' do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :quantity).to(total_qty)
-      end
-
-      it "updates state to 'designated'" do
-        orders_package.update_orders_package_state(total_qty)
-        expect(orders_package.reload.state).to eq 'designated'
-      end
     end
   end
 
@@ -211,67 +134,6 @@ RSpec.describe OrdersPackage, type: :model do
       expect{
         orders_package.delete_unwanted_cancelled_packages(order.id)
       }.to change(OrdersPackage, :count).by(-1)
-    end
-  end
-
-  describe '#undesignate_partially_designated_item' do
-    let!(:package) { create :package, quantity: 4, received_quantity: 10}
-    let!(:order) { create :order }
-    let!(:orders_package) { create :orders_package, order_id: order.id,
-      package_id: package.id, quantity: 6, state: 'designated' }
-
-    context 'when quantity to undesignate is not same as quantity of designation(orders_package)' do
-      let!(:undesignate_package_params) {
-        {
-          "0" => { "orders_package_id" => "#{orders_package.id}",
-            "package_id" => "#{package.id}",
-            "quantity" => "3" }
-        }
-      }
-
-      it 'reduces quantity to undesignate from its designation(orders_package) record' do
-        new_quantity = orders_package.quantity - undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.quantity).to eq new_quantity
-      end
-
-      it "updates state to 'designated' " do
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.state).to eq 'designated'
-      end
-
-      it 'adds undesignated quantity to its associated package' do
-        new_quantity = package.quantity + undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(package.reload.quantity).to eq new_quantity
-      end
-    end
-
-    context 'when undesignate total quantity of designation(orders_package) and remaining quantity of designation is zero' do
-      let!(:undesignate_package_params) {
-        {
-          "0" => { "orders_package_id" => "#{orders_package.id}",
-            "package_id" => "#{package.id}",
-            "quantity" => "#{orders_package.quantity}" }
-        }
-      }
-
-      it 'reduces quantity to undesignate from its designation(orders_package) record' do
-        new_quantity = orders_package.quantity - undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.quantity).to eq new_quantity
-      end
-
-      it "updates state to 'cancelled' " do
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.state).to eq 'cancelled'
-      end
-
-      it 'adds undesignated quantity to its associated package' do
-        new_quantity = package.quantity + undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(package.reload.quantity).to eq new_quantity
-      end
     end
   end
 end

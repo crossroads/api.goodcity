@@ -85,31 +85,6 @@ class OrdersPackage < ActiveRecord::Base
     self.dispatch
   end
 
-  def self.undesignate_partially_designated_item(packages)
-    packages.each_pair do |_key, package|
-      orders_package = find_by(id: package["orders_package_id"])
-      orders_package.remove_designation_of_associated_package
-      calculate_total_quantity_and_update_state(package['quantity'], orders_package)
-    end
-  end
-
-  def self.calculate_total_quantity_and_update_state(package_quantity, orders_package)
-    total_quantity = orders_package.quantity - package_quantity.to_i
-    orders_package.update_orders_package_state(total_quantity)
-  end
-
-  def remove_designation_of_associated_package
-    package.undesignate_from_stockit_order if package.is_singleton_package?
-  end
-
-  def update_orders_package_state(total_quantity)
-    if total_quantity == 0
-      self.cancel
-    else
-      update(quantity: total_quantity, state: "designated")
-    end
-  end
-
   def self.add_partially_designated_item(order_id:, package_id:, quantity:)
     create(
       order_id: order_id.to_i,
