@@ -30,12 +30,12 @@ module Designation
 
     def update_orders_package_state_and_quantity
       if quantity_after_undesignation == 0
-        orders_package.cancel
+        orders_package.state_event = "cancel"
       else
         orders_package.quantity = quantity_after_undesignation
-        state = "designated"
-        orders_package.save and recalculate_package_quantity
+        orders_package.state = "designated"
       end
+      orders_package.save and recalculate_package_quantity
     end
   end
 end
