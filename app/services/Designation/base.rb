@@ -45,6 +45,10 @@ module Designation
       end
     end
 
+    def undesignate_from_stockit_order
+      package.undesignate_from_stockit_order
+    end
+
     def update_designation_of_package
       if package && designated_orders_packages.count == 1
         package.update_designation(designated_orders_packages.first.order_id)
