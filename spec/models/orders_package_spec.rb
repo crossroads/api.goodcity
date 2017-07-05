@@ -87,41 +87,6 @@ RSpec.describe OrdersPackage, type: :model do
     end
   end
 
-  describe '.update_orders_package_state' do
-    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 3 }
-
-    context 'when total_qty is zero' do
-      total_qty = 0
-
-      it 'updates quantity with total_qty' do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :quantity).to(0)
-      end
-
-      it "updates state to 'cancelled'" do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :state).to('cancelled')
-      end
-    end
-
-    context 'when total_qty is not zero' do
-      total_qty = 12
-
-      it 'updates quantity with total_qty' do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :quantity).to(total_qty)
-      end
-
-      it "updates state to 'designated'" do
-        orders_package.update_orders_package_state(total_qty)
-        expect(orders_package.reload.state).to eq 'designated'
-      end
-    end
-  end
-
   describe '.add_partially_designated_item' do
     let!(:order) { create :order }
     let!(:package) { create :package, quantity: 20, received_quantity: 20 }
