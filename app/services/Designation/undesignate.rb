@@ -14,6 +14,7 @@ module Designation
         remove_designation_of_associated_package
         calculate_total_quantity_and_update_state
       end
+      undesignate_from_stockit_order
     end
 
     def quantity_after_undesignation
@@ -29,13 +30,10 @@ module Designation
     end
 
     def update_orders_package_state_and_quantity
-      if quantity_after_undesignation == 0
-        orders_package.state_event = "cancel"
-      else
-        orders_package.quantity = quantity_after_undesignation
-        orders_package.state = "designated"
+      new_state = quantity_after_undesignation == 0 ? "cancel" : "designated"
+      if orders_package.save_state_and_quantity(new_state, quantity_after_undesignation)
+        recalculate_package_quantity
       end
-      orders_package.save and recalculate_package_quantity
     end
   end
 end

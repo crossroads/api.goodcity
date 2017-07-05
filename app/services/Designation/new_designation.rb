@@ -1,5 +1,5 @@
 module Designation
-  class Designate < Base
+  class NewDesignation < Base
     attr_accessor :order_id, :package_id, :quantity, :package,
       :is_new_orders_package, :orders_package
 

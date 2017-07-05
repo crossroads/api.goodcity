@@ -139,14 +139,13 @@ module Api::V1
     end
 
     def undesignate_partial_item
-      # OrdersPackage.undesignate_partially_designated_item(params[:package])
-      Designation::Undesignate.new(params[:package]).undesignate_partially_designated_item
-      @package.undesignate_from_stockit_order
+      Designation::Undesignate.new(params[:package]
+        ).undesignate_partially_designated_item
       send_stock_item_response
     end
 
     def designate_partial_item
-      Designation::Designate.new(@package,
+      Designation::NewDesignation.new(@package,
         params[:package][:order_id],
         params[:package][:quantity]
       ).designate_partial_item
