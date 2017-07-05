@@ -97,7 +97,14 @@ class OrdersPackage < ActiveRecord::Base
     updated_by = User.current_user
     save
   end
-  
+
+  # def save_state_and_quantity(state, quantity)
+  #   state_event = state
+  #   quantity = quantity
+  #   updated_by = User.current_user
+  #   save
+  # end
+
   private
   def recalculate_quantity(operation)
     unless(self.requested? || GoodcitySync.request_from_stockit)
