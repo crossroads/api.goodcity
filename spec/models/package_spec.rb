@@ -374,7 +374,7 @@ RSpec.describe Package, type: :model do
         package_qty_changes = [{"packages_location_id" => packages_location.id, "package_id" => package.id,
           "new_qty" => quantity_to_move}]
         new_qty = packages_location_1.quantity + quantity_to_move
-        package1.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
+        package.move_partial_quantity(location.id, package_qty_changes, quantity_to_move)
         expect(packages_location_1.reload.quantity).to eq new_qty
       end
     end
