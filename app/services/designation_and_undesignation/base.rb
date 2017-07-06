@@ -1,4 +1,4 @@
-module Designation
+module DesignationAndUndesignation
   class Base
     attr_accessor :order_id, :package, :quantity, :is_new_orders_package
 
@@ -58,3 +58,5 @@ module Designation
     end
   end
 end
+
+

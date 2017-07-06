@@ -1,6 +1,6 @@
 require "rails_helper"
 
-module Designation
+module DesignationAndUndesignation
   describe Base do
 
     # class DesignationBaseTestClass
