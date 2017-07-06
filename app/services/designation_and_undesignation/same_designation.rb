@@ -1,4 +1,4 @@
-module Designation
+module DesignationAndUndesignation
   class SameDesignation < Base
     attr_accessor :orders_package, :total_quantity, :orders_package_state
 
