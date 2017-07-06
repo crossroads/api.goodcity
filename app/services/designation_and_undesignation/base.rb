@@ -1,31 +1,31 @@
 module DesignationAndUndesignation
   class Base
-    attr_accessor :order_id, :package, :quantity, :is_new_orders_package, :orders_package
+    attr_accessor :order_id, :package, :quantity, :is_new_orders_package
 
     def designate_stockit_item
       package.designate_to_stockit_order(order_id)
     end
 
     def designated_orders_packages
-      package.designated_orders_packages
+      package.get_designated_orders_packages
     end
 
     def dispatched_location_id
-      @id ||= Location.dispatch_location.id
+      id ||= Location.dispatch_location.id
     end
 
     def dispatched_orders_packages
-      package.dispatched_orders_packages
+      package.get_dispatched_orders_packages
     end
 
     def initialize(package, order_id, quantity, *args)
       self.order_id = order_id
       self.quantity = quantity
-      self.package  = package
+      self.package = package
     end
 
     def is_valid_for_sync?
-      !(orders_package.requested? || GoodcitySync.request_from_stockit)
+      !(orders_package.state == "requested" || GoodcitySync.request_from_stockit)
     end
 
     def operation_for_sync

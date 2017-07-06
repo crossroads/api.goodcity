@@ -16,9 +16,9 @@ module DesignationAndUndesignation
     end
 
     def update_partially_designated_item
-      state = orders_package.cancelled? ? "designated" : orders_package_state
+      state = orders_package.is_cancelled? ? "designated" : orders_package_state
       update_state_and_quantity(state)
-      update_dispatched_packages_location_quantity(total_quantity) if orders_package.dispatched?
+      update_dispatched_packages_location_quantity(total_quantity) if orders_package.is_dispatched?
     end
 
     def update_dispatched_location_quantity
@@ -29,8 +29,9 @@ module DesignationAndUndesignation
     end
 
     def update_dispatched_packages_location_quantity(total_quantity)
-      package.destroy_other_locations(dispatched_location_id) if total_quantity == package.received_quantity
-      package.update_location_quantity(total_quantity, dispatched_location_id)
+      location_id = Location.dispatch_location.id
+      package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
+      package.update_location_quantity(total_quantity, location_id)
     end
 
     def total_designated_quantity
