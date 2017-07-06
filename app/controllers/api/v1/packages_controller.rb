@@ -139,13 +139,13 @@ module Api::V1
     end
 
     def undesignate_partial_item
-      Designation::Undesignate.new(params[:package]
+      DesignationAndUndesignation::Undesignate.new(params[:package]
         ).undesignate_partially_designated_item
       send_stock_item_response
     end
 
     def designate_partial_item
-      Designation::NewDesignation.new(@package,
+      DesignationAndUndesignation::NewDesignation.new(@package,
         params[:package][:order_id],
         params[:package][:quantity]
       ).designate_partial_item
@@ -153,7 +153,7 @@ module Api::V1
     end
 
     def update_partial_quantity_of_same_designation
-      Designation::SameDesignation.new(
+      DesignationAndUndesignation::SameDesignation.new(
         @package, params[:package][:order_id],
         params[:package][:quantity],
         params[:package][:orders_package_id]

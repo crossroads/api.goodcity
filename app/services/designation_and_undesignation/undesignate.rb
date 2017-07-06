@@ -1,4 +1,4 @@
-module Designation
+module DesignationAndUndesignation
   class Undesignate < Base
     attr_accessor :orders_package, :package, :quantity_to_deduct, :package_params
 
