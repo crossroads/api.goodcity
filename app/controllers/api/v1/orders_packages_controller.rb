@@ -25,7 +25,6 @@ module Api::V1
     def index
       return search if params['search_by_order_id'].present?
       return search_by_package_id if params['search_by_package_id'].present?
-      # needs to be removed as it makes unwanted orders_packages request and makes the app slow
       return all_orders_packages if params['all_orders_packages'].present?
     end
 
