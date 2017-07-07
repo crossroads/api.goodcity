@@ -25,11 +25,6 @@ module Api::V1
     def index
       return search if params['search_by_order_id'].present?
       return search_by_package_id if params['search_by_package_id'].present?
-      return all_orders_packages if params['all_orders_packages'].present?
-    end
-
-    def all_orders_packages
-      render json: @orders_packages, each_serializer: serializer
     end
 
     def search_by_package_id
