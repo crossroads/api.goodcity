@@ -15,6 +15,29 @@ RSpec.describe OrdersPackage, type: :model do
     it{ is_expected.to have_db_column(:sent_on).of_type(:datetime)}
   end
 
+  describe 'Validations' do
+    describe 'State Validations' do
+      context 'Single Quantity' do
+        before :all do
+          @package = create :package, quantity: 5, received_quantity: 1,
+            quantity: 0
+          @orders_package = create :orders_package, state: 'designated',
+            quantity: 1, package: @package
+        end
+
+        it 'invalidate state transition from designated to designated' do
+          @orders_package.state = 'designated'
+          expect(@orders_package.valid?).to be_falsy
+        end
+
+        it 'validates state transition from designated to dispatched' do
+          @orders_package.state = 'dispatched'
+          expect(@orders_package.valid?).to be_truthy
+        end
+      end
+    end
+  end
+
   describe "update_state_to_designated" do
     it "set state='designated'"do
       @orders_package = create :orders_package, :with_state_requested
