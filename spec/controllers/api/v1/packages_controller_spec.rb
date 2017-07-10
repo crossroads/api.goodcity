@@ -167,7 +167,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'updates designation if item has designation in stockit and then designated to some other designation' do
-          WebMock.disable!
           package = create :package, :stockit_package, item: item
           order1 = create :order
           orders_package = create :orders_package, :with_state_designated, order: order1, package: package
@@ -175,15 +174,11 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
           }.to change(OrdersPackage, :count).by(0)
-          # debugger
           test_package_changes(package, response.status, order.code)
           stockit_request = GoodcitySync.request_from_stockit
-          # debugger
           test_orders_packages(package, stockit_request, 1)
-
           expect(package.orders_packages.first.order).to eq order
           expect(package.orders_packages.first.state).to eq 'designated'
-          WebMock.enable!
         end
 
         it 'cancels designation if item was previously designated and now its undesignated from stockit' do
@@ -213,19 +208,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'designates item to cancelled designation if again designated to same and if it has another active designation with some other order_id then it cancels it' do
-          WebMock.disable!
-          package = create :package, :stockit_package, designation_name: 'abc', received_quantity: 10, quantity: 8
-          orders_package = create :orders_package, :with_state_cancelled, quantity: 2, order: order, package: package
-          orders_package_1 = create :orders_package, :with_state_designated, quantity: 2, order: order_1, package: package
-          # debugger
-
+          package = create :package, :stockit_package, designation_name: 'abc'
+          orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
+          orders_package_1 = create :orders_package, :with_state_designated, order: order_1, package: package
           stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
           }.to change(OrdersPackage, :count).by(0)
-          # debugger
           test_package_changes(package, response.status, order.code)
-          WebMock.enable!
           expect(orders_package.reload.state).to eq 'designated'
           expect(orders_package_1.reload.state).to eq('cancelled')
           expect(GoodcitySync.request_from_stockit).to eq(true)
