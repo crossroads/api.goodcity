@@ -225,7 +225,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           }.to change(OrdersPackage, :count).by(0)
           # debugger
           test_package_changes(package, response.status, order.code)
-          WebMock.enable
+          WebMock.enable!
           expect(orders_package.reload.state).to eq 'designated'
           expect(orders_package_1.reload.state).to eq('cancelled')
           expect(GoodcitySync.request_from_stockit).to eq(true)
