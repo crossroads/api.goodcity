@@ -118,6 +118,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       context 'Designate & undesignate from stockit' do
 
+        before(:all) do
+          WebMock.disable!
+        end
+
+        after(:all) do
+          WebMock.enable!
+        end
+
         let(:stockit_item_params_with_designation){
           stockit_item_params.merge({
             designation_name: order.code,
@@ -223,6 +231,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Dispatch & Undispatch from stockit' do
+        before(:all) do
+          WebMock.disable!
+        end
+
+        after(:all) do
+          WebMock.enable!
+        end
+
         let(:stockit_params_with_sent_on_and_designation){
           stockit_item_params.merge({
             stockit_sent_on: Date.today,
