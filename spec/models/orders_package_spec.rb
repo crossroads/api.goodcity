@@ -35,6 +35,48 @@ RSpec.describe OrdersPackage, type: :model do
           expect(@orders_package.valid?).to be_truthy
         end
       end
+
+      context 'Multi Quantity' do
+        describe 'changing state of full quantity' do
+          before :all do
+            @package = create :package, quantity: 5, received_quantity: 10,
+              quantity: 0
+            @orders_package = create :orders_package, state: 'designated',
+              quantity: 10, package: @package
+          end
+
+          it 'invalidates state transition from designated to designated for full quantity' do
+            @orders_package.state = 'designated'
+            expect(@orders_package.valid?).to be_falsy
+          end
+
+          it 'validates state transition from designated to designated for full quantity' do
+            @orders_package.state = 'dispatched'
+            expect(@orders_package.valid?).to be_truthy
+          end
+        end
+
+        describe 'changing state of partial quantity' do
+          before :all do
+            @package = create :package, received_quantity: 10,
+              quantity: 4
+            @orders_package = create :orders_package, state: 'designated',
+              quantity: 6, package: @package
+          end
+
+          it 'validates state transition from designated to designated if some quantity added to already existing designation' do
+            @orders_package.state = 'designated'
+            @orders_package.quantity = 2
+            expect(@orders_package.valid?).to be_truthy
+          end
+
+          it 'validates state transition from designated to designated if new quantity of already existing designation is actually full quantity' do
+            @orders_package.state = 'designated'
+            @orders_package.quantity = 10
+            expect(@orders_package.valid?).to be_truthy
+          end
+        end
+      end
     end
   end
 
