@@ -175,9 +175,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'updates designation if item has designation in stockit and then designated to some other designation' do
-          package = create :package, :stockit_package, item: item
+          package = create :package, :stockit_package, item: item, quantity: 0, received_quantity: 1
           order1 = create :order
-          orders_package = create :orders_package, :with_state_designated, order: order1, package: package
+          orders_package = create :orders_package, :with_state_designated, order: order1,
+            package: package, quantity: 1
           stockit_item_params_with_designation[:stockit_id] = package.stockit_id
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
@@ -216,9 +217,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'designates item to cancelled designation if again designated to same and if it has another active designation with some other order_id then it cancels it' do
-          package = create :package, :stockit_package, designation_name: 'abc'
-          orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
-          orders_package_1 = create :orders_package, :with_state_designated, order: order_1, package: package
+          package = create :package, :stockit_package, designation_name: 'abc', received_quantity: 1,
+            quantity: 0
+          orders_package = create :orders_package, :with_state_cancelled, order: order,
+            package: package, quantity: 0
+          orders_package_1 = create :orders_package, :with_state_designated, order: order_1,
+            package: package, quantity: 1
           stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
@@ -256,8 +260,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it 'dispatches orders_package if exists with same designation' do
-          package = create :package, :stockit_package, designation_name: 'abc'
-          orders_package = create :orders_package, package: package, order: order, state: 'designated'
+          package = create :package, :stockit_package, designation_name: 'abc',
+            received_quantity: 1, quantity: 0
+          orders_package = create :orders_package, package: package, order: order,
+            state: 'designated', quantity: 1
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
            expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
@@ -315,9 +321,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
-          package = create :package, :stockit_package, stockit_sent_on: Date.today, order_id: order.id
+          package = create :package, :stockit_package, stockit_sent_on: Date.today,
+            order_id: order.id, received_quantity: 1, quantity: 0
           orders_package = create :orders_package, package: package,
-            order: order, state: 'dispatched', sent_on: Date.today
+            order: order, state: 'dispatched', sent_on: Date.today, quantity: 1
           stockit_params_without_sent_on[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, format: :json, package: stockit_params_without_sent_on
