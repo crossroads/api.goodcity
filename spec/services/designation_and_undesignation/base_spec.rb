@@ -41,7 +41,6 @@ module DesignationAndUndesignation
       end
 
       describe '#dispatched_orders_packages' do
-
         it 'returns dispatched orders_packages associated with package' do
           @orders_package = create :orders_package, order: @order, package: @package, state: 'dispatched'
           expect(subject.dispatched_orders_packages.count).to eq 1
@@ -49,6 +48,31 @@ module DesignationAndUndesignation
 
         it 'returns no records if no associated dispatched orders_packages exist' do
           expect(subject.dispatched_orders_packages.count).to eq 0
+        end
+      end
+
+      describe '#designated_orders_packages' do
+        it 'returns designated orders_packages associated with package' do
+          @orders_package = create :orders_package, order: @order, package: @package, state: 'designated'
+          expect(subject.designated_orders_packages.count).to eq 1
+        end
+
+        it 'returns no records if no associated designated orders_packages exist' do
+          expect(subject.designated_orders_packages.count).to eq 0
+        end
+      end
+
+      describe 'is_valid_for_sync' do
+        it 'returns true if orders_package state is not requested and request is not coming from stockit' do
+          @orders_package = create :orders_package, order: @order, package: @package, state: 'designated'
+          subject.orders_package = @orders_package
+          expect(subject.is_valid_for_sync?).to eq true
+        end
+
+        it 'returns false if orders_package state is not requested but request is coming from stockit' do
+          @orders_package = create :orders_package, order: @order, package: @package, state: 'requested'
+          subject.orders_package = @orders_package
+          expect(subject.is_valid_for_sync?).to eq false
         end
       end
     end
