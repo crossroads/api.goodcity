@@ -96,18 +96,6 @@ class OrdersPackage < ActiveRecord::Base
     )
   end
 
-  def is_dispatched?
-    state == "dispatched"
-  end
-
-  def is_cancelled?
-    state == "cancelled"
-  end
-
-  def is_requested?
-    state == "requested"
-  end
-
   def save_state_and_quantity(state, quantity)
     state_event = state
     quantity = quantity
@@ -118,7 +106,7 @@ class OrdersPackage < ActiveRecord::Base
   private
 
   def recalculate_quantity(operation)
-    unless(is_requested? || GoodcitySync.request_from_stockit)
+    unless(self.requested? || GoodcitySync.request_from_stockit)
       update_designation_of_package
       package.update_in_stock_quantity
       StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.is_singleton_package?
