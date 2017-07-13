@@ -516,11 +516,9 @@ class Package < ActiveRecord::Base
   end
 
   def update_location_quantity(total_quantity, location_id)
-    get_packages_location_with_location_id(location_id).update_quantity(total_quantity)
-  end
-
-  def get_packages_location_with_location_id(location_id)
-    packages_locations.where(location_id: location_id).first
+    if(packages_location = packages_locations.find_by(location_id: location_id))
+      packages_location.update_quantity(total_quantity)
+    end
   end
 
   def destroy_other_locations(location_id)
@@ -543,11 +541,11 @@ class Package < ActiveRecord::Base
     orders_packages.get_dispatched_records_with_order_id(order_id).first
   end
 
-  def get_designated_orders_packages
+  def designated_orders_packages
     orders_packages.where(state: 'designated')
   end
 
-  def get_dispatched_orders_packages
+  def dispatched_orders_packages
     orders_packages.where(state: 'dispatched')
   end
 

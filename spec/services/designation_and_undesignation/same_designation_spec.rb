@@ -40,6 +40,21 @@ module DesignationAndUndesignation
           expect(subject.all_quantity_dispatched?).to eq false
         end
       end
+
+      describe '#total_designated_quantity' do
+        it 'calculates total quantity to be designated' do
+          expect(subject.total_designated_quantity).to eq(@orders_package.quantity + @quantity)
+        end
+      end
+
+      describe '#operation_for_sync' do
+        it 'returns update operation as record for same designation is not newly created' do
+          expect(subject.operation_for_sync).to eq "update"
+        end
+      end
+
+      describe '#update_partial_quantity_of_same_designation' do
+      end
     end
   end
 end
