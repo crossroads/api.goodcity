@@ -584,11 +584,11 @@ class Package < ActiveRecord::Base
     donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
   end
 
-  def get_designated_orders_packages
+  def designated_orders_packages
     orders_packages.where(state: 'designated')
   end
 
-  def get_dispatched_orders_packages
+  def dispatched_orders_packages
     orders_packages.where(state: 'dispatched')
   end
 
