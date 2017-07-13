@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :orders_package do
     association  :order
-    association  :package
+    association  :package, :factory => [:package, :received]
     association :updated_by, factory: :user, strategy: :build
     state         ["requested", "cancelled", "designated", "received", "dispatched"].sample
     quantity      2

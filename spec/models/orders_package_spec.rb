@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe OrdersPackage, type: :model do
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to :order }
     it { is_expected.to belong_to :package }
@@ -103,7 +111,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#update_partially_designated_item' do
-    let!(:package) { create :package, quantity: 10 }
+    let!(:package) { create :package, :received, quantity: 10, received_quantity: 20 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it 'adds package quantity to orders_package quantity' do
@@ -137,6 +145,7 @@ RSpec.describe OrdersPackage, type: :model do
 
     it 'do not update state of orders_package if state is dispatched' do
       orders_package = create :orders_package, state: 'dispatched', package: package
+      package.packages_locations.destroy_all;
       packages_location = create :packages_location, quantity: 2, location: dispatched_location, package: package
       existing_state = orders_package.state
       orders_package.reload.update_partially_designated_item(package)
@@ -161,6 +170,7 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     it 'adds dispatched location for associate package' do
+      orders_package.package.packages_locations.last.update(quantity: 2)
       orders_package.dispatch_orders_package
       expect(orders_package.package.reload.locations).to include(dispatched_location)
     end
@@ -203,7 +213,7 @@ RSpec.describe OrdersPackage, type: :model do
 
   describe '.add_partially_designated_item' do
     let!(:order) { create :order }
-    let!(:package) { create :package, quantity: 20, received_quantity: 20 }
+    let!(:package) { create :package, :received, quantity: 20, received_quantity: 20 }
 
     it 'creates orders package with provided order_id, package_id, quantity' do
       package_params = { order_id: order.id, package_id: package.id, quantity: 10 }
@@ -255,7 +265,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#undesignate_partially_designated_item' do
-    let!(:package) { create :package, quantity: 4, received_quantity: 10}
+    let!(:package) { create :package, :received, quantity: 4, received_quantity: 10}
     let!(:order) { create :order }
     let!(:orders_package) { create :orders_package, order_id: order.id,
       package_id: package.id, quantity: 6, state: 'designated' }
