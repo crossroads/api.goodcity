@@ -15,6 +15,46 @@ RSpec.describe OrdersPackage, type: :model do
     it{ is_expected.to have_db_column(:sent_on).of_type(:datetime)}
   end
 
+  describe 'validations' do
+    let!(:order) { create :order, :with_state_submitted }
+    let!(:error) { [:package, ["is not properly inventoried"]] }
+
+    it "Package is not properly inventoried :for InventoryNumber" do
+      @package = create :package, :package_with_locations, state: "received"
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to match(error)
+    end
+
+    it "Package is not properly inventoried :for non-recevied state" do
+      @package = create :package, :received, state: "expecting"
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to match(error)
+    end
+
+    it "Package is not properly inventoried :with no locations" do
+      @package = create :package, :with_inventory_number, state: "expecting"
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to match(error)
+    end
+
+    it "Package is not properly inventoried :in submitted state" do
+      @package = create :package
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to match(error)
+    end
+
+    it "Package is not properly inventoried :in submitted state" do
+      @package = create :package, :received
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      expect(@orders_package.save).to eq(true)
+    end
+
+  end
+
   describe "update_state_to_designated" do
     it "set state='designated'"do
       @orders_package = create :orders_package, :with_state_requested

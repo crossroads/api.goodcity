@@ -4,6 +4,10 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :updated_by, class_name: 'User'
 
   validates :package, :order, :quantity, presence: true
+  validate :order_state_is_not_nil,  on: :create
+  validate :package_has_inventory_number,  on: :create
+  validate :package_has_locations,  on: :create
+  validate :package_is_received,  on: :create
   validates_with PackageQuantityValidator
 
   after_initialize :set_initial_state
@@ -163,5 +167,29 @@ class OrdersPackage < ActiveRecord::Base
 
   def destroy_stockit_record(operation)
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.is_singleton_package?
+  end
+
+  def package_has_inventory_number
+    unless package.inventory_number?
+      errors.add(:package, "inventory_number should be present")
+    end
+  end
+
+  def package_is_received
+    unless package.received?
+      errors.add(:package, "state should be received")
+    end
+  end
+
+  def package_has_locations
+    unless package.locations.exists?
+      errors.add(:package, "locations should be present")
+    end
+  end
+
+  def order_state_is_not_nil
+    unless order.state
+      errors.add(:order, "state cannot be nil")
+    end
   end
 end
