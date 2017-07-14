@@ -2,6 +2,14 @@ require 'rails_helper'
 
 RSpec.describe InventoryNumber, type: :model do
 
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
+  
   let(:inventory_number) { InventoryNumber.new }
 
   context "validations" do
