@@ -1,7 +1,14 @@
 require "rails_helper"
 
 describe StockitSyncOrdersPackageJob, :type => :job do
+  before(:all) do
+    WebMock.disable!
+  end
 
+  after(:all) do
+    WebMock.enable!
+  end
+  
   let(:inventory_number) { "H12345" }
   let(:package) { create :package, :stockit_package }
   let(:orders_package) { create :orders_package }
