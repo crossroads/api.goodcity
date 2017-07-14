@@ -301,7 +301,6 @@ RSpec.describe Package, type: :model do
       end
 
       it 'clears reference_to_orders_package' do
-        packages_location.update(reference_to_orders_package: orders_package.id)
         package.move_full_quantity(location.id, orders_package.id)
         expect(packages_location.reload.reference_to_orders_package).to be_nil
       end
@@ -502,10 +501,10 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#create_or_update_location_for_dispatch_from_stockit' do
-    let(:package) { create :package, :received }
-    let(:order) { create :order }
-    let(:orders_package) { create :orders_package, state: 'dispatched', package: package, order: order }
-    let(:dispatched_location) { create :location, :dispatched }
+    let!(:package) { create :package, :received }
+    let!(:order) { create :order }
+    let!(:orders_package) { create :orders_package, quantity: 1, state: 'dispatched', package: package, order: order }
+    let!(:dispatched_location) { create :location, :dispatched }
 
     it 'updates orders_package_id against packages_location record if dispatched' do
       package.packages_locations.first.update(location: dispatched_location)
@@ -519,7 +518,8 @@ RSpec.describe Package, type: :model do
       expect{
         package.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package.id, orders_package.quantity)
       }.to change(PackagesLocation, :count).by(1)
-      expect(package.reload.packages_locations.first.reference_to_orders_package).to eq orders_package.id
+      dispatched_packages_location = package.reload.packages_locations.find_by_location_id(dispatched_location.id)
+      expect(dispatched_packages_location.reference_to_orders_package).to eq orders_package.id
     end
   end
 
@@ -535,16 +535,16 @@ RSpec.describe Package, type: :model do
       expect{
         package.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
       }.to change(PackagesLocation, :count).by(1)
-      first_location = package.reload.packages_locations.first
-      expect(first_location.location).to eq dispatched_location
-      expect(first_location.reference_to_orders_package).to eq orders_package.id
-      expect(first_location.quantity).to eq 1
+      dispatched_packages_location = package.reload.packages_locations.find_by_location_id(dispatched_location.id)
+      expect(dispatched_packages_location.location).to eq dispatched_location
+      expect(dispatched_packages_location.reference_to_orders_package).to eq orders_package.id
+      expect(dispatched_packages_location.quantity).to eq 1
     end
 
     it 'do not creates dispatched packages_location record if already exists' do
       package.packages_locations.first.update(location: dispatched_location,
         reference_to_orders_package: orders_package.id)
-      packages_location = package.packages_locations.first 
+      packages_location = package.packages_locations.first
       expect{
         package.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
       }.to change(PackagesLocation, :count).by(0)
