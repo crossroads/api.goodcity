@@ -1,20 +1,27 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
 
   let(:user) { create(:user_with_token, :reviewer) }
   let(:donor) { create(:user_with_token) }
   let(:offer) { create :offer, created_by: donor }
   let(:item)  { create :item, offer: offer }
   let(:package_type)  { create :package_type }
-  let(:package) { create :package, item: item }
-  let(:package_with_stockit_id) { create :package, :stockit_package, item: item }
+  let(:package) { create :package, :received, item: item }
+  let(:package_with_stockit_id) { create :package, :received, item: item }
   let(:orders_package) { create :orders_package, package: package, order: order_id }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package) }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
 
   let(:package_params) do
-    FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
+    FactoryGirl.attributes_for(:package, :received, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
   end
 
   subject { JSON.parse(response.body) }
@@ -63,15 +70,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     let(:order) { create :order }
-    let(:package) { create :package, order: order, stockit_sent_on: Time.zone.now.to_date }
+    let(:package) { create :package, :received, order: order, stockit_sent_on: Time.zone.now.to_date }
      let(:dispatched_location) { create :location, :dispatched }
     let(:location_1) { create :location }
     let(:orders_package) { create :orders_package, package: package, order: order, state: 'dispatched' }
-    let!(:packages_location) { create :packages_location, package: package,
-      location: dispatched_location, reference_to_orders_package: orders_package.id}
 
     context 'undispatch from gc' do
       it 'undispatches orders_package with matching order_id when undispatched from gc and assigns locaion aginst package' do
+        packages_location = package.packages_locations.first
+        packages_location.update(location: dispatched_location, reference_to_orders_package: orders_package.id)
         put :move_full_quantity, format: :json, location_id: location_1.id, ordersPackageId: orders_package.id, id: package.id
         expect(package.reload.locations).to include(location_1)
         expect(package.packages_locations.count).to eq 1
@@ -108,6 +115,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           donor_condition_id: donor_condition.id,
           grade: "C",
           stockit_id: 1,
+          state: "received",
           code_id: code.stockit_id
         }
       }
@@ -117,15 +125,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Designate & undesignate from stockit' do
-
-        before(:all) do
-          WebMock.disable!
-        end
-
-        after(:all) do
-          WebMock.enable!
-        end
-
         let(:stockit_item_params_with_designation){
           stockit_item_params.merge({
             designation_name: order.code,
@@ -177,7 +176,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'updates designation if item has designation in stockit and then designated to some other designation' do
-          package = create :package, :stockit_package, item: item, quantity: 0, received_quantity: 1
+          package = create :package, :received, item: item, quantity: 0, received_quantity: 1
           order1 = create :order
           orders_package = create :orders_package, :with_state_designated, order: order1,
             package: package, quantity: 1
@@ -193,7 +192,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'cancels designation if item was previously designated and now its undesignated from stockit' do
-          package = create :package, :stockit_package, designation_name: 'abc', order: order
+          package = create :package, :received, designation_name: 'abc', order: order
           orders_package = create :orders_package, :with_state_designated, order: order, package: package
           stockit_item_params_without_designation[:stockit_id] = package.reload.stockit_id
           expect{
@@ -206,7 +205,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do
-          package = create :package, :stockit_package, designation_name: 'abc'
+          package = create :package, :received, designation_name: 'abc'
           orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
           stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
           expect{
@@ -219,7 +218,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'designates item to cancelled designation if again designated to same and if it has another active designation with some other order_id then it cancels it' do
-          package = create :package, :stockit_package, designation_name: 'abc', received_quantity: 1,
+          package = create :package, :received, designation_name: 'abc', received_quantity: 1,
             quantity: 0
           orders_package = create :orders_package, :with_state_cancelled, order: order,
             package: package, quantity: 0
@@ -262,7 +261,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it 'dispatches orders_package if exists with same designation' do
-          package = create :package, :stockit_package, designation_name: 'abc',
+          package = create :package, :received, designation_name: 'abc',
             received_quantity: 1, quantity: 0
           orders_package = create :orders_package, package: package, order: order,
             state: 'designated', quantity: 1
@@ -292,7 +291,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'cancels designation and creates new orders_package with state dispatched if dispatched with another designation from stockit' do
-          package = create :package, :stockit_package, designation_name: 'abc'
+          package = create :package, :received, designation_name: 'abc'
           orders_package = create :orders_package, package: package, order: order_1, state: 'designated'
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           expect{
@@ -304,7 +303,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'cancels existing designation and dispatches orders_package if available with same order id' do
-          package          = create :package, :stockit_package, quantity: 0
+          package          = create :package, :received, quantity: 0
           orders_package   = create :orders_package, :with_state_designated,
             package: package, order: order_1, quantity: 1
           orders_package_1 = create :orders_package, :with_state_cancelled,
@@ -323,7 +322,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
-          package = create :package, :stockit_package, stockit_sent_on: Date.today,
+          package = create :package, :received, stockit_sent_on: Date.today,
             order_id: order.id, received_quantity: 1, quantity: 0
           orders_package = create :orders_package, package: package,
             order: order, state: 'dispatched', sent_on: Date.today, quantity: 1
@@ -344,12 +343,17 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   describe "PUT package/1" do
    before { generate_and_set_token(user) }
     it "reviewer can update", :show_in_doc do
+<<<<<<< d5b942ac63197eeb8ede7173211cfbc6f70c0842
       package = create :package, :received
       package.packages_locations.destroy_all
       location = create :location
       package_params = FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}", received_quantity: 30, quantity: 30, width: 100, location_id: location.id)
 
       put :update, format: :json, id: package.id, package: package_params
+=======
+      updated_params = { received_quantity: 30, quantity: 30, width: 100, received_at: nil }
+      put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
+>>>>>>> Refactored validation and fixed specs
       expect(response.status).to eq(200)
     end
 

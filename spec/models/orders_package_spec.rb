@@ -25,34 +25,37 @@ RSpec.describe OrdersPackage, type: :model do
 
   describe 'validations' do
     let!(:order) { create :order, :with_state_submitted }
-    let!(:error) { [:package, ["is not properly inventoried"]] }
+    let!(:inventory_number_error) { ["inventory_number should be present"] }
+    let!(:state_error) { ["state should be received"] }
+    let!(:location_error) { ["locations should be present"] }
+    let!(:all_error) { ["inventory_number should be present", "locations should be present", "state should be received"] }
 
-    it "Package is not properly inventoried :for InventoryNumber" do
+    it "Package inventory_number should be present" do
       @package = create :package, :package_with_locations, state: "received"
       @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
       @orders_package.save
-      expect(@orders_package.errors.messages.first).to match(error)
+      expect(@orders_package.errors.messages.first).to include(inventory_number_error)
     end
 
-    it "Package is not properly inventoried :for non-recevied state" do
+    it "Package state should be received" do
       @package = create :package, :received, state: "expecting"
       @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
       @orders_package.save
-      expect(@orders_package.errors.messages.first).to match(error)
+      expect(@orders_package.errors.messages.first).to include(state_error)
     end
 
-    it "Package is not properly inventoried :with no locations" do
-      @package = create :package, :with_inventory_number, state: "expecting"
+    it "Package locations should be present" do
+      @package = create :package, :with_inventory_number, state: "received"
       @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
       @orders_package.save
-      expect(@orders_package.errors.messages.first).to match(error)
+      expect(@orders_package.errors.messages.first).to include(location_error)
     end
 
     it "Package is not properly inventoried :in submitted state" do
       @package = create :package
       @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
       @orders_package.save
-      expect(@orders_package.errors.messages.first).to match(error)
+      expect(@orders_package.errors.messages.first).to include(all_error)
     end
 
     it "Package is not properly inventoried :in submitted state" do
