@@ -127,7 +127,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '.update_orders_package_state' do
-    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 10 }
+    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 3 }
 
     context 'when total_qty is zero' do
       total_qty = 0

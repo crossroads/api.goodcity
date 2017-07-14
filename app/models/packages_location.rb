@@ -5,6 +5,7 @@ class PackagesLocation < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
+  validates_with PackageQuantityValidator
 
   scope :exclude_location, -> (location_id) {
     where.not(location_id: location_id)
