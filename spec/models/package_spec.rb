@@ -4,7 +4,12 @@ require "rspec/mocks/standalone"
 RSpec.describe Package, type: :model do
 
   before(:all) do
+    WebMock.disable!
     allow_any_instance_of(Package).to receive(:update_client_store)
+  end
+
+  after(:all) do
+    WebMock.enable!
   end
 
   let(:package) { create :package }
@@ -273,11 +278,16 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#move_full_quantity' do
-    let(:package) { create :package }
+    let(:package) { create :package, :received}
     let(:location) { create :location }
     let(:order) { create :order, state: "submitted"}
     let!(:orders_package) { create :orders_package, package: package, state: 'designated', order: order, quantity: 1 }
-    let!(:packages_location) { create :packages_location, package: package, reference_to_orders_package: orders_package.id}
+
+    let!(:packages_location) do
+      package.packages_locations.first.tap do  |packages_location|
+          packages_location.update(reference_to_orders_package: orders_package.id)
+      end
+    end
 
     context 'if no packages_location record exist with provided location_id' do
       it 'updates quantity of packages_location record with referenced orders package quantity' do
@@ -291,13 +301,17 @@ RSpec.describe Package, type: :model do
       end
 
       it 'clears reference_to_orders_package' do
+        packages_location.update(reference_to_orders_package: orders_package.id)
         package.move_full_quantity(location.id, orders_package.id)
         expect(packages_location.reload.reference_to_orders_package).to be_nil
       end
     end
 
     context 'if packages_location record already exist with provided location_id' do
-      let!(:packages_location_1) { create :packages_location, package: package, reference_to_orders_package: orders_package.id, location: location}
+      let!(:packages_location_1) do
+        package.packages_locations.first.update(quantity: 2)
+        create :packages_location, package: package, reference_to_orders_package: orders_package.id, location: location
+      end
 
       it 'adds up orders_package quantity and packages_location quantity and updates packages_location quantity with new quantity' do
         new_quantity = packages_location_1.quantity + orders_package.quantity
@@ -459,7 +473,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#update_in_stock_quantity' do
-    let(:package) { create :package, received_quantity: 10 }
+    let(:package) { create :package, :received, quantity: 10, received_quantity: 10 }
     let(:orders_package) { create :orders_package, quantity: 3, package: package, state: 'designated' }
 
     it 'subtracts assigned qty from received_quantity to calculate in hand quantity and updates package quantity with it' do
@@ -488,18 +502,20 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#create_or_update_location_for_dispatch_from_stockit' do
-    let(:package) { create :package }
+    let(:package) { create :package, :received }
     let(:order) { create :order }
     let(:orders_package) { create :orders_package, state: 'dispatched', package: package, order: order }
     let(:dispatched_location) { create :location, :dispatched }
 
     it 'updates orders_package_id against packages_location record if dispatched' do
-      packages_location = create :packages_location, package: package, location: dispatched_location
+      package.packages_locations.first.update(location: dispatched_location)
+      packages_location = package.packages_locations.first
       package.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package.id, orders_package.quantity)
       expect(packages_location.reload.reference_to_orders_package).to eq orders_package.id
     end
 
     it 'creates new packages_location record with orders_package_id if packages_location record do not exist and package dispatched' do
+      package.packages_locations.first.update(quantity: 3)
       expect{
         package.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package.id, orders_package.quantity)
       }.to change(PackagesLocation, :count).by(1)
@@ -508,12 +524,14 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#create_dispatched_packages_location_from_gc' do
+    let(:package) { create :package, :received }
     let(:dispatched_location) { create :location, :dispatched }
     let(:order) { create :order }
     let(:orders_package) { create :orders_package, state: 'dispatched', package: package, order: order }
     let(:dispatched_location) { create :location, :dispatched }
 
     it 'creates dispatched packages location record against package if do not exist' do
+      package.packages_locations.first.update(quantity: 1)
       expect{
         package.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
       }.to change(PackagesLocation, :count).by(1)
@@ -524,8 +542,9 @@ RSpec.describe Package, type: :model do
     end
 
     it 'do not creates dispatched packages_location record if already exists' do
-      packages_location = create :packages_location, package: package, location: dispatched_location,
-        reference_to_orders_package: orders_package.id
+      package.packages_locations.first.update(location: dispatched_location,
+        reference_to_orders_package: orders_package.id)
+      packages_location = package.packages_locations.first 
       expect{
         package.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
       }.to change(PackagesLocation, :count).by(0)
