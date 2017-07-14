@@ -3,6 +3,7 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
 
+  validates_with PackageQuantityValidator
   after_initialize :set_initial_state
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
@@ -139,6 +140,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   private
+
   def recalculate_quantity(operation)
     unless(state == "requested" || GoodcitySync.request_from_stockit)
       update_designation_of_package
@@ -161,5 +163,3 @@ class OrdersPackage < ActiveRecord::Base
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.is_singleton_package?
   end
 end
-
-

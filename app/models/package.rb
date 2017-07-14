@@ -578,4 +578,3 @@ class Package < ActiveRecord::Base
   end
 
 end
-
