@@ -1,16 +1,25 @@
 dependencies:
   pre:
     - bundle-audit --version || gem install bundler-audit
+  post:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
 
 machine:
   services:
     - redis
+  environment:
+    - CC_TEST_REPORTER_ID: 80a6c1890ff5b568fa7f62fea8c9b388cfef4d819f70411b615db61bc6a365ad
 
 database:
   override:
     - bundle exec rake db:create:all db:schema:load --trace
 
 test:
+  pre:
+    - cc-test-reporter before-build
+  override:
+    - bundle exec rspec; cc-test-reporter after-build --exit-code $?
   post:
     - bundle-audit -v --update
 deployment:
