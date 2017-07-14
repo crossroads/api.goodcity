@@ -9,7 +9,7 @@ machine:
   services:
     - redis
   environment:
-    - CC_TEST_REPORTER_ID: 80a6c1890ff5b568fa7f62fea8c9b388cfef4d819f70411b615db61bc6a365ad
+    - CC_TEST_REPORTER_ID: 80a6c1890ff5b568fa7f62fea8c9b388cfef4d819f70411b615db61bc6a365ad TO_FILE=true bundle exec rake
 
 database:
   override:
@@ -18,10 +18,10 @@ database:
 test:
   pre:
     - cc-test-reporter before-build
-  override:
-    - bundle exec rspec; cc-test-reporter after-build --exit-code $?
   post:
     - bundle-audit -v --update
+  override:
+    - bundle exec rspec; cc-test-reporter after-build --exit-code $?
 deployment:
   staging:
     branch: master
