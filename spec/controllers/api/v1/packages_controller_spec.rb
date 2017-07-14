@@ -94,7 +94,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context "create package from gc" do
       it "reviewer can create", :show_in_doc do
-        post :create, format: :json, package: package_params
+        post :create, format: :json, package: package_params.merge({received_at: nil})
         expect(response.status).to eq(201)
         expect(GoodcitySync.request_from_stockit).to eq(false)
       end
