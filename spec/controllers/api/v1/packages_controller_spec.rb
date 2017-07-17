@@ -95,6 +95,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     context "create package from gc" do
       it "reviewer can create", :show_in_doc do
         package = create :package, item: item
+        package_params = FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
         post :create, format: :json, package: package_params.merge({received_at: nil})
         expect(response.status).to eq(201)
         expect(GoodcitySync.request_from_stockit).to eq(false)
