@@ -75,6 +75,20 @@ module DesignationAndUndesignation
           expect(subject.is_valid_for_sync?).to eq false
         end
       end
+
+      describe '#update_designation_of_package' do
+        before(:all) do
+          @package = create :package, received_quantity: 1, quantity: 0
+          @designated_orders_package = create :orders_package, quantity: 1,
+            state: 'designated', package: @package
+        end
+
+        it 'sets order_id in package same as orders_package order_id when its designated' do
+          subject.package = @package
+          subject.update_designation_of_package
+          expect(@package.reload.order_id).to eq @designated_orders_package.order_id
+        end
+      end
     end
   end
 end
