@@ -4,7 +4,7 @@ class PackagesLocation < ActiveRecord::Base
 
   has_paper_trail class_name: 'Version'
 
-  validates :package_id, :location_id presence: true
+  validates :package_id, :location_id, presence: true
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates_with PackageQuantityValidator
 
