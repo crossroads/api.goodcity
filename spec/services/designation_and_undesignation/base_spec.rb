@@ -96,6 +96,35 @@ module DesignationAndUndesignation
           expect(@undesignated_package.reload.order_id).to eq nil
         end
       end
+
+      describe '#recalculate_package_quantity' do
+        let(:package) { create :package, received_quantity: 1, quantity: 1 }
+
+        context 'recalculates package quantity and assigns order_id to package when designated orders_package created' do
+          before(:each) do
+            @designated_orders_package = create :orders_package, quantity: 1,
+              state: 'designated', package: @package
+            subject.package = @package
+            subject.orders_package = @designated_orders_package
+            subject.recalculate_package_quantity
+          end
+
+          it 'recalculates package quantity after some of its quantity designated' do
+            expect(@package.reload.quantity).to eq 0
+          end
+
+          it 'updates designation(order_id) of package when some of its quantity is designated' do
+            expect(@package.order_id).to eq @designated_orders_package.order_id
+          end
+        end
+
+        it 'do not recalculates quantity if its not valid for sync' do
+          requested_orders_package = build :orders_package, state: 'requested', package: package,
+            quantity: 1
+          subject.orders_package = requested_orders_package
+          expect(subject.recalculate_package_quantity).to be_nil
+        end
+      end
     end
   end
 end
