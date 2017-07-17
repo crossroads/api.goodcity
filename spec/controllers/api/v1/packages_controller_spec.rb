@@ -94,8 +94,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context "create package from gc" do
       it "reviewer can create", :show_in_doc do
+        package = create :package, item: item
         post :create, format: :json, package: package_params.merge({received_at: nil})
         expect(response.status).to eq(201)
+        debugger
         expect(GoodcitySync.request_from_stockit).to eq(false)
       end
     end
@@ -352,6 +354,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       put :update, format: :json, id: package.id, package: package_params
 =======
       updated_params = { received_quantity: 30, quantity: 30, width: 100, received_at: nil }
+      package.packages_locations.destroy_all
       put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
 >>>>>>> Refactored validation and fixed specs
       expect(response.status).to eq(200)
