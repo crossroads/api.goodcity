@@ -97,7 +97,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         package = create :package, item: item
         post :create, format: :json, package: package_params.merge({received_at: nil})
         expect(response.status).to eq(201)
-        debugger
         expect(GoodcitySync.request_from_stockit).to eq(false)
       end
     end
