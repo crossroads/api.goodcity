@@ -26,12 +26,13 @@ describe Offer do
   end
 
   it 'validate mutplile records only when quantity is less than package received_quantity ' do
+    @order = create :order, :with_state_submitted
     (1..3).each do
-      orders_package = OrdersPackage.new(quantity: 3, package: @package)
+      orders_package = OrdersPackage.new(quantity: 3, package: @package, order: @order)
       expect(@package_quantity_validator.validate(orders_package)).to be_nil
       @package.orders_packages << orders_package
     end
-    orders_package = OrdersPackage.new(quantity: 3, package: @package)
+    orders_package = OrdersPackage.new(quantity: 3, package: @package, order: @order)
     expect(@package_quantity_validator.validate(orders_package)).to eq(@error_message)
   end
 end
