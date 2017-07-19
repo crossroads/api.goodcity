@@ -168,16 +168,20 @@ module Api::V1
 
     def dispatch_stockit_item
       @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
-      if @orders_package.dispatch_orders_package
-        @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
-        send_stock_item_response
-      else
-        render json: {errors: I18n.t('orders_package.already_dispatched')}.to_json , status: 422
-      end
+# <<<<<<< HEAD
+#       if @orders_package.dispatch_orders_package
+#         @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
+#         send_stock_item_response
+#       else
+#         render json: {errors: I18n.t('orders_package.already_dispatched')}.to_json , status: 422
+#       end
+# =======
+      DispatchAndUndispatch::Dispatch.new(@orders_package, @package, params["packages_location_and_qty"]).dispatch_package
+      send_stock_item_response
     end
 
     def undispatch_stockit_item
-      @package.undispatch_stockit_item
+      DispatchAndUndispatch::UnDispatch.new(@package).undispatch_package
       send_stock_item_response
     end
 
