@@ -8,15 +8,15 @@ context Goodcity::HealthChecks::OrdersPackagesOrderIdCheck do
   it { expect(subject.desc).to eql("OrdersPackages should contain an order_id reference.") }
 
   it "passes" do
-    create :orders_package, order_id: 123
+    create :orders_package, order_id: 123, package_id: 111
     subject.run
     expect(subject.passed?).to eql(true)
   end
 
   it "fails" do
     orders_package = build :orders_package, order_id: nil
-    orders_package.valid?
-    expect(orders_package.errors.messages).to eql({:order_id=>["can't be blank"]})
+    expect(orders_package.valid?).to eql(false)
+    expect(orders_package.errors.messages).to eql({:order=>["can't be blank"]})
   end
 
 end
