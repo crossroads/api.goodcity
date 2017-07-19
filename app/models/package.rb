@@ -108,11 +108,21 @@ class Package < ActiveRecord::Base
   end
 
   def assign_or_update_dispatched_location(orders_package_id, quantity)
-    dispatched_location = Location.dispatch_location
+    reset_existing_packages_location_qty
     if dispatch_from_stockit?
       create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
     else
       create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
+    end
+  end
+
+  def dispatched_location
+    Location.dispatch_location
+  end
+
+  def reset_existing_packages_location_qty
+    if is_singleton_package? && !(locations.include?(dispatched_location))
+      packages_locations.update_all(quantity: 0)
     end
   end
 
@@ -345,14 +355,16 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    deduct_dispatch_quantity(package_location_changes) if package_location_changes
+    deduct_dispatch_quantity(package_location_changes)
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
   end
 
   def deduct_dispatch_quantity(package_qty_changes)
-    package_qty_changes.each_pair do |_key, pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
+    if package_qty_changes && !is_singleton_package?
+      package_qty_changes.each_pair do |_key, pckg_qty_param|
+        update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
+      end
     end
   end
 
@@ -375,11 +387,10 @@ class Package < ActiveRecord::Base
   def move_full_quantity(location_id, orders_package_id)
     orders_package              = orders_packages.find_by(id: orders_package_id)
     referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
-
     if(packages_location_record = find_packages_location_with_location_id(location_id))
       new_qty = orders_package.quantity + packages_location_record.quantity
-      packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
       referenced_package_location.destroy
+      packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
     else
       update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
     end
@@ -387,6 +398,7 @@ class Package < ActiveRecord::Base
 
   def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
     if referenced_package_location
+      reset_existing_packages_location_qty
       referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
     elsif(packages_location = packages_locations.first)
       packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
