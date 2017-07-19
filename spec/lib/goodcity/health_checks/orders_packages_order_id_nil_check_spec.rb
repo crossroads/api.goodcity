@@ -8,9 +8,13 @@ context Goodcity::HealthChecks::OrdersPackagesOrderIdCheck do
   it { expect(subject.desc).to eql("OrdersPackages should contain an order_id reference.") }
 
   it "passes" do
-    create :orders_package, order_id: 123, package_id: 111
+    WebMock.disable!
+    order = create :order
+    package = create :package, :received
+    create :orders_package, order: order, package: package
     subject.run
     expect(subject.passed?).to eql(true)
+    WebMock.enable!
   end
 
   it "fails" do
