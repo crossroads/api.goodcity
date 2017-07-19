@@ -63,7 +63,7 @@ module Api::V1
         if @package.valid? && @package.save
           if is_stock_app
             render json: @package, serializer: stock_serializer, root: "item",
-          include_order: false
+            include_order: false
           else
             render json: @package, serializer: serializer, status: 201
           end
@@ -83,7 +83,6 @@ module Api::V1
       @package.received_quantity = qty if qty
       @package.donor_condition_id = donor_condition_id if is_stock_app
       packages_location_for_admin
-
       # use valid? to ensure mark_received errors get caught
       if @package.valid? and @package.save
         if is_stock_app
@@ -323,7 +322,9 @@ module Api::V1
     end
 
     def location_id
-      Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+      if package_params[:location_id].present?
+        Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+      end
     end
 
     def box_id

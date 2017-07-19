@@ -99,7 +99,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let(:order_1) { create :order, :with_stockit_id }
       let!(:code) { create :package_type, :with_stockit_id }
       let(:donor_condition) { create :donor_condition }
-      let!(:location) { create :location, :dispatched }
+      let!(:location) { create :location, :dispatched, stockit_id: 20 }
       let(:stockit_item_params) {
         {
           quantity: 1,
@@ -142,6 +142,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
+          stockit_item_params_with_designation[:stockit_id] = 99
+          stockit_item_params_with_designation[:location_id] = location.stockit_id
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
           }.to change(Package, :count).by(1)

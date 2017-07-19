@@ -3,7 +3,7 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
 
-  validates :package_id, :order_id, :quantity, presence: true
+  validates :package, :order, :quantity, presence: true
   validates_with PackageQuantityValidator
 
   after_initialize :set_initial_state
