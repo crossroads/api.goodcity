@@ -14,10 +14,9 @@ context Goodcity::HealthChecks::OrdersPackagesOrderIdCheck do
   end
 
   it "fails" do
-    create :orders_package, order_id: nil
-    subject.run
-    expect(subject.passed?).to eql(false)
-    expect(subject.message).to include("GoodCity OrdersPackages with nil order_id")
+    orders_package = build :orders_package, order_id: nil
+    orders_package.valid?
+    expect(orders_package.errors.messages).to eql({:order_id=>["can't be blank"]})
   end
 
 end

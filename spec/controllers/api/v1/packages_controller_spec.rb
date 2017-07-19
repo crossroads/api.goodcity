@@ -344,10 +344,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "reviewer can update", :show_in_doc do
       package = create :package, :received
       package.packages_locations.destroy_all
-      package_params = FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
       location = create :location
-      updated_params = {received_quantity: 30, quantity: 30, width: 100, location_id: location.id}
-      put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
+      package_params = FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}", received_quantity: 30, quantity: 30, width: 100, location_id: location.id)
+
+      put :update, format: :json, id: package.id, package: package_params
       expect(response.status).to eq(200)
     end
 
