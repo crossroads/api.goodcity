@@ -162,7 +162,7 @@ class Package < ActiveRecord::Base
 
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
-      packages_locations.first.update(:location_id, location_id)
+      packages_locations.first.update(location_id: location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
     else
@@ -409,6 +409,13 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
+    if(packages_location = packages_locations.find_by(id: packages_location_id))
+      new_qty = packages_location.quantity - quantity_to_move.to_i
+      new_qty == 0 ? packages_location.destroy : packages_location.update(quantity: new_qty)
+    end
+  end
+
   def move_stockit_item(location_id)
     response =
       if box_id? || pallet_id?
@@ -514,12 +521,13 @@ class Package < ActiveRecord::Base
 
   def update_location_quantity(total_quantity, location_id)
 # <<<<<<< HEAD
-#     if(packages_location = packages_locations.find_by(location_id: location_id))
-#       packages_location.update_quantity(total_quantity)
-#     end
+# #     if(packages_location = packages_locations.find_by(location_id: location_id))
+# #       packages_location.update_quantity(total_quantity)
+# #     end
+#     packages_locations.where(location_id: location_id).first.update(:quantity, total_quantity)
 # =======
-    packages_locations.where(location_id: location_id).first.update(:quantity, total_quantity)
-# >>>>>>> used update instead of update_column to consider validation for pkg qty
+    packages_locations.where(location_id: location_id).first.update(quantity: total_quantity)
+# >>>>>>> Updated update syntax
   end
 
   def destroy_other_locations(location_id)
