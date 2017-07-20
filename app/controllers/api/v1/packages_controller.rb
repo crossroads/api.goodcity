@@ -181,7 +181,7 @@ module Api::V1
     end
 
     def undispatch_stockit_item
-      DispatchAndUndispatch::UnDispatch.new(@package).undispatch_package
+      @package.undispatch_stockit_item
       send_stock_item_response
     end
 

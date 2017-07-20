@@ -349,23 +349,15 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatch_stockit_item(_orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
+  def dispatch_stockit_item(_orders_package=nil, package_location_changes=nil , skip_set_relation_update=false, dispatch_service)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    deduct_dispatch_quantity(package_location_changes)
+    dispatch_service.deduct_dispatch_quantity(package_location_changes) if package_location_changes
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
-  end
-
-  def deduct_dispatch_quantity(package_qty_changes)
-    if package_qty_changes && !is_singleton_package?
-      package_qty_changes.each_pair do |_key, pckg_qty_param|
-        update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
-      end
-    end
   end
 
   def undispatch_stockit_item
@@ -414,13 +406,6 @@ class Package < ActiveRecord::Base
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
       create_associated_packages_location(location_id, total_qty)
-    end
-  end
-
-  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if(packages_location = packages_locations.find_by(id: packages_location_id))
-      new_qty = packages_location.quantity - quantity_to_move.to_i
-      new_qty == 0 ? packages_location.destroy : packages_location.update_column(:quantity, new_qty)
     end
   end
 
