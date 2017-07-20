@@ -162,7 +162,7 @@ class Package < ActiveRecord::Base
 
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
-      packages_locations.first.update_column(:location_id, location_id)
+      packages_locations.first.update(:location_id, location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
     else
@@ -513,9 +513,13 @@ class Package < ActiveRecord::Base
   end
 
   def update_location_quantity(total_quantity, location_id)
-    if(packages_location = packages_locations.find_by(location_id: location_id))
-      packages_location.update_quantity(total_quantity)
-    end
+# <<<<<<< HEAD
+#     if(packages_location = packages_locations.find_by(location_id: location_id))
+#       packages_location.update_quantity(total_quantity)
+#     end
+# =======
+    packages_locations.where(location_id: location_id).first.update(:quantity, total_quantity)
+# >>>>>>> used update instead of update_column to consider validation for pkg qty
   end
 
   def destroy_other_locations(location_id)
