@@ -5,6 +5,8 @@ class PackagesLocation < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
+  validate :package_received_state_validator
+  validate :inventory_number_validator
   validates_with PackageQuantityValidator
 
   scope :exclude_location, -> (location_id) {
@@ -29,5 +31,19 @@ class PackagesLocation < ActiveRecord::Base
       quantity: quantity,
       reference_to_orders_package: reference_to_orders_package
     )
+  end
+
+  private
+
+  def package_received_state do
+    unless package.received?
+      package.errors.add(:state, "should be received")
+    end         
+  end
+
+  def inventory_number_validator do
+    unless package.inventory_number?
+      package.errors.add(:inventory_number, "should not be nil")
+    end
   end
 end
