@@ -5,7 +5,6 @@ class PackagesLocation < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
-  validate :package_received_state_validator
   validate :inventory_number_validator
   validates_with PackageQuantityValidator
 
