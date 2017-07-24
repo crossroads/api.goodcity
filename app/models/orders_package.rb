@@ -181,8 +181,8 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def package_has_locations
-    unless package.locations.exists?
-      errors.add(:package, "locations should be present")
+    unless package.locations.exists? && package.packages_locations.exists?
+      errors.add(:package, "packages_location/location should be present")
     end
   end
 end
