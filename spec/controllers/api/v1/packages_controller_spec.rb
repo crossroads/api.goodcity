@@ -108,7 +108,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:code) { create :package_type, :with_stockit_id }
       let(:donor_condition) { create :donor_condition }
       let!(:location) { create :location, :dispatched, stockit_id: 20 }
-      let(:stockit_item_params) {
+      let!(:stockit_item_params) {
         {
           quantity: 1,
           inventory_number: '123456',
@@ -266,6 +266,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             received_quantity: 1, quantity: 0
           orders_package = create :orders_package, package: package, order: order,
             state: 'designated', quantity: 1
+          create :location, :dispatched, stockit_id: 20
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
            expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
@@ -294,6 +295,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         it 'cancels designation and creates new orders_package with state dispatched if dispatched with another designation from stockit' do
           package = create :package, :received, designation_name: 'abc'
           orders_package = create :orders_package, package: package, order: order_1, state: 'designated'
+          create :location, :dispatched, stockit_id: 20
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
@@ -309,6 +311,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             package: package, order: order_1, quantity: 1
           orders_package_1 = create :orders_package, :with_state_cancelled,
             package: package, order: order, quantity: 0
+          create :location, :dispatched, stockit_id: 20
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           stockit_params_with_sent_on_and_designation[:quantity]   = 1
           expect{
@@ -323,6 +326,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
+          location = create :location, :dispatched, stockit_id: 20
           package = create :package, :received, stockit_sent_on: Date.today,
             order_id: order.id, received_quantity: 1, quantity: 0
           orders_package = create :orders_package, package: package,
