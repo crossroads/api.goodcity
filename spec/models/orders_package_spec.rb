@@ -32,35 +32,35 @@ RSpec.describe OrdersPackage, type: :model do
 
     it "Package inventory_number should be present" do
       @package = create :package, :package_with_locations, state: "received"
-      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
       @orders_package.save
       expect(@orders_package.errors.messages.first).to include(inventory_number_error)
     end
 
     it "Package state should be received" do
       @package = create :package, :received, state: "expecting"
-      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
       @orders_package.save
       expect(@orders_package.errors.messages.first).to include(state_error)
     end
 
     it "Package locations should be present" do
       @package = create :package, :with_inventory_number, state: "received"
-      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
       @orders_package.save
       expect(@orders_package.errors.messages.first).to include(location_error)
     end
 
     it "Package is not properly inventoried :in submitted state" do
       @package = create :package
-      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
       @orders_package.save
       expect(@orders_package.errors.messages.first).to include(all_error)
     end
 
     it "Package is not properly inventoried :in submitted state" do
       @package = create :package, :received
-      @orders_package =  build :orders_package, quantity: 1, package: @package, order: @order
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
       expect(@orders_package.save).to eq(true)
     end
 
