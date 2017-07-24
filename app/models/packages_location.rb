@@ -35,13 +35,13 @@ class PackagesLocation < ActiveRecord::Base
 
   private
 
-  def package_received_state do
+  def package_received_state
     unless package.received?
       package.errors.add(:state, "should be received")
-    end         
+    end
   end
 
-  def inventory_number_validator do
+  def inventory_number_validator
     unless package.inventory_number?
       package.errors.add(:inventory_number, "should not be nil")
     end
