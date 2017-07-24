@@ -186,7 +186,7 @@ RSpec.describe Package, type: :model do
 
   describe 'dispatch_stockit_item' do
     let(:package) { create :package, :with_set_item }
-    let(:location) { create :location, :dispatched }
+    let!(:location) { create :location, :dispatched }
     let!(:packages_location) { create :packages_location, location: location, package: package }
     before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
 

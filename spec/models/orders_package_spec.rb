@@ -119,11 +119,6 @@ RSpec.describe OrdersPackage, type: :model do
         orders_package.dispatch_orders_package
         }.to change(orders_package, :state).to eq 'dispatched'
     end
-
-    it 'adds dispatched location for associate package' do
-      orders_package.dispatch_orders_package
-      expect(orders_package.package.reload.locations).to include(dispatched_location)
-    end
   end
 
   describe '.update_orders_package_state' do
