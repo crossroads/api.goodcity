@@ -103,7 +103,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     describe "Received from Stockit" do
-      let(:location) { create :location }
       let!(:order) { create :order, :with_stockit_id }
       let(:order_1) { create :order, :with_stockit_id }
       let!(:code) { create :package_type, :with_stockit_id }

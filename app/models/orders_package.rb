@@ -4,7 +4,6 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :updated_by, class_name: 'User'
 
   validates :package, :order, :quantity, presence: true
-  validate :order_state_is_not_nil,  on: :create
   validate :package_has_inventory_number,  on: :create
   validate :package_has_locations,  on: :create
   validate :package_is_received,  on: :create
@@ -184,12 +183,6 @@ class OrdersPackage < ActiveRecord::Base
   def package_has_locations
     unless package.locations.exists?
       errors.add(:package, "locations should be present")
-    end
-  end
-
-  def order_state_is_not_nil
-    unless order.state
-      errors.add(:order, "state cannot be nil")
     end
   end
 end
