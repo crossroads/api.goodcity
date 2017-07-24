@@ -345,18 +345,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   describe "PUT package/1" do
    before { generate_and_set_token(user) }
     it "reviewer can update", :show_in_doc do
-<<<<<<< d5b942ac63197eeb8ede7173211cfbc6f70c0842
       package = create :package, :received
       package.packages_locations.destroy_all
       location = create :location
       package_params = FactoryGirl.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}", received_quantity: 30, quantity: 30, width: 100, location_id: location.id)
 
       put :update, format: :json, id: package.id, package: package_params
-=======
-      updated_params = { received_quantity: 30, quantity: 30, width: 100, received_at: nil }
-      package.packages_locations.destroy_all
-      put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
->>>>>>> Refactored validation and fixed specs
       expect(response.status).to eq(200)
     end
 
