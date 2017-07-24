@@ -112,7 +112,7 @@ class Package < ActiveRecord::Base
     if dispatch_from_stockit?
       create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
     else
-      create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
+      update_or_create_qty_moved_to_location(dispatched_location.id, quantity, orders_package_id)
     end
   end
 
@@ -410,11 +410,11 @@ class Package < ActiveRecord::Base
     packages_locations.find_by(location_id: location_id)
   end
 
-  def update_or_create_qty_moved_to_location(location_id, total_qty)
+  def update_or_create_qty_moved_to_location(location_id, total_qty, orders_package_id = nil)
     if(packages_location = find_packages_location_with_location_id(location_id))
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
-      create_associated_packages_location(location_id, total_qty)
+      create_associated_packages_location(location_id, total_qty, orders_package_id)
     end
   end
 
