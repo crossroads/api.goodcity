@@ -597,7 +597,7 @@ class Package < ActiveRecord::Base
   def recived_state_validator
     if received? && inventory_number? && !has_packages_locations?
       errors.add(:packages_locations, "should be present")
-    elsif received? && has_packages_locations && !inventory_number?
+    elsif received? && has_packages_locations? && !inventory_number?
       errors.add(:inventory_number, "should be present")
     end
   end
