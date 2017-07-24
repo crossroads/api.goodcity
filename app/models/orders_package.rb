@@ -53,8 +53,6 @@ class OrdersPackage < ActiveRecord::Base
       orders_package.sent_on    =  Time.now
       orders_package.updated_by =  User.current_user
     end
-
-    after_transition on: :dispatch, do: :assign_dispatched_location
   end
 
   def assign_dispatched_location

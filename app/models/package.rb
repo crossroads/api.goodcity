@@ -356,6 +356,7 @@ class Package < ActiveRecord::Base
     self.box = nil
     self.pallet = nil
     deduct_dispatch_quantity(package_location_changes)
+    assign_or_update_dispatched_location(_orders_package.id, _orders_package.quantity)
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
   end
