@@ -43,10 +43,10 @@ FactoryGirl.define do
     end
 
     trait :received do
-      package_with_locations
-      stockit_package
       state "received"
       received_at { Time.now }
+      stockit_package
+      package_with_locations
     end
 
     trait :published do
