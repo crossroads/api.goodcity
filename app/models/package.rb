@@ -32,7 +32,7 @@ class Package < ActiveRecord::Base
   after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
   after_commit :update_set_item_id, on: :destroy
   after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  after_save :dispatch_orders_package, if: :dispatch_from_stockit?
+  # after_save :dispatch_orders_package, if: :dispatch_from_stockit?
 
   after_touch { update_client_store :update }
 
@@ -105,47 +105,6 @@ class Package < ActiveRecord::Base
       package.received_at = nil
       package.remove_from_stockit
     end
-  end
-
-  def assign_or_update_dispatched_location(orders_package_id, quantity)
-    destroy_stale_packages_locations
-    if dispatch_from_stockit?
-      create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
-    else
-      create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
-    end
-  end
-
-  def dispatched_location
-    Location.dispatch_location
-  end
-
-  def destroy_stale_packages_locations
-    if is_singleton_package? && !(locations.include?(dispatched_location))
-      delete_associated_packages_locations
-    end
-  end
-
-  def create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
-    unless locations.include?(dispatched_location)
-      create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
-    end
-  end
-
-  def create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
-    if(dispatched_packages_location = find_packages_location_with_location_id(dispatched_location.id))
-      dispatched_packages_location.update_referenced_orders_package(orders_package_id)
-    else
-      create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
-    end
-  end
-
-  def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
-    packages_locations.create(
-      location_id: location_id,
-      quantity: quantity,
-      reference_to_orders_package: reference_to_orders_package
-    )
   end
 
   def received_quantity_changed_and_locations_exists?
@@ -397,9 +356,9 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def find_packages_location_with_location_id(location_id)
-    packages_locations.find_by(location_id: location_id)
-  end
+  # def find_packages_location_with_location_id(location_id)
+  #   packages_locations.find_by(location_id: location_id)
+  # end
 
   def update_or_create_qty_moved_to_location(location_id, total_qty)
     if(packages_location = find_packages_location_with_location_id(location_id))
