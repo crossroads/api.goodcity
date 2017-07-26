@@ -20,7 +20,7 @@ FactoryGirl.define do
 
     trait :with_inventory_packages do
       after(:create) do |item|
-        create_list(:package, rand(3)+1, :with_set_item, :package_with_locations, item: item)
+        create_list(:package, rand(3)+1, :with_set_item, :received, item: item)
       end
     end
 

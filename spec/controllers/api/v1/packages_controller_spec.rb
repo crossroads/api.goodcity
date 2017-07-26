@@ -2,6 +2,14 @@ require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
 
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
+
   let(:user) { create(:user_with_token, :reviewer) }
   let(:donor) { create(:user_with_token) }
   let(:offer) { create :offer, created_by: donor }
@@ -63,7 +71,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     let(:order) { create :order }
-    let(:package) { create :package, order: order, stockit_sent_on: Time.zone.now.to_date }
+    let(:package) { create :package, :received_without_locations, order: order, stockit_sent_on: Time.zone.now.to_date }
      let(:dispatched_location) { create :location, :dispatched }
     let(:location_1) { create :location }
     let(:orders_package) { create :orders_package, package: package, order: order, state: 'dispatched' }
@@ -118,14 +126,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       context 'Designate & undesignate from stockit' do
 
-        before(:all) do
-          WebMock.disable!
-        end
-
-        after(:all) do
-          WebMock.enable!
-        end
-
         let(:stockit_item_params_with_designation){
           stockit_item_params.merge({
             designation_name: order.code,
@@ -142,6 +142,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
+          stockit_item_params_with_designation["stockit_id"] = 99
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
           }.to change(Package, :count).by(1)
