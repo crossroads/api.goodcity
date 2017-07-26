@@ -15,6 +15,13 @@ RSpec.describe OrdersPackage, type: :model do
     it{ is_expected.to have_db_column(:sent_on).of_type(:datetime)}
   end
 
+  describe "Validations" do
+    it 'validates quantity' do
+      is_expected.to_not allow_value(-1).for(:quantity)
+      is_expected.to allow_value(rand(4)).for(:quantity)
+    end
+  end
+
   describe "update_state_to_designated" do
     it "set state='designated'"do
       @orders_package = create :orders_package, :with_state_requested
