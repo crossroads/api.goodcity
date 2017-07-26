@@ -313,7 +313,7 @@ module Api::V1
     end
 
     def packages_location_for_admin
-      if is_admin_app
+      if is_admin_app && params[:package][:location_id].present?
        @package.build_or_create_packages_location(params[:package][:location_id], 'create')
       end
     end
