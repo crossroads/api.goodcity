@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe OrdersPackage, type: :model do
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to :order }
     it { is_expected.to belong_to :package }
@@ -63,7 +71,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#update_partially_designated_item' do
-    let!(:package) { create :package, quantity: 10 }
+    let!(:package) { create :package, :received_without_locations, quantity: 10 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it 'adds package quantity to orders_package quantity' do
@@ -105,7 +113,8 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#dispatch_orders_package' do
-    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
+    let!(:package) { create :package, :received }
+    let!(:orders_package) { create :orders_package, package: package, state: 'designated', quantity: 1 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it "sets today's date for sent_on column" do
@@ -120,7 +129,8 @@ RSpec.describe OrdersPackage, type: :model do
         }.to change(orders_package, :state).to eq 'dispatched'
     end
 
-    it 'adds dispatched location for associate package' do
+    it 'adds dispatched location for associated package' do
+      # this spec fails becasue of extra packages_locations created by dispatch state GCW-1647
       orders_package.dispatch_orders_package
       expect(orders_package.package.reload.locations).to include(dispatched_location)
     end
