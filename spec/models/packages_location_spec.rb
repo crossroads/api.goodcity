@@ -13,8 +13,8 @@ RSpec.describe PackagesLocation, type: :model do
   end
 
   describe 'Validations' do
-
-
+    let!(:package) { create :package, :with_inventory_number, state: "received" }
+    let!(:packages_location) { build :packages_location, package: package, quantity: 5}
     context 'validates quantity: ' do
       let!(:package) { create :package, :received }
       let!(:packages_location) { package.packages_locations.first}
@@ -41,32 +41,24 @@ RSpec.describe PackagesLocation, type: :model do
     end
 
     context 'validates package ' do
-      let!(:package) { create :package, :with_inventory_number, state: "received" }
-
       it "should have inventory_number" do
-        package.packages_locations.build(quantity: 5)
-        expect(package.save).to be(true)
+        expect(packages_location.save).to be(true)
       end
 
       it "inventory_number cannot be nil" do
         package.update(inventory_number: nil)
-        package.packages_locations.build(quantity: 5)
-        expect(package.save).to be(false)
+        expect(packages_location.save).to be(false)
       end
     end
 
     context 'validates package ' do
-      let!(:package) { create :package, :with_inventory_number, state: "received" }
-
       it "should be in received state" do
-        package.packages_locations.build(quantity: 5)
-        expect(package.save).to be(true)
+        expect(packages_location.save).to be(true)
       end
 
       it "is not in received state" do
         package.update(state: "missing")
-        package.packages_locations.build(quantity: 5)
-        expect(package.save).to be(false)
+        expect(packages_location.save).to be(false)
       end
     end
 
@@ -74,8 +66,9 @@ RSpec.describe PackagesLocation, type: :model do
 
   describe '#update_quantity' do
     it 'should update quantity' do
-      packages_location = create(:packages_location)
-      new_quantity = rand(4)+2
+      package = create :package, :received
+      packages_location = package.packages_locations.first
+      new_quantity = rand(3)+2
       expect {
         packages_location.update(quantity: new_quantity)
 

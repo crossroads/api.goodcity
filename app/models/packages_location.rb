@@ -6,6 +6,7 @@ class PackagesLocation < ActiveRecord::Base
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validate :inventory_number_validator
+  validate :package_received_state_validator
   validates_with PackageQuantityValidator
 
   scope :exclude_location, -> (location_id) {
@@ -34,15 +35,15 @@ class PackagesLocation < ActiveRecord::Base
 
   private
 
-  def package_received_state
+  def package_received_state_validator
     unless package.received?
-      package.errors.add(:state, "should be received")
+      errors.add(:package, "state should be received")
     end
   end
 
   def inventory_number_validator
     unless package.inventory_number?
-      package.errors.add(:inventory_number, "should not be nil")
+      errors.add(:package, "inventory_number should not be nil")
     end
   end
 end
