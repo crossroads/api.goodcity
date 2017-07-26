@@ -7,7 +7,6 @@ module DispatchAndUndispatch
     def dispatch_package
       package.dispatch_stockit_item(orders_package, package_location_qty, true, self)
       orders_package.dispatch_orders_package
-      package.dispatch_orders_package if package.dispatch_from_stockit?
     end
 
 

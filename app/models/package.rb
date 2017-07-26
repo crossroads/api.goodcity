@@ -32,7 +32,7 @@ class Package < ActiveRecord::Base
   after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
   after_commit :update_set_item_id, on: :destroy
   after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  # after_save :dispatch_orders_package, if: :dispatch_from_stockit?
+  after_save :dispatch_orders_package, if: :dispatch_from_stockit?
 
   after_touch { update_client_store :update }
 
@@ -356,9 +356,9 @@ class Package < ActiveRecord::Base
     end
   end
 
-  # def find_packages_location_with_location_id(location_id)
-  #   packages_locations.find_by(location_id: location_id)
-  # end
+  def find_packages_location_with_location_id(location_id)
+    packages_locations.find_by(location_id: location_id)
+  end
 
   def update_or_create_qty_moved_to_location(location_id, total_qty)
     if(packages_location = find_packages_location_with_location_id(location_id))
