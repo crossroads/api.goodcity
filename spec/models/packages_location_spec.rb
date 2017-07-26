@@ -13,7 +13,7 @@ RSpec.describe PackagesLocation, type: :model do
   end
 
   describe 'Validations' do
-    let!(:package) { create :package, :with_inventory_number, state: "received" }
+    let!(:package) { create :package, :received_without_locations }
     let!(:packages_location) { build :packages_location, package: package, quantity: 5}
     context 'validates quantity: ' do
       let!(:package) { create :package, :received }

@@ -49,6 +49,12 @@ FactoryGirl.define do
       package_with_locations
     end
 
+    trait :received_without_locations do
+      state "received"
+      received_at { Time.now }
+      stockit_package
+    end
+
     trait :published do
       allow_web_publish true
     end

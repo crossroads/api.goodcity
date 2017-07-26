@@ -4,7 +4,12 @@ require "rspec/mocks/standalone"
 RSpec.describe Package, type: :model do
 
   before(:all) do
+    WebMock.disable!
     allow_any_instance_of(Package).to receive(:update_client_store)
+  end
+
+  after(:all) do
+    WebMock.enable!
   end
 
   let(:package) { create :package }
@@ -185,7 +190,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe 'dispatch_stockit_item' do
-    let(:package) { create :package, :with_set_item }
+    let(:package) { create :package, :with_set_item, :received_without_locations }
     let(:location) { create :location, :dispatched }
     let!(:packages_location) { create :packages_location, location: location, package: package }
     before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
@@ -197,7 +202,7 @@ RSpec.describe Package, type: :model do
     end
 
     it 'update set relation on dispatching single package' do
-      sibling_package = create :package, :with_set_item, :package_with_locations, item: package.item
+      sibling_package = create :package, :with_set_item, :received, item: package.item
       package.dispatch_stockit_item
       package.save
       expect(package.set_item_id).to be_nil
@@ -206,7 +211,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#update_or_create_qty_moved_to_location' do
-    let!(:package) { create :package }
+    let!(:package) { create :package, :received_without_locations }
     let!(:location) { create :location }
 
     it 'creates associated packages_location record if we do not have packages_location record with provided location_id' do
@@ -235,8 +240,8 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#update_existing_package_location_qty' do
-    let!(:package) { create :package, received_quantity: 10, quantity: 10 }
-    let!(:packages_location) { create :packages_location, quantity: package.received_quantity, package: package }
+    let!(:package) { create :package, :received, received_quantity: 10, quantity: 10 }
+    let!(:packages_location) { package.packages_locations.first }
 
     it 'subtracts quantity to move from existing packages location record if record exist' do
       quantity_to_move = 8
@@ -255,7 +260,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#build_or_create_packages_location' do
-    let!(:package) { create :package }
+    let!(:package) { create :package, :received_without_locations }
     let!(:location) { create :location }
 
     it 'creates new packages_location record with provided location id if it do not exist' do
@@ -273,7 +278,8 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#move_full_quantity' do
-    let(:package) { create :package }
+
+    let(:package) { create :package, :received_without_locations }
     let(:location) { create :location }
     let(:order) { create :order, state: "submitted"}
     let!(:orders_package) { create :orders_package, package: package, state: 'designated', order: order, quantity: 1 }
@@ -319,7 +325,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#move_partial_quantity' do
-    let(:package) { create :package, quantity: 10, received_quantity: 10 }
+    let(:package) { create :package, :received_without_locations, quantity: 10, received_quantity: 10 }
     let(:location) { create :location }
     let(:location_1) { create :location }
     let(:packages_location) { create :packages_location, quantity: 4, package: package, location: location_1 }
@@ -477,7 +483,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#create_associated_packages_location' do
-    let(:package) { create :package }
+    let(:package) { create :package, :received_without_locations}
     let(:location) { create :location }
 
     it 'creates associated package location record for package' do
@@ -488,7 +494,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#create_or_update_location_for_dispatch_from_stockit' do
-    let(:package) { create :package }
+    let(:package) { create :package, :received_without_locations }
     let(:order) { create :order }
     let(:orders_package) { create :orders_package, state: 'dispatched', package: package, order: order }
     let(:dispatched_location) { create :location, :dispatched }
@@ -508,6 +514,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#create_dispatched_packages_location_from_gc' do
+    let(:package) { create :package, :received_without_locations }
     let(:dispatched_location) { create :location, :dispatched }
     let(:order) { create :order }
     let(:orders_package) { create :orders_package, state: 'dispatched', package: package, order: order }
@@ -533,7 +540,7 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#find_packages_location_with_location_id' do
-    let(:package) { create :package }
+    let(:package) { create :package, :received_without_locations}
     let(:location) { create :location }
 
     it 'returns packages_location record if found with particular location_id' do
