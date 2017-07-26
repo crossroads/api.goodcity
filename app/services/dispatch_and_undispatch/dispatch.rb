@@ -5,7 +5,7 @@ module DispatchAndUndispatch
     end
 
     def dispatch_package
-      package.dispatch_stockit_item(orders_package, package_location_qty, true, self)
+      dispatch_stockit_item(orders_package, package_location_qty, true)
       orders_package.dispatch_orders_package
     end
 
@@ -57,6 +57,17 @@ module DispatchAndUndispatch
 
     def find_packages_location_with_location_id(location_id)
       package.packages_locations.find_by(location_id: location_id)
+    end
+
+    def dispatch_stockit_item(_orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
+      package.skip_set_relation_update = skip_set_relation_update
+      package.stockit_sent_on = Date.today
+      package.stockit_sent_by = User.current_user
+      package.box = nil
+      package.pallet = nil
+      deduct_dispatch_quantity(package_location_changes) if package_location_changes
+      response = Stockit::ItemSync.dispatch(self)
+      package.add_errors(response)
     end
 
   end
