@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Offer do
   before(:each) do
-    @package = create :package, :package_with_locations, quantity: 10, received_quantity: 10
+    @package = create :package, :received, quantity: 10, received_quantity: 10
     @package_quantity_validator = PackageQuantityValidator.new
     @error_message = ["cannot be greater than package quantity"]
   end
