@@ -22,6 +22,8 @@ class PackageType < ActiveRecord::Base
   has_many :package_categories_package_types
   has_many :package_categories, through: :package_categories_package_types
 
+  validates_presence_of :package_categories
+
   translates :name, :other_terms
 
   scope :visible, -> { where(visible_in_selects: true) }
