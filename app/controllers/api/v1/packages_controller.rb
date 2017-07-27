@@ -187,7 +187,8 @@ module Api::V1
 
     def move_partial_quantity
       package_params = JSON.parse(params["package"])
-      @package.move_partial_quantity(params["location_id"], package_params, params["total_qty"])
+      DispatchAndUndispatch::Dispatch.new(nil, @package, nil).move_partial_quantity(params["location_id"], package_params, params["total_qty"])
+      # @package.move_partial_quantity(params["location_id"], package_params, params["total_qty"])
       send_stock_item_response
     end
 

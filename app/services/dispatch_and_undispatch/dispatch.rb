@@ -70,5 +70,21 @@ module DispatchAndUndispatch
       package.add_errors(response)
     end
 
+
+    def move_partial_quantity(location_id, package_qty_changes, total_qty)
+      package_qty_changes.each do |pckg_qty_param|
+        update_existing_package_location_qty(pckg_qty_param["packages_location_id"],  pckg_qty_param["new_qty"])
+      end
+      update_or_create_qty_moved_to_location(location_id, total_qty)
+    end
+
+    def update_or_create_qty_moved_to_location(location_id, total_qty)
+      if(packages_location = find_packages_location_with_location_id(location_id))
+        packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
+      else
+        create_associated_packages_location(location_id, total_qty)
+      end
+    end
+
   end
 end
