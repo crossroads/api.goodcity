@@ -12,20 +12,19 @@ RSpec.describe PackageCategoriesPackageType, type: :model do
   end
 
   describe "Validations" do
+    let!(:package_category) { create(:package_category, :with_package_type)}
+    let!(:package_categories_package_type) { build(:package_categories_package_type,package_category: package_category)}
+    let!(:error) { {:package_type_id=>["has already been taken"]} }
+
     it "passes if it has unique package_type" do
-      package_category = create(:package_category, :with_package_type)
       package_type = build(:package_type)
-      package_categories_package_type = build(:package_categories_package_type,
-        package_type: package_type, package_category: package_category)
+      package_categories_package_type.package_type package_type
       expect(package_categories_package_type.save).to be(true)
     end
 
     it "fails if package_types is already present" do
-      package_category = create(:package_category, :with_package_type)
       package_type = package_category.package_types.last
-      package_categories_package_type = build(:package_categories_package_type,
-        package_type: package_type, package_category: package_category)
-      error = {:package_type_id=>["has already been taken"]}
+      package_categories_package_type.package_type = package_type
       expect(package_categories_package_type.save).to be(false)
       expect(package_categories_package_type.errors.messages).to include(error)
     end
