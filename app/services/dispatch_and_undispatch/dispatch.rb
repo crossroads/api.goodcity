@@ -66,7 +66,7 @@ module DispatchAndUndispatch
       package.box = nil
       package.pallet = nil
       deduct_dispatch_quantity(package_location_changes) if package_location_changes
-      response = Stockit::ItemSync.dispatch(self)
+      response = Stockit::ItemSync.dispatch(package)
       package.add_errors(response)
     end
 

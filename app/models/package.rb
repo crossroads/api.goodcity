@@ -347,6 +347,21 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
+    if(packages_location = packages_locations.find_by(id: packages_location_id))
+      new_qty = packages_location.quantity - quantity_to_move.to_i
+      new_qty == 0 ? packages_location.destroy : packages_location.update(quantity: new_qty)
+    end
+  end
+
+  def update_or_create_qty_moved_to_location(location_id, total_qty)
+    if(packages_location = find_packages_location_with_location_id(location_id))
+      packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
+    else
+      create_associated_packages_location(location_id, total_qty)
+    end
+  end
+
   def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
     if referenced_package_location
       destroy_stale_packages_locations
@@ -368,11 +383,12 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if(packages_location = packages_locations.find_by(id: packages_location_id))
-      new_qty = packages_location.quantity - quantity_to_move.to_i
-      new_qty == 0 ? packages_location.destroy : packages_location.update(quantity: new_qty)
-    end
+  def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
+    packages_locations.create(
+      location_id: location_id,
+      quantity: quantity,
+      reference_to_orders_package: reference_to_orders_package
+    )
   end
 
   def move_stockit_item(location_id)
