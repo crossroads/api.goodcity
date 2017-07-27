@@ -3,6 +3,14 @@ FactoryGirl.define do
     name_en    { FFaker::Lorem.characters(5) }
     name_zh_tw { FFaker::Lorem.characters(5) }
 
+    trait :with_package_type do
+      after(:create) do |package_category|
+        package_type = build(:package_type)
+        package_type.package_categories << package_category
+        package_type.save
+      end
+    end
+
     factory :child_package_category do
       after(:build) do |category|
         category.parent_category = build :parent_package_category
