@@ -7,6 +7,8 @@ FactoryGirl.define do
     other_terms_zh_tw  { generate(:package_types)[code][:other_terms_zh_tw] }
     visible_in_selects { true }
     initialize_with    { PackageType.find_or_initialize_by(code: code) }
+
+    package_categories { build_list :package_category, 3 }
   end
 
   factory :package_type, parent: :base_package_type do
