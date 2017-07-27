@@ -24,6 +24,7 @@ RSpec.describe PackageType, type: :model do
 
     it "fails if there is no package_categories" do
       package_type = build(:package_type)
+      package_type.package_categories.destroy_all
       expect(package_type.save).to be(false)
       expect(package_type.errors.messages).to include({:package_categories=>["can't be blank"]})
     end
