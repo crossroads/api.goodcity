@@ -528,7 +528,9 @@ class Package < ActiveRecord::Base
   end
 
   def update_location_quantity(total_quantity, location_id)
-    packages_locations.where(location_id: location_id).first.update(quantity: total_quantity)
+    if(packages_location = packages_locations.find_by(location_id: location_id))
+      packages_location.update_quantity(total_quantity)
+    end
   end
 
   def destroy_other_locations(location_id)
@@ -553,6 +555,14 @@ class Package < ActiveRecord::Base
 
   def donor_condition_name
     donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
+  end
+
+  def designated_orders_packages
+    orders_packages.where(state: 'designated')
+  end
+
+  def dispatched_orders_packages
+    orders_packages.where(state: 'dispatched')
   end
 
   private
