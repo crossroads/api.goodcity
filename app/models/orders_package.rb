@@ -5,7 +5,7 @@ class OrdersPackage < ActiveRecord::Base
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates_with PackageQuantityValidator
-  
+
   after_initialize :set_initial_state
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
@@ -117,6 +117,7 @@ class OrdersPackage < ActiveRecord::Base
   def self.calculate_total_quantity_and_update_state(package_quantity, orders_package)
     total_quantity = orders_package.quantity - package_quantity.to_i
     orders_package.update_orders_package_state(total_quantity)
+    orders_package
   end
 
   def remove_designation_of_associated_package
