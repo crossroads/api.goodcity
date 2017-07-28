@@ -132,13 +132,12 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.add_partially_designated_item(order_id:, package_id:, quantity:)
-    create(
-      order_id: order_id.to_i,
+    new(order_id: order_id.to_i,
       package_id: package_id.to_i,
       quantity: quantity.to_i,
       updated_by: User.current_user,
       state: 'designated'
-    )
+    ).save
   end
 
   private
