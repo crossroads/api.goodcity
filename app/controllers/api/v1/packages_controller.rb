@@ -141,6 +141,13 @@ module Api::V1
     def undesignate_partial_item
       DesignationAndUndesignation::Undesignate.new(params[:package]
         ).undesignate_partially_designated_item
+# =======
+#       saved = OrdersPackage.undesignate_partially_designated_item(params[:package])
+#       if(!saved)
+#         render json: {errors: I18n.t('orders_package.already_undesignated')}.to_json , status: 422
+#       end
+#       @package.undesignate_from_stockit_order
+# >>>>>>> Added error if update is unsuccessful
       send_stock_item_response
     end
 
