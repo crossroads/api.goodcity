@@ -107,20 +107,35 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.undesignate_partially_designated_item(packages)
-    errors = []
+    is_valid = !validate_orders_packages_quantity(packages).present?
+    return validate_orders_packages_quantity(packages) unless is_valid
     packages.each_pair do |_key, package|
       orders_package = find_by(id: package["orders_package_id"])
       orders_package.remove_designation_of_associated_package
-      orders_pkg = calculate_total_quantity_and_update_state(package['quantity'], orders_package)
-      errors.push(orders_pkg.errors.full_messages)
+      update_quantity_and_state(package['quantity'], orders_package)
+    end
+  end
+
+  def self.validate_orders_packages_quantity(packages)
+    errors = []
+    packages.each_pair do |_key, package|
+      orders_package = find_by(id: package["orders_package_id"])
+      orders_package.quantity = calculate_total_quantity(package['quantity'], orders_package.quantity)
+      unless orders_package.valid?
+        errors.push(orders_package.errors.full_messages)
+        break
+      end
     end
     errors.flatten
   end
 
-  def self.calculate_total_quantity_and_update_state(package_quantity, orders_package)
-    total_quantity = orders_package.quantity - package_quantity.to_i
+  def self.update_quantity_and_state(package_quantity, orders_package)
+    total_quantity = calculate_total_quantity(package_quantity, orders_package.quantity)
     orders_package.update_orders_package_state(total_quantity)
-    orders_package
+  end
+
+  def self.calculate_total_quantity(package_quantity, orders_package_quantity)
+    orders_package_quantity - package_quantity.to_i
   end
 
   def remove_designation_of_associated_package
