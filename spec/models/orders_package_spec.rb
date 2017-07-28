@@ -236,6 +236,22 @@ RSpec.describe OrdersPackage, type: :model do
         }
       }
 
+      it "throws quantity validation error" do
+        orders_package.update(quantity: 0)
+        errors = OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
+        expect(errors).to include("Quantity must be greater than or equal to 0")
+      end
+    end
+
+    context 'when quantity to undesignate is not same as quantity of designation(orders_package)' do
+      let!(:undesignate_package_params) {
+        {
+          "0" => { "orders_package_id" => "#{orders_package.id}",
+            "package_id" => "#{package.id}",
+            "quantity" => "3" }
+        }
+      }
+
       it 'reduces quantity to undesignate from its designation(orders_package) record' do
         new_quantity = orders_package.quantity - undesignate_package_params["0"]["quantity"].to_i
         OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)

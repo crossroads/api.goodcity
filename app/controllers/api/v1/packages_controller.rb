@@ -143,9 +143,9 @@ module Api::V1
     end
 
     def undesignate_partial_item
-      orders_package = OrdersPackage.undesignate_partially_designated_item(params[:package])
-      if(orders_package.errors.messages.present?)
-        render json: {errors: orders_package.errors.full_messages}.to_json , status: 422
+      errors = OrdersPackage.undesignate_partially_designated_item(params[:package])
+      if(errors.present?)
+        render json: {errors: errors}.to_json , status: 422
       else
         @package.undesignate_from_stockit_order
         send_stock_item_response

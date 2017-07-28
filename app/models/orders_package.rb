@@ -107,11 +107,14 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.undesignate_partially_designated_item(packages)
+    errors = []
     packages.each_pair do |_key, package|
       orders_package = find_by(id: package["orders_package_id"])
       orders_package.remove_designation_of_associated_package
-      calculate_total_quantity_and_update_state(package['quantity'], orders_package)
+      orders_pkg = calculate_total_quantity_and_update_state(package['quantity'], orders_package)
+      errors.push(orders_pkg.errors.full_messages)
     end
+    errors.flatten
   end
 
   def self.calculate_total_quantity_and_update_state(package_quantity, orders_package)
