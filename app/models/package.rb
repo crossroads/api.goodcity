@@ -319,14 +319,14 @@ class Package < ActiveRecord::Base
   #   add_errors(response)
   # end
 
-  def undispatch_stockit_item
-    self.stockit_sent_on = nil
-    self.stockit_sent_by = nil
-    self.pallet = nil
-    self.box = nil
-    response = Stockit::ItemSync.undispatch(self)
-    add_errors(response)
-  end
+  # def undispatch_stockit_item
+  #   self.stockit_sent_on = nil
+  #   self.stockit_sent_by = nil
+  #   self.pallet = nil
+  #   self.box = nil
+  #   response = Stockit::ItemSync.undispatch(self)
+  #   add_errors(response)
+  # end
 
   # def move_partial_quantity(location_id, package_qty_changes, total_qty)
   #   package_qty_changes.each do |pckg_qty_param|
