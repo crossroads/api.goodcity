@@ -63,6 +63,10 @@ class OrdersPackage < ActiveRecord::Base
     DispatchAndUndispatch::Dispatch.new(self, package, quantity).assign_or_update_dispatched_location(id, quantity)
   end
 
+  def undispatch_orders_package
+    update(state: "designated", sent_on: nil)
+  end
+
   def update_state_to_designated
     package.update_allow_web_publish_to_false
     update(state: 'designated')
