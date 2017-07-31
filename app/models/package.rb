@@ -521,6 +521,10 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def undispatch_orders_package
+    orders_package.update(state: "designated", sent_on: nil)
+  end
+
   def dispatched_orders_package
     orders_packages.get_dispatched_records_with_order_id(order_id).first
   end
