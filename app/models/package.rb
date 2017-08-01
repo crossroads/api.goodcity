@@ -108,11 +108,12 @@ class Package < ActiveRecord::Base
   end
 
   def assign_or_update_dispatched_location(orders_package_id, quantity)
-    reset_existing_packages_location_qty
+    destroy_stale_packages_locations
     if dispatch_from_stockit?
+
       create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
     else
-      update_or_create_qty_moved_to_location(dispatched_location.id, quantity, orders_package_id)
+      create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
     end
   end
 
@@ -120,9 +121,9 @@ class Package < ActiveRecord::Base
     Location.dispatch_location
   end
 
-  def reset_existing_packages_location_qty
+  def destroy_stale_packages_locations
     if is_singleton_package? && !(locations.include?(dispatched_location))
-      packages_locations.update_all(quantity: 0)
+      delete_associated_packages_locations
     end
   end
 
@@ -161,15 +162,18 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
-      packages_locations.first.update(location_id: location_id)
-    elsif (packages_location = packages_locations.find_by(location_id: location_id))
-      packages_location.update_quantity(received_quantity)
-    else
-      packages_locations.send(operation, {
-        location_id: location_id,
-        quantity: received_quantity
-      })
+    if location_id.presence
+      if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
+        packages_locations.first.update(location_id: location_id)
+      elsif (packages_location = packages_locations.find_by(location_id: location_id))
+        packages_location.update_quantity(received_quantity)
+      else
+
+        packages_locations.send(operation, {
+          location_id: location_id,
+          quantity: received_quantity
+        })
+      end
     end
   end
 
@@ -186,15 +190,18 @@ class Package < ActiveRecord::Base
       cancel_designation
       orders_package.update_column(:quantity, quantity)
       orders_package.dispatch
+      update_or_create_qty_moved_to_location(dispatched_location.id, quantity, orders_package_id)
     else
-      handle_singleton_dispatch_undispatch_with_or_without_designation
+      handle_singleton_dispatch_undispatch_with_or_without_designation(dispatched_location.id, quantity)
     end
     update_in_stock_quantity
   end
 
-  def handle_singleton_dispatch_undispatch_with_or_without_designation
+  def handle_singleton_dispatch_undispatch_with_or_without_designation(dispatched_location_id, quantity)
     if is_singleton_and_has_designation? && is_stockit_sent_on_present?
+
       dispatch_for_designated_with_sent_on_present
+      update_or_create_qty_moved_to_location(dispatched_location_id, quantity,  dispatched_orders_package.id)
     elsif stockit_sent_on.blank?
       requested_undispatch_from_stockit
     elsif is_stockit_sent_on_present?
@@ -257,6 +264,10 @@ class Package < ActiveRecord::Base
 
   def designation
     orders_packages.designated.first
+  end
+
+  def dispatched_designation
+    orders_packages.dispatched.first
   end
 
   def cancel_designation
@@ -399,7 +410,7 @@ class Package < ActiveRecord::Base
 
   def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
     if referenced_package_location
-      reset_existing_packages_location_qty
+      destroy_stale_packages_locations
       referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
     elsif(packages_location = packages_locations.first)
       packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
@@ -410,10 +421,11 @@ class Package < ActiveRecord::Base
     packages_locations.find_by(location_id: location_id)
   end
 
-  def update_or_create_qty_moved_to_location(location_id, total_qty, orders_package_id = nil)
+  def update_or_create_qty_moved_to_location(location_id, total_qty, orders_package_id)
     if(packages_location = find_packages_location_with_location_id(location_id))
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
+
       create_associated_packages_location(location_id, total_qty, orders_package_id)
     end
   end
