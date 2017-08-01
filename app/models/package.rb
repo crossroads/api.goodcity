@@ -559,7 +559,7 @@ class Package < ActiveRecord::Base
   private
 
   def order_id_exists
-    if(order_id && !orders_packages.where(order_id: order_id).exists)
+    if(order_id && !orders_packages.where(order_id: order_id).exists?)
       errors.add(:order_id, "should have orders_packages")
     end
   end
