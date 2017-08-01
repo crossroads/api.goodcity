@@ -40,6 +40,7 @@ class Package < ActiveRecord::Base
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity,  numericality: { greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
+  validate :order_id_exists
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where(state: 'received') }
@@ -556,6 +557,13 @@ class Package < ActiveRecord::Base
   end
 
   private
+
+  def order_id_exists
+    if(order_id && !orders_packages.where(order_id: order_id).exists)
+      errors.add(:order_id, "should have orders_packages")
+    end
+  end
+
 
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
