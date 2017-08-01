@@ -108,7 +108,6 @@ class OrdersPackage < ActiveRecord::Base
 
   def self.undesignate_partially_designated_item(packages)
     errors = validate_orders_packages_quantity(packages)
-    debugger
     return errors[false] unless errors
     packages.each_pair do |_key, package|
       orders_package = find_by(id: package["orders_package_id"])
