@@ -107,8 +107,9 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.undesignate_partially_designated_item(packages)
-    is_valid = !validate_orders_packages_quantity(packages).present?
-    return validate_orders_packages_quantity(packages) unless is_valid
+    errors = validate_orders_packages_quantity(packages)
+    debugger
+    return errors[false] unless errors
     packages.each_pair do |_key, package|
       orders_package = find_by(id: package["orders_package_id"])
       orders_package.remove_designation_of_associated_package
@@ -117,16 +118,16 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def self.validate_orders_packages_quantity(packages)
-    errors = []
+    valid_and_errors_mapping = {}
     packages.each_pair do |_key, package|
       orders_package = find_by(id: package["orders_package_id"])
       orders_package.quantity = calculate_total_quantity(package['quantity'], orders_package.quantity)
       unless orders_package.valid?
-        errors.push(orders_package.errors.full_messages)
+        valid_and_errors_mapping[orders_package.valid?] = orders_package.errors.full_messages
         break
       end
     end
-    errors.flatten
+    valid_and_errors_mapping
   end
 
   def self.update_quantity_and_state(package_quantity, orders_package)
