@@ -144,14 +144,10 @@ module Api::V1
         ).undesignate_partially_designated_item
       send_stock_item_response
 # =======
-#       is_saved = OrdersPackage.undesignate_partially_designated_item(params[:package])
-#       if(is_saved)
-#         @package.undesignate_from_stockit_order
-#         send_stock_item_response
-#       else
-#         render json: {errors: I18n.t('orders_package.already_undesignated')}.to_json , status: 422
-#       end
-# >>>>>>> Refactored the code
+#       OrdersPackage.undesignate_partially_designated_item(params[:package])
+#       @package.undesignate_from_stockit_order
+#       send_stock_item_response
+# >>>>>>> Revert "Gcw 1566 restrict negative values for quantity"
     end
 
     def designate_partial_item
