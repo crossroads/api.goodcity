@@ -103,6 +103,7 @@ class Package < ActiveRecord::Base
     before_transition on: :mark_missing do |package|
       package.delete_associated_packages_locations
       package.received_at = nil
+      package.location_id = nil
       package.remove_from_stockit
     end
   end
