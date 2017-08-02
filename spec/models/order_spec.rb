@@ -2,7 +2,14 @@ require 'rails_helper'
 require "rspec/mocks/standalone"
 
 RSpec.describe Order, type: :model do
+  before(:all) do
+    WebMock.disable!
+  end
 
+  after(:all) do
+    WebMock.enable!
+  end
+  
   context "create an order" do
     let(:order) { Order.new }
     it "state should not be blank" do

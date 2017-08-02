@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe OrdersPackage, type: :model do
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to :order }
     it { is_expected.to belong_to :package }
@@ -13,6 +21,49 @@ RSpec.describe OrdersPackage, type: :model do
     it{ is_expected.to have_db_column(:quantity).of_type(:integer)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:sent_on).of_type(:datetime)}
+  end
+
+  describe 'validations' do
+    let!(:order) { create :order, :with_state_submitted }
+    let!(:inventory_number_error) { ["inventory_number should be present"] }
+    let!(:state_error) { ["state should be received"] }
+    let!(:location_error) { ["locations should be present"] }
+    let!(:all_error) { ["inventory_number should be present", "locations should be present", "state should be received"] }
+
+    it "Package inventory_number should be present" do
+      @package = create :package, :package_with_locations, state: "received"
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to include(inventory_number_error)
+    end
+
+    it "Package state should be received" do
+      @package = create :package, :received, state: "expecting"
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to include(state_error)
+    end
+
+    it "Package locations should be present" do
+      @package = create :package, :with_inventory_number, state: "received"
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to include(location_error)
+    end
+
+    it "Package is not properly inventoried :in submitted state" do
+      @package = create :package
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
+      @orders_package.save
+      expect(@orders_package.errors.messages.first).to include(all_error)
+    end
+
+    it "Package is not properly inventoried :in submitted state" do
+      @package = create :package, :received
+      @orders_package =  build :orders_package, quantity: 1, package: @package, order: order
+      expect(@orders_package.save).to eq(true)
+    end
+
   end
 
   describe "update_state_to_designated" do
@@ -63,7 +114,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#update_partially_designated_item' do
-    let!(:package) { create :package, quantity: 10 }
+    let!(:package) { create :package, :received, quantity: 10, received_quantity: 20 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
     it 'adds package quantity to orders_package quantity' do
@@ -97,6 +148,7 @@ RSpec.describe OrdersPackage, type: :model do
 
     it 'do not update state of orders_package if state is dispatched' do
       orders_package = create :orders_package, state: 'dispatched', package: package
+      package.packages_locations.destroy_all;
       packages_location = create :packages_location, quantity: 2, location: dispatched_location, package: package
       existing_state = orders_package.state
       orders_package.reload.update_partially_designated_item(package)
@@ -121,6 +173,7 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     it 'adds dispatched location for associate package' do
+      orders_package.package.packages_locations.last.update(quantity: 2)
       orders_package.dispatch_orders_package
       expect(orders_package.package.reload.locations).to include(dispatched_location)
     end
@@ -163,7 +216,7 @@ RSpec.describe OrdersPackage, type: :model do
 
   describe '.add_partially_designated_item' do
     let!(:order) { create :order }
-    let!(:package) { create :package, quantity: 20, received_quantity: 20 }
+    let!(:package) { create :package, :received, quantity: 20, received_quantity: 20 }
 
     it 'creates orders package with provided order_id, package_id, quantity' do
       package_params = { order_id: order.id, package_id: package.id, quantity: 10 }
@@ -215,7 +268,7 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#undesignate_partially_designated_item' do
-    let!(:package) { create :package, quantity: 4, received_quantity: 10}
+    let!(:package) { create :package, :received, quantity: 4, received_quantity: 10}
     let!(:order) { create :order }
     let!(:orders_package) { create :orders_package, order_id: order.id,
       package_id: package.id, quantity: 6, state: 'designated' }

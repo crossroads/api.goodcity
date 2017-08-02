@@ -1,6 +1,14 @@
 require "rails_helper"
 
 describe Stockit::OrdersPackageSync do
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
+  
   let(:package) { create :package, :stockit_package }
   let(:package_without_inventory) { create :package }
   let(:orders_package) { create :orders_package }

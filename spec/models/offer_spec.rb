@@ -1,7 +1,14 @@
 require "rails_helper"
 
 RSpec.describe Offer, type: :model do
+  before(:all) do
+    WebMock.disable!
+  end
 
+  after(:all) do
+    WebMock.enable!
+  end
+  
   before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:offer) { create :offer }
 

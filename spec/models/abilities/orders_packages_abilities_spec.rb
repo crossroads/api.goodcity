@@ -2,6 +2,14 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe "OrdersPackage abilities" do
+  before(:all) do
+    WebMock.disable!
+  end
+
+  after(:all) do
+    WebMock.enable!
+  end
+  
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :search, :show] }
   let(:orders_package) { create :orders_package }
