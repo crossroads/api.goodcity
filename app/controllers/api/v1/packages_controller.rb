@@ -156,13 +156,12 @@ module Api::V1
         params[:package][:quantity]
       ).designate_partial_item
 # =======
-#       designate_stockit_item(params[:package][:order_id])
 #       OrdersPackage.add_partially_designated_item(
 #         order_id: params[:package][:order_id],
 #         package_id: params[:package][:package_id],
 #         quantity: params[:package][:quantity])
 #       designate_stockit_item(params[:package][:order_id])
-# >>>>>>> Revert "Gcw 1655 commit package chnages only if orders package is valid on designation"
+# >>>>>>> removed designate_stockit_item()
       send_stock_item_response
     end
 
