@@ -151,18 +151,18 @@ module Api::V1
     end
 
     def designate_partial_item
-# <<<<<<< HEAD
       DesignationAndUndesignation::NewDesignation.new(@package,
         params[:package][:order_id],
         params[:package][:quantity]
       ).designate_partial_item
 # =======
-#       is_saved = OrdersPackage.add_partially_designated_item(
+#       designate_stockit_item(params[:package][:order_id])
+#       OrdersPackage.add_partially_designated_item(
 #         order_id: params[:package][:order_id],
 #         package_id: params[:package][:package_id],
 #         quantity: params[:package][:quantity])
-#       designate_stockit_item(params[:package][:order_id]) if is_saved
-# >>>>>>> do not assign order_id to package if orders_package is not valid on designation
+#       designate_stockit_item(params[:package][:order_id])
+# >>>>>>> Revert "Gcw 1655 commit package chnages only if orders package is valid on designation"
       send_stock_item_response
     end
 
