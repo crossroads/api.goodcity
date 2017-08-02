@@ -2,14 +2,6 @@ require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
 
-  before(:all) do
-    WebMock.disable!
-  end
-
-  after(:all) do
-    WebMock.enable!
-  end
-
   let(:user) { create(:user_with_token, :reviewer) }
   let(:donor) { create(:user_with_token) }
   let(:offer) { create :offer, created_by: donor }
@@ -125,6 +117,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Designate & undesignate from stockit' do
+
+        before(:all) do
+          WebMock.disable!
+        end
+
+        after(:all) do
+          WebMock.enable!
+        end
+
         let(:stockit_item_params_with_designation){
           stockit_item_params.merge({
             designation_name: order.code,
@@ -234,6 +235,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Dispatch & Undispatch from stockit' do
+        before(:all) do
+          WebMock.disable!
+        end
+
+        after(:all) do
+          WebMock.enable!
+        end
+
         let(:stockit_params_with_sent_on_and_designation){
           stockit_item_params.merge({
             stockit_sent_on: Date.today,
@@ -345,32 +354,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
     end
 
-  end
-
-  describe "PUT items/1/designate_partial_item" do
-    before { generate_and_set_token(user) }
-
-    let(:order) { create :order }
-    let(:order_1) { create :order }
-
-    it "updates order_id of package if its not already designated" do
-      package = create :package, :received, quantity: 1,
-        received_quantity: 1
-      put :designate_partial_item, id: package.id, package: {"order_id" => order.id,
-        "package_id" => package.id, "quantity" => "1" }
-      expect(package.reload.quantity).to eq 0
-      expect(package.reload.order_id).to eq order.id
-    end
-
-    it "do not updates order_id of package if its already designated" do
-      package = create :package, :received, quantity: 0,
-        received_quantity: 1, order_id: order.id
-      orders_package = create :orders_package, quantity: 1,
-        state: 'designated', order_id: order.id, package_id: package.id
-      put :designate_partial_item, id: package.id, package: {"order_id" => order_1.id,
-        "package_id" => package.id, "quantity" => "1" }
-      expect(package.reload.order_id).to eq order.id
-    end
   end
 
   describe "DELETE package/1" do
