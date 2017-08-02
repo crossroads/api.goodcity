@@ -52,4 +52,4 @@ zh-tw:
     move_stockit: "You can only move it using Stockit."
   orders_package:
     already_dispatched: "This has been already dispatched."
-    already_undesignated: "This designation has been already been cancelled."
+
