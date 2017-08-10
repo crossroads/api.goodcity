@@ -560,9 +560,13 @@ class Package < ActiveRecord::Base
   private
 
   def package_quantity_validator
-    if orders_packages.exists? && quantity != received_quantity - orders_packages.pluck(:quantity).sum
+    if quantity_invalid?
       errors.add(:quantity, "is invalid")
     end
+  end
+
+  def quantity_invalid?
+     (orders_packages.exists? && quantity != received_quantity - orders_packages.pluck(:quantity).sum) || quantity != received_quantity
   end
 
   def set_default_values
