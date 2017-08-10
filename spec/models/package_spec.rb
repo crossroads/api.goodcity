@@ -132,7 +132,7 @@ RSpec.describe Package, type: :model do
       new_quantity = 4
       @packages_location = @package.packages_locations.first
       expect {
-        @package.update(received_quantity: new_quantity)
+        @package.update(quantity: new_quantity, received_quantity: new_quantity)
         @packages_location.reload
       }.to change(@packages_location, :quantity).from(@package.received_quantity).to(new_quantity)
     end
@@ -459,10 +459,11 @@ RSpec.describe Package, type: :model do
   end
 
   describe '#update_in_stock_quantity' do
-    let(:package) { create :package, received_quantity: 10 }
-    let(:orders_package) { create :orders_package, quantity: 3, package: package, state: 'designated' }
+    let(:package) { create :package, quantity: 10, received_quantity: 10 }
+    let(:orders_package) { create :orders_package, package: package, quantity: 3, state: 'designated' }
 
     it 'subtracts assigned qty from received_quantity to calculate in hand quantity and updates package quantity with it' do
+      debugger
       in_hand_quantity = package.received_quantity - orders_package.quantity
       package.reload.update_in_stock_quantity
       expect(package.reload.quantity).to eq in_hand_quantity
