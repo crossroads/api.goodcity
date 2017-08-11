@@ -202,7 +202,7 @@ class Package < ActiveRecord::Base
   def dispatch_orders_package
     if is_singleton_package? && (orders_package = orders_package_with_different_designation)
       cancel_designation
-      orders_package.update_column(:quantity, quantity)
+      orders_package.update_column(:quantity, received_quantity)
       orders_package.dispatch
     else
       handle_singleton_dispatch_undispatch_with_or_without_designation
@@ -296,7 +296,7 @@ class Package < ActiveRecord::Base
   end
 
   def is_singleton_and_has_designation?
-    is_singleton_package? && designation
+    designation && is_singleton_package?
   end
 
   def delete_associated_packages_locations
