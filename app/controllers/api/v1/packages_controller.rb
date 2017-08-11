@@ -344,7 +344,9 @@ module Api::V1
     end
 
     def location_id
-      Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+      if(package_params[:location_id])
+        Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+      end
     end
 
     def box_id
@@ -356,7 +358,9 @@ module Api::V1
     end
 
     def order_id
-      Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
+      if(package_params[:order_id])
+        Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
+      end
     end
 
     def barcode_service
