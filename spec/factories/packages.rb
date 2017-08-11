@@ -33,7 +33,8 @@ FactoryGirl.define do
 
     trait :stockit_package do
       with_inventory_number
-      sequence(:stockit_id) { |n| n }
+      stockit_id { rand(1000) + 1 }
+      # sequence(:stockit_id) { |n| n }
     end
 
     trait :with_set_item do
