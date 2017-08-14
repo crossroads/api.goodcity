@@ -81,7 +81,7 @@ module Api::V1
       qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
-      @package.donor_condition_id = donor_condition_id if is_stock_app
+      @package.donor_condition_id = donor_condition_id if assign_donor_condition?
       packages_location_for_admin
 
       # use valid? to ensure mark_received errors get caught
@@ -94,6 +94,10 @@ module Api::V1
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
+    end
+
+    def assign_donor_condition?
+      package_params[:donor_condition_id] && is_stock_app
     end
 
     api :DELETE, "/v1/packages/1", "Delete an package"
