@@ -78,7 +78,6 @@ module Api::V1
     api :PUT, "/v1/packages/1", "Update a package"
     param_group :package
     def update
-      debugger
       qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
@@ -354,7 +353,6 @@ module Api::V1
     end
 
     def donor_condition_id
-      debugger
       case package_params[:donor_condition_id]
       when "N" then 1
       when "M" then 2
