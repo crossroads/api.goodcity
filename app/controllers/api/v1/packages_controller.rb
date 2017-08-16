@@ -61,8 +61,7 @@ module Api::V1
       if package_record
         @package.offer_id = offer_id
         if @package.valid? && @package.save
-          dispatch = DispatchAndUndispatch::Dispatch.new(nil, @package , nil)
-          dispatch.dispatch_orders_package if @package.dispatch_from_stockit?
+          dispatch_undispatch_from_stockit
           if is_stock_app
             render json: @package, serializer: stock_serializer, root: "item",
           include_order: false
@@ -373,6 +372,12 @@ module Api::V1
       if(stockit_id = package_params[:stockit_id])
         Package.find_by(stockit_id: stockit_id)
       end
+    end
+
+    def dispatch_undispatch_from_stockit
+      if @package.dispatch_from_stockit?
+       DispatchAndUndispatch::Dispatch.new(nil, @package , nil).stockit_item_dispatch
+     end
     end
 
     def donor_condition_id

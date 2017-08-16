@@ -90,11 +90,11 @@ module DispatchAndUndispatch
       package.stockit_sent_on_changed? && GoodcitySync.request_from_stockit
     end
 
-    def dispatch_orders_package
-      if package.is_singleton_package? && (package.orders_package = package.orders_package_with_different_designation)
+    def stockit_item_dispatch
+      if package.is_singleton_package? && (orders_package = package.orders_package_with_different_designation)
         package.cancel_designation
-        package.orders_package.update_column(:quantity, package.quantity)
-        package.orders_package.dispatch
+        orders_package.update_column(:quantity, package.quantity)
+        orders_package.dispatch
       else
         package.handle_singleton_dispatch_undispatch_with_or_without_designation
       end
