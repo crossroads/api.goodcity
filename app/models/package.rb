@@ -33,7 +33,7 @@ class Package < ActiveRecord::Base
   after_update :update_orders_package_quantity, if: :received_quantity_changed_and_orders_packages_exists?
   after_commit :update_set_item_id, on: :destroy
   after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  after_save :dispatch_orders_package, if: :dispatch_from_stockit?
+  # after_save :dispatch_orders_package, if: :dispatch_from_stockit?
 
   after_touch { update_client_store :update }
 
@@ -153,16 +153,16 @@ class Package < ActiveRecord::Base
     stockit_sent_on.present?
   end
 
-  def dispatch_orders_package
-    if is_singleton_package? && (orders_package = orders_package_with_different_designation)
-      cancel_designation
-      orders_package.update_column(:quantity, received_quantity)
-      orders_package.dispatch
-    else
-      handle_singleton_dispatch_undispatch_with_or_without_designation
-    end
-    update_in_stock_quantity
-  end
+  # def dispatch_orders_package
+  #   if is_singleton_package? && (orders_package = orders_package_with_different_designation)
+  #     cancel_designation
+  #     orders_package.update_column(:quantity, quantity)
+  #     orders_package.dispatch
+  #   else
+  #     handle_singleton_dispatch_undispatch_with_or_without_designation
+  #   end
+  #   update_in_stock_quantity
+  # end
 
   def handle_singleton_dispatch_undispatch_with_or_without_designation
     if is_singleton_and_has_designation? && is_stockit_sent_on_present?

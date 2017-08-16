@@ -1,6 +1,6 @@
 module DispatchAndUndispatch
   class Dispatch < Base
-    def initialize(package, order_id, quantity)
+    def initialize(orders_package, package, quantity)
       super
     end
 
@@ -84,6 +84,21 @@ module DispatchAndUndispatch
       else
         create_associated_packages_location(location_id, total_qty)
       end
+    end
+
+    def dispatch_from_stockit?
+      package.stockit_sent_on_changed? && GoodcitySync.request_from_stockit
+    end
+
+    def dispatch_orders_package
+      if package.is_singleton_package? && (package.orders_package = package.orders_package_with_different_designation)
+        package.cancel_designation
+        package.orders_package.update_column(:quantity, package.quantity)
+        package.orders_package.dispatch
+      else
+        package.handle_singleton_dispatch_undispatch_with_or_without_designation
+      end
+      package.update_in_stock_quantity
     end
 
   end

@@ -61,6 +61,8 @@ module Api::V1
       if package_record
         @package.offer_id = offer_id
         if @package.valid? && @package.save
+          dispatch = DispatchAndUndispatch::Dispatch.new(nil, @package , nil)
+          dispatch.dispatch_orders_package if @package.dispatch_from_stockit?
           if is_stock_app
             render json: @package, serializer: stock_serializer, root: "item",
           include_order: false
