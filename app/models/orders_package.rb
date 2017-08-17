@@ -59,6 +59,9 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def assign_dispatched_location
+    if package.is_singleton_package?
+      package.destroy_stale_packages_locations(quantity)
+    end
     package.assign_or_update_dispatched_location(id, quantity)
   end
 
