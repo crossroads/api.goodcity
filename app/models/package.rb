@@ -110,7 +110,6 @@ class Package < ActiveRecord::Base
   end
 
   def assign_or_update_dispatched_location(orders_package_id, quantity)
-    # destroy_stale_packages_locations(quantity)
     if dispatch_from_stockit?
       create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
     else
@@ -123,9 +122,13 @@ class Package < ActiveRecord::Base
   end
 
   def destroy_stale_packages_locations(new_quantity)
-    if (is_singleton_package? || packages_location_quantity_equal_to_received_quantity?(new_quantity)) && !(locations.include?(dispatched_location))
+    if(is_singleton_package? || total_quantity_move_without_dispatch_location?(new_quantity))
       delete_associated_packages_locations
     end
+  end
+
+  def total_quantity_move_without_dispatch_location?(new_quantity)
+    packages_location_quantity_equal_to_received_quantity?(new_quantity) && !(locations.include?(dispatched_location))
   end
 
   def packages_location_quantity_equal_to_received_quantity?(new_quantity)
@@ -420,7 +423,7 @@ class Package < ActiveRecord::Base
 
   def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
     if referenced_package_location
-      destroy_stale_packages_locations(orders_package.quantity)
+      # destroy_stale_packages_locations(orders_package.quantity) unless !is_singleton_package?
       referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
     elsif(packages_location = packages_locations.first)
       packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
