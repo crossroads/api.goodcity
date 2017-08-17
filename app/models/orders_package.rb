@@ -59,10 +59,14 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def assign_dispatched_location
+# <<<<<<< HEAD
     if package.is_singleton_package?
       package.destroy_stale_packages_locations(quantity)
     end
     package.assign_or_update_dispatched_location(id, quantity)
+# =======
+#     DispatchAndUndispatch::Dispatch.new(package, nil, quantity, self).assign_or_update_dispatched_location(id, quantity)
+# >>>>>>> refoctor code in dispatch service
   end
 
   def undispatch_orders_package

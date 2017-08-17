@@ -57,11 +57,12 @@ module Api::V1
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
+      sent_on = @package.stockit_sent_on_was if @package
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
       if package_record
         @package.offer_id = offer_id
         if @package.valid? && @package.save
-          dispatch_undispatch_from_stockit
+          dispatch_undispatch_from_stockit(sent_on)
           if is_stock_app
             render json: @package, serializer: stock_serializer, root: "item",
           include_order: false
@@ -186,34 +187,25 @@ module Api::V1
 
     def dispatch_stockit_item
       @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
-# <<<<<<< HEAD
-#       if @orders_package.dispatch_orders_package
-#         @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
-#         send_stock_item_response
-#       else
-#         render json: {errors: I18n.t('orders_package.already_dispatched')}.to_json , status: 422
-#       end
-# =======
-      DispatchAndUndispatch::Dispatch.new(@orders_package, @package, params["packages_location_and_qty"]).dispatch_package
+      DispatchAndUndispatch::Dispatch.new(@package, nil, params["packages_location_and_qty"], params[:package][:order_package_id]).dispatch_package
       send_stock_item_response
     end
 
     def undispatch_stockit_item
       # @package.undispatch_stockit_item
-      DispatchAndUndispatch::UnDispatch.new(package, order_id, nil).undispatch_stockit_item
+      DispatchAndUndispatch::UnDispatch.new(package, order_id, nil, nil).undispatch_stockit_item
       send_stock_item_response
     end
 
     def move_partial_quantity
       package_params = JSON.parse(params["package"])
-      DispatchAndUndispatch::Dispatch.new(nil, @package, nil).move_partial_quantity(params["location_id"], package_params, params["total_qty"])
+      DispatchAndUndispatch::Dispatch.new(@package, nil, nil , nil).move_partial_quantity(params["location_id"], package_params, params["total_qty"])
       # @package.move_partial_quantity(params["location_id"], package_params, params["total_qty"])
       send_stock_item_response
     end
 
     def move_full_quantity
-      orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
-      un_dispatch = DispatchAndUndispatch::UnDispatch.new(orders_package, @package, nil)
+      un_dispatch = DispatchAndUndispatch::UnDispatch.new(@package, nil, nil, params["ordersPackageId"])
       un_dispatch.undispatch_orders_package
       @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
       un_dispatch.undispatch_stockit_item
@@ -374,10 +366,10 @@ module Api::V1
       end
     end
 
-    def dispatch_undispatch_from_stockit
-      if @package.dispatch_from_stockit?
-       DispatchAndUndispatch::Dispatch.new(nil, @package , nil).stockit_item_dispatch
-     end
+    def dispatch_undispatch_from_stockit(sent_on)
+      if @package.stockit_sent_on != sent_on && GoodcitySync.request_from_stockit
+        DispatchAndUndispatch::Dispatch.new(@package, nil , nil, nil).stockit_item_dispatch
+      end
     end
 
     def donor_condition_id

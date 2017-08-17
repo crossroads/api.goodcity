@@ -1,7 +1,10 @@
 module DispatchAndUndispatch
   class UnDispatch < Base
-    def initialize(orders_package, package, package_location_qty)
+    attr_accessor :orders_package, :total_quantity, :orders_package_state
+
+    def initialize(package, order_id, quantity, orders_package_id)
       super
+      self.orders_package = OrdersPackage.find_by(id: orders_package_id)
     end
 
     def undispatch_stockit_item

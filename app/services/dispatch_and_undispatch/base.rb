@@ -1,10 +1,10 @@
 module DispatchAndUndispatch
   class Base
-    attr_accessor :order_id, :package, :quantity, :orders_package, :package_location_qty
+    attr_accessor :order_id, :package, :quantity, :orders_package
 
-    def initialize(orders_package, package, package_location_qty)
-      self.package_location_qty = package_location_qty
-      self.orders_package = orders_package
+    def initialize(package, order_id, quantity, *args)
+      self.order_id = order_id
+      self.quantity = quantity
       self.package  = package
     end
   end

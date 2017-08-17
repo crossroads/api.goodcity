@@ -1,7 +1,10 @@
 module DispatchAndUndispatch
   class Dispatch < Base
-    def initialize(orders_package, package, quantity)
+    attr_accessor :orders_package, :total_quantity, :orders_package_state
+
+    def initialize(package, order_id, quantity, orders_package_id)
       super
+      self.orders_package = OrdersPackage.find_by(id: orders_package_id)
     end
 
     def dispatch_package
@@ -86,15 +89,11 @@ module DispatchAndUndispatch
       end
     end
 
-    def dispatch_from_stockit?
-      package.stockit_sent_on_changed? && GoodcitySync.request_from_stockit
-    end
-
     def stockit_item_dispatch
       if package.is_singleton_package? && (orders_package = package.orders_package_with_different_designation)
         package.cancel_designation
         orders_package.update_column(:quantity, package.quantity)
-        orders_package.dispatch
+        orders_package.dispatch!
       else
         package.handle_singleton_dispatch_undispatch_with_or_without_designation
       end
