@@ -372,13 +372,5 @@ module Api::V1
       end
     end
 
-    def donor_condition_id
-      case package_params[:donor_condition_id]
-      when "N" then 1
-      when "M" then 2
-      when "U" then 3
-      when "B" then 4
-      end
-    end
   end
 end
