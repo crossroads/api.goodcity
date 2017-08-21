@@ -81,7 +81,7 @@ module Api::V1
       qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
-      @package.donor_condition_id = donor_condition_id if assign_donor_condition?
+      @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
       packages_location_for_admin
 
       # use valid? to ensure mark_received errors get caught
@@ -293,7 +293,7 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if is_stock_app
-        @package.donor_condition_id = donor_condition_id
+        @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
         @package.inventory_number = inventory_number
         @package
       elsif inventory_number
