@@ -137,6 +137,10 @@ class Package < ActiveRecord::Base
   #   stockit_sent_on_changed? && GoodcitySync.request_from_stockit
   # end
 # >>>>>>> move dispatch_orders_package call back to services
+  def dispatch_from_stockit?
+    stockit_sent_on_changed? && GoodcitySync.request_from_stockit
+  end
+# >>>>>>> fix failing specs
 
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?

@@ -11,13 +11,13 @@ module DispatchAndUndispatch
   end
 
   describe 'instance methods' do
-    subject { described_class.new(@orders_package, @package, @quantity) }
+    subject { described_class.new(@package, @order.id, @quantity, @orders_package.id) }
 
     describe '#new' do
       it 'initializes class variables' do
         expect(subject.package).to eq @package
         expect(subject.orders_package).to eq @orders_package
-        expect(subject.package_location_qty).to eq @quantity
+        expect(subject.quantity).to eq @quantity
       end
     end
 
