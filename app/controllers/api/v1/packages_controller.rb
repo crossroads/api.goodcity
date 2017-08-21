@@ -57,9 +57,9 @@ module Api::V1
     api :POST, "/v1/packages", "Create a package"
     param_group :package
     def create
-      sent_on = @package.stockit_sent_on_was if @package
       @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
       if package_record
+        sent_on = @package.stockit_sent_on_was
         @package.offer_id = offer_id
         if @package.valid? && @package.save
           dispatch_undispatch_from_stockit(sent_on)

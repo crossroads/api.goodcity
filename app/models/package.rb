@@ -117,20 +117,26 @@ class Package < ActiveRecord::Base
     packages_locations.first.update_quantity(received_quantity)
   end
 
-  def received_quantity_changed_and_orders_packages_exists?
-    received_quantity_changed? && orders_packages.exists?
-  end
+# <<<<<<< HEAD
+#   def received_quantity_changed_and_orders_packages_exists?
+#     received_quantity_changed? && orders_packages.exists?
+#   end
 
-  def update_orders_package_quantity
-    if GoodcitySync.request_from_stockit
-      update_in_stock_quantity
-      orders_packages.first.update(quantity: received_quantity)
-    end
-  end
+#   def update_orders_package_quantity
+#     if GoodcitySync.request_from_stockit
+#       update_in_stock_quantity
+#       orders_packages.first.update(quantity: received_quantity)
+#     end
+#   end
 
-  def dispatch_from_stockit?
-    stockit_sent_on_changed? && GoodcitySync.request_from_stockit
-  end
+#   def dispatch_from_stockit?
+#     stockit_sent_on_changed? && GoodcitySync.request_from_stockit
+#   end
+# =======
+  # def dispatch_from_stockit?
+  #   stockit_sent_on_changed? && GoodcitySync.request_from_stockit
+  # end
+# >>>>>>> move dispatch_orders_package call back to services
 
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
@@ -540,6 +546,10 @@ class Package < ActiveRecord::Base
     if dispatched_orders_package
       dispatched_orders_package.undispatch_orders_package
     end
+  end
+
+  def undispatch_orders_package
+    orders_package.update(state: "designated", sent_on: nil)
   end
 
   def dispatched_orders_package
