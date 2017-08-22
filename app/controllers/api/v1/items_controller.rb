@@ -79,7 +79,7 @@ module Api::V1
     end
 
     def dispatch_stockit_item_set
-      @item.dispatch_set_to_stockit_order(params[:package])
+      DispatchAndUndispatch::dispatch.new(nil, nil, nil, nil, @item).dispatch_set_to_stockit_order(params[:package])
       render json: @item, serializer: stockit_serializer
     end
 

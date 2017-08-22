@@ -1,10 +1,11 @@
 module DispatchAndUndispatch
   class Dispatch < Base
-    attr_accessor :orders_package, :total_quantity, :orders_package_state
+    attr_accessor :orders_package, :total_quantity, :orders_package_state, :item
 
-    def initialize(package, order_id, quantity, orders_package_id)
+    def initialize(package, order_id, quantity, orders_package_id, item = nil)
       super
       self.orders_package = OrdersPackage.find_by(id: orders_package_id)
+      self.item = item
     end
 
     def dispatch_package
@@ -99,6 +100,18 @@ module DispatchAndUndispatch
       end
       package.update_in_stock_quantity
     end
+
+  def dispatch_set_to_stockit_order(params)
+    item.inventory_packages.set_items.each do |pkg|
+      self.package = pkg
+      orders_package = package.orders_packages.find_by(order_id: params[:order_id])
+      if orders_package
+        orders_package.dispatch_orders_package
+      end
+      dispatch_stockit_item(orders_package, nil, true)
+      package.valid? and package.save
+    end
+  end
 
   end
 end

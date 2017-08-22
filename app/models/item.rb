@@ -145,16 +145,16 @@ class Item < ActiveRecord::Base
     end
   end
 
-  def dispatch_set_to_stockit_order(params)
-    inventory_packages.set_items.each do |package|
-      orders_package = package.orders_packages.find_by(order_id: params[:order_id])
-      if orders_package
-        orders_package.dispatch_orders_package
-      end
-      DispatchAndUndispatch::Dispatch.new(orders_package, package, nil).dispatch_stockit_item(orders_package, nil, true)
-      package.valid? and package.save
-    end
-  end
+  # def dispatch_set_to_stockit_order(params)
+  #   inventory_packages.set_items.each do |package|
+  #     orders_package = package.orders_packages.find_by(order_id: params[:order_id])
+  #     if orders_package
+  #       orders_package.dispatch_orders_package
+  #     end
+  #     package.dispatch_stockit_item(orders_package, nil, true)
+  #     package.valid? and package.save
+  #   end
+  # end
 
   def move_set_to_location(location_id)
     inventory_packages.set_items.each do |package|

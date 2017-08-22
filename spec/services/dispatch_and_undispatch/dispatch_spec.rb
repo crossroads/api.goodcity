@@ -8,6 +8,7 @@ module DispatchAndUndispatch
     @order   = create :order
     @orders_package = create :orders_package
     @quantity = 2
+    @item = create :item, :with_inventory_packages
   end
 
   describe 'instance methods' do
@@ -260,6 +261,19 @@ module DispatchAndUndispatch
         expect{
           subject.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
         }.to change(PackagesLocation, :count).by(0)
+      end
+    end
+
+    describe 'dispatch set (inventory-packages)' do
+      let!(:location) { create :location, :dispatched }
+      let!(:item) { create :item, :with_inventory_packages }
+      let!(:dispatch) { DispatchAndUndispatch::Dispatch.new(nil, nil, nil, nil, item) }
+
+      it "dispatches all inventory packages of item" do
+        expect(Stockit::ItemSync).to receive(:dispatch).exactly(item.packages.count).times
+        dispatch.dispatch_set_to_stockit_order({ order_id: 1 })
+        expect(item.inventory_packages.undispatched.length).to eq(0)
+        expect(item.inventory_packages.non_set_items.length).to eq(0)
       end
     end
 

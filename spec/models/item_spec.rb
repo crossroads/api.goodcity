@@ -164,15 +164,4 @@ RSpec.describe Item, type: :model do
     end
   end
 
-  describe 'dispatch set (inventory-packages)' do
-    let!(:location) { create :location, :dispatched }
-
-    it "dispatches all inventory packages of item" do
-      item = create :item, :with_inventory_packages
-      expect(Stockit::ItemSync).to receive(:dispatch).exactly(item.packages.count).times
-      item.dispatch_set_to_stockit_order({ order_id: 1 })
-      expect(item.inventory_packages.undispatched.length).to eq(0)
-      expect(item.inventory_packages.non_set_items.length).to eq(0)
-    end
-  end
 end
