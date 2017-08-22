@@ -11,29 +11,31 @@ module DispatchAndUndispatch
   end
 
   describe 'instance methods' do
-    subject { described_class.new(@orders_package, @package, @quantity) }
+    subject { described_class.new(@package, @order.id, @quantity, @orders_package.id) }
 
     describe '#new' do
       it 'initializes class variables' do
         expect(subject.package).to eq @package
         expect(subject.orders_package).to eq @orders_package
-        expect(subject.package_location_qty).to eq @quantity
+        expect(subject.quantity).to eq @quantity
       end
     end
 
     describe '#undispatch_orders_package' do
       let!(:orders_package) { create :orders_package, :with_state_requested, sent_on: Date.today }
-      let!(:un_dispatch) { described_class.new(orders_package, @package, @quantity) }
+      let!(:un_dispatch) { described_class.new(@package, @order.id, @quantity, orders_package.id) }
 
       it 'sets state as designated' do
         expect{
           un_dispatch.undispatch_orders_package
+          orders_package.reload
         }.to change(orders_package, :state).to('designated')
       end
 
       it 'sent_on to nil' do
         expect{
           un_dispatch.undispatch_orders_package
+          orders_package.reload
         }.to change(orders_package, :sent_on).to(nil)
       end
     end

@@ -1,6 +1,6 @@
 module DispatchAndUndispatch
   class UnDispatch < Base
-    attr_accessor :orders_package, :total_quantity, :orders_package_state
+    attr_accessor :orders_package, :total_quantity, :orders_package_state, :quantity
 
     def initialize(package, order_id, quantity, orders_package_id)
       super
