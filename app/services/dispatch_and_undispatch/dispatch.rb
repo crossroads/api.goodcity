@@ -15,8 +15,8 @@ module DispatchAndUndispatch
     end
 
     def assign_dispatched_location(orders_package)
-      if package.is_singleton_package?
-        package.destroy_stale_packages_locations(quantity)
+      if orders_package.package.is_singleton_package?
+        orders_package.package.destroy_stale_packages_locations(quantity)
       end
       assign_or_update_dispatched_location(orders_package.id, orders_package.quantity)
     end
@@ -37,7 +37,7 @@ module DispatchAndUndispatch
 
     def assign_or_update_dispatched_location(orders_package_id, quantity)
       dispatched_location = Location.dispatch_location
-      if package.dispatch_from_stockit?
+      if orders_package.package.dispatch_from_stockit?
         create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
       else
         create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
@@ -53,7 +53,7 @@ module DispatchAndUndispatch
     end
 
     def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
-      package.packages_locations.create(
+      orders_package.package.packages_locations.create(
         location_id: location_id,
         quantity: quantity,
         reference_to_orders_package: reference_to_orders_package
@@ -61,13 +61,13 @@ module DispatchAndUndispatch
     end
 
     def create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
-      unless package.locations.include?(dispatched_location)
+      unless orders_package.package.locations.include?(dispatched_location)
         create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
       end
     end
 
     def find_packages_location_with_location_id(location_id)
-      package.packages_locations.find_by(location_id: location_id)
+      orders_package.package.packages_locations.find_by(location_id: location_id)
     end
 
     def dispatch_stockit_item(_orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
@@ -115,6 +115,8 @@ module DispatchAndUndispatch
       orders_package = package.orders_packages.find_by(order_id: params[:order_id])
       if orders_package
         orders_package.dispatch_orders_package
+        self.orders_package = orders_package
+        assign_dispatched_location(orders_package)
       end
       dispatch_stockit_item(orders_package, nil, true)
       package.valid? and package.save

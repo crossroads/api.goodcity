@@ -63,8 +63,10 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#dispatch_orders_package' do
+    let!(:package) { create :package, :stockit_package, quantity: 0}
     let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
+    let!(:dispatch) { DispatchAndUndispatch::Dispatch.new(package, nil , nil, orders_package)}
 
     it "sets today's date for sent_on column" do
       todays_date = Date.today
@@ -80,6 +82,7 @@ RSpec.describe OrdersPackage, type: :model do
 
     it 'adds dispatched location for associate package' do
       orders_package.dispatch_orders_package
+      dispatch.assign_dispatched_location(orders_package)
       expect(orders_package.package.reload.locations).to include(dispatched_location)
     end
   end
