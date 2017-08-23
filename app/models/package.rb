@@ -113,6 +113,12 @@ class Package < ActiveRecord::Base
     received_quantity_changed? && locations.exists?
   end
 
+  def destroy_stale_packages_locations(new_quantity)
+    if(is_singleton_package? || total_quantity_move_without_dispatch_location?(new_quantity))
+      delete_associated_packages_locations
+    end
+  end
+
   def update_packages_location_quantity
     packages_locations.first.update_quantity(received_quantity)
   end
