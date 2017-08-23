@@ -11,8 +11,15 @@ module DispatchAndUndispatch
     def dispatch_package
       dispatch_stockit_item(orders_package, package_location_qty, true)
       orders_package.dispatch_orders_package
+      assign_dispatched_location
     end
 
+    def assign_dispatched_location
+      if package.is_singleton_package?
+        package.destroy_stale_packages_locations(quantity)
+      end
+      assign_or_update_dispatched_location(orders_package.id, orders_package.quantity)
+    end
 
     def deduct_dispatch_quantity(package_qty_changes)
       package_qty_changes.each_pair do |_key, pckg_qty_param|
@@ -95,6 +102,7 @@ module DispatchAndUndispatch
         package.cancel_designation
         orders_package.update_column(:quantity, package.quantity)
         orders_package.dispatch!
+        assign_dispatched_location
       else
         package.handle_singleton_dispatch_undispatch_with_or_without_designation
       end
