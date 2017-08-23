@@ -11,10 +11,10 @@ module DispatchAndUndispatch
     def dispatch_package
       dispatch_stockit_item(orders_package, package_location_qty, true)
       orders_package.dispatch_orders_package
-      assign_dispatched_location
+      assign_dispatched_location(orders_package)
     end
 
-    def assign_dispatched_location
+    def assign_dispatched_location(orders_package)
       if package.is_singleton_package?
         package.destroy_stale_packages_locations(quantity)
       end
@@ -102,7 +102,7 @@ module DispatchAndUndispatch
         package.cancel_designation
         orders_package.update_column(:quantity, package.quantity)
         orders_package.dispatch!
-        assign_dispatched_location
+        assign_dispatched_location(orders_package)
       else
         package.handle_singleton_dispatch_undispatch_with_or_without_designation
       end
