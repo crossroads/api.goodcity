@@ -208,7 +208,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, '', location)
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
-          expect(package.orders_packages.first.state).to eq('cancelled')
+          expect(orders_package.state).to eq('cancelled')
         end
 
         it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do

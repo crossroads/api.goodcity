@@ -227,13 +227,13 @@ module DispatchAndUndispatch
 
       it 'updates orders_package_id against packages_location record if dispatched' do
         packages_location = create :packages_location, package: @package, location: dispatched_location
-        subject.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package.id, orders_package.quantity)
+        subject.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package, orders_package.quantity)
         expect(packages_location.reload.reference_to_orders_package).to eq orders_package.id
       end
 
       it 'creates new packages_location record with orders_package_id if packages_location record do not exist and package dispatched' do
         expect{
-          subject.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package.id, orders_package.quantity)
+          subject.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package, orders_package.quantity)
         }.to change(PackagesLocation, :count).by(1)
         expect(@package.reload.packages_locations.first.reference_to_orders_package).to eq orders_package.id
       end
@@ -247,7 +247,7 @@ module DispatchAndUndispatch
 
       it 'creates dispatched packages location record against package if do not exist' do
         expect{
-          subject.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
+          subject.create_dispatched_packages_location_from_gc(dispatched_location, orders_package, 1)
         }.to change(PackagesLocation, :count).by(1)
         first_location = @package.reload.packages_locations.first
         expect(first_location.location).to eq dispatched_location
@@ -259,7 +259,7 @@ module DispatchAndUndispatch
         packages_location = create :packages_location, package: @package, location: dispatched_location,
           reference_to_orders_package: orders_package.id
         expect{
-          subject.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
+          subject.create_dispatched_packages_location_from_gc(dispatched_location, orders_package, 1)
         }.to change(PackagesLocation, :count).by(0)
       end
     end

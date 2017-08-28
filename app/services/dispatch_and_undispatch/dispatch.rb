@@ -67,7 +67,7 @@ module DispatchAndUndispatch
     end
 
     def find_packages_location_with_location_id(location_id)
-      orders_package.package.packages_locations.find_by(location_id: location_id)
+      package.packages_locations.find_by(location_id: location_id)
     end
 
     def dispatch_stockit_item(_orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
