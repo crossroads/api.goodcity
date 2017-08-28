@@ -18,7 +18,7 @@ module DispatchAndUndispatch
       if orders_package.package.is_singleton_package?
         orders_package.package.destroy_stale_packages_locations(quantity)
       end
-      assign_or_update_dispatched_location(orders_package.id, orders_package.quantity)
+      assign_or_update_dispatched_location(orders_package, orders_package.quantity)
     end
 
     def deduct_dispatch_quantity(package_qty_changes)
@@ -35,34 +35,34 @@ module DispatchAndUndispatch
     end
 
 
-    def assign_or_update_dispatched_location(orders_package_id, quantity)
+    def assign_or_update_dispatched_location(orders_package, quantity)
       dispatched_location = Location.dispatch_location
       if orders_package.package.dispatch_from_stockit?
-        create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
+        create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package, quantity)
       else
-        create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
+        create_dispatched_packages_location_from_gc(dispatched_location, orders_package, quantity)
       end
     end
 
-    def create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
+    def create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package, quantity)
       if(dispatched_packages_location = find_packages_location_with_location_id(dispatched_location.id))
-        dispatched_packages_location.update_referenced_orders_package(orders_package_id)
+        dispatched_packages_location.update_referenced_orders_package(orders_package.id)
       else
-        create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
+        create_associated_packages_location(dispatched_location.id, quantity, orders_package.id)
       end
     end
 
     def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
-      orders_package.package.packages_locations.create(
+      package.packages_locations.create(
         location_id: location_id,
         quantity: quantity,
         reference_to_orders_package: reference_to_orders_package
       )
     end
 
-    def create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
+    def create_dispatched_packages_location_from_gc(dispatched_location, orders_package, quantity)
       unless orders_package.package.locations.include?(dispatched_location)
-        create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
+        create_associated_packages_location(dispatched_location.id, quantity, orders_package.id)
       end
     end
 

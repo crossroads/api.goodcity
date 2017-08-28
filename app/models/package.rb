@@ -119,6 +119,14 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def total_quantity_move_without_dispatch_location?(new_quantity)
+    packages_location_quantity_equal_to_received_quantity?(new_quantity) && !(locations.include?(dispatched_location))
+  end
+
+  def packages_location_quantity_equal_to_received_quantity?(new_quantity)
+    received_quantity == packages_locations.pluck(:quantity).sum && new_quantity == received_quantity
+  end
+
   def update_packages_location_quantity
     packages_locations.first.update_quantity(received_quantity)
   end
