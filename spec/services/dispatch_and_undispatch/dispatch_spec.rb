@@ -6,7 +6,7 @@ module DispatchAndUndispatch
   before(:all) do
     @package = create :package, :with_set_item, received_quantity: 140, quantity: 140
     @order   = create :order
-    @orders_package = create :orders_package
+    @orders_package = create :orders_package, package: @package
     @quantity = 2
     @item = create :item, :with_inventory_packages
   end

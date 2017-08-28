@@ -64,7 +64,7 @@ RSpec.describe OrdersPackage, type: :model do
 
   describe '#dispatch_orders_package' do
     let!(:package) { create :package, :stockit_package, quantity: 0}
-    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
+    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1, package: package }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
     let!(:dispatch) { DispatchAndUndispatch::Dispatch.new(package, nil , nil, orders_package)}
 
