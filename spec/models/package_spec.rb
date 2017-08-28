@@ -521,12 +521,16 @@ RSpec.describe Package, type: :model do
 
     it 'updates quantity of orders_package and package' do
       package = create :package, order: order, quantity: 0, received_quantity: 100
+      location = create :location
       orders_package = create :orders_package, order: order, package: package, quantity: 100, state: "designated"
+      packages_location = create :packages_location, package: package, location: location, reference_to_orders_package: orders_package.id, quantity: 100
       GoodcitySync.request_from_stockit = true
       new_quantity = 50
       package.update(received_quantity: new_quantity)
       updated_orders_package = package.reload.orders_packages.first
+      updated_packages_location = package.reload.packages_locations.first
       expect(updated_orders_package.quantity).to be(package.received_quantity)
+      expect(updated_packages_location.quantity).to be(package.received_quantity)
     end
   end
 
