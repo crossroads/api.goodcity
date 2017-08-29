@@ -339,9 +339,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             order_id: order.id, received_quantity: 1, quantity: 0
           orders_package = create :orders_package, package: package,
             order: order, state: 'dispatched', sent_on: Date.today, quantity: 1
-          packages_location = create :packages_location, package: package, location: dispatched_location,
+          packages_location = create :packages_location, package: package, location_id: dispatched_location.id,
             quantity: 1, reference_to_orders_package: orders_package.id
           stockit_params_without_sent_on[:stockit_id] = package.reload.stockit_id
+          stockit_params_without_sent_on[:location_id] = dispatched_location.stockit_id
           expect{
             post :create, format: :json, package: stockit_params_without_sent_on
           }.to change(OrdersPackage, :count).by(0)
