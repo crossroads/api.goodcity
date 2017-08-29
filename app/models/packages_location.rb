@@ -4,7 +4,6 @@ class PackagesLocation < ActiveRecord::Base
 
   has_paper_trail class_name: 'Version'
 
-  validates :package, :location, presence: true
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
 
   scope :exclude_location, -> (location_id) {
