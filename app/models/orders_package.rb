@@ -3,8 +3,6 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
 
-  validates :package, :order, :quantity, presence: true
-
   after_initialize :set_initial_state
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
