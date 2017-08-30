@@ -145,6 +145,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           })
         }
 
+        let(:stockit_params_with_sent_on_and_designation){
+          stockit_item_params.merge({
+            stockit_sent_on: Date.today,
+            designation_name: order.code,
+            order_id: order.stockit_id
+          })
+        }
+
         it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
@@ -192,6 +200,47 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_orders_packages(package, stockit_request, 1)
           expect(package.orders_packages.first.order).to eq order
           expect(package.orders_packages.first.state).to eq 'designated'
+        end
+
+        it 'updates quantity of package, orders_package and packages_location record if item(designated) quantity is changed from stockit' do
+          package = create :package, :stockit_package, quantity: 0, received_quantity: 10
+          order1 = create :order
+          orders_package = create :orders_package, :with_state_designated, order: order1,
+            package: package, quantity: 10
+          packages_location = create :packages_location, package: package, location: location,
+            quantity: package.received_quantity
+          stockit_item_params[:quantity] = 5
+          stockit_item_params[:stockit_id] = package.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_item_params
+          }.to change(OrdersPackage, :count).by(0)
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+          expect(package.quantity).to eq(0)
+          expect(package.reload.received_quantity).to eq(5)
+          expect(package.reload.orders_packages.first.quantity).to eq(5)
+          expect(package.reload.packages_locations.first.quantity).to eq(5)
+        end
+
+        it 'updates quantity of package, orders_package and packages_location record if item(dispatched) quantity is changed from stockit' do
+          package = create :package, :stockit_package, quantity: 0, designation_name: 'abc', received_quantity: 10
+          orders_package = create :orders_package, package: package, order: order,
+            state: 'designated', quantity: 10
+          packages_location = create :packages_location, package: package, location: location,
+            quantity: package.received_quantity
+          stockit_item_params[:quantity] = 5
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_params_with_sent_on_and_designation
+          }.to change(OrdersPackage, :count).by(0)
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+          expect(package.reload.received_quantity).to eq(5)
+          expect(package.reload.packages_locations.first.quantity).to eq(5)
+          expect(package.reload.packages_locations.first.location.building).to eq "Dispatched"
+          expect(package.reload.packages_locations.first.reference_to_orders_package).to eq(orders_package.id)
+          expect(package.reload.orders_packages.first.state).to eq "dispatched"
+          expect(package.reload.orders_packages.first.quantity).to eq(5)
         end
 
         it 'cancels designation if item was previously designated and now its undesignated from stockit' do
