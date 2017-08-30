@@ -17,10 +17,10 @@ context Goodcity::HealthChecks::OrdersPackagesOrderIdCheck do
     WebMock.enable!
   end
 
-  it "fails" do
-    orders_package = build :orders_package, order_id: nil
-    expect(orders_package.valid?).to eql(false)
-    expect(orders_package.errors.messages).to eql({:order=>["can't be blank"]})
-  end
+  # it "fails" do
+  #   orders_package = build :orders_package, order_id: nil
+  #   expect(orders_package.valid?).to eql(false)
+  #   expect(orders_package.errors.messages).to eql({:order=>["can't be blank"]})
+  # end
 
 end

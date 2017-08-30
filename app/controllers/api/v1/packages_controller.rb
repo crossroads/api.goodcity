@@ -81,7 +81,7 @@ module Api::V1
       qty = params[:package][:quantity]
       @package.assign_attributes(package_params)
       @package.received_quantity = qty if qty
-      @package.donor_condition_id = donor_condition_id if is_stock_app
+      @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
       packages_location_for_admin
 
       # use valid? to ensure mark_received errors get caught
@@ -94,6 +94,10 @@ module Api::V1
       else
         render json: {errors: @package.errors.full_messages}.to_json , status: 422
       end
+    end
+
+    def assign_donor_condition?
+      package_params[:donor_condition_id] && is_stock_app
     end
 
     api :DELETE, "/v1/packages/1", "Delete an package"
@@ -289,7 +293,7 @@ module Api::V1
     def package_record
       inventory_number = remove_stockit_prefix(@package.inventory_number)
       if is_stock_app
-        @package.donor_condition_id = donor_condition_id
+        @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
         @package.inventory_number = inventory_number
         @package
       elsif inventory_number
@@ -323,7 +327,9 @@ module Api::V1
     end
 
     def location_id
-      Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+      if(package_params[:location_id])
+        Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+      end
     end
 
     def box_id
@@ -335,7 +341,9 @@ module Api::V1
     end
 
     def order_id
-      Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
+      if(package_params[:order_id])
+        Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
+      end
     end
 
     def barcode_service
@@ -345,15 +353,6 @@ module Api::V1
     def existing_package
       if(stockit_id = package_params[:stockit_id])
         Package.find_by(stockit_id: stockit_id)
-      end
-    end
-
-    def donor_condition_id
-      case package_params[:donor_condition_id]
-      when "N" then 1
-      when "M" then 2
-      when "U" then 3
-      when "B" then 4
       end
     end
   end
