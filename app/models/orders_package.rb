@@ -4,7 +4,8 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :updated_by, class_name: 'User'
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
-  
+  validates :package, :order, :quantity, presence: true
+
   after_initialize :set_initial_state
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
