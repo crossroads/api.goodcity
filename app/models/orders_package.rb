@@ -3,7 +3,6 @@ class OrdersPackage < ActiveRecord::Base
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
 
-  validates :package, :order, :quantity, presence: true
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   
   after_initialize :set_initial_state
@@ -60,6 +59,9 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def assign_dispatched_location
+    if package.is_singleton_package?
+      package.destroy_stale_packages_locations(quantity)
+    end
     package.assign_or_update_dispatched_location(id, quantity)
   end
 
