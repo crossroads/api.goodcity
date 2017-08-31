@@ -284,24 +284,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(orders_package.reload.quantity).to eq(5)
           expect(packages_location.reload.quantity).to eq(5)
         end
-
-        it 'updates quantity of package, orders_package and packages_location record if item(dispatched) quantity is changed from stockit' do
-          orders_package = create :orders_package, package: package, order: order,
-            state: 'designated', quantity: 10
-          stockit_item_params[:quantity] = 5
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
-          expect{
-            post :create, format: :json, package: stockit_params_with_sent_on_and_designation
-          }.to change(OrdersPackage, :count).by(0)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 1)
-          expect(package.reload.received_quantity).to eq(5)
-          expect(package.reload.packages_locations.first.quantity).to eq(5)
-          expect(package.reload.packages_locations.first.location.building).to eq "Dispatched"
-          expect(package.reload.packages_locations.first.reference_to_orders_package).to eq(orders_package.id)
-          expect(orders_package.reload.state).to eq "dispatched"
-          expect(orders_package.reload.quantity).to eq(5)
-        end
       end
 
       context 'Dispatch & Undispatch from stockit' do
