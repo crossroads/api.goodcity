@@ -507,6 +507,19 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  describe '#create_or_update_orders_package_for_nested_designation_ and_dispatch_from_Stockit' do
+    let(:order) { create :order }
+    it 'creates new orders_package record for the package and recalculates quantity' do
+      package = create :package, order: order, quantity: 100, received_quantity: 100
+      expect{
+        package.designate_and_undesignate_from_stockit
+      }.to change(OrdersPackage, :count).by(1)
+      expect(package.quantity).to eq 0
+      orders_package = package.reload.orders_packages.first
+      expect(orders_package.quantity).to eq(package.received_quantity)
+    end
+  end
+
   describe '#create_dispatched_packages_location_from_gc' do
     let(:dispatched_location) { create :location, :dispatched }
     let(:order) { create :order }

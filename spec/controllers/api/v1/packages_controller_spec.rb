@@ -246,6 +246,46 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
       end
 
+      context 'Update quantity of item with Designate and Dispatch operation from Stockit' do
+
+        before(:all) do
+          WebMock.disable!
+        end
+
+        after(:all) do
+          WebMock.enable!
+        end
+
+        let(:package) { create :package, :stockit_package, quantity: 0, received_quantity: 10 }
+        let(:order1) { create :order }
+        let(:packages_location) { create :packages_location, package: package, location: location,
+          quantity: package.received_quantity }
+
+        let(:stockit_params_with_sent_on_and_designation){
+          stockit_item_params.merge({
+            stockit_sent_on: Date.today,
+            designation_name: order.code,
+            order_id: order.stockit_id
+          })
+        }
+
+        it 'updates quantity of package, orders_package and packages_location record if item(designated) quantity is changed from stockit' do
+          orders_package = create :orders_package, :with_state_designated, order: order1,
+            package: package, quantity: 10
+          stockit_item_params[:quantity] = 5
+          stockit_item_params[:stockit_id] = package.stockit_id
+          expect{
+            post :create, format: :json, package: stockit_item_params
+          }.to change(OrdersPackage, :count).by(0)
+          stockit_request = GoodcitySync.request_from_stockit
+          test_orders_packages(package, stockit_request, 1)
+          expect(package.quantity).to eq(0)
+          expect(package.reload.received_quantity).to eq(5)
+          expect(orders_package.reload.quantity).to eq(5)
+          expect(packages_location.reload.quantity).to eq(5)
+        end
+      end
+
       context 'Dispatch & Undispatch from stockit' do
         before(:all) do
           WebMock.disable!
