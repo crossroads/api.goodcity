@@ -18,44 +18,37 @@ class Ability
       @user_offer_ids = user.offers.pluck(:id)
 
       can(:manage, :all) if admin
-      define_abilities
+      address_abilities
+      contact_abilities
+      delivery_abilities
+      gogovan_order_abilities
+      holiday_abilities
+      item_abilities
+      image_abilities
+      message_abilities
+      orders_package_abilities
+      offer_abilities
+      package_abilities
+      stockit_abilities
+      schedule_abilities
+      order_abilities
+      order_transport_abilities
+      stockit_organisation_abilities
+      stockit_contact_abilities
+      stockit_local_order_abilities
+      taxonomies
+      user_abilities
+      version_abilities
+      packages_locations_abilities
     end
-  end
-
-  def define_abilities
-    address_abilities
-    contact_abilities
-    delivery_abilities
-    gogovan_order_abilities
-    holiday_abilities
-    item_abilities
-    image_abilities
-    message_abilities
-    orders_package_abilities
-    offer_abilities
-    package_abilities
-    stockit_abilities
-    schedule_abilities
-    order_abilities
-    order_transport_abilities
-    stockit_organisation_abilities
-    stockit_contact_abilities
-    stockit_local_order_abilities
-    taxonomies
-    user_abilities
-    version_abilities
-    packages_locations_abilities
   end
 
   def stockit_abilities
     can [:index, :create, :destroy], Location if @api_user || staff?
-
-    if @api_user
-      can [:create, :index], Box
-      can [:create, :index], Pallet
-      can [:create, :index], Country
-      can [:create, :index], StockitActivity
-    end
+    can [:create, :index], Box if @api_user
+    can [:create, :index], Pallet if @api_user
+    can [:create, :index], Country if @api_user
+    can [:create, :index], StockitActivity if @api_user
   end
 
   def delivery_abilities

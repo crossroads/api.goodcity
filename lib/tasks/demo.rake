@@ -95,7 +95,7 @@ namespace :demo do
         item.accept
         item.packages.each do |package|
           location_id = Location.pluck(:id).sample
-          package.update(inventory_number: InventoryNumber.next_code, allow_web_publish: true, location_id: location_id)
+          package.update(inventory_number: InventoryNumber.available_code, allow_web_publish: true, location_id: location_id)
           package.build_or_create_packages_location(location_id, 'create')
           package.mark_received
         end
@@ -156,7 +156,7 @@ namespace :demo do
     end
 
     def create_organisation
-      Organisation.find(Organisation.pluck(:id).sample)
+      Organisation.find(rand(Organisation.count))
     end
 
     def reviewer

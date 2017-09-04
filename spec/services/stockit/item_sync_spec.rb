@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe Stockit::ItemSync do
-  let(:package)  { create :package, :stockit_package, :with_item , quantity:1, received_quantity: 1}
+  let(:package)  { create :package, :stockit_package, :with_item }
   let(:inventory_number) { package.inventory_number }
   let(:stockit_inventory_number) { "X#{inventory_number}" }
   let(:stockit)  { described_class.new(package) }

@@ -24,8 +24,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
     it 'returns designated and dispatched orders_packages' do
       order = create :order
-      package = create :package, quantity: 8, received_quantity: 8
-      3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
+      package = create :package
+      3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated' }
       get :index, search_by_package_id: package.id
       body = JSON.parse(response.body)
       expect( body["orders_packages"].size ).to eq(3)

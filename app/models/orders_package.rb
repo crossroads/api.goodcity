@@ -128,3 +128,5 @@ class OrdersPackage < ActiveRecord::Base
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.is_singleton_package?
   end
 end
+
+

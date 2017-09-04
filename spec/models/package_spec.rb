@@ -129,12 +129,12 @@ RSpec.describe Package, type: :model do
   describe "after_update" do
     it "#update_packages_location_quantity" do
       @package = create(:package, :received)
-      new_quantity = 4
+      new_quantity = rand(4)+2
       @packages_location = @package.packages_locations.first
       expect {
         @package.update(received_quantity: new_quantity)
         @packages_location.reload
-      }.to change(@packages_location, :quantity).from(@package.received_quantity).to(new_quantity)
+      }.to change(@packages_location, :quantity).from(@package.quantity).to(new_quantity)
     end
 
     it "#received_quantity_changed_and_locations_exists?" do
@@ -276,7 +276,7 @@ RSpec.describe Package, type: :model do
     let(:package) { create :package }
     let(:location) { create :location }
     let(:order) { create :order, state: "submitted"}
-    let!(:orders_package) { create :orders_package, package: package, state: 'designated', order: order, quantity: 1 }
+    let!(:orders_package) { create :orders_package, package: package, state: 'designated', order: order, quantity: 10 }
     let!(:packages_location) { create :packages_location, package: package, reference_to_orders_package: orders_package.id}
 
     context 'if no packages_location record exist with provided location_id' do
@@ -545,12 +545,6 @@ RSpec.describe Package, type: :model do
       expect(package.find_packages_location_with_location_id(location.id)).to eq nil
     end
   end
-
-  describe '#donor_condition_name' do
-    let(:package){ create :package, :with_lightly_used_donor_condition}
-    it 'returns name of package donor condition' do
-      expect(package.donor_condition_name).to eq package.donor_condition.name_en
-    end
-  end
-
 end
+
+

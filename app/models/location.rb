@@ -30,6 +30,7 @@ class Location < ActiveRecord::Base
       (object_changes ->> 'location_id') IS NOT NULL AND
       CAST(whodunnit AS integer) = ? AND
       (object_changes ->> 'created_at') >= (?)", ['create', 'update'], user_id, 15.days.ago).
-    order("locations.id, recently_used_at DESC").where("building NOT IN (?)", ['Dispatched', 'Multiple'])
+    order("locations.id, recently_used_at DESC")
   end
 end
+

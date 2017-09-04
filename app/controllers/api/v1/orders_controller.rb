@@ -42,7 +42,14 @@ module Api::V1
       records = @orders.with_eager_load.
         search(params['searchText'], params['toDesignateItem'].presence).latest.
         page(params["page"]).per(params["per_page"])
-      orders = order_response(records)
+      orders = ActiveModel::ArraySerializer.new(records,
+        each_serializer: serializer,
+        root: "designations",
+        include_packages: true,
+        include_order: false,
+        include_images: true,
+        exclude_stockit_set_item: true
+      ).to_json
       render json: orders.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
     end
 
@@ -71,7 +78,15 @@ module Api::V1
 
     def recent_designations
       records = Order.recently_used(User.current_user.id)
-      render json: order_response(records)
+      orders = ActiveModel::ArraySerializer.new(records,
+        each_serializer: serializer,
+        root: "designations",
+        include_packages: true,
+        include_order: false,
+        include_images: true,
+        exclude_stockit_set_item: true
+        ).to_json
+      render json: orders
     end
 
     def my_orders
@@ -80,17 +95,6 @@ module Api::V1
     end
 
     private
-
-    def order_response(records)
-      ActiveModel::ArraySerializer.new(records,
-        each_serializer: serializer,
-        root: "designations",
-        include_packages: true,
-        include_order: false,
-        include_images: true,
-        exclude_stockit_set_item: true
-        ).to_json
-    end
 
     def order_record
       if order_params[:stockit_id]

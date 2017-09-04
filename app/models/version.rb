@@ -35,11 +35,11 @@ class Version < PaperTrail::Version
   }
 
   scope :offer_logs, -> (offer_id) {
-    joins(sanitize_sql_array(["INNER JOIN offers ON versions.item_id = offers.id
-      AND offers.id = ?
+    joins("INNER JOIN offers ON versions.item_id = offers.id
+      AND offers.id = #{offer_id}
       AND versions.item_type = 'Offer'
       AND versions.event IN ('call_Accepted', 'donor_called', 'admin_called')
-      AND offers.deleted_at IS NULL", offer_id]))
+      AND offers.deleted_at IS NULL")
   }
 
   scope :item_versions, -> (item_id) {

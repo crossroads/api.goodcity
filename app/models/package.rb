@@ -20,7 +20,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
 
-  has_many   :packages_locations, inverse_of: :package, dependent: :destroy
+  has_many   :packages_locations, inverse_of: :package
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
 
@@ -30,7 +30,6 @@ class Package < ActiveRecord::Base
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
   after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
-  after_update :update_orders_package_quantity, if: :received_quantity_changed_and_orders_packages_exists?
   after_commit :update_set_item_id, on: :destroy
   after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   # after_save :dispatch_orders_package, if: :dispatch_from_stockit?
@@ -104,7 +103,6 @@ class Package < ActiveRecord::Base
     before_transition on: :mark_missing do |package|
       package.delete_associated_packages_locations
       package.received_at = nil
-      package.location_id = nil
       package.remove_from_stockit
     end
   end
@@ -151,6 +149,7 @@ class Package < ActiveRecord::Base
   #   stockit_sent_on_changed? && GoodcitySync.request_from_stockit
   # end
 # >>>>>>> move dispatch_orders_package call back to services
+
   def dispatch_from_stockit?
     stockit_sent_on_changed? && GoodcitySync.request_from_stockit
   end
@@ -158,10 +157,10 @@ class Package < ActiveRecord::Base
 
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
-      packages_locations.first.update(location_id: location_id)
-    elsif(packages_location = packages_locations.find_by(location_id: location_id))
+      packages_locations.first.update_column(:location_id, location_id)
+    elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
-    elsif(!stockit_sent_on)
+    else
       packages_locations.send(operation, {
         location_id: location_id,
         quantity: received_quantity
@@ -193,9 +192,7 @@ class Package < ActiveRecord::Base
       dispatch_for_designated_with_sent_on_present
     elsif stockit_sent_on.blank?
       requested_undispatch_from_stockit
-    elsif is_stockit_sent_on_present? && orders_packages.exists?
-      dispatch_for_designated_with_sent_on_present
-    else
+    elsif is_stockit_sent_on_present?
       create_associated_dispatched_orders_package
     end
   end
@@ -214,15 +211,13 @@ class Package < ActiveRecord::Base
   end
 
   def create_associated_dispatched_orders_package
-    orders_package = orders_packages.create(
+    orders_packages.create(
       order_id: order_id,
-      quantity: received_quantity,
+      quantity: quantity,
+      state: 'dispatched',
       sent_on: Time.now,
-      updated_by: User.current_user,
-      state: 'designated'
+      updated_by: User.current_user
     )
-    update_in_stock_quantity
-    orders_package.dispatch!
   end
 
   def designate_and_undesignate_from_stockit
@@ -274,7 +269,7 @@ class Package < ActiveRecord::Base
   end
 
   def is_singleton_and_has_designation?
-    designation && is_singleton_package?
+    is_singleton_package? && designation
   end
 
   def delete_associated_packages_locations
@@ -379,10 +374,11 @@ class Package < ActiveRecord::Base
   def move_full_quantity(location_id, orders_package_id)
     orders_package              = orders_packages.find_by(id: orders_package_id)
     referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
+
     if(packages_location_record = find_packages_location_with_location_id(location_id))
       new_qty = orders_package.quantity + packages_location_record.quantity
-      referenced_package_location.destroy
       packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
+      referenced_package_location.destroy
     else
       update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
     end
@@ -497,11 +493,7 @@ class Package < ActiveRecord::Base
   end
 
   def in_hand_quantity
-    if GoodcitySync.request_from_stockit && received_quantity_was != nil
-      received_quantity_was - total_assigned_quantity
-    else
-      received_quantity - total_assigned_quantity
-    end
+    received_quantity - total_assigned_quantity
   end
 
   def total_assigned_quantity
@@ -625,5 +617,5 @@ class Package < ActiveRecord::Base
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
   end
-
 end
+

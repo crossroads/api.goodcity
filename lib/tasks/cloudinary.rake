@@ -17,12 +17,11 @@ namespace :cloudinary do
   task list_tags: :environment do
     tags = []
     next_cursor = nil
-    is_next_cursor= true
-    while is_next_cursor do
+    while true do
       list = Cloudinary::Api.tags(max_results: 500, next_cursor: next_cursor)
       tags << list["tags"]
       next_cursor = list[:next_cursor]
-      is_next_cursor = !next_cursor.nil?
+      break if next_cursor.nil?
     end
     puts tags.uniq.compact
   end
