@@ -240,13 +240,16 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it 'dispatches orders_package if exists with same designation' do
-          package = create :package, :stockit_package, stockit_id: 15, designation_name: 'abc'
+          package = create :package, :with_inventory_number, stockit_id: 5, designation_name: 'abc'
           orders_package = create :orders_package, package: package, order: order, state: 'designated'
+          packages_location = create :packages_location, package: package,
+            location: location, reference_to_orders_package: orders_package.id
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(0)
           test_package_changes(package, response.status, order.code)
+          expect(package.locations.first).to eq(location)
           expect(package.orders_packages.first.state).to eq 'dispatched'
           test_packages_location_changes(package)
           expect(package.packages_locations.first.reference_to_orders_package).to eq orders_package.id

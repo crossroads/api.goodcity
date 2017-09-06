@@ -105,6 +105,7 @@ module DispatchAndUndispatch
         assign_dispatched_location(orders_package)
       else
         package.handle_singleton_dispatch_undispatch_with_or_without_designation
+        assign_dispatched_location(package.orders_packages.first)
       end
       package.update_in_stock_quantity
     end
