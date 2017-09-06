@@ -191,7 +191,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, '')
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
-          byebug
           expect(orders_package.state).to eq('cancelled')
         end
 
