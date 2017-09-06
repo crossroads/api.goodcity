@@ -182,7 +182,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'cancels designation if item was previously designated and now its undesignated from stockit' do
-          package = create :package, :stockit_package, designation_name: 'abc', order: order
+          package = create :package, :with_inventory_number, stockit_id: 6, designation_name: 'abc', order: order
           orders_package = create :orders_package, :with_state_designated, order: order, package: package
           stockit_item_params_without_designation[:stockit_id] = package.reload.stockit_id
           expect{
@@ -191,7 +191,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, '')
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
-          expect(orders_package.state).to eq('cancelled')
+          expect(package.orders_packages.first.state).to eq('cancelled')
         end
 
         it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do

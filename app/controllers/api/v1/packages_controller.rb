@@ -331,7 +331,9 @@ module Api::V1
     end
 
     def order_id
-      Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
+      if(package_params[:order_id])
+        Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
+      end
     end
 
     def barcode_service
@@ -350,5 +352,13 @@ module Api::V1
       end
     end
 
+    def donor_condition_id
+      case package_params[:donor_condition_id]
+      when "N" then 1
+      when "M" then 2
+      when "U" then 3
+      when "B" then 4
+      end
+    end
   end
 end
