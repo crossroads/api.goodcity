@@ -191,6 +191,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, '')
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
+          byebug
           expect(orders_package.state).to eq('cancelled')
         end
 
@@ -240,10 +241,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it 'dispatches orders_package if exists with same designation' do
-          package = create :package, :stockit_package, designation_name: 'abc'
+          package = create :package, :stockit_package, stockit_id: 15, designation_name: 'abc'
           orders_package = create :orders_package, package: package, order: order, state: 'designated'
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
-           expect{
+          expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(0)
           test_package_changes(package, response.status, order.code)
