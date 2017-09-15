@@ -48,6 +48,7 @@ gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
 gem 'nokogiri', '~> 1.7.2'
 gem 'sidekiq'
+gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'airbrake', "~> 4" # peg to v4 until we figure out if we can support v5 in Errbit
 gem 'lograge'
