@@ -61,6 +61,7 @@ gem 'active_record_union'
 gem 'kaminari'
 gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
+gem 'codeclimate-test-reporter'
 
 group :development do
   unless ENV["CI"]
