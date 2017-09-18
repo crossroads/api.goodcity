@@ -61,7 +61,6 @@ gem 'active_record_union'
 gem 'kaminari'
 gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
-gem 'simplecov-shield'
 
 group :development do
   unless ENV["CI"]
@@ -86,7 +85,7 @@ group :development, :test do
 end
 
 group :test do
-  gem "simplecov"
+  gem 'simplecov', require: false
   gem 'webmock'
   gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"
