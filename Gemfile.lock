@@ -125,6 +125,8 @@ GEM
     cloudinary (1.1.2)
       aws_cf_signer
       rest-client
+    codeclimate-test-reporter (1.0.8)
+      simplecov (<= 0.13)
     coderay (1.1.1)
     concurrent-ruby (1.0.4)
     connection_pool (2.2.0)
@@ -406,6 +408,7 @@ DEPENDENCIES
   capistrano-rvm
   capistrano-sidekiq
   cloudinary
+  codeclimate-test-reporter
   dotenv-rails (= 0.11.1)
   easyzpl!
   execjs
