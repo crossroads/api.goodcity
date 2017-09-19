@@ -1,6 +1,9 @@
 dependencies:
   pre:
     - bundle-audit --version || gem install bundler-audit
+  post:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
 
 machine:
   services:
@@ -11,6 +14,10 @@ database:
     - bundle exec rake db:create:all db:schema:load --trace
 
 test:
+  pre:
+    - ./cc-test-reporter before-build
+  override:
+    - bundle exec rspec; ./cc-test-reporter after-build --exit-code $?
   post:
     - bundle-audit -v --update
 deployment:

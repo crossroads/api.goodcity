@@ -1,9 +1,7 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
-if ENV["CI"]
-  require "simplecov"
-  SimpleCov.start
-end
+require "simplecov"
+SimpleCov.start
 ENV["RAILS_ENV"] ||= 'test'
 require 'support/env' # Must load our dummy env vars before rails
 require File.expand_path("../../config/environment", __FILE__)
