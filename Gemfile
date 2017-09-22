@@ -86,7 +86,7 @@ group :development, :test do
 end
 
 group :test do
-  gem 'simplecov', require: false
+  gem 'simplecov', '0.9.0', require: false
   gem 'webmock'
   gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"
