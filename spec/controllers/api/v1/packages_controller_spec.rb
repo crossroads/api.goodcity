@@ -212,8 +212,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do
-          package = create :package, :stockit_package, designation_name: 'abc'
-          orders_package = create :orders_package, :with_state_cancelled, order: order, package: package
+          package = create :package, :stockit_package, designation_name: 'abc', quantity: 1, received_quantity: 1
+          orders_package = create :orders_package, :with_state_cancelled, order: order, package: package, quantity: 0
           packages_location = create :packages_location, package: package, location: location,
             quantity: package.received_quantity
           stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
@@ -256,10 +256,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           WebMock.enable!
         end
 
-        let(:package) { create :package, :stockit_package, quantity: 0, received_quantity: 10 }
+        let(:package) {create :package, :stockit_package, designation_name: 'abc', received_quantity: 10,
+          quantity: 0 }
         let(:order1) { create :order }
-        let(:packages_location) { create :packages_location, package: package, location: location,
-          quantity: package.received_quantity }
 
         let(:stockit_params_with_sent_on_and_designation){
           stockit_item_params.merge({
@@ -270,9 +269,11 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it 'updates quantity of package, orders_package and packages_location record if item(designated) quantity is changed from stockit' do
-          orders_package = create :orders_package, :with_state_designated, order: order1,
+          orders_package = create :orders_package, :with_state_designated, order: order,
             package: package, quantity: 10
-          stockit_item_params[:quantity] = 5
+          packages_location = create :packages_location, package: package, location: location,
+          quantity: package.received_quantity
+          stockit_item_params[:quantity] = 8
           stockit_item_params[:stockit_id] = package.stockit_id
           expect{
             post :create, format: :json, package: stockit_item_params
@@ -280,9 +281,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
           expect(package.quantity).to eq(0)
-          expect(package.reload.received_quantity).to eq(5)
-          expect(orders_package.reload.quantity).to eq(5)
-          expect(packages_location.reload.quantity).to eq(5)
+          expect(package.reload.received_quantity).to eq(8)
+          expect(orders_package.reload.quantity).to eq(8)
+          expect(packages_location.reload.quantity).to eq(8)
         end
       end
 
