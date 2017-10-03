@@ -25,7 +25,7 @@ class Location < ActiveRecord::Base
   def self.recently_used(user_id)
     select("DISTINCT ON (locations.id) locations.id, building, area, versions.created_at AS recently_used_at").
     joins("INNER JOIN versions ON ((object_changes -> 'location_id' ->> 1) = CAST(locations.id AS TEXT))").
-    joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'PackagesLocation')").
+    joins("INNER JOIN packages_locations ON (packages_locations.id = versions.item_id AND versions.item_type = 'PackagesLocation')").
     where("versions.event IN (?) AND
       (object_changes ->> 'location_id') IS NOT NULL AND
       CAST(whodunnit AS integer) = ? AND
