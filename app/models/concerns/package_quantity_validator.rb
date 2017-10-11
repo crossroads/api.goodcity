@@ -2,7 +2,7 @@ class PackageQuantityValidator < ActiveModel::Validator
   def validate(record)
     package = record.package
     if(package.present? && is_invalid_total_quantity?(record))
-      record.errors.add(:quantity, "cannot be greater than package quantity")
+      record.package.errors.add(:quantity, "cannot be greater than package quantity")
     end
   end
 
