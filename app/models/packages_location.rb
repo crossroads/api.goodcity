@@ -6,7 +6,6 @@ class PackagesLocation < ActiveRecord::Base
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :location, presence: true
-  validates_with PackageQuantityValidator
 
   scope :exclude_location, -> (location_id) {
     where.not(location_id: location_id)
