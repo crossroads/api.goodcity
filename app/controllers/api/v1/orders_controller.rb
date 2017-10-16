@@ -54,7 +54,6 @@ module Api::V1
         root: root,
         exclude_code_details: true,
         include_packages: true,
-        include_organisation: true,
         include_order: false,
         include_images: true,
         exclude_stockit_set_item: true
