@@ -105,6 +105,7 @@ class Package < ActiveRecord::Base
       package.delete_associated_packages_locations
       package.received_at = nil
       package.location_id = nil
+      package.allow_web_publish = false
       package.remove_from_stockit
     end
   end
