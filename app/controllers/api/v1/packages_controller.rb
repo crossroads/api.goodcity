@@ -161,7 +161,7 @@ module Api::V1
         designate_stockit_item(params[:package][:order_id])
         send_stock_item_response
       else
-        render json: {errors: @package.errors.full_messages}.to_json , status: 422
+        render json: { errors: result.errors.full_messages }.to_json , status: 422
       end
     end
 
