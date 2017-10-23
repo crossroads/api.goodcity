@@ -103,7 +103,7 @@ class Ability
   end
 
   def packages_locations_abilities
-    can [:show], PackagesLocation if @api_user || staff?
+    can [:index, :show], PackagesLocation if @api_user || staff?
   end
 
   def item_abilities
