@@ -35,7 +35,7 @@ module Api::V1
     private
 
     def package_type_params
-      params.require(:package_type).permit(:stockit_id)
+      params.require(:package_type).permit(:stockit_id, :code, :name_en, :name_zh_tw)
     end
 
     def serializer
