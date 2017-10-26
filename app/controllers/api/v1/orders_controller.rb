@@ -109,7 +109,7 @@ module Api::V1
     end
 
     def order_params
-      params.require(:order).permit(:stockit_id, :code, :status, :created_at,
+      params.require(:order).permit(:stockit_id, :code, :status, :created_at, :organisation_id,
         :stockit_contact_id, :detail_id, :detail_type, :description, :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :purpose_description,
         purpose_ids: [], cart_package_ids: [])
     end
