@@ -5,22 +5,16 @@ namespace :stockit do
 
     codes_json = Stockit::CodeSync.index
     stockit_codes = JSON.parse(codes_json["codes"]) || []
-
     stockit_codes.each do |value|
+
       code = PackageType.find_by_stockit_id(value["id"])
-      code = PackageType.find_by_code(value["code"]) unless code.present?
+      code = PackageType.find_by_code(value["code"]) || PackageType.new(code: value["code"]) unless code.present?
       code.name_en = value["description_en"]
       code.name_zh_tw = value["description_zht"]
       code.stockit_id = value["id"]
       code.location_id = Location.find_by(stockit_id:  value["location_id"]).try(:id)
       is_new_code = code.new_record?
       code.save
-      if is_new_code && code.default_child_package_types.count.zero?
-        SubpackageType.create(
-          package_type: code,
-          child_package_type: code,
-          is_default: true)
-      end
     end
 
     new_gc_codes = PackageType.where("stockit_id IS NULL")
@@ -35,5 +29,4 @@ namespace :stockit do
     end
 
   end
-
 end
