@@ -13,13 +13,13 @@ namespace :goodcity do
     begin
       Package.where(donor_condition_id: nil).find_each(batch_size: 50) do |package|
         package.donor_condition_id = lightly_used.id
-        package.save
-        count += 1
+        count += 1 if package.save
       end
     rescue => e
-      puts "(#{e.message})"
+      log.error "(#{e.message})"
     end
 
     log.info(": #{count} records updated")
+    log.close
   end
 end
