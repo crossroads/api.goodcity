@@ -204,11 +204,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_item_params_without_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, format: :json, package: stockit_item_params_without_designation
-          }.to change(OrdersPackage, :count).by(0)
+          }.to change(OrdersPackage, :count).by(-1)
           test_package_changes(package, response.status, '', location)
           stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 1)
-          expect(package.orders_packages.first.state).to eq('cancelled')
+          test_orders_packages(package, stockit_request, 0)
         end
 
         it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do
@@ -256,9 +255,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           WebMock.enable!
         end
 
-        let(:package) {create :package, :stockit_package, designation_name: 'abc', received_quantity: 10,
-          quantity: 0 }
         let(:order1) { create :order }
+        let(:order) { create :order, :with_stockit_id }
+        let(:package) {create :package, :stockit_package, designation_name: order1.code, received_quantity: 10,
+          quantity: 0 }
 
         let(:stockit_params_with_sent_on_and_designation){
           stockit_item_params.merge({
@@ -273,17 +273,17 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             package: package, quantity: 10
           packages_location = create :packages_location, package: package, location: location,
           quantity: package.received_quantity
-          stockit_item_params[:quantity] = 8
-          stockit_item_params[:stockit_id] = package.stockit_id
+          stockit_params_with_sent_on_and_designation[:quantity] = 8
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.stockit_id
           expect{
-            post :create, format: :json, package: stockit_item_params
+            post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(0)
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
           expect(package.quantity).to eq(0)
           expect(package.reload.received_quantity).to eq(8)
           expect(orders_package.reload.quantity).to eq(8)
-          expect(packages_location.reload.quantity).to eq(8)
+          expect(package.packages_locations.first.quantity).to eq(8)
         end
       end
 
