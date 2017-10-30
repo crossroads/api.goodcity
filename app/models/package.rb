@@ -262,8 +262,8 @@ class Package < ActiveRecord::Base
   end
 
   def handle_singleton_designate_undesignate_with_or_without_designation
-    if is_singleton_and_has_designation? && is_order_id_nil?
-      cancel_designation
+    if designation && is_order_id_nil?
+      designation.destroy
     else
       update_or_create_new_designation
     end
