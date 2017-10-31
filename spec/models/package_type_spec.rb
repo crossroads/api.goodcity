@@ -27,6 +27,7 @@ RSpec.describe PackageType, type: :model do
 
     it 'creates default subpackage_type' do
       expect(package_type.subpackage_types.count).to eq 1
+      expect(package_type.visible_in_selects).to be_truthy
     end
   end
 end
