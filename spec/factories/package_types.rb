@@ -13,19 +13,5 @@ FactoryGirl.define do
     trait :with_stockit_id do
       sequence(:stockit_id) { |n| n }
     end
-
-    # Create the default and other sub package types
-    # after(:create) do |package|
-    #   default_packages = (generate(:package_types)[package.code][:default_packages] || "").split(", ")
-    #   default_packages.each do |code|
-    #     child_package = create(:base_package_type, code: code)
-    #     create(:subpackage_type, package_type: package, child_package_type: child_package, is_default: true)
-    #   end
-    #   other_packages = (generate(:package_types)[package.code][:other_packages] || "").split(", ")
-    #   other_packages.each do |code|
-    #     child_package = create(:base_package_type, code: code)
-    #     create(:subpackage_type, package_type: package, child_package_type: child_package, is_default: false)
-    #   end
-    # end
   end
 end
