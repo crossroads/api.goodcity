@@ -183,7 +183,7 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
+    if GoodcitySync.request_from_stockit && self.packages_locations.exists?
       packages_locations.first.update(location_id: location_id)
     elsif(packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
