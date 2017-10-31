@@ -22,7 +22,23 @@ class PackageType < ActiveRecord::Base
   has_many :package_categories_package_types
   has_many :package_categories, through: :package_categories_package_types
 
+  after_create :create_default_sub_package_type, unless: :child_package_type?
+
   translates :name, :other_terms
 
   scope :visible, -> { where(visible_in_selects: true) }
+
+  private
+
+  def child_package_type?
+    default_child_package_types.exists?
+  end
+
+  def create_default_sub_package_type
+    SubpackageType.create(
+      package_type: self,
+      child_package_type: self,
+      is_default: true
+    )
+  end
 end
