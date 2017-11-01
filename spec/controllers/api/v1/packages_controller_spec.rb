@@ -156,6 +156,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.orders_packages.first.state).to eq 'designated'
           expect(package.orders_packages.first.quantity).to eq 1
           expect(package.quantity).to eq(0)
+          expect(package.location_id).to eq location.id
         end
 
         it 'do not creates any orders_package if designation name was nil and not changed' do

@@ -306,6 +306,7 @@ module Api::V1
         @package.assign_attributes(package_params)
         @package.received_quantity = received_quantity
         @package.build_or_create_packages_location(location_id, 'build')
+        @package.location_id = location_id
         @package.state = 'received'
         @package.order_id = order_id
         @package.inventory_number = inventory_number
