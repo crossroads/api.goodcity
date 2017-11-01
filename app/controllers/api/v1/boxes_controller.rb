@@ -2,6 +2,7 @@ module Api::V1
   class BoxesController < Api::V1::ApiController
 
     load_and_authorize_resource :box, parent: false
+    skip_before_filter :verify_authenticity_token, except: :create
 
     resource_description do
       short 'List and create boxes'
