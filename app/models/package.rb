@@ -183,7 +183,7 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && is_singleton_package? && self.packages_locations.exists?
+    if GoodcitySync.request_from_stockit && self.packages_locations.exists?
       packages_locations.first.update(location_id: location_id)
     elsif(packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
@@ -262,8 +262,8 @@ class Package < ActiveRecord::Base
   end
 
   def handle_singleton_designate_undesignate_with_or_without_designation
-    if is_singleton_and_has_designation? && is_order_id_nil?
-      cancel_designation
+    if designation && is_order_id_nil?
+      designation.destroy
     else
       update_or_create_new_designation
     end
