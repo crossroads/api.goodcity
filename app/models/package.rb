@@ -252,33 +252,18 @@ class Package < ActiveRecord::Base
   end
 
   def designate_and_undesignate_from_stockit
-    if is_singleton_package? && (orders_package = orders_package_with_different_designation)
-      cancel_designation
-      orders_package.update(state: 'designated', quantity: quantity)
-    else
-      handle_singleton_designate_undesignate_with_or_without_designation
-    end
-    update_in_stock_quantity
-  end
-
-  def handle_singleton_designate_undesignate_with_or_without_designation
     if designation && is_order_id_nil?
       designation.destroy
-    else
-      update_or_create_new_designation
-    end
-  end
-
-  def update_or_create_new_designation
-    if is_singleton_and_has_designation?
+    elsif designation && order_id
       designation.update_designation(order_id)
-    elsif !is_order_id_nil?
+    else
       OrdersPackage.add_partially_designated_item(
         order_id: order_id,
         package_id: id,
         quantity: quantity
       )
     end
+    update_in_stock_quantity
   end
 
   def designation
