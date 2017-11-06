@@ -128,6 +128,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           WebMock.enable!
         end
 
+        let(:order1) { create :order }
+
+
         let(:stockit_item_params_with_designation){
           stockit_item_params.merge({
             designation_name: order.code,
@@ -195,7 +198,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.orders_packages.first.state).to eq 'designated'
         end
 
-        it 'cancels designation if item was previously designated and now its undesignated from stockit' do
+        it 'removes designation if item was previously designated and now its undesignated from stockit' do
           package = create :package, :stockit_package, designation_name: 'abc', order: order,
             quantity: 0, received_quantity: 1
           orders_package = create :orders_package, :with_state_designated, order: order,
@@ -211,9 +214,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_orders_packages(package, stockit_request, 0)
         end
 
-        it 'updates cancelled orders_package to designated if item designated to existing cancelled orders_package' do
-          package = create :package, :stockit_package, designation_name: 'abc', quantity: 1, received_quantity: 1
-          orders_package = create :orders_package, :with_state_cancelled, order: order, package: package, quantity: 0
+        it 'updates existing orders_package order_id if designated to some other order' do
+          package = create :package, :stockit_package, designation_name: order1.code, quantity: 0, received_quantity: 1
+          orders_package = create :orders_package, :with_state_designated, order: order1, package: package, quantity: 1
           packages_location = create :packages_location, package: package, location: location,
             quantity: package.received_quantity
           stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
@@ -224,25 +227,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
           expect(package.orders_packages.first.state).to eq('designated')
-        end
-
-        it 'designates item to cancelled designation if again designated to same and if it has another active designation with some other order_id then it cancels it' do
-          package_1 = create :package, :stockit_package, designation_name: 'abc', received_quantity: 1,
-            quantity: 0
-          orders_package = create :orders_package, :with_state_cancelled, order: order,
-            package: package_1, quantity: 0
-          orders_package_1 = create :orders_package, :with_state_designated, order: order_1,
-            package: package_1, quantity: 1
-          packages_location = create :packages_location, package: package_1, location: location,
-            quantity: package_1.received_quantity
-          stockit_item_params_with_designation[:stockit_id] = package_1.reload.stockit_id
-          expect{
-            post :create, format: :json, package: stockit_item_params_with_designation
-          }.to change(OrdersPackage, :count).by(0)
-          test_package_changes(package_1.reload, response.status, order.code, location)
-          expect(orders_package.reload.state).to eq 'designated'
-          expect(orders_package_1.reload.state).to eq('cancelled')
-          expect(GoodcitySync.request_from_stockit).to eq(true)
         end
       end
 
