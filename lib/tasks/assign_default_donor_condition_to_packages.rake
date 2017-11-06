@@ -8,7 +8,7 @@ namespace :goodcity do
     count = 0
 
     begin
-      Package.where(donor_condition_id: nil).find_each(batch_size: 100) do |package|
+      Package.where('donor_condition_id is null and stockit_id is not null').find_each(batch_size: 100) do |package|
         package.donor_condition_id = lightly_used_id
         if package.save
           count += 1
