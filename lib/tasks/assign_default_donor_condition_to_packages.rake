@@ -13,7 +13,7 @@ namespace :goodcity do
         if package.save
           count += 1
         else
-          log.error "Package save error: #{package.errors.full_messages}"
+          log.error "Package with Id #{package.id} didn't save error: #{package.errors.full_messages}"
         end
       end
     rescue => e
