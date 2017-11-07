@@ -204,34 +204,21 @@ class Package < ActiveRecord::Base
   end
 
   def dispatch_orders_package
-    if is_singleton_package? && (orders_package = orders_package_with_different_designation)
-      cancel_designation
-      orders_package.update_column(:quantity, received_quantity)
-      orders_package.dispatch
+    if designation && is_stockit_sent_on_present? && same_order_id_as_designation?
+      designation.dispatch
+    elsif designation && is_stockit_sent_on_present?
+      designation.update(order_id: order_id, state_event: "dispatch")
+    elsif stockit_sent_on.blank?
+      requested_undispatch_from_stockit
     else
-      handle_singleton_dispatch_undispatch_with_or_without_designation
+      create_associated_dispatched_orders_package
     end
     update_in_stock_quantity
   end
 
-  def handle_singleton_dispatch_undispatch_with_or_without_designation
-    if is_singleton_and_has_designation? && is_stockit_sent_on_present?
-      dispatch_for_designated_with_sent_on_present
-    elsif stockit_sent_on.blank?
-      requested_undispatch_from_stockit
-    elsif is_stockit_sent_on_present? && orders_packages.exists?
-      dispatch_for_designated_with_sent_on_present
-    else
-      create_associated_dispatched_orders_package
-    end
-  end
-
-  def dispatch_for_designated_with_sent_on_present
-    if same_order_id_as_designation?
-      designation.dispatch!
-    else
-      cancel_designation
-      create_associated_dispatched_orders_package
+   def requested_undispatch_from_stockit
+    if dispatched_orders_package
+      dispatched_orders_package.undispatch_orders_package
     end
   end
 
@@ -555,11 +542,7 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def requested_undispatch_from_stockit
-    if dispatched_orders_package
-      dispatched_orders_package.undispatch_orders_package
-    end
-  end
+
 
   def dispatched_orders_package
     orders_packages.get_dispatched_records_with_order_id(order_id).first
