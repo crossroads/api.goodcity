@@ -329,34 +329,29 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_packages_location_changes(package)
         end
 
-        it 'cancels designation and creates new orders_package with state dispatched if dispatched with another designation from stockit' do
+        it 'updates existing designation with new order_id and dispatches it when dispatched from stockit with another order' do
           package = create :package, :stockit_package, designation_name: 'abc'
           orders_package = create :orders_package, package: package, order: order_1, state: 'designated'
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
-          }.to change(OrdersPackage, :count).by(1)
+          }.to change(OrdersPackage, :count).by(0)
           test_package_changes(package, response.status, order.code, dispatched_location)
-          expect(orders_package.reload.state).to eq 'cancelled'
+          expect(orders_package.reload.state).to eq 'dispatched'
           test_packages_location_changes(package)
         end
 
-        it 'cancels existing designation and dispatches orders_package if available with same order id' do
+        it 'dispatches existing designation if available with same order_id' do
           package          = create :package, :stockit_package, quantity: 0
-          orders_package   = create :orders_package, :with_state_designated,
-            package: package, order: order_1, quantity: 1
-          orders_package_1 = create :orders_package, :with_state_cancelled,
-            package: package, order: order, quantity: 0
+          orders_package = create :orders_package, :with_state_designated,
+            package: package, order: order, quantity: 1
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           stockit_params_with_sent_on_and_designation[:quantity]   = 1
           expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(0)
           test_package_changes(package, response.status, order.code, dispatched_location)
-          expect(orders_package.reload.quantity).to eq 0
-          expect(orders_package.reload.state).to eq 'cancelled'
-          expect(orders_package_1.reload.quantity).to eq 1
-          expect(orders_package_1.state).to eq 'dispatched'
+          expect(orders_package.reload.state).to eq 'dispatched'
           test_packages_location_changes(package)
         end
 
