@@ -79,7 +79,15 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def update_designation(order_id_to_update)
-    update(order_id: order_id_to_update, updated_by: ( GoodcitySync.request_from_stockit ? User.find_by(first_name: "Stockit") : User.current_user))
+    update(order_id: order_id_to_update, updated_by: designated_user)
+  end
+
+  def designated_user
+    if GoodcitySync.request_from_stockit
+      User.find_by(first_name: "Stockit")
+    else
+      User.current_user
+    end
   end
 
   def delete_unwanted_cancelled_packages(order_to_delete)
