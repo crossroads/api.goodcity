@@ -84,7 +84,7 @@ class OrdersPackage < ActiveRecord::Base
 
   def designated_user
     if GoodcitySync.request_from_stockit
-      User.find_by(first_name: "Stockit")
+      User.stockit_user
     else
       User.current_user
     end
