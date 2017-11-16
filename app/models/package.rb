@@ -251,7 +251,13 @@ class Package < ActiveRecord::Base
         quantity: quantity
       )
     end
+    assign_stockit_designated_by_and_stockit_sent_by
     update_in_stock_quantity
+  end
+
+  def assign_stockit_designated_by_and_stockit_sent_by
+    stockit_user_id = User.stockit_user.id
+    update_columns(stockit_designated_by_id: stockit_user_id, stockit_sent_by_id: stockit_user_id)
   end
 
   def designation
