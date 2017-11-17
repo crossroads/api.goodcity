@@ -102,7 +102,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let(:donor_condition) { create :donor_condition }
       let!(:dispatched_location) { create :location, :dispatched }
       # let!(:location_1) { create :location }
-      let!(:stockit_user) { create :user, id: 99, first_name: "Stockit" }
+      let!(:stockit_user) { create :user, id: 99, first_name: "Stockit", last_name: "User" }
       let(:stockit_item_params) {
         {
           quantity: 1,
@@ -175,6 +175,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'creates orders_package for already existing item which is now designated from stockit' do
+          GoodcitySync.request_from_stockit = true
           package = create :package, :stockit_package, item: item
           stockit_item_params_with_designation[:stockit_id] = package.stockit_id
           expect{
@@ -183,8 +184,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, order.code, location)
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
-          expect(package.orders_packages.first.updated_by_id).to eq 99
-          expect(package.stockit_designated_by_id).to eq 99
+          expect(package.stockit_designated_by_id).to eq stockit_user.id
+          expect(package.orders_packages.first.updated_by_id).to eq stockit_user.id
         end
 
         it 'updates designation if item has designation in stockit and then designated to some other designation' do
