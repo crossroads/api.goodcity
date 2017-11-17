@@ -132,7 +132,7 @@ class User < ActiveRecord::Base
     User.system.pluck(:id).include?(self.id)
   end
 
-  def self.designated_by_user
+  def self.updated_by_user
     if GoodcitySync.request_from_stockit
       User.stockit_user
     else
