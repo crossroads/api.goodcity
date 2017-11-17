@@ -102,6 +102,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let(:donor_condition) { create :donor_condition }
       let!(:dispatched_location) { create :location, :dispatched }
       # let!(:location_1) { create :location }
+      let!(:stockit_user) { create :user, first_name: "Stockit" }
       let(:stockit_item_params) {
         {
           quantity: 1,
@@ -160,6 +161,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.orders_packages.first.quantity).to eq 1
           expect(package.quantity).to eq(0)
           expect(package.location_id).to eq location.id
+          expect(package.orders_packages.first.updated_by).to eq stockit_user.id
+          expect(package.stockit_designated_by_id).to eq stockit_user.id
+          expect(package.stockit_sent_by_id).to eq stockit_user.id
         end
 
         it 'do not creates any orders_package if designation name was nil and not changed' do
