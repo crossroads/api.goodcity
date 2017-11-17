@@ -134,7 +134,7 @@ class User < ActiveRecord::Base
 
   def self.designated_by_user
     if GoodcitySync.request_from_stockit
-      find_by(first_name: "Stockit", last_name: "User")
+      User.stockit_user
     else
       RequestStore.store[:current_user]
     end
