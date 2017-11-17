@@ -161,7 +161,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.orders_packages.first.quantity).to eq 1
           expect(package.quantity).to eq(0)
           expect(package.location_id).to eq location.id
-          expect(package.orders_packages.first.updated_by).to eq stockit_user.id
+          expect(package.orders_packages.first.updated_by.id).to eq stockit_user.id
           expect(package.stockit_designated_by_id).to eq stockit_user.id
           expect(package.stockit_sent_by_id).to eq stockit_user.id
         end
