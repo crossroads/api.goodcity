@@ -132,7 +132,7 @@ class User < ActiveRecord::Base
     User.system.pluck(:id).include?(self.id)
   end
 
-  def self.designated_user
+  def self.designated_by_user
     if GoodcitySync.request_from_stockit
       find_by(first_name: "Stockit", last_name: "User")
     else
