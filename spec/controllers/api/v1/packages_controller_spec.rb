@@ -150,6 +150,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
 
         it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
+          debugger
           expect{
             post :create, format: :json, package: stockit_item_params_with_designation
           }.to change(Package, :count).by(1)
@@ -161,9 +162,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.orders_packages.first.quantity).to eq 1
           expect(package.quantity).to eq(0)
           expect(package.location_id).to eq location.id
-          expect(package.orders_packages.first.updated_by.id).to eq stockit_user.id
-          expect(package.stockit_designated_by_id).to eq stockit_user.id
-          expect(package.stockit_sent_by_id).to eq stockit_user.id
+          # expect(package.orders_packages.first.updated_by_id).to eq stockit_user.id
+          # expect(package.stockit_designated_by_id).to eq stockit_user.id
         end
 
         it 'do not creates any orders_package if designation name was nil and not changed' do
@@ -184,6 +184,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, order.code, location)
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
+          expect(package.orders_packages.first.updated_by_id).to eq stockit_user.id
+          expect(package.stockit_designated_by_id).to eq stockit_user.id
         end
 
         it 'updates designation if item has designation in stockit and then designated to some other designation' do
