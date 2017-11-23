@@ -215,11 +215,7 @@ class Package < ActiveRecord::Base
       create_associated_dispatched_orders_package
     end
     update_in_stock_quantity
-    assign_stockit_sent_by_id
-  end
-
-  def assign_stockit_sent_by_id
-    update_columns(stockit_sent_by_id: stockit_user_id)
+    assign_stockit_for :dispatch
   end
 
   def requested_undispatch_from_stockit
@@ -256,12 +252,12 @@ class Package < ActiveRecord::Base
         quantity: quantity
       )
     end
-    assign_stockit_designated_by_id
+    assign_stockit_for :designation
     update_in_stock_quantity
   end
 
-  def assign_stockit_designated_by_id
-    update_columns(stockit_designated_by_id: stockit_user_id)
+  def assign_stockit_for(event)
+    event == :dispatch ? update_columns(stockit_sent_by_id: stockit_user_id) : update_columns(stockit_designated_by_id: stockit_user_id)
   end
 
   def stockit_user_id
