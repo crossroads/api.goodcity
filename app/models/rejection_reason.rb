@@ -1,6 +1,7 @@
 class RejectionReason < ActiveRecord::Base
 
   include CacheableJson
+  include RollbarSpecification
 
   has_many :items
   translates :name

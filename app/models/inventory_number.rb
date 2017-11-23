@@ -1,4 +1,5 @@
 class InventoryNumber < ActiveRecord::Base
+  include RollbarSpecification
 
   validates :code, presence: true, uniqueness: true
 

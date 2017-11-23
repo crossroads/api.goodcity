@@ -1,6 +1,7 @@
 class CancellationReason < ActiveRecord::Base
 
   include CacheableJson
+  include RollbarSpecification
 
   has_many :offers
   translates :name

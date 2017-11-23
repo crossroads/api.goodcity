@@ -1,4 +1,6 @@
 class PackagesLocation < ActiveRecord::Base
+  include RollbarSpecification
+  
   belongs_to :location
   belongs_to :package
 
