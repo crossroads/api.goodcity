@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   include PushUpdates
+  include RollbarSpecification
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy

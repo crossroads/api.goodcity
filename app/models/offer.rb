@@ -3,6 +3,7 @@ class Offer < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include PushUpdates
+  include RollbarSpecification
 
   NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
 
