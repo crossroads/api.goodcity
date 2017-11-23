@@ -3,6 +3,7 @@ class Package < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include PushUpdates
+  include RollbarSpecification
 
   BROWSE_ITEM_STATES = ['accepted', 'submitted']
   BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
@@ -41,7 +42,6 @@ class Package < ActiveRecord::Base
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity,  numericality: { greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
-  after_validation :report_validation_errors_to_rollbar, if: :request_from_stockit?
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
   scope :received, -> { where(state: 'received') }
@@ -551,10 +551,6 @@ class Package < ActiveRecord::Base
 
   def donor_condition_name
     donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
-  end
-
-  def request_from_stockit?
-    GoodcitySync.request_from_stockit
   end
 
   private
