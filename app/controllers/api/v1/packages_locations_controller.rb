@@ -20,8 +20,17 @@ module Api::V1
       end
     end
 
+    def index
+      return search_by_package_id if params['search_by_package_id'].present?
+    end
+
     def show
       render json: @packages_location, serializer: serializer
+    end
+
+    def search_by_package_id
+      @packages_locations = @packages_locations.get_records_associated_with_package(params["search_by_package_id"])
+      render json: @packages_locations, each_serializer: serializer
     end
 
     def eager_load_packages_locations
