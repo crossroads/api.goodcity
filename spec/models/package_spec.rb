@@ -56,12 +56,13 @@ RSpec.describe Package, type: :model do
     end
 
     describe "#mark_missing" do
-      let(:package) { create :package, :received }
+      let(:package) { create :package, :received, allow_web_publish: true }
       it "should set received_at value" do
         expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number)
         expect{
           package.mark_missing
         }.to change(package, :received_at).to(nil)
+        expect(package.allow_web_publish).to eq(false)
         expect(package.state).to eq("missing")
       end
     end

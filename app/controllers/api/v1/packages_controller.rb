@@ -153,12 +153,16 @@ module Api::V1
     end
 
     def designate_partial_item
-      OrdersPackage.add_partially_designated_item(
+      result = OrdersPackage.add_partially_designated_item(
         order_id: params[:package][:order_id],
         package_id: params[:package][:package_id],
         quantity: params[:package][:quantity])
-      designate_stockit_item(params[:package][:order_id])
-      send_stock_item_response
+      if result.errors.blank?
+        designate_stockit_item(params[:package][:order_id])
+        send_stock_item_response
+      else
+        render json: { errors: result.errors.full_messages }.to_json , status: 422
+      end
     end
 
     def update_partial_quantity_of_same_designation
@@ -302,6 +306,7 @@ module Api::V1
         @package.assign_attributes(package_params)
         @package.received_quantity = received_quantity
         @package.build_or_create_packages_location(location_id, 'build')
+        @package.location_id = location_id
         @package.state = 'received'
         @package.order_id = order_id
         @package.inventory_number = inventory_number
