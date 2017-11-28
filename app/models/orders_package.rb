@@ -52,7 +52,7 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     before_transition on: :dispatch do |orders_package, _transition|
-      orders_package.sent_on    =  Time.now
+      orders_package.sent_on    =  orders_package.package.stockit_sent_on
       orders_package.updated_by =  User.current_user
     end
 
