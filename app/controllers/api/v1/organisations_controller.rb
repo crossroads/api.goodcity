@@ -4,8 +4,8 @@ module Api::V1
 
     api :GET, '/v1/orders', "List all orders"
     def index
-      records = @organisations.search(params["searchText"])
-      render json: records, serializer: serializer
+      @organisations = @organisations.search(params["searchText"])
+      render json: @organisations, each_serializer: serializer
     end
 
     private
