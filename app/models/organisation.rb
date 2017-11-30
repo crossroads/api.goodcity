@@ -6,6 +6,6 @@ class Organisation < ActiveRecord::Base
   has_many :users, through: :organisations_users
 
   def self.search(search_text)
-    where("name_en LIKE ?", "%#{search_text}%")
+    where("name_en ILIKE ?", "%#{search_text}%")
   end
 end
