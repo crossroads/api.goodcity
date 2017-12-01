@@ -296,6 +296,8 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+    rollbar (2.15.5)
+      multi_json
     rotp (2.1.1)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
@@ -443,6 +445,7 @@ DEPENDENCIES
   redis
   redis-rails
   request_store
+  rollbar
   rspec-rails
   rspec_junit_formatter
   shoulda-callback-matchers
@@ -465,4 +468,4 @@ RUBY VERSION
    ruby 2.2.2p95
 
 BUNDLED WITH
-   1.14.6
+   1.15.1

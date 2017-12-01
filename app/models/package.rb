@@ -3,6 +3,7 @@ class Package < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include PushUpdates
+  include RollbarSpecification
 
   BROWSE_ITEM_STATES = ['accepted', 'submitted']
   BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']

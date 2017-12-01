@@ -1,4 +1,6 @@
 class OrdersPackage < ActiveRecord::Base
+  include RollbarSpecification
+  
   belongs_to :order
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
