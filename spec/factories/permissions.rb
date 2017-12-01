@@ -27,10 +27,6 @@ FactoryGirl.define do
     name 'api-write'
   end
 
-  factory :charity_manager_permission, parent: :permission do
-    name 'Charity Manager'
-  end
-
   factory :charity_permission, parent: :permission do
     name 'Charity'
   end

@@ -37,10 +37,6 @@ FactoryGirl.define do
       association :permission, factory: :system_permission
     end
 
-    trait :charity_manager do
-      association :permission, factory: :charity_manager_permission
-    end
-
     trait :charity do
       association :permission, factory: :charity_permission
     end
