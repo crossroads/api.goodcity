@@ -1,5 +1,4 @@
 class CancellationReason < ActiveRecord::Base
-
   include CacheableJson
   include RollbarSpecification
 
@@ -16,5 +15,4 @@ class CancellationReason < ActiveRecord::Base
   def self.donor_cancelled
     find_by(name_en: "Donor cancelled")
   end
-
 end
