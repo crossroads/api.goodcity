@@ -16,9 +16,9 @@ class Message < ActiveRecord::Base
     end
   end
 
-  scope :with_eager_load, -> { includes( [:sender] ) }
+  scope :with_eager_load, -> { includes([:sender]) }
   scope :non_private, -> { where(is_private: false) }
-  scope :donor_messages, ->(donor_id) { joins(:offer).where(offers: {created_by_id: donor_id}, is_private: false) }
+  scope :donor_messages, ->(donor_id) { joins(:offer).where(offers: { created_by_id: donor_id }, is_private: false) }
 
   # used to override the state value during serialization
   attr_accessor :state_value, :is_call_log
