@@ -12,14 +12,14 @@ class AuthToken < ActiveRecord::Base
   # Generate the otp_code as normal but set default drift_time (can be overridden)
   # We store otp_code_expiry purely so we can include it on our SMS messages
   # Cycle the otp_auth_key so it it not always the same.
-  def otp_code(options={})
-    options.reverse_merge!( time: drift_time )
-    update_columns( otp_code_expiry: drift_time )
+  def otp_code(options = {})
+    options.reverse_merge!(time: drift_time)
+    update_columns(otp_code_expiry: drift_time)
     super(options)
   end
 
   def cycle_otp_auth_key!
-    update_columns( otp_auth_key: new_otp_auth_key )
+    update_columns(otp_auth_key: new_otp_auth_key)
   end
 
   def new_otp_auth_key
@@ -36,5 +36,4 @@ class AuthToken < ActiveRecord::Base
   def drift_time
     Time.now + otp_code_validity
   end
-
 end
