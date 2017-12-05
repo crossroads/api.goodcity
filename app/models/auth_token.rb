@@ -1,4 +1,5 @@
 class AuthToken < ActiveRecord::Base
+  include RollbarSpecification
   belongs_to :user
   has_one_time_password length: 4
 
