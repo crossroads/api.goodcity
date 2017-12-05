@@ -10,9 +10,9 @@ class Image < ActiveRecord::Base
   before_destroy :delete_image_from_cloudinary, unless: "has_multiple_items"
   after_update :clear_unused_transformed_images
 
-  after_update :reset_favourite,  if: :favourite_changed?
+  after_update :reset_favourite, if: :favourite_changed?
 
-  scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
+  scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
 
   def public_image_id
     cloudinary_id.split("/").last.split(".").first rescue nil
@@ -44,5 +44,4 @@ class Image < ActiveRecord::Base
   def has_multiple_items
     Image.where(cloudinary_id: cloudinary_id).count > 1
   end
-
 end
