@@ -26,5 +26,4 @@ class InventoryNumber < ActiveRecord::Base
   def self.max_code
     InventoryNumber.maximum('code').to_i || 0
   end
-
 end
