@@ -217,7 +217,7 @@ class Package < ActiveRecord::Base
     update_in_stock_quantity
   end
 
-   def requested_undispatch_from_stockit
+  def requested_undispatch_from_stockit
     if dispatched_orders_package
       dispatched_orders_package.undispatch_orders_package
     end
@@ -543,8 +543,6 @@ class Package < ActiveRecord::Base
     end
   end
 
-
-
   def dispatched_orders_package
     orders_packages.get_dispatched_records_with_order_id(order_id).first
   end
@@ -586,5 +584,4 @@ class Package < ActiveRecord::Base
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
   end
-
 end
