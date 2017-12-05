@@ -5,7 +5,7 @@ class Item < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
-  belongs_to :offer,     inverse_of: :items
+  belongs_to :offer, inverse_of: :items
   belongs_to :package_type, inverse_of: :items
   belongs_to :rejection_reason
   belongs_to :donor_condition
@@ -15,13 +15,13 @@ class Item < ActiveRecord::Base
   has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 
   scope :with_eager_load, -> {
-    eager_load( [:package_type, :rejection_reason, :donor_condition, :images,
+    eager_load([:package_type, :rejection_reason, :donor_condition, :images,
       { messages: :sender }, { packages: :package_type }
-    ] )
+    ])
   }
 
   scope :accepted, -> { where("state = 'accepted'") }
-  scope :donor_items, ->(donor_id) { joins(:offer).where(offers: {created_by_id: donor_id}) }
+  scope :donor_items, ->(donor_id) { joins(:offer).where(offers: { created_by_id: donor_id }) }
 
   # Workaround to set initial state fror the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial
