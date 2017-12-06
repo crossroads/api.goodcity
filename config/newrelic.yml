@@ -214,4 +214,4 @@ production:
 staging:
   <<: *default_settings
   monitor_mode: true
-  app_name: api.goodcity (Staging)
+  app_name: api-staging.goodcity
