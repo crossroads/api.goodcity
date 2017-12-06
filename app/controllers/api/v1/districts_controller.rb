@@ -1,6 +1,5 @@
 module Api::V1
   class DistrictsController < Api::V1::ApiController
-
     skip_before_action :validate_token, only: [:index, :show]
     load_and_authorize_resource :district, parent: false
 
@@ -36,6 +35,5 @@ module Api::V1
     def serializer
       Api::V1::DistrictSerializer
     end
-
   end
 end

@@ -1,6 +1,5 @@
 module Api::V1
   class LocationsController < Api::V1::ApiController
-
     load_and_authorize_resource :location, parent: false
 
     resource_description do
@@ -29,7 +28,7 @@ module Api::V1
         return
       end
       @locations = @locations.with_eager_load
-      @locations = @locations.find( params[:ids].split(",") ) if params[:ids].present?
+      @locations = @locations.find(params[:ids].split(",")) if params[:ids].present?
       render json: @locations, each_serializer: serializer
     end
 

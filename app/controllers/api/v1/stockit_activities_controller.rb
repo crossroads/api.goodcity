@@ -1,6 +1,5 @@
 module Api::V1
   class StockitActivitiesController < Api::V1::ApiController
-
     load_and_authorize_resource :stockit_activity, parent: false
 
     resource_description do

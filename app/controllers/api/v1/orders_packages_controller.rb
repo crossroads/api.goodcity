@@ -52,6 +52,7 @@ module Api::V1
     end
 
     private
+
     def orders_packages_params
       params.require(:orders_packages).permit(:package_id, :order_id, :state, :quantity, :sent_on)
     end
