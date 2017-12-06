@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::API
-
   include CanCan::ControllerAdditions
   include TokenValidatable
 
@@ -65,5 +64,4 @@ class ApplicationController < ActionController::API
       user
     end
   end
-
 end

@@ -34,7 +34,7 @@ module Api::V1
 
     api :GET, "/v1/packages", "get all packages for the item"
     def index
-      @packages = @packages.find( params[:ids].split(",") ) if params[:ids].present?
+      @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
       render json: @packages, each_serializer: serializer
     end
 
@@ -68,7 +68,7 @@ module Api::V1
             render json: @package, serializer: serializer, status: 201
           end
         else
-          render json: {errors: @package.errors.full_messages}.to_json , status: 422
+          render json: { errors: @package.errors.full_messages }.to_json , status: 422
         end
       else
         render nothing: true, status: 204
@@ -92,7 +92,7 @@ module Api::V1
           render json: @package, serializer: serializer
         end
       else
-        render json: {errors: @package.errors.full_messages}.to_json , status: 422
+        render json: { errors: @package.errors.full_messages }.to_json , status: 422
       end
     end
 
@@ -112,7 +112,7 @@ module Api::V1
       begin
         @package = Package.find params[:package_id]
       rescue ActiveRecord::RecordNotFound
-        return render json: {errors:"Package not found with supplied package_id"}, status: 400
+        return render json: { errors:"Package not found with supplied package_id" }, status: 400
       end
       if @package.inventory_number.blank?
         @package.inventory_number = InventoryNumber.next_code
@@ -161,7 +161,7 @@ module Api::V1
         designate_stockit_item(params[:package][:order_id])
         send_stock_item_response
       else
-        render json: { errors: result.errors.full_messages }.to_json , status: 422
+        render json: { errors: result.errors.full_messages }.to_json, status: 422
       end
     end
 
@@ -183,7 +183,7 @@ module Api::V1
         @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
         send_stock_item_response
       else
-        render json: {errors: I18n.t('orders_package.already_dispatched')}.to_json , status: 422
+        render json: { errors: I18n.t('orders_package.already_dispatched') }.to_json , status: 422
       end
     end
 
@@ -226,7 +226,7 @@ module Api::V1
           include_packages: false,
           include_images: @package.set_item_id.blank?
       else
-        render json: {errors: @package.errors.full_messages}.to_json , status: 422
+        render json: { errors: @package.errors.full_messages }.to_json , status: 422
       end
     end
 
@@ -323,7 +323,7 @@ module Api::V1
 
     def packages_location_for_admin
       if is_admin_app && params[:package][:location_id].present?
-       @package.build_or_create_packages_location(params[:package][:location_id], 'create')
+        @package.build_or_create_packages_location(params[:package][:location_id], 'create')
       end
     end
 

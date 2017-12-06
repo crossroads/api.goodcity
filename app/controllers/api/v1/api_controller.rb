@@ -1,6 +1,5 @@
 module Api::V1
   class ApiController <  ApplicationController
-
     skip_before_action :validate_token, only: [:error]
 
     rescue_from ActiveRecord::RecordNotFound, with: :not_found

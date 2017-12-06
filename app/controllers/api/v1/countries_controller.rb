@@ -1,6 +1,5 @@
 module Api::V1
   class CountriesController < Api::V1::ApiController
-
     load_and_authorize_resource :country, parent: false
 
     def create

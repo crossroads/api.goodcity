@@ -1,6 +1,5 @@
 module Api::V1
   class SchedulesController < Api::V1::ApiController
-
     skip_before_action :validate_token, only: [:availableTimeSlots]
     load_and_authorize_resource :schedule, parent: false
 
@@ -25,9 +24,9 @@ module Api::V1
 
     api :GET, "/v1/schedules", "List of available schedules for current week"
     def availableTimeSlots
-      result_hash = HashWithIndifferentAccess.new(AVAILABLESLOTS).map {|_k,v| v}
+      result_hash = HashWithIndifferentAccess.new(AVAILABLESLOTS).map { |_k, v| v }
       last_id = Schedule.last.try(:id) || 1
-      @schedules  = result_hash.each_with_index do |k,i|
+      @schedules  = result_hash.each_with_index do |k, i|
         k[:scheduled_at] = Time.now.utc + 1.weeks + k["scheduled_at"].day
         k.store("id", last_id + i + 1)
       end

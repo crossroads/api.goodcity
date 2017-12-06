@@ -1,6 +1,5 @@
 module Api::V1
   class StockitOrganisationsController < Api::V1::ApiController
-
     load_and_authorize_resource :stockit_organisation, parent: false
 
     resource_description do
@@ -43,6 +42,5 @@ module Api::V1
     def serializer
       Api::V1::StockitOrganisationSerializer
     end
-
   end
 end

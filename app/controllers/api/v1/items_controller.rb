@@ -1,6 +1,5 @@
 module Api::V1
   class ItemsController < Api::V1::ApiController
-
     load_and_authorize_resource :item, parent: false
 
     resource_description do
@@ -19,11 +18,11 @@ module Api::V1
     def_param_group :item do
       param :item, Hash, required: true do
         param :donor_description, String, allow_nil: true, desc: "Description/Details of item given by Item-Donor"
-        param :donor_condition_id, String, desc: "Describes the item's condition "<< DonorCondition.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; "), allow_nil: true
+        param :donor_condition_id, String, desc: "Describes the item's condition "<< DonorCondition.pluck(:id, :name_en).map{ |x| "#{x.first} - #{x.last}" }.join("; "), allow_nil: true
         param :state_event, Item.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this item. 'submit' is for when the donor has completed creating the item and will change the state from draft to submitted. Items in draft state should be hidden from offer view and if donor clicks to add an item the draft item should be loaded allowing them to continue creating the item."
         param :offer_id, String, desc: "Id of Offer to which item belongs."
         param :package_type_id, String, allow_nil: true, desc: "Not yet used"
-        param :rejection_reason_id, String, desc: "A categorisation describing the reason the item was rejected "<< RejectionReason.pluck(:id, :name_en).map{|x| "#{x.first} - #{x.last}"}.join("; "), allow_nil: true
+        param :rejection_reason_id, String, desc: "A categorisation describing the reason the item was rejected "<< RejectionReason.pluck(:id, :name_en).map{ |x| "#{x.first} - #{x.last}" }.join("; "), allow_nil: true
         param :reject_reason, String, allow_nil: true, desc: "Reviewer description of why the item was rejected"
         param :rejection_comments, String, allow_nil: true, desc: "Reviewer description of why the item was rejected given to Donor."
       end
@@ -113,13 +112,13 @@ module Api::V1
 
     def single_item_error
       render json:
-        { errors: 'Cannot delete the last item of a submitted offer'}.to_json,
+        { errors: 'Cannot delete the last item of a submitted offer' }.to_json,
         status: 422
     end
 
     def rejecting_last_item_having_confirmed_ggv(offer)
       item_params[:state_event] == 'reject' &&
-      offer.items.all?{|i| i.state_name == :rejected || i.id == @item.id} &&
+      offer.items.all?{ |i| i.state_name == :rejected || i.id == @item.id } &&
       offer.gogovan_order && offer.scheduled? && !offer.can_cancel?
     end
 

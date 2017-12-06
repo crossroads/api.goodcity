@@ -1,6 +1,5 @@
 module Api::V1
   class StockitContactsController < Api::V1::ApiController
-
     load_and_authorize_resource :stockit_contact, parent: false
 
     resource_description do
@@ -47,6 +46,5 @@ module Api::V1
     def serializer
       Api::V1::StockitContactSerializer
     end
-
   end
 end

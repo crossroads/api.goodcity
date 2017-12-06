@@ -1,6 +1,5 @@
 module Api::V1
   class VersionsController < Api::V1::ApiController
-
     load_and_authorize_resource :version, parent: false
 
     resource_description do
@@ -39,6 +38,5 @@ module Api::V1
     def serializer
       Api::V1::VersionSerializer
     end
-
   end
 end
