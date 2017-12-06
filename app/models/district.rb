@@ -1,5 +1,4 @@
 class District < ActiveRecord::Base
-
   include CacheableJson
   include RollbarSpecification
 
@@ -24,5 +23,4 @@ class District < ActiveRecord::Base
   def lat_lng_name
     [latitude, longitude, name]
   end
-
 end

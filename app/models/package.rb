@@ -43,7 +43,7 @@ class Package < ActiveRecord::Base
   validates :received_quantity,  numericality: { greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
 
-  scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
+  scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
@@ -287,7 +287,7 @@ class Package < ActiveRecord::Base
   def add_to_stockit
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+      errors.each{ |key, value| self.errors.add(key, value) }
     elsif response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
     end
@@ -305,7 +305,7 @@ class Package < ActiveRecord::Base
     if self.inventory_number.present?
       response = Stockit::ItemSync.delete(inventory_number)
       if response && (errors = response["errors"]).present?
-        errors.each{|key, value| self.errors.add(key, value) }
+        errors.each{ |key, value| self.errors.add(key, value) }
       else
         self.inventory_number = nil
         self.stockit_id = nil
@@ -348,7 +348,7 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatch_stockit_item(_orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
+  def dispatch_stockit_item(_orders_package = nil, package_location_changes = nil, skip_set_relation_update = false)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
@@ -451,7 +451,7 @@ class Package < ActiveRecord::Base
 
   def add_errors(response)
     if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+      errors.each{ |key, value| self.errors.add(key, value) }
     end
   end
 
@@ -516,7 +516,7 @@ class Package < ActiveRecord::Base
   def self.browse_non_inventorized
     joins(item: [:offer]).not_zero_quantity.published.expecting.
       where(items: { state: BROWSE_ITEM_STATES }).
-      where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
+      where.not(offers: { state: BROWSE_OFFER_EXCLUDE_STATE })
   end
 
   def update_favourite_image(image_id)
