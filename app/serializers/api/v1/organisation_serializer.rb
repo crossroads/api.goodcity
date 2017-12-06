@@ -5,5 +5,6 @@ module Api::V1
     attributes :id, :name_en, :name_zh_tw, :description_en, :description_zh_tw, :registration,
       :website, :organisation_type_id, :district_id, :country_id
 
+    has_many :organisations_users, serializer: OrganisationsUserSerializer
   end
 end
