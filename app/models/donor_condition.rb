@@ -1,5 +1,4 @@
 class DonorCondition < ActiveRecord::Base
-
   include CacheableJson
   include RollbarSpecification
 
@@ -9,5 +8,4 @@ class DonorCondition < ActiveRecord::Base
   translates :name
 
   validates :name_en, presence: true
-
 end
