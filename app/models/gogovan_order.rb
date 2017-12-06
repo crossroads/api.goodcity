@@ -32,7 +32,7 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def donor
-    User.joins(offers: {delivery: :gogovan_order}).
+    User.joins(offers: { delivery: :gogovan_order }).
       where('gogovan_orders.id = ?', id).last
   end
 
@@ -85,7 +85,7 @@ class GogovanOrder < ActiveRecord::Base
   private
 
   def generate_ggv_uuid
-    self.ggv_uuid = SecureRandom.uuid[0,6]
+    self.ggv_uuid = SecureRandom.uuid[0, 6]
   end
 
   def start_polling_status
