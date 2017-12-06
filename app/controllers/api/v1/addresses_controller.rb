@@ -1,6 +1,5 @@
 module Api::V1
   class AddressesController < Api::V1::ApiController
-
     load_and_authorize_resource :address, parent: false
 
     resource_description do
@@ -45,6 +44,5 @@ module Api::V1
       params.require(:address).permit(:street, :flat, :building,
         :district_id, :address_type, :addressable_id, :addressable_type)
     end
-
   end
 end

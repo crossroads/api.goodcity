@@ -1,6 +1,5 @@
 module Api::V1
   class CancellationReasonsController < Api::V1::ApiController
-
     load_and_authorize_resource :cancellation_reason, parent: false
 
     def index
@@ -21,6 +20,5 @@ module Api::V1
     def serializer
       Api::V1::CancellationReasonSerializer
     end
-
   end
 end

@@ -1,6 +1,5 @@
 module Api::V1
   class DonorConditionsController < Api::V1::ApiController
-
     load_and_authorize_resource :donor_condition, parent: false
     skip_before_action :validate_token, only: :index
 
@@ -29,6 +28,5 @@ module Api::V1
     def serializer
       Api::V1::DonorConditionSerializer
     end
-
   end
 end

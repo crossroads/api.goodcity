@@ -1,6 +1,5 @@
 module Api::V1
   class InventoryNumbersController < Api::V1::ApiController
-
     load_and_authorize_resource :inventory_number, parent: false
 
     resource_description do
@@ -22,6 +21,5 @@ module Api::V1
       InventoryNumber.find_by(code: params[:code]).destroy
       render json: {}
     end
-
   end
 end

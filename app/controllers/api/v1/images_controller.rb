@@ -1,6 +1,6 @@
 module Api::V1
   class ImagesController < Api::V1::ApiController
-    load_and_authorize_resource :image, parent: false, :except => [:generate_signature, :destroy]
+    load_and_authorize_resource :image, parent: false, except: [:generate_signature, :destroy]
     skip_authorization_check only: [:generate_signature, :destroy]
 
     resource_description do

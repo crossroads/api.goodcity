@@ -2,7 +2,6 @@ require "goodcity/offer_utils"
 
 module Api::V1
   class OffersController < Api::V1::ApiController
-
     before_action :eager_load_offer, except: [:index, :create, :finished]
     load_and_authorize_resource :offer, parent: false
 

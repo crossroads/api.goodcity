@@ -1,6 +1,5 @@
 module Api::V1
   class CrossroadsTransportsController < Api::V1::ApiController
-
     load_and_authorize_resource :crossroads_transport, parent: false
 
     resource_description do
@@ -22,6 +21,5 @@ module Api::V1
     def serializer
       Api::V1::CrossroadsTransportSerializer
     end
-
   end
 end
