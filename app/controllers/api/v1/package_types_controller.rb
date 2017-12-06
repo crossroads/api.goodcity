@@ -1,6 +1,5 @@
 module Api::V1
   class PackageTypesController < Api::V1::ApiController
-
     skip_before_action :validate_token, only: [:index, :show]
     load_and_authorize_resource :package_type, parent: false
 
@@ -15,7 +14,7 @@ module Api::V1
     api :GET, "/v1/package_types", "get all package_types"
     def index
       return stock_codes if params['stock'].present?
-      @package_types = @package_types.find( params[:ids].split(",") ) if params[:ids].present?
+      @package_types = @package_types.find(params[:ids].split(",")) if params[:ids].present?
       render json: @package_types.visible, each_serializer: serializer
     end
 
@@ -52,6 +51,5 @@ module Api::V1
     def fetch_location_id(stockit_location_id)
       Location.find_by(stockit_id: stockit_location_id).try(:id)
     end
-
   end
 end

@@ -1,6 +1,5 @@
 module Api::V1
   class TimeslotsController < Api::V1::ApiController
-
     load_and_authorize_resource :timeslot, parent: false
     skip_before_action :validate_token, only: :index
 
@@ -23,6 +22,5 @@ module Api::V1
     def serializer
       Api::V1::TimeslotSerializer
     end
-
   end
 end

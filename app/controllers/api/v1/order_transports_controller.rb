@@ -1,6 +1,5 @@
 module Api::V1
   class OrderTransportsController < Api::V1::ApiController
-
     load_and_authorize_resource :order_transport, parent: false
 
     def create
@@ -20,6 +19,5 @@ module Api::V1
     def serializer
       Api::V1::OrderTransportSerializer
     end
-
   end
 end

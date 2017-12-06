@@ -19,7 +19,7 @@ module Api::V1
     EOS
     def index
       @users = @users.except_stockit_user
-      @users = @users.find( params[:ids].split(",") ) if params[:ids].present?
+      @users = @users.find(params[:ids].split(",")) if params[:ids].present?
       render json: @users, each_serializer: serializer
     end
 

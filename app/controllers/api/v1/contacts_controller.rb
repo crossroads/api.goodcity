@@ -1,6 +1,5 @@
 module Api::V1
   class ContactsController < Api::V1::ApiController
-
     load_and_authorize_resource :contact, parent: false
 
     resource_description do
@@ -34,6 +33,5 @@ module Api::V1
     def contact_params
       params.require(:contact).permit(:name, :mobile)
     end
-
   end
 end

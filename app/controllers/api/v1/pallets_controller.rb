@@ -1,6 +1,5 @@
 module Api::V1
   class PalletsController < Api::V1::ApiController
-
     load_and_authorize_resource :pallet, parent: false
 
     resource_description do
@@ -42,6 +41,5 @@ module Api::V1
     def fetch_pallet
       @pallet = Pallet.find_by(stockit_id: params["pallet"]["stockit_id"]) || @pallet
     end
-
   end
 end

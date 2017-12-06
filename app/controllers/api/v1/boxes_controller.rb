@@ -1,6 +1,5 @@
 module Api::V1
   class BoxesController < Api::V1::ApiController
-
     load_and_authorize_resource :box, parent: false
 
     resource_description do
@@ -48,6 +47,5 @@ module Api::V1
     def fetch_box
       @box = Box.find_by(stockit_id: params["box"]["stockit_id"]) || @box
     end
-
   end
 end

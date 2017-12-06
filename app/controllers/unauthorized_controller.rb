@@ -1,5 +1,4 @@
 class UnauthorizedController < ActionController::Metal
-
   include ActionController::RackDelegation
 
   def self.call(env)
@@ -20,5 +19,4 @@ class UnauthorizedController < ActionController::Metal
     self.content_type = request.format.to_s
     self.response_body = { error: warden_message }.to_json
   end
-
 end
