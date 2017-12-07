@@ -84,6 +84,26 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
         put :update, id: item.id, item: item.attributes.except("id").merge(extra_params)
         expect(response.status).to eq(200)
       end
+
+      it "should give response status 422 when update not performed" do
+        item = create :item, state: "accepted"
+        package = create :package, :received, item: item
+        conditions = create_list :donor_condition, 3
+        conditions.delete(item.donor_condition)
+        extra_params = { donor_condition_id: conditions.last.id }
+        # expect(StockitUpdateJob).to receive(:perform_later).with(package.id)
+        put :update, id: item.id, item: {"donor_description"=>nil, "donor_condition_id"=>nil, "offer_id"=>nil, "package_type_id"=>nil, "rejection_reason_id"=>nil, "reject_reason"=>nil, "rejection_comments"=>nil}
+        expect(response.status).to eq(422)
+      end
+    end
+  end
+
+  describe "GET item/1" do
+    before { generate_and_set_token(user) }
+    let(:item)  { create :item, offer: offer, state: "draft" }
+    it "should response with 200" do
+      get :show , id: item.id
+      expect(response.status).to eq(200)
     end
   end
 end
