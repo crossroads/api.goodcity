@@ -1,6 +1,5 @@
 class PackageCategoriesPackageType < ActiveRecord::Base
   include RollbarSpecification
-  
   belongs_to :package_type
   belongs_to :package_category
 

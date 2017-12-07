@@ -55,11 +55,11 @@ class Order < ActiveRecord::Base
     state :submitted, :processing, :closed, :cancelled
 
     event :submit do
-      transition :draft => :submitted
+      transition draft: :submitted
     end
 
     event :start_processing do
-      transition :submitted => :processing
+      transition submitted: :processing
     end
 
     before_transition on: :submit do |order|
@@ -67,14 +67,14 @@ class Order < ActiveRecord::Base
     end
 
     after_transition on: :submit do |order|
-      order.designate_orders_packages if (order.detail_type == "GoodCity")
+      order.designate_orders_packages if order.detail_type == "GoodCity"
     end
   end
 
   def add_to_stockit
     response = Stockit::DesignationSync.create(self)
     if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+      errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (designation_id = response["designation_id"]).present?
       self.stockit_id = designation_id
     end

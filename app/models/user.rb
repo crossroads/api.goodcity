@@ -29,11 +29,11 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  scope :donors,      -> { where( permission_id: nil ) }
-  scope :reviewers,   -> { where( permissions: { name: 'Reviewer'   } ).joins(:permission) }
-  scope :supervisors, -> { where( permissions: { name: 'Supervisor' } ).joins(:permission) }
-  scope :system,      -> { where( permissions: { name: 'System' } ).joins(:permission) }
-  scope :staff,       -> { where( permissions: { name: ['Supervisor', 'Reviewer'] } ).joins(:permission) }
+  scope :donors,      -> { where(permission_id: nil) }
+  scope :reviewers,   -> { where(permissions: { name: 'Reviewer'   }).joins(:permission) }
+  scope :supervisors, -> { where(permissions: { name: 'Supervisor' }).joins(:permission) }
+  scope :system,      -> { where(permissions: { name: 'System' }).joins(:permission) }
+  scope :staff,       -> { where(permissions: { name: ['Supervisor', 'Reviewer'] }).joins(:permission) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
 
   # used when reviewer is logged into donor app
@@ -136,7 +136,7 @@ class User < ActiveRecord::Base
   private
 
   def generate_auth_token
-    auth_tokens.create( user_id:  self.id )
+    auth_tokens.create( user_id: self.id )
   end
 
   # required by PushUpdates module
