@@ -5,7 +5,6 @@
 # Optionally, if the model has a 'with_eager_load' scope, use that to generate the objects to cache
 #
 module CacheableJson
-
   extend ActiveSupport::Concern
 
   included do
@@ -14,7 +13,6 @@ module CacheableJson
 
   # Methods defined here are going to extend the class, not the instance
   module ClassMethods
-
     def cache_key
       key = "#{name.underscore}/#{I18n.locale}"
       max = maximum(:updated_at)

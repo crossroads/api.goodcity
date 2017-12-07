@@ -2,9 +2,9 @@ module PushUpdates
   extend ActiveSupport::Concern
 
   included do
-    after_create {update_client_store :create unless Rails.env.test? }
-    after_update {update_client_store :update unless Rails.env.test? }
-    after_destroy {update_client_store :delete unless Rails.env.test? }
+    after_create { update_client_store :create unless Rails.env.test? }
+    after_update { update_client_store :update unless Rails.env.test? }
+    after_destroy { update_client_store :delete unless Rails.env.test? }
   end
 
   def update_client_store(operation)
@@ -15,14 +15,14 @@ module PushUpdates
     return if current_user.nil?
     type  = self.class.name
     offer = send(:offer)
-    user  = Api::V1::UserSerializer.new(current_user, {user_summary: true})
-    data  = { item: data_updates(type, operation), sender: user, operation:operation }
+    user  = Api::V1::UserSerializer.new(current_user, { user_summary: true })
+    data  = { item: data_updates(type, operation), sender: user, operation: operation }
 
     unless offer.nil?
       donor_channel = Channel.private(offer.created_by_id)
       # update donor on his offer-cancellation
       if offer.try(:cancelled?) && self == offer
-        offer_data = { item: {"#{type}": {id: self.id}}, sender: user, operation: :delete }
+        offer_data = { item: { "#{type}": {id: self.id} }, sender: user, operation: :delete }
       end
       service.send_update_store(donor_channel, false, offer_data || data)
     end
@@ -33,7 +33,7 @@ module PushUpdates
 
   def browse_updates(operation)
     json = Api::V1::BrowsePackageSerializer.new(self).as_json
-    data = { item: { package: json[:browse_package], items: json[:items], images: json[:images]  }, operation: operation }
+    data = { item: { package: json[:browse_package], items: json[:items], images: json[:images] }, operation: operation }
     service.send_update_store(Channel.browse, false, data)
   end
 
@@ -53,16 +53,16 @@ module PushUpdates
 
   def updated_attributes(object, type)
     changed
-      .find_all{|i| serializer.respond_to?(i) || serializer.respond_to?(i.sub('_id', ''))}
-      .map{|i| i.to_sym}
-      .each{|i| object[type][i] = self[i]}
+      .find_all{ |i| serializer.respond_to?(i) || serializer.respond_to?(i.sub('_id', '')) }
+      .map{ |i| i.to_sym }
+      .each{ |i| object[type][i] = self[i] }
     object.values.first.merge!(serialized_object(object))
     object
   end
 
   def serializer
     name = self.class
-    exclude_relationships = {exclude: name.reflections.keys.map(&:to_sym)}
+    exclude_relationships = { exclude: name.reflections.keys.map(&:to_sym) }
     "Api::V1::#{name}Serializer".constantize.new(self, exclude_relationships)
   end
 
