@@ -32,8 +32,7 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def donor
-    User.joins(offers: { delivery: :gogovan_order }).
-      where('gogovan_orders.id = ?', id).last
+    User.joins(offers: { delivery: :gogovan_order }).where('gogovan_orders.id = ?', id).last
   end
 
   def need_polling?
@@ -73,7 +72,7 @@ class GogovanOrder < ActiveRecord::Base
       self.driver_mobile = driver_details["phone_number"]
       self.driver_license = driver_details["license_plate"]
     end
-    self.completed_at = Time.now if(order_details["status"] == "completed")
+    self.completed_at = Time.now if (order_details["status"] == "completed")
     self
   end
 
@@ -89,13 +88,12 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def start_polling_status
-    PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).
-      perform_later(id)
+    PollGogovanOrderStatusJob.set(wait: GGV_POLL_JOB_WAIT_TIME).perform_later(id)
   end
 
   def self.set_vehicle_type(attributes)
     attributes["vehicle"] =
-      if(attributes["gogovanOptionId"])
+      if (attributes["gogovanOptionId"])
         GogovanTransport.get_vehicle_tag(attributes["gogovanOptionId"])
       elsif(attributes['offerId'])
         Offer.find(attributes["offerId"]).try(:gogovan_transport).try(:vehicle_tag)
