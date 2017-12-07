@@ -3,6 +3,7 @@ class Organisation < ActiveRecord::Base
   belongs_to :country
   belongs_to :district
   has_many :organisations_users
+  has_many :orders
   has_many :users, through: :organisations_users
 
   def self.search(search_text)
