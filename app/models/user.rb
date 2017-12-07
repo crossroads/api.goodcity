@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  validates :mobile, presence: true, uniqueness: true, format: { with: Mobile::HongKongMobileRegExp }
+  validates :mobile, presence: true, uniqueness: true, format: { with: Mobile::HONGKONGMOBILEREGEXP }
 
   after_create :generate_auth_token
 
