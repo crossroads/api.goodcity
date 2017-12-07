@@ -6,7 +6,6 @@
 # E.g. throw(:warden, { status: :unauthorized, message: token.errors.full_messages.join }) unless token.valid?
 
 class Token
-
   include ::ActiveModel::Validations
 
   validate :token_validation
@@ -24,7 +23,7 @@ class Token
     options.merge!({
       "iat": now.to_i,
       "iss": issuer,
-      "exp": (now + validity).to_i,
+      "exp": (now + validity).to_i
     })
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
@@ -34,7 +33,7 @@ class Token
     options.merge!({
       "iat": now.to_i,
       "iss": issuer,
-      "exp": (now + validity(for_api: true)).to_i,
+      "exp": (now + validity(for_api: true)).to_i
     })
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
@@ -47,7 +46,7 @@ class Token
   private
 
   def jwt_string
-    @jwt_string ||= @bearer.sub("Bearer ","")
+    @jwt_string ||= @bearer.sub("Bearer ", "")
   end
 
   # Decode the json web token when we receive it from the client
@@ -59,7 +58,7 @@ class Token
   # - exp should be in the future
   # - iat should be in the past
   def token_validation
-    if(!jwt_string.blank? && !(token.all? &:blank?))
+    if (!jwt_string.blank? && !(token.all? &:blank?))
       cur_time = Time.now
       iat_time = Time.at(token[0]["iat"])
       exp_time = Time.at(token[0]["exp"])
@@ -96,5 +95,4 @@ class Token
   def validity(options = {})
     options[:for_api] ? jwt_config['validity_for_api'] : jwt_config['validity']
   end
-
 end

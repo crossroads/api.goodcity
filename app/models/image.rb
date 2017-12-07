@@ -24,7 +24,7 @@ class Image < ActiveRecord::Base
   end
 
   def reset_favourite
-    favourite and imageable.images.where.not(id: id).update_all(favourite: false)
+    favourite && imageable.images.where.not(id: id).update_all(favourite: false)
   end
 
   private

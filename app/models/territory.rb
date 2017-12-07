@@ -1,5 +1,4 @@
 class Territory < ActiveRecord::Base
-
   include CacheableJson
   include RollbarSpecification
 
@@ -8,6 +7,5 @@ class Territory < ActiveRecord::Base
 
   translates :name
 
-  scope :with_eager_load, -> { includes( :districts ) }
-
+  scope :with_eager_load, -> { includes(:districts) }
 end
