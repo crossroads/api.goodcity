@@ -1,4 +1,4 @@
-class TwilioJob  < ActiveJob::Base
+class TwilioJob < ActiveJob::Base
   queue_as :default
 
   rescue_from(Twilio::REST::RequestError) do
@@ -9,6 +9,6 @@ class TwilioJob  < ActiveJob::Base
   def perform(options)
     twilio_conf = Rails.application.secrets.twilio
     client = Twilio::REST::Client.new(twilio_conf['account_sid'], twilio_conf['auth_token'])
-    client.account.messages.create( {from: twilio_conf['phone_number']}.merge(options) )
+    client.account.messages.create({ from: twilio_conf['phone_number'] }.merge(options))
   end
 end

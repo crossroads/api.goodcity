@@ -49,7 +49,7 @@ class Message < ActiveRecord::Base
 
   def subscribe_users_to_message
     users_ids = offer.subscribed_users(is_private) - [sender_id]
-    users_ids.each{ |user_id| add_subscription("unread", offer_id, user_id) }
+    users_ids.each { |user_id| add_subscription("unread", offer_id, user_id) }
     subscribe_sender unless sender.try(:system_user?)
     subscribe_donor unless donor_subscribed?
     subscribe_reviewer unless reviewer_subscribed?
