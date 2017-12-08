@@ -1,23 +1,22 @@
 class OrdersPackage < ActiveRecord::Base
+  include RollbarSpecification
   belongs_to :order
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
-
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :order, :quantity, presence: true
-
   after_initialize :set_initial_state
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
   before_destroy -> { destroy_stockit_record("destroy") }
 
-  scope :get_records_associated_with_order_id, -> (order_id) { where(order_id: order_id) }
-  scope :get_designated_and_dispatched_packages, -> (package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
-  scope :get_records_associated_with_package_and_order, -> (order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
-  scope :get_dispatched_records_with_order_id, -> (order_id) { where(order_id: order_id, state: 'dispatched') }
-  scope :designated, -> { where(state: 'designated') }
+  scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
+  scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
+  scope :get_records_associated_with_package_and_order, ->(order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
+  scope :get_dispatched_records_with_order_id, ->(order_id) { where(order_id: order_id, state: 'dispatched') }
+  scope :designated, ->{ where(state: 'designated') }
 
-  scope :with_eager_load, -> {
+  scope :with_eager_load, ->{
     includes([
       { package: [:locations, :package_type] }
     ])
@@ -31,11 +30,11 @@ class OrdersPackage < ActiveRecord::Base
     state :cancelled, :designated, :received, :dispatched
 
     event :reject do
-      transition :requested => :cancelled
+      transition requested: :cancelled
     end
 
     event :designate do
-      transition :requested => :designated
+      transition requested: :designated
     end
 
     event :dispatch do
@@ -89,9 +88,9 @@ class OrdersPackage < ActiveRecord::Base
 
   def update_partially_designated_item(package)
     total_quantity = quantity + package[:quantity].to_i
-    if(state == "cancelled")
+    if (state == "cancelled")
       update(quantity: total_quantity, state: 'designated')
-    elsif(state == "dispatched")
+    elsif (state == "dispatched")
       update(quantity: total_quantity)
       update_quantity_based_on_dispatch_state(total_quantity)
     else
@@ -145,8 +144,9 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   private
+
   def recalculate_quantity(operation)
-    unless(state == "requested" || GoodcitySync.request_from_stockit)
+    unless (state == "requested" || GoodcitySync.request_from_stockit)
       update_designation_of_package
       package.update_in_stock_quantity
       StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.is_singleton_package?

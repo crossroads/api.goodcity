@@ -1,4 +1,5 @@
 class PackagesLocation < ActiveRecord::Base
+  include RollbarSpecification
   belongs_to :location
   belongs_to :package
 
@@ -7,14 +8,14 @@ class PackagesLocation < ActiveRecord::Base
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :location, presence: true
 
-  scope :exclude_location, -> (location_id) {
+  scope :exclude_location, ->(location_id) {
     where.not(location_id: location_id)
   }
 
-  scope :get_records_associated_with_package, -> (package_id) { where("package_id = (?)", package_id) }
+  scope :get_records_associated_with_package, ->(package_id) { where("package_id = (?)", package_id) }
 
   scope :with_eager_load, -> {
-     includes([:package, :location])
+    includes([:package, :location])
   }
 
   def update_quantity(received_quantity)

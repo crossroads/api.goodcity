@@ -32,8 +32,8 @@ module Api::V1
       param :AccountSid, String, desc: "Twilio Account SID"
       param :ApiVersion, String, desc: "Twilio API version"
       param :Direction, String, desc: "inbound or outbound"
-      param :Caller, String, desc:  "Name of the caller or phone number ex: 'client:Anonymous'"
-      param :From, String, desc:  "Name of the caller or phone number ex: 'client:Anonymous'"
+      param :Caller, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
+      param :From, String, desc: "Name of the caller or phone number ex: 'client:Anonymous'"
     end
 
     api :POST, '/v1/twilio_outbound/connect_call', "When an Admin calls \
@@ -90,6 +90,5 @@ module Api::V1
     def generate_call_token
       render json: { token: twilio_outgoing_call_capability.generate }
     end
-
   end
 end

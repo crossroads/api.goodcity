@@ -213,7 +213,7 @@ module Api::V1
     end
 
     def valid_platform?
-      ['gcm','aps','wns'].include?(params[:platform])
+      ['gcm', 'aps', 'wns'].include?(params[:platform])
     end
 
     def platform_error
@@ -230,6 +230,5 @@ module Api::V1
         params[:platform],
         is_admin_app )
     end
-
   end
 end

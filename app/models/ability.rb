@@ -181,7 +181,7 @@ class Ability
   end
 
   def public_ability
-    can :show_driver_details, Offer, {state: "scheduled", delivery: {gogovan_order: {status: ['pending', 'active']}}}
+    can :show_driver_details, Offer, { state: "scheduled", delivery: {gogovan_order: { status: ['pending', 'active'] } } }
 
     # Anonymous and all users
     can [:index, :show], PackageCategory

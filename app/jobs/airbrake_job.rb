@@ -1,4 +1,4 @@
-class AirbrakeJob  < ActiveJob::Base
+class AirbrakeJob < ActiveJob::Base
   queue_as :airbrake
 
   def perform(notice)

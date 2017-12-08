@@ -1,6 +1,5 @@
 module Api::V1
   class PackageCategoriesController < Api::V1::ApiController
-
     skip_before_action :validate_token, only: [:index, :show]
     load_and_authorize_resource :package_category, parent: false
 
@@ -27,6 +26,5 @@ module Api::V1
     def serializer
       Api::V1::PackageCategorySerializer
     end
-
   end
 end

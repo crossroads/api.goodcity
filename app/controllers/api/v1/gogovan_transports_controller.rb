@@ -1,6 +1,5 @@
 module Api::V1
   class GogovanTransportsController < Api::V1::ApiController
-
     load_and_authorize_resource :gogovan_transport, parent: false
 
     resource_description do
@@ -22,6 +21,5 @@ module Api::V1
     def serializer
       Api::V1::GogovanTransportSerializer
     end
-
   end
 end

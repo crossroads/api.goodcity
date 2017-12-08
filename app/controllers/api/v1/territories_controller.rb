@@ -1,6 +1,5 @@
 module Api::V1
   class TerritoriesController < Api::V1::ApiController
-
     skip_before_action :validate_token, only: [:index, :show]
     load_and_authorize_resource :territory, parent: false
 
@@ -27,7 +26,7 @@ module Api::V1
         return
       end
       @territories = @territories.with_eager_load
-      @territories = @territories.find( params[:ids].split(",") ) if params[:ids].present?
+      @territories = @territories.find(params[:ids].split(",")) if params[:ids].present?
       render json: @territories, each_serializer: serializer
     end
 
@@ -41,6 +40,5 @@ module Api::V1
     def serializer
       Api::V1::TerritorySerializer
     end
-
   end
 end

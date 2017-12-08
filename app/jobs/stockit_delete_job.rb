@@ -9,5 +9,4 @@ class StockitDeleteJob < ActiveJob::Base
       logger.error log_text
     end
   end
-
 end
