@@ -1,5 +1,4 @@
 module Api::V1
-
   class MessageSerializer < ApplicationSerializer
     include SerializeTimeValue
 
@@ -38,6 +37,5 @@ module Api::V1
          END"
       end
     end
-
   end
 end

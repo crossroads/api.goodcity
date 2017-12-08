@@ -1,5 +1,4 @@
 module Api::V1
-
   class UserSerializer < ApplicationSerializer
     include SerializeTimeValue
 
@@ -19,5 +18,4 @@ module Api::V1
     alias_method :include_last_connected?, :include_attribute?
     alias_method :include_last_disconnected?, :include_attribute?
   end
-
 end

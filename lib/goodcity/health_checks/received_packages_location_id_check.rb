@@ -2,7 +2,6 @@ require 'goodcity/health_checks/base'
 
 module Goodcity
   class HealthChecks
-
     class ReceivedPackagesLocationIdCheck < Base
       desc "Received Packages should contain location_id reference."
       def run
@@ -14,6 +13,5 @@ module Goodcity
         end
       end
     end
-
   end
 end

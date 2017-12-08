@@ -55,6 +55,5 @@ module Goodcity
         false
       end
     end
-
   end
 end

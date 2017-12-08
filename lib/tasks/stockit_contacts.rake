@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc 'Load contact details from Stockit'
   task add_stockit_contacts: :environment do
     contacts_json = Stockit::ContactSync.index
@@ -16,5 +15,4 @@ namespace :stockit do
     end
     bar.finished
   end
-
 end

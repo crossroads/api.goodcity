@@ -1,5 +1,4 @@
 module Api::V1
-
   class GogovanTransportSerializer < ApplicationSerializer
     attributes :id, :name, :disabled
 
@@ -7,5 +6,4 @@ module Api::V1
       "name_#{current_language}"
     end
   end
-
 end

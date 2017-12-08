@@ -1,5 +1,4 @@
 module Api::V1
-
   class BrowseItemSerializer < ApplicationSerializer
     embed :ids, include: true
 
@@ -7,6 +6,5 @@ module Api::V1
       :package_type_id, :donor_condition_id
 
     has_one :package_type, serializer: PackageTypeSerializer
-
   end
 end

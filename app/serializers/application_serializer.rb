@@ -5,5 +5,4 @@ class ApplicationSerializer < ActiveModel::Serializer
   def current_language
     I18n.locale.to_s.underscore
   end
-
 end

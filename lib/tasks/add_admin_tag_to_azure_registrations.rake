@@ -1,5 +1,4 @@
 namespace :azure do
-
   task add_admin_tag_to_azure_registrations: :environment do
     svc = AzureNotificationsService.new
 
@@ -29,5 +28,4 @@ namespace :azure do
       svc.send(:register_device, handle, tags, platform) if platform && handle
     end
   end
-
 end
