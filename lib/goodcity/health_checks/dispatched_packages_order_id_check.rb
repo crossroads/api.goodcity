@@ -14,6 +14,5 @@ module Goodcity
         end
       end
     end
-
   end
 end

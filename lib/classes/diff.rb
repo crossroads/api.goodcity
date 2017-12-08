@@ -51,5 +51,4 @@ class Diff
   def <=>(other)
     id <=> other.id
   end
-
 end

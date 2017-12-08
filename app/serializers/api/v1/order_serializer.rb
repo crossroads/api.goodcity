@@ -83,6 +83,5 @@ module Api::V1
     alias_method :include_stockit_contact?, :include_non_browse_details?
     alias_method :include_stockit_local_order?, :include_non_browse_details?
     alias_method :include_item_ids?, :include_packages?
-
   end
 end

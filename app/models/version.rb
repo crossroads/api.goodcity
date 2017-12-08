@@ -104,7 +104,7 @@ class Version < PaperTrail::Version
   end
 
   def is_item_or_call_log?
-    ['Item','Package'].include?(item_type) ||
-    ['call_accepted','donor_called', 'admin_called'].include?(event)
+    ['Item', 'Package'].include?(item_type) ||
+    ['call_accepted', 'donor_called', 'admin_called'].include?(event)
   end
 end

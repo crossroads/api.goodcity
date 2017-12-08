@@ -37,5 +37,4 @@ namespace :goodcity do
   def district_record(district_name)
     District.find_by(name: district_name) if district_name.present?
   end
-
 end

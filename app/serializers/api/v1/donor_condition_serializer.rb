@@ -1,5 +1,4 @@
 module Api::V1
-
   class DonorConditionSerializer < ApplicationSerializer
     attributes :id, :name
 
@@ -27,7 +26,5 @@ module Api::V1
         object.name
       end
     end
-
   end
-
 end

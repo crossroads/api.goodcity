@@ -29,6 +29,5 @@ namespace :goodcity do
         code.update_column(:location_id, location_id)
       end
     end
-
   end
 end

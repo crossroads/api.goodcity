@@ -42,6 +42,5 @@ module Goodcity
     def register_check(klass)
       @checks << klass.new
     end
-
   end
 end

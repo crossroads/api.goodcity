@@ -13,6 +13,5 @@ module Stockit
       url = url_for("/api/v1/contacts")
       get(url)
     end
-
   end
 end

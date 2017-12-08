@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc 'Load countries from Stockit'
   task add_stockit_countries: :environment do
     countries_json = Stockit::CountrySync.index
@@ -11,5 +10,4 @@ namespace :stockit do
       country.save
     end
   end
-
 end

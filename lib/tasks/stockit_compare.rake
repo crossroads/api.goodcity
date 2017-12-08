@@ -1,7 +1,6 @@
 require 'goodcity/compare'
 
 namespace :stockit do
-
   namespace :compare do
     %w(activities boxes codes countries locations pallets contacts local_orders organisations items orders).each do |task_name|
       desc %(Are #{task_name} in sync)
@@ -25,5 +24,4 @@ namespace :stockit do
     diffs.compare
     puts diffs.in_words
   end
-
 end
