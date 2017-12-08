@@ -107,5 +107,4 @@ class Gogovan
   def parse_time
     @time.is_a?(DateTime) ? @time : DateTime.parse(@time.to_s)
   end
-
 end

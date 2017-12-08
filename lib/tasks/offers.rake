@@ -26,5 +26,4 @@ namespace :goodcity do
     logger.level     = Logger::INFO
     Rails.logger     = logger
   end
-
 end

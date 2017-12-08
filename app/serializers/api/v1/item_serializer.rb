@@ -1,5 +1,4 @@
 module Api::V1
-
   class ItemSerializer < ApplicationSerializer
     embed :ids, include: true
 

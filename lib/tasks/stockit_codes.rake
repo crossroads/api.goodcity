@@ -27,6 +27,5 @@ namespace :stockit do
     if package_type
       package_type.update_column(:name_en, "Other types of computer equipment")
     end
-
   end
 end

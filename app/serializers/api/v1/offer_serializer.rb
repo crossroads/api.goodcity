@@ -1,5 +1,4 @@
 module Api::V1
-
   class OfferSerializer < ApplicationSerializer
     include SerializeTimeValue
 
@@ -34,6 +33,5 @@ module Api::V1
     alias_method :include_reviewed_by?, :goodcity_user?
     alias_method :include_gogovan_transport?, :goodcity_user?
     alias_method :include_crossroads_transport?, :goodcity_user?
-
   end
 end

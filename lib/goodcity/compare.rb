@@ -241,6 +241,5 @@ module Goodcity
       (puts time.format("%n %t")) if %w(development staging).include?(Rails.env)
       result
     end
-
   end
 end

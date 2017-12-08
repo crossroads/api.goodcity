@@ -48,5 +48,4 @@ class TwilioOutboundCallManager
   def redis
     @redis ||= Goodcity::Redis.new
   end
-
 end

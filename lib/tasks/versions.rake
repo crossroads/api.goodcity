@@ -10,5 +10,4 @@ namespace :versions do
       (related_type = 'Offer' AND related_id NOT IN (#{select_all_offer_ids}))
     ")
   end
-
 end

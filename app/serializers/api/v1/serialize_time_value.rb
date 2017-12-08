@@ -1,6 +1,5 @@
 module Api::V1
   module SerializeTimeValue
-
     def self.included(base)
       base.instance_eval do
         def self.time_attributes

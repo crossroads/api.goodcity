@@ -1,5 +1,4 @@
 module Api::V1
-
   class OrdersPackageSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :package_id, :order_id, :state, :quantity, :sent_on, :designation_id, :item_id
@@ -20,5 +19,4 @@ module Api::V1
       "package_id"
     end
   end
-
 end

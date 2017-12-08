@@ -48,6 +48,5 @@ module Goodcity
     def default_country
       @default_country ||= Country.find_by_name_en(COUNTRY_NAME_EN)
     end
-
   end
 end

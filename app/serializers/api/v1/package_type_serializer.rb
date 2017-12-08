@@ -1,5 +1,4 @@
 module Api::V1
-
   class PackageTypeSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :name, :code, :other_child_packages,
@@ -46,5 +45,4 @@ module Api::V1
         GROUP BY subpackage_types.package_type_id) "
     end
   end
-
 end
