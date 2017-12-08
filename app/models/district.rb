@@ -1,6 +1,6 @@
 class District < ActiveRecord::Base
-
   include CacheableJson
+  include RollbarSpecification
 
   belongs_to :territory, inverse_of: :districts
   has_many :addresses
@@ -23,5 +23,4 @@ class District < ActiveRecord::Base
   def lat_lng_name
     [latitude, longitude, name]
   end
-
 end

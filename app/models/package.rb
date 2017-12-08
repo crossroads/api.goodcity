@@ -3,6 +3,7 @@ class Package < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include PushUpdates
+  include RollbarSpecification
 
   BROWSE_ITEM_STATES = ['accepted', 'submitted']
   BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
@@ -38,11 +39,11 @@ class Package < ActiveRecord::Base
   after_touch { update_client_store :update }
 
   validates :package_type_id, :quantity, presence: true
-  validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
-  validates :received_quantity,  numericality: { greater_than: 0 }
+  validates :quantity, numericality: { greater_than_or_equal_to: 0 }
+  validates :received_quantity, numericality: { greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
 
-  scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: {created_by_id: donor_id}) }
+  scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
@@ -144,7 +145,7 @@ class Package < ActiveRecord::Base
 
   def create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
     destroy_stale_packages_locations(quantity)
-    if(dispatched_packages_location = find_packages_location_with_location_id(dispatched_location.id))
+    if (dispatched_packages_location = find_packages_location_with_location_id(dispatched_location.id))
       dispatched_packages_location.update_referenced_orders_package(orders_package_id)
     else
       create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
@@ -185,9 +186,9 @@ class Package < ActiveRecord::Base
   def build_or_create_packages_location(location_id, operation)
     if GoodcitySync.request_from_stockit && self.packages_locations.exists?
       packages_locations.first.update(location_id: location_id)
-    elsif(packages_location = packages_locations.find_by(location_id: location_id))
+    elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
-    elsif(!stockit_sent_on)
+    elsif (!stockit_sent_on)
       packages_locations.send(operation, {
         location_id: location_id,
         quantity: received_quantity
@@ -216,7 +217,7 @@ class Package < ActiveRecord::Base
     update_in_stock_quantity
   end
 
-   def requested_undispatch_from_stockit
+  def requested_undispatch_from_stockit
     if dispatched_orders_package
       dispatched_orders_package.undispatch_orders_package
     end
@@ -258,7 +259,7 @@ class Package < ActiveRecord::Base
   end
 
   def cancel_designation
-    designation and designation.cancel!
+    designation && designation.cancel!
   end
 
   def unless_dispatch_and_order_id_changed_with_request_from_stockit?
@@ -267,7 +268,7 @@ class Package < ActiveRecord::Base
 
   def orders_package_with_different_designation
     if(orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
-      (orders_package != designation && orders_package.try(:state) != 'dispatched') and orders_package
+      (orders_package != designation && orders_package.try(:state) != 'dispatched') && orders_package
     end
   end
 
@@ -286,7 +287,7 @@ class Package < ActiveRecord::Base
   def add_to_stockit
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+      errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
     end
@@ -304,7 +305,7 @@ class Package < ActiveRecord::Base
     if self.inventory_number.present?
       response = Stockit::ItemSync.delete(inventory_number)
       if response && (errors = response["errors"]).present?
-        errors.each{|key, value| self.errors.add(key, value) }
+        errors.each { |key, value| self.errors.add(key, value) }
       else
         self.inventory_number = nil
         self.stockit_id = nil
@@ -347,7 +348,7 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatch_stockit_item(_orders_package=nil, package_location_changes=nil , skip_set_relation_update=false)
+  def dispatch_stockit_item(_orders_package = nil, package_location_changes = nil, skip_set_relation_update = false)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
@@ -377,15 +378,15 @@ class Package < ActiveRecord::Base
 
   def move_partial_quantity(location_id, package_qty_changes, total_qty)
     package_qty_changes.each do |pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param["packages_location_id"],  pckg_qty_param["new_qty"])
+      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
     end
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
 
   def move_full_quantity(location_id, orders_package_id)
-    orders_package              = orders_packages.find_by(id: orders_package_id)
+    orders_package = orders_packages.find_by(id: orders_package_id)
     referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
-    if(packages_location_record = find_packages_location_with_location_id(location_id))
+    if (packages_location_record = find_packages_location_with_location_id(location_id))
       new_qty = orders_package.quantity + packages_location_record.quantity
       referenced_package_location.destroy
       packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
@@ -397,7 +398,7 @@ class Package < ActiveRecord::Base
   def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
     if referenced_package_location
       referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
-    elsif(packages_location = packages_locations.first)
+    elsif (packages_location = packages_locations.first)
       packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
     end
   end
@@ -407,7 +408,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_or_create_qty_moved_to_location(location_id, total_qty)
-    if(packages_location = find_packages_location_with_location_id(location_id))
+    if (packages_location = find_packages_location_with_location_id(location_id))
       packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
     else
       create_associated_packages_location(location_id, total_qty)
@@ -415,9 +416,9 @@ class Package < ActiveRecord::Base
   end
 
   def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if(packages_location = packages_locations.find_by(id: packages_location_id))
+    if (packages_location = packages_locations.find_by(id: packages_location_id))
       new_qty = packages_location.quantity - quantity_to_move.to_i
-      new_qty == 0 ? packages_location.destroy : packages_location.update(quantity: new_qty)
+      new_qty.zero? ? packages_location.destroy : packages_location.update(quantity: new_qty)
     end
   end
 
@@ -450,7 +451,7 @@ class Package < ActiveRecord::Base
 
   def add_errors(response)
     if response && (errors = response["errors"]).present?
-      errors.each{|key, value| self.errors.add(key, value) }
+      errors.each { |key, value| self.errors.add(key, value) }
     end
   end
 
@@ -496,7 +497,7 @@ class Package < ActiveRecord::Base
 
   def total_assigned_quantity
     total_quantity = 0
-    if(associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence)
+    if (associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence)
       associated_orders_packages.each do |orders_package|
         total_quantity += orders_package.quantity
       end
@@ -515,7 +516,7 @@ class Package < ActiveRecord::Base
   def self.browse_non_inventorized
     joins(item: [:offer]).not_zero_quantity.published.expecting.
       where(items: { state: BROWSE_ITEM_STATES }).
-      where.not(offers: {state: BROWSE_OFFER_EXCLUDE_STATE})
+      where.not(offers: { state: BROWSE_OFFER_EXCLUDE_STATE })
   end
 
   def update_favourite_image(image_id)
@@ -537,12 +538,10 @@ class Package < ActiveRecord::Base
   end
 
   def stockit_order_id
-    if(orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
+    if (orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
       orders_packages.first.order.try(:stockit_id)
     end
   end
-
-
 
   def dispatched_orders_package
     orders_packages.get_dispatched_records_with_order_id(order_id).first
@@ -585,5 +584,4 @@ class Package < ActiveRecord::Base
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
   end
-
 end

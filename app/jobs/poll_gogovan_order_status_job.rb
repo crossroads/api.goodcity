@@ -52,5 +52,4 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
   end
 
   class ValueError < StandardError; end
-
 end

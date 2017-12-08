@@ -1,6 +1,5 @@
 module Api::V1
   class BraintreeController < Api::V1::ApiController
-
     before_action :authorize_user, :braintree_object
 
     api :GET, '/v1/braintree/generate_token', "Get braintree token"
@@ -31,6 +30,5 @@ module Api::V1
     def response_error_message(response)
       response.try(:errors).try(:first).try(:message) || response.try(:transaction).try(:processor_response_text)
     end
-
   end
 end

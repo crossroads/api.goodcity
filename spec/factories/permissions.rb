@@ -27,4 +27,7 @@ FactoryGirl.define do
     name 'api-write'
   end
 
+  factory :charity_permission, parent: :permission do
+    name 'Charity'
+  end
 end

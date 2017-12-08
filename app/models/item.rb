@@ -5,7 +5,7 @@ class Item < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
 
-  belongs_to :offer,     inverse_of: :items
+  belongs_to :offer, inverse_of: :items
   belongs_to :package_type, inverse_of: :items
   belongs_to :rejection_reason
   belongs_to :donor_condition
@@ -15,13 +15,13 @@ class Item < ActiveRecord::Base
   has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 
   scope :with_eager_load, -> {
-    eager_load( [:package_type, :rejection_reason, :donor_condition, :images,
+    eager_load([:package_type, :rejection_reason, :donor_condition, :images,
       { messages: :sender }, { packages: :package_type }
-    ] )
+    ])
   }
 
   scope :accepted, -> { where("state = 'accepted'") }
-  scope :donor_items, ->(donor_id) { joins(:offer).where(offers: {created_by_id: donor_id}) }
+  scope :donor_items, ->(donor_id) { joins(:offer).where(offers: { created_by_id: donor_id }) }
 
   # Workaround to set initial state fror the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial
@@ -132,7 +132,7 @@ class Item < ActiveRecord::Base
     inventory_packages.set_items.each do |package|
       orders_package = package.orders_packages.find_by(order_id: params[:order_id])
       if orders_package
-        orders_package.update_partially_designated_item({"orders_package_id": orders_package.id, "quantity": params[:quantity] })
+        orders_package.update_partially_designated_item({ "orders_package_id": orders_package.id, "quantity": params[:quantity] })
       else
         OrdersPackage.add_partially_designated_item(
           order_id: params[:order_id],
@@ -141,7 +141,7 @@ class Item < ActiveRecord::Base
         )
       end
       package.designate_to_stockit_order(params[:order_id])
-      package.valid? and package.save
+      package.valid? && package.save
     end
   end
 
@@ -152,14 +152,14 @@ class Item < ActiveRecord::Base
         orders_package.dispatch_orders_package
       end
       package.dispatch_stockit_item(orders_package, nil, true)
-      package.valid? and package.save
+      package.valid? && package.save
     end
   end
 
   def move_set_to_location(location_id)
     inventory_packages.set_items.each do |package|
       package.move_stockit_item(location_id)
-      package.valid? and package.save
+      package.valid? && package.save
     end
   end
 end

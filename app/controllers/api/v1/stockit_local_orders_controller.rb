@@ -1,6 +1,5 @@
 module Api::V1
   class StockitLocalOrdersController < Api::V1::ApiController
-
     load_and_authorize_resource :stockit_local_order, parent: false
 
     resource_description do
@@ -46,6 +45,5 @@ module Api::V1
     def serializer
       Api::V1::StockitLocalOrderSerializer
     end
-
   end
 end

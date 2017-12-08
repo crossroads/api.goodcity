@@ -1,8 +1,6 @@
 module Api::V1
   class DeliveriesController < Api::V1::ApiController
-
     load_and_authorize_resource :delivery, parent: false
-
     resource_description do
       short 'Get, create, and update deliveries.'
       formats ['json']
@@ -20,7 +18,7 @@ module Api::V1
     end
 
     def_param_group :delivery do
-      param :delivery,  Hash, required: true do
+      param :delivery, Hash, required: true do
         param :offer_id, String, desc: "Id of offer to which delivery belongs."
         param :contact_id, String, allow_nil: true, desc: "Id of contact to which delivery belongs."
         param :schedule_id, String, allow_nil: true, desc: "Id of schedule to which delivery belongs."
@@ -158,8 +156,8 @@ module Api::V1
 
     def get_hash(object)
       Hash[
-        object.map do |(m,n)|
-          [m.underscore, (n.is_a?(Hash) ? get_hash(n) : n)  ]
+        object.map do |(m, n)|
+          [m.underscore, (n.is_a?(Hash) ? get_hash(n) : n)]
         end
       ]
     end

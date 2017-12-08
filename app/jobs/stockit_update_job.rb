@@ -9,7 +9,7 @@ class StockitUpdateJob < ActiveJob::Base
 
       if response && (errors = response["errors"] || response[:errors])
         log_text = "Inventory: #{package.inventory_number} Package: #{package_id}"
-        errors.each{ |attribute, error| log_text += " #{attribute}: #{error}" }
+        errors.each { |attribute, error| log_text += " #{attribute}: #{error}" }
         logger.error log_text
       end
     end

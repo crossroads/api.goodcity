@@ -13,7 +13,7 @@ class Delivery < ActiveRecord::Base
   before_destroy :push_back_offer_state
   after_save :send_updates, if: :successfully_scheduled?
   after_save :notify_reviewers, if: :successfully_scheduled?
-  after_destroy {send_updates :delete unless Rails.env.test? }
+  after_destroy { send_updates :delete unless Rails.env.test? }
 
   def update_offer_state
     self.delivery_type = delivery_type.try(:titleize)
@@ -41,8 +41,7 @@ class Delivery < ActiveRecord::Base
   end
 
   def process_completed?
-    (contact_id_changed? && contact.present?) ||
-    (delivery_type == 'Drop Off' && schedule_id_changed? && schedule.present?)
+    (contact_id_changed? && contact.present?) || (delivery_type == 'Drop Off' && schedule_id_changed? && schedule.present?)
   end
 
   def send_updates(operation = nil)
@@ -82,7 +81,7 @@ class Delivery < ActiveRecord::Base
 
   def delivery_notify_message
     formatted_date = schedule.scheduled_at.strftime("%a #{schedule.scheduled_at.day.ordinalize} %b %Y")
-    I18n.t("delivery.#{delivery_type.downcase.tr(" ","_")}_message",
+    I18n.t("delivery.#{delivery_type.downcase.tr(' ', '_')}_message",
       name: offer.created_by.full_name,
       time: schedule.slot_name,
       date: formatted_date)

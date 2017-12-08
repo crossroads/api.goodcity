@@ -1,6 +1,5 @@
 module Api::V1
   class GogovanOrdersController < Api::V1::ApiController
-
     skip_before_action :validate_token, only: :driver_details
     skip_authorization_check only: :driver_details
     load_and_authorize_resource :gogovan_order, parent: false, except: [:driver_details]

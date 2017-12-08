@@ -1,5 +1,4 @@
 module Paranoid
-
   extend ActiveSupport::Concern
 
   included do
@@ -10,5 +9,4 @@ module Paranoid
   def recover
     restore(recursive: true)
   end
-
 end

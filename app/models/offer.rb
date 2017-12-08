@@ -3,6 +3,7 @@ class Offer < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include PushUpdates
+  include RollbarSpecification
 
   NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
 
@@ -26,20 +27,18 @@ class Offer < ActiveRecord::Base
 
   scope :with_eager_load, -> {
     includes(
-      [
-        :created_by, :reviewed_by, :closed_by,
+      [:created_by, :reviewed_by, :closed_by,
         { delivery: [:schedule, :contact] },
         { messages: :sender },
-        { items: [:images, :packages, { messages: :sender } ] }
-      ]
+        { items: [:images, :packages, { messages: :sender } ] }]
     )
   }
 
   scope :active_from_past_fortnight, -> {
     where("id IN (?)", Version.active_offer_ids_in_past_fortnight)
   }
-  scope :reviewed_by, ->(reviewed_by_id){ where(reviewed_by_id: reviewed_by_id) }
-  scope :created_by, ->(created_by_id){ where(created_by_id: created_by_id) }
+  scope :reviewed_by, ->(reviewed_by_id) { where(reviewed_by_id: reviewed_by_id) }
+  scope :created_by, ->(created_by_id) { where(created_by_id: created_by_id) }
   scope :non_draft, -> { where("state NOT IN (?)", 'draft') }
   scope :active, -> { where("state NOT IN (?)", NOT_ACTIVE_STATES) }
   scope :not_active, -> { where(state: NOT_ACTIVE_STATES) }
@@ -78,19 +77,19 @@ class Offer < ActiveRecord::Base
     end
 
     event :start_review do
-      transition :submitted => :under_review
+      transition submitted: :under_review
     end
 
     event :finish_review do
-      transition :under_review => :reviewed
+      transition under_review: :reviewed
     end
 
     event :schedule do
-      transition :reviewed => :scheduled
+      transition reviewed: :scheduled
     end
 
     event :cancel_schedule do
-      transition :scheduled => :reviewed
+      transition scheduled: :reviewed
     end
 
     event :mark_unwanted do
@@ -175,15 +174,19 @@ class Offer < ActiveRecord::Base
     def donor_valid_states
       valid_states - ["cancelled"]
     end
+
     def not_active_states
       NOT_ACTIVE_STATES
     end
+
     def active_states
       valid_states - not_active_states
     end
+
     def nondraft_states
       active_states - ["draft"]
     end
+
     def donor_states
       valid_states - ["draft"]
     end
@@ -279,7 +282,7 @@ class Offer < ActiveRecord::Base
     self.language = I18n.locale.to_s unless self.language.present?
   end
 
-  #required by PusherUpdates module
+  # required by PusherUpdates module
   def offer
     self
   end

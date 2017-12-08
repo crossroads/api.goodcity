@@ -13,7 +13,7 @@ class Version < PaperTrail::Version
       id: object.id, type: object.class.name)
   }
 
-  scope :for_offers, ->{
+  scope :for_offers, -> {
     where('item_type = :type OR related_type = :type', type: "Offer") }
 
   scope :related_to_multiple, ->(objects) {
@@ -34,7 +34,7 @@ class Version < PaperTrail::Version
       AND packages.deleted_at IS NULL")
   }
 
-  scope :offer_logs, -> (offer_id) {
+  scope :offer_logs, ->(offer_id) {
     joins(sanitize_sql_array(["INNER JOIN offers ON versions.item_id = offers.id
       AND offers.id = ?
       AND versions.item_type = 'Offer'
@@ -42,13 +42,13 @@ class Version < PaperTrail::Version
       AND offers.deleted_at IS NULL", offer_id]))
   }
 
-  scope :item_versions, -> (item_id) {
+  scope :item_versions, ->(item_id) {
     joins(sanitize_sql_array(["INNER JOIN items ON (items.id = versions.item_id AND
       items.id = ? AND versions.item_type = 'Item' AND
       items.deleted_at IS NULL)", item_id]))
   }
 
-  scope :package_versions, -> (item_id) {
+  scope :package_versions, ->(item_id) {
     joins(sanitize_sql_array(["INNER JOIN packages ON packages.id = versions.item_id
       AND versions.item_type = 'Package'
       AND packages.item_id = ?

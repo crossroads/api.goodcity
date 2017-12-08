@@ -1,4 +1,5 @@
 class InventoryNumber < ActiveRecord::Base
+  include RollbarSpecification
 
   validates :code, presence: true, uniqueness: true
 
@@ -25,5 +26,4 @@ class InventoryNumber < ActiveRecord::Base
   def self.max_code
     InventoryNumber.maximum('code').to_i || 0
   end
-
 end

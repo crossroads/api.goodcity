@@ -65,7 +65,7 @@ module Api::V1
       if @order.valid? and @order.save
         render json: @order, serializer: serializer
       else
-        render json: {errors: @order.errors.full_messages}.to_json , status: 422
+        render json: { errors: @order.errors.full_messages }.to_json , status: 422
       end
     end
 

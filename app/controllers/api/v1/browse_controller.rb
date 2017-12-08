@@ -1,6 +1,5 @@
 module Api::V1
   class BrowseController < Api::V1::ApiController
-
     load_and_authorize_resource :package, parent: false
     skip_before_action :validate_token
 

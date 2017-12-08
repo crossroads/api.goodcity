@@ -15,5 +15,4 @@ class FlowdockNotification < ActionMailer::Base
   def mail_text(otp_code)
     I18n.t('twilio.sms_verification_pin', pin: otp_code)
   end
-
 end
