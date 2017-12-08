@@ -259,7 +259,7 @@ class Package < ActiveRecord::Base
   end
 
   def cancel_designation
-    designation ** designation.cancel!
+    designation && designation.cancel!
   end
 
   def unless_dispatch_and_order_id_changed_with_request_from_stockit?
