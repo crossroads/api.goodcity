@@ -1,5 +1,4 @@
 module Api::V1
-
   class PackageSerializer < ApplicationSerializer
     embed :ids, include: true
 
@@ -29,5 +28,4 @@ module Api::V1
       "stockit_sent_on"
     end
   end
-
 end

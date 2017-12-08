@@ -1,5 +1,4 @@
 module Api::V1
-
   class StockitSetItemSerializer < ApplicationSerializer
     embed :ids, include: true
 

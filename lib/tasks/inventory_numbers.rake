@@ -19,5 +19,4 @@ namespace :goodcity do
       InventoryNumber.where(code: code).first_or_create
     end
   end
-
 end

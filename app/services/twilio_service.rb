@@ -39,5 +39,4 @@ class TwilioService
     mobile = @user.mobile
     ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).include?(mobile)
   end
-
 end

@@ -11,9 +11,8 @@ module Goodcity
           pass!
         else
           fail_with_message!("GoodCity Locations with nil stockit_id: #{ids.join(', ')}")
-        end        
+        end
       end
     end
-
   end
 end

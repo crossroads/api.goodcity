@@ -89,6 +89,5 @@ module Stockit
         description: package.notes
       }
     end
-
   end
 end

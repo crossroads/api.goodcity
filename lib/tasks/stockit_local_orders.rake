@@ -16,5 +16,4 @@ namespace :stockit do
     end
     bar.finished
   end
-
 end

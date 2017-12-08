@@ -15,7 +15,7 @@ module Goodcity
         @status = PENDING
         @message = ""
       end
-      
+
       def run
         raise NotImplementedError
       end
@@ -53,6 +53,5 @@ module Goodcity
         @status == FAILED
       end
     end
-
   end
 end

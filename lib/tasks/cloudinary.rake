@@ -26,5 +26,4 @@ namespace :cloudinary do
     end
     puts tags.uniq.compact
   end
-
 end

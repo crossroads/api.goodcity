@@ -13,5 +13,4 @@ namespace :goodcity do
       ).first_or_create
     end
   end
-
 end

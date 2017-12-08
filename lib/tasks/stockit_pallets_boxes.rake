@@ -12,7 +12,7 @@ namespace :stockit do
       pallet.comments = value["comments"]
       pallet.save!
     end
-  
+
     boxes_json = Stockit::BoxSync.index
     stockit_boxes = JSON.parse(boxes_json["boxes"]) || []
     stockit_boxes.each do |value|
@@ -23,6 +23,5 @@ namespace :stockit do
       box.pallet_id = Pallet.find_by(stockit_id: value["pallet_id"]).try(:id)
       box.save!
     end
-
   end
 end

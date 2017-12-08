@@ -10,5 +10,4 @@ namespace :stockit do
       org.save
     end
   end
-
 end

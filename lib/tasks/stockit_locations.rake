@@ -11,5 +11,4 @@ namespace :stockit do
       location.save
     end
   end
-
 end

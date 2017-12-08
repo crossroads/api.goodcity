@@ -10,5 +10,4 @@ namespace :stockit do
       activity.save
     end
   end
-
 end

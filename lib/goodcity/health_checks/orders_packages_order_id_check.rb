@@ -2,7 +2,6 @@ require 'goodcity/health_checks/base'
 
 module Goodcity
   class HealthChecks
-
     class OrdersPackagesOrderIdCheck < Base
       desc "OrdersPackages should contain an order_id reference."
       def run
@@ -14,6 +13,5 @@ module Goodcity
         end
       end
     end
-
   end
 end
