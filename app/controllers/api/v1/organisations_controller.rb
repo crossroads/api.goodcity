@@ -20,7 +20,8 @@ module Api::V1
 
     api :GET, '/v1/organisations/1', "Details of a package"
     def show
-      render json: @organisation, serializer: serializer
+      # render json: @organisation, serializer: OrganisationSerializer
+      render json: Api::V1::OrganisationSerializer.new(@organisation)
     end
 
     private
@@ -29,4 +30,3 @@ module Api::V1
     end
   end
 end
-
