@@ -446,7 +446,7 @@ DEPENDENCIES
   rails-i18n
   rake-progressbar
   redis
-  redis-rails
+  redis-rails (= 5.0.2)
   request_store
   rollbar
   rspec-rails
