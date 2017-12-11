@@ -10,7 +10,7 @@ module Api::V1
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
     has_one :stockit_local_order, serializer: StockitLocalOrderSerializer, root: :local_order
     has_one :order_transport, serializer: OrderTransportSerializer
-    has_one :organisation, serializer: OrganisationSerializer
+    # has_one :organisation, serializer: OrganisationSerializer
     has_many :packages, serializer: StockitItemSerializer, root: :items
     has_many :cart_packages, serializer: BrowsePackageSerializer, root: :packages
     has_many :orders_packages, serializer: OrdersPackageSerializer
