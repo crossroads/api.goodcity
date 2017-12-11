@@ -103,6 +103,10 @@ class Ability
     can [:index, :search, :show], Organisation if @api_user || staff?
   end
 
+  # def organisations_users_abilities
+  #   can [:create, :show, :index], OrganisationsUser if @api_user || staff?
+  # end
+
   def orders_package_abilities
     can [:index, :search, :show], OrdersPackage if @api_user || staff?
   end
