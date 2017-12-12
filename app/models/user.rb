@@ -143,4 +143,12 @@ class User < ActiveRecord::Base
   def offer
     nil
   end
+
+  def self.build_new_user(organisations_users_params)
+    new(
+      first_name: organisations_users_params["first_name"],
+      mobile: organisations_users_params["mobile"],
+      permission: Permission.find_by_name("Charity")
+    )
+  end
 end
