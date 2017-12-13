@@ -90,9 +90,6 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.4.0)
-    airbrake (4.3.6)
-      builder
-      multi_json
     annotate (2.7.0)
       activerecord (>= 3.2, < 6.0)
       rake (~> 10.4)
@@ -400,7 +397,6 @@ DEPENDENCIES
   active_model_otp (~> 1.1.0)
   active_model_serializers (~> 0.8.0)
   active_record_union
-  airbrake (~> 4)
   annotate
   apipie-rails!
   braintree
