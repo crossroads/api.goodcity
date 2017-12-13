@@ -4,7 +4,7 @@ module Api::V1
 
     embed :ids, include: true
     attributes :id, :first_name, :last_name, :permission_id, :mobile,
-      :created_at, :last_connected, :last_disconnected
+      :created_at, :last_connected, :last_disconnected, :email
 
     has_one :image, serializer: ImageSerializer
     has_one :address, serializer: AddressSerializer
