@@ -6,9 +6,9 @@ RSpec.describe Api::V1::BrowseController, type: :controller do
 
   describe "GET fetch_packages" do
     before { generate_and_set_token(user) }
-      it "list all the packages" do
-        get :fetch_packages
-        expect(response.status).to eq(200)
-      end
+    it "response status 200" do
+      get :fetch_packages
+      expect(response.status).to eq(200)
+    end
   end
 end
