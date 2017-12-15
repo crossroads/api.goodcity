@@ -12,5 +12,9 @@ FactoryGirl.define do
     trait :dispatched do
       building 'Dispatched'
     end
+
+    trait :multiple do
+      building 'Multiple'
+    end
   end
 end
