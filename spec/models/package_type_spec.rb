@@ -21,4 +21,13 @@ RSpec.describe PackageType, type: :model do
       end
     end
   end
+
+  describe 'callbacks' do
+    let(:package_type) { create :package_type, :with_stockit_id }
+
+    it 'creates default subpackage_type' do
+      expect(package_type.subpackage_types.count).to eq 1
+      expect(package_type.visible_in_selects).to be_truthy
+    end
+  end
 end
