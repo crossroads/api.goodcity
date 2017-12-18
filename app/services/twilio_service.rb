@@ -13,6 +13,12 @@ class TwilioService
     TwilioJob.perform_later(options)
   end
 
+  def welcome_msg
+    return unless allowed_to_send?
+    options = { to: @user.mobile, body: "Welcome" }
+    TwilioJob.perform_later(options)
+  end
+
   def new_offer_alert(offer)
     return unless allowed_to_send?
     options = {to: @user.mobile, body: new_offer_message(offer)}
