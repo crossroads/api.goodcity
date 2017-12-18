@@ -1,7 +1,7 @@
 module Api::V1
   class OrganisationsUserSerializer < ActiveModel::Serializer
     embed :ids, include: true
-    attributes :id, :user_id, :organisation_id, :role, :position
+    attributes :id, :user_id, :organisation_id, :position, :position
     has_one :user, serializer: UserSerializer
   end
 end
