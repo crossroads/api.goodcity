@@ -10,7 +10,7 @@ class ChineseNameSeparator
 
   def has_en?
     # before calling getters check if this method returns true
-    (zh_index-3)==0
+    (zh_index-3) == 0
   end
 
   def en
@@ -27,6 +27,7 @@ class ChineseNameSeparator
   end
 
   private
+
   def zh_index
     # before calling getters check if this method returns true
     @mixed_name.index(/\p{Han}/)
