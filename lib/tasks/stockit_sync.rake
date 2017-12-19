@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc <<-eos
     Sync data from Stockit.
     This task syncs GoodCity up with Stockit data.
@@ -18,7 +17,6 @@ namespace :stockit do
     Rake::Task["stockit:add_stockit_codes"].execute
     puts "Update PackageType default locations"
     Rake::Task["goodcity:update_package_type_default_location"].execute
-    
     puts "Getting Stockit Pallets and boxes"
     Rake::Task["stockit:add_stockit_pallets_boxes"].execute
     puts "Getting Stockit Organisations"

@@ -3,7 +3,6 @@ require 'warden/strategies/base'
 module Warden
   module Strategies
     class PinStrategy < Warden::Strategies::Base
-
       def valid?
         params["pin"].present? && params['otp_auth_key'].present?
       end
@@ -22,7 +21,7 @@ module Warden
       end
 
       def has_valid_otp_code?(auth_token)
-        auth_token && auth_token.authenticate_otp(params["pin"], { drift: otp_code_validity })
+        auth_token && auth_token.authenticate_otp(params["pin"], drift: otp_code_validity)
       end
 
       def valid_app_store_credentials?(auth_token)
@@ -39,7 +38,6 @@ module Warden
       def appstore
         Rails.application.secrets.appstore_reviewer_login
       end
-
     end
   end
 end

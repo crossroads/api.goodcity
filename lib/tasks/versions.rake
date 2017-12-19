@@ -1,5 +1,4 @@
 namespace :versions do
-
   # rake versions:delete
   desc 'clean versions related to orphan offers'
   task delete: :environment do

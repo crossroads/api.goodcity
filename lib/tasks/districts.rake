@@ -1,5 +1,4 @@
 namespace :goodcity do
-
   # rake goodcity:update_lat_long_for_districts
   desc 'Update latitude and longitude values for districts'
   task update_lat_long_for_districts: :environment do
@@ -17,14 +16,14 @@ namespace :goodcity do
   # rake goodcity:geocode_districts
   desc "Find latitude and longitude for district using Geocoder service"
   task geocode_districts: :environment do
-    Geocoder.configure(:timeout => 10)
+    Geocoder.configure(timeout: 10)
     District.find_in_batches(batch_size: 50).each do |districts|
       districts.each do |district|
         if district.latitude.blank?
           address = "#{district.name}, #{district.territory.name}"
           results = Geocoder.search(address)
 
-          if(results.first)
+          if (results.first)
             location = results.first.data["geometry"]["location"]
 
             district.update_attributes(

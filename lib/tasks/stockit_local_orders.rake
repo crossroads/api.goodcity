@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc 'Load local_order details from Stockit'
   task add_stockit_local_orders: :environment do
     local_orders_json = Stockit::LocalOrderSync.index

@@ -17,7 +17,7 @@ namespace :cloudinary do
   task list_tags: :environment do
     tags = []
     next_cursor = nil
-    is_next_cursor= true
+    is_next_cursor = true
     while is_next_cursor do
       list = Cloudinary::Api.tags(max_results: 500, next_cursor: next_cursor)
       tags << list["tags"]
