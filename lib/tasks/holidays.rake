@@ -3,7 +3,7 @@ namespace :goodcity do
   desc 'Add holidays list'
   task add_holidays: :environment do
     holidays = YAML.load_file("#{Rails.root}/db/holidays.yml")
-    holidays.each_value do |_key, value|
+    holidays.each_value do |value|
       date_value = DateTime.parse(value[:holiday]).in_time_zone(Time.zone)
       Holiday.where(
         name: value[:name],

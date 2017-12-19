@@ -9,7 +9,7 @@ namespace :goodcity do
   desc 'Add Organisations list'
   task add_organisations: :environment do
     organisations = YAML.load_file("#{Rails.root}/db/organisations.yml")
-    organisations.each_value do |_key, value|
+    organisations.each_value do |value|
       Organisation.where(
         name_en: value[:name_en],
         name_zh_tw: value[:name_zh_tw],
