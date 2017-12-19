@@ -10,7 +10,7 @@ namespace :stockit do
         filename = "#{Rails.root}/log/stockit_compare_#{task_name}.txt"
         File.open(filename, 'w') do |file|
           file.puts diffs.summary
-          diffs.each_diff{ |diff| file.puts(diff.in_words) unless diff.identical? }
+          diffs.each_diff { |diff| file.puts(diff.in_words) unless diff.identical? }
         end
         puts diffs.summary
         puts "Detailed report saved at #{filename}"

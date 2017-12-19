@@ -12,7 +12,7 @@ namespace :goodcity do
     l_name = ENV['LAST_NAME']
     mobile = ENV['MOBILE']
     o_name = ENV['ORGANISATION']
-    if(all_names_exists?(f_name, l_name, mobile, o_name))
+    if (all_names_exists?(f_name, l_name, mobile, o_name))
       save_user(f_name, l_name, mobile, o_name)
     else
       print_message
@@ -21,7 +21,7 @@ namespace :goodcity do
 
   def save_user(f_name, l_name, mobile, o_name)
     user = AddUser.new(f_name, l_name, mobile, o_name)
-    if(user.add_user_to_organisation)
+    if (user.add_user_to_organisation)
       puts "\t\t**User Added**"
     else
       puts "ORGANISATION not found!!!"
