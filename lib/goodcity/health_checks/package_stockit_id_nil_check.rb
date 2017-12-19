@@ -6,7 +6,7 @@ module Goodcity
       desc "Packages should contain a stockit_id reference."
       def run
         ids = Package.where(stockit_id: nil).pluck(:id)
-        if ids.count == 0
+        if ids.count.zero?
           pass!
         else
           fail_with_message!("GoodCity Packages with nil stockit_id: #{ids.join(', ')}")
