@@ -7,6 +7,7 @@ module Goodcity
       def run
         ids = PackageType.where(stockit_id: nil).pluck(:id)
         if ids.count.zero?
+          pass!
         else
           fail_with_message!("GoodCity PackageTypes with nil stockit_id: #{ids.join(', ')}")
         end
