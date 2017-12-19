@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc 'Load location details from Stockit'
   task add_stockit_locations: :environment do
     locations_json = Stockit::LocationSync.index

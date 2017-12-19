@@ -1,6 +1,5 @@
 module Goodcity
   class HealthChecks
-
     class Base
       PASSED = "PASSED"
       FAILED = "FAILED"

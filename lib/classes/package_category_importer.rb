@@ -2,10 +2,10 @@ class PackageCategoryImporter
   def self.import
     categories = YAML.load_file("#{Rails.root}/db/package_categories.yml")
 
-    categories.each do |_key, value|
+    categories.each_value do |value|
       parent = create_category(value)
 
-      value[:child_categories].each do |_key, value|
+      value[:child_categories].each_value do |value|
         create_category(value, parent)
       end
     end
@@ -22,7 +22,7 @@ class PackageCategoryImporter
 
   def self.import_package_relation
     categories = YAML.load_file("#{Rails.root}/db/package_categories_package_type.yml")
-    categories.each do |_name, value|
+    categories.each_value do |value|
       package = PackageType.find_by(code: value[:code])
       package_category = PackageCategory.find_by(name_en: value[:lv2])
 
