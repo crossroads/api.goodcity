@@ -1,11 +1,9 @@
 require 'sidekiq/api'
 
 namespace :goodcity do
-
   # rake goodcity:queue_ggv_polling
   desc 'Queue GGV polling job for GGV-orders'
   task queue_ggv_polling: :environment do
-
     # Fetch order-ids from scheduled-ggv-polling jobs
     scheduled_set = Sidekiq::ScheduledSet.new
     job_arguments = scheduled_set.map(&:args).flatten

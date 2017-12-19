@@ -1,8 +1,6 @@
 namespace :stockit do
-
   desc 'Load pallet details from stockit'
   task add_stockit_pallets_boxes: :environment do
-
     pallets_json = Stockit::PalletSync.index
     stockit_pallets = JSON.parse(pallets_json["pallets"]) || []
     stockit_pallets.each do |value|

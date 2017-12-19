@@ -1,7 +1,6 @@
 require 'goodcity/offer_utils'
 
 namespace :goodcity do
-
   desc <<-DESC
   Merge one or more offers into another offer. All offers must belong to the same user.
   EXAMPLE USAGE: rake goodcity:merge_offers OFFER_ID=151 MERGE_OFFER_IDS='121,122'
