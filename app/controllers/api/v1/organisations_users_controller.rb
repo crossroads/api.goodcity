@@ -12,9 +12,9 @@ module Api::V1
 
     def_param_group :organisations_user do
       param :organisations_user, Hash, required: true do
-        param :organisation_id, Integer, desc: "Id of organisation to which user belongs"
+        param :organisation_id, String, desc: "Id of organisation to which user belongs"
         param :position, String, desc: "Position of user in organisation"
-        param :users, Hash, required: true do
+        param :user_attributes, Hash, required: true do
           param :first_name, String, desc: "First name of user"
           param :last_name, String, desc: "Family name of user"
           param :mobile, String, desc: "Mobile number of user"
