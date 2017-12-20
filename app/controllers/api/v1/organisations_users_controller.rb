@@ -12,12 +12,19 @@ module Api::V1
 
     def_param_group :organisations_user do
       param :organisations_user, Hash, required: true do
-        param :organisation_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "Organisation of User", allow_nil: true
+        param :organisation_id, Integer, desc: "Id of organisation to which user belongs"
+        param :position, String, desc: "Position of user in organisation"
+        param :users, Hash, required: true do
+          param :first_name, String, desc: "First name of user"
+          param :last_name, String, desc: "Family name of user"
+          param :mobile, String, desc: "Mobile number of user"
+          param :email, String, desc: "Email of user"
+        end
       end
     end
 
     api :POST, "/v1/organisations_user", "Create a package"
-    # param_group :organisations_user
+    param_group :organisations_user
     def create
       @organisations_user.user.permission = Permission.charity
       save_and_render_object(@organisations_user)
