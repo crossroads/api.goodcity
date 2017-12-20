@@ -9,4 +9,8 @@ class Organisation < ActiveRecord::Base
   def self.search(search_text)
     where("name_en ILIKE ?", "%#{search_text}%")
   end
+
+  def name_as_per_locale
+    I18n.locale == :en ? name_en : name_zh_tw
+  end
 end

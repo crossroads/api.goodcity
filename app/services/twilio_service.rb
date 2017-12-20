@@ -1,10 +1,11 @@
 require 'twilio-ruby'
 class TwilioService
 
-  attr_accessor :user
+  attr_accessor :user, :organisation
 
-  def initialize(user)
+  def initialize(user, organisation = nil)
     @user = user
+    @organisation = organisation
   end
 
   def sms_verification_pin
@@ -15,7 +16,7 @@ class TwilioService
 
   def welcome_msg
     return unless allowed_to_send?
-    options = { to: @user.mobile, body: "Welcome" }
+    options = { to: @user.mobile, body: welcome_sms_text }
     TwilioJob.perform_later(options)
   end
 
@@ -44,5 +45,11 @@ class TwilioService
     return true if Rails.env.production?
     mobile = @user.mobile
     ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).include?(mobile)
+  end
+
+  def welcome_sms_text
+    I18n.t('twilio.charity_user_welcome_sms',
+      full_name: User.current_user.full_name,
+      organisation_name: @organisation.name_as_per_locale)
   end
 end
