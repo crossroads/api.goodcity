@@ -40,6 +40,10 @@ FactoryGirl.define do
     trait :charity do
       association :permission, factory: :charity_permission
     end
+
+    trait :with_email do
+      email { FFaker::Internet.email }
+    end
   end
 
   factory :user_with_token, parent: :user do
