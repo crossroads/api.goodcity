@@ -5,7 +5,7 @@ class AddUser
   end
 
   def add_user_to_organisation
-    if((org = Organisation.find_by_name_en(@o_name)) && @user.save!)
+    if ((org = Organisation.find_by_name_en(@o_name)) && @user.save!)
       org.users << @user
     end
   end

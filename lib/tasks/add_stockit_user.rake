@@ -1,5 +1,4 @@
 namespace :goodcity do
-
   # rake goodcity:add_stockit_user
   desc 'Add Stockit User'
   task add_stockit_user: :environment do

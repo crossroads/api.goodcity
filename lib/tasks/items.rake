@@ -1,5 +1,4 @@
 namespace :goodcity do
-
   # rake goodcity:update_items_saleable_field
   desc 'Update saleable field of all items'
   task update_items_saleable_field: :environment do
