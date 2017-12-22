@@ -51,7 +51,6 @@ gem 'nokogiri', '~> 1.8.1'
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
-gem 'airbrake', "~> 4" # peg to v4 until we figure out if we can support v5 in Errbit
 gem 'lograge'
 gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
