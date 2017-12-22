@@ -108,8 +108,8 @@ module Api
       param :CallStatus, String, desc: "Status of call ex: ringing"
       param :ErrorCode, String, desc: "Code of error, ex: 11200"
       def call_fallback
-        # Airbrake.notify(Exception, parameters: params,
-        #   error_class: "TwilioError", error_message: "Twilio Voice Call Error")
+        Rollbar.error(Exception, parameters: params,
+          error_class: "TwilioError", error_message: "Twilio Voice Call Error")
         response = Twilio::TwiML::Response.new do |r|
           r.Say "Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you."
           r.Hangup
