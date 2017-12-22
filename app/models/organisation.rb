@@ -7,7 +7,7 @@ class Organisation < ActiveRecord::Base
   has_many :users, through: :organisations_users
 
   def self.search(search_text)
-    where("name_en ILIKE ?", "%#{search_text}%")
+    where("name_en || name_zh_tw ILIKE ?", "%#{search_text}%")
   end
 
   def name_as_per_locale
