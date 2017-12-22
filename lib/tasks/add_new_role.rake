@@ -1,7 +1,6 @@
 namespace :goodcity do
   desc 'Add new roles'
   task add_new_roles: :environment do
-
     ROLES = ["Charity"]
 
     ROLES.each do |role|

@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc 'Load activity details from Stockit'
   task add_stockit_activities: :environment do
     activities_json = Stockit::ActivitySync.index
