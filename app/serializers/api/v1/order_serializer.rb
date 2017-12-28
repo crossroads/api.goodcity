@@ -3,7 +3,8 @@ module Api::V1
     embed :ids, include: true
     attributes :status, :created_at, :code, :detail_type, :id, :detail_id,
       :contact_id, :local_order_id, :organisation_id, :description, :activity,
-      :country_name, :state, :purpose_description, :created_by_id, :item_ids
+      :country_name, :state, :purpose_description, :created_by_id, :item_ids,
+      :gc_organisation_id
 
     has_one :created_by, serializer: UserProfileSerializer, root: :user
     has_one :stockit_contact, serializer: StockitContactSerializer, root: :contact
@@ -40,6 +41,14 @@ module Api::V1
 
     def contact_id__sql
       "stockit_contact_id"
+    end
+
+    def gc_organisation_id
+      object.organisation_id
+    end
+
+    def gc_organisation_id__sql
+      "organisation_id"
     end
 
     def organisation_id
