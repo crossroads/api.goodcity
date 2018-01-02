@@ -36,19 +36,19 @@ RSpec.describe Organisation, type: :model do
     end
   end
 
-#   describe 'Instance Methods' do
-#     describe '#name_as_per_locale' do
-#       let(:organisation) { create :organisation }
+  describe 'Instance Methods' do
+    describe '#name_as_per_locale' do
+      let(:organisation) { create :organisation }
 
-#       it 'returns name_en if locale is en' do
-#         I18n.locale = :en
-#         expect(organisation.name_as_per_locale).to eq(organisation.name_en)
-#       end
+      it 'returns name_en if locale is en' do
+        I18n.locale = :"zh-tw"
+        expect(organisation.name_as_per_locale).to eq(organisation.name_zh_tw)
+      end
 
-#       it 'returns name_zh_tw if locale is zh-tw' do
-#         I18n.locale = :"zh-tw"
-#         expect(organisation.name_as_per_locale).to eq(organisation.name_zh_tw)
-#       end
-#     end
-#   end
+      it 'returns name_zh_tw if locale is zh-tw' do
+        I18n.locale = :en
+        expect(organisation.name_as_per_locale).to eq(organisation.name_en)
+      end
+    end
+  end
 end
