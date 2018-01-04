@@ -57,7 +57,6 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
     }) }
 
     it "will return response to Twilio on call-failure", :show_in_doc do
-      expect(Airbrake).to receive(:notify)
 
       post :call_fallback, parameters
       expect(response.status).to eq(200)
