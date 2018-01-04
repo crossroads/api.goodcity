@@ -10,7 +10,6 @@ production:
 :queues:
   - default
   - mailers
-  - airbrake
   - low
   - gogovan_orders
   - stockit_updates
