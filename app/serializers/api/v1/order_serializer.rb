@@ -11,7 +11,7 @@ module Api::V1
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
     has_one :stockit_local_order, serializer: StockitLocalOrderSerializer, root: :local_order
     has_one :order_transport, serializer: OrderTransportSerializer
-    # has_one :organisation, serializer: OrganisationSerializer
+    # has_one :organisation, serializer: OrganisationSerializer, root: :gc_organisation
     has_many :packages, serializer: StockitItemSerializer, root: :items
     has_many :cart_packages, serializer: BrowsePackageSerializer, root: :packages
     has_many :orders_packages, serializer: OrdersPackageSerializer
@@ -52,11 +52,11 @@ module Api::V1
     end
 
     def organisation_id
-      object.stockit_organisation_id || object.organisation_id
+      object.stockit_organisation_id
     end
 
     def organisation_id__sql
-      object.stockit_organisation_id ? "stockit_organisation_id" : "organisation_id"
+    "stockit_organisation_id"
     end
 
     def activity

@@ -50,7 +50,7 @@ class Ability
   end
 
   def stockit_abilities
-    can [:index, :create, :destroy], Location if @api_user || staff?
+    can [:index, :create, :destroy], Location if api_user_or_staff?
 
     if @api_user
       can [:create, :index], Box
@@ -101,19 +101,19 @@ class Ability
   end
 
   def organisations_abilities
-    can [:index, :search, :show], Organisation if @api_user || staff?
+    can [:index, :search, :show], Organisation if api_user_or_staff?
   end
 
   def organisations_users_abilities
-    can [:create, :show, :index], OrganisationsUser if @api_user || staff?
+    can [:create, :show, :index], OrganisationsUser if api_user_or_staff?
   end
 
   def orders_package_abilities
-    can [:index, :search, :show], OrdersPackage if @api_user || staff?
+    can [:index, :search, :show], OrdersPackage if api_user_or_staff?
   end
 
   def packages_locations_abilities
-    can [:index, :show], PackagesLocation if @api_user || staff?
+    can [:index, :show], PackagesLocation if api_user_or_staff?
   end
 
   def item_abilities
@@ -239,7 +239,7 @@ class Ability
     can [:index, :show], Permission
     can [:index, :show], CancellationReason
     can :create, PackageType if @api_user || staff?
-    can [:create, :remove_number], InventoryNumber if @api_user || staff?
+    can [:create, :remove_number], InventoryNumber if api_user_or_staff?
   end
 
   def user_abilities
@@ -255,6 +255,10 @@ class Ability
   end
 
   private
+
+  def api_user_or_staff?
+    @api_user || staff?
+  end
 
   def staff?
     @reviewer || @supervisor
