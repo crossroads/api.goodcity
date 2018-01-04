@@ -19,15 +19,27 @@ module Api
           render json:object.errors.to_json, status: 422
         end
       end
-
-      def render_object_with_cache(object, pid)
-        if pid.blank?
-          render json: object.model.cached_json
-          return
-        end
-        object = object.find(pid.split(",")) if pid.present?
-        render json: object, each_serializer: serializer_for(object)
+      
+    def save_and_render_object_with_errors(object)
+      if object.save
+        render json: object, serializer: serializer_for(object), status: 201
+      else
+        render_error(object.errors.full_messages.join('. '))
       end
+    end
+
+    def render_error(error_message)
+      render json: { errors: error_message }, status: 422
+    end
+
+    def render_object_with_cache(object, pid)
+      if pid.blank?
+        render json: object.model.cached_json
+        return
+      end
+      object = object.find(pid.split(",")) if pid.present?
+      render json: object, each_serializer: serializer_for(object)
+    end
 
       private
 
