@@ -22,12 +22,12 @@ describe User, :type => :model do
     it{ is_expected.to  have_db_column(:first_name).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_name).of_type(:string)}
     it{ is_expected.to  have_db_column(:mobile).of_type(:string)}
+    it{ is_expected.to  have_db_column(:email).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_connected).of_type(:datetime)}
     it{ is_expected.to  have_db_column(:last_disconnected).of_type(:datetime)}
   end
 
   describe "Validations" do
-
     context "mobile" do
       it { is_expected.to validate_presence_of(:mobile) }
       context "uniqueness" do
@@ -46,6 +46,17 @@ describe User, :type => :model do
       it { is_expected.to_not allow_value('invalid').for(:mobile) }
     end
 
+    context "email" do
+      it { is_expected.to allow_value('abc@gmail.com').for(:email) }
+      it { is_expected.to allow_value('abc#pqr@gmail.com').for(:email) }
+      it { is_expected.to allow_value('abc-pqr@gmail.com').for(:email) }
+      it { is_expected.to allow_value('abc.pqr.xyz@gmail.com').for(:email) }
+      it { is_expected.to_not allow_value('abc @gmail.com').for(:email) }
+      it { is_expected.to_not allow_value('abc@ gmail.com').for(:email) }
+      it { is_expected.to_not allow_value('abc @ gmail.com').for(:email) }
+      it { is_expected.to_not allow_value('abc@@gmail.com').for(:email) }
+      it { is_expected.to_not allow_value('abc.gmail.com').for(:email) }
+    end
   end
 
   describe '.creation_with_auth' do

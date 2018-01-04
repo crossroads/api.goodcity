@@ -27,6 +27,9 @@ class User < ActiveRecord::Base
 
   validates :mobile, presence: true, uniqueness: true, format: { with: Mobile::HONGKONGMOBILEREGEXP }
 
+  validates :email, uniqueness: true, allow_nil: true,
+    format: { with: /\A[^@\s]+@[^@\s]+\Z/ }
+
   after_create :generate_auth_token
 
   scope :donors,      -> { where(permission_id: nil) }

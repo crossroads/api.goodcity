@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::OfferSerializer do
 
-  let(:donor) { create(:user) }
+  let(:donor) { create(:user, :with_email) }
   let(:donor_serializer) { Api::V1::UserSerializer.new(donor) }
   let(:donor_json) { JSON.parse(donor_serializer.to_json) }
   let(:admin) { create(:user, :reviewer) }
@@ -24,6 +24,9 @@ describe Api::V1::OfferSerializer do
       expect(
         donor_json['user']['last_disconnected'].to_date
       ).to eql(donor.last_disconnected.to_date)
+      expect(
+        donor_json['user']['email']
+      ).to eql(donor.email)
     end
 
     let(:admin_serializer) { Api::V1::UserSerializer.new(admin) }
