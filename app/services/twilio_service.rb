@@ -14,7 +14,7 @@ class TwilioService
     TwilioJob.perform_later(options)
   end
 
-  def welcome_msg
+  def send_welcome_msg
     return unless allowed_to_send?
     options = { to: @user.mobile, body: welcome_sms_text }
     TwilioJob.perform_later(options)

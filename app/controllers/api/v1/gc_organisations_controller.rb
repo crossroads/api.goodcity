@@ -20,7 +20,6 @@ module Api::V1
 
     api :GET, '/v1/organisations/1', "Details of a package"
     def show
-      # render json: @organisation, serializer: OrganisationSerializer
       @organisation =  Api::V1::OrganisationSerializer.new(@organisation, root: "gc_organisations")
       render json: @organisation
     end
