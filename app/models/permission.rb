@@ -7,5 +7,5 @@ class Permission < ActiveRecord::Base
   scope :reviewer,   ->{ where(name: 'Reviewer').first }
   scope :supervisor, ->{ where(name: 'Supervisor').first }
   scope :visible,    ->{ where.not(name: 'api-write') }
-  scope :charity,    ->{ where(name: 'Charity') }
+  scope :charity,    ->{ where(name: 'Charity').first }
 end
