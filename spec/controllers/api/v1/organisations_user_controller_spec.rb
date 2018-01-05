@@ -4,7 +4,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
   let(:supervisor) { create(:user_with_token, :supervisor) }
   before { generate_and_set_token(supervisor) }
   let(:organisation) { create :organisation }
-  let(:charity_permission) { create :permission, :charity_permission }
+  let!(:charity_permission) { create :charity_permission }
   let(:user_attributes) do
     FactoryGirl.attributes_for(:user, :with_email)
   end
