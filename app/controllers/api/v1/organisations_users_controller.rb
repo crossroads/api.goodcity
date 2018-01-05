@@ -26,7 +26,7 @@ module Api::V1
     api :POST, "/v1/organisations_user", "Create a package"
     param_group :organisations_user
     def create
-      @organisations_user.user.permission = Permission.charity.first
+      @organisations_user.user.permission = Permission.charity
       save_and_render_object_with_errors(@organisations_user)
     end
 
