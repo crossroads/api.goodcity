@@ -26,7 +26,7 @@ namespace :goodcity do
           package.order_id = order_id
           package.designation_name = latest_designation_name
           if orders_package.save and package.save
-            log.info("\n\t updated package_id = #{package.id} and orders_package_id = #{orders_package.id}")
+            log.info("\n\t updated package_id = #{package.id} inventory_number = #{package.inventory_number} designation = #{package.designation_name} and orders_package_id = #{orders_package.id}")
             count += 1
           else
             not_updated_packages << package.id
