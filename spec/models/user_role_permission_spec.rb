@@ -1,5 +1,5 @@
 require 'rails_helper'
 
-RSpec.describe RolePermission, type: :model do
+RSpec.describe UserRolePermission, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
 end

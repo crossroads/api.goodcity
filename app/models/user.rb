@@ -17,6 +17,9 @@ class User < ActiveRecord::Base
   has_many :braintree_transactions, class_name: "BraintreeTransaction", foreign_key: :customer_id
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
+  has_many :user_role_permissions
+  has_many :roles, through: :user_role_permissions
+  has_many :permissions, through: :user_role_permissions
 
   belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
