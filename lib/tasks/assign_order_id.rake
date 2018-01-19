@@ -2,7 +2,7 @@ require "goodcity/rake_logger"
 
 namespace :goodcity do
   task assign_order_id_to_package_and_associated_orders_package: :environment do
-    log = Goodcity::RakeLogger.new("packages_add_received_quantity_data")
+    log = Goodcity::RakeLogger.new("assign_order_id")
 
     count = 0
     not_updated_packages = []
