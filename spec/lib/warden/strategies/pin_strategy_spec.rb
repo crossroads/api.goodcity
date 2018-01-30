@@ -68,16 +68,16 @@ describe Warden::Strategies::PinStrategy, type: :controller do
         end
       end
 
-      context "with appstore reviewer login credentials" do
-        let(:params) { {'pin' => '1234', 'otp_auth_key' => otp_auth_key} }
-        let(:user) { build :user, mobile: "+85255555555" }
-        before { expect(auth_token).to receive(:user).and_return(user).at_least(:once) }
-        before { expect(Rails.application.secrets).to receive(:appstore_reviewer_login).and_return({"number"=>"+85255555555","pin"=>"1234"}).at_least(:once) }
-        it "should return success" do
-          expect(strategy).to receive(:success!)
-          strategy.authenticate!
-        end
-      end
+      # context "with appstore reviewer login credentials" do
+      #   let(:params) { {'pin' => '1234', 'otp_auth_key' => otp_auth_key} }
+      #   let(:user) { build :user, mobile: "+85255555555" }
+      #   before { expect(auth_token).to receive(:user).and_return(user).at_least(:once) }
+      #   before { expect(Rails.application.secrets).to receive(:appstore_reviewer_login).and_return({"number"=>"+85255555555","pin"=>"1234"}).at_least(:once) }
+      #   it "should return success" do
+      #     expect(strategy).to receive(:success!)
+      #     strategy.authenticate!
+      #   end
+      # end
     end
 
     context "with invalid auth_token" do
