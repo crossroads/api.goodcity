@@ -60,6 +60,14 @@ RSpec.describe GogovanOrder, type: :model do
     end
   end
 
+  describe '#pick_up_location' do
+    it 'returns district name of pick up location' do
+      ggv_order = build :gogovan_order, :with_delivery
+      expect(ggv_order.send(:pick_up_location)).to eq ggv_order.delivery.try(
+        :contact).try(:address).try(:district).try(:name)
+    end
+  end
+
   describe "notify_order_completed" do
     let(:order) { create :gogovan_order, :with_delivery }
 

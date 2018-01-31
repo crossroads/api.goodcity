@@ -160,5 +160,4 @@ class TwilioInboundCallManager
   def caller
     @caller ||= User.find_by_mobile(@mobile) if @mobile.present?
   end
-
 end

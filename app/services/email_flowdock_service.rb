@@ -10,5 +10,4 @@ class EmailFlowdockService
     token = @user.most_recent_token
     FlowdockNotification.otp(token.otp_code).deliver_later
   end
-
 end

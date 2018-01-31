@@ -1,5 +1,4 @@
 class Diff
-
   include Comparable
   attr :id, :diff, :klass_name
 
@@ -24,7 +23,7 @@ class Diff
       next if [:id, :stockit_id].include?(attr)
       x = @goodcity_struct[attr] || "" # treat nil as blank i.e. nil == ""
       y = @stockit_struct[attr] || "" # treat nil as blank
-      @diff.merge!(attr => [x,y]) if x != y
+      @diff.merge!(attr => [x, y]) if x != y
     end
     self
   end
@@ -51,5 +50,4 @@ class Diff
   def <=>(other)
     id <=> other.id
   end
-
 end

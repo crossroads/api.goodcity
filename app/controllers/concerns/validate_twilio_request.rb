@@ -1,5 +1,4 @@
 module ValidateTwilioRequest
-
   extend ActiveSupport::Concern
 
   private

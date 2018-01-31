@@ -1,5 +1,4 @@
 namespace :goodcity do
-
   # rake goodcity:update_timeslots
   desc 'Update timeslots'
   task update_timeslots: :environment do
@@ -18,7 +17,7 @@ namespace :goodcity do
 
     drop_off_deliveries.find_in_batches(batch_size: 100).each do |deliveries|
       deliveries.each do |delivery|
-        if(schedule = delivery.schedule)
+        if (schedule = delivery.schedule)
           schedule.slot_name =
             case schedule.slot_name
               when "9AM-11AM" then "10:30AM-1PM"

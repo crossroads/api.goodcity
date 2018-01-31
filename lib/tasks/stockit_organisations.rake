@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc 'Load organisation details from stockit'
   task add_stockit_organisations: :environment do
     organisations_json = Stockit::OrganisationSync.index
@@ -10,5 +9,4 @@ namespace :stockit do
       org.save
     end
   end
-
 end

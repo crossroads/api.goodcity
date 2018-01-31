@@ -1,5 +1,4 @@
 module Api::V1
-
   class ImageSerializer < ApplicationSerializer
     embed :ids, include: true
 
@@ -20,7 +19,5 @@ module Api::V1
     def package_id__sql
       "case when imageable_type = 'Package' then imageable_id end"
     end
-
-
   end
 end

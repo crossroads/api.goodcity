@@ -1,5 +1,4 @@
 namespace :azure do
-
   task add_admin_tag_to_azure_registrations: :environment do
     svc = AzureNotificationsService.new
 
@@ -10,10 +9,10 @@ namespace :azure do
       newtag = user.permission.name.downcase
       oldtag = Channel.private(user)
       oldtag = Channel.add_admin_app_suffix(oldtag)
-      tags = [newtag,oldtag].flatten
+      tags = [newtag, oldtag].flatten
 
       platform = ""
-      handle = (doc.match(/GcmRegistrationId>(.*)</)|| [])[1]
+      handle = (doc.match(/GcmRegistrationId>(.*)</) || [])[1]
       if handle.present?
         platform = "gcm"
       else
@@ -29,5 +28,4 @@ namespace :azure do
       svc.send(:register_device, handle, tags, platform) if platform && handle
     end
   end
-
 end

@@ -1,9 +1,8 @@
 namespace :stockit do
   desc 'Load all item details from Stockit'
   task add_stockit_items: :environment do
-
-    LOOK_UP_IDS_CLASS_AND_COLUMN_MAPPING = {"box" => "id, stockit_id", "pallet" => "id, stockit_id", "package_type" => "id, stockit_id",
-    "location" => "id, stockit_id", "order" => "id, stockit_id, state"}
+    LOOK_UP_IDS_CLASS_AND_COLUMN_MAPPING = { "box" => "id, stockit_id", "pallet" => "id, stockit_id", "package_type" => "id, stockit_id",
+    "location" => "id, stockit_id", "order" => "id, stockit_id, state" }
 
     PaperTrail.enabled = false
     offset = 0
@@ -15,7 +14,7 @@ namespace :stockit do
     at_exit do
       if @failed.any?
         puts "#{@failed.count} failed Stockit items (stockit_id)"
-        @failed.each {|id, error| puts "#{id} : #{error}"}
+        @failed.each { |id, error| puts "#{id} : #{error}" }
       else
         puts "All items succeeded."
       end
@@ -25,7 +24,7 @@ namespace :stockit do
       define_method :"lookup_#{class_name}_id" do |stockit_id|
         @object ||= begin
           h = {}
-          class_name.classify.safe_constantize.select(columns).find_each{|obj| h[obj.stockit_id] = obj.id}
+          class_name.classify.safe_constantize.select(columns).find_each{ |obj| h[obj.stockit_id] = obj.id }
           h
         end
         @object[stockit_id]
@@ -86,7 +85,7 @@ namespace :stockit do
     @condition ||=
       begin
         h = {}
-        DonorCondition.select("id, name_en").find_each{|obj| h[obj.name_en] = obj.id}
+        DonorCondition.select("id, name_en").find_each{ |obj| h[obj.name_en] = obj.id }
         h
       end
     @condition[value]
@@ -97,7 +96,7 @@ namespace :stockit do
   def lookup_packages_location(package_id, location_id)
     @packages_locations ||= begin
       h = {}
-      PackagesLocation.find_each{|obj| h["#{obj.package_id}:#{obj.location_id}"] = obj}
+      PackagesLocation.find_each{ |obj| h["#{obj.package_id}:#{obj.location_id}"] = obj }
       h
     end
     key = "#{package_id}:#{location_id}"
@@ -107,7 +106,7 @@ namespace :stockit do
   def packages_locations(package, stockit_location_id)
     quantity = package.quantity
     location_id = lookup_location_id(stockit_location_id)
-    return [] unless (location_id and quantity)
+    return [] unless (location_id && quantity)
     record = lookup_packages_location(package.id, location_id)
     record.quantity = quantity
     [record]

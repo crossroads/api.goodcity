@@ -8,7 +8,6 @@ require 'goodcity/health_checks/package_type_stockit_id_nil_check'
 
 module Goodcity
   class HealthChecks
-
     def initialize
       @checks = []
       register_check(LocationStockitIdNilCheck)
@@ -28,7 +27,7 @@ module Goodcity
     end
 
     def list_checks
-      @checks.map{ |check| "#{check.name} - #{check.desc}" }.join("\n")
+      @checks.map { |check| "#{check.name} - #{check.desc}" }.join("\n")
     end
 
     def report(check)
@@ -42,6 +41,5 @@ module Goodcity
     def register_check(klass)
       @checks << klass.new
     end
-
   end
 end

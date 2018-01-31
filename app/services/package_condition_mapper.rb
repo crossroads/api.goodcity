@@ -1,10 +1,10 @@
 class PackageConditionMapper
   CONDITIONS_MAPPING = {
-                          "New" => 'N',
-                          "Lightly Used" => 'M',
-                          "Heavily Used" => 'U',
-                          "Broken" => 'B'
-                        }
+    "New" => 'N',
+    "Lightly Used" => 'M',
+    "Heavily Used" => 'U',
+    "Broken" => 'B'
+  }
 
   def self.to_stockit(condition)
     CONDITIONS_MAPPING[condition]

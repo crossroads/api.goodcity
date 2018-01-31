@@ -1,5 +1,4 @@
 namespace :stockit do
-
   desc 'Load designation details from Stockit'
   task add_designations: :environment do
     designations_json = Stockit::DesignationSync.index
@@ -39,5 +38,4 @@ namespace :stockit do
     end
     bar.finished
   end
-
 end

@@ -1,7 +1,6 @@
 require 'nestful'
 
 module Stockit::Base
-
   def post(url, params = {}, options = {})
     nestful_connection("post", url, params , options)
   end
@@ -53,5 +52,4 @@ module Stockit::Base
   end
 
   class ValueError < StandardError; end
-
 end

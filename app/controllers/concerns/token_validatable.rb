@@ -1,5 +1,4 @@
 module TokenValidatable
-
   extend ActiveSupport::Concern
 
   included do
@@ -25,5 +24,4 @@ module TokenValidatable
   def token
     @token ||= Token.new( bearer: request.headers['Authorization'] )
   end
-
 end
