@@ -1,5 +1,4 @@
 module Api::V1
-
   class ScheduleSerializer < ApplicationSerializer
     include SerializeTimeValue
 
@@ -8,5 +7,4 @@ module Api::V1
 
     # has_many :deliveries, serializer: DeliverySerializer
   end
-
 end

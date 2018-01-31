@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :organisations_user do
-    organisation nil
-    user nil
-    role "MyString"
+    association     :organisation, factory: :organisation
+    association     :user, factory: :user
+    position "MyString"
   end
 end

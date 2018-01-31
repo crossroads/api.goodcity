@@ -1,5 +1,4 @@
 module Api::V1
-
   class BrowsePackageSerializer < ApplicationSerializer
     embed :ids, include: true
 
@@ -25,7 +24,5 @@ module Api::V1
         ELSE (COALESCE(set_item_id, item_id))
         END)"
     end
-
   end
-
 end

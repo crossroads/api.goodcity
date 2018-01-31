@@ -11,7 +11,7 @@ namespace :goodcity do
     packages.select("id, location_id, received_quantity, state").find_each do |package|
       bar.inc
       next if packages_location_package_ids.include?(package.id)
-      if(location_id = package.location_id.presence)
+      if (location_id = package.location_id.presence)
         PackagesLocation.create(
           location_id: location_id,
           package_id: package.id,

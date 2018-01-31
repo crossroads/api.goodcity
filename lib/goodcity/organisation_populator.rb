@@ -1,13 +1,12 @@
 module Goodcity
   class OrganisationPopulator
-
     ORGANISATION_TYPE_NAME = "NGO"
     COUNTRY_NAME_EN = "China - Hong Kong (Special Administrative Region)"
     URL = "https://goodcitystorage.blob.core.windows.net/public/s88-orgs.json"
     ORGANISATION_MAPPING = {
       "name_en" => "name_en",
       "name_zh_tw" => "name_zh",
-      "website" => "url",
+      "website" => "url"
     }
 
     def self.run
@@ -19,7 +18,7 @@ module Goodcity
       JSON.parse(payload).each do |data|
         organisation = get_organisation(data['org_id']) || build_organisation(data['org_id'])
         ORGANISATION_MAPPING.each do |organisation_column, data_key|
-            organisation[organisation_column.to_sym] = data[data_key]
+          organisation[organisation_column.to_sym] = data[data_key]
         end
         organisation.save
       end
@@ -39,7 +38,7 @@ module Goodcity
       Organisation.find_by(registration: org_id)
     end
 
-    def build_organisation (org_id)
+    def build_organisation(org_id)
       Organisation.new(registration: org_id,
         organisation_type: organisation_type,
         country: default_country)
@@ -48,6 +47,5 @@ module Goodcity
     def default_country
       @default_country ||= Country.find_by_name_en(COUNTRY_NAME_EN)
     end
-
   end
 end

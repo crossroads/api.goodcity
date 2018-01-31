@@ -1,5 +1,4 @@
 module Api::V1
-
   class CrossroadsTransportSerializer < ApplicationSerializer
     attributes :id, :name, :cost, :is_van_allowed
 
@@ -7,5 +6,4 @@ module Api::V1
       "name_#{current_language}"
     end
   end
-
 end

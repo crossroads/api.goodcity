@@ -1,5 +1,4 @@
 require 'stockit/base'
-
 module Stockit
   class ActivitySync
 
@@ -15,5 +14,4 @@ module Stockit
     end
 
   end
-
 end

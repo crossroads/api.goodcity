@@ -1,5 +1,4 @@
 module Api::V1
-
   class TerritorySerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :name
@@ -10,5 +9,4 @@ module Api::V1
       "name_#{current_language}"
     end
   end
-
 end

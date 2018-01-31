@@ -1,5 +1,4 @@
 module GoodcitySync
-
   extend ActiveSupport::Concern
 
   def self.request_from_stockit
@@ -9,5 +8,4 @@ module GoodcitySync
   def self.request_from_stockit=(value)
     RequestStore.store[:request_from_stockit] = value
   end
-
 end

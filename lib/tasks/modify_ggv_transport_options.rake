@@ -1,5 +1,4 @@
 namespace :goodcity do
-
   # rake goodcity:modify_ggv_transport_options
   desc 'Modify GGV transport options'
   task modify_ggv_transport_options: :environment do
