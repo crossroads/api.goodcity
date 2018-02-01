@@ -567,4 +567,23 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  describe "#cancel_designation" do
+    let(:package) { create :package }
+    let!(:orders_package) { create :orders_package, package: package, state: 'designated', quantity: 1 }
+
+    it 'changes state of first orders_package having state as designated to cancelled' do
+      expect{
+        package.cancel_designation
+      }.to change{orders_package.reload.state}.from('designated').to('cancelled')
+    end
+  end
+
+  describe "#is_singleton_and_has_designation?" do
+    let(:package) { create :package, received_quantity: 1, quantity: 0 }
+    let!(:orders_package) { create :orders_package, package: package, state: 'designated', quantity: 1 }
+
+    it 'check package has designation and received quantity is one or not' do
+      expect(package.is_singleton_and_has_designation?).to be_truthy
+    end
+  end
 end
