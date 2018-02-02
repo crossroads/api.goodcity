@@ -30,7 +30,7 @@ namespace :goodcity do
             count += 1
           else
             not_updated_packages << package.id
-            not_updated_orders_packages << orders_package_id.id
+            not_updated_orders_packages << orders_package.id
           end
         end
 
@@ -42,7 +42,7 @@ namespace :goodcity do
     end
 
     log.info("\n\t Total number of packages updated =#{count}")
-    log.debug("\n\t List of orders_packages which are not update = #{not_updated_packages}")
+    log.debug("\n\t List of orders_packages which are not update = #{not_updated_orders_packages}")
     log.debug("\n\t List of packages which are not updated = #{not_updated_packages}")
   end
 end
