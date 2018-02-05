@@ -8,7 +8,7 @@ describe Api::V1::OrganisationsUserSerializer do
   it "creates JSON" do
     expect(json['organisations_user']['id']).to eql(organisations_user.id)
     expect(json['organisations_user']['user_id']).to eql(organisations_user.user_id)
-    expect(json['organisations_user']['organisation_id']).to eql(organisations_user.organisation_id)
+    expect(json['organisations_user']['gc_organisation_id']).to eql(organisations_user.organisation_id)
     expect(json['organisations_user']['position']).to eql(organisations_user.position)
   end
 end
