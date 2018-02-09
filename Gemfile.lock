@@ -424,7 +424,7 @@ DEPENDENCIES
   lograge
   nestful!
   newrelic_rpm
-  nokogiri (~> 1.8.1)
+  nokogiri
   oj (= 2.10.2)
   oj_mimic_json
   paper_trail (~> 4.0.0.beta)
@@ -462,9 +462,3 @@ DEPENDENCIES
   twilio-ruby
   warden
   webmock
-
-RUBY VERSION
-   ruby 2.2.2p95
-
-BUNDLED WITH
-   1.16.0
