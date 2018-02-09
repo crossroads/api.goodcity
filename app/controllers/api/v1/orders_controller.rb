@@ -28,6 +28,7 @@ module Api
       api :POST, "/v1/orders", "Create or Update a order"
       param_group :order
       def create
+        debugger
         if order_record.save
           render json: @order, serializer: serializer, status: 201
         else
@@ -37,6 +38,7 @@ module Api
 
       api :GET, '/v1/orders', "List all orders"
       def index
+        debugger
         return my_orders if is_browse_app
         return recent_designations if params['recently_used'].present?
         records = @orders.with_eager_load.
