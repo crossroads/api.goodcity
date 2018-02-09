@@ -99,6 +99,9 @@ GEM
     braintree (2.58.0)
       builder (>= 2.0.0)
     builder (3.2.3)
+    bullet (5.6.1)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.10.0)
     byebug (8.2.2)
     cancancan (1.13.1)
     capistrano (3.4.0)
@@ -203,7 +206,7 @@ GEM
     net-ssh (3.0.2)
     netrc (0.11.0)
     newrelic_rpm (3.15.0.314)
-    nokogiri (1.8.1)
+    nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     notiffany (0.0.8)
       nenv (~> 0.1)
@@ -274,6 +277,7 @@ GEM
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
+    rb-readline (0.5.5)
     redis (3.3.5)
     redis-actionpack (5.0.2)
       actionpack (>= 4.0, < 6)
@@ -383,6 +387,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.2)
+    uniform_notifier (1.10.0)
     warden (1.2.6)
       rack (>= 1.0)
     webmock (1.24.1)
@@ -400,6 +405,7 @@ DEPENDENCIES
   annotate
   apipie-rails!
   braintree
+  bullet
   by_star!
   byebug
   cancancan
@@ -424,7 +430,7 @@ DEPENDENCIES
   lograge
   nestful!
   newrelic_rpm
-  nokogiri
+  nokogiri (~> 1.8.2)
   oj (= 2.10.2)
   oj_mimic_json
   paper_trail (~> 4.0.0.beta)
@@ -441,6 +447,7 @@ DEPENDENCIES
   rails-api
   rails-i18n
   rake-progressbar
+  rb-readline
   redis
   redis-rails (~> 5.0.2)
   request_store
