@@ -15,6 +15,7 @@ module Api::V1
     has_many :packages, serializer: StockitItemSerializer, root: :items
     has_many :cart_packages, serializer: BrowsePackageSerializer, root: :packages
     has_many :orders_packages, serializer: OrdersPackageSerializer
+    has_many :orders_purposes, serializer: OrdersPurposeSerializer
 
     def include_packages?
       @options[:include_packages]
