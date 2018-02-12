@@ -16,6 +16,9 @@ describe User, :type => :model do
     it { is_expected.to have_many :messages }
     it { is_expected.to belong_to :permission }
     it { is_expected.to have_one  :address }
+    it { is_expected.to have_many(:roles).through(:user_role_permissions) }
+    it { is_expected.to have_many(:permissions).through(:user_role_permissions) }
+    it { is_expected.to have_many(:user_role_permissions) }
   end
 
   describe 'Database columns' do

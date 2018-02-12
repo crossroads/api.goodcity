@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   has_many :roles, through: :user_role_permissions
   has_many :permissions, through: :user_role_permissions
 
-  belongs_to :permission, inverse_of: :users
+  # belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
   has_many :moved_packages, class_name: "Package", foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
   has_many :used_locations, -> { order 'packages.stockit_moved_on DESC' }, class_name: "Location", through: :moved_packages, source: :location
@@ -98,7 +98,7 @@ class User < ActiveRecord::Base
   end
 
   def donor?
-    permission.try(:name) == nil || @treat_user_as_donor == true
+    !roles.exists? || @treat_user_as_donor == true
   end
 
   def api_user?

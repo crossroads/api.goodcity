@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :role do
-    name "MyString"
+    name { %w( Reviewer Supervisor Administrator ).sample }
   end
 end

@@ -5,7 +5,11 @@ namespace :goodcity do
     ROLES_AND_PERMISSIONS = {
       "Reviewer" => ['can_manage_packages', 'can_manage_offers', 'can_manage_deliveries',
         'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
-        'can_check_organisations', 'can_manage_packages_locations']
+        'can_check_organisations', 'can_manage_packages_locations'],
+      "Supervisor" => [],
+      "api-write" => [],
+      "System" => [],
+      "Charity" => []
     }
 
     User.find_each do |user|
