@@ -73,12 +73,20 @@ class User < ActiveRecord::Base
     reviewer? || supervisor? || administrator?
   end
 
+  # def reviewer?
+  #   permission.try(:name) == 'Reviewer' && @treat_user_as_donor != true
+  # end
+
+  def user_role_names
+    roles.distinct.map(&:name)
+  end
+
   def reviewer?
-    permission.try(:name) == 'Reviewer' && @treat_user_as_donor != true
+    user_role_names.include?('Reviewer') && @treat_user_as_donor != true
   end
 
   def supervisor?
-    permission.try(:name) == 'Supervisor' && @treat_user_as_donor != true
+    user_role_names.include?('Supervisor') && @treat_user_as_donor != true
   end
 
   def admin?
@@ -86,7 +94,7 @@ class User < ActiveRecord::Base
   end
 
   def administrator?
-    permission.try(:name) == 'Administrator' && @treat_user_as_donor != true
+    user_role_names.include?('Administrator') && @treat_user_as_donor != true
   end
 
   def donor?
