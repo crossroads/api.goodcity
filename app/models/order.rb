@@ -10,8 +10,9 @@ class Order < ActiveRecord::Base
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'") }, foreign_key: 'detail_id'
 
   has_many :packages
-  has_and_belongs_to_many :purposes
+  has_many :purposes, through: :orders_purposes
   has_many :orders_packages
+  has_many :orders_purposes
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport
 
