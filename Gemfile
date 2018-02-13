@@ -67,7 +67,6 @@ group :development do
   unless ENV["CI"]
     gem 'spring'
     gem 'annotate'
-    gem 'rb-readline'
     gem 'bullet'
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
