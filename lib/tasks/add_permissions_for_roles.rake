@@ -38,3 +38,4 @@ namespace :goodcity do
     end
   end
 end
+
