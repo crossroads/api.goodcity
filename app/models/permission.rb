@@ -1,7 +1,7 @@
 class Permission < ActiveRecord::Base
   include CacheableJson
 
-  # has_many :users, inverse_of: :permission
+  has_many :users, inverse_of: :permission
   has_many :role_permissions
   has_many :roles, through: :role_permissions
 
