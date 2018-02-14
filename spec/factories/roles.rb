@@ -1,5 +1,4 @@
 FactoryGirl.define do
-
   factory :role do
     name            { %w( Reviewer Supervisor Administrator ).sample }
     initialize_with { Role.find_or_initialize_by(name: name) } # limits us to our sample of permissions
