@@ -35,7 +35,6 @@ class Ability
       @api_user = user.api_user?
       @user_offer_ids = user.offers.pluck(:id)
       @user_permissions ||= Permission.names(user_id)
-
       can(:manage, :all) if admin
       define_abilities
     end
@@ -118,6 +117,42 @@ class Ability
     can :destroy, Image, imageable: {
       state: ['draft', 'submitted', 'accepted', 'rejected', 'scheduled'] } if can_destroy_image_for_imageable_states?
     can :destroy, Image if can_destroy_image?
+  end
+
+  def can_manage_items?
+    user_permissions.include?('can_manage_items')
+  end
+
+  def can_manage_packages?
+    user_permissions.include?('can_manage_packages')
+  end
+
+  def can_manage_offers?
+    user_permissions.include?('can_manage_offers')
+  end
+
+  def can_manage_deliveries?
+    user_permissions.include?('can_manage_deliveries')
+  end
+
+  def can_manage_orders?
+    user_permissions.include?('can_manage_orders')
+  end
+
+  def can_manage_order_transport?
+    user_permissions.include?('can_manage_order_transport')
+  end
+
+  def can_manage_holidays?
+    user_permissions.include?('can_manage_holidays')
+  end
+
+  def can_check_organisations?
+    user_permissions.include?('can_check_organisations')
+  end
+
+  def can_manage_packages_locations?
+    user_permissions.include?('can_manage_packages_locations')
   end
 
   def item_abilities
@@ -207,10 +242,6 @@ class Ability
         :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
         :undispatch_stockit_item, :stockit_item_details], Package
-    else
-      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
-        record.item ? record.item.offer.created_by_id == @user_id : false
-      end
     end
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
@@ -223,19 +254,17 @@ class Ability
     end
   end
 
-  def public_ability
-    can :show_driver_details, Offer, { state: "scheduled", delivery: {gogovan_order: { status: ['pending', 'active'] } } }
+  def offer_abilities
+    if can_manage_offers?
+      can [:create, :index, :show, :update, :complete_review, :close_offer,
+        :finished, :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer
+    end
+  end
 
-    # Anonymous and all users
-    can [:index, :show], PackageCategory
-    can [:index, :show], PackageType
-    can [:fetch_packages], Package # for BrowseController
-    can :index, DonorCondition
-    can [:index, :show], District
-    can [:index, :show], Territory
-    can :index, Timeslot
-    can :index, GogovanTransport
-    can :index, CrossroadsTransport
+  def deliveries_abilities
+    if can_manage_deliveries?
+      can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
+    end
   end
 
   def packages_locations_abilities
@@ -254,6 +283,34 @@ class Ability
 
   def stockit_local_order_abilities
     can [:create, :index], StockitLocalOrder if @api_user
+  end
+
+  def order_abilities
+    if can_manage_orders?
+      can [:create, :index, :show, :update], Order
+    end
+  end
+
+  def order_transport_abilities
+    if can_manage_order_transport?
+      can [:create, :index, :show], OrderTransport
+    end
+  end
+
+  def holiday_abilities
+    if can_manage_holidays?
+      can [:index, :destroy, :create, :update], Holiday
+    end
+  end
+
+  def organisations_abilities
+    if can_check_organisations?
+      can [:index, :search, :show], Organisation
+    end
+  end
+
+  def user_abilities
+    can :current_user_profile, User
   end
 
   def taxonomies
@@ -298,5 +355,22 @@ class Ability
     can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
     can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
     can [:index, :show], Version if can_read_versions?
+    # can :create, PackageType if @api_user || staff?
+    # can [:create, :remove_number], InventoryNumber if api_user_or_staff?
+  end
+
+  def public_ability
+    can :show_driver_details, Offer, { state: "scheduled", delivery: {gogovan_order: { status: ['pending', 'active'] } } }
+
+    # Anonymous and all users
+    can [:index, :show], PackageCategory
+    can [:index, :show], PackageType
+    can [:fetch_packages], Package # for BrowseController
+    can :index, DonorCondition
+    can [:index, :show], District
+    can [:index, :show], Territory
+    can :index, Timeslot
+    can :index, GogovanTransport
+    can :index, CrossroadsTransport
   end
 end
