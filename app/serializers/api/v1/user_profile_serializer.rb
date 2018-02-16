@@ -7,7 +7,8 @@ module Api::V1
 
     has_one :address, serializer: AddressSerializer
     has_one :image, serializer: ImageSerializer
-    has_one :permission, serializer: PermissionSerializer
+    has_many :user_roles, serializer: UserRoleSerializer
+    # has_one :permission, serializer: PermissionSerializer
 
     has_many :organisations_users, serializer: OrganisationsUserSerializer
 

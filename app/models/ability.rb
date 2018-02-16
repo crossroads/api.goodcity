@@ -13,7 +13,7 @@ class Ability
       @reviewer = user.reviewer?
       @api_user = user.api_user?
       @user_offer_ids = user.offers.pluck(:id)
-      @user_permissions = Permission.names(user_id)
+      @user_permissions ||= Permission.names(user_id)
 
       can(:manage, :all) if admin
       define_abilities
