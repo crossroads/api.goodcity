@@ -37,8 +37,9 @@ module Api
       private
 
       def box_params
-        params.require(:box).permit(:box_number, :description, :comments,
-          :pallet_id, :stockit_id)
+        params.require(:box).permit(
+          :box_number, :description, :comments, :pallet_id, :stockit_id
+        )
       end
 
       def assign_pallet
