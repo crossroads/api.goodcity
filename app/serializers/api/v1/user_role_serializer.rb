@@ -3,6 +3,8 @@ module Api::V1
     embed :ids, include: true
     attributes :id
 
+    attributes :id
+
     has_one :user, serializer: UserSerializer
     has_one :role, serializer: RoleSerializer
   end
