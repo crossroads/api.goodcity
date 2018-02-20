@@ -7,7 +7,10 @@ namespace :goodcity do
       "Reviewer" => ['can_manage_packages', 'can_manage_offers', 'can_manage_deliveries',
         'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
         'can_check_organisations', 'can_manage_packages_locations', 'can_manage_items'],
-      "Supervisor" => [],
+      "Supervisor" => ['can_manage_packages', 'can_manage_offers', 'can_manage_deliveries',
+        'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
+        'can_check_organisations', 'can_manage_packages_locations', 'can_manage_items',
+        'can_manage_users'],
       "api-write" => [],
       "System" => [],
       "Charity" => []
