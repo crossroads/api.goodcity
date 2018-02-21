@@ -69,7 +69,7 @@ module Api
               render json: @package, serializer: serializer, status: 201
             end
           else
-            render json: { errors: @package.errors.full_messages }.to_json , status: 422
+            render json: { errors: @package.errors.full_messages }.to_json, status: 422
           end
         else
           render nothing: true, status: 204
@@ -138,8 +138,7 @@ module Api
           include_packages: false,
           exclude_stockit_set_item: true,
           include_images: true,
-          include_stock_condition: is_stock_app
-        ).to_json
+          include_stock_condition: is_stock_app).to_json
         render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
       end
 
@@ -333,7 +332,7 @@ module Api
       end
 
       def location_id
-        if(package_params[:location_id])
+        if package_params[:location_id]
           Location.find_by(stockit_id: package_params[:location_id]).try(:id)
         end
       end
@@ -357,7 +356,7 @@ module Api
       end
 
       def existing_package
-        if(stockit_id = package_params[:stockit_id])
+        if (stockit_id = package_params[:stockit_id])
           Package.find_by(stockit_id: stockit_id)
         end
       end
