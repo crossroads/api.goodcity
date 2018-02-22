@@ -21,16 +21,34 @@ class Ability
   end
 
   def define_abilities
+    image_abilities
     package_abilities
+    item_abilities
+    package_type_abilities
+    packages_locations_abilities
     offer_abilities
     deliveries_abilities
     order_abilities
+    orders_package_abilities
     order_transport_abilities
     holiday_abilities
     organisations_abilities
     user_abilities
     taxonomies
+    message_abilities
     stockit_abilities
+    stockit_contact_abilities
+    stockit_organisation_abilities
+    stockit_local_order_abilities
+    version_abilities
+  end
+
+  def can_add_package_types?
+    user_permissions.include?('can_add_package_types')
+  end
+
+  def can_add_or_remove_inventory_number?
+    user_permissions.include?('can_add_or_remove_inventory_number')
   end
 
   def can_manage_items?
@@ -69,14 +87,49 @@ class Ability
     user_permissions.include?('can_manage_packages_locations')
   end
 
+  def can_manage_orders_packages?
+    user_permissions.include?('can_manage_orders_packages')
+  end
+
+  def can_destroy_image_for_imageable_states?
+    user_permissions.include?('can_destroy_for_imageable_states')
+  end
+
+  def can_manage_images?
+    user_permissions.include?('can_manage_images')
+  end
+
+  def image_abilities
+    if can_manage_images?
+      can [:index, :show, :create, :update, :destroy, :delete_cloudinary_image], Image
+    else
+      can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
+        record.imageable.offer.created_by_id == @user_id
+      end
+    end
+    can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
+      state: ['draft', 'submitted', 'scheduled'] }
+    can :destroy, Image, imageable: {
+      state: ['draft', 'submitted', 'accepted', 'rejected', 'scheduled'] } if can_destroy_image_for_imageable_states?
+  end
+
   def item_abilities
     if can_manage_items?
       can [:index, :show, :create, :update, :messages, :move_stockit_item_set, :move_set_partial_qty,
         :designate_stockit_item_set, :dispatch_stockit_item_set, :update_designation_of_set, :destroy], Item
+    else
+      can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
+        item.offer.created_by_id == @user_id
+      end
+      can :update, Item, Item.donor_items(user_id) do |item|
+        item.offer.created_by_id == @user_id && item.not_received_packages?
+      end
     end
+    can :destroy, Item, offer: { created_by_id: @user_id }
   end
 
   def package_abilities
+    can :create, Package if @api_user
     if can_manage_packages?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :designate_stockit_item, :remove_from_set,
@@ -84,12 +137,46 @@ class Ability
         :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
         :undispatch_stockit_item, :stockit_item_details], Package
+    else
+      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
+        record.item ? record.item.offer.created_by_id == @user_id : false
+      end
     end
+    can :create, Package if @api_user
+    can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
+  end
+
+  def can_perform_message_crud?
+    user_permissions.include?('can_perform_message_crud')
+  end
+
+  def can_create_and_read_messages?
+    user_permissions.include?('can_create_and_read_messages')
+  end
+
+  def message_abilities
+    if can_perform_message_crud?
+      can [:index, :show, :create, :update, :destroy], Message
+    elsif can_create_and_read_messages?
+      can [:index, :show, :create], Message
+    else
+      can [:index, :show, :create], Message, Message.donor_messages(@user_id) do |message|
+        message.offer.created_by_id == @user_id && !message.is_private
+      end
+    end
+    can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
   end
 
   def offer_abilities
+    can :create, Offer
+    can [:index, :show, :update], Offer, created_by_id: @user_id,
+      state: Offer.donor_valid_states
+
+    can :destroy, Offer, created_by_id: @user_id, state: ['draft',
+      'submitted', 'reviewed', 'scheduled', 'under_review', 'inactive']
+
     if can_manage_offers?
-      can [:create, :index, :show, :update, :complete_review, :close_offer,
+      can [:index, :show, :update, :complete_review, :close_offer,
         :finished, :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer
     end
   end
@@ -101,15 +188,40 @@ class Ability
   end
 
   def order_abilities
-    if can_manage_orders?
+    can :create, Order
+    can [:index, :show, :update], Order, created_by_id: @user_id
+    if can_manage_orders? || @api_user
       can [:create, :index, :show, :update], Order
     end
   end
 
+  def orders_package_abilities
+    if can_manage_orders_packages? || @api_user
+      can [:index, :search, :show], OrdersPackage
+    end
+  end
+
   def order_transport_abilities
+    can :create, OrderTransport
+    can [:index, :show], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
+      transport.order.created_by_id == @user_id
+    end
+
     if can_manage_order_transport?
       can [:create, :index, :show], OrderTransport
     end
+  end
+
+  def stockit_organisation_abilities
+    can [:create, :index], StockitOrganisation if @api_user
+  end
+
+  def stockit_contact_abilities
+    can [:create, :index], StockitContact if @api_user
+  end
+
+  def stockit_local_order_abilities
+    can [:create, :index], StockitLocalOrder if @api_user
   end
 
   def holiday_abilities
@@ -119,7 +231,7 @@ class Ability
   end
 
   def organisations_abilities
-    if can_check_organisations?
+    if can_check_organisations? || @api_user
       can [:index, :search, :show], Organisation
     end
   end
@@ -135,8 +247,15 @@ class Ability
     can [:index, :show], RejectionReason
     can [:index, :show], Permission
     can [:index, :show], CancellationReason
-    # can :create, PackageType if @api_user || staff?
-    # can [:create, :remove_number], InventoryNumber if api_user_or_staff?
+    if can_add_or_remove_inventory_number? || @api_user
+      can [:create, :remove_number], InventoryNumber
+    end
+  end
+
+  def package_type_abilities
+    if can_add_package_types? || @api_user
+      can :create, PackageType
+    end
   end
 
   def public_ability
@@ -155,12 +274,24 @@ class Ability
   end
 
   def packages_locations_abilities
-    if can_manage_packages_locations?
+    if can_manage_packages_locations? || @api_user
       can [:index, :show], PackagesLocation
     end
   end
 
   def stockit_abilities
     can [:index, :create, :destroy], Location
+
+    if @api_user
+      can [:create, :index], Box
+      can [:create, :index], Pallet
+      can [:create, :index], Country
+      can [:create, :index], StockitActivity
+    end
+  end
+
+  def version_abilities
+    can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
+    can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
   end
 end
