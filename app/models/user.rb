@@ -35,10 +35,10 @@ class User < ActiveRecord::Base
   after_create :generate_auth_token
 
   scope :donors,      -> { where(permission_id: nil) }
-  scope :reviewers,   -> { where(permissions: { name: 'Reviewer'   }).joins(:permission) }
-  scope :supervisors, -> { where(permissions: { name: 'Supervisor' }).joins(:permission) }
-  scope :system,      -> { where(permissions: { name: 'System' }).joins(:permission) }
-  scope :staff,       -> { where(permissions: { name: ['Supervisor', 'Reviewer'] }).joins(:permission) }
+  scope :reviewers,   -> { where(roles: { name: 'Reviewer'   }).joins(:roles) }
+  scope :supervisors, -> { where(roles: { name: 'Supervisor' }).joins(:roles) }
+  scope :system,      -> { where(roles: { name: 'System' }).joins(:roles) }
+  scope :staff,       -> { where(roles: { name: ['Supervisor', 'Reviewer'] }).joins(:roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
 
   # used when reviewer is logged into donor app
