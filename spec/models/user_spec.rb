@@ -14,7 +14,8 @@ describe User, :type => :model do
     it { is_expected.to have_many :auth_tokens }
     it { is_expected.to have_many :offers }
     it { is_expected.to have_many :messages }
-    it { is_expected.to belong_to :permission }
+    it { is_expected.to have_many :user_roles }
+    it { is_expected.to have_many(:roles).through(:user_roles) }
     it { is_expected.to have_one  :address }
   end
 

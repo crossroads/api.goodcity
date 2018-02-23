@@ -15,31 +15,70 @@ FactoryGirl.define do
     association :image
 
     trait :reviewer do
-      association :permission, factory: :reviewer_permission
+      after(:create) do |user|
+        user.roles << create(:reviewer_role)
+      end
+    end
+
+    trait :reviewer_with_can_manage_offers_permission do
+      after(:create) do |user|
+        user.roles << create(:reviewer_role, :with_can_manage_offers_permission)
+      end
     end
 
     trait :supervisor do
-      association :permission, factory: :supervisor_permission
+      after(:create) do |user|
+        user.roles << create(:supervisor_role)
+      end
     end
 
     trait :administrator do
-      association :permission, factory: :administrator_permission
+      after(:create) do |user|
+        user.roles << create(:administrator_role)
+      end
     end
 
     trait :api_user do
-      association :permission, factory: :api_write_permission
+      after(:create) do |user|
+        user.roles << create(:api_write_role)
+      end
     end
 
     trait :system do
       first_name "GoodCity"
       last_name  "Team"
       mobile     SYSTEM_USER_MOBILE
-      association :permission, factory: :system_permission
+      after(:create) do |user|
+        user.roles << create(:system_role)
+      end
+      # association :role, factory: :system_role
     end
 
     trait :charity do
-      association :permission, factory: :charity_permission
+      after(:create) do |user|
+        user.roles << create(:charity_role)
+      end
     end
+
+    # trait :reviewer do
+    #   association :role, factory: :reviewer_role
+    # end
+
+    # trait :supervisor do
+    #   association :role, factory: :supervisor_role
+    # end
+
+    # trait :administrator do
+    #   association :role, factory: :administrator_role
+    # end
+
+    # trait :api_user do
+    #   association :role, factory: :api_write_role
+    # end
+
+    # trait :charity do
+    #   # association :permission, factory: :charity_permission
+    # end
 
     trait :with_email do
       email { FFaker::Internet.email }
