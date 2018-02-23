@@ -1,4 +1,5 @@
 FactoryGirl.define do
+
   factory :role do
     name            { %w( Reviewer Supervisor Administrator ).sample }
     initialize_with { Role.find_or_initialize_by(name: name) } # limits us to our sample of permissions
@@ -50,6 +51,10 @@ FactoryGirl.define do
         role.permissions << (create :permission, name: 'can_manage_messages')
       end
     end
+  end
+
+  factory :reviewer_role, parent: :role do
+    name 'Reviewer'
 
     trait :with_can_manage_offers_permission do
       after(:create) do |role|
@@ -75,12 +80,6 @@ FactoryGirl.define do
       end
     end
 
-    trait :with_can_read_or_modify_user_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_read_or_modify_user')
-      end
-    end
-
     trait :with_can_manage_packages_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_packages')
@@ -99,12 +98,6 @@ FactoryGirl.define do
       end
     end
 
-    trait :with_can_manage_packages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_packages')
-      end
-    end
-
     trait :with_can_manage_organisations_users_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_organisations_users')
@@ -117,12 +110,6 @@ FactoryGirl.define do
       end
     end
 
-    trait :with_can_manage_items_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_items')
-      end
-    end
-
     trait :with_can_read_or_modify_user_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_read_or_modify_user')
@@ -132,12 +119,6 @@ FactoryGirl.define do
     trait :with_can_manage_orders_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_orders')
-      end
-    end
-
-    trait :with_can_manage_orders_packages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_orders_packages')
       end
     end
 
