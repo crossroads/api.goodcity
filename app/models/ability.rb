@@ -21,6 +21,7 @@ class Ability
   end
 
   def define_abilities
+    address_abilities
     image_abilities
     package_abilities
     item_abilities
@@ -67,6 +68,10 @@ class Ability
     user_permissions.include?('can_manage_deliveries')
   end
 
+  def can_manage_delivery_address?
+    user_permissions.include?('can_manage_delivery_address')
+  end
+
   def can_manage_orders?
     user_permissions.include?('can_manage_orders')
   end
@@ -97,6 +102,15 @@ class Ability
 
   def can_manage_images?
     user_permissions.include?('can_manage_images')
+  end
+
+  def address_abilities
+    # User address
+    can [:create, :show], Address, addressable_type: "User", addressable_id: @user_id
+
+    # Offer delivery address
+    can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
+    can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
   end
 
   def image_abilities
