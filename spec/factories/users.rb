@@ -39,6 +39,12 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_can_manage_offers_permission do
+      after(:create) do |user, evaluator|
+        user.roles << create(:reviewer_role, :with_can_manage_offers_permission, name: evaluator.role_name)
+      end
+    end
+
     trait :supervisor do
       after(:create) do |user|
         user.roles << create(:supervisor_role)
@@ -54,12 +60,6 @@ FactoryGirl.define do
     trait :with_can_manage_messages_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_manage_messages_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_offers_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_offers_permission, name: evaluator.role_name)
       end
     end
 
@@ -138,6 +138,12 @@ FactoryGirl.define do
     trait :with_can_manage_locations_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_manage_locations_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_users_permission do
+      after(:create) do |user|
+        user.roles << (create :role, :with_can_manage_users_permission)
       end
     end
 

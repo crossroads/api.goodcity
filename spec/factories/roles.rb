@@ -8,12 +8,6 @@ FactoryGirl.define do
       permissions { %w(can_manage_offers, can_manage_packages)}
     end
 
-    trait :with_can_destroy_contacts_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_destroy_contacts')
-      end
-    end
-
     trait :with_dynamic_permission do
       after(:create) do |role, evaluator|
         evaluator.permissions.each do |permission|
@@ -34,12 +28,6 @@ FactoryGirl.define do
       end
     end
 
-    trait :with_can_destroy_contacts_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_destroy_contacts')
-      end
-    end
-
     trait :with_can_manage_holidays_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_holidays')
@@ -49,16 +37,6 @@ FactoryGirl.define do
     trait :with_can_manage_messages_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_messages')
-      end
-    end
-  end
-
-  factory :reviewer_role, parent: :role do
-    name 'Reviewer'
-
-    trait :with_can_manage_offers_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_offers')
       end
     end
 
@@ -137,6 +115,12 @@ FactoryGirl.define do
     trait :with_can_manage_locations_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_locations')
+      end
+    end
+
+    trait :with_can_destroy_contacts_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_destroy_contacts')
       end
     end
   end
