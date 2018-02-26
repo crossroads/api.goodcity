@@ -22,6 +22,7 @@ class Ability
 
   def define_abilities
     address_abilities
+    contact_abilities
     image_abilities
     package_abilities
     item_abilities
@@ -104,6 +105,18 @@ class Ability
     user_permissions.include?('can_manage_images')
   end
 
+  def can_perform_message_crud?
+    user_permissions.include?('can_perform_message_crud')
+  end
+
+  def can_create_and_read_messages?
+    user_permissions.include?('can_create_and_read_messages')
+  end
+
+  def can_destroy_contacts?
+    user_permissions.include?('can_destroy_contacts')
+  end
+
   def address_abilities
     # User address
     can [:create, :show], Address, addressable_type: "User", addressable_id: @user_id
@@ -111,6 +124,12 @@ class Ability
     # Offer delivery address
     can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
     can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
+  end
+
+  def contact_abilities
+    can :destroy, Contact, delivery: { offer_id: @user_offer_ids }
+    can :destroy, Contact if can_destroy_contacts?
+    can :create, Contact
   end
 
   def image_abilities
@@ -158,14 +177,6 @@ class Ability
     end
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
-  end
-
-  def can_perform_message_crud?
-    user_permissions.include?('can_perform_message_crud')
-  end
-
-  def can_create_and_read_messages?
-    user_permissions.include?('can_create_and_read_messages')
   end
 
   def message_abilities

@@ -14,21 +14,37 @@ FactoryGirl.define do
 
     association :image
 
+    transient do
+      role_name { %w( Reviewer Supervisor Administrator ).sample }
+    end
+
     trait :reviewer do
       after(:create) do |user|
         user.roles << create(:reviewer_role)
       end
     end
 
-    trait :reviewer_with_can_manage_offers_permission do
-      after(:create) do |user|
-        user.roles << create(:reviewer_role, :with_can_manage_offers_permission)
+    trait :with_can_manage_offers_permission do
+      after(:create) do |user, evaluator|
+        user.roles << create(:reviewer_role, :with_can_manage_offers_permission, name: evaluator.role_name)
       end
     end
 
     trait :supervisor do
       after(:create) do |user|
         user.roles << create(:supervisor_role)
+      end
+    end
+
+    trait :with_can_destroy_contact_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_destroy_contacts_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_users_permission do
+      after(:create) do |user|
+        user.roles << (create :role, :with_can_manage_users_permission)
       end
     end
 
