@@ -84,6 +84,14 @@ lass Ability
     can :create, Contact
   end
 
+  def can_manage_delivery_address?
+    user_permissions.include?('can_manage_delivery_address')
+  end
+
+  def can_manage_orders?
+    user_permissions.include?('can_manage_orders')
+  end
+
   def deliveries_abilities
     can [:create], Delivery
     if can_manage_deliveries?
@@ -103,6 +111,15 @@ lass Ability
     if can_manage_holidays?
       can [:index, :destroy, :create, :update], Holiday
     end
+  end
+
+  def address_abilities
+    # User address
+    can [:create, :show], Address, addressable_type: "User", addressable_id: @user_id
+
+    # Offer delivery address
+    can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
+    can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
   end
 
   def image_abilities
