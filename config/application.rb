@@ -35,13 +35,6 @@ module GoodCityServer
 
     config.active_job.queue_adapter = :sidekiq
 
-    config.middleware.insert_before 0, "Rack::Cors" do
-      allow do
-        origins '*'
-        resource '*', :headers => :any, :methods => [:get, :post, :options]
-      end
-    end
-
     config.lograge.enabled = true
     config.lograge.enabled = Lograge::Formatters::Json.new
     config.log_formatter = proc do |severity, datetime, progname, msg|
