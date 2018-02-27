@@ -92,15 +92,6 @@ lass Ability
     user_permissions.include?('can_manage_orders')
   end
 
-  def deliveries_abilities
-    can [:create], Delivery
-    if can_manage_deliveries?
-      can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
-    else
-      can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
-    end
-  end
-
   def gogovan_order_abilities
     can [:calculate_price, :confirm_order, :destroy], GogovanOrder, delivery: { offer_id: @user_offer_ids }
     can [:calculate_price, :confirm_order, :destroy], GogovanOrder if can_handle_gogovan_order?
@@ -127,6 +118,10 @@ lass Ability
 
   def can_read_or_modify_user?
     user_permissions.include?('can_read_or_modify_user')
+  end
+
+  def can_handle_gogovan_order?
+    user_permissions.include?('can_handle_gogovan_order')
   end
 
   def address_abilities
@@ -198,6 +193,15 @@ lass Ability
     if can_manage_offers?
       can [:index, :show, :update, :complete_review, :close_offer,
         :finished, :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer
+    end
+  end
+
+  def deliveries_abilities
+    can [:create], Delivery
+    if can_manage_deliveries?
+      can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
+    else
+      can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
     end
   end
 
