@@ -13,7 +13,7 @@ describe "User abilities" do
   end
 
   context "when Supervisor" do
-    let(:user)   { create(:user, :supervisor) }
+    let(:user)   { create(:user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor') }
     let(:person) { create :user }
     let(:can)    { [:index, :show, :update, :current_user_profile] }
     let(:cannot) { [:create, :destroy, :manage] }
@@ -26,7 +26,7 @@ describe "User abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)   { create(:user, :reviewer) }
+    let(:user)   { create(:user, :with_can_read_or_modify_user_permission, role_name: 'Reviewer') }
     let(:person) { create :user }
     let(:can)    { [:index, :show, :update, :current_user_profile] }
     let(:cannot) { [:create, :destroy, :manage] }
