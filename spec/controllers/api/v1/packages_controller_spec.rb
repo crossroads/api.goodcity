@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
 
-  let(:user) { create(:user_with_token, :reviewer) }
+  let(:user) { create(:user_with_token, :with_can_manage_packages_permission, role_name: 'Reviewer') }
   let(:donor) { create(:user_with_token) }
   let(:offer) { create :offer, created_by: donor }
   let(:item)  { create :item, offer: offer }

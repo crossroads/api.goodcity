@@ -121,6 +121,10 @@ class Ability
     user_permissions.include?('can_read_or_modify_user')
   end
 
+  def can_handle_gogovan_order?
+    user_permissions.include?('can_handle_gogovan_order')
+  end
+
   def address_abilities
     # User address
     can [:create, :show], Address, addressable_type: "User", addressable_id: @user_id
@@ -217,6 +221,11 @@ class Ability
     else
       can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
     end
+  end
+
+  def gogovan_order_abilities
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder, delivery: { offer_id: @user_offer_ids }
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder if can_handle_gogovan_order?
   end
 
   def order_abilities

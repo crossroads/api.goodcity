@@ -96,9 +96,21 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_can_manage_orders_packages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_orders_packages_permission, name: evaluator.role_name)
+      end
+    end
+
     trait :with_can_manage_users_permission do
       after(:create) do |user|
         user.roles << (create :role, :with_can_manage_users_permission)
+      end
+    end
+
+    trait :with_can_manage_packages_permission do
+      after(:create) do |user|
+        user.roles << (create :role, :with_can_manage_packages_permission)
       end
     end
 
