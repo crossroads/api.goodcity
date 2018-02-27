@@ -27,6 +27,12 @@ FactoryGirl.define do
         role.permissions << (create :permission, name: 'can_destroy_contacts')
       end
     end
+
+    trait :with_can_manage_holidays_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_holidays')
+      end
+    end
   end
 
   factory :reviewer_role, parent: :role do
