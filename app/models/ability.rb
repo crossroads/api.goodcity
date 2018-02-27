@@ -113,8 +113,8 @@ lass Ability
     end
   end
 
-  def can_perform_message_crud?
-    user_permissions.include?('can_perform_message_crud')
+  def can_manage_messages?
+    user_permissions.include?('can_manage_messages')
   end
 
   def can_create_and_read_messages?
@@ -123,6 +123,10 @@ lass Ability
 
   def can_destroy_contacts?
     user_permissions.include?('can_destroy_contacts')
+  end
+
+  def can_read_or_modify_user?
+    user_permissions.include?('can_read_or_modify_user')
   end
 
   def address_abilities
@@ -228,10 +232,10 @@ lass Ability
     end
   end
 
-  def organisations_users_abilities
-    if can_manage_organisations_users? || @api_user
-      can [:create, :show, :index], OrganisationsUser
-    end
+  def user_abilities
+    can [:show, :update], User, id: @user_id
+    can :current_user_profile, User
+    can [:index, :show, :update], User if can_read_or_modify_user?
   end
 
   def package_abilities
