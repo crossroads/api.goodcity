@@ -105,8 +105,8 @@ class Ability
     user_permissions.include?('can_manage_images')
   end
 
-  def can_perform_message_crud?
-    user_permissions.include?('can_perform_message_crud')
+  def can_manage_messages?
+    user_permissions.include?('can_manage_messages')
   end
 
   def can_create_and_read_messages?
@@ -115,6 +115,10 @@ class Ability
 
   def can_destroy_contacts?
     user_permissions.include?('can_destroy_contacts')
+  end
+
+  def can_read_or_modify_user?
+    user_permissions.include?('can_read_or_modify_user')
   end
 
   def address_abilities
@@ -180,7 +184,7 @@ class Ability
   end
 
   def message_abilities
-    if can_perform_message_crud?
+    if can_manage_messages?
       can [:index, :show, :create, :update, :destroy], Message
     elsif can_create_and_read_messages?
       can [:index, :show, :create], Message
@@ -207,8 +211,11 @@ class Ability
   end
 
   def deliveries_abilities
+    can [:create], Delivery
     if can_manage_deliveries?
       can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
+    else
+      can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
     end
   end
 
@@ -250,6 +257,7 @@ class Ability
   end
 
   def holiday_abilities
+    can [:available_dates], Holiday
     if can_manage_holidays?
       can [:index, :destroy, :create, :update], Holiday
     end
@@ -262,7 +270,9 @@ class Ability
   end
 
   def user_abilities
+    can [:show, :update], User, id: @user_id
     can :current_user_profile, User
+    can [:index, :show, :update], User if can_read_or_modify_user?
   end
 
   def taxonomies

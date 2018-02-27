@@ -48,6 +48,54 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_can_manage_messages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_messages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_offers_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_offers_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_add_package_types_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_add_package_types_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_items_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_items_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_create_and_read_messages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_create_and_read_messages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_read_or_modify_user_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_read_or_modify_user_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_packages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_packages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_deliveries do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_deliveries, name: evaluator.role_name)
+      end
+    end
+
     trait :with_can_manage_users_permission do
       after(:create) do |user|
         user.roles << (create :role, :with_can_manage_users_permission)
