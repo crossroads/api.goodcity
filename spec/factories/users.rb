@@ -207,11 +207,47 @@ FactoryGirl.define do
       end
     end
 
-    trait :with_can_manage_users_permission do
-      after(:create) do |user|
-        user.roles << (create :role, :with_can_manage_users_permission)
+    trait :with_can_check_organisations_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_check_organisations_permission, name: evaluator.role_name)
       end
     end
+
+    trait :with_can_manage_items_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_items_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_read_or_modify_user_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_read_or_modify_user_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_orders_packages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_orders_packages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_images_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_images_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_access_packages_locations_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_access_packages_locations_permission, name: evaluator.role_name)
+      end
+    end
+
+    # trait :with_can_manage_users_permission do
+    #   after(:create) do |user|
+    #     user.roles << (create :role, :with_can_manage_users_permission)
+    #   end
+    # end
 
     trait :with_can_manage_packages_permission do
       after(:create) do |user|

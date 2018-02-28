@@ -59,13 +59,13 @@ lass Ability
     package_abilities
     package_type_abilities
     packages_locations_abilities
+    user_abilities
+    taxonomies
     schedule_abilities
     stockit_abilities
     stockit_contact_abilities
     stockit_organisation_abilities
     stockit_local_order_abilities
-    taxonomies
-    user_abilities
     version_abilities
   end
 
@@ -99,6 +99,30 @@ lass Ability
     can [:calculate_price, :confirm_order, :destroy], GogovanOrder if can_handle_gogovan_order?
   end
 
+  def can_manage_order_transport?
+    user_permissions.include?('can_manage_order_transport')
+  end
+
+  def can_manage_holidays?
+    user_permissions.include?('can_manage_holidays')
+  end
+
+  def can_check_organisations?
+    user_permissions.include?('can_check_organisations')
+  end
+
+  def can_access_packages_locations?
+    user_permissions.include?('can_access_packages_locations')
+  end
+
+  def can_manage_orders_packages?
+    user_permissions.include?('can_manage_orders_packages')
+  end
+
+  def can_destroy_image_for_imageable_states?
+    user_permissions.include?('can_destroy_for_imageable_states')
+  end
+
   def holiday_abilities
     can [:available_dates], Holiday
     if can_manage_holidays?
@@ -124,6 +148,10 @@ lass Ability
 
   def can_handle_gogovan_order?
     user_permissions.include?('can_handle_gogovan_order')
+  end
+
+  def can_read_schedule?
+    user_permissions.include?('can_read_schedule')
   end
 
   def address_abilities
