@@ -23,6 +23,7 @@ class Ability
   def define_abilities
     address_abilities
     contact_abilities
+    gogovan_order_abilities
     image_abilities
     package_abilities
     item_abilities
@@ -39,6 +40,7 @@ class Ability
     user_abilities
     taxonomies
     message_abilities
+    schedule_abilities
     stockit_abilities
     stockit_contact_abilities
     stockit_organisation_abilities
@@ -94,8 +96,8 @@ class Ability
     user_permissions.include?('can_check_organisations')
   end
 
-  def can_manage_packages_locations?
-    user_permissions.include?('can_manage_packages_locations')
+  def can_access_packages_locations?
+    user_permissions.include?('can_access_packages_locations')
   end
 
   def can_manage_orders_packages?
@@ -128,6 +130,10 @@ class Ability
 
   def can_handle_gogovan_order?
     user_permissions.include?('can_handle_gogovan_order')
+  end
+
+  def can_read_schedule?
+    user_permissions.include?('can_read_schedule')
   end
 
   def address_abilities
@@ -327,9 +333,15 @@ class Ability
   end
 
   def packages_locations_abilities
-    if can_manage_packages_locations? || @api_user
+    if can_access_packages_locations? || @api_user
       can [:index, :show], PackagesLocation
     end
+  end
+
+  def schedule_abilities
+    can [:create, :availableTimeSlots], Schedule
+    can [:index, :show], Schedule, deliveries: { offer_id: @user_offer_ids }
+    can [:index, :show], Schedule if can_read_schedule?
   end
 
   def stockit_abilities
