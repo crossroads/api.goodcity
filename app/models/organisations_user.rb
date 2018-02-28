@@ -4,7 +4,7 @@ class OrganisationsUser < ActiveRecord::Base
 
   accepts_nested_attributes_for :user, allow_destroy: true, limit: 1
 
-  after_create :send_welcome_msg, :add_charity_user_role
+  after_create :send_welcome_msg, :create_user_role
 
   private
 
@@ -13,6 +13,6 @@ class OrganisationsUser < ActiveRecord::Base
   end
 
   def create_user_role
-    UserRole.add_charity_role(user.id, Role.charity.id)
+    UserRole.create_user_role(user.id, Role.charity.id)
   end
 end

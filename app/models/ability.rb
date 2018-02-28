@@ -35,6 +35,7 @@ class Ability
     order_transport_abilities
     holiday_abilities
     organisations_abilities
+    organisations_users_abilities
     user_abilities
     taxonomies
     message_abilities
@@ -63,6 +64,10 @@ class Ability
 
   def can_manage_offers?
     user_permissions.include?('can_manage_offers')
+  end
+
+  def can_manage_organisations_users?
+    user_permissions.include?('can_manage_organisations_users')
   end
 
   def can_manage_deliveries?
@@ -276,6 +281,10 @@ class Ability
     if can_check_organisations? || @api_user
       can [:index, :search, :show], Organisation
     end
+  end
+
+  def organisations_users_abilities
+    can [:create, :show, :index], OrganisationsUser if can_manage_organisations_users?
   end
 
   def user_abilities
