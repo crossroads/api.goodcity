@@ -3,13 +3,6 @@
 require ::File.expand_path('../config/environment',  __FILE__)
 run Rails.application
 
-use Rack::Cors do
-  allow do
-    origins '*'
-    resource '*', :headers => :any, :methods => [:get, :post, :options]
-  end
-end
-
 require 'sidekiq/web'
 map '/sidekiq' do
   use Rack::Auth::Basic, "Protected Area" do |username, password|
