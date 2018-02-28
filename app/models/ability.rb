@@ -78,10 +78,12 @@ lass Ability
     can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
   end
 
-  def contact_abilities
-    can :destroy, Contact, delivery: { offer_id: @user_offer_ids }
-    can :destroy, Contact if can_destroy_contacts?
-    can :create, Contact
+  def can_manage_organisations_users?
+    user_permissions.include?('can_manage_organisations_users')
+  end
+
+  def can_manage_deliveries?
+    user_permissions.include?('can_manage_deliveries')
   end
 
   def can_manage_delivery_address?
@@ -234,6 +236,10 @@ lass Ability
     if can_check_organisations? || @api_user
       can [:index, :search, :show], Organisation
     end
+  end
+
+  def organisations_users_abilities
+    can [:create, :show, :index], OrganisationsUser if can_manage_organisations_users?
   end
 
   def user_abilities
