@@ -16,3 +16,4 @@ class OrganisationsUser < ActiveRecord::Base
     UserRole.create_user_role(user.id, Role.charity.id)
   end
 end
+
