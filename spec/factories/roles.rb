@@ -93,6 +93,12 @@ FactoryGirl.define do
         role.permissions << (create :permission, name: 'can_manage_packages')
       end
     end
+
+    trait :with_can_manage_organisations_users_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_organisations_users')
+      end
+    end
   end
 
   factory :reviewer_role, parent: :role do
