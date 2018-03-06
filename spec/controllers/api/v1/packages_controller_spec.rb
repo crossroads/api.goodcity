@@ -2,14 +2,16 @@ require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
 
-  let(:user) { create(:user_with_token, :with_can_manage_packages_permission, role_name: 'Reviewer') }
+  let(:user) { create(:user_with_token, :with_can_manage_packages_permission,
+    :with_can_manage_orders_permission,
+    role_name: 'Reviewer') }
   let(:donor) { create(:user_with_token) }
   let(:offer) { create :offer, created_by: donor }
   let(:item)  { create :item, offer: offer }
   let(:package_type)  { create :package_type }
   let(:package) { create :package, item: item }
   let(:package_with_stockit_id) { create :package, :stockit_package, item: item }
-  let(:orders_package) { create :orders_package, package: package, order: order_id }
+  let(:orders_package) { create :orders_package, package: package }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package) }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
 
