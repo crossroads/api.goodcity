@@ -214,6 +214,12 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_can_manage_orders_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_orders')
+      end
+    end
+
     trait :with_can_manage_orders_packages_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_orders_packages')
