@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :districts, only: [:index, :show]
       resources :package_types, only: [:index, :create]
       resources :permissions, only: [:index, :show]
+      resources :roles, only: [:index, :show]
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
 

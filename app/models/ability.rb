@@ -304,7 +304,7 @@ class Ability
     can [:index, :show], DonorCondition
     can [:index, :show], SubpackageType
     can [:index, :show], RejectionReason
-    can [:index, :show], Permission
+    can [:index, :show], Role
     can [:index, :show], CancellationReason
     if can_add_or_remove_inventory_number? || @api_user
       can [:create, :remove_number], InventoryNumber
