@@ -16,7 +16,8 @@ namespace :goodcity do
         'can_check_organisations', 'can_manage_packages_locations', 'can_manage_items',
         'can_manage_users', 'can_add_package_types', 'can_perform_message_crud',
         'can_add_or_remove_inventory_number', 'can_manage_delivery_address',
-        'can_destroy_contacts', 'can_handle_gogovan_order', 'can_manage_organisations_users'],
+        'can_destroy_contacts', 'can_handle_gogovan_order', 'can_manage_organisations_users',
+        'can_read_or_modify_user'],
       "api-write" => [],
       "System" => [],
       "Charity" => []
