@@ -234,9 +234,9 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     puma (3.0.2)
-    rack (1.6.8)
+    rack (1.6.9)
     rack-cors (0.4.0)
-    rack-protection (1.5.3)
+    rack-protection (2.0.1)
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -351,10 +351,9 @@ GEM
       multi_json
       simplecov-html (~> 0.8.0)
     simplecov-html (0.8.0)
-    sinatra (1.4.7)
-      rack (~> 1.5)
-      rack-protection (~> 1.4)
-      tilt (>= 1.3, < 3)
+    sinatra (1.2.8)
+      rack (~> 1.1)
+      tilt (>= 1.2.2, < 2.0)
     slop (3.6.0)
     spring (1.6.4)
     spring-commands-rspec (1.0.4)
@@ -372,7 +371,7 @@ GEM
     state_machine (1.2.0)
     thor (0.19.4)
     thread_safe (0.3.6)
-    tilt (2.0.2)
+    tilt (1.4.1)
     timecop (0.8.1)
     traco (3.1.6)
       activerecord (>= 3.0)
@@ -439,7 +438,7 @@ DEPENDENCIES
   postgres_ext-serializers!
   puma
   rack-cors
-  rack-protection
+  rack-protection (~> 2.0.0)
   rack-timeout
   railroady
   rails (~> 4.2.0)
@@ -467,3 +466,9 @@ DEPENDENCIES
   twilio-ruby
   warden
   webmock
+
+RUBY VERSION
+   ruby 2.2.2p95
+
+BUNDLED WITH
+   1.13.6

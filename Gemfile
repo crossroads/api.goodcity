@@ -28,7 +28,7 @@ gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
 gem 'jwt', '~> 1.2.0'
 gem 'rack-cors'
-gem 'rack-protection'
+gem 'rack-protection', '~> 2.0.0'
 gem 'state_machine'
 gem 'twilio-ruby'
 gem 'warden'
