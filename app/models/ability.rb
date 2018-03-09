@@ -294,8 +294,8 @@ class Ability
   end
 
   def user_abilities
-    can [:show, :update], User, id: @user_id
     can :current_user_profile, User
+    can [:show, :update], User, id: @user_id
     can [:index, :show, :update], User if can_read_or_modify_user?
   end
 
@@ -305,6 +305,7 @@ class Ability
     can [:index, :show], SubpackageType
     can [:index, :show], RejectionReason
     can [:index, :show], Role
+    can [:index, :show], Permission
     can [:index, :show], CancellationReason
     if can_add_or_remove_inventory_number? || @api_user
       can [:create, :remove_number], InventoryNumber
