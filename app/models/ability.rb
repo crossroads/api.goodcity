@@ -271,8 +271,8 @@ lass Ability
   end
 
   def user_abilities
-    can [:show, :update], User, id: @user_id
     can :current_user_profile, User
+    can [:show, :update], User, id: @user_id
     can [:index, :show, :update], User if can_read_or_modify_user?
   end
 
@@ -392,3 +392,4 @@ lass Ability
     can [:index, :show], Version if can_read_versions?
   end
 end
+
