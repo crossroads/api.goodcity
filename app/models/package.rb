@@ -214,8 +214,7 @@ class Package < ActiveRecord::Base
     else
       create_associated_dispatched_orders_package
     end
-    update_in_stock_quantity
-    assign_stockit_for :dispatch
+    update_in_stock_quantity :dispatch
   end
 
   def requested_undispatch_from_stockit
@@ -252,8 +251,7 @@ class Package < ActiveRecord::Base
         quantity: quantity
       )
     end
-    assign_stockit_for :designation
-    update_in_stock_quantity
+    update_in_stock_quantity :designation
   end
 
   def assign_stockit_for(event)
@@ -489,7 +487,8 @@ class Package < ActiveRecord::Base
     update(order_id: nil)
   end
 
-  def update_in_stock_quantity
+  def update_in_stock_quantity(event = false)
+    assign_stockit_for(event) if event
     if GoodcitySync.request_from_stockit
       update_column(:quantity, in_hand_quantity)
     else
