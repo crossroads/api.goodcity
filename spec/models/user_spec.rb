@@ -164,4 +164,12 @@ describe User, :type => :model do
       end
     end
   end
+
+  describe '#user_role_names' do
+    it 'returns role names for user' do
+      user = create :user, :reviewer
+      expect(user.user_role_names).to include('Reviewer')
+      expect(user.user_role_names.count).to eq(1)
+    end
+  end
 end

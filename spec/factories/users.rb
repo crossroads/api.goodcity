@@ -16,11 +16,26 @@ FactoryGirl.define do
 
     transient do
       role_name { %w( Reviewer Supervisor Administrator ).sample }
+      roles_and_permissions {}
     end
 
     trait :reviewer do
       after(:create) do |user|
         user.roles << create(:reviewer_role)
+      end
+    end
+
+    trait :with_multiple_roles_and_permissions do
+      after(:create) do |user, evaluator|
+        evaluator.roles_and_permissions.each_pair do |role_name, permissions|
+          user.roles << create(:role, :with_dynamic_permission, name: role_name, permissions: permissions)
+        end
+      end
+    end
+
+    trait :with_can_destroy_contact_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_destroy_contacts_permission, name: evaluator.role_name)
       end
     end
 
@@ -33,12 +48,6 @@ FactoryGirl.define do
     trait :supervisor do
       after(:create) do |user|
         user.roles << create(:supervisor_role)
-      end
-    end
-
-    trait :with_can_destroy_contact_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_destroy_contacts_permission, name: evaluator.role_name)
       end
     end
 
@@ -150,11 +159,11 @@ FactoryGirl.define do
       end
     end
 
-    # trait :with_can_manage_users_permission do
-    #   after(:create) do |user|
-    #     user.roles << (create :role, :with_can_manage_users_permission)
-    #   end
-    # end
+    trait :with_can_manage_locations_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_locations_permission, name: evaluator.role_name)
+      end
+    end
 
     trait :with_can_manage_packages_permission do
       after(:create) do |user|
@@ -181,7 +190,6 @@ FactoryGirl.define do
       after(:create) do |user|
         user.roles << create(:system_role)
       end
-      # association :role, factory: :system_role
     end
 
     trait :charity do
@@ -190,25 +198,25 @@ FactoryGirl.define do
       end
     end
 
-    # trait :reviewer do
-    #   association :role, factory: :reviewer_role
-    # end
+    trait :reviewer do
+      association :role, factory: :reviewer_role
+    end
 
-    # trait :supervisor do
-    #   association :role, factory: :supervisor_role
-    # end
+    trait :supervisor do
+      association :role, factory: :supervisor_role
+    end
 
-    # trait :administrator do
-    #   association :role, factory: :administrator_role
-    # end
+    trait :administrator do
+      association :role, factory: :administrator_role
+    end
 
-    # trait :api_user do
-    #   association :role, factory: :api_write_role
-    # end
+    trait :api_user do
+      association :role, factory: :api_write_role
+    end
 
-    # trait :charity do
-    #   # association :permission, factory: :charity_permission
-    # end
+    trait :charity do
+      association :role, factory: :charity_role
+    end
 
     trait :with_email do
       email { FFaker::Internet.email }
@@ -221,5 +229,4 @@ FactoryGirl.define do
       user.auth_tokens << create(:scenario_before_auth_token)
     end
   end
-
 end

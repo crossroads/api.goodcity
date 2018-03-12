@@ -1,33 +1,8 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-
   factory :permission do
-    name  'can_manage_things'
-    # initialize_with { Permission.find_or_initialize_by(name: name) } # limits us to our sample of permissions
+    name            { %w( can_manange_orders can_manage_offers can_manage_packages ).sample }
+    initialize_with { Permission.find_or_initialize_by(name: name) } # limits us to our sample of permissions
   end
-
-  # factory :reviewer_permission, parent: :permission do
-  #   name 'Reviewer'
-  # end
-
-  # factory :supervisor_permission, parent: :permission do
-  #   name 'Supervisor'
-  # end
-
-  # factory :administrator_permission, parent: :permission do
-  #   name 'Administrator'
-  # end
-
-  # factory :system_permission, parent: :permission do
-  #   name 'System'
-  # end
-
-  # factory :api_write_permission, parent: :permission do
-  #   name 'api-write'
-  # end
-
-  # factory :charity_permission, parent: :permission do
-  #   name 'Charity'
-  # end
 end
