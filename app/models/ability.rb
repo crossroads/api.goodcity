@@ -1,7 +1,28 @@
 class Ability
   include CanCan::Ability
 
+  # Actions :index, :show, :create, :update, :destroy, :manage
+  # See the wiki for details: https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
+
   attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids, :user_permissions
+
+  PERMISSION_NAMES = ['can_manage_items', 'can_manage_packages',
+    'can_manage_offers', 'can_manage_organisations_users',
+    'can_manage_deliveries', 'can_manage_delivery_address', 'can_manage_delivery_address',
+    'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
+    'can_manage_orders_packages', 'can_manage_images', 'can_manage_messages',
+    'can_add_package_types', 'can_add_or_remove_inventory_number', 'can_check_organisations',
+    'can_access_packages_locations', 'can_destroy_image_for_imageable_states',
+    'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
+    'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
+    'can_destroy_package_with_specific_states', 'can_manage_locations',
+    'can_read_versions'].freeze
+
+  PERMISSION_NAMES.each do |permission_name|
+    define_method "#{permission_name}?" do
+      user_permissions.include?(permission_name)
+    end
+  end
 
   def initialize(user)
     public_ability
@@ -23,117 +44,29 @@ class Ability
   def define_abilities
     address_abilities
     contact_abilities
-    gogovan_order_abilities
-    image_abilities
-    package_abilities
-    item_abilities
-    package_type_abilities
-    packages_locations_abilities
-    offer_abilities
     deliveries_abilities
+    gogovan_order_abilities
+    holiday_abilities
+    image_abilities
+    item_abilities
+    offer_abilities
     order_abilities
+    message_abilities
     orders_package_abilities
     order_transport_abilities
-    holiday_abilities
     organisations_abilities
     organisations_users_abilities
-    user_abilities
-    taxonomies
-    message_abilities
+    package_abilities
+    package_type_abilities
+    packages_locations_abilities
     schedule_abilities
     stockit_abilities
     stockit_contact_abilities
     stockit_organisation_abilities
     stockit_local_order_abilities
+    taxonomies
+    user_abilities
     version_abilities
-  end
-
-  def can_add_package_types?
-    user_permissions.include?('can_add_package_types')
-  end
-
-  def can_add_or_remove_inventory_number?
-    user_permissions.include?('can_add_or_remove_inventory_number')
-  end
-
-  def can_manage_items?
-    user_permissions.include?('can_manage_items')
-  end
-
-  def can_manage_packages?
-    user_permissions.include?('can_manage_packages')
-  end
-
-  def can_manage_offers?
-    user_permissions.include?('can_manage_offers')
-  end
-
-  def can_manage_organisations_users?
-    user_permissions.include?('can_manage_organisations_users')
-  end
-
-  def can_manage_deliveries?
-    user_permissions.include?('can_manage_deliveries')
-  end
-
-  def can_manage_delivery_address?
-    user_permissions.include?('can_manage_delivery_address')
-  end
-
-  def can_manage_orders?
-    user_permissions.include?('can_manage_orders')
-  end
-
-  def can_manage_order_transport?
-    user_permissions.include?('can_manage_order_transport')
-  end
-
-  def can_manage_holidays?
-    user_permissions.include?('can_manage_holidays')
-  end
-
-  def can_check_organisations?
-    user_permissions.include?('can_check_organisations')
-  end
-
-  def can_access_packages_locations?
-    user_permissions.include?('can_access_packages_locations')
-  end
-
-  def can_manage_orders_packages?
-    user_permissions.include?('can_manage_orders_packages')
-  end
-
-  def can_destroy_image_for_imageable_states?
-    user_permissions.include?('can_destroy_for_imageable_states')
-  end
-
-  def can_manage_images?
-    user_permissions.include?('can_manage_images')
-  end
-
-  def can_manage_messages?
-    user_permissions.include?('can_manage_messages')
-  end
-
-  def can_create_and_read_messages?
-    user_permissions.include?('can_create_and_read_messages')
-  end
-
-  def can_destroy_contacts?
-    user_permissions.include?('can_destroy_contacts')
-  end
-
-  def can_read_or_modify_user?
-    user_permissions.include?('can_read_or_modify_user')
-  end
-
-  def can_handle_gogovan_order?
-    user_permissions.include?('can_handle_gogovan_order')
-  end
-
-  def can_read_schedule?
-    user_permissions.include?('can_read_schedule')
   end
 
   def address_abilities
@@ -151,6 +84,27 @@ class Ability
     can :create, Contact
   end
 
+  def deliveries_abilities
+    can [:create], Delivery
+    if can_manage_deliveries?
+      can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
+    else
+      can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
+    end
+  end
+
+  def gogovan_order_abilities
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder, delivery: { offer_id: @user_offer_ids }
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder if can_handle_gogovan_order?
+  end
+
+  def holiday_abilities
+    can [:available_dates], Holiday
+    if can_manage_holidays?
+      can [:index, :destroy, :create, :update], Holiday
+    end
+  end
+
   def image_abilities
     if can_manage_images?
       can [:index, :show, :create, :update, :destroy, :delete_cloudinary_image], Image
@@ -163,6 +117,7 @@ class Ability
       state: ['draft', 'submitted', 'scheduled'] }
     can :destroy, Image, imageable: {
       state: ['draft', 'submitted', 'accepted', 'rejected', 'scheduled'] } if can_destroy_image_for_imageable_states?
+    can :destroy, Image if can_destroy_image?
   end
 
   def item_abilities
@@ -178,24 +133,6 @@ class Ability
       end
     end
     can :destroy, Item, offer: { created_by_id: @user_id }
-  end
-
-  def package_abilities
-    can :create, Package if @api_user
-    if can_manage_packages?
-      can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :designate_stockit_item, :remove_from_set,
-        :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,
-        :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
-        :move_partial_quantity, :move_full_quantity, :print_inventory_label,
-        :undispatch_stockit_item, :stockit_item_details], Package
-    else
-      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
-        record.item ? record.item.offer.created_by_id == @user_id : false
-      end
-    end
-    can :create, Package if @api_user
-    can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
   end
 
   def message_abilities
@@ -225,20 +162,6 @@ class Ability
     end
   end
 
-  def deliveries_abilities
-    can [:create], Delivery
-    if can_manage_deliveries?
-      can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
-    else
-      can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
-    end
-  end
-
-  def gogovan_order_abilities
-    can [:calculate_price, :confirm_order, :destroy], GogovanOrder, delivery: { offer_id: @user_offer_ids }
-    can [:calculate_price, :confirm_order, :destroy], GogovanOrder if can_handle_gogovan_order?
-  end
-
   def order_abilities
     can :create, Order
     can [:index, :show, :update], Order, created_by_id: @user_id
@@ -264,25 +187,6 @@ class Ability
     end
   end
 
-  def stockit_organisation_abilities
-    can [:create, :index], StockitOrganisation if @api_user
-  end
-
-  def stockit_contact_abilities
-    can [:create, :index], StockitContact if @api_user
-  end
-
-  def stockit_local_order_abilities
-    can [:create, :index], StockitLocalOrder if @api_user
-  end
-
-  def holiday_abilities
-    can [:available_dates], Holiday
-    if can_manage_holidays?
-      can [:index, :destroy, :create, :update], Holiday
-    end
-  end
-
   def organisations_abilities
     if can_check_organisations? || @api_user
       can [:index, :search, :show], Organisation
@@ -290,26 +194,27 @@ class Ability
   end
 
   def organisations_users_abilities
-    can [:create, :show, :index], OrganisationsUser if can_manage_organisations_users?
-  end
-
-  def user_abilities
-    can :current_user_profile, User
-    can [:show, :update], User, id: @user_id
-    can [:index, :show, :update], User if can_read_or_modify_user?
-  end
-
-  def taxonomies
-    can :register, :device
-    can [:index, :show], DonorCondition
-    can [:index, :show], SubpackageType
-    can [:index, :show], RejectionReason
-    can [:index, :show], Role
-    can [:index, :show], Permission
-    can [:index, :show], CancellationReason
-    if can_add_or_remove_inventory_number? || @api_user
-      can [:create, :remove_number], InventoryNumber
+    if can_manage_organisations_users? || @api_user
+      can [:create, :show, :index], OrganisationsUser
     end
+  end
+
+  def package_abilities
+    if can_manage_packages?
+      can [:index, :show, :create, :update, :destroy, :print_barcode,
+        :search_stockit_items, :designate_stockit_item, :remove_from_set,
+        :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,
+        :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
+        :move_partial_quantity, :move_full_quantity, :print_inventory_label,
+        :undispatch_stockit_item, :stockit_item_details], Package
+    else
+      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
+        record.item ? record.item.offer.created_by_id == @user_id : false
+      end
+    end
+    can :create, Package if @api_user
+    can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
+    can :destroy, Package, item: { state: 'draft' } if can_destroy_package_with_specific_states?
   end
 
   def package_type_abilities
@@ -339,6 +244,31 @@ class Ability
     end
   end
 
+  def stockit_organisation_abilities
+    can [:create, :index], StockitOrganisation if @api_user
+  end
+
+  def stockit_contact_abilities
+    can [:create, :index], StockitContact if @api_user
+  end
+
+  def stockit_local_order_abilities
+    can [:create, :index], StockitLocalOrder if @api_user
+  end
+
+  def taxonomies
+    can :register, :device
+    can [:index, :show], DonorCondition
+    can [:index, :show], SubpackageType
+    can [:index, :show], RejectionReason
+    can [:index, :show], Role
+    can [:index, :show], Permission
+    can [:index, :show], CancellationReason
+    if can_add_or_remove_inventory_number? || @api_user
+      can [:create, :remove_number], InventoryNumber
+    end
+  end
+
   def schedule_abilities
     can [:create, :availableTimeSlots], Schedule
     can [:index, :show], Schedule, deliveries: { offer_id: @user_offer_ids }
@@ -346,7 +276,9 @@ class Ability
   end
 
   def stockit_abilities
-    can [:index, :create, :destroy], Location
+    if can_manage_locations? || @api_user
+      can [:index, :create, :destroy], Location
+    end
 
     if @api_user
       can [:create, :index], Box
@@ -356,8 +288,15 @@ class Ability
     end
   end
 
+  def user_abilities
+    can :current_user_profile, User
+    can [:show, :update], User, id: @user_id
+    can [:index, :show, :update], User if can_read_or_modify_user?
+  end
+
   def version_abilities
     can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
     can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
+    can [:index, :show], Version if can_read_versions?
   end
 end

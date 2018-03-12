@@ -4,9 +4,21 @@ FactoryGirl.define do
     name            { %w( Reviewer Supervisor Administrator ).sample }
     initialize_with { Role.find_or_initialize_by(name: name) } # limits us to our sample of permissions
 
+    transient do
+      permissions { %w(can_manage_offers, can_manage_packages)}
+    end
+
     trait :with_can_destroy_contacts_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_destroy_contacts')
+      end
+    end
+
+    trait :with_dynamic_permission do
+      after(:create) do |role, evaluator|
+        evaluator.permissions.each do |permission|
+          role.permissions << (create :permission, name: permission)
+        end
       end
     end
 
@@ -139,6 +151,12 @@ FactoryGirl.define do
     trait :with_can_access_packages_locations_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_access_packages_locations')
+      end
+    end
+
+    trait :with_can_manage_locations_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_locations')
       end
     end
   end
