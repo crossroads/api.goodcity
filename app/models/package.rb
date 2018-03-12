@@ -212,6 +212,7 @@ class Package < ActiveRecord::Base
     elsif stockit_sent_on.blank?
       requested_undispatch_from_stockit
     else
+      update_column("stockit_designated_by_id", stockit_user_id)
       create_associated_dispatched_orders_package
     end
     update_sent_by_or_designated_by("dispatch")
@@ -236,7 +237,6 @@ class Package < ActiveRecord::Base
       updated_by: User.updated_by_user,
       state: 'designated'
     )
-    update_column("stockit_designated_by_id", stockit_user_id)
     update_in_stock_quantity
     orders_package.dispatch!
   end
