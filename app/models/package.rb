@@ -214,7 +214,6 @@ class Package < ActiveRecord::Base
     else
       create_associated_dispatched_orders_package
     end
-    update_sent_by_or_designated_by("designation")
     update_sent_by_or_designated_by("dispatch")
     update_in_stock_quantity
   end
@@ -234,9 +233,10 @@ class Package < ActiveRecord::Base
       order_id: order_id,
       quantity: received_quantity,
       sent_on: Time.now,
-      updated_by: User.current_user,
+      updated_by: User.updated_by_user,
       state: 'designated'
     )
+    update_column("stockit_designated_by_id", stockit_user_id)
     update_in_stock_quantity
     orders_package.dispatch!
   end
