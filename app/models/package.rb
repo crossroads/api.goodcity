@@ -258,7 +258,7 @@ class Package < ActiveRecord::Base
 
   def update_sent_by_or_designated_by(event)
     if(event == "dispatch")
-      update_column("stockit_designated_by_id", stockit_user_id) unless stockit_designated_by
+      update_column("stockit_designated_by_id", stockit_user_id) unless stockit_designated_by_id
       update_column("stockit_sent_by_id", stockit_user_id)
     elsif(event == "designation")
       update_column("stockit_designated_by_id", stockit_user_id)
