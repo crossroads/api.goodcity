@@ -1,5 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
   factory :permission do
     name            { %w( can_manange_orders can_manage_offers can_manage_packages ).sample }
