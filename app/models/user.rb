@@ -79,18 +79,9 @@ class User < ActiveRecord::Base
     user_role_names.include?('Reviewer') && @treat_user_as_donor != true
   end
 
-  # def reviewer?
-  #   permission.try(:name) == 'Reviewer' && @treat_user_as_donor != true
-  # end
-
   def supervisor?
     user_role_names.include?('Supervisor') && @treat_user_as_donor != true
   end
-
-
-  # def supervisor?
-  #   permission.try(:name) == 'Supervisor' && @treat_user_as_donor != true
-  # end
 
   def admin?
     administrator?
@@ -100,25 +91,13 @@ class User < ActiveRecord::Base
     user_role_names.include?('Administrator') && @treat_user_as_donor != true
   end
 
-  # def administrator?
-  #   permission.try(:name) == 'Administrator' && @treat_user_as_donor != true
-  # end
-
   def donor?
     !roles.exists? || @treat_user_as_donor == true
   end
 
-  # def donor?
-  #   permission.try(:name) == nil || @treat_user_as_donor == true
-  # end
-
   def api_user?
     user_role_names.include?('api-write')
   end
-
-  # def api_user?
-  #   permission.try(:name) == "api-write"
-  # end
 
   def online?
     (last_connected && last_disconnected) ?

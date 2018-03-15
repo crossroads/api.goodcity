@@ -31,30 +31,24 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 
-  # describe "PUT user/1" do
-  #   let(:reviewer) { create(:user_with_token, :reviewer) }
-  #   let(:permission) { create(:permission, name: "Supervisor") }
+  describe "PUT user/1" do
+    let(:reviewer) { create(:user_with_token, :reviewer) }
+    let(:permission) { create(:permission, name: "Supervisor") }
 
-  #   context "Reviewer" do
-  #     before { generate_and_set_token(user) }
-  #     it "update user last_connected time", :show_in_doc do
-  #       put :update, id: user.id, user: { last_connected: 5.days.ago.to_s }
-  #       expect(response.status).to eq(200)
-  #       expect(user.reload.last_connected.to_date).to eq(5.days.ago.to_date)
-  #     end
+    context "Reviewer" do
+      before { generate_and_set_token(user) }
+      it "update user last_connected time", :show_in_doc do
+        put :update, id: user.id, user: { last_connected: 5.days.ago.to_s }
+        expect(response.status).to eq(200)
+        expect(user.reload.last_connected.to_date).to eq(5.days.ago.to_date)
+      end
 
-  #     it "update user last_disconnected time", :show_in_doc do
-  #       put :update, id: user.id, user: { last_disconnected: 3.days.ago.to_s }
-  #       expect(response.status).to eq(200)
-  #       expect(user.reload.last_disconnected.to_date).to eq(3.days.ago.to_date)
-  #     end
-
-
-      # it "update user permission", :show_in_doc do
-      #   put :update, id: reviewer.id, user: { permission_id: permission.id }
-      #   expect(response.status).to eq(200)
-      #   expect(reviewer.reload.permission).not_to eq(permission)
-      # end
+      it "update user last_disconnected time", :show_in_doc do
+        put :update, id: user.id, user: { last_disconnected: 3.days.ago.to_s }
+        expect(response.status).to eq(200)
+        expect(user.reload.last_disconnected.to_date).to eq(3.days.ago.to_date)
+      end
+    end
 
     # context "Supervisor" do
     #   let(:supervisor) { create(:user_with_token, :supervisor, :supervisor_with_can_manage_users_permission) }

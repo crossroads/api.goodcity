@@ -16,9 +16,9 @@ FactoryGirl.define do
       end
     end
 
-    trait :with_can_manage_offers_permission do
+    trait :with_can_destroy_contacts_permission do
       after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_offers')
+        role.permissions << (create :permission, name: 'can_destroy_contacts')
       end
     end
 
@@ -43,18 +43,6 @@ FactoryGirl.define do
     trait :with_can_add_package_types_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_add_package_types')
-      end
-    end
-
-    trait :with_can_manage_items_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_items')
-      end
-    end
-
-    trait :with_can_create_and_read_messages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_create_and_read_messages')
       end
     end
 
@@ -118,33 +106,9 @@ FactoryGirl.define do
       end
     end
 
-    trait :with_can_destroy_contacts_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_destroy_contacts')
-      end
-    end
-
-    trait :with_can_manage_holidays_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_holidays')
-      end
-    end
-
-    trait :with_can_manage_messages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_messages')
-      end
-    end
-
     trait :with_can_manage_offers_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_offers')
-      end
-    end
-
-    trait :with_can_add_package_types_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_add_package_types')
       end
     end
 
@@ -157,84 +121,6 @@ FactoryGirl.define do
     trait :with_can_create_and_read_messages_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_create_and_read_messages')
-      end
-    end
-
-    trait :with_can_read_or_modify_user_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_read_or_modify_user')
-      end
-    end
-
-    trait :with_can_manage_packages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_packages')
-      end
-    end
-
-    trait :with_can_manage_deliveries do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_deliveries')
-      end
-    end
-
-    trait :with_can_manage_orders_packages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_orders_packages')
-      end
-    end
-
-    trait :with_can_manage_packages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_packages')
-      end
-    end
-
-    trait :with_can_manage_organisations_users_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_organisations_users')
-      end
-    end
-
-    trait :with_can_check_organisations_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_check_organisations')
-      end
-    end
-
-    trait :with_can_manage_items_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_items')
-      end
-    end
-
-    trait :with_can_read_or_modify_user_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_read_or_modify_user')
-      end
-    end
-
-    trait :with_can_manage_orders_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_orders')
-      end
-    end
-
-    trait :with_can_manage_orders_packages_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_orders_packages')
-      end
-    end
-
-    trait :with_can_manage_images_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_images')
-      end
-    end
-
-    trait :with_can_access_packages_locations_permission do
-      after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_access_packages_locations')
       end
     end
   end

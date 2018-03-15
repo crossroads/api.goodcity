@@ -1,4 +1,4 @@
-lass Ability
+class Ability
   include CanCan::Ability
 
   # Actions :index, :show, :create, :update, :destroy, :manage
@@ -59,99 +59,14 @@ lass Ability
     package_abilities
     package_type_abilities
     packages_locations_abilities
-    user_abilities
-    taxonomies
     schedule_abilities
     stockit_abilities
     stockit_contact_abilities
     stockit_organisation_abilities
     stockit_local_order_abilities
+    taxonomies
+    user_abilities
     version_abilities
-  end
-
-  def address_abilities
-    # User address
-    can [:create, :show], Address, addressable_type: "User", addressable_id: @user_id
-
-    # Offer delivery address
-    can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
-    can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
-  end
-
-  def can_manage_organisations_users?
-    user_permissions.include?('can_manage_organisations_users')
-  end
-
-  def can_manage_deliveries?
-    user_permissions.include?('can_manage_deliveries')
-  end
-
-  def can_manage_delivery_address?
-    user_permissions.include?('can_manage_delivery_address')
-  end
-
-  def can_manage_orders?
-    user_permissions.include?('can_manage_orders')
-  end
-
-  def gogovan_order_abilities
-    can [:calculate_price, :confirm_order, :destroy], GogovanOrder, delivery: { offer_id: @user_offer_ids }
-    can [:calculate_price, :confirm_order, :destroy], GogovanOrder if can_handle_gogovan_order?
-  end
-
-  def can_manage_order_transport?
-    user_permissions.include?('can_manage_order_transport')
-  end
-
-  def can_manage_holidays?
-    user_permissions.include?('can_manage_holidays')
-  end
-
-  def can_check_organisations?
-    user_permissions.include?('can_check_organisations')
-  end
-
-  def can_access_packages_locations?
-    user_permissions.include?('can_access_packages_locations')
-  end
-
-  def can_manage_orders_packages?
-    user_permissions.include?('can_manage_orders_packages')
-  end
-
-  def can_destroy_image_for_imageable_states?
-    user_permissions.include?('can_destroy_for_imageable_states')
-  end
-
-  def holiday_abilities
-    can [:available_dates], Holiday
-    if can_manage_holidays?
-      can [:index, :destroy, :create, :update], Holiday
-    end
-  end
-
-  def can_manage_messages?
-    user_permissions.include?('can_manage_messages')
-  end
-
-  def can_create_and_read_messages?
-    user_permissions.include?('can_create_and_read_messages')
-  end
-
-  def can_destroy_contacts?
-    user_permissions.include?('can_destroy_contacts')
-  end
-
-  def can_read_or_modify_user?
-    user_permissions.include?('can_read_or_modify_user')
-  end
-
-  def can_handle_gogovan_order?
-    user_permissions.include?('can_handle_gogovan_order')
-  end
-
-  def can_read_schedule?
-    user_permissions.include?('can_read_schedule')
   end
 
   def address_abilities
@@ -167,6 +82,27 @@ lass Ability
     can :destroy, Contact, delivery: { offer_id: @user_offer_ids }
     can :destroy, Contact if can_destroy_contacts?
     can :create, Contact
+  end
+
+  def deliveries_abilities
+    can [:create], Delivery
+    if can_manage_deliveries?
+      can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
+    else
+      can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
+    end
+  end
+
+  def gogovan_order_abilities
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder, delivery: { offer_id: @user_offer_ids }
+    can [:calculate_price, :confirm_order, :destroy], GogovanOrder if can_handle_gogovan_order?
+  end
+
+  def holiday_abilities
+    can [:available_dates], Holiday
+    if can_manage_holidays?
+      can [:index, :destroy, :create, :update], Holiday
+    end
   end
 
   def image_abilities
@@ -226,15 +162,6 @@ lass Ability
     end
   end
 
-  def deliveries_abilities
-    can [:create], Delivery
-    if can_manage_deliveries?
-      can [:index, :show, :update, :destroy, :confirm_delivery], Delivery
-    else
-      can [:show, :update, :destroy, :confirm_delivery], Delivery, offer_id: @user_offer_ids
-    end
-  end
-
   def order_abilities
     can :create, Order
     can [:index, :show, :update], Order, created_by_id: @user_id
@@ -267,13 +194,9 @@ lass Ability
   end
 
   def organisations_users_abilities
-    can [:create, :show, :index], OrganisationsUser if can_manage_organisations_users?
-  end
-
-  def user_abilities
-    can :current_user_profile, User
-    can [:show, :update], User, id: @user_id
-    can [:index, :show, :update], User if can_read_or_modify_user?
+    if can_manage_organisations_users? || @api_user
+      can [:create, :show, :index], OrganisationsUser
+    end
   end
 
   def package_abilities
@@ -292,20 +215,6 @@ lass Ability
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
     can :destroy, Package, item: { state: 'draft' } if can_destroy_package_with_specific_states?
-  end
-
-  def taxonomies
-    can :register, :device
-    can [:index, :show], DonorCondition
-    can [:index, :show], SubpackageType
-    can [:index, :show], RejectionReason
-    can [:index, :show], Role
-    can [:index, :show], Permission
-    can [:index, :show], UserRole
-    can [:index, :show], CancellationReason
-    if can_add_or_remove_inventory_number? || @api_user
-      can [:create, :remove_number], InventoryNumber
-    end
   end
 
   def package_type_abilities
@@ -392,4 +301,3 @@ lass Ability
     can [:index, :show], Version if can_read_versions?
   end
 end
-
