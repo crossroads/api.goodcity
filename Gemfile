@@ -21,6 +21,7 @@ gem 'paranoia', '~> 2.1.0'
 gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
 
 gem 'cancancan'
+gem 'loofah'
 gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
 gem 'ffaker'
@@ -67,6 +68,7 @@ group :development do
   unless ENV["CI"]
     gem 'spring'
     gem 'annotate'
+    gem 'rb-readline'
     gem 'bullet'
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
