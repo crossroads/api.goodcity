@@ -141,6 +141,13 @@ class User < ActiveRecord::Base
     Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
   end
 
+  def create_or_remove_user_roles(role_ids)
+    user_roles.where('role_id NOT IN (?)', role_ids).destroy_all
+    role_ids.each do |role_id|
+      user_roles.where(role_id: role_id).first_or_create
+    end
+  end
+
   private
 
   def generate_auth_token
