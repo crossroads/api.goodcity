@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       resources :roles, only: [:index, :show]
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
+      resources :user_roles, only: [:show, :index]
 
       resources :images, only: [:create, :update, :destroy, :show] do
         collection do
