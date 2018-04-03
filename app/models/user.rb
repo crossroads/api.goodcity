@@ -142,13 +142,18 @@ class User < ActiveRecord::Base
   end
 
   def create_or_remove_user_roles(role_ids)
-    user_roles.where('role_id NOT IN (?)', role_ids).destroy_all
+    remove_user_roles(role_ids)
     role_ids.each do |role_id|
       user_roles.where(role_id: role_id).first_or_create
     end
   end
 
   private
+
+  def remove_user_roles(role_ids)
+    role_ids_to_remove = roles.pluck(:id) - role_ids
+    user_roles.where("role_id IN(?)", role_ids_to_remove).destroy_all
+  end
 
   def generate_auth_token
     auth_tokens.create( user_id: self.id )
