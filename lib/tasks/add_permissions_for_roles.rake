@@ -28,8 +28,7 @@ namespace :goodcity do
     }
 
     ROLES_AND_PERMISSIONS.each_pair do |role_name, permission_names|
-      role = Role.where(name: role_name).first_or_create
-      if role
+      if(role = Role.where(name: role_name).first_or_create)
         permission_names.each do |permission_name|
           permission = Permission.where(name: permission_name).first_or_create
           RolePermission.where(role: role, permission: permission).first_or_create
