@@ -43,7 +43,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       expect {
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(UserRole, :count).by(1)
-      expect(supervisor.roles.pluck(:name)).to include("Supervisor")
+      expect(OrganisationsUser.last.user.roles.pluck(:name)).to include('Charity')
     end
 
     it "sends error if new organisations_user is with blank mobile number", :show_in_doc do

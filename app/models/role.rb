@@ -7,5 +7,5 @@ class Role < ActiveRecord::Base
   has_many :permissions, through: :role_permissions
 
   scope :charity, ->{ where(name: 'Charity').first }
-  scope :visible,    ->{ where.not(name: 'api-write') }
+  scope :visible, ->{ where.not(name: 'api-write') }
 end
