@@ -189,7 +189,7 @@ GEM
       actionpack (>= 3)
       activesupport (>= 3)
       railties (>= 3)
-    loofah (2.2.1)
+    loofah (2.2.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     lumberjack (1.0.10)
@@ -427,7 +427,7 @@ DEPENDENCIES
   jwt (~> 1.2.0)
   kaminari
   lograge
-  loofah
+  loofah (~> 2.2.2)
   nestful!
   newrelic_rpm
   nokogiri (~> 1.8.2)
@@ -469,3 +469,9 @@ DEPENDENCIES
   twilio-ruby
   warden
   webmock
+
+RUBY VERSION
+   ruby 2.2.2p95
+
+BUNDLED WITH
+   1.13.6
