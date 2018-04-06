@@ -8,7 +8,7 @@ module Api
           render json: CancellationReason.visible.cached_json
           return
         end
-        @cancellation_reasons = @cancellation_reasons.find( params[:ids].split(",") ) if params[:ids].present?
+        @cancellation_reasons = @cancellation_reasons.find(params[:ids].split(",")) if params[:ids].present?
         render json: @cancellation_reasons, each_serializer: serializer
       end
 

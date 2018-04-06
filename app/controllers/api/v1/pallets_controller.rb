@@ -35,8 +35,7 @@ module Api
       private
 
       def pallet_params
-        params.require(:pallet).permit(:pallet_number, :description, :comments,
-          :stockit_id)
+        params.require(:pallet).permit(:pallet_number, :description, :comments, :stockit_id)
       end
 
       def fetch_pallet
