@@ -13,7 +13,7 @@ describe "contact abilities" do
   end
 
   context "when Supervisor" do
-    let(:user)     { create(:user, :supervisor) }
+    let(:user)     { create(:user, :with_can_destroy_contact_permission, role_name: 'Supervisor') }
     let(:contact)  { create :contact }
     let(:can)      { [:create, :destroy] }
     let(:cannot)   { [:manage] }
@@ -22,7 +22,7 @@ describe "contact abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)     { create(:user, :reviewer) }
+    let(:user)     { create(:user, :with_can_destroy_contact_permission, role_name: 'Reviewer') }
     let(:contact)  { create :contact }
     let(:can)      { [:create, :destroy] }
     let(:cannot)   { [:manage] }
@@ -57,5 +57,4 @@ describe "contact abilities" do
     it { can.each { |do_action| is_expected.to be_able_to(do_action, contact) } }
     it { cannot.each { |do_action| is_expected.to_not be_able_to(do_action, contact) } }
   end
-
 end

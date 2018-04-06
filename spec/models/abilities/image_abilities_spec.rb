@@ -15,7 +15,7 @@ describe "Image abilities" do
   end
 
   context "when Supervisor" do
-    let(:user) { create(:user, :supervisor) }
+    let(:user) { create(:user, :with_can_manage_images_permission, role_name: 'Supervisor') }
     context "and image belongs to draft item" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
@@ -29,7 +29,7 @@ describe "Image abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)    { create(:user, :reviewer) }
+    let(:user)    { create(:user, :with_can_manage_images_permission, role_name: 'Reviewer') }
     context "and image belongs to draft item" do
       let(:can)     { [:index, :show, :create, :update, :destroy] }
       let(:cannot)  { [:manage] }
