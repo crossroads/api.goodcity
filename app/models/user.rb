@@ -17,8 +17,9 @@ class User < ActiveRecord::Base
   has_many :braintree_transactions, class_name: "BraintreeTransaction", foreign_key: :customer_id
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
+  has_many :user_roles
+  has_many :roles, through: :user_roles
 
-  belongs_to :permission, inverse_of: :users
   belongs_to :image, dependent: :destroy
   has_many :moved_packages, class_name: "Package", foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
   has_many :used_locations, -> { order 'packages.stockit_moved_on DESC' }, class_name: "Location", through: :moved_packages, source: :location
@@ -33,10 +34,10 @@ class User < ActiveRecord::Base
   after_create :generate_auth_token
 
   scope :donors,      -> { where(permission_id: nil) }
-  scope :reviewers,   -> { where(permissions: { name: 'Reviewer'   }).joins(:permission) }
-  scope :supervisors, -> { where(permissions: { name: 'Supervisor' }).joins(:permission) }
-  scope :system,      -> { where(permissions: { name: 'System' }).joins(:permission) }
-  scope :staff,       -> { where(permissions: { name: ['Supervisor', 'Reviewer'] }).joins(:permission) }
+  scope :reviewers,   -> { where(roles: { name: 'Reviewer'   }).joins(:roles) }
+  scope :supervisors, -> { where(roles: { name: 'Supervisor' }).joins(:roles) }
+  scope :system,      -> { where(roles: { name: 'System' }).joins(:roles) }
+  scope :staff,       -> { where(roles: { name: ['Supervisor', 'Reviewer'] }).joins(:roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
 
   # used when reviewer is logged into donor app
@@ -70,12 +71,16 @@ class User < ActiveRecord::Base
     reviewer? || supervisor? || administrator?
   end
 
+  def user_role_names
+    roles.pluck(:name)
+  end
+
   def reviewer?
-    permission.try(:name) == 'Reviewer' && @treat_user_as_donor != true
+    user_role_names.include?('Reviewer') && @treat_user_as_donor != true
   end
 
   def supervisor?
-    permission.try(:name) == 'Supervisor' && @treat_user_as_donor != true
+    user_role_names.include?('Supervisor') && @treat_user_as_donor != true
   end
 
   def admin?
@@ -83,15 +88,15 @@ class User < ActiveRecord::Base
   end
 
   def administrator?
-    permission.try(:name) == 'Administrator' && @treat_user_as_donor != true
+    user_role_names.include?('Administrator') && @treat_user_as_donor != true
   end
 
   def donor?
-    permission.try(:name) == nil || @treat_user_as_donor == true
+    !roles.exists? || @treat_user_as_donor == true
   end
 
   def api_user?
-    permission.try(:name) == "api-write"
+    user_role_names.include?('api-write')
   end
 
   def online?
@@ -136,7 +141,19 @@ class User < ActiveRecord::Base
     Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
   end
 
+  def create_or_remove_user_roles(role_ids)
+    remove_user_roles(role_ids)
+    role_ids.each do |role_id|
+      user_roles.where(role_id: role_id).first_or_create
+    end
+  end
+
   private
+
+  def remove_user_roles(role_ids)
+    role_ids_to_remove = roles.pluck(:id) - role_ids
+    user_roles.where("role_id IN(?)", role_ids_to_remove).destroy_all
+  end
 
   def generate_auth_token
     auth_tokens.create( user_id: self.id )
@@ -147,3 +164,5 @@ class User < ActiveRecord::Base
     nil
   end
 end
+
+

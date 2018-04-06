@@ -2,8 +2,7 @@ require "rails_helper"
 
 RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   let(:orders_package) { create :orders_package }
-  let(:user) { create(:user_with_token, :reviewer) }
-
+  let(:user) { create(:user_with_token, :with_can_manage_orders_packages_permission, role_name: 'Reviewer') }
 
   subject { JSON.parse(response.body) }
 

@@ -1,10 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
-  let(:supervisor) { create(:user_with_token, :supervisor) }
+  let(:supervisor) { create(:user_with_token, :with_can_manage_organisations_users_permission, role_name: 'Supervisor') }
   before { generate_and_set_token(supervisor) }
   let(:organisation) { create :organisation }
-  let!(:charity_permission) { create :charity_permission }
+  let!(:charity_role) { create :charity_role }
   let(:user_attributes) do
     FactoryGirl.attributes_for(:user, :with_email)
   end
@@ -37,6 +37,13 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"]).to eq("Mobile is invalid")
+    end
+
+    it "assigns 'charity' role to user and creates user_role", :show_in_doc do
+      expect {
+        post :create, format: :json, organisations_user: organisations_user_params
+      }.to change(UserRole, :count).by(1)
+      expect(OrganisationsUser.last.user.roles.pluck(:name)).to include('Charity')
     end
 
     it "sends error if new organisations_user is with blank mobile number", :show_in_doc do

@@ -14,7 +14,7 @@ describe "Item abilities" do
   end
 
   context "when Supervisor" do
-    let(:user)  { create(:user, :supervisor) }
+    let(:user)  { create(:user, :with_can_manage_items_permission, role_name: 'Supervisor') }
     context "and item is draft" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }
       let(:cannot) { [:manage] }
@@ -28,7 +28,7 @@ describe "Item abilities" do
   end
 
   context "when Reviewer" do
-    let(:user) { create(:user, :reviewer) }
+    let(:user) { create(:user, :with_can_manage_items_permission, role_name: 'Reviewer') }
 
     context "and item is draft" do
       let(:can)    { [:index, :show, :create, :update, :destroy] }

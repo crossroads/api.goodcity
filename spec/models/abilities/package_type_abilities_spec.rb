@@ -13,7 +13,7 @@ describe "PackageType abilities" do
   end
 
   context "when Supervisor" do
-    let(:user)     { create(:user, :supervisor) }
+    let(:user)     { create(:user, :with_can_add_package_types_permission, role_name: 'Supervisor') }
     let(:package_type) { create :package_type }
     let(:can)      { [:index, :show, :create] }
     let(:cannot)   { [:update, :destroy, :manage] }
@@ -26,7 +26,7 @@ describe "PackageType abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)     { create(:user, :reviewer) }
+    let(:user)     { create(:user, :with_can_add_package_types_permission, role_name: 'Reviewer') }
     let(:package_type) { create :package_type }
     let(:can)      { [:index, :show, :create] }
     let(:cannot)   { [:update, :destroy, :manage] }
