@@ -21,6 +21,7 @@ gem 'paranoia', '~> 2.1.0'
 gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
 
 gem 'cancancan'
+gem 'loofah'
 gem 'cloudinary'
 gem 'factory_girl_rails' # used in rake db:seed in production
 gem 'ffaker'
@@ -28,7 +29,7 @@ gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
 gem 'jwt', '~> 1.2.0'
 gem 'rack-cors'
-gem 'rack-protection'
+gem 'rack-protection', '~> 2.0.0'
 gem 'state_machine'
 gem 'twilio-ruby'
 gem 'warden'
@@ -47,7 +48,7 @@ gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
-gem 'nokogiri', '~> 1.8.1'
+gem 'nokogiri', '~> 1.8.2'
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
@@ -67,6 +68,8 @@ group :development do
   unless ENV["CI"]
     gem 'spring'
     gem 'annotate'
+    gem 'rb-readline'
+    gem 'bullet'
     gem 'railroady'
     gem "spring-commands-rspec", group: :development
     gem 'guard-rspec', require: false
