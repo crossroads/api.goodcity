@@ -136,6 +136,7 @@ class Ability
   end
 
   def message_abilities
+    # Message (sender and admins, not user if private is true)
     if can_manage_messages?
       can [:index, :show, :create, :update, :destroy], Message
     elsif can_create_and_read_messages?
