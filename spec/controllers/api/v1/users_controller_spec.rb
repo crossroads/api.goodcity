@@ -62,6 +62,16 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(reviewer.reload.roles.count).to eq(0)
       end
 
+      it "removes user roles if user_role_ids parameter is nil" do
+        put :update, id: reviewer.id, user: { user_role_ids: [] }
+        expect(reviewer.reload.roles.count).to eq(0)
+      end
+
+      it "do not removes user roles if user_role_ids parameter is not present in request" do
+        put :update, id: reviewer.id, user: { first_name: "abc" }
+        expect(reviewer.reload.roles.count).to eq(1)
+      end
+
       it "adds new roles and removes old roles as per params", :show_in_doc do
         existing_user_roles = reviewer.roles
         put :update, id: reviewer.id, user: { user_role_ids: [role.id] }
