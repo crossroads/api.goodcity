@@ -37,7 +37,9 @@ module Api
       end
       def update
         @user.update_attributes(user_params)
-        @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
+        if params["user"]["user_role_ids"]
+          @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
+        end
         render json: @user, serializer: serializer
       end
 
