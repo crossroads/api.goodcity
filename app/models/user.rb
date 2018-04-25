@@ -142,7 +142,6 @@ class User < ActiveRecord::Base
   end
 
   def create_or_remove_user_roles(role_ids)
-    role_ids ||= []
     remove_user_roles(role_ids)
     role_ids.each do |role_id|
       user_roles.where(role_id: role_id).first_or_create
