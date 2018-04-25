@@ -129,12 +129,20 @@ class User < ActiveRecord::Base
     User.system.order(:id).first
   end
 
+  def self.stockit_user
+    find_by(first_name: "Stockit", last_name: "User")
+  end
+
   def system_user?
     User.system.pluck(:id).include?(self.id)
   end
 
-  def self.stockit_user
-    find_by(first_name: "Stockit", last_name: "User")
+  def self.updated_by_user
+    if GoodcitySync.request_from_stockit
+      User.stockit_user
+    else
+      RequestStore.store[:current_user]
+    end
   end
 
   def recent_active_offer_id

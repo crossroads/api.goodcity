@@ -214,6 +214,7 @@ class Package < ActiveRecord::Base
     else
       create_associated_dispatched_orders_package
     end
+    update_sent_by_or_designated_by("dispatch")
     update_in_stock_quantity
   end
 
@@ -232,7 +233,7 @@ class Package < ActiveRecord::Base
       order_id: order_id,
       quantity: received_quantity,
       sent_on: Time.now,
-      updated_by: User.current_user,
+      updated_by: User.updated_by_user,
       state: 'designated'
     )
     update_in_stock_quantity
@@ -251,7 +252,21 @@ class Package < ActiveRecord::Base
         quantity: quantity
       )
     end
+    update_sent_by_or_designated_by("designation")
     update_in_stock_quantity
+  end
+
+  def update_sent_by_or_designated_by(event)
+    if(event == "dispatch")
+      update_column("stockit_designated_by_id", stockit_user_id) unless stockit_designated_by_id
+      update_column("stockit_sent_by_id", stockit_user_id)
+    elsif(event == "designation")
+      update_column("stockit_designated_by_id", stockit_user_id)
+    end
+  end
+
+  def stockit_user_id
+    User.stockit_user.try(:id)
   end
 
   def designation

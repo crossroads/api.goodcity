@@ -102,6 +102,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let(:donor_condition) { create :donor_condition }
       let!(:dispatched_location) { create :location, :dispatched }
       # let!(:location_1) { create :location }
+      let!(:stockit_user) { create :user, id: 99, first_name: "Stockit", last_name: "User" }
       let(:stockit_item_params) {
         {
           quantity: 1,
@@ -160,6 +161,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.orders_packages.first.quantity).to eq 1
           expect(package.quantity).to eq(0)
           expect(package.location_id).to eq location.id
+          expect(package.orders_packages.first.updated_by_id).to eq stockit_user.id
+          expect(package.stockit_designated_by_id).to eq stockit_user.id
         end
 
         it 'do not creates any orders_package if designation name was nil and not changed' do
@@ -172,6 +175,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it 'creates orders_package for already existing item which is now designated from stockit' do
+          GoodcitySync.request_from_stockit = true
           package = create :package, :stockit_package, item: item
           stockit_item_params_with_designation[:stockit_id] = package.stockit_id
           expect{
@@ -180,6 +184,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, order.code, location)
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 1)
+          expect(package.stockit_designated_by_id).to eq stockit_user.id
+          expect(package.orders_packages.first.updated_by_id).to eq stockit_user.id
         end
 
         it 'updates designation if item has designation in stockit and then designated to some other designation' do
@@ -311,6 +317,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.orders_packages.first.state).to eq 'dispatched'
           test_packages_location_changes(package)
           expect(package.packages_locations.first.reference_to_orders_package).to eq orders_package.id
+          expect(package.stockit_sent_by_id).to eq stockit_user.id
         end
 
         it 'creates new desigantion and then dispatch if package is not designated before dispatch from stockit' do
@@ -327,6 +334,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(package.reload.quantity).to eq 0
           expect(package.reload.orders_packages.count).to eq 1
           test_packages_location_changes(package)
+          expect(package.stockit_sent_by_id).to eq stockit_user.id
         end
 
         it 'updates existing designation with new order_id and dispatches it when dispatched from stockit with another order' do
@@ -339,6 +347,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, order.code, dispatched_location)
           expect(orders_package.reload.state).to eq 'dispatched'
           test_packages_location_changes(package)
+          expect(package.stockit_sent_by_id).to eq stockit_user.id
         end
 
         it 'dispatches existing designation if available with same order_id' do
@@ -353,6 +362,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, order.code, dispatched_location)
           expect(orders_package.reload.state).to eq 'dispatched'
           test_packages_location_changes(package)
+          expect(package.stockit_sent_by_id).to eq stockit_user.id
         end
 
         it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
