@@ -6,7 +6,8 @@ namespace :goodcity do
 
     if mobile
       stockit_user = User.where(first_name: "Stockit", last_name: "User", mobile: mobile).first_or_create
-      stockit_user.permission = Permission.api_write
+      role =  Role.where(name: 'api-write').first_or_create
+      stockit_user.user_roles.where(role: role).first_or_create
       if stockit_user.save
         stockit_user.auth_tokens.delete_all
         api_token = Token.new.generate_api_token(user_id: stockit_user.id)
