@@ -1,6 +1,6 @@
 class Item < ActiveRecord::Base
   has_paper_trail class_name: 'Version', meta: { related: :offer },
-    only: [:donor_description, :donor_condition_id, :state]
+  only: [:donor_description, :donor_condition_id, :state]
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -58,10 +58,10 @@ class Item < ActiveRecord::Base
   end
 
   def set_description
-    self.donor_description = donor_description.presence || get_package_notes
+    self.donor_description = donor_description.presence || package_notes
   end
 
-  def get_package_notes
+  def package_notes
     if packages.present?
       packages.pluck(:notes).reject(&:blank?).join(" + ")
     else
@@ -70,7 +70,7 @@ class Item < ActiveRecord::Base
   end
 
   def send_reject_message
-    if rejection_comments.present? && !is_recently_messaged_reason?
+    if rejection_comments.present? && !recently_messaged_reason?
       messages.create(
         is_private: false,
         body: rejection_comments,
@@ -90,7 +90,7 @@ class Item < ActiveRecord::Base
     end
   end
 
-  def is_recently_messaged_reason?
+  def recently_messaged_reason?
     messages.last.try(:body) == rejection_comments
   end
 
@@ -111,7 +111,7 @@ class Item < ActiveRecord::Base
   end
 
   def update_stockit_item
-    if previous_changes.has_key?("donor_condition_id")
+    if previous_changes.key?("donor_condition_id")
       packages.received.each do |package|
         StockitUpdateJob.perform_later(package.id)
       end
