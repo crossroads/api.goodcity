@@ -14,7 +14,7 @@ describe "Offer abilities" do
   end
 
   context "when Supervisor" do
-    let(:user)    { create(:user, :supervisor) }
+    let(:user)    { create(:user, :with_can_manage_offers_permission, role_name: 'Supervisor') }
     context "and offer is draft" do
       let(:offer)     { create :offer, state: 'draft' }
       let(:can)       { [:index, :show, :create, :update, :destroy] }
@@ -29,7 +29,7 @@ describe "Offer abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)      { create(:user, :reviewer) }
+    let(:user)      { create(:user, :with_can_manage_offers_permission, role_name: 'Reviewer') }
 
     context "and offer is draft" do
       let(:offer)     { create :offer, state: 'draft' }

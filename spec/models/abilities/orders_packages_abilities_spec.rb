@@ -12,12 +12,12 @@ describe "OrdersPackage abilities" do
   end
 
   context "when Supervisor" do
-    let(:user)  { create(:user, :supervisor) }
+    let(:user)  { create(:user, :with_can_manage_orders_packages_permission, role_name: 'Supervisor') }
     it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, orders_package) } }
   end
 
   context "when Reviewer" do
-    let(:user) { create(:user, :reviewer) }
+    let(:user) { create(:user, :with_can_manage_orders_packages_permission, role_name: 'Reviewer') }
     it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, orders_package) } }
   end
 

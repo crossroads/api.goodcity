@@ -1,5 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
   factory :user, aliases: [:sender] do
     association :address
@@ -14,31 +12,158 @@ FactoryGirl.define do
 
     association :image
 
+    transient do
+      role_name { %w( Reviewer Supervisor Administrator ).sample }
+      roles_and_permissions {}
+    end
+
     trait :reviewer do
-      association :permission, factory: :reviewer_permission
+      after(:create) do |user|
+        user.roles << create(:reviewer_role)
+      end
+    end
+
+    trait :with_multiple_roles_and_permissions do
+      after(:create) do |user, evaluator|
+        evaluator.roles_and_permissions.each_pair do |role_name, permissions|
+          user.roles << create(:role, :with_dynamic_permission, name: role_name, permissions: permissions)
+        end
+      end
+    end
+
+    trait :with_can_destroy_contact_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_destroy_contacts_permission, name: evaluator.role_name)
+      end
     end
 
     trait :supervisor do
-      association :permission, factory: :supervisor_permission
+      after(:create) do |user|
+        user.roles << create(:supervisor_role)
+      end
+    end
+
+    trait :with_can_manage_holidays_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_holidays_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_create_and_read_messages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_create_and_read_messages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_packages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_packages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_organisations_users_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_organisations_users_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_deliveries do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_deliveries, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_orders_packages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_orders_packages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_check_organisations_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_check_organisations_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_items_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_items_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_messages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_messages_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_offers_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_offers_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_add_package_types_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_add_package_types_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_read_or_modify_user_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_read_or_modify_user_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_images_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_images_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_access_packages_locations_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_access_packages_locations_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_orders_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_orders_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_locations_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_locations_permission, name: evaluator.role_name)
+      end
     end
 
     trait :administrator do
-      association :permission, factory: :administrator_permission
+      after(:create) do |user|
+        user.roles << create(:administrator_role)
+      end
     end
 
     trait :api_user do
-      association :permission, factory: :api_write_permission
+      after(:create) do |user|
+        user.roles << create(:api_write_role)
+      end
     end
 
     trait :system do
       first_name "GoodCity"
       last_name  "Team"
       mobile     SYSTEM_USER_MOBILE
-      association :permission, factory: :system_permission
+      after(:create) do |user|
+        user.roles << create(:system_role)
+      end
     end
 
     trait :charity do
-      association :permission, factory: :charity_permission
+      after(:create) do |user|
+        user.roles << create(:charity_role)
+      end
     end
 
     trait :with_email do
@@ -52,5 +177,4 @@ FactoryGirl.define do
       user.auth_tokens << create(:scenario_before_auth_token)
     end
   end
-
 end
