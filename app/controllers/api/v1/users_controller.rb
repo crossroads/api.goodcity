@@ -37,6 +37,9 @@ module Api
       end
       def update
         @user.update_attributes(user_params)
+        if params["user"]["user_role_ids"]
+          @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
+        end
         render json: @user, serializer: serializer
       end
 
@@ -48,7 +51,7 @@ module Api
 
       def user_params
         attributes = [:last_connected, :last_disconnected]
-        attributes.concat([:permission_id]) if User.current_user.supervisor?
+        attributes.concat([:user_role_ids]) if User.current_user.supervisor?
         params.require(:user).permit(attributes)
       end
     end

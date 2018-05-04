@@ -72,7 +72,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     end
 
     describe "update donor_condition" do
-      before { generate_and_set_token(create(:user, :reviewer)) }
+      before { generate_and_set_token(create(:user, :with_can_manage_items_permission, role_name: 'can_manage_items')) }
 
       it "should add stockit-update-item request job" do
         item = create :item, state: "accepted"

@@ -5,7 +5,7 @@ RSpec.describe Api::V1::HolidaysController, type: :controller do
   let(:holiday)  { create :holiday }
   let!(:holiday_1) { create(:holiday) }
   let!(:holiday_2) { create(:holiday, holiday: Time.zone.now + 7.days) }
-  let(:reviewer) { create(:user, :reviewer) }
+  let!(:reviewer) { create(:user, :with_can_manage_holidays_permission, role_name: 'Reviewer') }
 
   before { generate_and_set_token(reviewer) }
 
