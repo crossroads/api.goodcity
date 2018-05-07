@@ -13,7 +13,7 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
     it "returns 201", :show_in_doc do
       expect {
         post :create, address: address_params
-        }.to change(Address, :count).by(1)
+      }.to change(Address, :count).by(1)
       expect(response.status).to eq(201)
     end
   end
