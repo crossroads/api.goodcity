@@ -488,7 +488,7 @@ class Package < ActiveRecord::Base
   end
 
   def in_hand_quantity
-    if GoodcitySync.request_from_stockit && received_quantity_was.nil?
+    if GoodcitySync.request_from_stockit && !received_quantity_was.nil?
       received_quantity_was - total_assigned_quantity
     else
       received_quantity - total_assigned_quantity
