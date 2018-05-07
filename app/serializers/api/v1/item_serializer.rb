@@ -1,5 +1,6 @@
 module Api::V1
   class ItemSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
 
     attributes :id, :donor_description, :state, :offer_id, :reject_reason,

@@ -1,5 +1,6 @@
 module Api::V1
   class TerritorySerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
     attributes :id, :name
 

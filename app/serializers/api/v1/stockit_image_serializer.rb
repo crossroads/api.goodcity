@@ -1,5 +1,6 @@
 module Api::V1
   class StockitImageSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
 
     attributes :id, :favourite, :cloudinary_id, :item_id, :angle

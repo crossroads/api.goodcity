@@ -1,5 +1,6 @@
 module Api::V1
   class DonorConditionSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     attributes :id, :name
 
     def name__sql

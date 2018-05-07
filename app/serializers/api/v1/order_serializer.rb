@@ -1,5 +1,6 @@
 module Api::V1
   class OrderSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
     attributes :status, :created_at, :code, :detail_type, :id, :detail_id,
       :contact_id, :local_order_id, :organisation_id, :description, :activity,

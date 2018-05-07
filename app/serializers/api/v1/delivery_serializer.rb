@@ -1,5 +1,6 @@
 module Api::V1
   class DeliverySerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
     attributes :id, :start, :finish, :offer_id, :delivery_type
 

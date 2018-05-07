@@ -1,5 +1,6 @@
 module Api::V1
   class PackageCategorySerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     # embed :ids, include: true
     attributes :id, :name, :parent_id, :package_type_codes
 

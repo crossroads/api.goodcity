@@ -1,5 +1,6 @@
 module Api::V1
   class VersionSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     include SerializeTimeValue
 
     embed :ids, include: true

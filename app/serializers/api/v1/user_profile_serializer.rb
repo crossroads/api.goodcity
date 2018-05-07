@@ -1,5 +1,6 @@
 module Api::V1
   class UserProfileSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
 
     attributes :id, :first_name, :last_name, :mobile, :donation_amount,

@@ -1,5 +1,6 @@
 module Api::V1
   class OfferSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     include SerializeTimeValue
 
     embed :ids, include: true
@@ -13,13 +14,13 @@ module Api::V1
 
     has_many :items, serializer: ItemSerializer
     has_many :messages, serializer: MessageSerializer
-    has_one  :closed_by, serializer: UserSerializer, root: :user
-    has_one  :created_by, serializer: UserSerializer, root: :user
-    has_one  :reviewed_by, serializer: UserSerializer, root: :user
-    has_one  :delivery, serializer: DeliverySerializer
-    has_one  :gogovan_transport, serializer: GogovanTransportSerializer
-    has_one  :crossroads_transport, serializer: CrossroadsTransportSerializer
-    has_one  :cancellation_reason, serializer: CancellationReasonSerializer
+    belongs_to  :closed_by, serializer: UserSerializer, root: :user
+    belongs_to  :created_by, serializer: UserSerializer, root: :user
+    belongs_to  :reviewed_by, serializer: UserSerializer, root: :user
+    belongs_to  :delivery, serializer: DeliverySerializer
+    belongs_to  :gogovan_transport, serializer: GogovanTransportSerializer
+    belongs_to  :crossroads_transport, serializer: CrossroadsTransportSerializer
+    belongs_to  :cancellation_reason, serializer: CancellationReasonSerializer
 
     def include_messages?
       return false unless goodcity_user?

@@ -1,5 +1,6 @@
 module Api::V1
   class BrowseItemSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
 
     attributes :id, :created_at, :updated_at,

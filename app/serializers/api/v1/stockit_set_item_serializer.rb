@@ -1,5 +1,6 @@
 module Api::V1
   class StockitSetItemSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
 
     attributes :id, :description, :code_id

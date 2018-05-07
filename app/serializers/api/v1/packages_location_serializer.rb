@@ -1,5 +1,6 @@
 module Api::V1
   class PackagesLocationSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     embed :ids, include: true
     attributes :id, :package_id, :location_id, :quantity, :item_id
 

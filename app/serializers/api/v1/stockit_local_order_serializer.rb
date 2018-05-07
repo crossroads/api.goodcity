@@ -1,5 +1,6 @@
 module Api::V1
   class StockitLocalOrderSerializer < ApplicationSerializer
+    include FastJsonapi::ObjectSerializer
     attributes :id, :client_name, :hkid_number, :reference_number,
       :purpose_of_goods
 
