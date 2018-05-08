@@ -2,6 +2,9 @@ require 'rails_helper'
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user_with_token) }
+  let(:supervisor) { create(:user_with_token, :supervisor) }
+  let(:charity_user) { create(:user_with_token, :charity) }
+  let(:reviewer) { create(:user_with_token, :reviewer) }
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
@@ -89,7 +92,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(body['otp_auth_key']).to eql( otp_auth_key )
     end
 
-    it 'should not send pin if donor logging into admin', :show_in_doc do
+    it 'does not send pin if donor logging into admin', :show_in_doc do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
@@ -99,13 +102,41 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(body['otp_auth_key']).to eql( otp_auth_key )
     end
 
-    it 'should not send pin if donor logging into Browse', :show_in_doc do
+    it 'does not send pin if donor logging into Browse', :show_in_doc do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:app_name).and_return(BROWSE_APP).once
       post :send_pin, mobile: mobile
       body = JSON.parse(response.body)
       expect(body['error']).to eql( "You are not authorized." )
+    end
+
+    it 'does not send pin if reviewer logging into Browse', :show_in_doc do
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(reviewer)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).once
+      post :send_pin, mobile: mobile
+      body = JSON.parse(response.body)
+      expect(body['error']).to eql( "You are not authorized." )
+    end
+
+    it 'does not send pin if supervisor logging into Browse', :show_in_doc do
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).once
+      post :send_pin, mobile: mobile
+      body = JSON.parse(response.body)
+      expect(body['error']).to eql( "You are not authorized." )
+    end
+
+    it 'does send otp_auth_key if charity_user logging into Browse', :show_in_doc do
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return( otp_auth_key )
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
+      post :send_pin, mobile: mobile
+      body = JSON.parse(response.body)
+      expect(body['otp_auth_key']).to eql( otp_auth_key )
     end
 
     context "where mobile is" do
