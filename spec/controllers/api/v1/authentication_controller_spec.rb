@@ -99,6 +99,15 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(body['otp_auth_key']).to eql( otp_auth_key )
     end
 
+    it 'should not send pin if donor logging into Browse', :show_in_doc do
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).once
+      post :send_pin, mobile: mobile
+      body = JSON.parse(response.body)
+      expect(body['error']).to eql( "You are not authorized." )
+    end
+
     context "where mobile is" do
       it 'empty' do
         expect(User).to_not receive(:find_by_mobile)
