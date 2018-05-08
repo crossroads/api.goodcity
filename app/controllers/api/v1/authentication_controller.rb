@@ -60,6 +60,7 @@ module Api
       * 422 - returned if the mobile number is invalid
       EOS
       param :mobile, String, desc: "Mobile number with prefixed country code e.g. +85262345678"
+      error 401, "Unauthorized"
       error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
       error 500, "Internal Server Error"
       # Lookup user based on mobile. Validate mobile format first.
@@ -70,6 +71,9 @@ module Api
         end
 
         @user = User.find_by_mobile(@mobile.mobile)
+        if is_browse_app && @user && !@user.charity?
+          return render json: { error: "You are not authorized." }, status: 401
+        end
         @user.send_verification_pin if valid_user
         render json: { otp_auth_key: otp_auth_key_for(@user) }
       end
