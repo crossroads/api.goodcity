@@ -129,7 +129,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(body['error']).to eql( "You are not authorized." )
     end
 
-    it 'does send otp_auth_key if charity_user logging into Browse', :show_in_doc do
+    it 'sends otp_auth_key if charity_user logging into Browse', :show_in_doc do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return( otp_auth_key )
