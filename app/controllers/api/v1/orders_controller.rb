@@ -75,7 +75,7 @@ module Api
       end
 
       def my_orders
-        render json: @orders, each_serializer: serializer, root: "orders",
+        render json: @orders.browse_orders, each_serializer: serializer, root: "orders",
           include_packages: false, browse_order: true
       end
 
