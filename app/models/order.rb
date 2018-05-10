@@ -36,8 +36,6 @@ class Order < ActiveRecord::Base
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
-  scope :browse_orders, -> { where("created_by_id = (?) and detail_type = 'GoodCity'", User.current_user.try(:id)) }
-
   def designate_orders_packages
     orders_packages.each do |orders_package|
       orders_package.update_state_to_designated
