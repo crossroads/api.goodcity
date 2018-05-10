@@ -66,10 +66,10 @@ class Version < PaperTrail::Version
     "#{item_logs.to_sql} UNION ALL #{package_logs.to_sql} UNION ALL #{call_logs.to_sql}"
   }
 
-  scope :items_and_calls_log, -> {
+  scope :items_and_calls_log, -> (user_id) {
     find_by_sql("
       SELECT ver.id, event, item_id, item_type, whodunnit, object_changes, ver.created_at, concat(users.first_name,' ', users.last_name) as whodunnit_name, (object_changes -> 'state' -> 1) as state
-      from (#{union_all_logs}) as ver INNER JOIN users ON users.id = CAST(ver.whodunnit AS integer)")
+      from (#{union_all_logs}) as ver INNER JOIN users ON users.id = CAST(ver.whodunnit AS integer) where CAST(ver.whodunnit AS integer) = #{user_id}")
   }
 
   scope :join_users, -> {
