@@ -42,7 +42,8 @@ Rollbar.configure do |config|
   # config.use_sucker_punch
 
   # Enable delayed reporting (using Sidekiq)
-  # config.use_sidekiq
+  config.use_sidekiq
+  config.sidekiq_threshold = 3 # Start reporting ActiveJob errors after 3 retries have failed
   # You can supply custom Sidekiq options:
   # config.use_sidekiq 'queue' => 'default'
 
