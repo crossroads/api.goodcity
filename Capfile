@@ -5,4 +5,5 @@ require 'capistrano/bundler'
 require 'capistrano/rails/migrations'
 require 'capistrano/sidekiq'
 require 'capistrano/rake'
+require 'rollbar/capistrano3'
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
