@@ -65,4 +65,6 @@ Rollbar.configure do |config|
   # setup for Heroku. See:
   # https://devcenter.heroku.com/articles/deploying-to-a-custom-rails-environment
   config.environment = ENV['ROLLBAR_ENV'].presence || Rails.env
+
+  config.project_gems = ['go_go_van_api', 'easyzpl']
 end
