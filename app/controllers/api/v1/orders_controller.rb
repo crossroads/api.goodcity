@@ -37,13 +37,18 @@ module Api
 
       api :GET, '/v1/orders', "List all orders"
       def index
-        return my_orders if is_browse_app
         return recent_designations if params['recently_used'].present?
         records = @orders.with_eager_load.
           search(params['searchText'], params['toDesignateItem'].presence).latest.
           page(params["page"]).per(params["per_page"])
         orders = order_response(records)
         render json: orders.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
+      end
+
+      api :GET, 'v1/browse_orders', "List user specific orders with type goodcity"
+      def browse_orders
+        render json: @orders.my_orders.goodcity_orders, each_serializer: serializer,
+          root: "orders", include_packages: false, browse_order: true
       end
 
       api :GET, '/v1/designations/1', "Get a order"
@@ -72,11 +77,6 @@ module Api
       def recent_designations
         records = Order.recently_used(User.current_user.id)
         render json: order_response(records)
-      end
-
-      def my_orders
-        render json: @orders.my_orders.goodcity_orders, each_serializer: serializer,
-          root: "orders", include_packages: false, browse_order: true
       end
 
       private

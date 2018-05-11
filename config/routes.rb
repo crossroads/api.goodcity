@@ -117,6 +117,9 @@ Rails.application.routes.draw do
         put :remove_number, on: :collection
       end
 
+      #routes used in browse app
+      get "browse_orders", to: "orders#browse_orders"
+
       # routes used in stock app
       get "designations", to: "orders#index"
       get "designations/:id", to: "orders#show"

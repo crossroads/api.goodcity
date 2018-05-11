@@ -164,7 +164,7 @@ class Ability
   end
 
   def order_abilities
-    can :create, Order
+    can [:create,  :browse_orders], Order
     can [:index, :show, :update], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update], Order
@@ -299,6 +299,7 @@ class Ability
   def version_abilities
     can [:index, :show], Version, related_type: "Offer", related_id: @user_offer_ids
     can [:index, :show], Version, item_type: "Offer", item_id: @user_offer_ids
+
     can [:index, :show], Version if can_read_versions?
   end
 end
