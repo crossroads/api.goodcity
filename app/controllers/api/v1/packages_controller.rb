@@ -256,7 +256,7 @@ module Api
           :received_at, :rejected_at, :package_type_id, :state_event,
           :inventory_number, :designation_name, :donor_condition_id, :grade,
           :location_id, :box_id, :pallet_id, :stockit_id,
-          :order_id, :stockit_designated_on, :stockit_sent_on,
+          :order_id, :stockit_designated_on, :stockit_sent_on, :stockit_moved_on,
           :case_number, :allow_web_publish, :received_quantity, :state,
           packages_locations_attributes: [:id, :location_id, :quantity]]
         params.require(:package).permit(attributes)
@@ -312,6 +312,8 @@ module Api
           @package.inventory_number = inventory_number
           @package.box_id = box_id
           @package.pallet_id = pallet_id
+          @package.stockit_designated_by_id = designated_from_stockit ? current_user_id : nil
+          @package.stockit_sent_by_id = dispatched_from_stockit ? current_user_id : nil
           @package
         else
           @package.assign_attributes(package_params)
@@ -353,6 +355,18 @@ module Api
 
       def barcode_service
         BarcodeService.new
+      end
+
+      def designated_from_stockit
+        !(package_params[:stockit_designated_on].blank? && package_params[:order_id].blank?)
+      end
+
+      def dispatched_from_stockit
+        !package_params[:stockit_sent_on].blank?
+      end
+
+      def current_user_id
+        User.current_user.id
       end
 
       def existing_package

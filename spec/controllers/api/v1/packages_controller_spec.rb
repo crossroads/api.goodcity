@@ -309,6 +309,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           }.to change(OrdersPackage, :count).by(0)
           test_package_changes(package, response.status, order.code, dispatched_location)
           expect(package.orders_packages.first.state).to eq 'dispatched'
+          expect(package.stockit_designated_by_id).to eq(user.id)
+          expect(package.stockit_sent_by_id).to eq(user.id)
+          expect(package.orders_packages.first.updated_by_id).to eq(user.id)
           test_packages_location_changes(package)
           expect(package.packages_locations.first.reference_to_orders_package).to eq orders_package.id
         end
@@ -370,6 +373,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, order.code, dispatched_location)
           expect(orders_package.reload.state).to eq 'designated'
           expect(orders_package.order_id).to eq order.id
+          expect(package.stockit_designated_by_id).to eq(user.id)
+          expect(package.stockit_sent_by_id).to eq(nil)
           test_packages_location_changes(package)
         end
       end
