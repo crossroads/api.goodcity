@@ -79,6 +79,10 @@ class User < ActiveRecord::Base
     user_role_names.include?('Reviewer') && @treat_user_as_donor != true
   end
 
+  def charity?
+    user_role_names.include?('Charity')
+  end
+
   def supervisor?
     user_role_names.include?('Supervisor') && @treat_user_as_donor != true
   end

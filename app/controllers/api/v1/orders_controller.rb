@@ -75,8 +75,8 @@ module Api
       end
 
       def my_orders
-        render json: @orders, each_serializer: serializer, root: "orders",
-          include_packages: false, browse_order: true
+        render json: @orders.my_orders.goodcity_orders, each_serializer: serializer,
+          root: "orders", include_packages: false, browse_order: true
       end
 
       private

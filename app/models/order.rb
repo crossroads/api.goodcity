@@ -32,6 +32,10 @@ class Order < ActiveRecord::Base
 
   scope :active_orders, -> { where('status NOT IN (?)', INACTIVE_STATUS) }
 
+  scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
+
+  scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
+
   def designate_orders_packages
     orders_packages.each do |orders_package|
       orders_package.update_state_to_designated
