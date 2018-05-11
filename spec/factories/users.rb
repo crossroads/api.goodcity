@@ -31,6 +31,12 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_can_add_or_remove_inventory_number do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_add_or_remove_inventory_number, name: evaluator.role_name)
+      end
+    end
+
     trait :with_can_destroy_contact_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_destroy_contacts_permission, name: evaluator.role_name)

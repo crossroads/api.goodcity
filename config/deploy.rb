@@ -8,6 +8,9 @@ set :linked_dirs, %w{log tmp/pids tmp/cache}
 set :bundle_binstubs, nil
 set :sidekiq_processes, 2
 set :rvm_ruby_version, '2.2.2'
+set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
+set :rollbar_env, Proc.new { fetch :stage }
+set :rollbar_role, Proc.new { :app }
 
 namespace :deploy do
   desc 'Restart application'
