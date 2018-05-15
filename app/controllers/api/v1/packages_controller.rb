@@ -61,7 +61,9 @@ module Api
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
         if package_record
           @package.offer_id = offer_id
+
           if @package.valid? && @package.save
+
             if is_stock_app
               render json: @package, serializer: stock_serializer, root: "item",
             include_order: false

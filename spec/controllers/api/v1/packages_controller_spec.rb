@@ -231,8 +231,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Update quantity from Stockit' do
-        let(:package) { create :package, :with_inventory_number, :stockit_package,
-                    :package_with_locations,:designation, :received }
+        let(:package) { create :package, :stockit_package, quantity: 0, received_quantity: 1 }
+        let!(:orders_package) {create :orders_package, :with_state_designated, package: package, quantity: 1 }
 
         let(:package_params){
           stockit_item_params.merge({
@@ -248,7 +248,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         it 'update quantity of item with edit' do
           post :create, format: :json, package: package_params
           expect(response.status).to eq(201)
-          expect(package[:quantity]).to eq(5)
+          expect(package.reload.quantity).to eq(0)
         end
       end
 
