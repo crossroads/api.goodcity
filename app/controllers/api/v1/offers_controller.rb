@@ -135,7 +135,7 @@ module Api
       private
 
       def filter_created_by(offers)
-        if user_id = params["created_by_id"] || User.current_user.treat_user_as_donor && User.current_user.id
+        if (user_id = params["created_by_id"] || User.current_user.treat_user_as_donor && User.current_user.id)
           offers.created_by(user_id)
         else
           offers
