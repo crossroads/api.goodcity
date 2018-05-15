@@ -5,8 +5,8 @@ class Package < ActiveRecord::Base
   include PushUpdates
   include RollbarSpecification
 
-  BROWSE_ITEM_STATES = ['accepted', 'submitted']
-  BROWSE_OFFER_EXCLUDE_STATE = ['cancelled', 'inactive', 'closed', 'draft']
+  BROWSE_ITEM_STATES = %w(accepted submitted)
+  BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
 
   belongs_to :item
   belongs_to :set_item, class_name: 'Item'
@@ -124,7 +124,7 @@ class Package < ActiveRecord::Base
   end
 
   def destroy_stale_packages_locations(new_quantity)
-    if(is_singleton_package? || total_quantity_move_without_dispatch_location?(new_quantity))
+    if (singleton_package? || total_quantity_move_without_dispatch_location?(new_quantity))
       delete_associated_packages_locations
     end
   end
@@ -188,7 +188,7 @@ class Package < ActiveRecord::Base
       packages_locations.first.update(location_id: location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
-    elsif (!stockit_sent_on)
+    elsif !stockit_sent_on
       packages_locations.send(operation, {
         location_id: location_id,
         quantity: received_quantity
@@ -196,18 +196,18 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def is_order_id_nil?
+  def order_id_nil?
     order_id.nil?
   end
 
-  def is_stockit_sent_on_present?
+  def stockit_sent_on_present?
     stockit_sent_on.present?
   end
 
   def dispatch_orders_package
-    if designation && is_stockit_sent_on_present? && same_order_id_as_designation?
+    if designation && stockit_sent_on_present? && same_order_id_as_designation?
       designation.dispatch
-    elsif designation && is_stockit_sent_on_present?
+    elsif designation && stockit_sent_on_present?
       designation.update(order_id: order_id, state_event: "dispatch")
     elsif stockit_sent_on.blank?
       requested_undispatch_from_stockit
@@ -240,7 +240,7 @@ class Package < ActiveRecord::Base
   end
 
   def designate_and_undesignate_from_stockit
-    if designation && is_order_id_nil?
+    if designation && order_id_nil?
       designation.destroy
     elsif designation && order_id
       designation.update_designation(order_id)
@@ -272,8 +272,8 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def is_singleton_and_has_designation?
-    designation && is_singleton_package?
+  def singleton_and_has_designation?
+    designation && singleton_package?
   end
 
   def delete_associated_packages_locations
@@ -320,7 +320,7 @@ class Package < ActiveRecord::Base
   end
 
   def updated_received_package?
-    !self.previous_changes.has_key?("state") && received? &&
+    !self.previous_changes.key?("state") && received? &&
     !GoodcitySync.request_from_stockit
   end
 
@@ -360,7 +360,7 @@ class Package < ActiveRecord::Base
   end
 
   def deduct_dispatch_quantity(package_qty_changes)
-    if package_qty_changes && !is_singleton_package?
+    if package_qty_changes && !singleton_package?
       package_qty_changes.each_pair do |_key, pckg_qty_param|
         update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
       end
@@ -488,7 +488,7 @@ class Package < ActiveRecord::Base
   end
 
   def in_hand_quantity
-    if GoodcitySync.request_from_stockit && received_quantity_was != nil
+    if GoodcitySync.request_from_stockit && !received_quantity_was.nil?
       received_quantity_was - total_assigned_quantity
     else
       received_quantity - total_assigned_quantity
@@ -525,7 +525,7 @@ class Package < ActiveRecord::Base
     image.imageable.images.where.not(id: image_id).update_all(favourite: false)
   end
 
-  def is_singleton_package?
+  def singleton_package?
     received_quantity == 1
   end
 

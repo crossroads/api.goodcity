@@ -578,12 +578,12 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe "#is_singleton_and_has_designation?" do
+  describe "#singleton_and_has_designation?" do
     let(:package) { create :package, received_quantity: 1, quantity: 0 }
     let!(:orders_package) { create :orders_package, package: package, state: 'designated', quantity: 1 }
 
     it 'check package has designation and received quantity is one or not' do
-      expect(package.is_singleton_and_has_designation?).to be_truthy
+      expect(package.singleton_and_has_designation?).to be_truthy
     end
   end
 end
