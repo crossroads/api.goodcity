@@ -124,11 +124,11 @@ class Package < ActiveRecord::Base
   end
 
    def designate_from_stockit
-    stockit_designated_by_id = !(stockit_designated_on.blank? && order_id.blank?) ? User.current_user.id : nil
+    self.stockit_designated_by_id = !(stockit_designated_on.blank? && order_id.blank?) ? User.current_user.id : nil
   end
 
   def dispatch_from_stockit
-    stockit_sent_by_id = !stockit_sent_on.blank? ? User.current_user.id : nil
+    self.stockit_sent_by_id = !stockit_sent_on.blank? ? User.current_user.id : nil
   end
 
   def destroy_stale_packages_locations(new_quantity)
