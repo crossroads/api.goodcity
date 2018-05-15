@@ -5,6 +5,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:user) { create(:user_with_token) }
   let(:reviewer) { create(:user, :with_can_manage_offers_permission, role_name: 'Reviewer') }
+  let(:supervisor) { create(:user, :with_can_manage_offers_permission, role_name: 'Supervisor') }
   let(:offer) { create(:offer, :with_transport, created_by: user) }
   let(:submitted_offer) { create(:offer, created_by: user, state: 'submitted') }
   let(:in_review_offer) { create(:offer, created_by: user, state: 'under_review', reviewed_by: reviewer) }
@@ -86,6 +87,35 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         get :index, created_by_id: offer1.created_by_id
         expect(assigns(:offers).to_a).to eql([offer1])
       end
+
+      describe "if user is supervisor" do
+        context "for donor app"
+          let!(:offer1) { create :offer, created_by: supervisor }
+          let!(:offer2) { create :offer }
+          before { generate_and_set_token(supervisor) }
+
+          it 'returns offers created_by supervisor' do
+            request.headers["X-GOODCITY-APP-NAME"] = "app.goodcity"
+            get :index
+            expect(assigns(:offers).to_a).to eql([offer1])
+            expect(assigns(:offers).to_a).not_to include(offer2)
+            expect(assigns(:offers).count).to eq(1)
+          end
+        end
+
+        context "for admin app" do
+          let!(:offer1) { create :offer, created_by: supervisor }
+          let!(:offer2) { create :offer }
+          before { generate_and_set_token(supervisor) }
+
+          it "returns all offers" do
+            request.headers["X-GOODCITY-APP-NAME"] = "admin.goodcity"
+            get :index
+            expect(assigns(:offers).to_a).to include(offer1)
+            expect(assigns(:offers).to_a).to include(offer2)
+            expect(assigns(:offers).to_a.count).to eq(2)
+          end
+        end
     end
 
     context "reviewed_by_id" do
