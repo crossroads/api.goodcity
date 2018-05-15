@@ -312,8 +312,8 @@ module Api
           @package.inventory_number = inventory_number
           @package.box_id = box_id
           @package.pallet_id = pallet_id
-          @package.stockit_designated_by_id = designated_from_stockit ? current_user_id : nil
-          @package.stockit_sent_by_id = dispatched_from_stockit ? current_user_id : nil
+          @package.stockit_designated_by_id = @package.designated_from_stockit ? current_user_id : nil
+          @package.stockit_sent_by_id = @package.dispatched_from_stockit ? current_user_id : nil
           @package
         else
           @package.assign_attributes(package_params)
@@ -355,14 +355,6 @@ module Api
 
       def barcode_service
         BarcodeService.new
-      end
-
-      def designated_from_stockit
-        !(package_params[:stockit_designated_on].blank? && package_params[:order_id].blank?)
-      end
-
-      def dispatched_from_stockit
-        !package_params[:stockit_sent_on].blank?
       end
 
       def current_user_id
