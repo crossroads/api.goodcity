@@ -127,7 +127,7 @@ module Api
         records = {}; pages = 0
         if params['searchText'].present?
           records = params["orderId"].present? ?
-            @packages.stockit_items.undispatched : @packages.stockit_items
+            @packages.undispatched : @packages
           records = records.search(params['searchText'], params["itemId"], params['showQuantityItems']).page(params["page"]).per(params["per_page"])
           pages = records.total_pages
         end
