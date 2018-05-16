@@ -231,8 +231,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Update quantity from Stockit' do
+        let(:order) { create :order, :with_stockit_id }
         let(:package) { create :package, :stockit_package, quantity: 0, received_quantity: 1 }
-        let!(:orders_package) {create :orders_package, :with_state_designated, package: package, quantity: 1 }
+        let!(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: 1 }
 
         let(:package_params){
           stockit_item_params.merge({
@@ -241,7 +242,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             package_type_id:package.package_type_id,
             state: package.state,
             stockit_id: package.stockit_id,
-            donor_condition_id: package.donor_condition_id
+            donor_condition_id: package.donor_condition_id,
+            designation_name: order.code,
+            order_id: order.stockit_id
           })
         }
 
