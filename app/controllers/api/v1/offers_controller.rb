@@ -60,7 +60,7 @@ module Api
               @offers.in_states(states)
             end
         end
-        @offers = @offers.created_by(params["created_by_id"]) if params["created_by_id"].present?
+        @offers = filter_created_by(@offers)
         @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
         render json: @offers.with_eager_load, each_serializer: serializer, exclude_messages: params["exclude_messages"] == "true"
       end
@@ -133,6 +133,14 @@ module Api
       end
 
       private
+
+      def filter_created_by(offers)
+        if (user_id = params["created_by_id"] || User.current_user.treat_user_as_donor && User.current_user.id)
+          offers.created_by(user_id)
+        else
+          offers
+        end
+      end
 
       def eager_load_offer
         @offer = Offer.with_eager_load.find(params[:id])
