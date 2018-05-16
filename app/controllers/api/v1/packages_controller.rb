@@ -61,9 +61,7 @@ module Api
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
         if package_record
           @package.offer_id = offer_id
-
           if @package.valid? && @package.save
-
             if is_stock_app
               render json: @package, serializer: stock_serializer, root: "item",
             include_order: false
@@ -315,9 +313,7 @@ module Api
         new_package_params = package_params
         GoodcitySync.request_from_stockit = true
         @package = existing_package || Package.new()
-        if new_package_params['quantity'].to_i.eql?(@package.total_assigned_quantity)
-          new_package_params.delete('quantity')
-        end
+        delete_params_quantity_if_all_quantity_designated(new_package_params)
         @package.assign_attributes(new_package_params)
         @package.received_quantity = received_quantity
         @package.build_or_create_packages_location(location_id, 'build')
@@ -372,6 +368,12 @@ module Api
 
       def inventory_number
         remove_stockit_prefix(@package.inventory_number)
+      end
+
+      def delete_params_quantity_if_all_quantity_designated(new_package_params)
+        if new_package_params['quantity'].to_i == @package.total_assigned_quantity
+          new_package_params.delete('quantity')
+        end
       end
     end
   end
