@@ -16,7 +16,7 @@ module Api
       def index
         return offer_logs if params["for_offer"].presence
         return item_logs if params["for_item"].presence
-        render json: @versions.items_and_calls_log
+        render json: @versions.items_and_calls_log(User.current_user.id)
       end
 
       api :GET, '/v1/versions/1', "List a version"
