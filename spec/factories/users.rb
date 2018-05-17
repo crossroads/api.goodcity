@@ -43,6 +43,12 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_can_read_versions_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_read_versions_permission, name: evaluator.role_name)
+      end
+    end
+
     trait :supervisor do
       after(:create) do |user|
         user.roles << create(:supervisor_role)
