@@ -256,7 +256,7 @@ module Api
           :received_at, :rejected_at, :package_type_id, :state_event,
           :inventory_number, :designation_name, :donor_condition_id, :grade,
           :location_id, :box_id, :pallet_id, :stockit_id,
-          :order_id, :stockit_designated_on, :stockit_sent_on,
+          :order_id, :stockit_designated_on, :stockit_sent_on, :stockit_moved_on,
           :case_number, :allow_web_publish, :received_quantity, :state,
           packages_locations_attributes: [:id, :location_id, :quantity]]
         params.require(:package).permit(attributes)
@@ -312,6 +312,8 @@ module Api
           @package.inventory_number = inventory_number
           @package.box_id = box_id
           @package.pallet_id = pallet_id
+          @package.designate_from_stockit
+          @package.dispatch_from_stockit
           @package
         else
           @package.assign_attributes(package_params)

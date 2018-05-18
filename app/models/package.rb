@@ -123,6 +123,14 @@ class Package < ActiveRecord::Base
     Location.dispatch_location
   end
 
+   def designate_from_stockit
+    self.stockit_designated_by_id = !(stockit_designated_on.blank? && order_id.blank?) ? User.current_user.id : nil
+  end
+
+  def dispatch_from_stockit
+    self.stockit_sent_by_id = !stockit_sent_on.blank? ? User.current_user.id : nil
+  end
+
   def destroy_stale_packages_locations(new_quantity)
     if (singleton_package? || total_quantity_move_without_dispatch_location?(new_quantity))
       delete_associated_packages_locations
