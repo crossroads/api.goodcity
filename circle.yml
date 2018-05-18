@@ -22,7 +22,7 @@ test:
     - bundle-audit -v --update
 deployment:
   staging:
-    branch: master
+    branch: GCW-1888-undesignate-should-available-item
     commands:
       - bundle exec cap staging deploy
   production:
