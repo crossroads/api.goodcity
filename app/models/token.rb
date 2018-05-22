@@ -40,6 +40,7 @@ class Token
 
   # Allow access to the data stored inside the token e.g. mobile number
   def data
+    puts "token = #{token}"
     token
   end
 
