@@ -115,7 +115,7 @@ class Package < ActiveRecord::Base
 
   def assign_stockit_designated_by
     if (stockit_designated_on.presence && order_id.presence)
-      self.stockit_designated_by = User.current_user
+      self.stockit_designated_by = User.stockit_user
     else
       self.stockit_designated_by = nil
     end
@@ -123,7 +123,7 @@ class Package < ActiveRecord::Base
 
   def assign_stockit_sent_by
     if stockit_sent_on.presence
-      self.stockit_sent_by = User.current_user
+      self.stockit_sent_by = User.stockit_user
     else
       self.stockit_sent_by = nil
     end
