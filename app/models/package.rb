@@ -35,7 +35,7 @@ class Package < ActiveRecord::Base
   after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  before_save :assign_stockit_sent_by, if: :dispatch_from_stockit?
+  before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   after_save :dispatch_orders_package, if: :dispatch_from_stockit?
 
   after_touch { update_client_store :update }
@@ -121,8 +121,11 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def assign_stockit_sent_by
-    if stockit_sent_on.presence
+  def assign_stockit_sent_by_and_designated_by
+    if stockit_sent_on.presence && stockit_designated_on.presence
+      self.stockit_sent_by = User.stockit_user
+      self.stockit_designated_by = User.stockit_user
+    elsif stockit_sent_on.presence
       self.stockit_sent_by = User.stockit_user
     else
       self.stockit_sent_by = nil
