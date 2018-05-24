@@ -18,7 +18,7 @@ RSpec.describe Api::V1::PermissionsController, type: :controller do
     it 'returns all permissions except api-write' do
       get :index
       body = JSON.parse(response.body)
-      expect(body['permissions'].length).to eq(2)
+      expect(body['permissions'].length).to eq(1)
     end
   end
 
