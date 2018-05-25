@@ -350,6 +350,7 @@ class Package < ActiveRecord::Base
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     self.donor_condition_id =  donor_condition_id.presence || 3
+    self.last_allow_web_published = self.allow_web_publish
     self.allow_web_publish = false
     response = Stockit::ItemSync.update(self)
     add_errors(response)
@@ -359,6 +360,7 @@ class Package < ActiveRecord::Base
     self.order = nil
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
+    self.allow_web_publish = self.last_allow_web_published if self.last_allow_web_published
     response = Stockit::ItemSync.update(self)
     add_errors(response)
   end
