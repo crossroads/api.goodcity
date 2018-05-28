@@ -360,7 +360,7 @@ class Package < ActiveRecord::Base
     self.order = nil
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
-    self.allow_web_publish = self.last_allow_web_published if self.last_allow_web_published
+    last_allow_web_published and self.allow_web_publish = last_allow_web_published
     response = Stockit::ItemSync.update(self)
     add_errors(response)
   end
