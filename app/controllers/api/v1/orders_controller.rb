@@ -59,6 +59,21 @@ module Api
           exclude_stockit_set_item: true
       end
 
+      def start_process
+        @order.start_processing(current_user) if @order.submitted?
+        render json: @order, serializer: serializer
+      end
+
+      def finish_process
+        @order.finish_processing(current_user) if @order.processing?
+        render json: @order, serializer: serializer
+      end
+
+      def cancel_order
+        @order.cancel(current_user) if @order.processing?
+        render json: @order, serializer: serializer
+      end
+
       def update
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
