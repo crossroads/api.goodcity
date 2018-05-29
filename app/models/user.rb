@@ -59,6 +59,18 @@ class User < ActiveRecord::Base
     user
   end
 
+  def allowed_login_staff_apps?(app_name)
+    allowed_to_login?(app_name) || STAFF_APPS_FOR_LOGIN.include?(app_name) && staff?
+  end
+
+  def allowed_to_login?(app_name)
+    app_name == STOCK_APP && user_permissions_names.include?('can_login_to_stock')
+  end
+
+  def user_permissions_names
+    Permission.names(id)
+  end
+
   def most_recent_token
     auth_tokens.most_recent.first
   end
