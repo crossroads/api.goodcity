@@ -167,7 +167,7 @@ class Ability
     can :create, Order
     can [:index, :show, :update], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
-      can [:create, :index, :show, :update, :start_process, :finish_process, :cancel_order], Order
+      can [:create, :index, :show, :update, :start_process, :finish_process, :cancel_order, :close_order], Order
     end
   end
 

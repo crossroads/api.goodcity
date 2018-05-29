@@ -72,7 +72,11 @@ class Order < ActiveRecord::Base
     end
 
     event :cancel_order do
-      transition processing: :cancelled
+      transition all => :cancelled
+    end
+
+    event :close_order do
+      transition awaiting_dispatch: :closed
     end
 
     before_transition on: :submit do |order|
@@ -89,6 +93,10 @@ class Order < ActiveRecord::Base
 
     before_transition on: :cancel_order do |order|
       order.cancelled_at = Time.now
+    end
+
+    before_transition on: :close_order do |order|
+      order.closed_at = Time.now
     end
 
     after_transition on: :submit do |order|
@@ -109,10 +117,18 @@ class Order < ActiveRecord::Base
   end
 
   def cancel(reviewer)
-    orders_packages.update_all(state: "cancelled", quantity: 0)
+    orders_packages.each do |orders_package|
+      orders_package.cancel
+    end
     update_attributes(
       cancelled_by_id: reviewer.id,
       state_event: 'cancel_order')
+  end
+
+  def close(reviewer)
+    update_attributes(
+      closed_by_id: reviewer.id,
+      state_event: 'close_order')
   end
 
   def add_to_stockit

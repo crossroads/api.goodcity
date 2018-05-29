@@ -74,6 +74,11 @@ module Api
         render json: @order, serializer: serializer
       end
 
+      def close_order
+        @order.close(current_user) if @order.awaiting_dispatch?
+        render json: @order, serializer: serializer
+      end
+
       def update
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
