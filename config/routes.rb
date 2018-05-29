@@ -114,6 +114,7 @@ Rails.application.routes.draw do
           put :start_process
           put :finish_process
           put :cancel_order
+          put :close_order
         end
       end
       resources :order_transports, only: [:create, :show, :index]
