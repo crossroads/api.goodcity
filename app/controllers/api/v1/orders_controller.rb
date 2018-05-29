@@ -70,7 +70,7 @@ module Api
       end
 
       def cancel_order
-        @order.cancel(current_user) if @order.processing?
+        @order.cancel(current_user)
         render json: @order, serializer: serializer
       end
 
