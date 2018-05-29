@@ -57,7 +57,7 @@ class Order < ActiveRecord::Base
   end
 
   state_machine :state, initial: :draft do
-    state :submitted, :processing, :closed, :cancelled
+    state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch
 
     event :submit do
       transition draft: :submitted
@@ -67,13 +67,52 @@ class Order < ActiveRecord::Base
       transition submitted: :processing
     end
 
+    event :finish_processing do
+      transition processing: :awaiting_dispatch
+    end
+
+    event :cancel_order do
+      transition processing: :cancelled
+    end
+
     before_transition on: :submit do |order|
       order.add_to_stockit
+    end
+
+    before_transition on: :start_processing do |order|
+      order.processed_at = Time.now
+    end
+
+    before_transition on: :finish_processing do |order|
+      order.process_completed_at = Time.now
+    end
+
+    before_transition on: :cancel_order do |order|
+      order.cancelled_at = Time.now
     end
 
     after_transition on: :submit do |order|
       order.designate_orders_packages if order.detail_type == "GoodCity"
     end
+  end
+
+  def start_processing(reviewer)
+    update_attributes(
+      processed_by_id: reviewer.id,
+      state_event: 'start_processing')
+  end
+
+  def finish_processing(reviewer)
+    update_attributes(
+      process_completed_by_id: reviewer.id,
+      state_event: 'finish_processing')
+  end
+
+  def cancel(reviewer)
+    orders_packages.update_all(state: "cancelled", quantity: 0)
+    update_attributes(
+      cancelled_by_id: reviewer.id,
+      state_event: 'cancel_order')
   end
 
   def add_to_stockit
