@@ -185,8 +185,7 @@ module Api
       end
 
       def valid_user
-        @user && (STAFF_APPS.exclude?(app_name) ||
-          (STAFF_APPS.include?(app_name) && @user.staff?))
+        @user && STAFF_APPS.exclude?(app_name) || @user && @user.allowed_login_staff_apps?(app_name)
       end
 
       def current_user_channels

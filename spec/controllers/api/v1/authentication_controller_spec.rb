@@ -5,6 +5,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   let(:supervisor) { create(:user_with_token, :supervisor) }
   let(:charity_user) { create(:user_with_token, :charity) }
   let(:reviewer) { create(:user_with_token, :reviewer) }
+  let(:order_fulfilment) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Order fulfilment' => ['can_login_to_stock']} )}
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
@@ -57,6 +59,25 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(JSON.parse(response.body)["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
+      end
+
+      it 'returns unprocessable entity if donor is accessing stock app', :show_in_doc do
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
+        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(controller).to receive(:app_name).and_return(STOCK_APP).twice
+        post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
+        expect(JSON.parse(response.body)["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(response.status).to eq(422)
+      end
+
+      it 'allows user with order fulfilment user to access stock after sign-in', :show_in_doc do
+        set_stock_app_header
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(order_fulfilment)
+        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(controller).to receive(:generate_token).with(user_id: order_fulfilment.id).and_return(jwt_token)
+        post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
+        expect(JSON.parse(response.body)["jwt_token"]).to eq(jwt_token)
+        expect(response.status).to eq(200)
       end
     end
 

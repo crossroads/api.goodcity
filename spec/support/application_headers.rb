@@ -8,4 +8,8 @@ module ApplicationHeaders
     request.headers['X-GOODCITY-APP-NAME'] = 'app.goodcity' if request.headers
   end
 
+  def set_stock_app_header
+    request.headers['X-GOODCITY-APP-NAME'] = 'stock.goodcity' if request.headers
+  end
+
 end

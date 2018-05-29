@@ -1,3 +1,4 @@
+# rake goodcity:add_new_roles
 namespace :goodcity do
   desc 'Add new roles'
   task add_new_roles: :environment do
