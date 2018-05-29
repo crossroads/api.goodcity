@@ -109,7 +109,13 @@ Rails.application.routes.draw do
       resources :stockit_organisations, only: [:create]
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
-      resources :orders, only: [:create, :show, :index, :update]
+      resources :orders, only: [:create, :show, :index, :update] do
+        member do
+          put :start_process
+          put :finish_process
+          put :cancel_order
+        end
+      end
       resources :order_transports, only: [:create, :show, :index]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
