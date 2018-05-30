@@ -185,6 +185,11 @@ class Order < ActiveRecord::Base
     self
   end
 
+  #to satisfy push_updates
+  def offer
+    nil
+  end
+
   def self.gc_code(record)
     record ? record.code.gsub(/\D/, '').to_i + 1 : 1
   end
