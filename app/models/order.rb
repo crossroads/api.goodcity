@@ -1,4 +1,6 @@
 class Order < ActiveRecord::Base
+  include PushUpdates
+
   belongs_to :detail, polymorphic: true
   belongs_to :stockit_activity
   belongs_to :country
@@ -176,6 +178,11 @@ class Order < ActiveRecord::Base
   def self.generate_gc_code
     record = where(detail_type: "GoodCity").order("id desc").first
     "GC-" + gc_code(record).to_s.rjust(5, "0")
+  end
+
+  #to satisfy push_updates
+  def order
+    self
   end
 
   def self.gc_code(record)
