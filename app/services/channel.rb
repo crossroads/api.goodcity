@@ -17,6 +17,10 @@ class Channel
      [reviewer, supervisor].flatten
     end
 
+    def order_channel
+      [reviewer, supervisor, browse].flatten
+    end
+
     # users - can be array or single instance of user id or user object
     def private(users)
       [users].flatten.map{ |user| "user_#{user.is_a?(User) ? user.id : user}" }

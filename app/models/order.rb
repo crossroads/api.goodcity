@@ -1,4 +1,6 @@
 class Order < ActiveRecord::Base
+  include PushUpdates
+
   belongs_to :detail, polymorphic: true
   belongs_to :stockit_activity
   belongs_to :country
@@ -57,7 +59,7 @@ class Order < ActiveRecord::Base
   end
 
   state_machine :state, initial: :draft do
-    state :submitted, :processing, :closed, :cancelled
+    state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch
 
     event :submit do
       transition draft: :submitted
@@ -67,8 +69,49 @@ class Order < ActiveRecord::Base
       transition submitted: :processing
     end
 
+    event :finish_processing do
+      transition processing: :awaiting_dispatch
+    end
+
+    event :cancel do
+      transition all => :cancelled
+    end
+
+    event :close do
+      transition awaiting_dispatch: :closed
+    end
+
     before_transition on: :submit do |order|
       order.add_to_stockit
+    end
+
+    before_transition on: :start_processing do |order|
+      if order.submitted?
+        order.processed_at = Time.now
+        order.processed_by_id = User.current_user.id
+      end
+    end
+
+    before_transition on: :finish_processing do |order|
+      if order.processing?
+        order.process_completed_at = Time.now
+        order.process_completed_by_id = User.current_user.id
+      end
+    end
+
+    before_transition on: :cancel do |order|
+      order.cancelled_at = Time.now
+      order.cancelled_by_id = User.current_user.id
+      order.orders_packages.each do |orders_package|
+        orders_package.cancel
+      end
+    end
+
+    before_transition on: :close do |order|
+      if order.awaiting_dispatch?
+        order.closed_at = Time.now
+        order.closed_by_id = User.current_user.id
+      end
     end
 
     after_transition on: :submit do |order|
@@ -121,6 +164,16 @@ class Order < ActiveRecord::Base
   def self.generate_gc_code
     record = where(detail_type: "GoodCity").order("id desc").first
     "GC-" + gc_code(record).to_s.rjust(5, "0")
+  end
+
+  #to satisfy push_updates
+  def order
+    self
+  end
+
+  #to satisfy push_updates
+  def offer
+    nil
   end
 
   def self.gc_code(record)
