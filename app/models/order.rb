@@ -100,11 +100,11 @@ class Order < ActiveRecord::Base
     end
 
     before_transition on: :cancel do |order|
+      order.cancelled_at = Time.now
+      order.cancelled_by_id = User.current_user.id
       order.orders_packages.each do |orders_package|
         orders_package.cancel
       end
-      order.cancelled_at = Time.now
-      order.cancelled_by_id = User.current_user.id
     end
 
     before_transition on: :close do |order|
