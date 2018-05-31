@@ -73,11 +73,11 @@ class Order < ActiveRecord::Base
       transition processing: :awaiting_dispatch
     end
 
-    event :cancel_order do
+    event :cancel do
       transition all => :cancelled
     end
 
-    event :close_order do
+    event :close do
       transition awaiting_dispatch: :closed
     end
 
@@ -86,51 +86,37 @@ class Order < ActiveRecord::Base
     end
 
     before_transition on: :start_processing do |order|
-      order.processed_at = Time.now
+      if order.submitted?
+        order.processed_at = Time.now
+        order.processed_by_id = User.current_user.id
+      end
     end
 
     before_transition on: :finish_processing do |order|
-      order.process_completed_at = Time.now
+      if order.processing?
+        order.process_completed_at = Time.now
+        order.process_completed_by_id = User.current_user.id
+      end
     end
 
-    before_transition on: :cancel_order do |order|
+    before_transition on: :cancel do |order|
+      order.orders_packages.each do |orders_package|
+        orders_package.cancel
+      end
       order.cancelled_at = Time.now
+      order.cancelled_by_id = User.current_user.id
     end
 
-    before_transition on: :close_order do |order|
-      order.closed_at = Time.now
+    before_transition on: :close do |order|
+      if order.awaiting_dispatch?
+        order.closed_at = Time.now
+        order.closed_by_id = User.current_user.id
+      end
     end
 
     after_transition on: :submit do |order|
       order.designate_orders_packages if order.detail_type == "GoodCity"
     end
-  end
-
-  def start_processing(reviewer)
-    update_attributes(
-      processed_by_id: reviewer.id,
-      state_event: 'start_processing')
-  end
-
-  def finish_processing(reviewer)
-    update_attributes(
-      process_completed_by_id: reviewer.id,
-      state_event: 'finish_processing')
-  end
-
-  def cancel(reviewer)
-    orders_packages.each do |orders_package|
-      orders_package.cancel
-    end
-    update_attributes(
-      cancelled_by_id: reviewer.id,
-      state_event: 'cancel_order')
-  end
-
-  def close(reviewer)
-    update_attributes(
-      closed_by_id: reviewer.id,
-      state_event: 'close_order')
   end
 
   def add_to_stockit
