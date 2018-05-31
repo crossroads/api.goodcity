@@ -59,12 +59,17 @@ class User < ActiveRecord::Base
     user
   end
 
-  def allowed_login_staff_apps?(app_name)
-    allowed_to_login?(app_name) || STAFF_APPS_FOR_LOGIN.include?(app_name) && staff?
-  end
-
-  def allowed_to_login?(app_name)
-    app_name == STOCK_APP && user_permissions_names.include?('can_login_to_stock')
+  def allowed_login?(app_name)
+    case app_name
+    when DONOR_APP
+      return true
+    when STOCK_APP
+      user_permissions_names.include?('can_login_to_stock')
+    when ADMIN_APP
+      STAFF_APPS_FOR_LOGIN.include?(app_name) && staff?
+    when BROWSE_APP
+      charity?
+    end
   end
 
   def user_permissions_names
