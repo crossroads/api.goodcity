@@ -184,43 +184,29 @@ describe User, :type => :model do
     end
   end
 
-  describe '#allowed_to_login?' do
+  describe '#allowed_login?' do
     it 'returns true if user has stock login permission and app is stock app' do
-      expect(user_with_role_permissions.allowed_to_login?(STOCK_APP)).to be_truthy
+      expect(user_with_role_permissions.allowed_login?(STOCK_APP)).to be_truthy
     end
 
     it 'returns false if user do not have stock login permission and app is stock app' do
-      expect(user.allowed_to_login?(STOCK_APP)).to be_falsey
+      expect(user.allowed_login?(STOCK_APP)).to be_falsey
     end
 
     it 'returns false if user has stock login permission and app is admin app' do
-      expect(user_with_role_permissions.allowed_to_login?(ADMIN_APP)).to be_falsey
+      expect(user_with_role_permissions.allowed_login?(ADMIN_APP)).to be_falsey
     end
 
-    it 'returns false if user has stock login permission and app is donor app' do
-      expect(user_with_role_permissions.allowed_to_login?(DONOR_APP)).to be_falsey
+    it 'returns true if user has stock login permission and app is donor app' do
+      expect(user_with_role_permissions.allowed_login?(DONOR_APP)).to be_truthy
     end
 
-    it 'returns false if user has stock login permission and app is donor app' do
-      expect(user_with_role_permissions.allowed_to_login?(BROWSE_APP)).to be_falsey
+    it 'returns false if user has stock login permission and app is browse app' do
+      expect(user_with_role_permissions.allowed_login?(BROWSE_APP)).to be_falsey
     end
 
     it 'returns false if user do not have stock login permission and app is not stock app' do
-      expect(user.allowed_to_login?(ADMIN_APP)).to be_falsey
-    end
-  end
-
-  describe '#allowed_login_staff_apps?' do
-    it 'returns true if user is staff and login app is admin' do
-      expect(supervisor.allowed_login_staff_apps?(ADMIN_APP)).to be_truthy
-    end
-
-    it 'returns false if user is normal user and tries to login to admin' do
-      expect(user.allowed_login_staff_apps?(ADMIN_APP)).to be_falsey
-    end
-
-    it 'returns true if user has stock login permission and tries to login stock app' do
-      expect(user_with_role_permissions.allowed_login_staff_apps?(STOCK_APP)).to be_truthy
+      expect(user.allowed_login?(ADMIN_APP)).to be_falsey
     end
   end
 end
