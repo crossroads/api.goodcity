@@ -60,22 +60,22 @@ module Api
       end
 
       def start_process
-        @order.start_processing(current_user) if @order.submitted?
+        @order.start_processing
         render json: @order, serializer: serializer
       end
 
       def finish_process
-        @order.finish_processing(current_user) if @order.processing?
+        @order.finish_processing
         render json: @order, serializer: serializer
       end
 
       def cancel_order
-        @order.cancel(current_user)
+        @order.cancel
         render json: @order, serializer: serializer
       end
 
       def close_order
-        @order.close(current_user) if @order.awaiting_dispatch?
+        @order.close
         render json: @order, serializer: serializer
       end
 

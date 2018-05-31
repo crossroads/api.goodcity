@@ -40,12 +40,6 @@ module PushUpdates
     browse_updates(operation) if type == "Package"
   end
 
-  def browse_updates(operation)
-    json = Api::V1::BrowsePackageSerializer.new(self).as_json
-    data = { item: { package: json[:browse_package], items: json[:items], images: json[:images] }, operation: operation }
-    service.send_update_store(Channel.browse, false, data)
-  end
-
   def order_updates(order)
     data = Api::V1::OrderSerializer.new(order)
   end
