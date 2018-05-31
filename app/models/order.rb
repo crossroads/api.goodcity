@@ -166,16 +166,6 @@ class Order < ActiveRecord::Base
     "GC-" + gc_code(record).to_s.rjust(5, "0")
   end
 
-  #to satisfy push_updates
-  def order
-    self
-  end
-
-  #to satisfy push_updates
-  def offer
-    nil
-  end
-
   def self.gc_code(record)
     record ? record.code.gsub(/\D/, '').to_i + 1 : 1
   end
@@ -184,5 +174,15 @@ class Order < ActiveRecord::Base
 
   def assign_code
     self.code = Order.generate_gc_code if detail_type == "GoodCity"
+  end
+
+  #to satisfy push_updates
+  def order
+    self
+  end
+
+  #to satisfy push_updates
+  def offer
+    nil
   end
 end
