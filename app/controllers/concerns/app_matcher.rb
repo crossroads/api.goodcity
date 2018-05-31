@@ -13,7 +13,7 @@ module AppMatcher
     @app_name == STOCKIT_APP
   end
 
-  def is_bowse_app
+  def is_browse_app
     @app_name == BROWSE_APP
   end
 
