@@ -74,7 +74,7 @@ module Api
 
         if @user && @user.allowed_login?(app_name)
           @user.send_verification_pin
-        else
+        elsif @user
           return render json: { error: "You are not authorized." }, status: 401
         end
         render json: { otp_auth_key: otp_auth_key_for(@user) }
