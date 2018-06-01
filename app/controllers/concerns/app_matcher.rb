@@ -6,15 +6,15 @@ module AppMatcher
   end
 
   def is_stock_app
-    @app_name == STOCK_APP
+    app_name == STOCK_APP
   end
 
   def is_stockit_request
-    @app_name == STOCKIT_APP
+    app_name == STOCKIT_APP
   end
 
   def is_browse_app
-    @app_name == BROWSE_APP
+    app_name == BROWSE_APP
   end
 
   protected
