@@ -17,6 +17,8 @@ module PushUpdates
     type == "Order" ? order = send(:order) : offer = send(:offer)
     user  = Api::V1::UserSerializer.new(current_user, { user_summary: true })
 
+    return if type == "Order" && operation == :create
+
     unless order.nil?
       json =  Api::V1::OrderSerializer.new(order).as_json
       order_data = { item: { designation: json[:order] }, operation: operation}
