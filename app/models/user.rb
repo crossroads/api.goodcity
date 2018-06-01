@@ -60,20 +60,15 @@ class User < ActiveRecord::Base
   end
 
   def allowed_login?(app_name)
-    case app_name
-    when DONOR_APP
+    if DONOR_APP
       return true
-    when STOCK_APP
-      user_permissions_names.include?('can_login_to_stock')
-    when ADMIN_APP
-      STAFF_APPS_FOR_LOGIN.include?(app_name) && staff?
-    when BROWSE_APP
-      charity?
+    else
+      user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
     end
   end
 
   def user_permissions_names
-    Permission.names(id)
+    @permissions ||= Permission.names(id)
   end
 
   def most_recent_token

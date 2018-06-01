@@ -12,7 +12,7 @@ namespace :goodcity do
         'can_add_or_remove_inventory_number', 'can_manage_delivery_address',
         'can_destroy_contacts', 'can_handle_gogovan_order', 'can_manage_holidays',
         'can_destroy_package_with_specific_states', 'can_manage_locations', 'can_read_schedule',
-        'can_read_versions', 'can_access_packages_locations'],
+        'can_read_versions', 'can_access_packages_locations', 'can_login_to_admin'],
       "Supervisor" => ['can_manage_packages', 'can_manage_offers', 'can_manage_deliveries',
         'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
         'can_check_organisations', 'can_manage_packages_locations', 'can_manage_items',
@@ -22,7 +22,7 @@ namespace :goodcity do
         'can_read_or_modify_user', 'can_destroy_image', 'can_manage_messages',
         'can_manage_orders_packages', 'can_manage_locations', 'can_read_schedule',
         'can_read_versions', 'can_access_packages_locations', 'can_manage_images',
-        'can_login_to_stock'],
+        'can_login_to_stock', 'can_login_to_admin'],
       "Order fulfilment" => ['can_manage_packages', 'can_manage_offers', 'can_manage_deliveries',
         'can_manage_orders', 'can_manage_orders_packages', 'can_manage_order_transport',
         'can_check_organisations', 'can_manage_packages_locations',
@@ -32,9 +32,9 @@ namespace :goodcity do
         'can_destroy_contacts', 'can_handle_gogovan_order', 'can_manage_holidays',
         'can_destroy_package_with_specific_states', 'can_manage_locations', 'can_read_schedule',
         'can_read_versions', 'can_access_packages_locations', 'can_login_to_stock'],
+      "Charity" => ['can_login_to_browse'],
       "api-write" => [],
-      "System" => [],
-      "Charity" => []
+      "System" => []
     }
 
     ROLES_AND_PERMISSIONS.each_pair do |role_name, permission_names|
