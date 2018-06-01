@@ -3,7 +3,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user_with_token) }
   let(:supervisor) { create(:user_with_token, :supervisor) }
-  let(:charity_user) { create(:user_with_token, :charity) }
+  let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
   let(:reviewer) { create(:user_with_token, :reviewer) }
   let(:order_fulfilment) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Order fulfilment' => ['can_login_to_stock']} )}
@@ -116,6 +117,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it 'do not send pin if donor login into admin', :show_in_doc do
+      set_admin_app_header
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:app_name).and_return(ADMIN_APP)
@@ -160,6 +162,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it 'sends otp_auth_key if charity_user logging into Browse', :show_in_doc do
+      set_admin_app_header
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return(otp_auth_key)
