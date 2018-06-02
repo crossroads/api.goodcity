@@ -150,7 +150,7 @@ class Order < ActiveRecord::Base
   end
 
   def nullify_columns(*columns)
-    columns.each { |column| send("#{column}=", nil) }
+    columns.map { |column| send("#{column}=", nil) }
   end
 
   def add_to_stockit
