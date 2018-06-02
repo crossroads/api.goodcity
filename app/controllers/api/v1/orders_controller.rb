@@ -60,9 +60,9 @@ module Api
       end
 
       def transition
-        @transition = params['transition'].to_sym
-        if @order.state_events.include?(@transition)
-          @order.fire_state_event(@transition)
+        transition_event = params['transition'].to_sym
+        if @order.state_events.include?(transition_event)
+          @order.fire_state_event(transition_event)
         end
         render json: @order, serializer: serializer
       end
