@@ -59,7 +59,7 @@ class Order < ActiveRecord::Base
   end
 
   state_machine :state, initial: :draft do
-    state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch
+    state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch, :restart_process
 
     event :submit do
       transition draft: :submitted
@@ -74,11 +74,23 @@ class Order < ActiveRecord::Base
     end
 
     event :cancel do
-      transition all => :cancelled
+      transition all - [:draft, :closed] => :cancelled
     end
 
     event :close do
       transition awaiting_dispatch: :closed
+    end
+
+    event :reopen do
+      transition closed: :awaiting_dispatch
+    end
+
+    event :restart_process do
+      transition awaiting_dispatch: :submitted
+    end
+
+    event :resubmit do
+      transition cancelled: :submitted
     end
 
     before_transition on: :submit do |order|
@@ -114,9 +126,31 @@ class Order < ActiveRecord::Base
       end
     end
 
+    before_transition on: :reopen do |order|
+      if order.closed?
+        order.nullify_columns(:closed_at, :closed_by_id)
+      end
+    end
+
+    before_transition on: :restart_process do |order|
+      if order.awaiting_dispatch?
+        order.nullify_columns(:processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id)
+      end
+    end
+
+    before_transition on: :resubmit do |order|
+      if order.cancelled?
+        order.nullify_columns(:processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id, :cancelled_at, :cancelled_by_id)
+      end
+    end
+
     after_transition on: :submit do |order|
       order.designate_orders_packages if order.detail_type == "GoodCity"
     end
+  end
+
+  def nullify_columns(*columns)
+    columns.map { |column| send("#{column}=", nil) }
   end
 
   def add_to_stockit
