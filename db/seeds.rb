@@ -108,17 +108,28 @@ purposes.each do |key, value|
   ).first_or_create
 end
 
-# Create System User
-FactoryGirl.create(:user, :system)
-
-# Create api-write permission
-FactoryGirl.create(:permission, name: "api-write")
-
 # Create PackageCategories
 PackageCategoryImporter.import
 
 # Create PackageCategoriesPackageType
 PackageCategoryImporter.import_package_relation
+
+# Permission and Role mappings
+permissions_roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
+permissions_roles.each_pair do |role_name, permission_names|
+  if (role = Role.where(name: role_name).first_or_create)
+    permission_names.each do |permission_name|
+      permission = Permission.where(name: permission_name).first_or_create
+      RolePermission.where(role: role, permission: permission).first_or_create
+    end
+  end
+end
+
+# Create System User
+FactoryGirl.create(:user, :system)
+
+# Create API User
+FactoryGirl.create(:user, :api_user, first_name: "api", last_name: "write")
 
 # Don't run the following setup on the live server.
 # This is for dummy data
