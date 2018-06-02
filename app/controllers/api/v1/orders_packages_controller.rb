@@ -30,6 +30,15 @@ module Api
         return all_orders_packages if params['all_orders_packages'].present?
       end
 
+      api :DELETE, '/v1/orders_package/1', "Delete an orders_package"
+      def destroy
+        @orders_package = OrdersPackage.find_by_id(params[:id])
+        if @orders_package
+          @orders_package.destroy
+        end
+        render json: {}
+      end
+
       def all_orders_packages
         render json: @orders_packages, each_serializer: serializer
       end
