@@ -158,4 +158,20 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85291111114", first_name: "Scott", last_name: "Sandro94" },
   ]
   supervisor_attributes.each {|attr| FactoryGirl.create(:user, :supervisor, attr) }
+
+  charity_attributes = [
+    { mobile: "+85252222221", first_name: "Chris", last_name: "Chan521" },
+    { mobile: "+85252222222", first_name: "Charlotte", last_name: "Cheung522" },
+    { mobile: "+85252222223", first_name: "Charis", last_name: "Chen523" },
+    { mobile: "+85252222224", first_name: "Carlos", last_name: "Chung524" },
+  ]
+  charity_attributes.each {|attr| FactoryGirl.create(:user, :charity, attr) }
+
+  order_fulfiler_attributes = [
+    { mobile: "+85262222221", first_name: "Olive", last_name: "Oakley621" },
+    { mobile: "+85262222222", first_name: "Owen", last_name: "Ogilvy622" },
+    { mobile: "+85262222223", first_name: "Oscar", last_name: "O'Riley623" },
+    { mobile: "+85262222224", first_name: "Octavia", last_name: "O'Connor624" },
+  ]
+  order_fulfiler_attributes.each {|attr| FactoryGirl.create(:user, :order_fulfilment, attr) }
 end
