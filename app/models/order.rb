@@ -1,4 +1,5 @@
 class Order < ActiveRecord::Base
+  has_paper_trail class_name: 'Version'
   include PushUpdates
 
   belongs_to :detail, polymorphic: true
