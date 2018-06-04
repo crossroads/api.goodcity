@@ -13,14 +13,16 @@ FactoryGirl.define do
     association :image
 
     transient do
-      role_name { %w( Reviewer Supervisor Administrator ).sample }
+      role_name { generate(:permissions_roles).keys.sample }
       roles_and_permissions {}
     end
 
-    trait :reviewer do
-      after(:create) do |user|
-        user.roles << create(:reviewer_role)
-      end
+    [:reviewer, :order_fulfilment, :supervisor, :administrator, :charity].each do |role|
+      trait role do
+        after(:create) do |user|
+          user.roles << create("#{role}_role")
+        end
+      end  
     end
 
     trait :with_multiple_roles_and_permissions do
@@ -46,12 +48,6 @@ FactoryGirl.define do
     trait :with_can_read_versions_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_read_versions_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :supervisor do
-      after(:create) do |user|
-        user.roles << create(:supervisor_role)
       end
     end
 
@@ -151,12 +147,6 @@ FactoryGirl.define do
       end
     end
 
-    trait :administrator do
-      after(:create) do |user|
-        user.roles << create(:administrator_role)
-      end
-    end
-
     trait :api_user do
       after(:create) do |user|
         user.roles << create(:api_write_role)
@@ -174,12 +164,6 @@ FactoryGirl.define do
       mobile     SYSTEM_USER_MOBILE
       after(:create) do |user|
         user.roles << create(:system_role)
-      end
-    end
-
-    trait :charity do
-      after(:create) do |user|
-        user.roles << create(:charity_role)
       end
     end
 

@@ -1,11 +1,21 @@
 FactoryGirl.define do
 
   factory :role do
-    name            { %w( Reviewer Supervisor Administrator ).sample }
+    name            { generate(:permissions_roles).keys.sample }
     initialize_with { Role.find_or_initialize_by(name: name) } # limits us to our sample of permissions
 
     transient do
       permissions { %w(can_manage_offers, can_manage_packages)}
+    end
+
+    ["Administrator", "Charity", "Order_fulfilment", "Reviewer", "Supervisor", "System"].each do |role|
+      factory "#{role.downcase}_role".to_sym, parent: :role do
+        name role
+      end
+    end
+
+    factory :api_write_role, parent: :role do
+      name 'api-write'
     end
 
     trait :with_dynamic_permission do
@@ -137,27 +147,4 @@ FactoryGirl.define do
     end
   end
 
-  factory :reviewer_role, parent: :role do
-    name 'Reviewer'
-  end
-
-  factory :supervisor_role, parent: :role do
-    name 'Supervisor'
-  end
-
-  factory :administrator_role, parent: :role do
-    name 'Administrator'
-  end
-
-  factory :system_role, parent: :role do
-    name 'System'
-  end
-
-  factory :api_write_role, parent: :role do
-    name 'api-write'
-  end
-
-  factory :charity_role, parent: :role do
-    name 'Charity'
-  end
 end

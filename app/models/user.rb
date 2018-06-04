@@ -59,6 +59,18 @@ class User < ActiveRecord::Base
     user
   end
 
+  def allowed_login?(app_name)
+    if app_name == DONOR_APP
+      return true
+    else
+      user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
+    end
+  end
+
+  def user_permissions_names
+    @permissions ||= Permission.names(id)
+  end
+
   def most_recent_token
     auth_tokens.most_recent.first
   end
