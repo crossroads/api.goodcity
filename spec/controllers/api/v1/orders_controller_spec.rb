@@ -20,7 +20,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it 'returns orders created by logged in user when user is supervisor and if its browse app' do
-        request.headers["X-GOODCITY-APP-NAME"] = "browse.goodcity"
+        set_browse_app_header
         get :index
         body = JSON.parse(response.body)
         expect(body['orders'].count).to eq(1)
