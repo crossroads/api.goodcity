@@ -59,23 +59,11 @@ module Api
           exclude_stockit_set_item: true
       end
 
-      def start_process
-        @order.start_processing
-        render json: @order, serializer: serializer
-      end
-
-      def finish_process
-        @order.finish_processing
-        render json: @order, serializer: serializer
-      end
-
-      def cancel_order
-        @order.cancel
-        render json: @order, serializer: serializer
-      end
-
-      def close_order
-        @order.close
+      def transition
+        transition_event = params['transition'].to_sym
+        if @order.state_events.include?(transition_event)
+          @order.fire_state_event(transition_event)
+        end
         render json: @order, serializer: serializer
       end
 

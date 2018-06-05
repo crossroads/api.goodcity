@@ -1,4 +1,5 @@
 class Order < ActiveRecord::Base
+  has_paper_trail class_name: 'Version'
   include PushUpdates
 
   belongs_to :detail, polymorphic: true
@@ -59,7 +60,7 @@ class Order < ActiveRecord::Base
   end
 
   state_machine :state, initial: :draft do
-    state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch
+    state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch, :restart_process, :dispatching, :start_dispatching
 
     event :submit do
       transition draft: :submitted
@@ -74,11 +75,31 @@ class Order < ActiveRecord::Base
     end
 
     event :cancel do
-      transition all => :cancelled
+      transition all - [:draft, :closed] => :cancelled
     end
 
     event :close do
-      transition awaiting_dispatch: :closed
+      transition dispatching: :closed
+    end
+
+    event :reopen do
+      transition closed: :dispatching
+    end
+
+    event :restart_process do
+      transition awaiting_dispatch: :submitted
+    end
+
+    event :resubmit do
+      transition cancelled: :submitted
+    end
+
+    event :dispatch_later do
+      transition dispatching: :awaiting_dispatch
+    end
+
+    event :start_dispatching do
+      transition awaiting_dispatch: :dispatching
     end
 
     before_transition on: :submit do |order|
@@ -89,6 +110,13 @@ class Order < ActiveRecord::Base
       if order.submitted?
         order.processed_at = Time.now
         order.processed_by_id = User.current_user.id
+      end
+    end
+
+    before_transition on: :start_dispatching do |order|
+      if order.awaiting_dispatch?
+        order.dispatch_started_at = Time.now
+        order.dispatch_started_by = User.current_user.id
       end
     end
 
@@ -108,15 +136,45 @@ class Order < ActiveRecord::Base
     end
 
     before_transition on: :close do |order|
-      if order.awaiting_dispatch?
+      if order.dispatching?
         order.closed_at = Time.now
         order.closed_by_id = User.current_user.id
+      end
+    end
+
+    before_transition on: :dispatch_later do |order|
+      if order.dispatching?
+        order.nullify_columns(:dispatch_started_at, :dispatch_started_by)
+      end
+    end
+
+    before_transition on: :reopen do |order|
+      if order.closed?
+        order.dispatch_started_at = Time.now
+        order.dispatch_started_by = User.current_user.id
+        order.nullify_columns(:closed_at, :closed_by_id)
+      end
+    end
+
+    before_transition on: :restart_process do |order|
+      if order.awaiting_dispatch?
+        order.nullify_columns(:processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id)
+      end
+    end
+
+    before_transition on: :resubmit do |order|
+      if order.cancelled?
+        order.nullify_columns(:processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id, :cancelled_at, :cancelled_by_id, :dispatch_started_by, :dispatch_started_at)
       end
     end
 
     after_transition on: :submit do |order|
       order.designate_orders_packages if order.detail_type == "GoodCity"
     end
+  end
+
+  def nullify_columns(*columns)
+    columns.map { |column| send("#{column}=", nil) }
   end
 
   def add_to_stockit

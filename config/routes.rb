@@ -111,10 +111,7 @@ Rails.application.routes.draw do
       resources :stockit_local_orders, only: [:create]
       resources :orders, only: [:create, :show, :index, :update] do
         member do
-          put :start_process
-          put :finish_process
-          put :cancel_order
-          put :close_order
+          put :transition
         end
       end
       resources :order_transports, only: [:create, :show, :index]
