@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180529040927) do
+ActiveRecord::Schema.define(version: 20180604030318) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -277,6 +277,8 @@ ActiveRecord::Schema.define(version: 20180529040927) do
     t.integer  "cancelled_by_id"
     t.datetime "closed_at"
     t.integer  "closed_by_id"
+    t.datetime "dispatch_started_at"
+    t.integer  "dispatch_started_by"
   end
 
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
