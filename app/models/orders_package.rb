@@ -28,7 +28,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def delete_order_if_no_package
-    order.destroy unless order.orders_packages.exists?
+    order.destroy unless order.draft_goodcity_order?
   end
 
   state_machine :state, initial: :requested do
