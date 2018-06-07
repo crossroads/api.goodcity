@@ -242,10 +242,18 @@ class Order < ActiveRecord::Base
     record ? record.code.gsub(/\D/, '').to_i + 1 : 1
   end
 
+  def goodcity_order?
+    detail_type == "GoodCity"
+  end
+
+  def draft_goodcity_order?
+    state == "draft" && goodcity_order? && orders_packages.exists?
+  end
+
   private
 
   def assign_code
-    self.code = Order.generate_gc_code if detail_type == "GoodCity"
+    self.code = Order.generate_gc_code if goodcity_order?
   end
 
   #to satisfy push_updates

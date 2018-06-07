@@ -32,7 +32,6 @@ module Api
 
       api :DELETE, '/v1/orders_package/1', "Delete an orders_package"
       def destroy
-        @orders_package = OrdersPackage.find_by_id(params[:id])
         if @orders_package
           @orders_package.destroy
         end
