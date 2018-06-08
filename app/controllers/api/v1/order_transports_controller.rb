@@ -7,7 +7,19 @@ module Api
         save_and_render_object(@order_transport)
       end
 
+      def update
+        if @order_transport.update_attributes(order_transport_params)
+          render json: @order_transport, serializer: serializer
+        else
+          render_errors
+        end
+      end
+
       private
+
+      def render_errors
+        render json: @order_transport.errors.to_json, status: 422
+      end
 
       def order_transport_params
         params.require(:order_transport).permit(:order_id, :scheduled_at,
