@@ -7,6 +7,11 @@ module Api
         save_and_render_object(@order_transport)
       end
 
+      def update
+        @order_transport.assign_attributes(order_transport_params)
+        save_and_render_object_with_errors(@order_transport)
+      end
+
       private
 
       def order_transport_params
