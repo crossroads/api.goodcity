@@ -88,7 +88,7 @@ module Api
       end
 
       def destroy
-        @order.destroy
+        @order.destroy if @order.draft?
         render json: {}
       end
 
