@@ -36,6 +36,7 @@ en:
               blank: "can't be blank"
   notification:
     new_offer: New offer submitted by %{name}
+    new_order: "New order from %{organisation_name_en}: %{contact_name}"
   offer:
     thank_message: Thank you for your offer, our team will start reviewing it
       soon. The reviewer will message you if they have questions about any of
