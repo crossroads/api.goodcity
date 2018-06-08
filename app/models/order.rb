@@ -14,10 +14,10 @@ class Order < ActiveRecord::Base
 
   has_many :packages
   has_many :purposes, through: :orders_purposes
-  has_many :orders_packages
-  has_many :orders_purposes
+  has_many :orders_packages, dependent: :destroy
+  has_many :orders_purposes, dependent: :destroy
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
-  has_one :order_transport
+  has_one :order_transport, dependent: :destroy
 
   after_initialize :set_initial_state
   after_create :update_orders_packages_quantity, if: :state_is_draft_and_detail_type_is_goodcity?

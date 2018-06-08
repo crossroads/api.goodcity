@@ -87,6 +87,11 @@ module Api
           root: "orders", include_packages: false, browse_order: true
       end
 
+      def destroy
+        @order.destroy if @order.draft?
+        render json: {}
+      end
+
       private
 
       def order_response(records)
