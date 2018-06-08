@@ -165,9 +165,9 @@ class Ability
 
   def order_abilities
     can :create, Order
-    can [:index, :show, :update], Order, created_by_id: @user_id
+    can [:index, :show, :update, :destroy], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
-      can [:create, :index, :show, :update, :transition], Order
+      can [:create, :index, :show, :update, :transition, :destroy], Order
     end
   end
 
