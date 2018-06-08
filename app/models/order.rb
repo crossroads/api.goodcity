@@ -169,8 +169,22 @@ class Order < ActiveRecord::Base
     end
 
     after_transition on: :submit do |order|
-      order.designate_orders_packages if order.detail_type == "GoodCity"
+      if order.detail_type == "GoodCity"
+        order.designate_orders_packages
+        order.send_new_order_notificationen
+      end
     end
+  end
+
+  def send_new_order_notificationen
+    PushService.new.send_notification Channel.goodcity_order_channel, false, {
+      category:   'new_order',
+      message:    I18n.t("notification.new_order", organisation_name_en:
+        organisation.name_en, organisation_name_zh_tw: organisation.name_zh_tw,
+        contact_name: created_by.full_name),
+      order_id:   id,
+      author_id:  created_by_id
+    }
   end
 
   def nullify_columns(*columns)
