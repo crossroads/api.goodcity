@@ -179,12 +179,12 @@ class Ability
 
   def order_transport_abilities
     can :create, OrderTransport
-    can [:index, :show], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
+    can [:index, :show, :update], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
       transport.order.created_by_id == @user_id
     end
 
     if can_manage_order_transport?
-      can [:create, :index, :show], OrderTransport
+      can [:create, :index, :show, :update], OrderTransport
     end
   end
 
