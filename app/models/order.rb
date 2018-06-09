@@ -247,7 +247,7 @@ class Order < ActiveRecord::Base
   end
 
   def delete_if_no_orders_packages
-    self.destroy if draft_goodcity_order? and orders_packages.exists?
+    self.destroy if draft_goodcity_order? and !orders_packages.exists?
   end
 
   private
