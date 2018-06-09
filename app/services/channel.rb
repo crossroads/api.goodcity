@@ -13,8 +13,16 @@ class Channel
       ["browse"]
     end
 
+    def order_fulfilment
+      ["order_fulfilment"]
+    end
+
     def staff
      [reviewer, supervisor].flatten
+    end
+
+    def goodcity_order_channel
+      [order_fulfilment].flatten
     end
 
     def order_channel
