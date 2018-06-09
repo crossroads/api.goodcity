@@ -180,7 +180,7 @@ class Order < ActiveRecord::Base
     PushService.new.send_notification Channel.goodcity_order_channel, false, {
       category:   'new_order',
       message:    I18n.t("notification.new_order", organisation_name_en:
-        organisation.name_en, organisation_name_zh_tw: organisation.name_zh_tw,
+        organisation.try(:name_en), organisation_name_zh_tw: organisation.try(:name_zh_tw),
         contact_name: created_by.full_name),
       order_id:   id,
       author_id:  created_by_id
