@@ -99,6 +99,10 @@ class User < ActiveRecord::Base
     user_role_names.include?('Supervisor') && @treat_user_as_donor != true
   end
 
+  def order_fulfilment?
+    user_role_names.include?('Order fulfilment')
+  end
+
   def admin?
     administrator?
   end
@@ -130,6 +134,7 @@ class User < ActiveRecord::Base
     channels = Channel.private(self)
     channels += Channel.reviewer if reviewer?
     channels += Channel.supervisor if supervisor?
+    channels += Channel.order_fulfilment if order_fulfilment?
     channels
   end
 
