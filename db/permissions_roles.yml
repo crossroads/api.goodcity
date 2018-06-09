@@ -57,6 +57,7 @@ Supervisor:
 api-write: []
 Charity:
 - can_login_to_browse
+- can_manage_orders_packages
 Order fulfilment:
 - can_manage_packages
 - can_manage_offers
