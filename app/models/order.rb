@@ -20,7 +20,7 @@ class Order < ActiveRecord::Base
   has_one :order_transport, dependent: :destroy
 
   after_initialize :set_initial_state
-  after_create :update_orders_packages_quantity, if: :state_is_draft_and_detail_type_is_goodcity?
+  after_create :update_orders_packages_quantity, if: :draft_goodcity_order?
   before_create :assign_code
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
@@ -43,10 +43,6 @@ class Order < ActiveRecord::Base
     orders_packages.each do |orders_package|
       orders_package.update_state_to_designated
     end
-  end
-
-  def state_is_draft_and_detail_type_is_goodcity?
-    state == "draft" && detail_type == "GoodCity"
   end
 
   def update_orders_packages_quantity
@@ -242,10 +238,22 @@ class Order < ActiveRecord::Base
     record ? record.code.gsub(/\D/, '').to_i + 1 : 1
   end
 
+  def goodcity_order?
+    detail_type == "GoodCity"
+  end
+
+  def draft_goodcity_order?
+    state == "draft" && goodcity_order?
+  end
+
+  def delete_if_no_orders_packages
+    self.destroy if draft_goodcity_order? and !orders_packages.exists?
+  end
+
   private
 
   def assign_code
-    self.code = Order.generate_gc_code if detail_type == "GoodCity"
+    self.code = Order.generate_gc_code if goodcity_order?
   end
 
   #to satisfy push_updates
