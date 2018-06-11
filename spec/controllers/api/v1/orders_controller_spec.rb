@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
-  let(:charity_user) { create :user, :charity}
+  let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
   let!(:order) { create :order, created_by: charity_user }
 
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
@@ -68,6 +68,20 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(response.status).to eq(200)
         expect(body['designations'].count).to eq(1)
         expect(body["designations"][0]['id']).to eq(order.id)
+      end
+    end
+  end
+
+  describe "PUT orders/1" do
+    before { generate_and_set_token(charity_user) }
+    let(:draft_order) { create :order, :with_orders_packages, :with_state_draft }
+
+    context 'should merge offline cart' do
+      it "if order is in draft state" do
+        package = create :package, quantity: 1, received_quantity: 1
+        orderParams = { cart_package_ids: [package.id] }
+        put :update, id: draft_order.id, order: orderParams
+        expect(response.status).to eq(200)
       end
     end
   end
