@@ -173,7 +173,7 @@ class Ability
 
   def orders_package_abilities
     if can_manage_orders_packages? || @api_user
-      can [:index, :search, :show], OrdersPackage
+      can [:index, :search, :show, :destroy], OrdersPackage
     end
   end
 

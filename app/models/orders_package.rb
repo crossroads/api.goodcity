@@ -9,6 +9,7 @@ class OrdersPackage < ActiveRecord::Base
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
   before_destroy -> { destroy_stockit_record("destroy") }
+  after_destroy -> { order.delete_if_no_orders_packages }
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
