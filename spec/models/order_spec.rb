@@ -136,6 +136,93 @@ RSpec.describe Order, type: :model do
         expect(order.dispatch_started_at).to eq(Time.now)
       end
     end
+
+    describe '#restart_process' do
+      it 'resets attributes relatred to process started and process completed if order is in awaiting state' do
+        order = create :order, :awaiting_dispatch
+        order.restart_process
+        expect(order.reload.processed_by_id).to eq(nil)
+        expect(order.reload.processed_at).to eq(nil)
+        expect(order.reload.process_completed_by_id).to eq(nil)
+        expect(order.reload.process_completed_at).to eq(nil)
+      end
+    end
+
+    describe '#redesignate_cancelled_order' do
+      it 'sets processed_at and processed_by columns and nullyfies other order workflow related columns' do
+        order = create :order, state: 'cancelled', process_completed_at: Time.now, process_completed_by_id: user.id, cancelled_at: Time.now, cancelled_by_id: user.id,
+          dispatch_started_by: user.id, dispatch_started_at: Time.now
+        order.redesignate_cancelled_order
+        expect(order.reload.processed_at).to eq(Time.now)
+        expect(order.reload.processed_by_id).to eq(user.id)
+        expect(order.reload.process_completed_at).to be_nil
+        expect(order.reload.process_completed_by_id).to be_nil
+        expect(order.reload.cancelled_at).to be_nil
+        expect(order.reload.cancelled_by_id).to be_nil
+        expect(order.reload.dispatch_started_by).to be_nil
+        expect(order.reload.dispatch_started_at).to be_nil
+      end
+    end
+
+    describe '#cancel' do
+      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in submitted state' do
+        order = create :order, state: 'submitted'
+        orders_package = create :orders_package, order: order, state: 'designated'
+        order.cancel
+        expect(order.reload.cancelled_at).to eq(Time.now)
+        expect(order.reload.cancelled_by_id).to eq(user.id)
+        expect(orders_package.reload.state).to eq('cancelled')
+      end
+
+      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in proceesin state' do
+        order = create :order, state: 'processing'
+        order.cancel
+        expect(order.reload.cancelled_at).to eq(Time.now)
+        expect(order.reload.cancelled_by_id).to eq(user.id)
+      end
+
+      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in awaiting_dispatch state' do
+        order = create :order, state: 'awaiting_dispatch'
+        order.cancel
+        expect(order.reload.cancelled_at).to eq(Time.now)
+        expect(order.reload.cancelled_by_id).to eq(user.id)
+      end
+
+      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in dispatching state' do
+        order = create :order, state: 'dispatching'
+        order.cancel
+        expect(order.reload.cancelled_at).to eq(Time.now)
+        expect(order.reload.cancelled_by_id).to eq(user.id)
+      end
+    end
+
+    describe '#resubmit' do
+      it 'nullyfies all columns related to order workflow if order is in cancelled state' do
+        order = create :order, state: 'cancelled', processed_at: Time.now,
+        processed_by_id: user.id, process_completed_at: Time.now,
+        process_completed_by_id: user.id, cancelled_at: Time.now,
+        cancelled_by_id: user.id, dispatch_started_by: user.id,
+        dispatch_started_at: Time.now
+        order.resubmit
+        expect(order.reload.processed_at).to be_nil
+        expect(order.reload.processed_by_id).to be_nil
+        expect(order.reload.process_completed_at).to be_nil
+        expect(order.reload.process_completed_by_id).to be_nil
+        expect(order.reload.cancelled_at).to be_nil
+        expect(order.reload.cancelled_by_id).to be_nil
+        expect(order.reload.dispatch_started_by).to be_nil
+        expect(order.reload.dispatch_started_at).to be_nil
+      end
+    end
+
+    describe '#dispatch_later' do
+      it 'nullyfies dispatch_started_at and dispatch_started_by if order is in dispatching state' do
+        order = create :order, state: 'dispatching', dispatch_started_at: Time.now, dispatch_started_by: user.id
+        order.dispatch_later
+        expect(order.reload.dispatch_started_at).to be_nil
+        expect(order.reload.dispatch_started_by).to be_nil
+      end
+    end
   end
 
   describe "Callbacks" do
