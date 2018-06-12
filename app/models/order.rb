@@ -10,6 +10,10 @@ class Order < ActiveRecord::Base
   belongs_to :organisation
   belongs_to :created_by, class_name: 'User'
   belongs_to :processed_by, class_name: 'User'
+  belongs_to :cancelled_by, class_name: 'User'
+  belongs_to :process_completed_by, class_name: 'User'
+  belongs_to :dispatch_started_by, class_name: 'User'
+  belongs_to :closed_by, class_name: 'User'
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'") }, foreign_key: 'detail_id'
 
   has_many :packages
@@ -118,14 +122,14 @@ class Order < ActiveRecord::Base
         order.processed_at = Time.now
         order.processed_by_id = User.current_user.id
         order.nullify_columns(:process_completed_at, :process_completed_by_id, :cancelled_at,
-          :cancelled_by_id, :dispatch_started_by, :dispatch_started_at)
+          :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
       end
     end
 
     before_transition on: :start_dispatching do |order|
       if order.awaiting_dispatch?
         order.dispatch_started_at = Time.now
-        order.dispatch_started_by = User.current_user.id
+        order.dispatch_started_by_id = User.current_user.id
       end
     end
 
@@ -153,14 +157,14 @@ class Order < ActiveRecord::Base
 
     before_transition on: :dispatch_later do |order|
       if order.dispatching?
-        order.nullify_columns(:dispatch_started_at, :dispatch_started_by)
+        order.nullify_columns(:dispatch_started_at, :dispatch_started_by_id)
       end
     end
 
     before_transition on: :reopen do |order|
       if order.closed?
         order.dispatch_started_at = Time.now
-        order.dispatch_started_by = User.current_user.id
+        order.dispatch_started_by_id = User.current_user.id
         order.nullify_columns(:closed_at, :closed_by_id)
       end
     end
@@ -174,7 +178,7 @@ class Order < ActiveRecord::Base
     before_transition on: :resubmit do |order|
       if order.cancelled?
         order.nullify_columns(:processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id,
-          :cancelled_at, :cancelled_by_id, :dispatch_started_by, :dispatch_started_at)
+          :cancelled_at, :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
       end
     end
 
