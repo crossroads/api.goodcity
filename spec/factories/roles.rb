@@ -10,7 +10,7 @@ FactoryGirl.define do
 
     ["Administrator", "Charity", "Order_fulfilment", "Reviewer", "Supervisor", "System"].each do |role|
       factory "#{role.downcase}_role".to_sym, parent: :role do
-        name role
+        name role.humanize
       end
     end
 
