@@ -34,7 +34,7 @@ class Ability
       @reviewer = user.reviewer?
       @api_user = user.api_user?
       @user_offer_ids = user.offers.pluck(:id)
-      @user_permissions ||= Permission.names(user_id)
+      @user_permissions ||= @user.user_permissions_names
 
       can(:manage, :all) if admin
       define_abilities
@@ -165,26 +165,26 @@ class Ability
 
   def order_abilities
     can :create, Order
-    can [:index, :show, :update], Order, created_by_id: @user_id
+    can [:index, :show, :update, :destroy], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
-      can [:create, :index, :show, :update], Order
+      can [:create, :index, :show, :update, :transition, :destroy], Order
     end
   end
 
   def orders_package_abilities
     if can_manage_orders_packages? || @api_user
-      can [:index, :search, :show], OrdersPackage
+      can [:index, :search, :show, :destroy], OrdersPackage
     end
   end
 
   def order_transport_abilities
     can :create, OrderTransport
-    can [:index, :show], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
+    can [:index, :show, :update], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
       transport.order.created_by_id == @user_id
     end
 
     if can_manage_order_transport?
-      can [:create, :index, :show], OrderTransport
+      can [:create, :index, :show, :update], OrderTransport
     end
   end
 

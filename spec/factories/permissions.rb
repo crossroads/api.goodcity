@@ -1,6 +1,10 @@
 FactoryGirl.define do
   factory :permission do
-    name            { %w( can_manange_orders can_manage_offers can_manage_packages ).sample }
+    name            { generate(:permissions_roles).values.flatten.uniq.sample }
     initialize_with { Permission.find_or_initialize_by(name: name) } # limits us to our sample of permissions
+
+    trait :api_write do
+      name 'api-write'
+    end
   end
 end
