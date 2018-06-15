@@ -49,7 +49,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:updated_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:dispatch_started_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:dispatch_started_by).of_type(:integer)}
+    it{ is_expected.to have_db_column(:dispatch_started_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:cancelled_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:cancelled_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:process_completed_at).of_type(:datetime)}
@@ -83,7 +83,7 @@ RSpec.describe Order, type: :model do
         order = create :order, state: 'awaiting_dispatch'
         order.start_dispatching
         expect(order.reload.dispatch_started_at).to eq(Time.now)
-        expect(order.reload.dispatch_started_by).to eq(user.id)
+        expect(order.reload.dispatch_started_by_id).to eq(user.id)
       end
 
       it 'do not sets dispatch_started_at time and dispatch_started_by as current user if order is not in awaiting_dispatch state' do
@@ -132,7 +132,7 @@ RSpec.describe Order, type: :model do
         order.reopen
         expect(order.reload.closed_at).to eq(nil)
         expect(order.reload.closed_by_id).to eq(nil)
-        expect(order.dispatch_started_by).to eq(user.id)
+        expect(order.dispatch_started_by_id).to eq(user.id)
         expect(order.dispatch_started_at).to eq(Time.now)
       end
     end
@@ -151,7 +151,7 @@ RSpec.describe Order, type: :model do
     describe '#redesignate_cancelled_order' do
       it 'sets processed_at and processed_by columns and nullyfies other order workflow related columns' do
         order = create :order, state: 'cancelled', process_completed_at: Time.now, process_completed_by_id: user.id, cancelled_at: Time.now, cancelled_by_id: user.id,
-          dispatch_started_by: user.id, dispatch_started_at: Time.now
+          dispatch_started_by_id: user.id, dispatch_started_at: Time.now
         order.redesignate_cancelled_order
         expect(order.reload.processed_at).to eq(Time.now)
         expect(order.reload.processed_by_id).to eq(user.id)
@@ -159,7 +159,7 @@ RSpec.describe Order, type: :model do
         expect(order.reload.process_completed_by_id).to be_nil
         expect(order.reload.cancelled_at).to be_nil
         expect(order.reload.cancelled_by_id).to be_nil
-        expect(order.reload.dispatch_started_by).to be_nil
+        expect(order.reload.dispatch_started_by_id).to be_nil
         expect(order.reload.dispatch_started_at).to be_nil
       end
     end
@@ -201,7 +201,7 @@ RSpec.describe Order, type: :model do
         order = create :order, state: 'cancelled', processed_at: Time.now,
         processed_by_id: user.id, process_completed_at: Time.now,
         process_completed_by_id: user.id, cancelled_at: Time.now,
-        cancelled_by_id: user.id, dispatch_started_by: user.id,
+        cancelled_by_id: user.id, dispatch_started_by_id: user.id,
         dispatch_started_at: Time.now
         order.resubmit
         expect(order.reload.processed_at).to be_nil
@@ -210,17 +210,17 @@ RSpec.describe Order, type: :model do
         expect(order.reload.process_completed_by_id).to be_nil
         expect(order.reload.cancelled_at).to be_nil
         expect(order.reload.cancelled_by_id).to be_nil
-        expect(order.reload.dispatch_started_by).to be_nil
+        expect(order.reload.dispatch_started_by_id).to be_nil
         expect(order.reload.dispatch_started_at).to be_nil
       end
     end
 
     describe '#dispatch_later' do
       it 'nullyfies dispatch_started_at and dispatch_started_by if order is in dispatching state' do
-        order = create :order, state: 'dispatching', dispatch_started_at: Time.now, dispatch_started_by: user.id
+        order = create :order, state: 'dispatching', dispatch_started_at: Time.now, dispatch_started_by_id: user.id
         order.dispatch_later
         expect(order.reload.dispatch_started_at).to be_nil
-        expect(order.reload.dispatch_started_by).to be_nil
+        expect(order.reload.dispatch_started_by_id).to be_nil
       end
     end
   end
