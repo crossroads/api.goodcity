@@ -34,12 +34,28 @@ FactoryGirl.define do
       state "draft"
     end
 
+    trait :awaiting_dispatch do
+      state 'awaiting_dispatch'
+      :with_processed_by
+      processed_at { Time.now }
+      :with_process_completed_by
+      process_completed_at { Time.now }
+    end
+
     trait :with_created_by do
       association :created_by, factory: :user, strategy: :build
     end
 
     trait :with_processed_by do
       association :processed_by, factory: :user, strategy: :build
+    end
+
+    trait :with_closed_by do
+      association :closed_by, factory: :user, strategy: :build
+    end
+
+    trait :with_process_completed_by do
+      association :process_complted_by, factory: :user, strategy: :build
     end
   end
 end

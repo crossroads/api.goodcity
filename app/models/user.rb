@@ -59,6 +59,18 @@ class User < ActiveRecord::Base
     user
   end
 
+  def allowed_login?(app_name)
+    if app_name == DONOR_APP
+      return true
+    else
+      user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
+    end
+  end
+
+  def user_permissions_names
+    @permissions ||= Permission.names(id)
+  end
+
   def most_recent_token
     auth_tokens.most_recent.first
   end
@@ -85,6 +97,10 @@ class User < ActiveRecord::Base
 
   def supervisor?
     user_role_names.include?('Supervisor') && @treat_user_as_donor != true
+  end
+
+  def order_fulfilment?
+    user_role_names.include?('Order fulfilment')
   end
 
   def admin?
@@ -118,6 +134,7 @@ class User < ActiveRecord::Base
     channels = Channel.private(self)
     channels += Channel.reviewer if reviewer?
     channels += Channel.supervisor if supervisor?
+    channels += Channel.order_fulfilment if order_fulfilment?
     channels
   end
 
