@@ -1,5 +1,7 @@
 class OrdersPackage < ActiveRecord::Base
   include RollbarSpecification
+  attr_accessor :is_delete_orders_package_request_from_cart
+
   belongs_to :order
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
@@ -9,7 +11,7 @@ class OrdersPackage < ActiveRecord::Base
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
   before_destroy -> { destroy_stockit_record("destroy") }
-  after_destroy -> { order.delete_if_no_orders_packages }
+  after_destroy -> { order.delete_if_no_orders_packages if is_delete_orders_package_request_from_cart }
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
