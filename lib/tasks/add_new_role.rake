@@ -5,7 +5,7 @@ namespace :goodcity do
     ROLES = ["Charity", "Order fulfilment"].freeze
 
     ROLES.each do |role|
-      Permission.where(name: role).first_or_create
+      Role.where(name: role).first_or_create
     end
   end
 end
