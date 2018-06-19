@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 describe Api::V1::OrganisationWithoutOrderSerializer do
-
   let(:organisation_without_order)   { build(:organisation) }
   let(:serializer) { Api::V1::OrganisationWithoutOrderSerializer.new(organisation_without_order) }
   let(:json)       { JSON.parse( serializer.to_json ) }
@@ -23,5 +22,4 @@ describe Api::V1::OrganisationWithoutOrderSerializer do
     expect(json['organisation_without_order']['name_zh_tw']).to eql(organisation_without_order.name_zh_tw)
     expect(json['organisation_without_order']['description_zh_tw']).to eql(organisation_without_order.description_zh_tw)
   end
-
 end
