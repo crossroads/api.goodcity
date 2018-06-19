@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby "2.2.2"
+ruby "2.3.7"
 
 gem 'rails', '~> 4.2.0'
 # gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
