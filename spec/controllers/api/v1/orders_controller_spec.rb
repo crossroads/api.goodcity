@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
-  let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
+  let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission }
+  let(:order_fulfilment_user) { create :user, :order_fulfilment,
+    :with_can_manage_orders_permission }
   let!(:order) { create :order, created_by: charity_user }
 
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
@@ -84,6 +86,30 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(response.status).to eq(200)
         expect(draft_order.orders_packages.count).to eq(4)
       end
+    end
+  end
+
+  describe 'PUT orders/1/transitions' do
+    before { generate_and_set_token() }
+    it 'changes state of order to processing if params has tranistion key with value start processing' do
+    end
+
+    it 'changes state of order to awaiting_dispatch if params has tranistion key with value finish processing' do
+    end
+
+    it 'changes state of order to disptaching if params has tranistion key with value start_dispatching' do
+    end
+
+    it 'changes state of order to awaiting_dispatch if params has tranistion key with value dispatch_later' do
+    end
+
+    it 'changes state of order to cancelled if params has tranistion attribute with cancel' do
+    end
+
+    it 'changes state of order to submitted if params has tranistion key with value resubmit' do
+    end
+
+    it 'changes state of order to cancelled if params has tranistion attribute with cancel' do
     end
   end
 end
