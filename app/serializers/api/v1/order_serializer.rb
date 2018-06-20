@@ -18,12 +18,12 @@ module Api::V1
     has_many :cart_packages, serializer: BrowsePackageSerializer, root: :packages
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :orders_purposes, serializer: OrdersPurposeSerializer
-    has_one  :closed_by, serializer: UserSerializer, root: :user
-    has_one  :processed_by, serializer: UserSerializer, root: :user
-    has_one  :cancelled_by, serializer: UserSerializer, root: :user
-    has_one  :process_completed_by, serializer: UserSerializer, root: :user
-    has_one  :dispatch_started_by, serializer: UserSerializer, root: :user
-    has_one  :submitted_by, serializer: UserSerializer, root: :user
+    has_one  :closed_by, serializer: UserSerializer
+    has_one  :processed_by, serializer: UserSerializer
+    has_one  :cancelled_by, serializer: UserSerializer
+    has_one  :process_completed_by, serializer: UserSerializer
+    has_one  :dispatch_started_by, serializer: UserSerializer
+    has_one  :submitted_by, serializer: UserSerializer
 
     def include_packages?
       @options[:include_packages]
