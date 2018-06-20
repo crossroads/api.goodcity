@@ -19,7 +19,6 @@ module Api::V1
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :orders_purposes, serializer: OrdersPurposeSerializer
     has_one  :closed_by, serializer: UserSerializer, root: :user
-    has_one  :created_by, serializer: UserSerializer, root: :user
     has_one  :processed_by, serializer: UserSerializer, root: :user
     has_one  :cancelled_by, serializer: UserSerializer, root: :user
     has_one  :process_completed_by, serializer: UserSerializer, root: :user
