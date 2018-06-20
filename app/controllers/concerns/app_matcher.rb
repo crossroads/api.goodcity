@@ -1,6 +1,10 @@
 module AppMatcher
   extend ActiveSupport::Concern
 
+  def is_dcnor_app
+    app_name == DONOR_APP
+  end
+
   def is_admin_app
     app_name == ADMIN_APP
   end

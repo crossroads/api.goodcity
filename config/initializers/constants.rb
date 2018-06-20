@@ -19,3 +19,9 @@ APP_NAME_AND_LOGIN_PERMISSION_MAPPING = {
   STOCK_APP => 'can_login_to_stock',
   BROWSE_APP => 'can_login_to_browse'
 }
+FORCE_APP_INSTALL = {
+  "app.goodcity": { minor_version: "0.16", should_push: true},
+  "admin.goodcity": { minor_version: "0.14.1", should_push: true},
+  "stock.goodcity": { minor_version: "0.4", should_push: true},
+  "browse.goodcity": { minor_version: "0.7", should_push: true}
+}

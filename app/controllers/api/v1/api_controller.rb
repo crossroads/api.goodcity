@@ -1,12 +1,26 @@
 module Api
   module V1
     class ApiController <  ApplicationController
-      skip_before_action :validate_token, only: [:error]
+      skip_before_action :validate_token, only: [:error, :app_version_info]
+      skip_authorization_check only: [:app_version_info]
 
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from CanCan::AccessDenied, with: :access_denied
       rescue_from Apipie::ParamInvalid, with: :invalid_params
       rescue_from Apipie::ParamMissing, with: :invalid_params
+
+      api :GET, '/v1/app_version_info', "Application Minimum version details"
+      description "Returns Application Minimum Required . Helps to decide force push"
+      def app_version_info
+        return if(app_name.blank? && app_version.blank?)
+
+        app_version_object = FORCE_APP_INSTALL[:"#{app_name}"]
+        if(app_version_object[:should_push] && app_version_object[:minor_version] > app_version)
+          render json: { min_req_version: app_version_object[:minor_version], force_push: true}, status: 201
+        else
+          render json: { min_req_version: app_version, force_push: false}, status: 201
+        end
+      end
 
       def serializer_for(object)
         "Api::V1::#{object.class}Serializer".safe_constantize

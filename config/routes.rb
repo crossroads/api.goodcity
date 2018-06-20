@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   namespace "api" do
     namespace "v1", defaults: { format: "json" } do
 
+      get "app_version_info", to: "api#app_version_info"
       get "browse/fetch_packages", to: "browse#fetch_packages"
 
       post "auth/signup", to: "authentication#signup"
