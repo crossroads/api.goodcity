@@ -128,7 +128,7 @@ GEM
     codeclimate-test-reporter (1.0.8)
       simplecov (<= 0.13)
     coderay (1.1.1)
-    concurrent-ruby (1.0.4)
+    concurrent-ruby (1.0.5)
     connection_pool (2.2.0)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -234,7 +234,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     puma (3.0.2)
-    rack (1.6.9)
+    rack (1.6.10)
     rack-cors (0.4.0)
     rack-protection (2.0.1)
       rack
@@ -359,7 +359,7 @@ GEM
     spring (1.6.4)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
-    sprockets (3.7.1)
+    sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
     sprockets-rails (3.2.0)
@@ -463,6 +463,7 @@ DEPENDENCIES
   sinatra
   spring
   spring-commands-rspec
+  sprockets (~> 3.7.2)
   state_machine
   timecop
   traco
