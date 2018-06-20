@@ -153,12 +153,9 @@ module Api
       end
 
       def designate_partial_item
-        result = OrdersPackage.add_partially_designated_item(
-          order_id: params[:package][:order_id],
-          package_id: params[:package][:package_id],
-          quantity: params[:package][:quantity])
-        if result.errors.blank?
-          designate_stockit_item(params[:package][:order_id])
+        result = InventoryOperations::Base.new(package_params[:package_id], package_params[:order_id], package_params[:quantity]).designate
+        if result
+          designate_stockit_item(package_params[:order_id])
           send_stock_item_response
         else
           render json: { errors: result.errors.full_messages }.to_json, status: 422
@@ -166,8 +163,9 @@ module Api
       end
 
       def update_partial_quantity_of_same_designation
-        @orders_package = OrdersPackage.find_by(id: params[:package][:orders_package_id])
-        @orders_package.update_partially_designated_item(params[:package])
+        InventoryOperations::Base.new(package_params[:package_id], package_params[:order_id], package_params[:quantity]).designate
+        # @orders_package = OrdersPackage.find(package_params[:orders_package_id])
+        # @orders_package.update_partially_designated_item(params[:package])
         designate_stockit_item(params[:package][:order_id])
         send_stock_item_response
       end
@@ -256,7 +254,7 @@ module Api
           :received_at, :rejected_at, :package_type_id, :state_event,
           :inventory_number, :designation_name, :donor_condition_id, :grade,
           :location_id, :box_id, :pallet_id, :stockit_id,
-          :order_id, :stockit_designated_on, :stockit_sent_on,
+          :order_id, :package_id, :stockit_designated_on, :stockit_sent_on,
           :case_number, :allow_web_publish, :received_quantity, :state,
           packages_locations_attributes: [:id, :location_id, :quantity]]
         params.require(:package).permit(attributes)

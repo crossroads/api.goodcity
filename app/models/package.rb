@@ -554,6 +554,10 @@ class Package < ActiveRecord::Base
     packages_locations.where(location_id: location_id).first.update(quantity: total_quantity)
   end
 
+  def dispatched_packages_location
+    packages_locations.where(location_id: location_id).first
+  end
+
   def destroy_other_locations(location_id)
     packages_locations.exclude_location(location_id).destroy_all
   end
