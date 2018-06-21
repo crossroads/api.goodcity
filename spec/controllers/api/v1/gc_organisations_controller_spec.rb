@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
   let(:supervisor) { create(:user_with_token, :with_can_check_organisations_permission, role_name: 'Supervisor') }
+  let(:parsed_body) { JSON.parse(response.body) }
+
   before { generate_and_set_token(supervisor) }
 
   describe 'GET gc organisations' do
@@ -14,31 +16,30 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
     it "return serialized organisations", :show_in_doc do
       get :index
-      body = JSON.parse(response.body)
-      expect( body['gc_organisations'].length ).to eq(Organisation.count)
+      expect( parsed_body['gc_organisations'].length ).to eq(Organisation.count)
     end
 
     it "returns serialized organisations with matching search text" do
-      organisation = create :organisation, name_en: 'Zuni'
-      get :index, search_text: organisation.name_en
-      body = JSON.parse(response.body)
-      expect(body['gc_organisations'].length ).to eq(1)
-      expect(body['gc_organisations'][0]["id"]).to eq(organisation.id)
+      name = "Zuni"
+      organisation = create :organisation, name_en: name
+      get :index, searchText: name
+      expect(parsed_body['gc_organisations'].length ).to eq(1)
+      expect(parsed_body['gc_organisations'][0]["id"]).to eq(organisation.id)
+      expect(parsed_body['meta']['search']).to eql(name)
     end
   end
 
   describe "GET GC Organisation" do
     let(:organisation) { create :organisation }
-    let(:serialized_gc_orgnisation) { Api::V1::OrganisationSerializer.new(organisation, root: "gc_organisations") }
+    let(:serialized_gc_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "gc_organisations").as_json.to_json) }
 
+    before { get :show, id: organisation.id }
     it "returns 200" do
-      get :show, id: organisation.id
       expect(response.status).to eq(200)
     end
 
     it "return serialized address", :show_in_doc do
-      get :show, id: organisation.id
-      expect(response.body).to eq(serialized_gc_orgnisation.to_json)
+      expect(parsed_body).to eq(serialized_gc_organisation)
     end
   end
 end
