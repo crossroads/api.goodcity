@@ -39,7 +39,7 @@ module Api
         if location_record.save
           render json: @location, serializer: serializer, status: 201
         else
-          render json: @location.errors.to_json, status: 422
+          render json: @location.errors, status: 422
         end
       end
 
