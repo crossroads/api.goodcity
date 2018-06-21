@@ -4,20 +4,16 @@ RSpec.describe Api::V1::TerritoriesController, type: :controller do
 
   let(:territory) { create(:territory_districts) }
   let(:serialized_territory) { Api::V1::TerritorySerializer.new(territory) }
-  let(:serialized_territory_json) { JSON.parse( serialized_territory.to_json ) }
-
-  let(:territories) { create_list(:territory, 2) }
+  let(:serialized_territory_json) { JSON.parse( serialized_territory.as_json.to_json ) }
+  let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET territory" do
+    before { get :show, id: territory.id}
     it "returns 200" do
-      get :show, id: territory.id
       expect(response.status).to eq(200)
     end
-
-    it "return serialized territory", :show_in_doc do
-      get :show, id: territory.id
-      body = JSON.parse(response.body)
-      expect( body ).to eq(serialized_territory_json)
+    it "return serialized territory", :show_in_doc do  
+      expect( parsed_body ).to eq(serialized_territory_json)
     end
   end
 
@@ -28,11 +24,17 @@ RSpec.describe Api::V1::TerritoriesController, type: :controller do
     end
 
     it "return serialized territories", :show_in_doc do
-      create(:territory_districts, districts_count: 2)
-      create(:territory_districts, districts_count: 2)
+      2.times { create(:territory) }
       get :index
-      body = JSON.parse(response.body)
-      expect( body['territories'].length ).to eq(Territory.count)
+      expect( parsed_body['territories'].length ).to eq(Territory.count)
+    end
+
+    it 'returns territories with ids present in params' do
+      2.times { create :territory }
+      get :index, ids: [territory.id]
+      expect(response.status).to eq(200)
+      expect(parsed_body['territories'].length).to eq(1)
+      expect(assigns(:territories).to_a).to eq([territory])
     end
   end
 
