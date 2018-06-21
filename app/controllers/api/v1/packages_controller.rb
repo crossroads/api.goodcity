@@ -16,19 +16,19 @@ module Api
 
       def_param_group :package do
         param :package, Hash, required: true do
-          param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
-          param :received_quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
-          param :length, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package length", allow_nil: true
-          param :width, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package width", allow_nil: true
-          param :height, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package height", allow_nil: true
+          param :quantity, lambda { |val| [String, Integer].include? val.class }, desc: "Package quantity", allow_nil: true
+          param :received_quantity, lambda { |val| [String, Integer].include? val.class }, desc: "Package quantity", allow_nil: true
+          param :length, lambda { |val| [String, Integer].include? val.class }, desc: "Package length", allow_nil: true
+          param :width, lambda { |val| [String, Integer].include? val.class }, desc: "Package width", allow_nil: true
+          param :height, lambda { |val| [String, Integer].include? val.class }, desc: "Package height", allow_nil: true
           param :notes, String, desc: "Comment mentioned by customer", allow_nil: true
           param :item_id, String, desc: "Item for which package is created", allow_nil: true
           param :state_event, Package.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this package."
           param :received_at, String, desc: "Date on which package is received", allow_nil: true
           param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
-          param :package_type_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "Category of the package", allow_nil: true
-          param :favourite_image_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of the item image that represents this package", allow_nil: true
-          param :donor_condition_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of donor-condition", allow_nil: true
+          param :package_type_id, lambda { |val| [String, Integer].include? val.class }, desc: "Category of the package", allow_nil: true
+          param :favourite_image_id, lambda { |val| [String, Integer].include? val.class }, desc: "The id of the item image that represents this package", allow_nil: true
+          param :donor_condition_id, lambda { |val| [String, Integer].include? val.class }, desc: "The id of donor-condition", allow_nil: true
           param :grade, String, allow_nil: true
         end
       end
@@ -69,7 +69,7 @@ module Api
               render json: @package, serializer: serializer, status: 201
             end
           else
-            render json: { errors: @package.errors.full_messages }.to_json, status: 422
+            render json: { errors: @package.errors.full_messages }, status: 422
           end
         else
           render nothing: true, status: 204
