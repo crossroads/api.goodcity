@@ -1,7 +1,7 @@
 module InventoryOperations
   module Goodcity
     class Designate < Base
-      def initialize(package_id, order_id, quantity)
+      def initialize(options = {})
         super
       end
 
@@ -11,6 +11,11 @@ module InventoryOperations
         else
           new_designation
         end
+      end
+
+      def designate_to_stockit
+        package.designate_to_stockit_order(order_id)
+        orders_package.reload
       end
 
       def new_designation
@@ -50,10 +55,6 @@ module InventoryOperations
 
       def total_quantity_designation?
         total_quantity == package.received_quantity
-      end
-
-      def dispatched_location_id
-        @dispatched_location_id ||= Location.dispatch_location.id
       end
 
       def assign_total_quantity_to_designate

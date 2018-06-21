@@ -147,13 +147,12 @@ module Api
       end
 
       def undesignate_partial_item
-        OrdersPackage.undesignate_partially_designated_item(params[:package])
-        @package.undesignate_from_stockit_order
+        InventoryOperations::Goodcity::Undesignate.new({package_id: package_params[:package_id], order_id: package_params[:order_id], quantity: package_params[:quantity]}).undesignate
         send_stock_item_response
       end
 
       def designate_partial_item
-        result = InventoryOperations::Base.new(package_params[:package_id], package_params[:order_id], package_params[:quantity]).designate
+        result = InventoryOperations::Goodcity::Designate.new({package_id: package_params[:package_id], order_id: package_params[:order_id], quantity: package_params[:quantity]}).designate
         if result
           designate_stockit_item(package_params[:order_id])
           send_stock_item_response
@@ -163,9 +162,7 @@ module Api
       end
 
       def update_partial_quantity_of_same_designation
-        InventoryOperations::Base.new(package_params[:package_id], package_params[:order_id], package_params[:quantity]).designate
-        # @orders_package = OrdersPackage.find(package_params[:orders_package_id])
-        # @orders_package.update_partially_designated_item(params[:package])
+        InventoryOperations::Goodcity::Designate.new(package_id: package_params[:package_id], order_id: package_params[:order_id], quantity: package_params[:quantity]).designate
         designate_stockit_item(params[:package][:order_id])
         send_stock_item_response
       end
