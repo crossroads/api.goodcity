@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby "2.3.7"
+ruby "2.4.4"
 
 gem 'rails', '~> 4.2.0'
 # gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
@@ -39,7 +39,7 @@ gem 'newrelic_rpm' unless ENV["CI"]
 gem 'traco'
 gem 'rails-i18n'
 gem 'http_accept_language'
-gem 'oj', '2.10.2' # 2.10.3 causes a 'too deeply nested' error
+gem 'oj'
 gem 'oj_mimic_json'
 gem 'redis'
 gem 'redis-rails', '~> 5.0.2'
@@ -89,7 +89,7 @@ group :development, :test do
 end
 
 group :test do
-  gem 'simplecov', '0.9.0', require: false
+  gem 'simplecov', require: false
   gem 'webmock'
   gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"
