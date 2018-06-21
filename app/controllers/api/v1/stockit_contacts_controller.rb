@@ -27,7 +27,7 @@ module Api
         if stockit_contact_record.save
           render json: @stockit_contact, serializer: serializer, status: 201
         else
-          render json: @stockit_contact.errors.to_json, status: 422
+          render json: @stockit_contact.errors, status: 422
         end
       end
 

@@ -16,7 +16,7 @@ module Api
         if object.save
           render json: object, serializer: serializer_for(object), status: 201
         else
-          render json:object.errors.to_json, status: 422
+          render json: object.errors, status: 422
         end
       end
       

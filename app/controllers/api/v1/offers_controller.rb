@@ -129,7 +129,7 @@ module Api
 
       def merge_offer
         status = Goodcity::OfferUtils.merge_offer!(offer_id: params["base_offer_id"], other_offer_id: @offer.id)
-        render json: { status: status }.to_json
+        render json: { status: status }
       end
 
       private
