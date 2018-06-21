@@ -4,11 +4,11 @@ module Api
       load_and_authorize_resource :cancellation_reason, parent: false
 
       def index
-        if params[:ids].blank?
-          render json: CancellationReason.visible.cached_json
-          return
+        if params["ids"].present?
+          @cancellation_reasons = @cancellation_reasons.where(id: params["ids"].split(",").flatten)
+        else
+          @cancellation_reasons = @cancellation_reasons.visible
         end
-        @cancellation_reasons = @cancellation_reasons.find(params[:ids].split(",")) if params[:ids].present?
         render json: @cancellation_reasons, each_serializer: serializer
       end
 
