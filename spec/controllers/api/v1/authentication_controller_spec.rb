@@ -12,14 +12,15 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   let(:mobile) { generate(:mobile) }
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
   let(:jwt_token)    { Token.new.generate }
-  let(:serialized_user) { Api::V1::UserProfileSerializer.new(user).to_json }
+  let(:serialized_user) { JSON.parse(Api::V1::UserProfileSerializer.new(user).as_json.to_json) }
+  let(:parsed_body) { JSON.parse(response.body) }
 
   context "signup" do
     it 'new user successfully', :show_in_doc do
       expect_any_instance_of(User).to receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).and_return(otp_auth_key)
       post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
-      expect(JSON.parse(response.body)["otp_auth_key"]).to eq( otp_auth_key )
+      expect(parsed_body["otp_auth_key"]).to eq( otp_auth_key )
     end
 
     it "with duplicate mobile don't create new user, send pin to existing number", :show_in_doc do
@@ -31,12 +32,12 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     it "with invalid mobile number" do
       post :signup, format: 'json', user_auth: { mobile: "123456", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
-      expect(JSON.parse(response.body)["errors"]).to eq( 'Mobile is invalid' )
+      expect(parsed_body["errors"]).to eq( 'Mobile is invalid' )
     end
 
     it "with blank mobile number" do
       post :signup, format: 'json', user_auth: { mobile: "", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
-      expect(JSON.parse(response.body)["errors"]).to eq( "Mobile can't be blank. Mobile is invalid" )
+      expect(parsed_body["errors"]).to eq( "Mobile can't be blank. Mobile is invalid" )
     end
 
   end
@@ -49,7 +50,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(controller).to receive(:generate_token).with(user_id: user.id).and_return(jwt_token)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
-        expect(JSON.parse(response.body)["jwt_token"]).to eq(jwt_token)
+        expect(parsed_body["jwt_token"]).to eq(jwt_token)
+        expect(parsed_body["user"]).to eq(serialized_user)
         expect(response.status).to eq(200)
       end
 
@@ -59,7 +61,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(controller).to receive(:app_name).and_return(ADMIN_APP)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
-        expect(JSON.parse(response.body)["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
       end
 
@@ -69,7 +71,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(controller).to receive(:app_name).and_return(STOCK_APP)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
-        expect(JSON.parse(response.body)["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
       end
 
@@ -79,7 +81,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(controller).to receive(:generate_token).with(user_id: order_fulfilment.id).and_return(jwt_token)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
-        expect(JSON.parse(response.body)["jwt_token"]).to eq(jwt_token)
+        expect(parsed_body["jwt_token"]).to eq(jwt_token)
         expect(response.status).to eq(200)
       end
     end
@@ -89,7 +91,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(nil)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
-        expect(JSON.parse(response.body)["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
       end
     end
@@ -102,9 +104,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
       expect(controller).to receive(:app_name).and_return(DONOR_APP)
       post :send_pin, mobile: mobile
-
-      body = JSON.parse(response.body)
-      expect(body['otp_auth_key']).to eql( otp_auth_key )
+      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
 
     it "where user does not exist" do
@@ -112,8 +112,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).with(nil).and_return( otp_auth_key )
       post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
-      expect(body['otp_auth_key']).to eql( otp_auth_key )
+      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
 
     it 'do not send pin if donor login into admin', :show_in_doc do
@@ -122,10 +121,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:app_name).and_return(ADMIN_APP)
       post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
       expect(response.status).to eq(401)
-      expect(body["error"]).to eq("You are not authorized.")
-      expect(body['otp_auth_key']).to eql( nil )
+      expect(parsed_body["error"]).to eq("You are not authorized.")
+      expect(parsed_body['otp_auth_key']).to eql( nil )
     end
 
     it 'do not send pin if donor login into Browse', :show_in_doc do
@@ -133,10 +131,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:app_name).and_return(BROWSE_APP)
       post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
       expect(response.status).to eq(401)
-      expect(body['otp_auth_key']).to eql( nil )
-      expect(body['error']).to eql( "You are not authorized." )
+      expect(parsed_body['otp_auth_key']).to eql( nil )
+      expect(parsed_body['error']).to eql( "You are not authorized." )
     end
 
     it 'do not send pin if reviewer login into Browse', :show_in_doc do
@@ -144,10 +141,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:app_name).and_return(BROWSE_APP)
       post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
       expect(response.status).to eq(401)
-      expect(body['otp_auth_key']).to eql( nil )
-      expect(body['error']).to eql("You are not authorized.")
+      expect(parsed_body['otp_auth_key']).to eql( nil )
+      expect(parsed_body['error']).to eql("You are not authorized.")
     end
 
     it 'does not send pin if supervisor logging into Browse', :show_in_doc do
@@ -155,10 +151,9 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:app_name).and_return(BROWSE_APP)
       post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
       expect(response.status).to eq(401)
-      expect(body['otp_auth_key']).to eql( nil )
-      expect(body['error']).to eql("You are not authorized.")
+      expect(parsed_body['otp_auth_key']).to eql( nil )
+      expect(parsed_body['error']).to eql("You are not authorized.")
     end
 
     it 'sends otp_auth_key if charity_user logging into Browse', :show_in_doc do
@@ -168,9 +163,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return(otp_auth_key)
       expect(controller).to receive(:app_name).and_return(BROWSE_APP)
       post :send_pin, mobile: mobile
-      body = JSON.parse(response.body)
       expect(response.status).to eq(200)
-      expect(body['otp_auth_key']).to eql(otp_auth_key)
+      expect(parsed_body['otp_auth_key']).to eql(otp_auth_key)
     end
 
     context "where mobile is" do
@@ -180,8 +174,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(controller).to_not receive(:otp_auth_key_for)
         post :send_pin, mobile: ""
         expect(response.status).to eq(422)
-        body = JSON.parse(response.body)
-        expect(body['errors']).to eql( "Mobile is invalid" )
+        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
       end
 
       it "not +852..." do
@@ -190,8 +183,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(controller).to_not receive(:otp_auth_key_for)
         post :send_pin, mobile: "+9101234567"
         expect(response.status).to eq(422)
-        body = JSON.parse(response.body)
-        expect(body['errors']).to eql( "Mobile is invalid" )
+        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
       end
     end
   end
