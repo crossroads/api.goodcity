@@ -60,10 +60,12 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def assign_dispatched_location
-    if package.singleton_package?
-      package.destroy_stale_packages_locations(quantity)
+    if GoodcitySync.request_from_stockit
+      if package.singleton_package?
+        package.destroy_stale_packages_locations(quantity)
+      end
+      package.assign_or_update_dispatched_location(id, quantity)
     end
-    package.assign_or_update_dispatched_location(id, quantity)
   end
 
   def undispatch_orders_package

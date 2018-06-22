@@ -173,12 +173,13 @@ module Api
       end
 
       def dispatch_stockit_item
-        @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
-        if @orders_package.dispatch_orders_package
-          @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
-          send_stock_item_response
+        response = InventoryOperations::Goodcity::Dispatch.new(package_id: package_params[:package_id], order_id: package_params[:order_id],
+          quantity: package_params[:quantity],
+          packages_location_id: package_params[:packages_location_id]).dispatch
+        if response && response.errors.present?
+          render json: { errors: @package.errors.full_messages }.to_json, status: 422
         else
-          render json: { errors: I18n.t('orders_package.already_dispatched') }.to_json , status: 422
+          send_stock_item_response
         end
       end
 

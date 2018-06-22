@@ -13,7 +13,7 @@ module InventoryOperations
     end
 
     def find_or_build_orders_package
-      OrdersPackage.where(order_id: order_id, package_id: package_id).first || OrdersPackage.new
+      OrdersPackage.where(order_id: order_id, package_id: package_id).first || OrdersPackage.new(order_id: order_id, package_id: package_id)
     end
 
     def dispatched_location_id
