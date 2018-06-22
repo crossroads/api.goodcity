@@ -51,11 +51,15 @@ FactoryGirl.define do
     end
 
     trait :published do
+      with_inventory_number
       allow_web_publish true
     end
 
     trait :with_lightly_used_donor_condition do
       donor_condition { create(:donor_condition, name_en: "Lightly Used") }
     end
+
+    factory :browseable_package, traits: [:published, :with_inventory_number, :received]
+
   end
 end
