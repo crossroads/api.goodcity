@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::ScheduleSerializer do
 
   let(:schedule)   { build(:schedule) }
-  let(:serializer) { Api::V1::ScheduleSerializer.new(schedule) }
+  let(:serializer) { Api::V1::ScheduleSerializer.new(schedule).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do
