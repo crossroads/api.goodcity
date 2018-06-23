@@ -64,7 +64,7 @@ module Api
           update_offer_state(offer)
           render json: @item, serializer: serializer
         else
-          render json: @item.errors.to_json, status: 422
+          render json: @item.errors, status: 422
         end
       end
 
