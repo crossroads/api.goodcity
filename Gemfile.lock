@@ -235,7 +235,7 @@ GEM
     puma (3.0.2)
     rack (1.6.10)
     rack-cors (0.4.0)
-    rack-protection (2.0.1)
+    rack-protection (2.0.3)
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -418,7 +418,7 @@ DEPENDENCIES
   easyzpl!
   execjs
   factory_girl_rails
-  ffaker (~> 2.8.0)
+  ffaker
   foreman
   go_go_van_api!
   guard-rspec
@@ -438,7 +438,7 @@ DEPENDENCIES
   postgres_ext-serializers!
   puma
   rack-cors
-  rack-protection (~> 2.0.0)
+  rack-protection
   rack-timeout
   railroady
   rails (~> 4.2.0)
