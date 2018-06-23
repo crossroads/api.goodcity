@@ -212,7 +212,6 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     oj (3.6.2)
-    oj_mimic_json (1.0.1)
     paper_trail (4.0.2)
       activerecord (>= 3.0, < 6.0)
       activesupport (>= 3.0, < 6.0)
@@ -432,7 +431,6 @@ DEPENDENCIES
   newrelic_rpm
   nokogiri (~> 1.8.2)
   oj
-  oj_mimic_json
   paper_trail (~> 4.0.0.beta)
   paranoia (~> 2.1.0)
   pg
