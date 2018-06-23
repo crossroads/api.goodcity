@@ -18,8 +18,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       order = create :order
       3.times{ create :orders_package, order_id: order.id }
       get :index, search_by_order_id: order.id
-      body = JSON.parse(response.body)
-      expect( body["orders_packages"].size ).to eq(3)
+      expect( subject["orders_packages"].size ).to eq(3)
     end
 
     it 'returns designated and dispatched orders_packages' do
@@ -27,8 +26,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       package = create :package, quantity: 8, received_quantity: 8
       3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
       get :index, search_by_package_id: package.id
-      body = JSON.parse(response.body)
-      expect( body["orders_packages"].size ).to eq(3)
+      expect( subject["orders_packages"].size ).to eq(3)
     end
   end
 
@@ -48,8 +46,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       it "returns 200", :show_in_doc do
         delete :destroy, id: orders_package.id
         expect(response.status).to eq(200)
-        body = JSON.parse(response.body)
-        expect(body).to eq( {} )
+        expect(subject).to eq( {} )
       end
 
       it "should not delete order" do
