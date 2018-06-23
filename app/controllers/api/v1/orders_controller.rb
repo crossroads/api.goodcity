@@ -31,7 +31,7 @@ module Api
         if order_record.save
           render json: @order, serializer: serializer, status: 201
         else
-          render json: @order.errors.to_json, status: 422
+          render json: @order.errors, status: 422
         end
       end
 
@@ -43,7 +43,7 @@ module Api
           search(params['searchText'], params['toDesignateItem'].presence).latest.
           page(params["page"]).per(params["per_page"])
         orders = order_response(records)
-        render json: orders.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
+        render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(orders)
       end
 
       api :GET, '/v1/designations/1', "Get a order"
@@ -73,7 +73,7 @@ module Api
         if @order.valid? and @order.save
           render json: @order, serializer: serializer
         else
-          render json: { errors: @order.errors.full_messages }.to_json , status: 422
+          render json: { errors: @order.errors.full_messages } , status: 422
         end
       end
 
@@ -101,7 +101,7 @@ module Api
           include_packages: true,
           include_order: false,
           include_images: true,
-          exclude_stockit_set_item: true).to_json
+          exclude_stockit_set_item: true).as_json
       end
 
       def order_record
