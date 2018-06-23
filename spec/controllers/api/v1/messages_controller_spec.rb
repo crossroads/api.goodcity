@@ -9,7 +9,8 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:item) { create(:item, offer: offer) }
   let(:message) { create :message, sender: user, offer: offer, item: item }
   let(:subscription) { message.subscriptions.where(user_id: user.id).first }
-  let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).to_json }
+  let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
+  let(:serialized_message_json) { JSON.parse(serialized_message.to_json) }
   let(:message_params) do
     FactoryGirl.attributes_for(:message, sender: user.id, offer_id: offer.id )
   end
@@ -46,9 +47,10 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   describe "GET message" do
     before { generate_and_set_token(user) }
-    it "returns 200", :show_in_doc do
+    it "returns 200 and payload", :show_in_doc do
       get :show, id: message.id
       expect(response.status).to eq(200)
+      expect(subject['message']['body']).to eql(message.body)
     end
   end
 
