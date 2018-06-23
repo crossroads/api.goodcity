@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::RejectionReasonSerializer do
 
   let(:rejection_reason) { build(:rejection_reason) }
-  let(:serializer) { Api::V1::RejectionReasonSerializer.new(rejection_reason) }
+  let(:serializer) { Api::V1::RejectionReasonSerializer.new(rejection_reason).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it_behaves_like 'name_with_language'

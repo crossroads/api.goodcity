@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::OrganisationsUserSerializer do
   let(:organisations_user) { build(:organisations_user) }
-  let(:serializer) { Api::V1::OrganisationsUserSerializer.new(organisations_user) }
+  let(:serializer) { Api::V1::OrganisationsUserSerializer.new(organisations_user).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do

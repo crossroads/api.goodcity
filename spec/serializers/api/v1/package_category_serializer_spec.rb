@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::PackageCategorySerializer do
 
   let(:package_category)  { create(:package_category_with_package_type) }
-  let(:serializer) { Api::V1::PackageCategorySerializer.new(package_category) }
+  let(:serializer) { Api::V1::PackageCategorySerializer.new(package_category).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it_behaves_like 'name_with_language'
