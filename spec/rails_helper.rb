@@ -13,6 +13,12 @@ require 'paper_trail/frameworks/rspec'
 
 WebMock.disable_net_connect!(:allow => "codeclimate.com")
 
+# When running tests using bin/rspec (Spring), the Rails env is preloaded and stored.
+# This means any secrets.yml variables that use ENV data will collect the development
+# env INSTEAD of support/env file that is loaded above. To fix this, we clear the Rails
+# secrets cache and force it to reload here every time that rspec or bin/rspec is run.
+Rails.application.instance_variable_set('@secrets', nil)
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
