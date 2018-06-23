@@ -6,8 +6,6 @@ RSpec.describe Api::V1::RolesController, type: :controller do
   let(:serialized_role) { Api::V1::RoleSerializer.new(role).as_json }
   let(:serialized_role_json) { JSON.parse( serialized_role.to_json ) }
 
-  let(:roles) { create_list(:role, 2) }
-
   subject { JSON.parse(response.body) }
 
   describe "GET role/1" do
@@ -33,7 +31,7 @@ RSpec.describe Api::V1::RolesController, type: :controller do
     end
 
     it "return serialized offers", :show_in_doc do
-      2.times{ create :role }
+      create :reviewer_role
       get :index
       expect( subject['roles'].length ).to eq(Role.count)
     end
