@@ -93,7 +93,7 @@ module Api
             render json: @package, serializer: serializer
           end
         else
-          render json: { errors: @package.errors.full_messages }.to_json , status: 422
+          render json: { errors: @package.errors.full_messages } , status: 422
         end
       end
 
@@ -138,8 +138,8 @@ module Api
           include_packages: false,
           exclude_stockit_set_item: true,
           include_images: true,
-          include_stock_condition: is_stock_app).to_json
-        render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
+          include_stock_condition: is_stock_app).as_json
+        render json: {meta: { total_pages: pages, search: params['searchText'] } }.merge(packages)
       end
 
       def designate_stockit_item(order_id)
@@ -161,7 +161,7 @@ module Api
           designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
         else
-          render json: { errors: result.errors.full_messages }.to_json, status: 422
+          render json: { errors: result.errors.full_messages }, status: 422
         end
       end
 
@@ -183,7 +183,7 @@ module Api
           @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
           send_stock_item_response
         else
-          render json: { errors: I18n.t('orders_package.already_dispatched') }.to_json , status: 422
+          render json: { errors: I18n.t('orders_package.already_dispatched') } , status: 422
         end
       end
 
@@ -226,7 +226,7 @@ module Api
             include_packages: false,
             include_images: @package.set_item_id.blank?
         else
-          render json: { errors: @package.errors.full_messages }.to_json , status: 422
+          render json: { errors: @package.errors.full_messages } , status: 422
         end
       end
 

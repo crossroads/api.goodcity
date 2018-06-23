@@ -11,7 +11,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:package) { create :package, item: item }
   let(:package_with_stockit_id) { create :package, :stockit_package, item: item }
   let(:orders_package) { create :orders_package, package: package }
-  let(:serialized_package) { Api::V1::PackageSerializer.new(package) }
+  let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
 
   let(:package_params) do
@@ -47,8 +47,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "return serialized packages", :show_in_doc do
       3.times{ create :package }
       get :index
-      body = JSON.parse(response.body)
-      expect( body["packages"].size ).to eq(3)
+      expect( subject["packages"].size ).to eq(3)
     end
   end
 
@@ -443,15 +442,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "returns 200", :show_in_doc do
       delete :destroy, id: package.id
       expect(response.status).to eq(200)
-      body = JSON.parse(response.body)
-      expect(body).to eq( {} )
+      expect(subject).to eq( {} )
     end
 
     it "should send delete-item request to stockit if package has inventory_number" do
       delete :destroy, id: (create :package, :stockit_package).id
       expect(response.status).to eq(200)
-      body = JSON.parse(response.body)
-      expect(body).to eq( {} )
+      expect(subject).to eq( {} )
     end
   end
 
@@ -468,8 +465,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "returns 400 if package does not exist" do
       post :print_barcode, package_id: 1
       expect(response.status).to eq(400)
-      body = JSON.parse(response.body)
-      expect(body["errors"]).to eq("Package not found with supplied package_id")
+      expect(subject["errors"]).to eq("Package not found with supplied package_id")
     end
 
     it "should generate inventory number if empty on package" do
@@ -490,5 +486,39 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       post :print_barcode, package_id: package.id
       expect(response.status).to eq(200)
     end
+  end
+
+  describe "search_stockit_items" do
+    before { generate_and_set_token(user) }
+    it 'find 2 of 4 items (excludes quantity items)' do
+      create :package, received_quantity: 1, inventory_number: "456222"
+      create :package, received_quantity: 1, inventory_number: "456111"
+      create :package, received_quantity: 1, inventory_number: "111111"
+      create :package, received_quantity: 2, inventory_number: "456333"
+      get :search_stockit_items, searchText: "456"
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql("456")
+      expect(subject['items'].length).to eql(2)
+      # 'id ASC' ordering is guaranteed by pagination
+      expect(subject['items'][0]['inventory_number']).to eql("456222")
+      expect(subject['items'][1]['inventory_number']).to eql("456111")
+    end
+
+    it 'find 3 items (includes quantity items)' do
+      create :package, received_quantity: 1, inventory_number: "456333"
+      create :package, received_quantity: 2, inventory_number: "456222"
+      create :package, received_quantity: 2, inventory_number: "456111"
+      get :search_stockit_items, searchText: "456", showQuantityItems: 'true'
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql("456")
+      expect(subject['items'].length).to eql(3)
+      # 'id ASC' ordering is guaranteed by pagination
+      expect(subject['items'][0]['inventory_number']).to eql("456333")
+      expect(subject['items'][1]['inventory_number']).to eql("456222")
+      expect(subject['items'][2]['inventory_number']).to eql("456111")
+    end
+  
   end
 end
