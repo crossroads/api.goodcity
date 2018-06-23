@@ -429,7 +429,7 @@ DEPENDENCIES
   loofah
   nestful!
   newrelic_rpm
-  nokogiri (~> 1.8.2)
+  nokogiri
   oj
   paper_trail (~> 4.0.0.beta)
   paranoia (~> 2.1.0)
@@ -447,7 +447,7 @@ DEPENDENCIES
   rake-progressbar
   rb-readline
   redis
-  redis-rails (~> 5.0.2)
+  redis-rails
   request_store
   rollbar
   rspec-rails

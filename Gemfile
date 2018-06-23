@@ -37,13 +37,13 @@ gem 'rails-i18n'
 gem 'http_accept_language'
 gem 'oj'
 gem 'redis'
-gem 'redis-rails', '~> 5.0.2'
+gem 'redis-rails'
 gem 'rollbar'
 gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
-gem 'nokogiri', '~> 1.8.2'
+gem 'nokogiri'
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
