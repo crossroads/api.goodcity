@@ -1,14 +1,10 @@
 source 'https://rubygems.org'
-ruby "2.4.4"
+ruby "2.5.1"
 
 gem 'rails', '~> 4.2.0'
-# gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
 gem 'rails-api'
 gem 'pg'
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.1.2'
-# gem 'active_model_otp'
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'postgres_ext', '~> 2.4.0.beta.1'
