@@ -554,7 +554,7 @@ class Package < ActiveRecord::Base
     packages_locations.where(location_id: location_id).first.update(quantity: total_quantity)
   end
 
-  def dispatched_packages_location
+  def dispatched_packages_location(location_id)
     packages_locations.where(location_id: location_id).first
   end
 

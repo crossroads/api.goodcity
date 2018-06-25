@@ -7,7 +7,7 @@ module InventoryOperations
       def initialize(options = {})
         super
         self.current_packages_location_id = options[:packages_location_id]
-        self.dispatched_packages_location = package.dispatched_packages_location || package.packages_locations.new(location_id: dispatched_location_id)
+        self.dispatched_packages_location = package.dispatched_packages_location(dispatched_location_id) || package.packages_locations.new(location_id: dispatched_location_id)
         self.is_singletone_package = package.singleton_package?
       end
 
