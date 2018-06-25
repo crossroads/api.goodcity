@@ -195,9 +195,12 @@ module Api
       end
 
       def move_full_quantity
-        orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
-        orders_package.undispatch_orders_package
-        @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
+        InventoryOperations::Goodcity::Undispatch.new(package_id: package_params[:package_id], order_id: package_params[:order_id],
+          location_id: package_params[:location_id],
+          quantity: package_params[:quantity]).undispatch
+        # orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
+        # orders_package.undispatch_orders_package
+        # @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
         @package.undispatch_stockit_item
         send_stock_item_response
       end

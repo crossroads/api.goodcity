@@ -404,6 +404,10 @@ class Package < ActiveRecord::Base
     update_or_create_qty_moved_to_location(location_id, total_qty)
   end
 
+  def referenced_packages_location(orders_package_id)
+    packages_locations.find_by(reference_to_orders_package: orders_package_id)
+  end
+
   def move_full_quantity(location_id, orders_package_id)
     orders_package = orders_packages.find_by(id: orders_package_id)
     referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
@@ -556,10 +560,6 @@ class Package < ActiveRecord::Base
 
   def dispatched_packages_location(location_id)
     packages_locations.where(location_id: location_id).first
-  end
-
-  def destroy_other_locations(location_id)
-    packages_locations.exclude_location(location_id).destroy_all
   end
 
   def stockit_order_id

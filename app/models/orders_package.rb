@@ -46,6 +46,15 @@ class OrdersPackage < ActiveRecord::Base
       transition designated: :cancelled
     end
 
+    event :undispatch do
+      transition dispatched: :designated
+    end
+
+    before_transition on: :undispatch do |orders_package, _transition|
+      orders_package.state  = 'designated'
+      orders_package.sent_on = nil
+    end
+
     before_transition on: :cancel do |orders_package, _transition|
       orders_package.quantity   = 0
       orders_package.updated_by = User.current_user
