@@ -12,7 +12,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
   let(:serialized_message_json) { JSON.parse(serialized_message.to_json) }
   let(:message_params) do
-    FactoryGirl.attributes_for(:message, sender: user.id, offer_id: offer.id )
+    FactoryBot.attributes_for(:message, sender: user.id, offer_id: offer.id )
   end
 
   subject { JSON.parse(response.body) }

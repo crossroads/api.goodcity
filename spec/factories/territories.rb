@@ -1,6 +1,6 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :territory do
     name_en         { generate(:territories).keys.sample }
     name_zh_tw      { generate(:territories)[name_en][:name_zh_tw] }
@@ -11,7 +11,7 @@ FactoryGirl.define do
       end
 
       after(:create) do |territory, evaluator|
-        FactoryGirl.create_list(:district, evaluator.districts_count, territory: territory)
+        FactoryBot.create_list(:district, evaluator.districts_count, territory: territory)
         territory.reload
       end
     end

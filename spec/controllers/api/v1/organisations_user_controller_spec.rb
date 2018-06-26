@@ -6,10 +6,10 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
   let(:organisation) { create :organisation }
   let!(:charity_role) { create :charity_role }
   let(:user_attributes) do
-    FactoryGirl.attributes_for(:user, :with_email)
+    FactoryBot.attributes_for(:user, :with_email)
   end
   let(:organisations_user_params) do
-    FactoryGirl.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", user_attributes: user_attributes)
+    FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", user_attributes: user_attributes)
   end
 
   let(:subject) { JSON.parse(response.body) }
