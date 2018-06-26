@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :braintree_transaction do
     transaction_id { rand(100000..999999) }
     customer_id    { rand(1000..9999) }

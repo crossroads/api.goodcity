@@ -50,7 +50,7 @@ namespace :demo do
     end
 
     def create_submitted_offer
-      FactoryGirl.create(:offer, :with_demo_items, :with_messages, created_by: donor).tap(&:submit)
+      FactoryBot.create(:offer, :with_demo_items, :with_messages, created_by: donor).tap(&:submit)
     end
 
     def create_reviewing_offer
@@ -70,7 +70,7 @@ namespace :demo do
     def create_scheduled_offer
       offer = create_reviewed_offer.tap(&:schedule)
       delivery_type = ["crossroads_delivery", "drop_off_delivery"].sample.to_sym
-      FactoryGirl.create(delivery_type, offer: offer)
+      FactoryBot.create(delivery_type, offer: offer)
       offer
     end
 
@@ -100,12 +100,12 @@ namespace :demo do
           package.mark_received
         end
       end
-      offer.update(delivered_by: FactoryGirl.generate(:delivered_by))
+      offer.update(delivered_by: FactoryBot.generate(:delivered_by))
       offer
     end
 
     def create_single_order
-      FactoryGirl.create(:order, :with_status_processing, :with_created_by, processed_by: reviewer, organisation: create_organisation)
+      FactoryBot.create(:order, :with_status_processing, :with_created_by, processed_by: reviewer, organisation: create_organisation)
     end
 
     def create_designated_packages
@@ -142,15 +142,15 @@ namespace :demo do
       puts "Contacts:\t\tCreating #{count} contacts"
       #create contact
       count.times do
-        FactoryGirl.create(:contact)
+        FactoryBot.create(:contact)
       end
     end
 
     def add_organisations_users(count)
       count.times do |i|
-        org = FactoryGirl.create(:organisation)
-        user = FactoryGirl.create(:user, mobile: "+8525500000"+(i+1).to_s)
-        FactoryGirl.create(:organisations_user, organisation: org, user: user, role: "Staff")
+        org = FactoryBot.create(:organisation)
+        user = FactoryBot.create(:user, mobile: "+8525500000"+(i+1).to_s)
+        FactoryBot.create(:organisations_user, organisation: org, user: user, role: "Staff")
       end
 
     end
@@ -160,7 +160,7 @@ namespace :demo do
     end
 
     def reviewer
-      User.where(permission_id: 3).sample||FactoryGirl.create(:user, :reviewer)
+      User.where(permission_id: 3).sample||FactoryBot.create(:user, :reviewer)
     end
 
     # Choose a donor from seed data

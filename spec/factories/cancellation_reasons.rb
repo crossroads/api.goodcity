@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :cancellation_reason do
     name_en         { generate(:cancellation_reasons).keys.sample }
     name_zh_tw      { generate(:cancellation_reasons)[name_en][:name_zh_tw] }

@@ -49,12 +49,12 @@ RSpec.configure do |config|
 
   config.infer_spec_type_from_file_location!
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
   # Apipie can record examples using "APIPIE_RECORD=examples rake"
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 
-  FactoryGirl.create :user, :system
+  FactoryBot.create :user, :system
 
   # Default app to be 'admin' in order to not use treat_user_as_donor
   config.include ApplicationHeaders

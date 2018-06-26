@@ -149,7 +149,7 @@
 
 #     context "with missing stockit object" do
 #       before do
-#         FactoryGirl.create(:stockit_activity, name: "Name")
+#         FactoryBot.create(:stockit_activity, name: "Name")
 #         subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
 #       end
 #       let(:stockit_objects) { {} }
@@ -168,7 +168,7 @@
 #     context "with different stockit object" do
 #       let(:stockit_objects) { [{"name" => "Name2"}] }
 #       before do
-#         FactoryGirl.create(:stockit_activity, name: "Name")
+#         FactoryBot.create(:stockit_activity, name: "Name")
 #         subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
 #       end
 #       it { expect(subject.diffs.values.size).to eql(1) }
@@ -177,7 +177,7 @@
 
 #     context "with different goodcity object" do
 #       before do
-#         FactoryGirl.create(:stockit_activity, name: "Name2")
+#         FactoryBot.create(:stockit_activity, name: "Name2")
 #         subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
 #       end
 #       it { expect(subject.diffs.values.size).to eql(1) }
@@ -186,7 +186,7 @@
 
 #     context "with identical objects" do
 #       before do
-#         FactoryGirl.create(:stockit_activity, name: "Name", stockit_id: 1)
+#         FactoryBot.create(:stockit_activity, name: "Name", stockit_id: 1)
 #         subject.send(:compare_objects, goodcity_klass, stockit_objects, attributes_to_compare)
 #       end
 #       it { expect(subject.diffs.values.size).to eql(1) }

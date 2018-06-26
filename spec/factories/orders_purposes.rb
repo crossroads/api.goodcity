@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :orders_purpose do
     association  :purpose
   end

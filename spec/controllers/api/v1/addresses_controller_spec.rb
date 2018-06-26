@@ -6,7 +6,7 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
   let(:address) { create(:profile_address, addressable: user) }
   let(:serialized_address) { Api::V1::AddressSerializer.new(address).as_json }
   let(:serialized_address_json) { JSON.parse( serialized_address.to_json ) }
-  let(:address_params) { FactoryGirl.attributes_for(:profile_address).merge({ addressable: user }) }
+  let(:address_params) { FactoryBot.attributes_for(:profile_address).merge({ addressable: user }) }
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "POST address/1" do

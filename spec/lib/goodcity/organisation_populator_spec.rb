@@ -4,7 +4,7 @@ require "goodcity/organisation_populator"
 describe Goodcity::OrganisationPopulator do
   let(:organisation_populator) { described_class.new }
   let(:file)                   { File.read("#{Rails.root}/spec/fixtures/organisation.json")}
-  let!(:country)               { FactoryGirl.create(:country, name_en: "China - Hong Kong (Special Administrative Region)") }
+  let!(:country)               { FactoryBot.create(:country, name_en: "China - Hong Kong (Special Administrative Region)") }
 
   before do
     stub_request(:get, /goodcitystorage.blob.core.windows.net/).

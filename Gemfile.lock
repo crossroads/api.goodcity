@@ -143,10 +143,10 @@ GEM
       dotenv (= 0.11.1)
     erubis (2.7.0)
     execjs (2.6.0)
-    factory_girl (4.5.0)
+    factory_bot (4.10.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (4.6.0)
-      factory_girl (~> 4.5.0)
+    factory_bot_rails (4.10.0)
+      factory_bot (~> 4.10.0)
       railties (>= 3.0.0)
     ffaker (2.8.1)
     ffi (1.9.10)
@@ -417,7 +417,7 @@ DEPENDENCIES
   dotenv-rails (= 0.11.1)
   easyzpl!
   execjs
-  factory_girl_rails
+  factory_bot_rails
   ffaker
   foreman
   go_go_van_api!

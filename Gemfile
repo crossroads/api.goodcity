@@ -19,7 +19,7 @@ gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before
 gem 'cancancan'
 gem 'loofah'
 gem 'cloudinary'
-gem 'factory_girl_rails' # used in rake db:seed in production
+gem 'factory_bot_rails' # used in rake db:seed in production
 gem 'ffaker'
 gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0

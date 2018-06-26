@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   sequence :delivered_by do
     ['Gogovan','Crossroads truck','Dropped off'].sample
   end

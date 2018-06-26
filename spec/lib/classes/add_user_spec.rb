@@ -14,7 +14,7 @@ describe AddUser do
 
   context "add_user_to_organisation" do
     it "should add user to organisation" do
-      org =  FactoryGirl.create(:organisation, name_en: "Microsoft Corp")
+      org =  FactoryBot.create(:organisation, name_en: "Microsoft Corp")
       expect(add_user.add_user_to_organisation).to include(add_user.instance_variable_get("@user"))
       expect(org.users).to include(add_user.instance_variable_get("@user"))
     end
