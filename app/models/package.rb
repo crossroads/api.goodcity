@@ -375,7 +375,6 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    # deduct_dispatch_quantity(package_location_changes)
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
   end
@@ -388,6 +387,19 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def deduct_quantity_from_packages_locations(package_qty_changes)
+    if package_qty_changes
+      package_qty_changes.each_pair do |_key, pckg_qty_param|
+        update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["quantity"])
+      end
+    end
+  end
+
+  def move_partial_quantity(location_id, package_qty_changes, total_qty)
+    deduct_quantity_from_packages_locations(package_qty_changes)
+    update_or_create_qty_moved_to_location(location_id, total_qty)
+  end
+
   def undispatch_stockit_item
     self.stockit_sent_on = nil
     self.stockit_sent_by = nil
@@ -397,12 +409,7 @@ class Package < ActiveRecord::Base
     add_errors(response)
   end
 
-  def move_partial_quantity(location_id, package_qty_changes, total_qty)
-    package_qty_changes.each do |pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
-    end
-    update_or_create_qty_moved_to_location(location_id, total_qty)
-  end
+
 
   def referenced_packages_location(orders_package_id)
     packages_locations.find_by(reference_to_orders_package: orders_package_id)
@@ -442,9 +449,13 @@ class Package < ActiveRecord::Base
 
   def update_existing_package_location_qty(packages_location_id, quantity_to_move)
     if (packages_location = packages_locations.find_by(id: packages_location_id))
-      new_qty = packages_location.quantity - quantity_to_move.to_i
+      new_qty = packages_location.quantity.to_i - quantity_to_move.to_i
       new_qty.zero? ? packages_location.destroy : packages_location.update(quantity: new_qty)
     end
+  end
+
+  def update_singletone_packages_location
+    packages_locations.first.update(quantity: quantity)
   end
 
   def move_stockit_item(location_id)

@@ -177,7 +177,7 @@ module Api
           package_id: package_params[:package_id], order_id: package_params[:order_id],
           quantity: package_params[:quantity],
           packages_location_id: package_params[:packages_location_id],
-          packages_location_qty_mapping: params[:quantity_to_deduct_from_location_mapping]
+          packages_location_qty_mapping: params[:quantity_to_deduct_and_location_mapping]
         ).dispatch
         if response && response.errors.present?
           render json: { errors: @package.errors.full_messages }.to_json, status: 422
@@ -192,8 +192,8 @@ module Api
       end
 
       def move_partial_quantity
-        package_params = JSON.parse(params["package"])
-        @package.move_partial_quantity(params["location_id"], package_params, params["total_qty"])
+        package_params = params["quantity_to_deduct_and_location_mapping"]
+        @package.move_partial_quantity(params["location_id"], package_params, params["quantity"])
         send_stock_item_response
       end
 
@@ -201,9 +201,6 @@ module Api
         InventoryOperations::Goodcity::Undispatch.new(package_id: package_params[:package_id], order_id: package_params[:order_id],
           location_id: package_params[:location_id],
           quantity: package_params[:quantity]).undispatch
-        # orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
-        # orders_package.undispatch_orders_package
-        # @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
         @package.undispatch_stockit_item
         send_stock_item_response
       end
@@ -260,7 +257,7 @@ module Api
           :location_id, :box_id, :pallet_id, :stockit_id,
           :order_id, :package_id, :stockit_designated_on, :stockit_sent_on,
           :case_number, :allow_web_publish, :received_quantity, :state,
-          :quantity_to_deduct_from_location_mapping,
+          :quantity_to_deduct_and_location_mapping,
           packages_locations_attributes: [:id, :location_id, :quantity]]
         params.require(:package).permit(attributes)
       end

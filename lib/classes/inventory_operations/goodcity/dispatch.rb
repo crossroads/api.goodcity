@@ -2,13 +2,12 @@ module InventoryOperations
   module Goodcity
     class Dispatch < Base
       attr_accessor :current_packages_location_id, :dispatched_packages_location,
-        :is_singletone_package, :packages_location_qty_mapping
+        :packages_location_qty_mapping
 
       def initialize(options = {})
         super
         self.current_packages_location_id = options[:packages_location_id]
         self.dispatched_packages_location = package.dispatched_packages_location(dispatched_location_id) || package.packages_locations.new(location_id: dispatched_location_id)
-        self.is_singletone_package = package.singleton_package?
         self.packages_location_qty_mapping = options[:packages_location_qty_mapping]
       end
 
@@ -44,8 +43,7 @@ module InventoryOperations
       end
 
       def update_packages_locations_for_multi_quantity
-        debugger
-        package.deduct_dispatch_quantity(packages_location_qty_mapping)
+        package.deduct_quantity_from_packages_locations(packages_location_qty_mapping)
         save_dispatched_location_changes
       end
 
