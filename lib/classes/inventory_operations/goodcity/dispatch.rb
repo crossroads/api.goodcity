@@ -2,30 +2,51 @@ module InventoryOperations
   module Goodcity
     class Dispatch < Base
       attr_accessor :current_packages_location_id, :dispatched_packages_location,
-        :is_singletone_package
+        :is_singletone_package, :packages_location_qty_mapping
 
       def initialize(options = {})
         super
         self.current_packages_location_id = options[:packages_location_id]
         self.dispatched_packages_location = package.dispatched_packages_location(dispatched_location_id) || package.packages_locations.new(location_id: dispatched_location_id)
         self.is_singletone_package = package.singleton_package?
+        self.packages_location_qty_mapping = options[:packages_location_qty_mapping]
       end
 
       def dispatch
-        if is_singletone_package && orders_package.dispatched?
+        if is_singletone_package
+          singleton_package_dispatch
+        else
+          multi_quantity_package_dispatch
+        end
+      end
+
+      def singleton_package_dispatch
+        if orders_package.dispatched?
           package.errors.add('Item', I18n.t('orders_package.already_dispatched')) and package
-        elsif is_singletone_package
+        else
           assign_attributes_to_orders_package
           save_changes_and_sync_to_stockit
           package.dispatch_stockit_item(orders_package, true)
         end
       end
 
-      def save_changes_and_sync_to_stockit
+      def multi_quantity_package_dispatch
+        assign_attributes_to_orders_package
+        update_packages_locations_for_multi_quantity
+        package.dispatch_stockit_item(orders_package, true)
+      end
+
+      def update_packages_locations_for_singletone
         if orders_package.save
           destroy_stale_packages_locations
           save_dispatched_location_changes
         end
+      end
+
+      def update_packages_locations_for_multi_quantity
+        debugger
+        package.deduct_dispatch_quantity(packages_location_qty_mapping)
+        save_dispatched_location_changes
       end
 
       def assign_attributes_to_orders_package

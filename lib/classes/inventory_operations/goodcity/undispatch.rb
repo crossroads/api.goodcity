@@ -40,21 +40,6 @@ module InventoryOperations
       def packages_location_to_modify
         @packages_location ||= existing_packages_location_record_with_same_id || referenced_packages_location || package.packages_locations.first
       end
-
-      # def move_quantity_to_location
-      #   if existing_packages_location_record_with_same_id
-      #     packages_location_with_same_location.quantity += orders_package.quanity
-      #     packages_location_with_same_location.reference_to_orders_package = nil
-      #     referenced_packages_location.destroy
-      #   elsif referenced_packages_location
-      #     referenced_packages_location.quanity += orders_package.quanity
-      #     referenced_packages_location.location_id = location_id
-      #   else
-      #     packages_location = package.packages_location.first
-      #     packages_location.quanity += orders_package.quanity
-      #     packages_location.location_id = location_id
-      #   end
-      # end
     end
   end
 end

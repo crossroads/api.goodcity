@@ -173,9 +173,12 @@ module Api
       end
 
       def dispatch_stockit_item
-        response = InventoryOperations::Goodcity::Dispatch.new(package_id: package_params[:package_id], order_id: package_params[:order_id],
+        response = InventoryOperations::Goodcity::Dispatch.new(
+          package_id: package_params[:package_id], order_id: package_params[:order_id],
           quantity: package_params[:quantity],
-          packages_location_id: package_params[:packages_location_id]).dispatch
+          packages_location_id: package_params[:packages_location_id],
+          packages_location_qty_mapping: params[:quantity_to_deduct_from_location_mapping]
+        ).dispatch
         if response && response.errors.present?
           render json: { errors: @package.errors.full_messages }.to_json, status: 422
         else
@@ -257,6 +260,7 @@ module Api
           :location_id, :box_id, :pallet_id, :stockit_id,
           :order_id, :package_id, :stockit_designated_on, :stockit_sent_on,
           :case_number, :allow_web_publish, :received_quantity, :state,
+          :quantity_to_deduct_from_location_mapping,
           packages_locations_attributes: [:id, :location_id, :quantity]]
         params.require(:package).permit(attributes)
       end
