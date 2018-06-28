@@ -192,8 +192,12 @@ module Api
       end
 
       def move_partial_quantity
-        package_params = params["quantity_to_deduct_and_location_mapping"]
-        @package.move_partial_quantity(params["location_id"], package_params, params["quantity"])
+        InventoryOperations::Goodcity::Move.new(
+          package_id: params['id'],
+          location_id: params['location_id'],
+          quantity_and_location_mapping: params['quantity_to_deduct_and_location_mapping'],
+          quantity: params['quantity']
+        ).move
         send_stock_item_response
       end
 

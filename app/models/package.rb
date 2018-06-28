@@ -173,14 +173,6 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
-    packages_locations.create(
-      location_id: location_id,
-      quantity: quantity,
-      reference_to_orders_package: reference_to_orders_package
-    )
-  end
-
   def received_quantity_changed_and_locations_exists?
     received_quantity_changed? && locations.exists?
   end
@@ -447,6 +439,14 @@ class Package < ActiveRecord::Base
     end
   end
 
+   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
+    packages_locations.create(
+      location_id: location_id,
+      quantity: quantity,
+      reference_to_orders_package: reference_to_orders_package
+    )
+  end
+
   def update_existing_package_location_qty(packages_location_id, quantity_to_move)
     if (packages_location = packages_locations.find_by(id: packages_location_id))
       new_qty = packages_location.quantity.to_i - quantity_to_move.to_i
@@ -454,8 +454,8 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def update_singletone_packages_location
-    packages_locations.first.update(quantity: quantity)
+  def update_singletone_packages_location(location_id, quantity)
+    packages_locations.first.update(location_id: location_id, quantity: quantity)
   end
 
   def move_stockit_item(location_id)

@@ -1,11 +1,11 @@
 module InventoryOperations
   module Goodcity
     class Move < Base
-      attr_accessor :quantity_to_deduct_and_location_mapping, :packages_location_to_update, :location_id
+      attr_accessor :quantity_and_location_mapping, :packages_location, :location_id
 
       def initialize(options = {})
         super
-        self.quantity_to_deduct_and_location_mapping = options[:quantity_to_deduct_and_location_mapping]
+        self.quantity_and_location_mapping = options[:quantity_to_deduct_and_location_mapping]
         self.location_id = options[:location_id]
       end
 
@@ -18,12 +18,32 @@ module InventoryOperations
       end
 
       def move_singletone_package
-        package.update_singletone_packages_location
+        packages_location = package.packages_locations.first
+        packages_location.quantity = quantity
+        packages_location.location_id = location_id
+        packages_location.save
+        # package.update_singletone_packages_location(location_id, quantity)
       end
 
       def move_multi_quantity_package
-        package.deduct_quantity_from_packages_locations(quantity_to_deduct_and_location_mapping)
-        package.update_or_create_qty_moved_to_location(location_id, total_qty)
+        package.deduct_quantity_from_packages_locations(quantity_and_location_mapping)
+        update_or_create_packages_location
+      end
+
+      def update_or_create_packages_location
+        if packages_location = packages_location_exists?
+          packages_location.quantity += quantity
+          packages_location.save
+        else
+          package.packages_locations.create(
+            location_id: location_id,
+            quantity: quantity
+          )
+        end
+      end
+
+      def packages_location_exists?
+        package.packages_locations.find_by_location_id(location_id)
       end
     end
   end
