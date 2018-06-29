@@ -96,7 +96,7 @@ module Api
 
       def update_offer_state(offer)
         offer.items.reload
-        if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all?{|i| i.state_name == :rejected}
+        if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all?{ |i| i.state_name == :rejected }
           offer.re_review!
         end
       end
