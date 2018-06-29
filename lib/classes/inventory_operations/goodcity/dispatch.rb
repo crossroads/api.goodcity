@@ -24,7 +24,7 @@ module InventoryOperations
           package.errors.add('Item', I18n.t('orders_package.already_dispatched')) and package
         else
           assign_attributes_to_orders_package
-          save_changes_and_sync_to_stockit
+          update_packages_locations_for_singletone
           package.dispatch_stockit_item(orders_package, true)
         end
       end
