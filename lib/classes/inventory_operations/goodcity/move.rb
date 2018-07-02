@@ -5,7 +5,7 @@ module InventoryOperations
 
       def initialize(options = {})
         super
-        self.quantity_and_location_mapping = options[:quantity_to_deduct_and_location_mapping]
+        self.quantity_and_location_mapping = options[:quantity_and_location_mapping]
         self.location_id = options[:location_id]
       end
 

@@ -373,7 +373,7 @@ class Package < ActiveRecord::Base
 
   def deduct_dispatch_quantity(package_qty_changes)
     if package_qty_changes && !singleton_package?
-      package_qty_changes.each_pair do |_key, pckg_qty_param|
+      package_qty_changes.each do |_key, pckg_qty_param|
         update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
       end
     end
@@ -381,8 +381,8 @@ class Package < ActiveRecord::Base
 
   def deduct_quantity_from_packages_locations(package_qty_changes)
     if package_qty_changes
-      package_qty_changes.each_pair do |_key, pckg_qty_param|
-        update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["quantity"])
+      package_qty_changes.each do |pckg_qty_param|
+        update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
       end
     end
   end
