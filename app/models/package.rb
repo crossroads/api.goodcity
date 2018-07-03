@@ -555,6 +555,10 @@ class Package < ActiveRecord::Base
       where.not(offers: { state: BROWSE_OFFER_EXCLUDE_STATE })
   end
 
+  def destroy_other_locations(location_id)
+    packages_locations.exclude_location(location_id).destroy_all
+  end
+
   def update_favourite_image(image_id)
     image = images.find_by(id: image_id)
     image.update(favourite: true)

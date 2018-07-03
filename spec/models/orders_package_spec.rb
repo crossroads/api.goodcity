@@ -127,7 +127,8 @@ RSpec.describe OrdersPackage, type: :model do
         }.to change(orders_package, :state).to eq 'dispatched'
     end
 
-    it 'adds dispatched location for associate package' do
+    it 'adds dispatched location for associate package ifn dispatch is from stockit' do
+      GoodcitySync.request_from_stockit = true
       orders_package.dispatch_orders_package
       expect(orders_package.package.reload.locations).to include(dispatched_location)
     end

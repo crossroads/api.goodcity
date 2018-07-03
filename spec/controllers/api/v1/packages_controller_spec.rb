@@ -74,7 +74,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context 'undispatch from gc' do
       it 'undispatches orders_package with matching order_id when undispatched from gc and assigns locaion aginst package' do
-        put :move_full_quantity, format: :json, location_id: location.id, ordersPackageId: orders_package.id, id: package.id
+        put :move_full_quantity, format: :json, id: package.id, package: { package_id: package.id, location_id: location.id, order_id: orders_package.order_id, quantity: orders_package.quantity }
         expect(package.reload.locations).to include(location)
         expect(package.packages_locations.count).to eq 1
         expect(package.reload.order_id).to eq order.id

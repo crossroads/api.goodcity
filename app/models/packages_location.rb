@@ -10,6 +10,10 @@ class PackagesLocation < ActiveRecord::Base
 
   scope :get_records_associated_with_package, ->(package_id) { where("package_id = (?)", package_id) }
 
+  scope :exclude_location, ->(location_id) {
+    where.not(location_id: location_id)
+  }
+
   scope :with_eager_load, -> {
     includes([:package, :location])
   }

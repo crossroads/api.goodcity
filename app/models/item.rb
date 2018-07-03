@@ -151,7 +151,7 @@ class Item < ActiveRecord::Base
       if orders_package
         orders_package.dispatch_orders_package
       end
-      package.dispatch_stockit_item(orders_package, nil, true)
+      package.dispatch_stockit_item(orders_package, true)
       package.valid? && package.save
     end
   end
