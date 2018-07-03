@@ -192,12 +192,11 @@ module Api
       end
 
       def move_partial_quantity
-        quantity_to_deduct_and_location_mapping = JSON.parse(params['quantity_to_deduct_and_location_mapping'])[0]
         InventoryOperations::Goodcity::Move.new(
           package_id: params['id'],
           location_id: params['location_id'],
-          quantity_and_location_mapping: quantity_to_deduct_and_location_mapping,
-          quantity: params['quantity']
+          quantity_and_location_mapping: params['package'],
+          quantity: params['total_qty']
         ).move
         send_stock_item_response
       end

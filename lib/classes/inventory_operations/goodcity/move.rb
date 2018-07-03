@@ -5,7 +5,7 @@ module InventoryOperations
 
       def initialize(options = {})
         super
-        self.quantity_and_location_mapping = options[:quantity_and_location_mapping]
+        self.quantity_and_location_mapping = JSON.parse(options[:quantity_and_location_mapping])
         self.location_id = options[:location_id]
       end
 
@@ -22,7 +22,6 @@ module InventoryOperations
         packages_location.quantity = quantity
         packages_location.location_id = location_id
         packages_location.save
-        # package.update_singletone_packages_location(location_id, quantity)
       end
 
       def move_multi_quantity_package
