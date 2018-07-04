@@ -7,14 +7,10 @@ class SlackPinService
   end
 
   def send_otp
-    SlackMessageJob.perform_later(message)
-  end
-
-  private
-
-  def message
+    channel = ENV['SLACK_PIN_CHANNEL']
     token = @user.most_recent_token
-    I18n.t('twilio.sms_verification_pin', pin: token.otp_code)
+    message = "[#{Rails.env}] " + I18n.t('twilio.sms_verification_pin', pin: token.otp_code)
+    SlackMessageJob.perform_later(message, channel)
   end
 
 end
