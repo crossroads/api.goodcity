@@ -1,9 +1,9 @@
 class SlackMessageJob < ActiveJob::Base
   queue_as :low
 
-  def perform(message)
-    # Slack.send_message(message)
-    Rails.logger.info "Sending Slack message: #{message}"
+  def perform(message, channel)
+    client = Slack::Web::Client.new
+    client.chat_postMessage(channel: channel, text: message, as_user: true)
   end
 
 end
