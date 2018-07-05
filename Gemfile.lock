@@ -461,6 +461,7 @@ DEPENDENCIES
   sinatra
   spring
   spring-commands-rspec
+  sprockets (~> 3.7.2)
   state_machine
   timecop
   traco

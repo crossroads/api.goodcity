@@ -20,7 +20,7 @@ en:
       Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy donating
       your quality goods. (If you didn't request this message, please ignore)
     charity_user_welcome_sms: |
-      %{full_name} from %{organisation_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.
+      %{full_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.
     input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
     thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
   activerecord:

@@ -14,6 +14,7 @@ class Order < ActiveRecord::Base
   belongs_to :process_completed_by, class_name: 'User'
   belongs_to :dispatch_started_by, class_name: 'User'
   belongs_to :closed_by, class_name: 'User'
+  belongs_to :submitted_by, class_name: 'User'
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'") }, foreign_key: 'detail_id'
 
   has_many :packages
@@ -115,20 +116,22 @@ class Order < ActiveRecord::Base
     end
 
     before_transition on: :submit do |order|
+      order.submitted_at = Time.now
+      order.submitted_by = User.current_user
       order.add_to_stockit
     end
 
     before_transition on: :start_processing do |order|
       if order.submitted?
         order.processed_at = Time.now
-        order.processed_by_id = User.current_user.id
+        order.processed_by = User.current_user
       end
     end
 
     before_transition on: :redesignate_cancelled_order do |order|
       if order.cancelled?
         order.processed_at = Time.now
-        order.processed_by_id = User.current_user.id
+        order.processed_by = User.current_user
         order.nullify_columns(:process_completed_at, :process_completed_by_id, :cancelled_at,
           :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
       end
@@ -137,20 +140,20 @@ class Order < ActiveRecord::Base
     before_transition on: :start_dispatching do |order|
       if order.awaiting_dispatch?
         order.dispatch_started_at = Time.now
-        order.dispatch_started_by_id = User.current_user.id
+        order.dispatch_started_by = User.current_user
       end
     end
 
     before_transition on: :finish_processing do |order|
       if order.processing?
         order.process_completed_at = Time.now
-        order.process_completed_by_id = User.current_user.id
+        order.process_completed_by = User.current_user
       end
     end
 
     before_transition on: :cancel do |order|
       order.cancelled_at = Time.now
-      order.cancelled_by_id = User.current_user.id
+      order.cancelled_by = User.current_user
       order.orders_packages.each do |orders_package|
         orders_package.cancel
       end
@@ -159,7 +162,7 @@ class Order < ActiveRecord::Base
     before_transition on: :close do |order|
       if order.dispatching?
         order.closed_at = Time.now
-        order.closed_by_id = User.current_user.id
+        order.closed_by = User.current_user
       end
     end
 
@@ -172,7 +175,7 @@ class Order < ActiveRecord::Base
     before_transition on: :reopen do |order|
       if order.closed?
         order.dispatch_started_at = Time.now
-        order.dispatch_started_by_id = User.current_user.id
+        order.dispatch_started_by = User.current_user
         order.nullify_columns(:closed_at, :closed_by_id)
       end
     end
