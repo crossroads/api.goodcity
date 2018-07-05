@@ -9,7 +9,7 @@ class OrganisationsUser < ActiveRecord::Base
   private
 
   def send_welcome_msg
-    TwilioService.new(user, organisation).send_welcome_msg
+    TwilioService.new(user).send_welcome_msg
   end
 
   def create_user_role
