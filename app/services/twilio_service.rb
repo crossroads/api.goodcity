@@ -1,11 +1,10 @@
 require 'twilio-ruby'
 class TwilioService
 
-  attr_accessor :user, :organisation
+  attr_accessor :user
 
-  def initialize(user, organisation = nil)
+  def initialize(user)
     @user = user
-    @organisation = organisation
   end
 
   def sms_verification_pin
@@ -49,7 +48,6 @@ class TwilioService
 
   def welcome_sms_text
     I18n.t('twilio.charity_user_welcome_sms',
-      full_name: User.current_user.full_name,
-      organisation_name: @organisation.name_as_per_locale)
+      full_name: User.current_user.full_name)
   end
 end
