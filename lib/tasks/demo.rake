@@ -1,4 +1,4 @@
-require 'factory_girl'
+require 'factory_bot'
 
 # Run following rake tasks in sequence:
 #   rake db:seed
