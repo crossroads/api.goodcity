@@ -60,6 +60,8 @@ module Api
           return render_require_ggv_cancel_error
         end
 
+        @item.request_from_admin = is_admin_app
+
         if @item.update_attributes(item_params)
           update_offer_state(offer)
           render json: @item, serializer: serializer

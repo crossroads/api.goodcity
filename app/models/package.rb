@@ -64,7 +64,7 @@ class Package < ActiveRecord::Base
 
   accepts_nested_attributes_for :packages_locations, allow_destroy: true, limit: 1
 
-  attr_accessor :skip_set_relation_update
+  attr_accessor :skip_set_relation_update, :request_from_admin
 
   def self.search(search_text, item_id, show_quantity_item = false)
     records =
@@ -306,7 +306,8 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    response = Stockit::ItemSync.create(self)
+    allow_multi_quantity_sync = request_from_admin && self.received?
+    response = Stockit::ItemSync.create(self, allow_multi_quantity_sync)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (item_id = response["item_id"]).present?
@@ -587,7 +588,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_stockit_item
-    StockitUpdateJob.perform_later(id)
+    StockitUpdateJob.perform_later(id, request_from_admin)
   end
 
   def save_inventory_number
