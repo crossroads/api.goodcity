@@ -19,6 +19,12 @@ class TwilioService
     TwilioJob.perform_later(options)
   end
 
+  def send_new_order_sms(order)
+    return unless allowed_to_send?
+    options = { to: @user.mobile, body: new_order_text(order) }
+    TwilioJob.perform_later(options)
+  end
+
   def new_offer_alert(offer)
     return unless allowed_to_send?
     options = {to: @user.mobile, body: new_offer_message(offer)}
@@ -49,5 +55,10 @@ class TwilioService
   def welcome_sms_text
     I18n.t('twilio.charity_user_welcome_sms',
       full_name: User.current_user.full_name)
+  end
+
+  def new_order_text(order)
+    I18n.t('twilio.new_order_submitted_sms',
+      code: order.code)
   end
 end
