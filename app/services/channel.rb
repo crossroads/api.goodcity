@@ -13,6 +13,10 @@ class Channel
       ["browse"]
     end
 
+    def stock
+      ["stock"]
+    end
+
     def order_fulfilment
       ["order_fulfilment"]
     end
