@@ -1,5 +1,5 @@
 class TwilioJob < ActiveJob::Base
-  queue_as :twilio_services
+  queue_as :high
 
   rescue_from(Twilio::REST::RequestError) do
     retry_job wait: 30.seconds
