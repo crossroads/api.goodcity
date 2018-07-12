@@ -7,7 +7,7 @@ describe AzureNotificationsService do
 
   describe "app_namespace" do
     describe "should return donor" do
-      it { expect(service.send(:app_namespace)).to eql("donor") }
+      it { expect(service.send(:app_namespace)).to eql("browse") }
     end
     describe "should return admin" do
       let(:is_admin_app) { true }
