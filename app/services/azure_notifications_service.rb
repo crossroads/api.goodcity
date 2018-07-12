@@ -156,6 +156,8 @@ class AzureNotificationsService
 
   def app_namespace
     case @app_name
+    when true
+      @app_namespace = "admin"
     when "admin"
       @app_namespace = "admin"
     when "donor"
