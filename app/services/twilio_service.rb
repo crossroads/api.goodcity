@@ -22,7 +22,7 @@ class TwilioService
   def send_new_order_sms(order)
     return unless allowed_to_send?
     options = { to: @user.mobile, body: new_order_text(order) }
-    TwilioJob.perform_later(options)
+    TwilioJob.perform_now(options)
   end
 
   def new_offer_alert(offer)
