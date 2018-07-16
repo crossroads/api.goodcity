@@ -127,7 +127,7 @@ module Api
         records = {}; pages = 0
         if params['searchText'].present?
           records = params["orderId"].present? ?
-            @packages.stockit_items.undispatched : @packages.stockit_items
+            @packages.undispatched : @packages
           records = records.search(params['searchText'], params["itemId"], params['showQuantityItems']).page(params["page"]).per(params["per_page"])
           pages = records.total_pages
         end
@@ -295,29 +295,34 @@ module Api
       end
 
       def package_record
-        inventory_number = remove_stockit_prefix(@package.inventory_number)
         if is_stock_app
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
           @package
         elsif inventory_number
-          GoodcitySync.request_from_stockit = true
-          @package = existing_package || Package.new()
-          @package.assign_attributes(package_params)
-          @package.received_quantity = received_quantity
-          @package.build_or_create_packages_location(location_id, 'build')
-          @package.location_id = location_id
-          @package.state = 'received'
-          @package.order_id = order_id
-          @package.inventory_number = inventory_number
-          @package.box_id = box_id
-          @package.pallet_id = pallet_id
-          @package
+          assign_values_to_existing_or_new_package
         else
           @package.assign_attributes(package_params)
         end
         @package.received_quantity ||= received_quantity
         add_favourite_image if params["package"]["favourite_image_id"]
+        @package
+      end
+
+      def assign_values_to_existing_or_new_package
+        new_package_params = package_params
+        GoodcitySync.request_from_stockit = true
+        @package = existing_package || Package.new()
+        delete_params_quantity_if_all_quantity_designated(new_package_params)
+        @package.assign_attributes(new_package_params)
+        @package.received_quantity = received_quantity
+        @package.build_or_create_packages_location(location_id, 'build')
+        @package.location_id = location_id
+        @package.state = 'received'
+        @package.order_id = order_id
+        @package.inventory_number = inventory_number
+        @package.box_id = box_id
+        @package.pallet_id = pallet_id
         @package
       end
 
@@ -358,6 +363,16 @@ module Api
       def existing_package
         if (stockit_id = package_params[:stockit_id])
           Package.find_by(stockit_id: stockit_id)
+        end
+      end
+
+      def inventory_number
+        remove_stockit_prefix(@package.inventory_number)
+      end
+
+      def delete_params_quantity_if_all_quantity_designated(new_package_params)
+        if new_package_params['quantity'].to_i == @package.total_assigned_quantity
+          new_package_params.delete('quantity')
         end
       end
     end

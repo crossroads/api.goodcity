@@ -60,6 +60,10 @@ RSpec.configure do |config|
   config.before(:each) do
     RequestStore.clear!
   end
+
+  config.before(:suite) do
+    Time.zone = 'Hong Kong'
+  end
 end
 
 Shoulda::Matchers.configure do |config|

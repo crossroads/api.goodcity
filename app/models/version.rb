@@ -66,10 +66,10 @@ class Version < PaperTrail::Version
     "#{item_logs.to_sql} UNION ALL #{package_logs.to_sql} UNION ALL #{call_logs.to_sql}"
   }
 
-  scope :items_and_calls_log, -> {
-    find_by_sql("
-      SELECT ver.id, event, item_id, item_type, whodunnit, object_changes, ver.created_at, concat(users.first_name,' ', users.last_name) as whodunnit_name, (object_changes -> 'state' -> 1) as state
-      from (#{union_all_logs}) as ver INNER JOIN users ON users.id = CAST(ver.whodunnit AS integer)")
+  scope :items_and_calls_log, ->(user_id) {
+    find_by_sql(["
+      SELECT ver.id, event, related_id, related_type, item_id, item_type, whodunnit, object_changes, ver.created_at, concat(users.first_name,' ', users.last_name) as whodunnit_name, (object_changes -> 'state' -> 1) as state
+      from (#{union_all_logs}) as ver INNER JOIN users ON users.id = CAST(ver.whodunnit AS integer) INNER JOIN offers ON offers.id = related_id AND ver.related_type = 'Offer' where offers.created_by_id = (?)", user_id])
   }
 
   scope :join_users, -> {
@@ -98,13 +98,13 @@ class Version < PaperTrail::Version
 
   # required by PushUpdates and PaperTrail modules
   def offer
-    return nil unless is_item_or_call_log?
+    return nil unless item_or_call_log?
     return item if item_type == "Offer"
     return related if related_type == "Offer"
   end
 
-  def is_item_or_call_log?
-    ['Item', 'Package'].include?(item_type) ||
-    ['call_accepted', 'donor_called', 'admin_called'].include?(event)
+  def item_or_call_log?
+    %w(Item Package).include?(item_type) ||
+    %w(call_accepted donor_called admin_called).include?(event)
   end
 end

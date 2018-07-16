@@ -59,6 +59,14 @@ module Api
           exclude_stockit_set_item: true
       end
 
+      def transition
+        transition_event = params['transition'].to_sym
+        if @order.state_events.include?(transition_event)
+          @order.fire_state_event(transition_event)
+        end
+        render json: @order, serializer: serializer
+      end
+
       def update
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
@@ -77,6 +85,11 @@ module Api
       def my_orders
         render json: @orders.my_orders.goodcity_orders, each_serializer: serializer,
           root: "orders", include_packages: false, browse_order: true
+      end
+
+      def destroy
+        @order.destroy if @order.draft?
+        render json: {}
       end
 
       private

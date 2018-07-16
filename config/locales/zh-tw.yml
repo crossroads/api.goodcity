@@ -20,7 +20,9 @@ zh-tw:
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
       （如你並沒有要求驗證碼，請忽略此信息）
     charity_user_welcome_sms: |
-      %{full_name} from %{organisation_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.
+      %{full_name} 已將閣下登記於好人好巿平台。請下載該應用程式及以此電話號碼登入。
+    new_order_submitted_sms: |
+      Thank you for placing order %{code} on GoodCity. Our team will be in touch with you soon.
     input_offer_id_message: "請輸入捐獻號碼，提取捐贈人士的號碼。"
     thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
   activerecord:
@@ -36,6 +38,7 @@ zh-tw:
               blank: "不能留空"
   notification:
     new_offer: "%{name} 的新捐獻。"
+    new_order: "New order from %{organisation_name_zh_tw}: %{contact_name}"
   offer:
     thank_message: 感謝您的捐獻，我們的團隊很快就會開始審查。假如審查員有任何關於捐獻物資的疑問，他們會以訊息向您查詢。由於儲存空間有限，社區的需要亦經常改變，我們可能無法接收部分物資。為此，我們深感遺憾，並先就此道歉。當審查完成時，您就能立刻安排已接受的物資的運輸。假如您有任何疑問，請隨時回覆此信息。
     ggv_cancel_message: GoGoVan已取消預約於 %{time} 的貨車，請重新安排運輸。

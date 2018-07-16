@@ -45,11 +45,11 @@ FactoryGirl.define do
   end
 
   sequence :gogovan_transports do |n|
-    @gogovan_options = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
+    @gogovan_options ||= YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
   end
 
   sequence :crossroads_transports do |n|
-    @crossroads_options = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
+    @crossroads_options ||= YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
   end
 
   sequence :random_chinese_string do |n|
@@ -58,6 +58,10 @@ FactoryGirl.define do
 
   sequence :schedules do |n|
     @schedules ||= YAML.load_file("#{Rails.root}/db/schedules.yml")
+  end
+
+  sequence :permissions_roles do |n|
+    @permissions_roles ||= YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
   end
 
   sequence :mobile do |n|
