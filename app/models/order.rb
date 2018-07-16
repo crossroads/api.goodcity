@@ -219,7 +219,9 @@ class Order < ActiveRecord::Base
   end
 
   def send_order_placed_sms_to_order_fulfilment_users
-    User.order_fulfilment.map { |user| TwilioService.new(user).order_submitted_sms_to_order_fulfilment_users(self) }
+    User.order_fulfilment.each do |user|
+      TwilioService.new(user).order_submitted_sms_to_order_fulfilment_users(self)
+    end
   end
 
   def nullify_columns(*columns)
