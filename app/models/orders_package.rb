@@ -9,6 +9,7 @@ class OrdersPackage < ActiveRecord::Base
   after_create -> { recalculate_quantity("create") }
   after_update -> { recalculate_quantity("update") }
   before_destroy -> { destroy_stockit_record("destroy") }
+  after_destroy -> { order.delete_if_no_orders_packages }
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
@@ -59,7 +60,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def assign_dispatched_location
-    if package.is_singleton_package?
+    if package.singleton_package?
       package.destroy_stale_packages_locations(quantity)
     end
     package.assign_or_update_dispatched_location(id, quantity)
@@ -122,7 +123,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def remove_designation_of_associated_package
-    package.undesignate_from_stockit_order if package.is_singleton_package?
+    package.undesignate_from_stockit_order if package.singleton_package?
   end
 
   def update_orders_package_state(total_quantity)
@@ -149,7 +150,7 @@ class OrdersPackage < ActiveRecord::Base
     unless (state == "requested" || GoodcitySync.request_from_stockit)
       update_designation_of_package
       package.update_in_stock_quantity
-      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.is_singleton_package?
+      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.singleton_package?
     end
   end
 
@@ -164,6 +165,6 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def destroy_stockit_record(operation)
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.is_singleton_package?
+    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.singleton_package?
   end
 end

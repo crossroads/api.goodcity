@@ -5,6 +5,14 @@ describe User, :type => :model do
   let(:mobile) { generate(:mobile) }
   let(:address_attributes) { { 'district_id' => "9", 'address_type' => "profile" } }
   let(:user_attributes) {  FactoryGirl.attributes_for(:user).merge('mobile' => mobile, 'address_attributes' => address_attributes).stringify_keys }
+  let(:supervisor) { create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_login_to_stock', 'can_login_to_admin']})}
+  let(:order_fulfilment_user) { create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Order fulfilment' => ['can_login_to_stock']} )}
+  let(:reviewer) { create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Reviewer' => ['can_login_to_admin']} )}
+  let(:charity) { create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Charity' => ['can_login_to_browse']})}
 
   let(:invalid_user_attributes) { { 'mobile' => "85211111112", 'first_name' => "John2", 'last_name' => "Dey2" } }
 
@@ -170,6 +178,104 @@ describe User, :type => :model do
       user = create :user, :reviewer
       expect(user.user_role_names).to include('Reviewer')
       expect(user.user_role_names.count).to eq(1)
+    end
+  end
+
+  describe '#user_permissions_names' do
+    it 'returns all names of permissions assigned to user' do
+      permissions = order_fulfilment_user.user_permissions_names
+      expect(permissions.count).to eq(1)
+      expect(permissions).to eq(['can_login_to_stock'])
+    end
+  end
+
+  describe '#allowed_login?' do
+    context 'with stock login permission' do
+      it 'returns true if user has stock login permission and app is stock app' do
+        expect(order_fulfilment_user.allowed_login?(STOCK_APP)).to be_truthy
+      end
+
+      it 'returns false if user do not have stock login permission and app is stock app' do
+        expect(user.allowed_login?(STOCK_APP)).to be_falsey
+      end
+
+      it 'returns false if user has stock login permission and app is admin app' do
+        expect(order_fulfilment_user.allowed_login?(ADMIN_APP)).to be_falsey
+      end
+
+      it 'returns true if user has stock login permission and app is donor app' do
+        expect(order_fulfilment_user.allowed_login?(DONOR_APP)).to be_truthy
+      end
+
+      it 'returns false if user has stock login permission and app is browse app' do
+        expect(order_fulfilment_user.allowed_login?(BROWSE_APP)).to be_falsey
+      end
+    end
+
+    context 'with admin login permission' do
+      it 'returns true if user have admin login permission and app is admin app' do
+        expect(supervisor.allowed_login?(ADMIN_APP)).to be_truthy
+      end
+
+      it 'returns false if user do not admin login permission and app is admin app' do
+        expect(charity.allowed_login?(ADMIN_APP)).to be_falsey
+      end
+
+      it 'returns false if user do not have admin login permission and app is admin app' do
+        expect(order_fulfilment_user.allowed_login?(ADMIN_APP)).to be_falsey
+      end
+
+      it 'returns true if user have admin login permission app is donor app' do
+        expect(supervisor.allowed_login?(DONOR_APP)).to be_truthy
+      end
+
+      it 'returns false if user has admin login permission and app is stock app' do
+        expect(reviewer.allowed_login?(STOCK_APP)).to be_falsey
+      end
+
+      it 'returns false if user has admin app login permission and app browse app' do
+        expect(supervisor.allowed_login?(BROWSE_APP)).to be_falsey
+      end
+    end
+
+    context 'with browse login permission' do
+      it 'returns true if user have browse login permission and app is browse app' do
+        expect(charity.allowed_login?(BROWSE_APP)).to be_truthy
+      end
+
+      it 'returns false if user do not browse login permission and app is browse app' do
+        expect(supervisor.allowed_login?(BROWSE_APP)).to be_falsey
+      end
+
+      it 'returns false if user have browse login permission and app is not browse app' do
+        expect(charity.allowed_login?(STOCK_APP)).to be_falsey
+      end
+
+      it 'returns true if user have browse login permission app is donor app' do
+        expect(charity.allowed_login?(DONOR_APP)).to be_truthy
+      end
+
+      it 'returns false if user has browse login permission and app is stock app' do
+        expect(charity.allowed_login?(STOCK_APP)).to be_falsey
+      end
+    end
+
+    context 'to donor app' do
+      it 'returns true for user without any permissions' do
+        expect(user.allowed_login?(DONOR_APP)).to be_truthy
+      end
+
+      it 'returns true if user have permission only to login to stock app' do
+        expect(order_fulfilment_user.allowed_login?(DONOR_APP)).to be_truthy
+      end
+
+      it 'returns true if user have permission only to login to admin app' do
+        expect(supervisor.allowed_login?(DONOR_APP)).to be_truthy
+      end
+
+      it 'returns true if user have permission only to login to browse app' do
+        expect(charity.allowed_login?(DONOR_APP)).to be_truthy
+      end
     end
   end
 end

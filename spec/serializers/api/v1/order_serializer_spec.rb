@@ -2,9 +2,12 @@ require 'rails_helper'
 
 describe Api::V1::OrderSerializer do
   let(:country) { create :country }
+  let(:user) { create :user }
   let(:stockit_local_order) { create :stockit_local_order }
   let(:stockit_activity) { create :stockit_activity }
-  let(:order) { create :order, country: country, detail: stockit_local_order, stockit_activity: stockit_activity }
+  let(:order) { create :order, country: country, detail: stockit_local_order,
+    stockit_activity: stockit_activity, processed_by: user, cancelled_by_id: user.id,
+    process_completed_by_id: user.id, closed_by_id: user }
   let(:serializer) { Api::V1::OrderSerializer.new(order) }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
@@ -29,6 +32,14 @@ describe Api::V1::OrderSerializer do
     expect(json['order']['activity']).to eq(stockit_activity.name)
     expect(json['order']['created_by_id']).to eq(order.created_by_id)
     expect(json['order']['local_order_id']).to eq(nil)
+    expect(json['order']['processed_by_id']).to eq(user.id)
+    expect(json['order']['cancelled_by_id']).to eq(order.cancelled_by_id)
+    expect(json['order']['process_completed_by_id']).to eq(order.process_completed_by_id)
+    expect(json['order']['closed_by_id']).to eq(order.closed_by_id)
+    expect(json['order']['processed_at']).to eq(order.processed_at)
+    expect(json['order']['cancelled_at']).to eq(order.cancelled_at)
+    expect(json['order']['process_completed_at']).to eq(order.process_completed_at)
+    expect(json['order']['closed_at']).to eq(order.closed_at)
   end
 
   it 'returns organisation id as gc_organisation_id in json response if stockit_organisation is not assigned' do

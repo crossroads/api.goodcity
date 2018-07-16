@@ -8,14 +8,24 @@ module PushUpdates
   end
 
   def update_client_store(operation)
+    type  = self.class.name
     current_user = User.current_user
-    current_user ||= send(:offer).try(:created_by)
+    current_user ||= send(:offer).try(:created_by) if type == "Offer"
 
     # current_user can be nil if accessed from rails console, tests or db seed
     return if current_user.nil?
-    type  = self.class.name
-    offer = send(:offer)
+    type == "Order" ? order = send(:order) : offer = send(:offer)
     user  = Api::V1::UserSerializer.new(current_user, { user_summary: true })
+
+    return if type == "Order" && operation == :create
+
+    unless order.nil?
+      json =  Api::V1::OrderSerializer.new(order).as_json
+      order_data = { item: { designation: json[:order] }, operation: operation}
+      service.send_update_store(Channel.order_channel, false, order_data)
+      return
+    end
+
     data  = { item: data_updates(type, operation), sender: user, operation: operation }
 
     unless offer.nil?
@@ -26,6 +36,7 @@ module PushUpdates
       end
       service.send_update_store(donor_channel, false, offer_data || data)
     end
+
     user.options[:user_summary] = false
     service.send_update_store(Channel.staff, true, data)
     browse_updates(operation) if type == "Package"

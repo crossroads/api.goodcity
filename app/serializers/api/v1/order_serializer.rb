@@ -4,7 +4,9 @@ module Api::V1
     attributes :status, :created_at, :code, :detail_type, :id, :detail_id,
       :contact_id, :local_order_id, :organisation_id, :description, :activity,
       :country_name, :state, :purpose_description, :created_by_id, :item_ids,
-      :gc_organisation_id
+      :gc_organisation_id, :processed_at, :processed_by_id, :cancelled_at, :cancelled_by_id,
+      :process_completed_at, :process_completed_by_id, :closed_at, :closed_by_id, :dispatch_started_at,
+      :dispatch_started_by_id, :submitted_at, :submitted_by_id
 
     has_one :created_by, serializer: UserProfileSerializer, root: :user
     has_one :stockit_contact, serializer: StockitContactSerializer, root: :contact
@@ -16,6 +18,12 @@ module Api::V1
     has_many :cart_packages, serializer: BrowsePackageSerializer, root: :packages
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :orders_purposes, serializer: OrdersPurposeSerializer
+    has_one  :closed_by, serializer: UserSerializer
+    has_one  :processed_by, serializer: UserSerializer
+    has_one  :cancelled_by, serializer: UserSerializer
+    has_one  :process_completed_by, serializer: UserSerializer
+    has_one  :dispatch_started_by, serializer: UserSerializer
+    has_one  :submitted_by, serializer: UserSerializer
 
     def include_packages?
       @options[:include_packages]
