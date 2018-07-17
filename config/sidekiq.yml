@@ -16,9 +16,3 @@ production:
   - stockit_sync_orders_package_updates
   - rollbar
   - [high, 2]
-
-:schedule:
-  import_swd_organisations:
-    every: ["1m"].  #added 1m for testing purpose.
-    class: ImportSWDOrganisationsJob
-
