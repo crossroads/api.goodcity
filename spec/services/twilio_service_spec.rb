@@ -27,7 +27,6 @@ describe TwilioService do
   end
 
   context "new_offer_alert" do
-
     let(:donor) { build(:user, first_name: "John", last_name: "Lowe") }
     let(:offer) { build(:offer, created_by: donor) }
 
@@ -37,7 +36,30 @@ describe TwilioService do
       expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
       twilio.new_offer_alert(offer)
     end
-
   end
 
+  context "order_confirmed_sms_to_charity" do
+    let(:charity) { build(:user, :charity) }
+    let(:order) { build(:order, created_by: charity) }
+
+    it "sends order submitted acknowledgement to charity who submitted order" do
+      allow(twilio).to receive(:allowed_to_send?).and_return(true)
+      body = "Thank you for placing order #{order.code} on GoodCity. Our team will be in touch with you soon.\n"
+      expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+      twilio.order_confirmed_sms_to_charity(order)
+    end
+  end
+
+  context "order_submitted_sms_to_order_fulfilment_users" do
+    let(:order_fulfilment_user) { build(:user, :order_fulfilment) }
+    let(:charity) { build(:user, :charity) }
+    let(:order) { build(:order, created_by: charity, submitted_by: charity) }
+
+    it "sends order submitted alert to order_fulfilment_user" do
+      allow(twilio).to receive(:allowed_to_send?).and_return(true)
+      body = "#{charity.full_name} from #{order.organisation.name_en} has just placed an order #{order.code} on GoodCity.\n"
+      expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+      twilio.order_submitted_sms_to_order_fulfilment_users(order)
+    end
+  end
 end

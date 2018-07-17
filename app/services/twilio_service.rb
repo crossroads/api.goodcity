@@ -19,9 +19,15 @@ class TwilioService
     TwilioJob.perform_later(options)
   end
 
-  def send_new_order_sms(order)
+  def order_confirmed_sms_to_charity(order)
     return unless allowed_to_send?
-    options = { to: @user.mobile, body: new_order_text(order) }
+    options = { to: @user.mobile, body: new_order_confirmed_text_to_charity(order) }
+    TwilioJob.perform_later(options)
+  end
+
+  def order_submitted_sms_to_order_fulfilment_users(order)
+    return unless allowed_to_send?
+    options = { to: @user.mobile, body: new_order_placed_text_to_users(order) }
     TwilioJob.perform_later(options)
   end
 
@@ -57,8 +63,13 @@ class TwilioService
       full_name: User.current_user.full_name)
   end
 
-  def new_order_text(order)
-    I18n.t('twilio.new_order_submitted_sms',
+  def new_order_placed_text_to_users(order)
+    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
+      code: order.code, submitter_name: order.submitted_by.full_name, organisation_name: order.organisation.try(:name_en))
+  end
+
+  def new_order_confirmed_text_to_charity(order)
+    I18n.t('twilio.new_order_submitted_sms_to_charity',
       code: order.code)
   end
 end
