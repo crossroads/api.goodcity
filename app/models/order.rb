@@ -197,6 +197,7 @@ class Order < ActiveRecord::Base
       if order.detail_type == "GoodCity"
         order.designate_orders_packages
         order.send_new_order_notificationen
+        order.send_new_order_sms
       end
     end
   end
@@ -210,6 +211,10 @@ class Order < ActiveRecord::Base
       order_id:   id,
       author_id:  created_by_id
     }
+  end
+
+  def send_new_order_sms
+    TwilioService.new(submitted_by).send_new_order_sms(self)
   end
 
   def nullify_columns(*columns)
