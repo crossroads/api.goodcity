@@ -21,7 +21,9 @@ zh-tw:
       （如你並沒有要求驗證碼，請忽略此信息）
     charity_user_welcome_sms: |
       %{full_name} 已將閣下登記於好人好巿平台。請下載該應用程式及以此電話號碼登入。
-    new_order_submitted_sms: |
+    order_submitted_sms_to_order_fulfilment_users: |
+      %{submitter_name} from %{organisation_name} has just placed an order %{code} on GoodCity.
+    new_order_submitted_sms_to_charity: |
       Thank you for placing order %{code} on GoodCity. Our team will be in touch with you soon.
     input_offer_id_message: "請輸入捐獻號碼，提取捐贈人士的號碼。"
     thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
