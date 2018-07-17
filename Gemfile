@@ -65,6 +65,7 @@ gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
 gem 'codeclimate-test-reporter'
 gem 'slack-ruby-client'
+gem 'whenever', '~> 0.8.4'
 
 group :development do
   unless ENV["CI"]

@@ -1,5 +1,8 @@
 lock '3.4.0'
 
+set :whenever_command, "bundle exec whenever"
+require "whenever/capistrano"
+
 set :application, 'goodcity_server'
 set :repo_url, 'git@github.com:crossroads/api.goodcity.git'
 set :deploy_to, '/opt/rails/goodcity_server'
