@@ -20,7 +20,9 @@ zh-tw:
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
       （如你並沒有要求驗證碼，請忽略此信息）
     charity_user_welcome_sms: |
-      %{full_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.
+      %{full_name} 已將閣下登記於好人好巿平台。請下載該應用程式及以此電話號碼登入。
+    new_order_submitted_sms: |
+      Thank you for placing order %{code} on GoodCity. Our team will be in touch with you soon.
     input_offer_id_message: "請輸入捐獻號碼，提取捐贈人士的號碼。"
     thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
   activerecord:
