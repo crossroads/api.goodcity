@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::RolesController, type: :controller do
   let(:user) { create(:user_with_token) }
-  let(:role) { create(:role, :with_dynamic_permission, permissions: ['can_create_package']) }
+  let!(:role) { create(:role, :with_dynamic_permission, permissions: ['can_create_package']) }
   let(:serialized_role) { Api::V1::RoleSerializer.new(role) }
   let(:serialized_role_json) { JSON.parse( serialized_role.to_json ) }
 
@@ -31,7 +31,7 @@ RSpec.describe Api::V1::RolesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "return serialized offers", :show_in_doc do
+    it "return serialized roles", :show_in_doc do
       2.times{ create :role }
       get :index
       body = JSON.parse(response.body)
