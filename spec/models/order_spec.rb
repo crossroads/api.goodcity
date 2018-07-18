@@ -249,4 +249,28 @@ RSpec.describe Order, type: :model do
     end
   end
 
+  describe '#send_new_order_confirmed_sms_to_charity' do
+    let(:charity) { create(:user, :charity) }
+    let(:order) { build(:order, submitted_by: charity) }
+    let(:twilio)     { TwilioService.new(charity) }
+
+    it "send order submission sms to charity user who submitted order" do
+      expect(TwilioService).to receive(:new).with(charity).and_return(twilio)
+      expect(twilio).to receive(:order_confirmed_sms_to_charity).with(order)
+      order.send_new_order_confirmed_sms_to_charity
+    end
+  end
+
+  describe '#send_order_placed_sms_to_order_fulfilment_users' do
+    let(:charity) { create(:user, :charity) }
+    let(:order_1) { create(:order, submitted_by: charity) }
+    let(:order_fulfiment_user_1) { create(:user, :order_fulfilment) }
+    let(:twilio)     { TwilioService.new(order_fulfiment_user_1) }
+
+    it "send new order submitted alert sms to order_fulfilment users" do
+      expect(TwilioService).to receive(:new).with(order_fulfiment_user_1).and_return(twilio)
+      expect(twilio).to receive(:order_submitted_sms_to_order_fulfilment_users).with(order_1)
+      order_1.send_order_placed_sms_to_order_fulfilment_users
+    end
+  end
 end

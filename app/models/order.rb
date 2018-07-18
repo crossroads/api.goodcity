@@ -197,7 +197,8 @@ class Order < ActiveRecord::Base
       if order.detail_type == "GoodCity"
         order.designate_orders_packages
         order.send_new_order_notificationen
-        order.send_new_order_sms
+        order.send_new_order_confirmed_sms_to_charity
+        order.send_order_placed_sms_to_order_fulfilment_users
       end
     end
   end
@@ -213,8 +214,14 @@ class Order < ActiveRecord::Base
     }
   end
 
-  def send_new_order_sms
-    TwilioService.new(submitted_by).send_new_order_sms(self)
+  def send_new_order_confirmed_sms_to_charity
+    TwilioService.new(submitted_by).order_confirmed_sms_to_charity(self)
+  end
+
+  def send_order_placed_sms_to_order_fulfilment_users
+    User.order_fulfilment.each do |user|
+      TwilioService.new(user).order_submitted_sms_to_order_fulfilment_users(self)
+    end
   end
 
   def nullify_columns(*columns)
