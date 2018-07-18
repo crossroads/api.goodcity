@@ -1,5 +1,6 @@
 lock '3.4.0'
 
+set :whenever_environment, defer { stage }
 set :whenever_command, "bundle exec whenever"
 set :application, 'goodcity_server'
 set :repo_url, 'git@github.com:crossroads/api.goodcity.git'
@@ -31,5 +32,12 @@ namespace :pg do
         execute :bundle, "config build.pg --with-pg-config=/usr/pgsql-9.4/bin/pg_config"
       end
     end
+  end
+end
+
+namespace :deploy do
+  desc 'Testing stage value'
+  task :testing_stage_value do
+    puts "Stage variable value: #{stage}"
   end
 end
