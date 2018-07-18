@@ -1,6 +1,8 @@
 lock '3.4.0'
 
-set :whenever_environment, defer { stage }
+# set :whenever_environment, defer { stage }
+set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
+
 set :whenever_command, "bundle exec whenever"
 set :application, 'goodcity_server'
 set :repo_url, 'git@github.com:crossroads/api.goodcity.git'
