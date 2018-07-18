@@ -1,13 +1,12 @@
 module InventoryOperations
   module Goodcity
     class Dispatch < Base
-      attr_accessor :current_packages_location_id, :dispatched_packages_location,
-        :packages_location_qty_mapping
+      attr_accessor :current_packages_location_id, :packages_location_qty_mapping
 
       def initialize(options = {})
         super
         self.current_packages_location_id = options[:packages_location_id]
-        self.dispatched_packages_location = package.dispatched_packages_location(dispatched_location_id) || package.packages_locations.new(location_id: dispatched_location_id)
+        self.dispatched_packages_location = dispatched_packages_location || package.packages_locations.new(location_id: dispatched_location_id)
         self.packages_location_qty_mapping = options[:packages_location_qty_mapping]
       end
 

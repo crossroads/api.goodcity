@@ -1,7 +1,8 @@
 module InventoryOperations
   class Base
     attr_accessor :order_id, :package_id, :quantity, :orders_package,
-      :current_user, :total_quantity, :package, :is_singletone_package
+      :current_user, :total_quantity, :package, :is_singletone_package,
+      :dispatched_packages_location
 
     def initialize(options = {})
       self.order_id       = options[:order_id]
@@ -11,6 +12,7 @@ module InventoryOperations
       self.package        = Package.find(package_id)
       self.current_user ||= User.current_user
       self.is_singletone_package = package.singleton_package?
+      self.dispatched_packages_location = package.dispatched_packages_location(dispatched_location_id)
     end
 
     def find_or_build_orders_package
