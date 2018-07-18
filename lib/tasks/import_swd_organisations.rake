@@ -8,7 +8,7 @@ namespace :goodcity do
   task import_swd_organisations: :environment do
     log = Goodcity::RakeLogger.new("import_swd_organisations")
     url = "https://www.swd.gov.hk/datagovhk/istb/SWD-GeoInfo-Map.csv"
-    sucess_count, error_count = 0
+    success_count, error_count = 0
 
     CSV.foreach(open(url), encoding: "UTF-16LE:UTF-8", col_sep: "\t", headers: :true, header_converters: :symbol) do |row|
       begin
@@ -33,11 +33,11 @@ namespace :goodcity do
   end
 
   def get_organisation_id
-    OrganisationType.find_by(name_en: "SWD").try(:id)
+    @org_id ||= OrganisationType.find_by(name_en: "SWD").try(:id)
   end
 
   def get_country_id
-    Country.find_by(name_en: "Hong Kong").try(:id)
+    @country_id ||= Country.find_by(name_en: "Hong Kong").try(:id)
   end
 
   def get_district_id(district_name)
