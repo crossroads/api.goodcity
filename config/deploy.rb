@@ -3,7 +3,7 @@ lock '3.4.0'
 # set :whenever_environment, defer { stage }
 
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
-require "whenever/capistrano"
+# require "whenever/capistrano"
 
 # set :whenever_command, "bundle exec whenever"
 set :application, 'goodcity_server'
