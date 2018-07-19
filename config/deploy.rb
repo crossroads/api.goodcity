@@ -1,7 +1,6 @@
 lock '3.4.0'
 
-# set :whenever_environment, defer { stage }
-
+set :whenever_environment, fetch(:stage)
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 # require "whenever/capistrano"
 
