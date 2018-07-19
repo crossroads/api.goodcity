@@ -4,7 +4,7 @@ set :whenever_environment, fetch(:stage)
 set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
 # require "whenever/capistrano"
 
-set :whenever_command, "bundle exec whenever"
+# set :whenever_command, "bundle exec whenever"
 set :application, 'goodcity_server'
 set :repo_url, 'git@github.com:crossroads/api.goodcity.git'
 set :deploy_to, '/opt/rails/goodcity_server'
