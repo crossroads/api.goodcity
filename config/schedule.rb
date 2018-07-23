@@ -1,5 +1,5 @@
 set :output, 'log/cron_log.log'
 
-every :monday, at: '7pm' do
+every :monday, at: '9pm' do
   rake 'goodcity:import_swd_organisations'
 end
