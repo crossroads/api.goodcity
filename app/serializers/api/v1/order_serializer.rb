@@ -9,7 +9,7 @@ module Api::V1
       :dispatch_started_by_id, :submitted_at, :submitted_by_id
 
     has_one :created_by, serializer: UserProfileSerializer, root: :user
-    has_one :stockit_contact, serializer: StockitContactSerializer, root: :contact
+    has_one :stockit_contact, serializer: StockitContactSerializer
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
     has_one :stockit_local_order, serializer: StockitLocalOrderSerializer, root: :local_order
     has_one :order_transport, serializer: OrderTransportSerializer
