@@ -176,7 +176,7 @@ class AzureNotificationsService
 
   def notification_title
     prefix = Rails.env.production? ? "" : "S. "
-    suffix = @app_name ? " Admin" : ""
+    suffix = @app_name ? " Admin" : "Stock"
     prefix << "GoodCity" << suffix
   end
 end
