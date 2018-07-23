@@ -492,4 +492,4 @@ DEPENDENCIES
   twilio-ruby
   warden
   webmock
-  whenever (~> 0.9.0)
+  whenever (~> 0.9.5)
