@@ -23,7 +23,7 @@ namespace :goodcity do
           organisation.country_id           = get_country_id,
           organisation.district_id          = get_district_id(row[:district])
         end
-        count += 1
+        success_count += 1
       rescue Exception => e
         log.error "organisation gih3_id: #{row[:gih3_id]} Error = (#{e.message})"
         error_count += 1
