@@ -164,7 +164,7 @@ class AzureNotificationsService
       @app_namespace = "donor"
     when "stock"
       @app_namespace = "stock"
-    when "browse"
+    else
       @app_namespace = "browse"
     end
     #@app_namespace ||= (@app_name ? "admin" : "donor")
