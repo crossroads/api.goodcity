@@ -44,7 +44,31 @@ namespace :goodcity do
     @country_id ||= Country.find_by(name_en: "China - Hong Kong (Special Administrative Region)").try(:id)
   end
 
-  def get_district_id(district_name)
-    District.find_by(name_en: district_name).try(:id) if district_name.present?
+  def exact_match_for_district district_name
+    District.find_by(name_en: district_name).try(:id)
+  end
+
+  def extract_district_name_and_find_record district_name)
+    splitted_district_name = district_name.scan(/[\w]+/)
+    if splitted_district_name.size > 1
+      District.where("lower(name_en) IN (?)", possible_district_name_combinations(splitted_district_name)).first.try(:id)
+    elsif splitted_district_name.size == 1
+      District.where("replace(lower(name_en), ' ', '') = (?)", "#{splitted_district_name[0].downcase}").first.try(:id)
+    end
+  end
+
+  def possible_district_name_combinations splitted_district_name
+    possible_district_names = []
+    (0..splitted_district_name.size).to_a.combination(2).map do |start_index, end_index|
+      possible_district_names << splitted_district_name[start_index...end_index].join(" ")
+      possible_district_names << splitted_district_name[start_index...end_index].join()
+    end
+    possible_district_names.flatten.map(&:downcase)
+  end
+
+  def get_district_id district_name
+    if district_name.present?
+      exact_match_for_district(district_name) || extract_district_name_and_find_record(district_name)
+    end
   end
 end
