@@ -37,11 +37,11 @@ module Api::V1
     end
 
     def local_order_id
-      object.detail_type == "LocalOrder" ? object.detail_id : nil
+      (object.detail_type == "LocalOrder" || object.detail_type == "StockitLocalOrder") ? object.detail_id : nil
     end
 
     def local_order_id__sql
-      "case when detail_type = 'LocalOrder' then detail_id end"
+      "case when (detail_type = 'LocalOrder' OR detail_type = 'StockitLocalOrder') then detail_id end"
     end
 
     def contact_id
