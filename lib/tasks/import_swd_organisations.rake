@@ -8,7 +8,15 @@ namespace :goodcity do
   task import_swd_organisations: :environment do
     log = Goodcity::RakeLogger.new("import_swd_organisations")
     url = "https://www.swd.gov.hk/datagovhk/istb/SWD-GeoInfo-Map.csv"
+
     success_count = error_count = 0
+    DISTRICT_NAME_CSV_AND_DB_MAPPING = {
+      "EASTERN AND WAN CHAI" => "Wan Chai",
+      "KOWLOON CITY AND YAU TSIM MONG" => "kowloon City",
+      "TAI PO AND NORTH" => "Taipo",
+      "TSUEN WAN AND KWAI TSING" => "Tsuen Wan",
+      "SHATIN" => "Sha Tin",
+    }
 
     CSV.foreach(open(url), encoding: "UTF-16LE:UTF-8", col_sep: "\t", headers: :true, header_converters: :symbol) do |row|
       begin
@@ -45,6 +53,16 @@ namespace :goodcity do
   end
 
   def get_district_id(district_name)
-    District.find_by(name_en: district_name).try(:id) if district_name.present?
+    if district_name.present?
+      get_exact_matching_district_id(district_name) || get_district_id_with_csv_db_mapping(district_name)
+    end
+  end
+
+  def get_district_id_with_csv_db_mapping(district_name)
+    District.find_by(name_en: DISTRICT_NAME_CSV_AND_DB_MAPPING[district_name]).try(:id)
+  end
+
+  def get_exact_matching_district_id(district_name)
+    District.find_by(name_en: district_name).try(:id)
   end
 end
