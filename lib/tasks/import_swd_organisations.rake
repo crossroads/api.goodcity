@@ -8,10 +8,10 @@ namespace :goodcity do
 
   DISTRICT_NAME_CSV_AND_DB_MAPPING = {
     "EASTERN AND WAN CHAI" => "Wan Chai",
-    "KOWLOON CITY AND YAU TSIM MONG" => "kowloon City",
+    "KOWLOON CITY AND YAU TSIM MONG" => "Kowloon City",
     "TAI PO AND NORTH" => "Taipo",
     "TSUEN WAN AND KWAI TSING" => "Tsuen Wan",
-    "SHATIN" => "Sha Tin",
+    "SHATIN" => "Sha Tin"
   }
 
   task import_swd_organisations: :environment do
@@ -22,14 +22,13 @@ namespace :goodcity do
 
     CSV.foreach(open(url), encoding: "UTF-16LE:UTF-8", col_sep: "\t", headers: :true, header_converters: :symbol) do |row|
       begin
-        organisation = Organisation.where(gih3_id: row[:gih3_id]).first_or_create
+        organisation = find_or_build_organisation(row[:gih3_id], row[:eng_name],
+          row[:chi_name])
+        organisation.gih3_id              = row[:gih3_id]
         organisation.name_en              = row[:eng_name]
         organisation.name_zh_tw           = row[:chi_name]
-        organisation.description_en       = ""
-        organisation.description_zh_tw    = ""
-        organisation.registration         = ""
         organisation.website              = row[:website]
-        organisation.organisation_type_id = get_organisation_id
+        organisation.organisation_type_id = get_organisation_type_id
         organisation.country_id           = get_country_id
         organisation.district_id          = get_district_id(row[:district])
         if organisation.save
@@ -46,7 +45,12 @@ namespace :goodcity do
     log.info("\n\t Total number of organisation updated =#{success_count} and error occurred = #{error_count}")
   end
 
-  def get_organisation_id
+  def find_or_build_organisation(gih3_id, name_en, name_zh_tw)
+    Organisation.where("gih3_id = :gih3_id OR name_en = :name_en OR name_zh_tw = :name_zh_tw", gih3_id: gih3_id, name_en: name_en,
+      name_zh_tw: name_zh_tw).first || Organisation.new
+  end
+
+  def get_organisation_type_id
     @org_id ||= OrganisationType.find_by(name_en: "SWD").try(:id)
   end
 
