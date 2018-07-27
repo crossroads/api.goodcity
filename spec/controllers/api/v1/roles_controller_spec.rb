@@ -30,12 +30,5 @@ RSpec.describe Api::V1::RolesController, type: :controller do
       get :index
       expect(response.status).to eq(200)
     end
-
-    # it "return serialized roles", :show_in_doc do
-    #   2.times{ create :role }
-    #   get :index
-    #   body = JSON.parse(response.body)
-    #   expect( body['roles'].length ).to eq(Role.count)
-    # end
   end
 end
