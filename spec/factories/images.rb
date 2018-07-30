@@ -1,8 +1,8 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :image do
-    cloudinary_id { FactoryGirl.generate(:fake_cloudinary_image_id) }
+    cloudinary_id { FactoryBot.generate(:fake_cloudinary_image_id) }
     favourite false
     trait :with_item do
       association :imageable, factory: :item

@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::ImageSerializer do
 
   let(:image)      { build(:image) }
-  let(:serializer) { Api::V1::ImageSerializer.new(image) }
+  let(:serializer) { Api::V1::ImageSerializer.new(image).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do

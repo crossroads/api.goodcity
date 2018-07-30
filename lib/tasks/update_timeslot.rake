@@ -4,7 +4,7 @@ namespace :goodcity do
   task update_timeslots: :environment do
     Timeslot.where("name_en <> ?", "2PM-4PM").delete_all
 
-    FactoryGirl.create :timeslot,
+    FactoryBot.create :timeslot,
       name_en: "10:30AM-1PM",
       name_zh_tw: "上午10:30時至下午1時"
   end

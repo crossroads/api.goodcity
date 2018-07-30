@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::LocationsController, type: :controller do
 
   let(:reviewer) { create(:user_with_token, :with_can_manage_locations_permission, role_name: 'Reviewer') }
+  let(:parsed_body) { JSON.parse(response.body) }
   before { generate_and_set_token(reviewer) }
 
   describe "GET locations" do
@@ -16,9 +17,17 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
     it "return serialized locations", :show_in_doc do
       create_list(:location, 2)
       get :index
-      body = JSON.parse(response.body)
-      expect( body['locations'].length ).to eq(Location.count)
+      expect( parsed_body['locations'].length ).to eq(Location.count)
     end
+
+    it "finds location using searchText" do
+      loc1 = create :location, building: "TestBuilding"
+      create :location
+      get :index, searchText: "TestBuilding"
+      expect(parsed_body['locations'][0]['building']).to eql("TestBuilding")
+      expect(parsed_body['meta']['total_pages']).to eql(1)
+    end
+    
   end
 
   describe "POST location/1" do

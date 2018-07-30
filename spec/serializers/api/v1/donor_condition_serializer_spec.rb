@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::DonorConditionSerializer do
 
   let(:donor_condition) { build(:donor_condition) }
-  let(:serializer)      { Api::V1::DonorConditionSerializer.new(donor_condition) }
+  let(:serializer)      { Api::V1::DonorConditionSerializer.new(donor_condition).as_json }
   let(:json)            { JSON.parse( serializer.to_json ) }
 
   it_behaves_like 'name_with_language'

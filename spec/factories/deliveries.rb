@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :delivery do
     association :offer, :scheduled
     delivery_type { ["Alternate", "Drop Off", "Gogovan"].sample }

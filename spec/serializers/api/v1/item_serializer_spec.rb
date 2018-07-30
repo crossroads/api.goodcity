@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::ItemSerializer do
 
   let(:item)       { build(:item) }
-  let(:serializer) { Api::V1::ItemSerializer.new(item) }
+  let(:serializer) { Api::V1::ItemSerializer.new(item).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do

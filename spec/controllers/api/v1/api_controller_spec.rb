@@ -2,13 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ApiController, type: :controller do
 
-  #subject { JSON.parse(response.body) }
-
   before { generate_and_set_token }
 
+  subject { JSON.parse(response.body) }
+  
   context "handling ActiveRecord::RecordNotFound exceptions" do
-
-    subject { JSON.parse(response.body) }
 
     controller do
       def index
@@ -40,8 +38,6 @@ RSpec.describe Api::V1::ApiController, type: :controller do
   end
 
   context "handling Apipie::ParamInvalid exceptions" do
-
-    subject { JSON.parse(response.body) }
 
     let(:error_msg) { "Invalid parameter 'language' value \"test\": Must be one of: en, zh-tw." }
 

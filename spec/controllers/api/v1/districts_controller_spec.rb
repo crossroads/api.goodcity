@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe Api::V1::DistrictsController, type: :controller do
 
   let(:district) { create(:district) }
-  let(:serialized_district) { Api::V1::DistrictSerializer.new(district) }
+  let(:serialized_district) { Api::V1::DistrictSerializer.new(district).as_json }
   let(:serialized_district_json) { JSON.parse( serialized_district.to_json ) }
-
+  let(:parsed_body) { JSON.parse(response.body) }
   let(:districts) { create_list(:district, 2) }
 
   describe "GET district" do
@@ -16,8 +16,7 @@ RSpec.describe Api::V1::DistrictsController, type: :controller do
 
     it "return serialized district", :show_in_doc do
       get :show, id: district.id
-      body = JSON.parse(response.body)
-      expect( body ).to eq(serialized_district_json)
+      expect(parsed_body).to eq(serialized_district_json)
     end
   end
 
@@ -31,8 +30,7 @@ RSpec.describe Api::V1::DistrictsController, type: :controller do
       create(:district)
       create(:district)
       get :index
-      body = JSON.parse(response.body)
-      expect( body['districts'].length ).to eq(District.count)
+      expect(parsed_body['districts'].length).to eq(District.count)
     end
   end
 

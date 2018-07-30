@@ -4,7 +4,9 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
 
   let(:user) { create(:user_with_token) }
   let(:gogovan_order) { create(:gogovan_order) }
-  let(:serialized_order) { Api::V1::GogovanOrderSerializer.new(gogovan_order) }
+  let(:serialized_order) { Api::V1::GogovanOrderSerializer.new(gogovan_order).as_json }
+  let(:serialized_order_json) { JSON.parse(serialized_order.to_json) }
+  let(:parsed_body) { JSON.parse(response.body) }
   let(:offer) { create(:offer, :with_transport) }
   let(:ggv_order) { create(:gogovan_order, :with_delivery) }
   let(:order_attributes) {
@@ -67,6 +69,7 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
     it "returns 200" do
       get :driver_details, id: ggv_order.ggv_uuid
       expect(response.status).to eq(200)
+      expect(parsed_body.keys).to include("gogovan_orders")
     end
   end
 end
