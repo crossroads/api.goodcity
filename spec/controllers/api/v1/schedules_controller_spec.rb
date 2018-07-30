@@ -4,7 +4,7 @@ RSpec.describe Api::V1::SchedulesController, type: :controller do
 
   let(:user) { create(:user_with_token) }
   let(:schedule) { build(:schedule) }
-  let(:schedule_params) { FactoryGirl.attributes_for(:schedule) }
+  let(:schedule_params) { FactoryBot.attributes_for(:schedule) }
 
   describe "GET availableTimeSlots" do
     before { generate_and_set_token(user) }

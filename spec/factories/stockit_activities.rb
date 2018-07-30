@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :stockit_activity do
     name {FFaker::Name.first_name}
   end

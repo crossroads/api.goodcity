@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :order do
     status   ["draft", "submitted", "processing", "closed", "cancelled"].sample
     state    ["draft", "submitted", "processing", "closed", "cancelled"].sample

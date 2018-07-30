@@ -24,7 +24,7 @@ module Api
         if stockit_activity_record.save
           render json: {}, status: 201
         else
-          render json: @stockit_activity.errors.to_json, status: 422
+          render json: @stockit_activity.errors, status: 422
         end
       end
 

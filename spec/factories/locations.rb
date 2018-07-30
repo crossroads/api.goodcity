@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :location do
     building   { 10+rand(36) }
     area       { FFaker::Lorem.characters(1).upcase }

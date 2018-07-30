@@ -16,7 +16,7 @@ module Api
       api :GET, '/v1/donor_conditions', "List all donor conditions."
       param :ids, Array, of: Integer, desc: "Filter by donor condition ids e.g. ids = [1,2,3,4]"
       def index
-        render_object_with_cache(@donor_conditions, params[:ids])
+        render_objects_with_cache(@donor_conditions, params[:ids])
       end
 
       api :GET, '/v1/donor_conditions/1', "List a Donor-Condition"

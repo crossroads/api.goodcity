@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::OfferSerializer do
 
   let(:donor) { create(:user, :with_email) }
-  let(:donor_serializer) { Api::V1::UserSerializer.new(donor) }
+  let(:donor_serializer) { Api::V1::UserSerializer.new(donor).as_json }
   let(:donor_json) { JSON.parse(donor_serializer.to_json) }
   let(:admin) { create(:user, :reviewer) }
 
@@ -29,7 +29,7 @@ describe Api::V1::OfferSerializer do
       ).to eql(donor.email)
     end
 
-    let(:admin_serializer) { Api::V1::UserSerializer.new(admin) }
+    let(:admin_serializer) { Api::V1::UserSerializer.new(admin).as_json }
     let(:admin_json) { JSON.parse(admin_serializer.to_json) }
     it "doesn't include private reviewer data" do
       expect(admin_json['user']['mobile']).to eql(nil)

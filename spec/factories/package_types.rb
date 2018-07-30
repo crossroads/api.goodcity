@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :base_package_type, class: :PackageType do
     code               { generate(:package_types).keys.sample }
     name_en            { generate(:package_types)[code][:name_en] }

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::PackagesLocationSerializer do
   let(:packages_location) { build :packages_location }
-  let(:serializer) { Api::V1::PackagesLocationSerializer.new(packages_location) }
+  let(:serializer) { Api::V1::PackagesLocationSerializer.new(packages_location).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
 

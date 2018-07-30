@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::OrganisationWithoutOrderSerializer do
   let(:organisation_without_order)   { build(:organisation) }
-  let(:serializer) { Api::V1::OrganisationWithoutOrderSerializer.new(organisation_without_order) }
+  let(:serializer) { Api::V1::OrganisationWithoutOrderSerializer.new(organisation_without_order).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do

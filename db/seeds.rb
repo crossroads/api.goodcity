@@ -3,21 +3,21 @@
 
 donor_conditions = YAML.load_file("#{Rails.root}/db/donor_conditions.yml")
 donor_conditions.each do |name, value|
-  FactoryGirl.create(:donor_condition,
+  FactoryBot.create(:donor_condition,
     name_en: name,
     name_zh_tw: value[:name_zh_tw] )
 end
 
 rejection_reasons = YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
 rejection_reasons.each do |name_en, value|
-  FactoryGirl.create(:rejection_reason,
+  FactoryBot.create(:rejection_reason,
     name_en: name_en,
     name_zh_tw: value[:name_zh_tw] )
 end
 
 cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
 cancellation_reasons.each do |name_en, value|
-  FactoryGirl.create(:cancellation_reason,
+  FactoryBot.create(:cancellation_reason,
     name_en: name_en,
     name_zh_tw: value[:name_zh_tw],
     visible_to_admin: value[:visible_to_admin] )
@@ -25,23 +25,23 @@ end
 
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
-  # FactoryGirl creates the correct territory for us
-  FactoryGirl.create :district, name_en: name_en, latitude: value[:latitude], longitude: value[:longitude]
+  # FactoryBot creates the correct territory for us
+  FactoryBot.create :district, name_en: name_en, latitude: value[:latitude], longitude: value[:longitude]
 end
 
 timeslots = [["10:30am-1pm", "上午10:30時至下午1時"], ["2PM-4PM", "下午2時至下午4時"]]
 timeslots.each do |name|
-  FactoryGirl.create :timeslot, name_en: name.first, name_zh_tw: name.last
+  FactoryBot.create :timeslot, name_en: name.first, name_zh_tw: name.last
 end
 
 gogovan_transports = YAML.load_file("#{Rails.root}/db/gogovan_transports.yml")
 gogovan_transports.each do |name, value|
-  FactoryGirl.create :gogovan_transport, name_en: name, name_zh_tw: value[:name_zh_tw], disabled: value[:disabled]
+  FactoryBot.create :gogovan_transport, name_en: name, name_zh_tw: value[:name_zh_tw], disabled: value[:disabled]
 end
 
 crossroads_transports = YAML.load_file("#{Rails.root}/db/crossroads_transports.yml")
 crossroads_transports.each do |name, value|
-  FactoryGirl.create :crossroads_transport, name_en: name, name_zh_tw: value[:name_zh_tw], cost: value[:cost], truck_size: value[:truck_size]
+  FactoryBot.create :crossroads_transport, name_en: name, name_zh_tw: value[:name_zh_tw], cost: value[:cost], truck_size: value[:truck_size]
 end
 
 CrossroadsTransport.find_by(name_en: "Disable").update_column(:is_van_allowed, false)
@@ -126,10 +126,10 @@ permissions_roles.each_pair do |role_name, permission_names|
 end
 
 # Create System User
-FactoryGirl.create(:user, :system)
+FactoryBot.create(:user, :system)
 
 # Create API User
-FactoryGirl.create(:user, :api_user, first_name: "api", last_name: "write")
+FactoryBot.create(:user, :api_user, first_name: "api", last_name: "write")
 
 # Don't run the following setup on the live server.
 # This is for dummy data
@@ -141,7 +141,7 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85251111113", first_name: "Dakota", last_name: "Deryn53" },
     { mobile: "+85251111114", first_name: "Delia", last_name: "Devon54" },
   ]
-  donor_attributes.each {|attr| FactoryGirl.create(:user, attr) }
+  donor_attributes.each {|attr| FactoryBot.create(:user, attr) }
 
   reviewer_attributes = [
     { mobile: "+85261111111", first_name: "Rachel", last_name: "Riley61" },
@@ -149,7 +149,7 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85261111113", first_name: "Rafael", last_name: "Ras63" },
     { mobile: "+85261111114", first_name: "Raj", last_name: "Rakim64" },
   ]
-  reviewer_attributes.each {|attr| FactoryGirl.create(:user, :reviewer, attr) }
+  reviewer_attributes.each {|attr| FactoryBot.create(:user, :reviewer, attr) }
 
   supervisor_attributes = [
     { mobile: "+85291111111", first_name: "Sarah", last_name: "Sahn91" },
@@ -157,7 +157,7 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85291111113", first_name: "Saad", last_name: "Safa93" },
     { mobile: "+85291111114", first_name: "Scott", last_name: "Sandro94" },
   ]
-  supervisor_attributes.each {|attr| FactoryGirl.create(:user, :supervisor, attr) }
+  supervisor_attributes.each {|attr| FactoryBot.create(:user, :supervisor, attr) }
 
   charity_attributes = [
     { mobile: "+85252222221", first_name: "Chris", last_name: "Chan521" },
@@ -165,7 +165,7 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85252222223", first_name: "Charis", last_name: "Chen523" },
     { mobile: "+85252222224", first_name: "Carlos", last_name: "Chung524" },
   ]
-  charity_attributes.each {|attr| FactoryGirl.create(:user, :charity, attr) }
+  charity_attributes.each {|attr| FactoryBot.create(:user, :charity, attr) }
 
   order_fulfiler_attributes = [
     { mobile: "+85262222221", first_name: "Olive", last_name: "Oakley621" },
@@ -173,5 +173,5 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85262222223", first_name: "Oscar", last_name: "O'Riley623" },
     { mobile: "+85262222224", first_name: "Octavia", last_name: "O'Connor624" },
   ]
-  order_fulfiler_attributes.each {|attr| FactoryGirl.create(:user, :order_fulfilment, attr) }
+  order_fulfiler_attributes.each {|attr| FactoryBot.create(:user, :order_fulfilment, attr) }
 end

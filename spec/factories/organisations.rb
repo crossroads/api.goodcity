@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :organisation do
     name_en { FFaker::Company.name }
     name_zh_tw { FFaker::Company.name }

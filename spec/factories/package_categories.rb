@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :package_category, aliases: [:parent_package_category] do
     name_en    { FFaker::Lorem.characters(5) }
     name_zh_tw { FFaker::Lorem.characters(5) }

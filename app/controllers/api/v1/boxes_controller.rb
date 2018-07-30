@@ -30,7 +30,7 @@ module Api
         if @box.save
           render json: {}, status: 201
         else
-          render json: @box.errors.to_json, status: 422
+          render json: @box.errors, status: 422
         end
       end
 

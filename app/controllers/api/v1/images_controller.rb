@@ -41,7 +41,7 @@ module Api
         if @image.save
           serialized_response(201)
         else
-          render json: @image.errors.to_json, status: 422
+          render json: @image.errors, status: 422
         end
       end
 
@@ -61,7 +61,7 @@ module Api
         if @image.update_attributes(image_params)
           serialized_response
         else
-          render json: @image.errors.to_json, status: 422
+          render json: @image.errors, status: 422
         end
       end
 

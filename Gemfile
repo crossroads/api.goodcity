@@ -1,14 +1,10 @@
 source 'https://rubygems.org'
-ruby "2.2.2"
+ruby "2.5.1"
 
 gem 'rails', '~> 4.2.0'
-# gem 'activejob_backport' # remove this gem when Rails is upgraded to 4.2
 gem 'rails-api'
 gem 'pg'
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.1.2'
-# gem 'active_model_otp'
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'postgres_ext', '~> 2.4.0.beta.1'
@@ -23,13 +19,13 @@ gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before
 gem 'cancancan'
 gem 'loofah'
 gem 'cloudinary'
-gem 'factory_girl_rails' # used in rake db:seed in production
-gem 'ffaker', '~> 2.8.0'
+gem 'factory_bot_rails' # used in rake db:seed in production
+gem 'ffaker'
 gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
 gem 'jwt', '~> 1.2.0'
 gem 'rack-cors'
-gem 'rack-protection', '~> 2.0.0'
+gem 'rack-protection'
 gem 'state_machine'
 gem 'twilio-ruby'
 gem 'warden'
@@ -39,17 +35,15 @@ gem 'newrelic_rpm' unless ENV["CI"]
 gem 'traco'
 gem 'rails-i18n'
 gem 'http_accept_language'
-gem 'oj', '2.10.2' # 2.10.3 causes a 'too deeply nested' error
-gem 'oj_mimic_json'
+gem 'oj'
 gem 'redis'
-gem 'redis-rails', '~> 5.0.2'
-gem 'sprockets', '~>3.7.2'
+gem 'redis-rails'
 gem 'rollbar'
 gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
-gem 'nokogiri', '~> 1.8.2'
+gem 'nokogiri'
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
@@ -92,7 +86,7 @@ group :development, :test do
 end
 
 group :test do
-  gem 'simplecov', '0.9.0', require: false
+  gem 'simplecov', require: false
   gem 'webmock'
   gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"

@@ -112,7 +112,7 @@ module Api
       private
 
       def render_errors
-        render json: @delivery.errors.to_json, status: 422
+        render json: @delivery.errors, status: 422
       end
 
       def delivery_params

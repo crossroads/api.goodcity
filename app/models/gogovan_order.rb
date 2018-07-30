@@ -51,7 +51,7 @@ class GogovanOrder < ActiveRecord::Base
     pending? # only cancel orders in this state
   end
 
-  # '200' Fixnum
+  # '200'
   # {:error=>"Failed.  Response code = 409.  Response message = Conflict.  Response Body = {\"error\":\"Order that is already accepted by a driver cannot be cancelled\"}."}
   def cancel_order
     if booking_id
