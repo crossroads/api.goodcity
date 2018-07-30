@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::RolesController, type: :controller do
   let(:user) { create(:user_with_token) }
+
   let(:role) { create(:role, :with_dynamic_permission, permissions: ['can_create_package']) }
   let(:serialized_role) { Api::V1::RoleSerializer.new(role).as_json }
   let(:serialized_role_json) { JSON.parse( serialized_role.to_json ) }

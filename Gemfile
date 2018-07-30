@@ -59,6 +59,7 @@ gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
 gem 'codeclimate-test-reporter'
 gem 'slack-ruby-client'
+gem 'whenever', '~>  0.9.5', require: false
 
 group :development do
   unless ENV["CI"]
@@ -70,7 +71,7 @@ group :development do
     gem "spring-commands-rspec", group: :development
     gem 'guard-rspec', require: false
     gem 'foreman', require: false
-    #gem 'ruby-graphviz' # only enable when needed for workflow diagram generation
+    gem 'ruby-graphviz' # only enable when needed for workflow diagram generation
   end
 end
 

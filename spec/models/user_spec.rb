@@ -101,12 +101,12 @@ describe User, :type => :model do
 
   describe '#send_verification_pin' do
 
-    let(:flowdock)   { EmailFlowdockService.new(user) }
-    let(:twilio)     { TwilioService.new(user) }
+    let(:slack)   { SlackPinService.new(user) }
+    let(:twilio)  { TwilioService.new(user) }
 
     it "should send pin via Twilio" do
-      expect(EmailFlowdockService).to receive(:new).with(user).and_return(flowdock)
-      expect(flowdock).to receive(:send_otp)
+      expect(SlackPinService).to receive(:new).with(user).and_return(slack)
+      expect(slack).to receive(:send_otp)
       expect(TwilioService).to receive(:new).with(user).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
       user.send_verification_pin
