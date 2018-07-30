@@ -127,7 +127,6 @@ class User < ActiveRecord::Base
 
   def send_verification_pin
     most_recent_token.cycle_otp_auth_key!
-    EmailFlowdockService.new(self).send_otp
     SlackPinService.new(self).send_otp
     TwilioService.new(self).sms_verification_pin
   end
