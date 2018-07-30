@@ -1,5 +1,8 @@
 lock '3.4.0'
 
+set :whenever_environment, fetch(:stage)
+set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
+
 set :application, 'goodcity_server'
 set :repo_url, 'git@github.com:crossroads/api.goodcity.git'
 set :deploy_to, '/opt/rails/goodcity_server'
@@ -19,6 +22,17 @@ namespace :deploy do
       execute :touch, release_path.join('tmp/restart.txt')
     end
   end
+
+  desc "Update crontab with whenever"
+  task :update_cron do
+    on roles(:app) do
+      within current_path do
+        execute :bundle, :exec, "whenever --update-crontab #{fetch(:application)}"
+      end
+    end
+  end
+
+  after :finishing, :update_cron
   after :publishing, :restart
 end
 
@@ -30,5 +44,12 @@ namespace :pg do
         execute :bundle, "config build.pg --with-pg-config=/usr/pgsql-9.4/bin/pg_config"
       end
     end
+  end
+end
+
+namespace :deploy do
+  desc 'Testing stage value'
+  task :testing_stage_value do
+    puts "Stage variable value: #{stage}"
   end
 end
