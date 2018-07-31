@@ -9,7 +9,7 @@ module Api::V1
       :dispatch_started_by_id, :submitted_at, :submitted_by_id
 
     has_one :created_by, serializer: UserProfileSerializer, root: :user
-    has_one :stockit_contact, serializer: StockitContactSerializer, root: :contact
+    has_one :stockit_contact, serializer: StockitContactSerializer
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
     has_one :stockit_local_order, serializer: StockitLocalOrderSerializer, root: :local_order
     has_one :order_transport, serializer: OrderTransportSerializer
@@ -37,11 +37,11 @@ module Api::V1
     end
 
     def local_order_id
-      object.detail_type == "LocalOrder" ? object.detail_id : nil
+      (object.detail_type == "LocalOrder" || object.detail_type == "StockitLocalOrder") ? object.detail_id : nil
     end
 
     def local_order_id__sql
-      "case when detail_type = 'LocalOrder' then detail_id end"
+      "case when (detail_type = 'LocalOrder' OR detail_type = 'StockitLocalOrder') then detail_id end"
     end
 
     def contact_id
