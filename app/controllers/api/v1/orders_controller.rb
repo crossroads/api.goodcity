@@ -101,7 +101,7 @@ module Api
           include_packages: true,
           include_order: false,
           include_images: true,
-          exclude_stockit_set_item: true).as_json
+          exclude_stockit_set_item: true).to_json
       end
 
       def order_record
