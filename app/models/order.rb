@@ -15,7 +15,7 @@ class Order < ActiveRecord::Base
   belongs_to :dispatch_started_by, class_name: 'User'
   belongs_to :closed_by, class_name: 'User'
   belongs_to :submitted_by, class_name: 'User'
-  belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder'") }, foreign_key: 'detail_id'
+  belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: 'detail_id'
 
   has_many :packages
   has_many :purposes, through: :orders_purposes
