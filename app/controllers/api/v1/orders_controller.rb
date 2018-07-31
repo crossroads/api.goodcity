@@ -43,7 +43,7 @@ module Api
           search(params['searchText'], params['toDesignateItem'].presence).latest.
           page(params["page"]).per(params["per_page"])
         orders = order_response(records)
-        render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(orders)
+        render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
       end
 
       api :GET, '/v1/designations/1', "Get a order"
