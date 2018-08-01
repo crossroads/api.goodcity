@@ -21,7 +21,7 @@ module Api
         end
         @territories = @territories.with_eager_load
         @territories = @territories.where(id: params["ids"].split(",").flatten) if params["ids"].present?
-        render json: @territories, each_serializer: serializer
+        render json: @territories, each_serializer: serializer, include_territory: false
       end
 
       api :GET, '/v1/territory/1', "List a territory"
