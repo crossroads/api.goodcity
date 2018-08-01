@@ -55,6 +55,7 @@ module Api
           exclude_code_details: true,
           include_packages: true,
           include_order: false,
+          include_territory: true,
           include_images: true,
           exclude_stockit_set_item: true
       end
