@@ -22,7 +22,7 @@ test:
     - bundle-audit -v --update
 deployment:
   staging:
-    branch: master
+    branch: GCW-1909-order-fulfillment-push-notification
     commands:
       - bundle exec cap staging deploy
   production:
