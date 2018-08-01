@@ -24,7 +24,7 @@ module CacheableJson
     def cache_json
       records = try(:with_eager_load) || all
       root = name.underscore.pluralize
-      objects = ActiveModel::ArraySerializer.new(records, each_serializer: "Api::V1::#{name}Serializer".constantize, root: root).as_json
+      objects = ActiveModel::ArraySerializer.new(records, each_serializer: "Api::V1::#{name}Serializer".constantize, root: root, include_territory: false).to_json
       Rails.cache.write(cache_key, objects)
       objects
     end
