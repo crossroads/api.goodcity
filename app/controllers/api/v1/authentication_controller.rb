@@ -230,7 +230,7 @@ module Api
           params[:handle],
           channels,
           params[:platform],
-          is_admin_app )
+          app_name.sub(".goodcity", "") )
       end
     end
   end
