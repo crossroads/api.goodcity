@@ -31,7 +31,7 @@ describe Api::V1::OrderSerializer do
     expect(json['order']['contact_id']).to eq(order.stockit_contact_id)
     expect(json['order']['activity']).to eq(stockit_activity.name)
     expect(json['order']['created_by_id']).to eq(order.created_by_id)
-    expect(json['order']['local_order_id']).to eq(nil)
+    expect(json['order']['local_order_id']).to eq(order.detail_id)
     expect(json['order']['processed_by_id']).to eq(user.id)
     expect(json['order']['cancelled_by_id']).to eq(order.cancelled_by_id)
     expect(json['order']['process_completed_by_id']).to eq(order.process_completed_by_id)
