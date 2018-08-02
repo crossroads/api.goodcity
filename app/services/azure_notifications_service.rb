@@ -1,7 +1,7 @@
 class AzureNotificationsService
 
-  def initialize(is_admin_app=nil)
-    @is_admin_app = is_admin_app
+  def initialize(app_name)
+    @app_name = app_name
   end
 
   def notify(tags, data)
@@ -155,7 +155,19 @@ class AzureNotificationsService
   end
 
   def app_namespace
-    @app_namespace ||= (@is_admin_app ? "admin" : "donor")
+    case @app_name
+    when true
+      @app_namespace = "admin"
+    when "admin"
+      @app_namespace = "admin"
+    when "donor"
+      @app_namespace = "donor"
+    when "stock"
+      @app_namespace = "stock"
+    else
+      @app_namespace = "browse"
+    end
+    #@app_namespace ||= (@app_name ? "admin" : "donor")
   end
 
   def settings
@@ -164,7 +176,18 @@ class AzureNotificationsService
 
   def notification_title
     prefix = Rails.env.production? ? "" : "S. "
-    suffix = @is_admin_app ? " Admin" : ""
+    case @app_name
+    when true
+      suffix = " Admin"
+    when "admin"
+      suffix = " Admin"
+    when "donor"
+      suffix = " Donor"
+    when "stock"
+      suffix = " Stock"
+    else
+      suffix = ""
+    end
     prefix << "GoodCity" << suffix
   end
 end
