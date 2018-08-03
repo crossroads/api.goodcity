@@ -60,29 +60,16 @@ jobs:
         # This is a broad list of cache paths to include many possible development environments
         # You can probably delete some of these entries
         - vendor/bundle
-        - ~/virtualenvs
-        - ~/.m2
-        - ~/.ivy2
         - ~/.bundle
-        - ~/.go_workspace
-        - ~/.gradle
-        - ~/.cache/bower
-    # This is based on your 1.0 configuration file or project settings
     - run: bundle exec rake db:create:all db:schema:load --trace
     # Test
     #   This would typically be a build job when using workflows, possibly combined with build
-    # This is based on your 1.0 configuration file or project settings
     - run:
-        name: ./cc-test-reporter before-build
-        command: if [ "$CIRCLE_NODE_INDEX" == "0" ]; then ./cc-test-reporter before-build; fi
-    # This is based on your 1.0 configuration file or project settings
-    - run:
-        name: bundle exec rspec; ./cc-test-reporter after-build --exit-code $?
-        command: if [ "$CIRCLE_NODE_INDEX" == "0" ]; then bundle exec rspec; ./cc-test-reporter after-build --exit-code $?; fi
-    # This is based on your 1.0 configuration file or project settings
+        name: bundle exec rspec
+        command: bundle exec rspec
     - run:
         name: bundle-audit -v --update
-        command: if [ "$CIRCLE_NODE_INDEX" == "0" ]; then bundle-audit -v --update; fi
+        command: bundle-audit -v --update
     # Deployment
     # Your existing circle.yml file contains deployment steps.
     # The config translation tool does not support translating deployment steps
