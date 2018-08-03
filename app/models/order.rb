@@ -204,7 +204,7 @@ class Order < ActiveRecord::Base
   end
 
   def send_new_order_notificationen
-    PushService.new.send_notification Channel.goodcity_order_channel, "stock", {
+    PushService.new.send_notification Channel.goodcity_order_channel, STOCK_APP, {
       category:   'new_order',
       message:    I18n.t("notification.new_order", organisation_name_en:
         organisation.try(:name_en), organisation_name_zh_tw: organisation.try(:name_zh_tw),

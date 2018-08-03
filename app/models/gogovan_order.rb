@@ -113,7 +113,7 @@ class GogovanOrder < ActiveRecord::Base
   def notify_order_completed
     message = I18n.t("gogovan.notify_completed", license: driver_license, booking_id: booking_id)
 
-    PushService.new.send_notification Channel.staff, true, {
+    PushService.new.send_notification Channel.staff, ADMIN_APP, {
       category: 'offer_delivery',
       message:   message,
       offer_id:  offer.id,
