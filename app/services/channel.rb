@@ -46,11 +46,6 @@ class Channel
       channels
     end
 
-    # TODO deprecate this method
-    def add_admin_app_suffix(channel_name)
-      [channel_name].flatten.map {|c| user_channel?(c) ? "#{c}_admin" : c}
-    end
-
     # add the appropriate app_name suffix on the user channels when registering the device
     # e.g. user_1 becomes user_1_admin, group channels (don't start with 'user_') are unaffected
     # note that donor app channel is just user_1
