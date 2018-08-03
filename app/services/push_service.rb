@@ -1,6 +1,6 @@
 class PushService
-  def send_update_store(channel, is_admin_app, data)
-    channel = Channel.add_app_name_suffix(channel, ADMIN_APP) if is_admin_app
+  def send_update_store(channel, app_name, data)
+    channel = Channel.add_app_name_suffix(channel, ADMIN_APP) if app_name == ADMIN_APP
     SocketioSendJob.perform_later(channel, "update_store", data.to_json, true)
   end
 

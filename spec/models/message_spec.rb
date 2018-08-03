@@ -136,7 +136,7 @@ describe Message, type: :model do
       message = create_message(sender_id: subscribed_user.id)
       User.current_user = reviewer
 
-      expect(message).to receive(:send_update) do |item, user, state, channel, is_admin_app, operation|
+      expect(message).to receive(:send_update) do |item, user, state, channel, app_name, operation|
         expect(channel).to include("user_#{subscribed_user.id}")
         expect(channel).to include("user_#{unsubscribed_user.id}")
         expect(channel).to_not include("user_#{donor.id}")
