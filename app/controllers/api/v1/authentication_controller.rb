@@ -171,7 +171,7 @@ module Api
       error 401, "Unauthorized"
       error 500, "Internal Server Error"
       def current_user_rooms
-        return render json: ["browse"], root: false if is_browse_app
+        return render json: ["browse"], root: false if is_browse_app?
         validate_token && authorize!(:current_user_profile, User)
         render json: current_user_channels, root: false
       end

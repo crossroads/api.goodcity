@@ -49,4 +49,48 @@ describe AppMatcherFakeController do
 
   end
 
+  context "is_admin_app?" do
+    it do
+      expect(controller).to receive(:app_name).and_return(ADMIN_APP)
+      expect(controller.is_admin_app?).to eql(true)
+    end
+    it do
+      expect(controller).to receive(:app_name).and_return(DONOR_APP)
+      expect(controller.is_admin_app?).to eql(false)
+    end
+  end
+
+  context "is_stock_app?" do
+    it do
+      expect(controller).to receive(:app_name).and_return(STOCK_APP)
+      expect(controller.is_stock_app?).to eql(true)
+    end
+    it do
+      expect(controller).to receive(:app_name).and_return(DONOR_APP)
+      expect(controller.is_stock_app?).to eql(false)
+    end
+  end
+
+  context "is_browse_app?" do
+    it do
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller.is_browse_app?).to eql(true)
+    end
+    it do
+      expect(controller).to receive(:app_name).and_return(DONOR_APP)
+      expect(controller.is_browse_app?).to eql(false)
+    end
+  end
+
+  context "is_stockit_request?" do
+    it do
+      expect(controller).to receive(:app_name).and_return(STOCKIT_APP)
+      expect(controller.is_stockit_request?).to eql(true)
+    end
+    it do
+      expect(controller).to receive(:app_name).and_return(DONOR_APP)
+      expect(controller.is_stockit_request?).to eql(false)
+    end
+  end
+
 end

@@ -3,23 +3,19 @@ module AppMatcher
 
   # Identifies which app is currently making the controller request
 
-  def is_donor_app
-    app_name == DONOR_APP
-  end
-
-  def is_admin_app
+  def is_admin_app?
     app_name == ADMIN_APP
   end
 
-  def is_stock_app
+  def is_stock_app?
     app_name == STOCK_APP
   end
 
-  def is_browse_app
+  def is_browse_app?
     app_name == BROWSE_APP
   end
 
-  def is_stockit_request
+  def is_stockit_request?
     app_name == STOCKIT_APP
   end
   
