@@ -1,6 +1,7 @@
 class AzureNotificationsService
 
   def initialize(app_name)
+    raise ArgumentError.new("Invalid app_name: #{app_name}") unless APP_NAMES.include?(app_name)
     @app_name = app_name
   end
 
@@ -154,40 +155,15 @@ class AzureNotificationsService
     CGI.escape(url).gsub('+', '%20')
   end
 
-  def app_namespace
-    case @app_name
-    when true
-      @app_namespace = "admin"
-    when "admin"
-      @app_namespace = "admin"
-    when "donor"
-      @app_namespace = "donor"
-    when "stock"
-      @app_namespace = "stock"
-    else
-      @app_namespace = "browse"
-    end
-    #@app_namespace ||= (@app_name ? "admin" : "donor")
-  end
-
   def settings
-    Rails.application.secrets.azure_notifications[app_namespace]
+    Rails.application.secrets.azure_notifications[@app_name]
   end
 
   def notification_title
+    # TODO i18n for title
     prefix = Rails.env.production? ? "" : "S. "
-    case @app_name
-    when true
-      suffix = " Admin"
-    when "admin"
-      suffix = " Admin"
-    when "donor"
-      suffix = " Donor"
-    when "stock"
-      suffix = " Stock"
-    else
-      suffix = ""
-    end
-    prefix << "GoodCity" << suffix
+    suffix = @app_name == DONOR_APP ? '' : " #{@app_name.titleize}"
+    "#{prefix}GoodCity#{suffix}"
   end
+
 end

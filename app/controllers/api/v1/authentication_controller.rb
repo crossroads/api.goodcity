@@ -187,9 +187,7 @@ module Api
       end
 
       def current_user_channels
-        channels = current_user.channels
-        channels = Channel.add_admin_app_suffix(channels) if is_admin_app
-        channels
+        Channel.channels_for_user_with_app_context(current_user, app_name)
       end
 
       # Generate a token that contains the otp_auth_key.
@@ -223,12 +221,9 @@ module Api
       end
 
       def register_device_for_notifications
-        channels = current_user.channels
-        channels = Channel.add_admin_app_suffix(channels) if is_admin_app
-
         AzureRegisterJob.perform_later(
           params[:handle],
-          channels,
+          current_user_channels,
           params[:platform],
           app_name)
       end
