@@ -46,7 +46,7 @@ module Api
       api :DELETE, "/v1/locations/1", "Delete Location"
       description "If request comes from stockit, find record by matching it with stockit_id."
       def destroy
-        @location = Location.find_by(stockit_id: params[:id]) if is_stockit_request
+        @location = Location.find_by(stockit_id: params[:id]) if is_stockit_request?
         @location.try(:destroy)
         render json: {}
       end

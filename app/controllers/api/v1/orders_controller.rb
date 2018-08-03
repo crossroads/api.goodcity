@@ -37,7 +37,7 @@ module Api
 
       api :GET, '/v1/orders', "List all orders"
       def index
-        return my_orders if is_browse_app
+        return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
         records = @orders.with_eager_load.
           search(params['searchText'], params['toDesignateItem'].presence).latest.
@@ -48,7 +48,7 @@ module Api
 
       api :GET, '/v1/designations/1', "Get a order"
       def show
-        root = is_browse_app ? "order" : "designation"
+        root = is_browse_app? ? "order" : "designation"
         render json: @order,
           serializer: serializer,
           root: root,
@@ -113,7 +113,7 @@ module Api
           @order.stockit_contact = stockit_contact
           @order.stockit_organisation = stockit_organisation
           @order.detail = stockit_local_order
-        elsif is_browse_app
+        elsif is_browse_app?
           @order.assign_attributes(order_params)
           @order.created_by = current_user
           @order.detail_type = "GoodCity"
