@@ -9,7 +9,10 @@ class PushService
     data[:date] = Time.now.to_json.tr('"','')
     channel = Channel.add_app_name_suffix(channel, ADMIN_APP) if is_admin_app
 
+    # TODO handle stock and browse apps
+    app_name = is_admin_app ? ADMIN_APP : DONOR_APP
+
     SocketioSendJob.perform_later(channel, "notification", data.to_json)
-    AzureNotifyJob.perform_later(channel, data, is_admin_app)
+    AzureNotifyJob.perform_later(channel, data, app_name)
   end
 end
