@@ -96,12 +96,12 @@ class Message < ActiveRecord::Base
     sender_channel = current_channel
     channels = subscribed_user_channels - sender_channel - donor_channel
 
-    send_notification donor_channel, false unless is_private || offer.cancelled? || donor_channel == sender_channel
-    send_notification channels, true
+    send_notification(donor_channel, DONOR_APP) unless is_private || offer.cancelled? || donor_channel == sender_channel
+    send_notification(channels, ADMIN_APP)
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
-      send_notification Channel.supervisor, true
+      send_notification(Channel.supervisor, ADMIN_APP)
     end
   end
 
@@ -130,8 +130,8 @@ class Message < ActiveRecord::Base
     self.state_value = nil
   end
 
-  def send_notification(channel, is_admin_app)
-    PushService.new.send_notification channel, is_admin_app, {
+  def send_notification(channel, app_name)
+    PushService.new.send_notification channel, app_name, {
       category:   'message',
       message:    body.truncate(150, separator: ' '),
       is_private: is_private,
