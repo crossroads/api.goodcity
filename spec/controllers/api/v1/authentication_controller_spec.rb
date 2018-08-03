@@ -203,4 +203,43 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
   end
 
+  # High level smoke tests to ensure correct channels are returned
+  context "current_user_channels" do
+
+    context 'donor app' do
+      before { generate_and_set_token(user) }
+      before { set_donor_app_header }
+      let(:expected_channels) { ["user_#{user.id}"] }
+      it { expect(controller.send(:current_user_channels)).to eql(expected_channels) }
+    end
+
+    context 'admin app with supervisor role' do
+      before do
+        generate_and_set_token(supervisor)
+        set_admin_app_header
+      end
+      let(:expected_channels) { ["user_#{supervisor.id}_admin", 'supervisor'] }
+      it { expect(controller.send(:current_user_channels)).to eql(expected_channels) }
+    end
+
+    context 'stock app with order_fulfilment role' do
+      before do
+        generate_and_set_token(order_fulfilment)
+        set_stock_app_header
+      end
+      let(:expected_channels) { ["user_#{order_fulfilment.id}_stock", 'order_fulfilment'] }
+      it { expect(controller.send(:current_user_channels)).to eql(expected_channels) }
+    end
+
+    context 'browse app with charity role' do
+      before do
+        generate_and_set_token(charity_user)
+        set_browse_app_header
+      end
+      let(:expected_channels) { ["user_#{charity_user.id}_browse"] }
+      it { expect(controller.send(:current_user_channels)).to eql(expected_channels) }
+    end
+
+  end
+
 end

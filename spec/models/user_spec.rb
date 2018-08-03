@@ -170,6 +170,12 @@ describe User, :type => :model do
         user = create(:user, :supervisor)
         expect(user.channels).to match_array(["user_#{user.id}", "supervisor"])
       end
+
+      it "for order_fulfilment" do
+        user = create(:user, :order_fulfilment)
+        expect(user.channels).to match_array(["user_#{user.id}", "order_fulfilment"])
+      end
+
     end
   end
 
