@@ -230,7 +230,7 @@ module Api
           params[:handle],
           channels,
           params[:platform],
-          app_name.sub(".goodcity", "") )
+          app_name)
       end
     end
   end
