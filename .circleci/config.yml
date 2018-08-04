@@ -18,6 +18,9 @@ jobs:
       - image: circleci/redis:4.0.9-alpine
     working_directory: ~/api.goodcity
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "82:2d:b0:86:d3:4a:3f:e5:90:1f:8c:10:52:06:fa:3e"
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
@@ -37,6 +40,10 @@ jobs:
     environment:
       RAILS_ENV: TEST
     steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: echo "Test!"
 
   audit:
@@ -44,6 +51,10 @@ jobs:
       - image: circleci/ruby:2.5.1-node
     working_directory: ~/api.goodcity
     steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: gem install bundler-audit
       - run: bundle-audit -v --update
 
@@ -52,6 +63,10 @@ jobs:
       - image: circleci/ruby:2.5.1-node
     working_directory: ~/api.goodcity
     steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: echo "Deploy!"
 
 workflows:
