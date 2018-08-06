@@ -31,8 +31,6 @@ class Item < ActiveRecord::Base
   before_save :set_description
   after_commit :update_stockit_item, on: :update, unless: "GoodcitySync.request_from_stockit"
 
-  attr_accessor :request_from_admin
-
   def set_initial_state
     self.state ||= :draft
   end
@@ -115,7 +113,7 @@ class Item < ActiveRecord::Base
   def update_stockit_item
     if previous_changes.key?("donor_condition_id")
       packages.received.each do |package|
-        StockitUpdateJob.perform_later(package.id, request_from_admin)
+        StockitUpdateJob.perform_later(package.id, true)
       end
     end
   end
