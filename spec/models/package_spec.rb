@@ -83,6 +83,20 @@ RSpec.describe Package, type: :model do
       package.add_to_stockit
       expect(package.errors).to include(:code)
     end
+
+    it "allows multi quantity stockit sync if package received from admin with inventory_number" do
+      package = build :package, :received, request_from_admin: true
+      expect(Stockit::ItemSync).to receive(:create).with(package, package.request_from_admin).and_return({"status"=>201, "item_id"=> 12})
+      package.add_to_stockit
+      expect(package.stockit_id).to eq(12)
+    end
+
+    it "do not allows multi quantity stockit sync if package is not received from admin" do
+      package = build :package, :received, stockit_id: nil, request_from_admin: false
+      expect(Stockit::ItemSync).to receive(:create).with(package, package.request_from_admin).and_return({})
+      package.add_to_stockit
+      expect(package.stockit_id).to be_nil
+    end
   end
 
   describe "remove_from_stockit" do
