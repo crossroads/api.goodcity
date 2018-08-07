@@ -43,7 +43,7 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
-      - run: bin/rake db:create:all db:schema:load
+      # - run: bin/rake db:create:all db:schema:load
       - run: bundle exec rspec
 
   audit:
