@@ -35,15 +35,15 @@ jobs:
       - image: circleci/redis:4.0.9-alpine
     working_directory: ~/api.goodcity
     environment:
-      RAILS_ENV: TEST
-      BUNDLE_PATH: vendor/bundle
+      RAILS_ENV: test
+      BUNDLE_PATH: ~/api.goodcity/vendor/bundle
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
+      # - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      # - run: chmod +x ./cc-test-reporter
       - run: bundle exec rake db:create:all db:schema:load
       # - run: ./cc-test-reporter before-build
       - run: bundle exec rspec
