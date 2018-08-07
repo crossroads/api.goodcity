@@ -45,13 +45,18 @@ jobs:
       # - run: chmod +x ./cc-test-reporter
       - run: bundle --path vendor/bundle
       - run: bundle exec rake db:create:all db:schema:load
-      # - run: ./cc-test-reporter before-build
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter 
+      - run: ./cc-test-reporter before-build
       - run:
           command: bundle exec rspec --format progress --format RspecJunitFormatter -o ~/rspec/rspec.xml
           when: always
       - store_test_results:
           path: ~/rspec
-      # - run: ./cc-test-reporter after-build
+      - run: ./cc-test-reporter after-build  --exit-code $?
 
   audit:
     docker:
