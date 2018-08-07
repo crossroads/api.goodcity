@@ -36,7 +36,6 @@ jobs:
     working_directory: ~/api.goodcity
     environment:
       RAILS_ENV: test
-      BUNDLE_PATH: ~/api.goodcity/vendor/bundle
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
@@ -44,6 +43,7 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       # - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       # - run: chmod +x ./cc-test-reporter
+      - run: bundle --path vendor/bundle
       - run: bundle exec rake db:create:all db:schema:load
       # - run: ./cc-test-reporter before-build
       - run: bundle exec rspec
@@ -70,6 +70,7 @@ jobs:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
+      - run: bundle --path vendor/bundle
       - run: echo "Deploy!"
 
 workflows:
