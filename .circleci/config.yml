@@ -46,7 +46,11 @@ jobs:
       - run: bundle --path vendor/bundle
       - run: bundle exec rake db:create:all db:schema:load
       # - run: ./cc-test-reporter before-build
-      - run: bundle exec rspec
+      - run:
+          command: bundle exec rspec --format progress --format RspecJunitFormatter -o ~/rspec/rspec.xml
+          when: always
+      - store_test_results:
+          path: ~/rspec
       # - run: ./cc-test-reporter after-build
 
   audit:
