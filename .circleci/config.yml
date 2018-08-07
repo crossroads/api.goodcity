@@ -17,15 +17,17 @@ jobs:
     working_directory: ~/api.goodcity
     steps:
       - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run: gem install bundler
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
-      - run: bundle check --path=vendor/bundle || bundle install --path vendor/bundle --jobs=4 --retry=3
+      - run: bundle check --deployment || bundle install --deployment --jobs=4 --retry=3
+      - run: git diff Gemfile.lock
       - save_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
           paths:
-            - ~/api.goodcity/vendor/bundle
+            - vendor/bundle
 
   test:
     docker:
