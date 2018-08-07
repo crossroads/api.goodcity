@@ -119,7 +119,7 @@ class TwilioInboundCallManager
   end
 
   def send_calling_notification
-    PushService.new.send_notification offer.call_notify_channels, true, {
+    PushService.new.send_notification offer.call_notify_channels, ADMIN_APP, {
       category:  'incoming_call',
       message:   "#{user.full_name} calling now..",
       author_id: @user_id,
@@ -128,7 +128,7 @@ class TwilioInboundCallManager
   end
 
   def send_call_accept_notification
-    PushService.new.send_notification call_accepted_notify_channels, true, {
+    PushService.new.send_notification call_accepted_notify_channels, ADMIN_APP, {
       category:  'call_answered',
       message:   call_accepted_message,
       author_id: @user_id,

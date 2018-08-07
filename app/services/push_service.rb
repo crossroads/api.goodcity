@@ -1,15 +1,14 @@
 class PushService
-  def send_update_store(channel, is_admin_app, data)
-    channel = Channel.add_admin_app_suffix(channel) if is_admin_app
+  def send_update_store(channel, app_name, data)
+    channel = Channel.add_app_name_suffix(channel, ADMIN_APP) if app_name == ADMIN_APP
     SocketioSendJob.perform_later(channel, "update_store", data.to_json, true)
   end
 
-  def send_notification(channel, is_admin_app, data)
+  def send_notification(channel, app_name, data)
     data[:message] = ActionView::Base.full_sanitizer.sanitize(data[:message])
     data[:date] = Time.now.to_json.tr('"','')
-    channel = Channel.add_admin_app_suffix(channel) if is_admin_app
-
+    channel = Channel.add_app_name_suffix(channel, ADMIN_APP) if app_name == ADMIN_APP
     SocketioSendJob.perform_later(channel, "notification", data.to_json)
-    AzureNotifyJob.perform_later(channel, data, is_admin_app)
+    AzureNotifyJob.perform_later(channel, data, app_name)
   end
 end
