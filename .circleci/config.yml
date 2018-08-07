@@ -14,12 +14,11 @@ jobs:
   bundle_dependencies:
     docker:
       - image: circleci/ruby:2.5.1-node
-      - image: circleci/postgres:9.6.9-alpine-ram
-      - image: circleci/redis:4.0.9-alpine
+      #- image: circleci/postgres:9.6.9-alpine-ram
+      #- image: circleci/redis:4.0.9-alpine
     working_directory: ~/api.goodcity
     steps:
       - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run: cat ~/.ssh/known_hosts
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       # - restore_cache:
