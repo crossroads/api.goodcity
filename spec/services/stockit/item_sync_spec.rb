@@ -29,23 +29,23 @@ describe Stockit::ItemSync do
 
     it "should send create request and get success_response" do
       expect( Nestful ).to receive(:post).with( url, stockit_params, options ).and_return( mock_response )
-      expect(stockit.create).to eql( success_response )
+      expect(stockit.create(package.request_from_admin)).to eql( success_response )
     end
 
     it "should send create request and get error_response" do
       expect( Nestful ).to receive(:post).with( url, stockit_params, options ).and_return( mock_error_response )
-      expect(stockit.create).to eql( error_response )
+      expect(stockit.create(package.request_from_admin)).to eql( error_response )
     end
 
     it "should handle error case" do
       expect( Nestful ).to receive(:post).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit.create).to eql( "errors" => connection_error_response  )
+      expect(stockit.create(package.request_from_admin)).to eql( "errors" => connection_error_response  )
     end
 
     it "should not send create request if inventory_number is blank" do
       allow(package).to receive(:inventory_number).and_return(nil)
       expect( Nestful ).not_to receive(:post)
-      stockit.create
+      stockit.create(package.request_from_admin)
     end
 
   end
@@ -87,23 +87,23 @@ describe Stockit::ItemSync do
 
     it "should send update request and get success_response" do
       expect( Nestful ).to receive(:put).with( url, stockit_params, options ).and_return( mock_response )
-      expect(stockit.update).to eql( success_response )
+      expect(stockit.update(package.request_from_admin)).to eql( success_response )
     end
 
     it "should send update request and get error_response" do
       expect( Nestful ).to receive(:put).with( url, stockit_params, options ).and_return( mock_error_response )
-      expect(stockit.update).to eql( error_response )
+      expect(stockit.update(package.request_from_admin)).to eql( error_response )
     end
 
     it "should handle error case" do
       expect( Nestful ).to receive(:put).and_raise(Nestful::ConnectionError, connection_error_response )
-      expect(stockit.update).to eql( "errors" => connection_error_response  )
+      expect(stockit.update(package.request_from_admin)).to eql( "errors" => connection_error_response  )
     end
 
     it "should not send update request if inventory_number is blank" do
       allow(package).to receive(:inventory_number).and_return(nil)
       expect(Nestful).to_not receive(:put)
-      expect(stockit.update).to be_nil
+      expect(stockit.update(package.request_from_admin)).to be_nil
     end
 
   end

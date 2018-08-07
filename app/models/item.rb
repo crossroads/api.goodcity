@@ -113,7 +113,7 @@ class Item < ActiveRecord::Base
   def update_stockit_item
     if previous_changes.key?("donor_condition_id")
       packages.received.each do |package|
-        StockitUpdateJob.perform_later(package.id)
+        StockitUpdateJob.perform_later(package.id, true)
       end
     end
   end

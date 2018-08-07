@@ -79,10 +79,10 @@ module Api
       api :PUT, "/v1/packages/1", "Update a package"
       param_group :package
       def update
-        qty = params[:package][:quantity]
         @package.assign_attributes(package_params)
-        @package.received_quantity = qty if qty
+        @package.received_quantity = package_params[:quantity] if package_params[:quantity]
         @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
+        @package.request_from_admin = is_admin_app?
         packages_location_for_admin
 
         # use valid? to ensure mark_received errors get caught
