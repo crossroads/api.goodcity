@@ -57,7 +57,6 @@ gem 'active_record_union'
 gem 'kaminari'
 gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
-gem 'codeclimate-test-reporter'
 gem 'slack-ruby-client'
 gem 'whenever', '~>  0.9.5', require: false
 
@@ -90,7 +89,6 @@ group :test do
   gem 'webmock'
   gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"
-  gem "codeclimate-test-reporter", require: nil if ENV["CI"]
   gem 'rspec_junit_formatter'
   gem 'timecop'
 end

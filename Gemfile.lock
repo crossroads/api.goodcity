@@ -128,8 +128,6 @@ GEM
     cloudinary (1.1.2)
       aws_cf_signer
       rest-client
-    codeclimate-test-reporter (1.0.8)
-      simplecov (<= 0.13)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.2)
@@ -137,7 +135,7 @@ GEM
       safe_yaml (~> 1.0.0)
     crass (1.0.4)
     diff-lcs (1.3)
-    docile (1.1.5)
+    docile (1.3.1)
     domain_name (0.5.20160216)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (0.11.1)
@@ -358,8 +356,8 @@ GEM
       tilt (>= 1.4.0)
     sidekiq-statistic (1.2.0)
       sidekiq (>= 3.3.4, < 5)
-    simplecov (0.13.0)
-      docile (~> 1.1.0)
+    simplecov (0.16.1)
+      docile (~> 1.1)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
@@ -437,7 +435,6 @@ DEPENDENCIES
   capistrano-rvm
   capistrano-sidekiq
   cloudinary
-  codeclimate-test-reporter
   dotenv-rails (= 0.11.1)
   easyzpl!
   execjs
@@ -499,4 +496,4 @@ RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.16.2
+   1.16.3
