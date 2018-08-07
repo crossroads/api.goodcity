@@ -68,7 +68,7 @@ jobs:
       - run: gem install bundler-audit
       - run: bundle-audit -v --update
 
-  deploy:
+  deploy-master:
     docker:
       - image: circleci/ruby:2.5.1-node
     working_directory: ~/api.goodcity
@@ -79,6 +79,18 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: bundle exec cap staging invoke:rake TASK=-T
+
+  deploy-live:
+    docker:
+      - image: circleci/ruby:2.5.1-node
+    working_directory: ~/api.goodcity
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-bundle-{{ checksum "Gemfile.lock" }}
+      - run: bundle --path vendor/bundle
+      - run: bundle exec cap production invoke:rake TASK=-T
 
 workflows:
   version: 2
@@ -94,8 +106,19 @@ workflows:
       - audit:
           requires:
             - checkout_code
-      - deploy:
+      - deploy-master:
           requires:
             - test
             - audit
+          filters:
+            branches:
+              only: circle2
+      - deploy-live:
+          requires:
+            - test
+            - audit
+          filters:
+            branches:
+              only: live
+
 
