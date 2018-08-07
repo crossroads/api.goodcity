@@ -4,6 +4,7 @@ ruby "2.5.1"
 gem 'rails', '~> 4.2.0'
 gem 'rails-api'
 gem 'pg'
+gem 'rake'
 
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'

@@ -465,6 +465,7 @@ DEPENDENCIES
   rails (~> 4.2.0)
   rails-api
   rails-i18n
+  rake
   rake-progressbar
   rb-readline
   redis
