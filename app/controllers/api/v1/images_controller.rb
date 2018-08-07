@@ -78,7 +78,7 @@ module Api
       private
 
       def serialized_response(status = 200)
-        if is_stock_app
+        if is_stock_app?
           render json: @image, serializer: StockitImageSerializer,
             status: status, root: :image
         else
