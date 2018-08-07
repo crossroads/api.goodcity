@@ -41,9 +41,10 @@ jobs:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
-      - run: git diff
-      - run: bundle exec rake
-      - run: echo "Test!"
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - run: rake db:create:all db:schema:load
+      - run: bundle exec rspec
 
   audit:
     docker:
