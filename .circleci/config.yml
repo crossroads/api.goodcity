@@ -57,6 +57,9 @@ jobs:
       - attach_workspace:
           at: ~/api.goodcity/tmp
       - run: bundle install --path vendor/bundle
+      - run:
+          name: Wait for DB and Redis containers to start
+          command: dockerize -wait tcp://localhost:5432 -wait tcp://localhost:6379 -timeout 1m
       - run: bundle exec rake db:create:all db:schema:load
       - run:
           name: Rspec tests
