@@ -69,50 +69,23 @@ jobs:
       - run: bundle-audit -v --update
 
 
-  deploy-defaults: &deploy-defaults
+  deploy:
     docker:
       - image: circleci/ruby:2.5.1-node
     working_directory: ~/api.goodcity
-    environment:
-      stage: staging
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
-      - run: bundle exec cap $STAGE invoke:rake TASK=-T
-
-  deploy-master:
-    <<: *deploy-defaults
-    environment:
-      STAGE: staging
-
-  deploy-live:
-    <<: *deploy-defaults
-    environment:
-      STAGE: production
-
-  build:
-    docker:
-      - image: circleci/ruby:2.5.1-node
-    environment:
-      STAGE: staging
-      STAGE2: if [ "$CIRCLE_BRANCH" = "live" ]; then "production"; else "staging"; fi
-    steps:
-      - run: echo $STAGE
-      - run: echo $STAGE2
-      - run: if [ "$CIRCLE_BRANCH" = "circle2" ]; then STAGE3="production"; else STAGE3="staging"; fi
       - run: |
-          [ "$CIRCLE_BRANCH" == "circle2" ] && echo $STAGE3 || echo $STAGE3
-      - run: |
-          [ "$CIRCLE_BRANCH" == "circle2" ] && echo "circle2" || echo "not circle2"
-  
+          [ "$CIRCLE_BRANCH" == "circle2" ] && bundle exec cap production invoke:rake -T || bundle exec cap staging invoke:rake -T
+
 workflows:
   version: 2
   build-test-audit-and-deploy:
     jobs:
-      - build
       # - checkout_code
       # - bundle_dependencies:
       #     requires:
@@ -123,18 +96,10 @@ workflows:
       # - audit:
       #     requires:
       #       - checkout_code
-      # - deploy-master:
-      #     requires:
-      #       - test
-      #       - audit
-      #     filters:
-      #       branches:
-      #         only: circle2
-      # - deploy-live:
-      #     requires:
-      #       - test
-      #       - audit
-      #     filters:
-      #       branches:
-      #         only: live
-
+      - deploy:
+          # requires:
+          #   - test
+          #   - audit
+          filters:
+            branches:
+              only: "circle2|master|live"
