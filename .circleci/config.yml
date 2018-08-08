@@ -56,7 +56,6 @@ jobs:
           at: ~/api.goodcity/tmp
       - run: bundle install --path vendor/bundle
       - run: bundle exec rake db:create:all db:schema:load
-      - run: ./cc-test-reporter before-build
       - run:
           name: Rspec tests
           command: |
