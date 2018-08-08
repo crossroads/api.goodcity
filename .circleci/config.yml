@@ -69,7 +69,7 @@ jobs:
       - persist_to_workspace:
           root: tmp
           paths:
-            - codeclimate.$CIRCLE_NODE_INDEX.json
+            - codeclimate.*.json
 
   upload-coverage:
     docker:
