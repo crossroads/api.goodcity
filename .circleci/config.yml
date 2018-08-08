@@ -69,7 +69,7 @@ jobs:
       - run: bundle-audit -v --update
 
 
-  deploy:
+  build:
     docker:
       - image: circleci/ruby:2.5.1-node
     working_directory: ~/api.goodcity
@@ -96,7 +96,7 @@ workflows:
       # - audit:
       #     requires:
       #       - checkout_code
-      - deploy:
+      - build:
           # requires:
           #   - test
           #   - audit
