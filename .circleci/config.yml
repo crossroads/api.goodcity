@@ -62,14 +62,14 @@ jobs:
             bundle exec rspec --format progress \
                               --format RspecJunitFormatter \
                               --out ~/rspec/rspec.xml \
-                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split)
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
             ./tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.$CIRCLE_NODE_INDEX.json coverage/backend/.resultset.json
       - store_test_results:
           path: ~/rspec
       - persist_to_workspace:
           root: tmp
           paths:
-            - codeclimate.backend.json
+            - codeclimate.$CIRCLE_NODE_INDEX.json
 
   upload-coverage:
     docker:
@@ -123,9 +123,9 @@ workflows:
       - audit:
           requires:
             - checkout_code
-      # - upload-coverage:
-      #     requires:
-      #       - test
+      - upload-coverage:
+          requires:
+            - test
       - deploy:
           requires:
             - test
