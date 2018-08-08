@@ -92,8 +92,6 @@ jobs:
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: gem install bundler-audit
       - run: bundle-audit -v --update
 
