@@ -31,8 +31,8 @@ jobs:
   test:
     docker:
       - image: circleci/ruby:2.5.1-node
-      - image: circleci/postgres:9.6.9-alpine-ram
-      - image: circleci/redis:4.0.9-alpine
+      # - image: circleci/postgres:9.6.9-alpine-ram
+      # - image: circleci/redis:4.0.9-alpine
     working_directory: ~/api.goodcity
     environment:
       RAILS_ENV: test
@@ -68,7 +68,6 @@ jobs:
       - run: gem install bundler-audit
       - run: bundle-audit -v --update
 
-
   deploy:
     docker:
       - image: circleci/ruby:2.5.1-node
@@ -80,7 +79,7 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: |
-          [ "$CIRCLE_BRANCH" == "circle2" ] && bundle exec cap production invoke:rake -T || bundle exec cap staging invoke:rake -T
+          [ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy || bundle exec cap staging deploy
 
 workflows:
   version: 2
@@ -90,17 +89,16 @@ workflows:
       - bundle_dependencies:
           requires:
             - checkout_code
-      # - test:
-      #     requires:
-      #       - bundle_dependencies
-      # - audit:
-      #     requires:
-      #       - checkout_code
+      - test:
+          requires:
+            - bundle_dependencies
+      - audit:
+          requires:
+            - checkout_code
       - deploy:
           requires:
-          #   - test
-          #   - audit
-            - bundle_dependencies
+            - test
+            - audit
           filters:
             branches:
-              only: /^(circle2|master|live)$/
+              only: /^(master|live)$/
