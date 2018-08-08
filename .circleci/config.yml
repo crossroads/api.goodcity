@@ -1,9 +1,13 @@
 version: 2
+
+defaults: &defaults
+  docker:
+    - image: circleci/ruby:2.5.1-node
+  working_directory: ~/api.goodcity
+
 jobs:
   checkout_code:
-    docker:
-      - image: circleci/ruby:2.5.1-node
-    working_directory: ~/api.goodcity
+    <<: *defaults
     steps:
       - checkout
       - save_cache:
@@ -12,9 +16,7 @@ jobs:
             - ~/api.goodcity
 
   bundle_dependencies:
-    docker:
-      - image: circleci/ruby:2.5.1-node
-    working_directory: ~/api.goodcity
+    <<: *defaults
     steps:
       - run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: gem install bundler
@@ -39,12 +41,12 @@ jobs:
             - cc-test-reporter
 
   test:
+    <<: *defaults
     docker:
       - image: circleci/ruby:2.5.1-node
       - image: circleci/postgres:9.6.9-alpine-ram
       - image: circleci/redis:4.0.9-alpine
     parallelism: 4
-    working_directory: ~/api.goodcity
     environment:
       RAILS_ENV: test
     steps:
@@ -72,9 +74,7 @@ jobs:
             - codeclimate.*.json
 
   upload-coverage:
-    docker:
-      - image: circleci/ruby:2.5.1-node
-    working_directory: ~/api.goodcity
+    <<: *defaults
     steps:
       - attach_workspace:
           at: ~/api.goodcity/tmp
@@ -85,9 +85,7 @@ jobs:
             ./tmp/cc-test-reporter upload-coverage -i tmp/codeclimate.total.json
 
   audit:
-    docker:
-      - image: circleci/ruby:2.5.1-node
-    working_directory: ~/api.goodcity
+    <<: *defaults
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
@@ -97,9 +95,7 @@ jobs:
       - run: bundle-audit -v --update
 
   deploy:
-    docker:
-      - image: circleci/ruby:2.5.1-node
-    working_directory: ~/api.goodcity
+    <<: *defaults
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
