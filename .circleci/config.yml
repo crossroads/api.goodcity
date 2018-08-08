@@ -102,4 +102,4 @@ workflows:
           #   - audit
           filters:
             branches:
-              only: "circle2|master|live"
+              only: /^(circle2|master|live)$/
