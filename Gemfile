@@ -4,6 +4,7 @@ ruby "2.5.1"
 gem 'rails', '~> 4.2.0'
 gem 'rails-api'
 gem 'pg'
+gem 'rake'
 
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
@@ -29,9 +30,9 @@ gem 'rack-protection'
 gem 'state_machine'
 gem 'twilio-ruby'
 gem 'warden'
-gem 'puma' unless ENV["CI"]
+gem 'puma'
 gem 'rack-timeout'
-gem 'newrelic_rpm' unless ENV["CI"]
+gem 'newrelic_rpm'
 gem 'traco'
 gem 'rails-i18n'
 gem 'http_accept_language'
@@ -57,26 +58,23 @@ gem 'active_record_union'
 gem 'kaminari'
 gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
-gem 'codeclimate-test-reporter'
 gem 'slack-ruby-client'
 gem 'whenever', '~>  0.9.5', require: false
 
 group :development do
-  unless ENV["CI"]
-    gem 'spring'
-    gem 'annotate'
-    gem 'rb-readline'
-    gem 'bullet'
-    gem 'railroady'
-    gem "spring-commands-rspec", group: :development
-    gem 'guard-rspec', require: false
-    gem 'foreman', require: false
-    gem 'ruby-graphviz' # only enable when needed for workflow diagram generation
-  end
+  gem 'spring'
+  gem 'annotate'
+  gem 'rb-readline'
+  gem 'bullet'
+  gem 'railroady'
+  gem "spring-commands-rspec", group: :development
+  gem 'guard-rspec', require: false
+  gem 'foreman', require: false
+  gem 'ruby-graphviz' # only enable when needed for workflow diagram generation
 end
 
 group :development, :test do
-  gem 'byebug' unless ENV["CI"] or ENV["RM_INFO"]
+  gem 'byebug'
   gem 'rspec-rails'
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
@@ -90,7 +88,6 @@ group :test do
   gem 'webmock'
   gem 'shoulda-matchers'
   gem "shoulda-callback-matchers"
-  gem "codeclimate-test-reporter", require: nil if ENV["CI"]
   gem 'rspec_junit_formatter'
   gem 'timecop'
 end
