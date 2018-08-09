@@ -1,3 +1,7 @@
+# Required environment variables
+# CC_TEST_REPORTER_ID   - for reporting code climate statistics
+# ROLLBAR_ACCESS_TOKEN  - for recording deployments
+
 version: 2
 
 defaults: &defaults
