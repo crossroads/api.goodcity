@@ -27,7 +27,8 @@ module Api
       api :POST, "/v1/organisations_user", "Create a package"
       param_group :organisations_user
       def create
-        save_and_render_object_with_errors(@organisations_user)
+        org_user = OrganisationsUser.organisation_user?(@organisations_user)
+        save_and_render_object_with_errors(org_user)
       end
 
       private
