@@ -6,24 +6,25 @@ class OrganisationsUser < ActiveRecord::Base
 
   after_create :send_welcome_msg, :create_user_role
 
-  def self.create_or_update_existing_user_object(organisation_user)
-    existing_user = User.find_by_mobile(organisation_user.user.mobile)
-    unless existing_user.nil?
-      return organisation_user if is_user_exists_in_organisation(existing_user, organisation_user)
-      begin
-        existing_user.update_attributes(first_name: organisation_user.user.first_name, last_name: organisation_user.user.last_name, email: organisation_user.user.email)
-      rescue Exception => e
-        return e
-      end
-      organisation_user.user_id = existing_user.id
-      organisation_user
-    else
-      organisation_user
-    end
+  def create_or_update_existing_organisation_user
+    existing_user = User.find_by_mobile(user.mobile)
+    if existing_user && already_exist_in_same_organisation?(existing_user)
+       self
+    elsif existing_user
+       existing_user.first_name = user.first_name
+       existing_user.last_name = user.last_name
+       existing_user.email = user.email
+       self.user_id = existing_user.id
+       existing_user.save
+       existing_user
+     else
+       self
+     end
+
   end
 
-  def self.is_user_exists_in_organisation(existing_user, organisation_user)
-    existing_user.organisations_users.exists? && existing_user.organisations_users.pluck(:organisation_id).include?(organisation_user.organisation_id)
+  def already_exist_in_same_organisation?(existing_user)
+    existing_user.organisations.include?(organisation)
   end
 
   private

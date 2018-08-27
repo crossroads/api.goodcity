@@ -71,10 +71,21 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
     it "add organisation user with existing mobile from User Model" do
       organisations_user = create :organisations_user
-      organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
+      organisations_user_params[:user_attributes][:mobile] = "+85295367257"
       expect {
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(1)
+      expect(response.status).to eq(201)
+    end
+
+    it "do not add organisation user if mobile number already exists in organisation", :show_in_doc do
+      organisations_user = create :organisations_user
+      new_organisations_user_params[:organisation_id] = organisations_user.organisation_id
+      new_organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
+      expect {
+        post :create, format: :json, organisations_user: new_organisations_user_params
+      }.to change(OrganisationsUser, :count).by(0)
+      expect(response.status).to eq(422)
     end
   end
 end
