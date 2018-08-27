@@ -140,6 +140,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_requests_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_requests')
+      end
+    end
+
     trait :with_can_create_and_read_messages_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_create_and_read_messages')

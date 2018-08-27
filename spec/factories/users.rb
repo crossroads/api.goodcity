@@ -22,7 +22,7 @@ FactoryBot.define do
         after(:create) do |user|
           user.roles << create("#{role}_role")
         end
-      end  
+      end
     end
 
     trait :with_multiple_roles_and_permissions do
@@ -96,6 +96,12 @@ FactoryBot.define do
     trait :with_can_manage_items_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_manage_items_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_requests_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_requests_permission, name: evaluator.role_name)
       end
     end
 
