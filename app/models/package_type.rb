@@ -18,6 +18,7 @@ class PackageType < ActiveRecord::Base
 
   has_many :items, inverse_of: :package_type
   has_many :packages, inverse_of: :package_type
+  has_many :requests
 
   has_many :package_categories_package_types
   has_many :package_categories, through: :package_categories_package_types
