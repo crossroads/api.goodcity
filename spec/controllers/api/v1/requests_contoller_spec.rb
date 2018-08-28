@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::RequestsController, type: :controller do
 
   let(:user)  { create(:user, :with_can_manage_requests_permission, role_name: 'Supervisor') }
-  le(:request) { create(:request) }
+  let(:request) { create(:request) }
   let(:request_params) { FactoryBot.attributes_for(:request) }
   let(:parsed_body) { JSON.parse(response.body ) }
 
