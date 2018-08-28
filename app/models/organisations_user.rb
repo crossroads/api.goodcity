@@ -8,23 +8,28 @@ class OrganisationsUser < ActiveRecord::Base
 
   def create_or_update_existing_organisation_user
     existing_user = User.find_by_mobile(user.mobile)
-    if existing_user && already_exist_in_same_organisation?(existing_user)
-       self
-    elsif existing_user
-       existing_user.first_name = user.first_name
-       existing_user.last_name = user.last_name
-       existing_user.email = user.email
-       self.user_id = existing_user.id
-       existing_user.save
-       existing_user
-     else
-       self
-     end
-
+    return self if already_existing_user_with_same_organisation?(existing_user)
+    if existing_user
+      update_existing_user(existing_user)
+    end
+    self
   end
 
   def already_exist_in_same_organisation?(existing_user)
     existing_user.organisations.include?(organisation)
+  end
+
+  def already_existing_user_with_same_organisation?(existing_user)
+    existing_user && already_exist_in_same_organisation?(existing_user)
+  end
+
+  def update_existing_user(existing_user)
+    existing_user.first_name = user.first_name
+    existing_user.last_name = user.last_name
+    existing_user.email = user.email
+    existing_user.save
+    self.user_id = existing_user.id
+    self
   end
 
   private
