@@ -69,7 +69,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       expect(subject["errors"]).to eq("User email is invalid")
     end
 
-    it "add organisation user with existing mobile from User Model" do
+    it "adds organisation user with existing mobile from User Model" do
       organisations_user = create :organisations_user
       organisations_user_params[:user_attributes][:mobile] = "+85295367257"
       expect {
@@ -86,6 +86,15 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: new_organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
+    end
+
+    it "adds new user organisation user if user do not exist in User Model" do
+      organisations_user = create :organisations_user
+      expect {
+        post :create, format: :json, organisations_user: organisations_user_params
+      }.to change(OrganisationsUser, :count).by(1)
+      expect(response.status).to eq(201)
+      expect(OrganisationsUser.count).to eq(2)
     end
   end
 end
