@@ -25,16 +25,6 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       expect(response.status).to eq(201)
     end
 
-    # it "sends error if new organisations_user is with existing mobile number", :show_in_doc do
-    #   organisations_user = create :organisations_user
-    #   organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
-    #   expect {
-    #     post :create, format: :json, organisations_user: organisations_user_params
-    #   }.to change(OrganisationsUser, :count).by(0)
-    #   expect(response.status).to eq(422)
-    #   expect(subject["errors"]).to eq("Mobile has already been taken")
-    # end
-
     it "sends error if new organisations_user is with invalid mobile number", :show_in_doc do
       organisations_user_params[:user_attributes][:mobile] = "23535"
       expect {
@@ -95,6 +85,19 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       }.to change(OrganisationsUser, :count).by(1)
       expect(response.status).to eq(201)
       expect(OrganisationsUser.count).to eq(2)
+    end
+
+    it "update existing user first_name, last_name and email" do
+      organisations_user = create :organisations_user
+      new_organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
+      expect {
+        post :create, format: :json, organisations_user: organisations_user_params
+      }.to change(OrganisationsUser, :count).by(1)
+      expect(response.status).to eq(201)
+      expect(OrganisationsUser.count).to eq(2)
+      debugger
+      expect(OrganisationsUser.last.user.first_name).to eq(new_organisations_user_params[:user_attributes][:first_name])
+      expect(OrganisationsUser.last.user.last_name).to eq(new_organisations_user_params[:user_attributes][:last_name])
     end
   end
 end
