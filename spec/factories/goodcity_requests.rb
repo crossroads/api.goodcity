@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :request do
+  factory :goodcity_request do
     association :order
     association :package_type
     quantity 1
