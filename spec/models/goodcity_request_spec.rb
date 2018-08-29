@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Request, type: :model do
+RSpec.describe GoodcityRequest, type: :model do
   describe "Associations" do
     it { is_expected.to belong_to :order }
     it { is_expected.to belong_to :package_type }

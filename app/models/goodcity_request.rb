@@ -1,4 +1,4 @@
-class Request < ActiveRecord::Base
+class GoodcityRequest < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   belongs_to :package_type
   belongs_to :order

@@ -1,5 +1,5 @@
 module Api::V1
-  class RequestSerializer < ApplicationSerializer
+  class GoodcityRequestSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :quantity, :description, :code_id
     # Commented below line as it goes into infinite loop of rendering order and request, also don't need to render order again

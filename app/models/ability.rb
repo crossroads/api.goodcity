@@ -44,9 +44,9 @@ class Ability
   def define_abilities
     address_abilities
     contact_abilities
-    request_abilitites
     deliveries_abilities
     gogovan_order_abilities
+    goodcity_request_abilitites
     holiday_abilities
     image_abilities
     item_abilities
@@ -79,9 +79,9 @@ class Ability
     can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
   end
 
-  def request_abilitites
+  def goodcity_request_abilitites
     if can_manage_requests?
-      can [:create, :destroy, :update], Request
+      can [:create, :destroy, :update], GoodcityRequest
     end
   end
 
