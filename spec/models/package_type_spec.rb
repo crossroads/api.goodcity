@@ -12,6 +12,7 @@ RSpec.describe PackageType, type: :model do
   describe 'Associations' do
     it { is_expected.to have_many :subpackage_types }
     it { is_expected.to have_many :child_package_types }
+    it { is_expected.to have_many :goodcity_requests }
   end
 
   describe 'scope' do

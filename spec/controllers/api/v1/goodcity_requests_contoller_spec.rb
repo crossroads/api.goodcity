@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
-  let(:user)  { create(:user, :with_can_manage_requests_permission, role_name: 'Supervisor') }
+  let(:user)  { create(:user, :with_can_manage_goodcity_requests_permission, role_name: 'Supervisor') }
   let(:goodcity_request) { create(:goodcity_request) }
   let(:goodcity_request_params) { FactoryBot.attributes_for(:goodcity_request) }
   let(:parsed_body) { JSON.parse(response.body ) }
@@ -23,7 +23,6 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     let(:gc_request) { create(:goodcity_request, quantity: 5) }
 
     it "Updates goodcity_request record", :show_in_doc do
-      params = goodcity_request_params
       put :update, id: goodcity_request.id, goodcity_request: gc_request.attributes.except(:id)
       expect(response.status).to eq(201)
       expect(goodcity_request.reload.quantity).to eq(goodcity_request.quantity)

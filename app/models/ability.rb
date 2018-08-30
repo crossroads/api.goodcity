@@ -6,7 +6,7 @@ class Ability
 
   attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids, :user_permissions
 
-  PERMISSION_NAMES = ['can_manage_items', 'can_manage_requests', 'can_manage_packages',
+  PERMISSION_NAMES = ['can_manage_items', 'can_manage_goodcity_requests', 'can_manage_packages',
     'can_manage_offers', 'can_manage_organisations_users',
     'can_manage_deliveries', 'can_manage_delivery_address', 'can_manage_delivery_address',
     'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
@@ -80,7 +80,7 @@ class Ability
   end
 
   def goodcity_request_abilitites
-    if can_manage_requests?
+    if can_manage_goodcity_requests?
       can [:create, :destroy, :update], GoodcityRequest
     end
   end

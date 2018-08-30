@@ -3,5 +3,5 @@ class GoodcityRequest < ActiveRecord::Base
   belongs_to :package_type
   belongs_to :order
   belongs_to :created_by, class_name: 'User'
-  validates  :quantity,  numericality: { greater_than_or_equal_to: 1 }
+  validates  :quantity, numericality: { greater_than_or_equal_to: 1 }
 end
