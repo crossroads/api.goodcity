@@ -140,9 +140,9 @@ FactoryBot.define do
       end
     end
 
-    trait :with_can_manage_requests_permission do
+    trait :with_can_manage_goodcity_requests_permission do
       after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_requests')
+        role.permissions << (create :permission, name: 'can_manage_goodcity_requests')
       end
     end
 
