@@ -99,9 +99,9 @@ FactoryBot.define do
       end
     end
 
-    trait :can_mange_goodcity_requests_permission do
+    trait :with_can_manage_goodcity_requests_permission do
       after(:create) do |user, evaluator|
-        user.roles << (create :role, :can_mange_goodcity_requests_permission, name: evaluator.role_name)
+        user.roles << (create :role, :with_can_manage_goodcity_requests_permission, name: evaluator.role_name)
       end
     end
 
