@@ -32,6 +32,8 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
+  scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
+
   scope :with_eager_load, -> {
     includes([
       { packages: [:locations, :package_type] }
@@ -250,7 +252,7 @@ class Order < ActiveRecord::Base
     if to_designate_item
       join_order_associations.active_orders
     else
-      join_order_associations
+      join_order_associations.non_draft_orders
     end
   end
 
