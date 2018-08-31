@@ -27,7 +27,12 @@ module Api
       api :POST, "/v1/organisations_user", "Create a package"
       param_group :organisations_user
       def create
-        save_and_render_object_with_errors(@organisations_user.create_or_update_existing_organisation_user)
+        organisation_user = OrganisationsUserBuilder.new(@organisations_user).build
+        if organisation_user.valid?
+          render json: organisation_user, serializer: serializer, status: 201
+        else
+          render_error(organisation_user.errors.full_messages.join('. '))
+        end
       end
 
       private

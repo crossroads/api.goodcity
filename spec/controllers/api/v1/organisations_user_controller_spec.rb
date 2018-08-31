@@ -34,22 +34,6 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       expect(subject["errors"]).to eq("Mobile is invalid")
     end
 
-    it "assigns 'charity' role to user and creates user_role", :show_in_doc do
-      expect {
-        post :create, format: :json, organisations_user: organisations_user_params
-      }.to change(UserRole, :count).by(1)
-      expect(OrganisationsUser.last.user.roles.pluck(:name)).to include('Charity')
-    end
-
-    it "sends error if new organisations_user is with blank mobile number", :show_in_doc do
-      organisations_user_params[:user_attributes][:mobile] = ""
-      expect {
-        post :create, format: :json, organisations_user: organisations_user_params
-      }.to change(OrganisationsUser, :count).by(0)
-      expect(response.status).to eq(422)
-      expect(subject["errors"]).to eq("Mobile can't be blank. Mobile is invalid")
-    end
-
     it "sends error if new organisations_user is with invalid email id", :show_in_doc do
       organisations_user_params[:user_attributes][:email] = "abc"
       expect {
@@ -58,7 +42,6 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       expect(response.status).to eq(422)
       expect(subject["errors"]).to eq("User email is invalid")
     end
-
 
     it "creates new organisations_user record  if user with mobile number exists in db and its not assigned to same organisation" do
       organisations_user = create :organisations_user
@@ -78,29 +61,6 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
       expect(subject["errors"]).to eq("Mobile has already been taken")
-    end
-
-    it "creates new user organisation_user if user do not exist in db with same mobile number and not assigned to organisation" do
-      expect {
-        post :create, format: :json, organisations_user: organisations_user_params
-      }.to change(OrganisationsUser, :count).by(1)
-      expect(response.status).to eq(201)
-      expect(OrganisationsUser.first.user.first_name).to eq(organisations_user_params[:user_attributes][:first_name])
-      expect(OrganisationsUser.first.user.last_name).to eq(organisations_user_params[:user_attributes][:last_name])
-      expect(OrganisationsUser.first.user.last_name).to eq(organisations_user_params[:user_attributes][:last_name])
-      expect(OrganisationsUser.first.user.email).to eq(organisations_user_params[:user_attributes][:email])
-    end
-
-    it "update existing users first_name, last_name and email while adding it to organisation" do
-      organisations_user = create :organisations_user
-      new_organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
-      expect {
-        post :create, format: :json, organisations_user: organisations_user_params
-      }.to change(OrganisationsUser, :count).by(1)
-      expect(response.status).to eq(201)
-      expect(OrganisationsUser.last.user.first_name).to eq(new_organisations_user_params[:user_attributes][:first_name])
-      expect(OrganisationsUser.last.user.last_name).to eq(new_organisations_user_params[:user_attributes][:last_name])
-      expect(OrganisationsUser.last.user.email).to eq(new_organisations_user_params[:user_attributes][:email])
     end
   end
 end
