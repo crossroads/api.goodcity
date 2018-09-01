@@ -68,7 +68,6 @@ The following command will start the ```rails server```, ```sidekiq workers``` a
 
     foreman start
 
-
 ## Deployment
 
 Using capistrano, commit all changes to master branch and push to github. Then type:
@@ -90,6 +89,13 @@ To update documentation examples ensure test has `:show_in_doc` and then run:
 
     APIPIE_RECORD=examples rspec                                *for all tests*
     APIPIE_RECORD=examples rspec spec/models/offer_spec.rb:29   *for specific test*
+
+To update specific model diagrams, use the following commands:
+
+    railroady --hide-magic -M -j -t -s app/models/order*,app/models/stockit_local_order* | dot -Tpng > doc/models_orders.png
+    railroady --hide-magic -M -j -t -s app/models/package.rb,app/models/pallet*,app/models/box*,app/models/item*,app/models/package_type*,app/models/packages_location.rb | dot -Tpng > doc/models_packages.png
+    railroady --hide-magic -M -j -t -s app/models/package.rb,app/models/item.rb,app/models/offer.rb,app/models/message.rb,app/models/user.rb,app/models/delivery.rb,app/models/schedule.rb,app/models/address.rb,app/models/contact.rb | dot -Tpng > doc/models_offers.png
+    railroady --hide-magic -M -j -t -s app/models/user.rb,app/models/role.rb,app/models/permission.rb,app/models/role_permission.rb,app/models/user_role.rb,app/models/auth_token.rb,app/models/organisation.rb,app/models/organisations_user.rb,app/models/address.rb | dot -Tpng > doc/models_users.png
 
 ## License
 
