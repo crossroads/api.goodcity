@@ -57,7 +57,6 @@ module Api
           include_order: false,
           include_territory: true,
           include_images: true,
-          include_territory: true,
           exclude_stockit_set_item: true
       end
 
