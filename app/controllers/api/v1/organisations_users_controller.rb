@@ -27,11 +27,11 @@ module Api
       api :POST, "/v1/organisations_user", "Create a package"
       param_group :organisations_user
       def create
-        organisation_user = OrganisationsUserBuilder.new(@organisations_user).build
-        if organisation_user.valid?
+        builder = OrganisationsUserBuilder.new(@organisations_user).build
+        if builder['result'] == true
           render json: organisation_user, serializer: serializer, status: 201
         else
-          render_error(organisation_user.errors.full_messages.join('. '))
+          render_error(builder['errors'])
         end
       end
 

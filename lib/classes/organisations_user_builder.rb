@@ -1,26 +1,40 @@
 class OrganisationsUserBuilder
 
-  def initialize(organisations_user)
-    @organisations_user = organisations_user
-    @organisation_id = organisations_user.organisation_id
-    @user = organisations_user.user
+  # :organisations_user: {
+  #   :organisation_id,
+  #   :position,
+  #   user_attributes: {
+  #     :first_name,
+  #     :last_name,
+  #     :mobile,
+  #     :email
+  #   }
+
+  def initialize(params)
+    @organisation_id = params['organisation_id']
+    @user_attributes = params['user_attributes']
+    @mobile = @user_attributes['mobile']
+    fail_with_error(I18n.t('organisations_user_builder.organisation.blank')) unless @organisation_id.present?
+    fail_with_error(I18n.t('organisations_user_builder.user.mobile.blank')) unless @mobile.present?
   end
 
   def build
-    mobile = @user.mobile
-    raise ValueError("No mobile provided") unless mobile.present?
-    user = User.where(mobile: mobile).first_or_create(@user.attributes)
-    if user && !user_belongs_to_organisation(user)
-      @organisations_user.user = user
-      if @organisations_user.save
-        TwilioService.new(user).send_welcome_msg
-        user.roles << charity_role unless user.roles.include?(charity_role)
-      end
+    user = User.where(mobile: @mobile).first_or_create(@user_attributes)
+    return fail_with_error(user.errors) unless user.valid?
+    return fail_with_error(I18n.t('organisations_user_builder.organisation.not_found')) unless organisation.exists?
+    if !user_belongs_to_organisation(user)
+      organisation.users << user
+      TwilioService.new(user).send_welcome_msg
+      user.roles << charity_role unless user.roles.include?(charity_role)
     end
-    @organisations_user
+    return_success
   end
 
   private
+
+  def organisation
+    @organisation ||= Organisation.find(@organisation_id)
+  end
 
   def user_belongs_to_organisation(user)
     user.organisation_ids.include?(@organisation_id)
@@ -28,6 +42,15 @@ class OrganisationsUserBuilder
 
   def charity_role
     @charity_role ||= Role.charity
+  end
+
+  def fail_with_error(errors)
+    errors = errors.full_messages.join('. ') if errors.respond_to?(:full_messages)
+    {'result' => false, 'errors' => errors}
+  end
+
+  def return_success
+    {'result': true}
   end
 
 end

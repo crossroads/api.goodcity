@@ -1,16 +1,28 @@
 require "rails_helper"
 
+  # :organisations_user: {
+  #   :organisation_id,
+  #   :position,
+  #   user_attributes: {
+  #     :first_name,
+  #     :last_name,
+  #     :mobile,
+  #     :email
+  #   }
+
 describe OrganisationsUserBuilder do
-  let(:organisation){ create :organisation}
-  let(:user){ create :user}
-  let(:organisations_user){ create :organisations_user, user: user, organisation: organisation }
-  let(:organisations_user_builder)  {OrganisationsUserBuilder.new(organisations_user)}
-  let!(:role) { create :charity_role}
+  let(:organisation) { create :organisation}
+  let(:user) { create :user }
+  let(:organisations_user) { create :organisations_user, user: user, organisation: organisation }
+  let(:organisations_user_builder) { OrganisationsUserBuilder.new(params) }
+  let(:params) { 'organisation_id' => organisation.id, 'user_attributes' => {'mobile' => mobile} }
+  let(:mobile) { '+85251111111' }
+  let!(:role) { create :charity_role }
 
   context "initialization" do
     it { expect(organisations_user_builder.instance_variable_get("@organisations_user")).to eql(organisations_user) }
-    it { expect(organisations_user_builder.instance_variable_get("@organisation_id")).to eql(organisations_user.organisation.id) }
-    it { expect(organisations_user_builder.instance_variable_get("@user")).to eql(organisations_user.user) }
+    it { expect(organisations_user_builder.instance_variable_get("@user_attributes")).to eql(organisations_user.organisation.id) }
+    it { expect(organisations_user_builder.instance_variable_get("@mobile")).to eql(organisations_user.user) }
   end
 
   context "build" do
