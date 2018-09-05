@@ -66,4 +66,6 @@ zh-tw:
     user:
       mobile:
         blank: "Mobile can't be blank"
+    existing_user:
+      present: "User's already exist in organisation"
 

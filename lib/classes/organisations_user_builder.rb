@@ -19,25 +19,27 @@ class OrganisationsUserBuilder
   end
 
   def build
-    user = User.where(mobile: @mobile).first_or_create(@user_attributes)
+    user = User.where(mobile: @mobile).first_or_create(@user_attributes.to_hash)
     return fail_with_error(user.errors) unless user.valid?
-    return fail_with_error(I18n.t('organisations_user_builder.organisation.not_found')) unless organisation.exists?
+    return fail_with_error(I18n.t('organisations_user_builder.organisation.not_found')) unless organisation
     if !user_belongs_to_organisation(user)
       organisation.users << user
       TwilioService.new(user).send_welcome_msg
       user.roles << charity_role unless user.roles.include?(charity_role)
+      return_success
+    else
+      return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
     end
-    return_success
   end
 
   private
 
   def organisation
-    @organisation ||= Organisation.find(@organisation_id)
+    @organisation ||= Organisation.find_by_id(@organisation_id)
   end
 
   def user_belongs_to_organisation(user)
-    user.organisation_ids.include?(@organisation_id)
+    user.organisation_ids.include?(@organisation_id.to_i)
   end
 
   def charity_role
@@ -46,11 +48,11 @@ class OrganisationsUserBuilder
 
   def fail_with_error(errors)
     errors = errors.full_messages.join('. ') if errors.respond_to?(:full_messages)
-    {'result' => false, 'errors' => errors}
+    { 'result' => false, 'errors' => errors }
   end
 
   def return_success
-    {'result': true}
+    { 'result': true }
   end
 
 end
