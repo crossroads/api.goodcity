@@ -1,8 +1,7 @@
 module Api
   module V1
     class OrganisationsUsersController < Api::V1::ApiController
-      load_and_authorize_resource :organisations_user, parent: false
-
+      authorize_resource :organisations_user, parent: false
       resource_description do
         short "Get Organisations Users."
         formats ["json"]
@@ -27,8 +26,8 @@ module Api
       api :POST, "/v1/organisations_user", "Create a package"
       param_group :organisations_user
       def create
-        builder = OrganisationsUserBuilder.new(@organisations_user).build
-        if builder['result'] == true
+        builder = OrganisationsUserBuilder.new(params['organisations_user']).build
+        if builder[:result]
           render json: organisation_user, serializer: serializer, status: 201
         else
           render_error(builder['errors'])
