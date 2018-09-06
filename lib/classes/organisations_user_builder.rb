@@ -11,10 +11,10 @@ class OrganisationsUserBuilder
   #   }
 
   def initialize(params)
-    @organisation_id = params['organisation_id']
-    @user_attributes = params['user_attributes']
-    @mobile = @user_attributes['mobile']
-    @position = @user_attributes['position']
+    @organisation_id = params[:organisation_id].to_i
+    @user_attributes = params[:user_attributes]
+    @mobile = @user_attributes[:mobile]
+    @position = params[:position]
     fail_with_error(I18n.t('organisations_user_builder.organisation.blank')) unless @organisation_id.present?
     fail_with_error(I18n.t('organisations_user_builder.user.mobile.blank')) unless @mobile.present?
   end
@@ -40,7 +40,7 @@ class OrganisationsUserBuilder
   end
 
   def user_belongs_to_organisation(user)
-    user.organisation_ids.include?(@organisation_id.to_i)
+    user.organisation_ids.include?(@organisation_id)
   end
 
   def charity_role
