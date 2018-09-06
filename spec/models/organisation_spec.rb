@@ -23,15 +23,31 @@ RSpec.describe Organisation, type: :model do
 
   describe 'Class Methods' do
     describe '.search' do
-      let(:organisation) { create :organisation, name_en: "ZUNI ICOSAHEDRON", name_zh_tw: "進念二十面體" }
+      context 'when name_en and name_zh_tw both are pesent' do
+        let(:organisation) { create :organisation, name_en: "ZUNI ICOSAHEDRON", name_zh_tw: "進念二十面體" }
 
-      it 'performs case insensitive search for organisation with matching name_en' do
-        expect(Organisation.search("zun")).to include(organisation)
-        expect(Organisation.search("ZUNI")).to include(organisation)
+        it 'performs case insensitive search for organisation with matching name_en' do
+          expect(Organisation.search("zun")).to include(organisation)
+          expect(Organisation.search("ZUNI")).to include(organisation)
+        end
+
+        it 'performs case insensitive search for organisation with matching name_zh_tw' do
+          expect(Organisation.search("進念")).to include(organisation)
+        end
       end
 
-      it 'performs case insensitive search for organisation with matching name_zh_tw' do
-        expect(Organisation.search("進念")).to include(organisation)
+      context 'when name_zh_tw is nil' do
+        it 'performs case insensitive search for organisation with matching name_en' do
+          organisation = create :organisation, name_en: "ZUNI ICOSAHEDRON"
+          expect(Organisation.search("zun")).to include(organisation)
+        end
+      end
+
+      context 'when name_en is nil' do
+        it 'performs case insensitive search for organisation with matching name_en' do
+          organisation = create :organisation, name_zh_tw: "進念二十面體"
+          expect(Organisation.search("進念二十")).to include(organisation)
+        end
       end
     end
   end
