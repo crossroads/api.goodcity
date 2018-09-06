@@ -28,7 +28,7 @@ module Api
       def create
         builder = OrganisationsUserBuilder.new(params['organisations_user']).build
         if builder[:result]
-          render json: organisation_user, serializer: serializer, status: 201
+          save_and_render_object_with_errors(builder[:organisations_user])
         else
           render_error(builder['errors'])
         end
