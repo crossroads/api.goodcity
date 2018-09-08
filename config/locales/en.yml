@@ -64,3 +64,11 @@ en:
     move_stockit: "You can only move it using Stockit."
   orders_package:
     already_dispatched: "This has been already dispatched."
+  organisations_user_builder:
+    organisation:
+      blank: "Organisation can't be blank"
+      not_found: "Organisation not found"
+    user:
+      mobile:
+        blank: "Mobile can't be blank"
+    
