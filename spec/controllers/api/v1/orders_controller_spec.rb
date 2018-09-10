@@ -56,25 +56,24 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
 
     context 'Stock App' do
-      before { generate_and_set_token(user) }
-
-      it 'returns searched non-draft order as designation if search text is present' do
+      before { 
+        generate_and_set_token(user) 
         request.headers["X-GOODCITY-APP-NAME"] = "stock.goodcity"
       }
 
       it 'returns the number of items specified for the page' do
-        5.times { FactoryBot.create :order } # There are now 7 orders in total
+        5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 orders in total
         get :index, page: 1, per_page: 5
         expect(parsed_body['designations'].count).to eq(5)
       end
 
       it 'returns the remaining items in the last page' do
-        5.times { FactoryBot.create :order } # There are now 7 orders in total
+        5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 orders in total
         get :index, page: 2, per_page: 5
         expect(parsed_body['designations'].count).to eq(2)
       end
 
-      it 'can search orders using their ID' do
+      it 'returns searched non-draft order as designation if search text is present' do
         get :index, searchText: order.code
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -84,15 +83,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it 'returns empty response if search text is draft order' do
-        request.headers["X-GOODCITY-APP-NAME"] = "stock.goodcity"
         get :index, searchText: draft_order.code
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(0)
         expect(parsed_body['meta']['total_pages']).to eql(0)
       end
-      
+
       it 'can search orders using their description (case insensitive)' do
-        FactoryBot.create :order, description: 'IPhone 100s'
+        order = FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
         get :index, searchText: 'iphone'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -103,7 +101,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it 'can search orders by the organization that submitted them' do
         organisation = FactoryBot.create :organisation, name_en: "Crossroads Foundation LTD"
-        FactoryBot.create :order, organisation: organisation
+        FactoryBot.create :order, :with_state_submitted, organisation: organisation
         get :index, searchText: 'crossroads'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -114,7 +112,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "can search orders from a user's first or last name" do
         submitter = FactoryBot.create :user, first_name: 'John', last_name: 'Smith'
-        FactoryBot.create :order, submitted_by: submitter
+        FactoryBot.create :order, :with_state_submitted, submitted_by: submitter
         get :index, searchText: 'smit'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -125,7 +123,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "can search orders from a user's full name" do
         submitter = FactoryBot.create :user, first_name: 'John', last_name: 'Smith'
-        FactoryBot.create :order, submitted_by: submitter
+        FactoryBot.create :order, :with_state_submitted, submitted_by: submitter
         get :index, searchText: 'john smith'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
