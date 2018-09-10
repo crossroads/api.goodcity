@@ -33,6 +33,8 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
+  INACTIVE_STATES = ['cancelled', 'closed']
+
   scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
 
   scope :with_eager_load, -> {
@@ -43,7 +45,7 @@ class Order < ActiveRecord::Base
 
   scope :descending, -> { order('id desc') }
 
-  scope :active_orders, -> { where('status NOT IN (?)', INACTIVE_STATUS) }
+  scope :active_orders, -> { where("status NOT IN (?) or state NOT IN (?)", INACTIVE_STATUS, INACTIVE_STATES) }
 
   scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
 
