@@ -241,7 +241,7 @@ class Order < ActiveRecord::Base
 
   def self.search(search_text, to_designate_item)
     fetch_orders(to_designate_item)
-    .where(" code LIKE :query OR 
+    .where(" code ILIKE :query OR 
       description ILIKE :query OR
       organisations.name_en ILIKE :query OR
       organisations.name_zh_tw ILIKE :query OR
