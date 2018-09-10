@@ -248,7 +248,7 @@ class Order < ActiveRecord::Base
       CONCAT(users.first_name, ' ', users.last_name) ILIKE :query OR
       stockit_organisations.name ILIKE :query OR
       stockit_local_orders.client_name ILIKE :query OR
-      stockit_contacts.first_name ILIKE :query OR stockit_contacts.last_name LIKE :query OR
+      stockit_contacts.first_name ILIKE :query OR stockit_contacts.last_name ILIKE :query OR
       stockit_contacts.mobile_phone_number LIKE :query OR
       stockit_contacts.phone_number LIKE :query", query: "%#{search_text}%")
   end
