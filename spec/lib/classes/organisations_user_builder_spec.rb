@@ -20,7 +20,6 @@ describe OrganisationsUserBuilder do
   end
 
   let(:user) { create :user }
-  let(:current_user) { create :user }
   let(:user1) { create :user, mobile: user_attributes[:mobile] }
   let(:position) { 'Admin' }
 
@@ -37,11 +36,15 @@ describe OrganisationsUserBuilder do
   end
 
   context "build" do
+
+    before(:each) {
+      User.current_user = user
+    }
+
     it "adds new user if mobile does not exist and associates it with organisation" do
-      User.current_user = current_user
-      organisations_user_builder.build
-      expect(User.count).to eq(3)
-      expect(OrganisationsUser.count).to eq(1)
+      expect{
+        organisations_user_builder.build
+      }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
     end
 
     it "do not add user to organisation if mobile number already in organisation" do
@@ -51,15 +54,14 @@ describe OrganisationsUserBuilder do
     end
 
     it "associates charity_role to user if user added in organisation" do
-      User.current_user = current_user
-      organisations_user_builder.build
-      expect(OrganisationsUser.count).to eq(1)
+      expect{
+        organisations_user_builder.build
+      }.to change{OrganisationsUser.count}.by(1)
       expect(OrganisationsUser.last.user.roles).to include(role)
     end
 
     it "twilio send_message after organisations_user creation" do
-      User.current_user = current_user
-      allow(TwilioService.new(user)).to receive(:send_welcome_msg).and_return({:to=>"+85252345678", :body=>"#{current_user.full_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.\n"})
+      allow(TwilioService.new(user)).to receive(:send_welcome_msg).and_return({:to=>"+85252345678", :body=>"#{user.full_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.\n"})
     end
   end
 end
