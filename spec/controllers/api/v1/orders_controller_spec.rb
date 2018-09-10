@@ -6,7 +6,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft }
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-  let!(:order_created_by_supervisor) { create :order, created_by: user }
+  let!(:order_created_by_supervisor) { create :order, :with_state_submitted, created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET orders" do
@@ -62,13 +62,13 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       }
 
       it 'returns the number of items specified for the page' do
-        5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 orders in total
+        5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
         get :index, page: 1, per_page: 5
         expect(parsed_body['designations'].count).to eq(5)
       end
 
       it 'returns the remaining items in the last page' do
-        5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 orders in total
+        5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 non-draft orders in total
         get :index, page: 2, per_page: 5
         expect(parsed_body['designations'].count).to eq(2)
       end
