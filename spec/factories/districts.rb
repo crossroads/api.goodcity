@@ -1,6 +1,6 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :district do
     name_en         { generate(:districts).keys.sample }
     name_zh_tw      { generate(:districts)[name_en][:name_zh_tw] }

@@ -5,7 +5,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   let(:user)  { create :user_with_token }
   let(:offer) { create :offer, created_by: user }
   let(:item)  { create(:item, offer: offer) }
-  let(:serialized_item) { Api::V1::ItemSerializer.new(item) }
+  let(:serialized_item) { Api::V1::ItemSerializer.new(item).as_json }
   let(:serialized_item_json) { JSON.parse( serialized_item.to_json ) }
   let(:item_params) { item.attributes.except("id") }
 
@@ -74,6 +74,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     describe "update donor_condition" do
       before { generate_and_set_token(create(:user, :with_can_manage_items_permission, role_name: 'can_manage_items')) }
 
+      # TODO refactor this test, is not actually checking job is created
       it "should add stockit-update-item request job" do
         item = create :item, state: "accepted"
         package = create :package, :received, item: item

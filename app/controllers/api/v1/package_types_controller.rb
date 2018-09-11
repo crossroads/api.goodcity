@@ -28,7 +28,7 @@ module Api
         if @package_type.save
           render json: {}, status: 201
         else
-          render json: @package_type.errors.to_json, status: 422
+          render json: @package_type.errors, status: 422
         end
       end
 

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :box do
     box_number   "MyString"
     description  "MyString"

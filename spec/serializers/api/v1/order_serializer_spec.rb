@@ -8,12 +8,12 @@ describe Api::V1::OrderSerializer do
   let(:order) { create :order, country: country, detail: stockit_local_order,
     stockit_activity: stockit_activity, processed_by: user, cancelled_by_id: user.id,
     process_completed_by_id: user.id, closed_by_id: user }
-  let(:serializer) { Api::V1::OrderSerializer.new(order) }
+  let(:serializer) { Api::V1::OrderSerializer.new(order).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   let(:stockit_organisation) { create :stockit_organisation }
   let(:order_with_stockit_organisation) { create :order, stockit_organisation_id: stockit_organisation.id, organisation_id: nil }
-  let(:serializer_with_stockit_organisation) { Api::V1::OrderSerializer.new(order_with_stockit_organisation) }
+  let(:serializer_with_stockit_organisation) { Api::V1::OrderSerializer.new(order_with_stockit_organisation).as_json }
   let(:json_with_stockit_organisation) { JSON.parse( serializer_with_stockit_organisation.to_json ) }
 
   it 'creates json' do

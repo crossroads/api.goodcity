@@ -2,10 +2,10 @@ require 'rails_helper'
 
 describe Api::V1::StockitLocalOrderSerializer do
   let(:stockit_local_order)  { build(:stockit_local_order) }
-  let(:serializer) { Api::V1::StockitLocalOrderSerializer.new(stockit_local_order) }
+  let(:serializer) { Api::V1::StockitLocalOrderSerializer.new(stockit_local_order).as_json }
   let(:json) { JSON.parse( serializer.to_json ) }
   let(:stockit_local_order_without_hkid) { build(:stockit_local_order, hkid_number: nil) }
-  let(:serializer_without_hkid) { Api::V1::StockitLocalOrderSerializer.new(stockit_local_order_without_hkid) }
+  let(:serializer_without_hkid) { Api::V1::StockitLocalOrderSerializer.new(stockit_local_order_without_hkid).as_json }
   let(:json_without_hkid) { JSON.parse( serializer_without_hkid.to_json ) }
 
   it "creates JSON" do

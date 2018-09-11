@@ -34,7 +34,8 @@ class Message < ActiveRecord::Base
   def mark_read!(user_id)
     self.subscriptions.where(user_id: user_id).update_all(state: 'read')
     reader = User.find_by(id: user_id)
-    send_update self, serialized_user(reader), "read", Channel.private(reader), reader.staff?
+    app_name = reader.staff? ? ADMIN_APP : DONOR_APP
+    send_update(self, serialized_user(reader), "read", Channel.private(reader), app_name)
   end
 
   def user_subscribed?(user_id)
@@ -96,12 +97,12 @@ class Message < ActiveRecord::Base
     sender_channel = current_channel
     channels = subscribed_user_channels - sender_channel - donor_channel
 
-    send_notification donor_channel, false unless is_private || offer.cancelled? || donor_channel == sender_channel
-    send_notification channels, true
+    send_notification(donor_channel, DONOR_APP) unless is_private || offer.cancelled? || donor_channel == sender_channel
+    send_notification(channels, ADMIN_APP)
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
-      send_notification Channel.supervisor, true
+      send_notification(Channel.supervisor, ADMIN_APP)
     end
   end
 
@@ -113,25 +114,25 @@ class Message < ActiveRecord::Base
     user = serialized_user(sender)
 
     if sender_channel == donor_channel
-      send_update self, user, "read", donor_channel, false unless offer.cancelled? || is_private
+      send_update self, user, "read", donor_channel, DONOR_APP unless offer.cancelled? || is_private
     else
-      send_update self, user, "read", sender_channel, true unless sender.system_user?
-      send_update self, user, "unread", donor_channel, false unless offer.cancelled? || is_private
+      send_update self, user, "read", sender_channel, ADMIN_APP unless sender.system_user?
+      send_update self, user, "unread", donor_channel, DONOR_APP unless offer.cancelled? || is_private
     end
-    send_update self, user, 'unread', subscribed_user_channels, true
-    send_update self, user, 'never-subscribed', unsubscribed_user_channels, true
+    send_update self, user, 'unread', subscribed_user_channels, ADMIN_APP
+    send_update self, user, 'never-subscribed', unsubscribed_user_channels, ADMIN_APP
   end
 
-  def send_update(object, user, state, channel, is_admin_app, operation = :create)
+  def send_update(object, user, state, channel, app_name, operation = :create)
     self.state_value = state
-    PushService.new.send_update_store channel, is_admin_app, {
+    PushService.new.send_update_store channel, app_name, {
       item: serialized_message(object), sender: user,
       operation: operation } unless channel.empty?
     self.state_value = nil
   end
 
-  def send_notification(channel, is_admin_app)
-    PushService.new.send_notification channel, is_admin_app, {
+  def send_notification(channel, app_name)
+    PushService.new.send_notification channel, app_name, {
       category:   'message',
       message:    body.truncate(150, separator: ' '),
       is_private: is_private,
@@ -144,7 +145,7 @@ class Message < ActiveRecord::Base
 
   def notify_deletion_to_subscribers
     send_update self, serialized_user(User.current_user), 'read',
-      admin_channel - donor_channel, true, :delete
+      admin_channel - donor_channel, ADMIN_APP, :delete
   end
 
   def admin_channel

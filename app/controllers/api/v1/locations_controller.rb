@@ -39,14 +39,14 @@ module Api
         if location_record.save
           render json: @location, serializer: serializer, status: 201
         else
-          render json: @location.errors.to_json, status: 422
+          render json: @location.errors, status: 422
         end
       end
 
       api :DELETE, "/v1/locations/1", "Delete Location"
       description "If request comes from stockit, find record by matching it with stockit_id."
       def destroy
-        @location = Location.find_by(stockit_id: params[:id]) if is_stockit_request
+        @location = Location.find_by(stockit_id: params[:id]) if is_stockit_request?
         @location.try(:destroy)
         render json: {}
       end
@@ -54,8 +54,8 @@ module Api
       def search
         records = @locations.search(params['searchText']).
           page(params["page"]).per(params["per_page"])
-        locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").to_json
-        render json: locations.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
+        locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").as_json
+        render json: {meta: {total_pages: records.total_pages, search: params['searchText']} }.merge(locations)
       end
 
       def recent_locations

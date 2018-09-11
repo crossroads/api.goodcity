@@ -4,7 +4,7 @@ describe Api::V1::OfferSerializer do
 
   let(:ggv_order)  { create(:gogovan_order, :with_delivery) }
   let(:offer)      { ggv_order.delivery.offer }
-  let(:serializer) { Api::V1::OfferSerializer.new(offer) }
+  let(:serializer) { Api::V1::OfferSerializer.new(offer).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do
