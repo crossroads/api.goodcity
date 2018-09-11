@@ -60,7 +60,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: new_organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(subject["errors"]).to eq("User's already exist in organisation")
+      expect(subject["errors"]).to eq("User already exists in this organisation")
     end
   end
 end
