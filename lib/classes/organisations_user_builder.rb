@@ -11,23 +11,23 @@ class OrganisationsUserBuilder
   #   }
 
   def initialize(params)
-    @organisation_id = params[:organisation_id].to_i
-    @user_attributes = params[:user_attributes]
-    @mobile = @user_attributes[:mobile]
-    @position = params[:position]
+    @organisation_id = params['organisation_id'].to_i
+    @user_attributes = params['user_attributes']
+    @mobile = @user_attributes['mobile']
+    @position = params['position']
     fail_with_error(I18n.t('organisations_user_builder.organisation.blank')) unless @organisation_id.present?
     fail_with_error(I18n.t('organisations_user_builder.user.mobile.blank')) unless @mobile.present?
   end
 
   def build
-    user = User.where(mobile: @mobile).first_or_create(@user_attributes.to_hash)
+    user = User.where(mobile: @mobile).first_or_create(@user_attributes)
     return fail_with_error(user.errors) unless user.valid?
     return fail_with_error(I18n.t('organisations_user_builder.organisation.not_found')) unless organisation
     if !user_belongs_to_organisation(user)
       organisations_user = OrganisationsUser.create!(organisation_id: @organisation_id, user_id: user.id, position: @position)
       TwilioService.new(user).send_welcome_msg
       user.roles << charity_role unless user.roles.include?(charity_role)
-      return_success.merge!('organisations_user': organisations_user)
+      return_success.merge!('organisations_user' => organisations_user)
     else
       return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
     end
@@ -53,7 +53,6 @@ class OrganisationsUserBuilder
   end
 
   def return_success
-    { 'result': true }
+    { 'result' =>  true }
   end
-
 end
