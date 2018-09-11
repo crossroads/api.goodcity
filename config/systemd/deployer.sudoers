@@ -1,0 +1,9 @@
+# Place this file in /etc/sudoers.d/deployer
+#   and chmod 440 /etc/sudoers.d/deployer
+
+Defaults:deployer    !requiretty
+
+%deployer ALL=(ALL) NOPASSWD: /bin/systemctl start sidekiq
+%deployer ALL=(ALL) NOPASSWD: /bin/systemctl stop sidekiq
+%deployer ALL=(ALL) NOPASSWD: /bin/systemctl restart sidekiq
+%deployer ALL=(ALL) NOPASSWD: /bin/systemctl status sidekiq

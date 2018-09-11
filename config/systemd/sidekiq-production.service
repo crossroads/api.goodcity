@@ -1,0 +1,27 @@
+# This file corresponds to a single Sidekiq process.  Add multiple copies
+# to run multiple processes (sidekiq-1, sidekiq-2, etc).
+# Save this file to /usr/lib/systemd/system/sidekiq.service
+
+[Unit]
+Description=sidekiq
+After=syslog.target network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/rails/goodcity_server/current
+Environment=NODE_VERSION=lts/boron MALLOC_ARENA_MAX=2
+ExecStart=/home/deployer/.nvm/nvm-exec /home/deployer/.rvm/bin/rvm 2.2.2 do bundle exec sidekiq -e production -C config/sidekiq.yml
+User=deployer
+Group=deployer
+UMask=0002
+
+RestartSec=10
+Restart=on-failure
+
+# output goes to /var/log/messages
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=sidekiq
+
+[Install]
+WantedBy=multi-user.target

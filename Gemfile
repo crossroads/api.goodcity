@@ -79,7 +79,6 @@ group :development, :test do
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
   gem 'capistrano-rvm'
-  gem 'capistrano-sidekiq'
   gem 'capistrano-rake', require: false
 end
 
