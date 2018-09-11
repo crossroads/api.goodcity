@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
-  let!(:order) { create :order, created_by: charity_user }
-
+  let!(:order) { create :order, :with_state_submitted, created_by: charity_user }
+  let(:draft_order) { create :order, :with_orders_packages, :with_state_draft }
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-
   let!(:order_created_by_supervisor) { create :order, created_by: user }
+  let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET orders" do
     context 'If logged in user is Supervisor in Browse app ' do
@@ -22,9 +22,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it 'returns orders created by logged in user when user is supervisor and if its browse app' do
         set_browse_app_header
         get :index
-        body = JSON.parse(response.body)
-        expect(body['orders'].count).to eq(1)
-        expect(body["orders"][0]['id']).to eq(order_created_by_supervisor.id)
+        expect(parsed_body['orders'].count).to eq(1)
+        expect(parsed_body["orders"][0]['id']).to eq(order_created_by_supervisor.id)
       end
     end
 
@@ -40,9 +39,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it 'returns orders created by logged in user' do
         request.headers["X-GOODCITY-APP-NAME"] = "browse.goodcity"
         get :index
-        body = JSON.parse(response.body)
-        expect(body['orders'].count).to eq(1)
-        expect(body["orders"][0]['id']).to eq(order.id)
+        expect(parsed_body['orders'].count).to eq(1)
+        expect(parsed_body["orders"][0]['id']).to eq(order.id)
       end
     end
 
@@ -52,30 +50,36 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it 'returns all orders as designations for admin app if search text is not present' do
         request.headers["X-GOODCITY-APP-NAME"] = "admin.goodcity"
         get :index
-        body = JSON.parse(response.body)
         expect(response.status).to eq(200)
-        expect(body['designations'].count).to eq(2)
+        expect(parsed_body['designations'].count).to eq(2)
       end
     end
 
     context 'Stock App' do
       before { generate_and_set_token(user) }
 
-      it 'returns searched order as designation if search text is present' do
+      it 'returns searched non-draft order as designation if search text is present' do
         request.headers["X-GOODCITY-APP-NAME"] = "stock.goodcity"
         get :index, searchText: order.code
-        body = JSON.parse(response.body)
         expect(response.status).to eq(200)
-        expect(body['designations'].count).to eq(1)
-        expect(body["designations"][0]['id']).to eq(order.id)
+        expect(parsed_body['designations'].count).to eq(1)
+        expect(parsed_body["designations"][0]['id']).to eq(order.id)
+        expect(parsed_body['meta']['total_pages']).to eql(1)
+        expect(parsed_body['meta']['search']).to eql(order.code)
+      end
+
+      it 'returns empty response if search text is draft order' do
+        request.headers["X-GOODCITY-APP-NAME"] = "stock.goodcity"
+        get :index, searchText: draft_order.code
+        expect(response.status).to eq(200)
+        expect(parsed_body['designations'].count).to eq(0)
+        expect(parsed_body['meta']['total_pages']).to eql(0)
       end
     end
   end
 
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
-    let(:draft_order) { create :order, :with_orders_packages, :with_state_draft }
-
     context 'should merge offline cart orders_packages on login with order' do
       it "if order is in draft state" do
         package = create :package, quantity: 1, received_quantity: 1

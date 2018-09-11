@@ -6,7 +6,7 @@ module Api
       api :GET, '/v1/braintree/generate_token', "Get braintree token"
       def generate_token
         token = @braintree.client_token
-        render json: { braintree_token: token }.to_json
+        render json: { braintree_token: token }
       end
 
       api :POST, '/v1/braintree/make_transaction', "Get braintree token"
@@ -15,7 +15,7 @@ module Api
       def make_transaction
         response = @braintree.create_transaction(params["amount"], params["payment_method_nonce"])
         render json: { response: response.success?,
-          error: response_error_message(response) }.to_json
+          error: response_error_message(response) }
       end
 
       private

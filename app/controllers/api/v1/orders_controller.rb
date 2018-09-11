@@ -31,32 +31,32 @@ module Api
         if order_record.save
           render json: @order, serializer: serializer, status: 201
         else
-          render json: @order.errors.to_json, status: 422
+          render json: @order.errors, status: 422
         end
       end
 
       api :GET, '/v1/orders', "List all orders"
       def index
-        return my_orders if is_browse_app
+        return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
         records = @orders.with_eager_load.
           search(params['searchText'], params['toDesignateItem'].presence).latest.
           page(params["page"]).per(params["per_page"])
         orders = order_response(records)
-        render json: orders.chop + ",\"meta\":{\"total_pages\": #{records.total_pages}, \"search\": \"#{params['searchText']}\"}}"
+        render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
       end
 
       api :GET, '/v1/designations/1', "Get a order"
       def show
-        root = is_browse_app ? "order" : "designation"
+        root = is_browse_app? ? "order" : "designation"
         render json: @order,
           serializer: serializer,
           root: root,
           exclude_code_details: true,
           include_packages: true,
           include_order: false,
-          include_images: true,
           include_territory: true,
+          include_images: true,
           exclude_stockit_set_item: true
       end
 
@@ -74,7 +74,7 @@ module Api
         if @order.valid? and @order.save
           render json: @order, serializer: serializer
         else
-          render json: { errors: @order.errors.full_messages }.to_json , status: 422
+          render json: { errors: @order.errors.full_messages } , status: 422
         end
       end
 
@@ -113,7 +113,7 @@ module Api
           @order.stockit_contact = stockit_contact
           @order.stockit_organisation = stockit_organisation
           @order.detail = stockit_local_order
-        elsif is_browse_app
+        elsif is_browse_app?
           @order.assign_attributes(order_params)
           @order.created_by = current_user
           @order.detail_type = "GoodCity"

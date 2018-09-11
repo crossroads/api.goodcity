@@ -4,7 +4,7 @@ describe User, :type => :model do
 
   let(:mobile) { generate(:mobile) }
   let(:address_attributes) { { 'district_id' => "9", 'address_type' => "profile" } }
-  let(:user_attributes) {  FactoryGirl.attributes_for(:user).merge('mobile' => mobile, 'address_attributes' => address_attributes).stringify_keys }
+  let(:user_attributes) {  FactoryBot.attributes_for(:user).merge('mobile' => mobile, 'address_attributes' => address_attributes).stringify_keys }
   let(:supervisor) { create(:user, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_login_to_stock', 'can_login_to_admin']})}
   let(:order_fulfilment_user) { create(:user, :with_multiple_roles_and_permissions,
@@ -170,6 +170,12 @@ describe User, :type => :model do
         user = create(:user, :supervisor)
         expect(user.channels).to match_array(["user_#{user.id}", "supervisor"])
       end
+
+      it "for order_fulfilment" do
+        user = create(:user, :order_fulfilment)
+        expect(user.channels).to match_array(["user_#{user.id}", "order_fulfilment"])
+      end
+
     end
   end
 

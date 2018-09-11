@@ -16,7 +16,7 @@ module Api
         if object.save
           render json: object, serializer: serializer_for(object), status: 201
         else
-          render json:object.errors.to_json, status: 422
+          render json: object.errors, status: 422
         end
       end
       
@@ -32,29 +32,32 @@ module Api
       render json: { errors: error_message }, status: 422
     end
 
-    def render_object_with_cache(object, pid)
+    def render_objects_with_cache(object, pid)
+      pid = [pid].flatten.compact # catch 1 or [1]
       if pid.blank?
         render json: object.model.cached_json
-        return
+      else
+        object = object.where(id: pid.split(",").flatten.uniq)
+        serializer = "Api::V1::#{object.base_class}Serializer".safe_constantize
+        render json: object, each_serializer: serializer
       end
-      object = object.find(pid.split(",")) if pid.present?
-      render json: object, each_serializer: serializer_for(object)
     end
 
-      private
+    private
 
-      def access_denied
-        throw(:warden, { status: 403, message: I18n.t("warden.unauthorized") } ) if request.format.json?
-        render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
-      end
+    def access_denied
+      throw(:warden, { status: 403, message: I18n.t("warden.unauthorized") } ) if request.format.json?
+      render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
+    end
 
-      def invalid_params(e)
-        render json: { error: e.message }, status: 422
-      end
+    def invalid_params(e)
+      render json: { error: e.message }, status: 422
+    end
 
-      def not_found
-        render json: {}, status: 404
-      end
+    def not_found
+      render json: {}, status: 404
+    end
+
     end
   end
 end

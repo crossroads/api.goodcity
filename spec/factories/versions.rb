@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :version do
     event       { %w(create update).sample }
     whodunnit   {|v| v.association(:user).id }

@@ -32,6 +32,8 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
+  scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
+
   scope :with_eager_load, -> {
     includes([
       { packages: [:locations, :package_type] }
@@ -204,7 +206,7 @@ class Order < ActiveRecord::Base
   end
 
   def send_new_order_notificationen
-    PushService.new.send_notification Channel.goodcity_order_channel, false, {
+    PushService.new.send_notification Channel.goodcity_order_channel, STOCK_APP, {
       category:   'new_order',
       message:    I18n.t("notification.new_order", organisation_name_en:
         organisation.try(:name_en), organisation_name_zh_tw: organisation.try(:name_zh_tw),
@@ -250,7 +252,7 @@ class Order < ActiveRecord::Base
     if to_designate_item
       join_order_associations.active_orders
     else
-      join_order_associations
+      join_order_associations.non_draft_orders
     end
   end
 

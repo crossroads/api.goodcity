@@ -6,11 +6,13 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
   let(:organisation) { create :organisation }
   let!(:charity_role) { create :charity_role }
   let(:user_attributes) do
-    FactoryGirl.attributes_for(:user, :with_email)
+    FactoryBot.attributes_for(:user, :with_email)
   end
   let(:organisations_user_params) do
-    FactoryGirl.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", user_attributes: user_attributes)
+    FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", user_attributes: user_attributes)
   end
+
+  let(:subject) { JSON.parse(response.body) }
 
   describe "POST organisations_user/1" do
     it "creates new organisations user", :show_in_doc do
@@ -27,7 +29,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(JSON.parse(response.body)["errors"]).to eq("Mobile has already been taken")
+      expect(subject["errors"]).to eq("Mobile has already been taken")
     end
 
     it "sends error if new organisations_user is with invalid mobile number", :show_in_doc do
@@ -36,7 +38,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(JSON.parse(response.body)["errors"]).to eq("Mobile is invalid")
+      expect(subject["errors"]).to eq("Mobile is invalid")
     end
 
     it "assigns 'charity' role to user and creates user_role", :show_in_doc do
@@ -52,7 +54,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(JSON.parse(response.body)["errors"]).to eq("Mobile can't be blank. Mobile is invalid")
+      expect(subject["errors"]).to eq("Mobile can't be blank. Mobile is invalid")
     end
 
     it "sends error if new organisations_user is with invalid email id", :show_in_doc do
@@ -61,7 +63,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(JSON.parse(response.body)["errors"]).to eq("User email is invalid")
+      expect(subject["errors"]).to eq("User email is invalid")
     end
   end
 end

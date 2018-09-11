@@ -7,7 +7,7 @@ module Api
         if country_record.save
           render json: {}, status: 201
         else
-          render json: @country.errors.to_json, status: 422
+          render json: @country.errors, status: 422
         end
       end
 

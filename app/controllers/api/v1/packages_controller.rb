@@ -16,19 +16,19 @@ module Api
 
       def_param_group :package do
         param :package, Hash, required: true do
-          param :quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
-          param :received_quantity, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package quantity", allow_nil: true
-          param :length, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package length", allow_nil: true
-          param :width, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package width", allow_nil: true
-          param :height, lambda { |val| [String, Fixnum].include? val.class }, desc: "Package height", allow_nil: true
+          param :quantity, lambda { |val| [String, Integer].include? val.class }, desc: "Package quantity", allow_nil: true
+          param :received_quantity, lambda { |val| [String, Integer].include? val.class }, desc: "Package quantity", allow_nil: true
+          param :length, lambda { |val| [String, Integer].include? val.class }, desc: "Package length", allow_nil: true
+          param :width, lambda { |val| [String, Integer].include? val.class }, desc: "Package width", allow_nil: true
+          param :height, lambda { |val| [String, Integer].include? val.class }, desc: "Package height", allow_nil: true
           param :notes, String, desc: "Comment mentioned by customer", allow_nil: true
           param :item_id, String, desc: "Item for which package is created", allow_nil: true
           param :state_event, Package.valid_events, allow_nil: true, desc: "Fires the state transition (if allowed) for this package."
           param :received_at, String, desc: "Date on which package is received", allow_nil: true
           param :rejected_at, String, desc: "Date on which package rejected", allow_nil: true
-          param :package_type_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "Category of the package", allow_nil: true
-          param :favourite_image_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of the item image that represents this package", allow_nil: true
-          param :donor_condition_id, lambda { |val| [String, Fixnum].include? val.class }, desc: "The id of donor-condition", allow_nil: true
+          param :package_type_id, lambda { |val| [String, Integer].include? val.class }, desc: "Category of the package", allow_nil: true
+          param :favourite_image_id, lambda { |val| [String, Integer].include? val.class }, desc: "The id of the item image that represents this package", allow_nil: true
+          param :donor_condition_id, lambda { |val| [String, Integer].include? val.class }, desc: "The id of donor-condition", allow_nil: true
           param :grade, String, allow_nil: true
         end
       end
@@ -52,7 +52,7 @@ module Api
           include_order: true,
           exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
           include_images: @package.set_item_id.blank?,
-          include_stock_condition: is_stock_app
+          include_stock_condition: is_stock_app?
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -62,14 +62,14 @@ module Api
         if package_record
           @package.offer_id = offer_id
           if @package.valid? && @package.save
-            if is_stock_app
+            if is_stock_app?
               render json: @package, serializer: stock_serializer, root: "item",
             include_order: false
             else
               render json: @package, serializer: serializer, status: 201
             end
           else
-            render json: { errors: @package.errors.full_messages }.to_json, status: 422
+            render json: { errors: @package.errors.full_messages }, status: 422
           end
         else
           render nothing: true, status: 204
@@ -79,26 +79,26 @@ module Api
       api :PUT, "/v1/packages/1", "Update a package"
       param_group :package
       def update
-        qty = params[:package][:quantity]
         @package.assign_attributes(package_params)
-        @package.received_quantity = qty if qty
+        @package.received_quantity = package_params[:quantity] if package_params[:quantity]
         @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
+        @package.request_from_admin = is_admin_app?
         packages_location_for_admin
 
         # use valid? to ensure mark_received errors get caught
         if @package.valid? and @package.save
-          if is_stock_app
+          if is_stock_app?
             stockit_item_details
           else
             render json: @package, serializer: serializer
           end
         else
-          render json: { errors: @package.errors.full_messages }.to_json , status: 422
+          render json: { errors: @package.errors.full_messages } , status: 422
         end
       end
 
       def assign_donor_condition?
-        package_params[:donor_condition_id] && is_stock_app
+        package_params[:donor_condition_id] && is_stock_app?
       end
 
       api :DELETE, "/v1/packages/1", "Delete an package"
@@ -138,8 +138,8 @@ module Api
           include_packages: false,
           exclude_stockit_set_item: true,
           include_images: true,
-          include_stock_condition: is_stock_app).to_json
-        render json: packages.chop + ",\"meta\":{\"total_pages\": #{pages}, \"search\": \"#{params['searchText']}\"}}"
+          include_stock_condition: is_stock_app?).as_json
+        render json: {meta: { total_pages: pages, search: params['searchText'] } }.merge(packages)
       end
 
       def designate_stockit_item(order_id)
@@ -161,7 +161,7 @@ module Api
           designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
         else
-          render json: { errors: result.errors.full_messages }.to_json, status: 422
+          render json: { errors: result.errors.full_messages }, status: 422
         end
       end
 
@@ -183,7 +183,7 @@ module Api
           @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
           send_stock_item_response
         else
-          render json: { errors: I18n.t('orders_package.already_dispatched') }.to_json , status: 422
+          render json: { errors: I18n.t('orders_package.already_dispatched') } , status: 422
         end
       end
 
@@ -226,7 +226,7 @@ module Api
             include_packages: false,
             include_images: @package.set_item_id.blank?
         else
-          render json: { errors: @package.errors.full_messages }.to_json , status: 422
+          render json: { errors: @package.errors.full_messages } , status: 422
         end
       end
 
@@ -295,7 +295,7 @@ module Api
       end
 
       def package_record
-        if is_stock_app
+        if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
           @package
@@ -327,7 +327,7 @@ module Api
       end
 
       def packages_location_for_admin
-        if is_admin_app && params[:package][:location_id].present?
+        if is_admin_app? && params[:package][:location_id].present?
           @package.build_or_create_packages_location(params[:package][:location_id], 'create')
         end
       end

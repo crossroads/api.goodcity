@@ -28,7 +28,7 @@ module Api
         if @pallet.save
           render json: {}, status: 201
         else
-          render json: @pallet.errors.to_json, status: 422
+          render json: @pallet.errors, status: 422
         end
       end
 

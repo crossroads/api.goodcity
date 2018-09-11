@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::LocationSerializer do
 
   let(:location)   { build(:location) }
-  let(:serializer) { Api::V1::LocationSerializer.new(location) }
+  let(:serializer) { Api::V1::LocationSerializer.new(location).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
   it "creates JSON" do

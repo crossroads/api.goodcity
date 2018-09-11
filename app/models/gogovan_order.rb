@@ -51,7 +51,7 @@ class GogovanOrder < ActiveRecord::Base
     pending? # only cancel orders in this state
   end
 
-  # '200' Fixnum
+  # '200'
   # {:error=>"Failed.  Response code = 409.  Response message = Conflict.  Response Body = {\"error\":\"Order that is already accepted by a driver cannot be cancelled\"}."}
   def cancel_order
     if booking_id
@@ -113,7 +113,7 @@ class GogovanOrder < ActiveRecord::Base
   def notify_order_completed
     message = I18n.t("gogovan.notify_completed", license: driver_license, booking_id: booking_id)
 
-    PushService.new.send_notification Channel.staff, true, {
+    PushService.new.send_notification Channel.staff, ADMIN_APP, {
       category: 'offer_delivery',
       message:   message,
       offer_id:  offer.id,
