@@ -28,6 +28,7 @@ Reviewer:
 Supervisor:
 - can_manage_packages
 - can_manage_offers
+- can_manage_goodcity_requests
 - can_manage_deliveries
 - can_manage_orders
 - can_manage_orders_packages
@@ -60,6 +61,7 @@ Charity:
 - can_manage_orders_packages
 Order fulfilment:
 - can_manage_packages
+- can_manage_goodcity_requests
 - can_manage_offers
 - can_manage_deliveries
 - can_manage_orders
