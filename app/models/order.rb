@@ -33,7 +33,7 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
-  INACTIVE_STATES = ['cancelled', 'closed']
+  INACTIVE_STATES = ['cancelled', 'closed', 'draft']
 
   scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
 
