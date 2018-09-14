@@ -33,7 +33,7 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
-  INACTIVE_STATES = ['cancelled', 'closed', 'draft']
+  INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
   scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
 
@@ -244,7 +244,7 @@ class Order < ActiveRecord::Base
 
   def self.search(search_text, to_designate_item)
     fetch_orders(to_designate_item)
-      .where("code ILIKE :query OR 
+      .where("code ILIKE :query OR
       description ILIKE :query OR
       organisations.name_en ILIKE :query OR
       organisations.name_zh_tw ILIKE :query OR
@@ -267,7 +267,7 @@ class Order < ActiveRecord::Base
   def self.join_order_associations
     joins("LEFT OUTER JOIN stockit_local_orders ON orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'
     LEFT OUTER JOIN users ON orders.submitted_by_id = users.id or orders.created_by_id = users.id
-    LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id 
+    LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
     LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
     LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id")
   end
