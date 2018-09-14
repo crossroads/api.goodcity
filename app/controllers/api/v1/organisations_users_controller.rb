@@ -1,8 +1,7 @@
 module Api
   module V1
     class OrganisationsUsersController < Api::V1::ApiController
-      load_and_authorize_resource :organisations_user, parent: false
-
+      authorize_resource :organisations_user, parent: false
       resource_description do
         short "Get Organisations Users."
         formats ["json"]
@@ -27,7 +26,12 @@ module Api
       api :POST, "/v1/organisations_user", "Create a package"
       param_group :organisations_user
       def create
-        save_and_render_object_with_errors(@organisations_user)
+        builder = OrganisationsUserBuilder.new(params['organisations_user'].to_hash).build
+        if builder['result']
+          save_and_render_object_with_errors(builder['organisations_user'])
+        else
+          render_error(builder['errors'])
+        end
       end
 
       private

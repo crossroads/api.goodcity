@@ -12,16 +12,9 @@ RSpec.describe OrganisationsUser, type: :model do
     it { is_expected.to belong_to :user }
   end
 
-  describe 'Callbacks' do
-    it { is_expected.to callback(:send_welcome_msg).after(:create) }
-    it { is_expected.to callback(:create_user_role).after(:create) }
-
-    it "creates entry in UserRole table after creation OrganisationsUser" do
-      organisation_user = build :organisations_user
-      charity_role = create :charity_role
-      expect{
-        organisation_user.save
-      }.to change(UserRole, :count).by(1)
-    end
+  describe "validations" do
+    it { is_expected.to validate_presence_of(:organisation_id) }
+    it { is_expected.to validate_presence_of(:user_id) }
   end
+
 end
