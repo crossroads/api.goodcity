@@ -242,15 +242,15 @@ class Order < ActiveRecord::Base
   def self.search(search_text, to_designate_item)
     fetch_orders(to_designate_item)
     .where(" code ILIKE :query OR 
-        description ILIKE :query OR
-        organisations.name_en ILIKE :query OR
-        organisations.name_zh_tw ILIKE :query OR
-        CONCAT(users.first_name, ' ', users.last_name) ILIKE :query OR
-        stockit_organisations.name ILIKE :query OR
-        stockit_local_orders.client_name ILIKE :query OR
-        stockit_contacts.first_name ILIKE :query OR stockit_contacts.last_name ILIKE :query OR
-        stockit_contacts.mobile_phone_number LIKE :query OR
-        stockit_contacts.phone_number LIKE :query", query: "%#{search_text}%")
+          description ILIKE :query OR
+          organisations.name_en ILIKE :query OR
+          organisations.name_zh_tw ILIKE :query OR
+          CONCAT(users.first_name, ' ', users.last_name) ILIKE :query OR
+          stockit_organisations.name ILIKE :query OR
+          stockit_local_orders.client_name ILIKE :query OR
+          stockit_contacts.first_name ILIKE :query OR stockit_contacts.last_name ILIKE :query OR
+          stockit_contacts.mobile_phone_number LIKE :query OR
+          stockit_contacts.phone_number LIKE :query", query: "%#{search_text}%")
   end
 
   def self.fetch_orders(to_designate_item)
