@@ -39,9 +39,9 @@ module Api
       def index
         return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
-        records = @orders.with_eager_load.
-          search(params['searchText'], params['toDesignateItem'].presence).descending.
-          page(params["page"]).per(params["per_page"])
+        records = @orders.with_eager_load
+          .search(params['searchText'], params['toDesignateItem'].presence).descending
+          .page(params["page"]).per(params["per_page"])
         orders = order_response(records)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
       end
