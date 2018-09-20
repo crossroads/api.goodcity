@@ -73,11 +73,12 @@ module Api
         @user = User.find_by_mobile(@mobile.mobile)
 
         if @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin(app_name)
+          @user.send_verification_pin
         elsif @user
           return render json: { error: "You are not authorized." }, status: 401
         end
         render json: { otp_auth_key: otp_auth_key_for(@user) }
+        end
       end
 
       api :POST, '/v1/auth/signup', "Register a new user"
