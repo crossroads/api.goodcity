@@ -71,13 +71,15 @@ module Api
         end
 
         @user = User.find_by_mobile(@mobile.mobile)
-
-        if @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin(app_name)
-        elsif @user
+        if (is_browse_app? && !@user) || (!@user.allowed_login?(app_name) || @user.organisations.empty?)
+          @user = User.where(mobile: @mobile.mobile).first_or_create
+          render json: { jwt_token: generate_token(user_id: @user.id),new_user: true, user: Api::V1::UserProfileSerializer.new(@user) }
+        elsif @user && @user.allowed_login?(app_name)
+          @user.send_verification_pin
+          render json: { otp_auth_key: otp_auth_key_for(@user) }
+        else
           return render json: { error: "You are not authorized." }, status: 401
         end
-        render json: { otp_auth_key: otp_auth_key_for(@user) }
       end
 
       api :POST, '/v1/auth/signup', "Register a new user"
