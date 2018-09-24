@@ -31,6 +31,7 @@ class OrganisationsUserBuilder
       update_user
       return_success.merge!('organisations_user' => @organisations_user)
     else
+      update_user(user)
       return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
     end
   end
@@ -51,7 +52,6 @@ class OrganisationsUserBuilder
     @user.roles << charity_role unless @user.roles.include?(charity_role)
     @user.update(@user_attributes)
   end
-
 
   def user_belongs_to_organisation(user)
     user.organisation_ids.include?(@organisation_id)
