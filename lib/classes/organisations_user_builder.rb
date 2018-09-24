@@ -50,7 +50,6 @@ class OrganisationsUserBuilder
 
   def update_user
     @user.roles << charity_role unless @user.roles.include?(charity_role)
-    @user.update(@user_attributes)
   end
 
   def user_belongs_to_organisation(user)
