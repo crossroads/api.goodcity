@@ -71,12 +71,11 @@ module Api
         end
 
         @user = User.find_by_mobile(@mobile.mobile)
-        if (is_browse_app? && !@user) || (!@user.allowed_login?(app_name) || @user.organisations.empty?)
+        if (is_browse_app? && !@user)
           @user = User.where(mobile: @mobile.mobile).first_or_create
-          render json: { jwt_token: generate_token(user_id: @user.id),new_user: true, user: Api::V1::UserProfileSerializer.new(@user) }
+          render_send_pin_json(@user)
         elsif @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin
-          render json: { otp_auth_key: otp_auth_key_for(@user) }
+          render_send_pin_json(@user)
         else
           return render json: { error: "You are not authorized." }, status: 401
         end
@@ -180,17 +179,17 @@ module Api
 
       private
 
-      def render_send_pin_json
-        @user.send_verification_pin
-        render json: { otp_auth_key: otp_auth_key_for(@user) }
+      def render_send_pin_json(user)
+        user.send_verification_pin
+        render json: { otp_auth_key: otp_auth_key_for(user) }
       end
-      
+
       def render_error(error_message)
         render json: { errors: error_message }, status: 422
       end
 
       def authenticated_user
-        warden.authenticated? && @user.allowed_login?(app_name)
+        warden.authenticated? && (is_browse_app? || @user.allowed_login?(app_name))
       end
 
       def current_user_channels
