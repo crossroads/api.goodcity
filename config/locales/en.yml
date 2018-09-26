@@ -19,6 +19,8 @@ en:
     sms_verification_pin: |
       Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy donating
       your quality goods. (If you didn't request this message, please ignore)
+    browse_sms_verification_pin: |
+      Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy browsing quality goods.(If you didn't request this message, please ignore)
     charity_user_welcome_sms: |
       %{full_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.
     order_submitted_sms_to_order_fulfilment_users: |
