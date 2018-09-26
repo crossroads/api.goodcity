@@ -19,6 +19,8 @@ zh-tw:
     sms_verification_pin: |
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
       （如你並沒有要求驗證碼，請忽略此信息）
+    browse_sms_verification_pin: |
+      Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy browsing quality goods.(If you didn't request this message, please ignore)
     charity_user_welcome_sms: |
       %{full_name} 已將閣下登記於好人好巿平台。請下載該應用程式及以此電話號碼登入。
     order_submitted_sms_to_order_fulfilment_users: |
