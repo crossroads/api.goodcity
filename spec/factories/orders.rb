@@ -8,6 +8,7 @@ FactoryBot.define do
     purpose_description FFaker::Lorem.sentence
     stockit_id      nil
     detail_type     "GoodCity"
+    people_helped   { rand(10) + 1 }
     association     :stockit_organisation
     association     :stockit_activity
     association     :organisation
