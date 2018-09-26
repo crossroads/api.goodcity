@@ -9,6 +9,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
+  let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id) }
 
   describe "GET orders" do
     context 'If logged in user is Supervisor in Browse app ' do
@@ -168,4 +169,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
     end
   end
+
+  describe "POST orders" do
+    context 'If logged in user is Supervisor in Browse app ' do
+      before { generate_and_set_token(user) }
+      it 'should create an order via POST method' do
+        set_browse_app_header
+        post :create, order: order_params
+        expect(response.status).to eq(201)
+        expect(parsed_body['order']['people_helped']).to eq(order_params[:people_helped])
+      end
+    end
+  end
+
 end
