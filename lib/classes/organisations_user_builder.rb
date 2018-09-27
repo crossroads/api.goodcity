@@ -11,6 +11,7 @@ class OrganisationsUserBuilder
   #   }
 
   def initialize(params)
+    @organisations_user_id = params['id'] if params['id']
     @organisation_id = params['organisation_id'].to_i
     @user_attributes = params['user_attributes']
     @mobile = @user_attributes['mobile']
@@ -30,9 +31,15 @@ class OrganisationsUserBuilder
       update_user(user)
       return_success.merge!('organisations_user' => organisations_user)
     else
-      update_user(user)
       return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
     end
+  end
+
+  def update
+    user = User.find_by_mobile(@mobile)
+    update_user(user)
+    get_organisation_user.update(organisation_id: @organisation_id, user_id: user.id, position: @position)
+    return_success.merge!('organisations_user' => get_organisation_user)
   end
 
   private
@@ -43,6 +50,10 @@ class OrganisationsUserBuilder
 
   def update_user(user)
     user.update(@user_attributes)
+  end
+
+  def get_organisation_user
+    OrganisationsUser.find(@organisations_user_id)
   end
 
   def user_belongs_to_organisation(user)

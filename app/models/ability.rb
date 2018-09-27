@@ -212,7 +212,7 @@ class Ability
 
   def organisations_users_abilities
     if can_manage_organisations_users? || @api_user
-      can [:create, :show, :index], OrganisationsUser
+      can [:create, :show, :index, :update], OrganisationsUser
     end
 
   end
