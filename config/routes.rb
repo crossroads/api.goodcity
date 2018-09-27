@@ -69,7 +69,7 @@ Rails.application.routes.draw do
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
       resources :gc_organisations, only: [:index, :show]
-      resources :organisations_users, only: [:create, :index]
+      resources :organisations_users, only: [:create, :index, :update]
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]
