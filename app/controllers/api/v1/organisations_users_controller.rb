@@ -36,6 +36,16 @@ module Api
         end
       end
 
+      def update
+        params['organisations_user']['id'] = params['id']
+        builder = OrganisationsUserBuilder.new(params['organisations_user'].to_hash).update
+        if builder['result']
+          save_and_render_object_with_errors(builder['organisations_user'])
+        else
+          render_error(builder['errors'])
+        end
+      end
+
       private
 
       def organisations_user_params
