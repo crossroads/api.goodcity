@@ -31,7 +31,7 @@ class OrganisationsUserBuilder
       update_user
       return_success.merge!('organisations_user' => @organisations_user)
     else
-      update_user(user)
+      update_user
       return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
     end
   end
