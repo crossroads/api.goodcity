@@ -245,6 +245,7 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+    can [:create, :show], OrganisationsUser
   end
 
   def packages_locations_abilities
@@ -274,7 +275,6 @@ class Ability
     can [:index, :show], Permission
     can [:index, :show], UserRole
     can [:index, :show], CancellationReason
-    can [:create, :show], OrganisationsUser
     can [:index, :show], Organisation
     if can_add_or_remove_inventory_number? || @api_user
       can [:create, :remove_number], InventoryNumber

@@ -34,6 +34,7 @@ describe User, :type => :model do
     it{ is_expected.to  have_db_column(:email).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_connected).of_type(:datetime)}
     it{ is_expected.to  have_db_column(:last_disconnected).of_type(:datetime)}
+    it{ is_expected.to  have_db_column(:title).of_type(:string)}
   end
 
   describe "Validations" do
