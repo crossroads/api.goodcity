@@ -49,11 +49,9 @@ class OrganisationsUserBuilder
 
   def update_user
     @user.roles << charity_role unless @user.roles.include?(charity_role)
+    @organisations_user.user.update(@user_attributes)
   end
 
-  def get_organisation_user
-    OrganisationsUser.find(@organisations_user_id)
-  end
 
   def user_belongs_to_organisation(user)
     user.organisation_ids.include?(@organisation_id)

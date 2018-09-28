@@ -255,7 +255,6 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
-    can [:create], OrganisationsUser
   end
 
   def packages_locations_abilities
