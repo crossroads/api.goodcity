@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true, allow_nil: true,
     format: { with: /\A[^@\s]+@[^@\s]+\Z/ }
 
+  validates :title, :inclusion => { :in => TITLE_OPTIONS }, :allow_nil => true
+
   after_create :generate_auth_token
 
   scope :donors,      -> { where(permission_id: nil) }
