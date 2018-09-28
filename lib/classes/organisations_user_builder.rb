@@ -11,8 +11,8 @@ class OrganisationsUserBuilder
   #   }
 
   def initialize(params)
-    @organisations_user_id = params['id'] if params['id']
-    @organisation_id = params['organisation_id'].to_i
+    @organisations_user = OrganisationsUser.find_by_id(params['id']) if params['id']
+    @organisation_id = params['organisation_id'].to_i if params['organisation_id']
     @user_attributes = params['user_attributes']
     @mobile = @user_attributes['mobile']
     @position = params['position']
@@ -25,21 +25,20 @@ class OrganisationsUserBuilder
     return fail_with_error(user.errors) unless user.valid?
     return fail_with_error(I18n.t('organisations_user_builder.organisation.not_found')) unless organisation
     if !user_belongs_to_organisation(user)
-      organisations_user = OrganisationsUser.create!(organisation_id: @organisation_id, user_id: user.id, position: @position)
+      @organisations_user = OrganisationsUser.create!(organisation_id: @organisation_id, user_id: user.id, position: @position)
       TwilioService.new(user).send_welcome_msg
       user.roles << charity_role unless user.roles.include?(charity_role)
-      update_user(user)
-      return_success.merge!('organisations_user' => organisations_user)
+      update_user
+      return_success.merge!('organisations_user' => @organisations_user)
     else
       return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
     end
   end
 
   def update
-    user = User.find_by_mobile(@mobile)
-    update_user(user)
-    get_organisation_user.update(organisation_id: @organisation_id, user_id: user.id, position: @position)
-    return_success.merge!('organisations_user' => get_organisation_user)
+    update_user
+    @organisations_user.update(position: @position)
+    return_success.merge!('organisations_user' => @organisations_user.reload)
   end
 
   private
@@ -48,13 +47,10 @@ class OrganisationsUserBuilder
     @organisation ||= Organisation.find_by_id(@organisation_id)
   end
 
-  def update_user(user)
-    user.update(@user_attributes)
+  def update_user
+    @organisations_user.user.update(@user_attributes)
   end
 
-  def get_organisation_user
-    OrganisationsUser.find(@organisations_user_id)
-  end
 
   def user_belongs_to_organisation(user)
     user.organisation_ids.include?(@organisation_id)
