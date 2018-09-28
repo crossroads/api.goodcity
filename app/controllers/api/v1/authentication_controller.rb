@@ -70,12 +70,9 @@ module Api
           return render_error(@mobile.errors.full_messages.join('. '))
         end
 
-        @user = User.find_by_mobile(@mobile.mobile)
-        if (is_browse_app? && !@user)
-          @user = User.where(mobile: @mobile.mobile).first_or_create
-          render_send_pin_json(@user)
-        elsif @user && @user.allowed_login?(app_name)
-          render_send_pin_json(@user)
+        if is_browse_app? || (@user && @user.allowed_login?(app_name))
+          @user || @user = User.where(mobile: @mobile.mobile).first_or_create
+          render_send_pin_json
         else
           return render json: { error: "You are not authorized." }, status: 401
         end
@@ -179,9 +176,9 @@ module Api
 
       private
 
-      def render_send_pin_json(user)
-        user.send_verification_pin
-        render json: { otp_auth_key: otp_auth_key_for(user) }
+      def render_send_pin_json
+        @user.send_verification_pin
+        render json: { otp_auth_key: otp_auth_key_for(@user) }
       end
       
       def render_error(error_message)
