@@ -59,6 +59,11 @@ describe OrganisationsUserBuilder do
       }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
     end
 
+    it "edit existing organisation" do
+      update_organisations_user_builder.update
+      expect(OrganisationsUser.first.position).to eq("Updated position")
+    end
+
     it "do not add user to organisation if mobile number already in organisation" do
       organisations_user1 = create :organisations_user, user: user1, organisation: organisation
       expect(organisations_user_builder.build).to eq({ 'result' => false, 'errors' => "Mobile has already been taken" })

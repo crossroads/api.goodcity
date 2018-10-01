@@ -184,12 +184,6 @@ FactoryBot.define do
       end
     end
 
-    trait :with_organisation do
-      after(:create) do |user|
-        user.organisations << create(:organisation)
-      end
-    end
-
     trait :with_email do
       email { FFaker::Internet.email }
     end
