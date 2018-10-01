@@ -19,6 +19,7 @@ describe OrganisationsUserBuilder do
   let(:update_user_attributes) do
     FactoryBot.attributes_for(:user, :with_email, mobile:'+85252345678', last_name: "Cooper")
   end
+
   let(:organisations_user) { create :organisations_user }
   let(:organisations_user_params) do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}" , user_attributes: user_attributes)
@@ -56,6 +57,11 @@ describe OrganisationsUserBuilder do
       expect{
         organisations_user_builder.build
       }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
+    end
+
+    it "edit existing organisation" do
+      update_organisations_user_builder.update
+      expect(OrganisationsUser.first.position).to eq("Updated position")
     end
 
     it "do not add user to organisation if mobile number already in organisation" do
