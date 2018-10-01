@@ -15,8 +15,13 @@ describe OrganisationsUserBuilder do
   let(:user_attributes) do
     FactoryBot.attributes_for(:user, :with_email, mobile:'+85252345678')
   end
+  let(:organisations_user) { create :organisations_user }
   let(:organisations_user_params) do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}" , user_attributes: user_attributes)
+  end
+
+  let(:update_organisations_user_params) do
+    FactoryBot.attributes_for(:organisations_user, id: "#{organisations_user.id}", position: "Updated position", user_attributes: user_attributes)
   end
 
   let(:user) { create :user }
@@ -24,6 +29,7 @@ describe OrganisationsUserBuilder do
   let(:position) { 'Admin' }
 
   let(:organisations_user_builder) { OrganisationsUserBuilder.new(organisations_user_params.stringify_keys) }
+  let(:update_organisations_user_builder) { OrganisationsUserBuilder.new(update_organisations_user_params.stringify_keys) }
   let(:mobile) { '+85251111111' }
   let!(:role) { create :charity_role }
   let(:subject) { JSON.parse(response.body) }
@@ -33,6 +39,7 @@ describe OrganisationsUserBuilder do
     it { expect(organisations_user_builder.instance_variable_get("@user_attributes")).to eql(user_attributes) }
     it { expect(organisations_user_builder.instance_variable_get("@mobile")).to eql(user_attributes['mobile']) }
     it { expect(organisations_user_builder.instance_variable_get("@position")).to eql(position) }
+    it { expect(update_organisations_user_builder.instance_variable_get("@organisations_user")).to eql(organisations_user) }
   end
 
   context "build" do
@@ -45,6 +52,11 @@ describe OrganisationsUserBuilder do
       expect{
         organisations_user_builder.build
       }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
+    end
+
+    it "edit existing organisation" do
+      update_organisations_user_builder.update
+      expect(OrganisationsUser.first.position).to eq("Updated position")
     end
 
     it "do not add user to organisation if mobile number already in organisation" do
