@@ -69,7 +69,7 @@ module Api
         unless @mobile.valid?
           return render_error(@mobile.errors.full_messages.join('. '))
         end
-
+        @user = User.find_by_mobile(@mobile.mobile)
         if is_browse_app? || (@user && @user.allowed_login?(app_name))
           @user || @user = User.where(mobile: @mobile.mobile).first_or_create
           render_send_pin_json
