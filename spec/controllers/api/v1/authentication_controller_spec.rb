@@ -10,6 +10,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
   let(:mobile1) { generate(:mobile) }
+
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
   let(:jwt_token)    { Token.new.generate }
   let(:serialized_user) { JSON.parse(Api::V1::UserProfileSerializer.new(user).as_json.to_json) }
@@ -59,7 +60,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_admin_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        expect(controller).to receive(:app_name).and_return(ADMIN_APP)
+        allow(controller).to receive(:app_name).and_return(ADMIN_APP)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -69,7 +70,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_stock_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        expect(controller).to receive(:app_name).and_return(STOCK_APP)
+        allow(controller).to receive(:app_name).and_return(STOCK_APP)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -119,8 +120,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     it 'do not send pin if donor login into admin', :show_in_doc do
       set_admin_app_header
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:app_name).and_return(ADMIN_APP)
+      allow(controller).to receive(:app_name).and_return(ADMIN_APP)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(401)
       expect(parsed_body["error"]).to eq("You are not authorized.")

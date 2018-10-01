@@ -65,7 +65,7 @@ describe Api::V1::OfferSerializer do
     before { User.current_user = charity_user }
     let(:charity_serializer) { Api::V1::UserSerializer.new(charity_user).as_json }
     let(:charity_json) { JSON.parse(charity_serializer.to_json) }
-    
+
     it "creates JSON" do
       expect(charity_json['user']['id']).to eql(charity_user.id)
       expect(charity_json['user']['first_name']).to eql(charity_user.first_name)
