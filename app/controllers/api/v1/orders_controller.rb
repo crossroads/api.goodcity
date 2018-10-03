@@ -23,6 +23,7 @@ module Api
           param :people_helped, :number
           param :detail_id, String
           param :stockit_id, String, desc: "stockit designation record id"
+          param :beneficiary_id, String
         end
       end
 
@@ -126,7 +127,7 @@ module Api
         params.require(:order).permit(:stockit_id, :code, :status, :created_at,
           :organisation_id, :stockit_contact_id, :detail_id, :detail_type, :description,
           :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :people_helped,
-          :purpose_description, purpose_ids: [], cart_package_ids: [])
+          :beneficiary_id, :purpose_description, purpose_ids: [], cart_package_ids: [])
       end
 
       def serializer
