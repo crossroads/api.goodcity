@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180924074059) do
+ActiveRecord::Schema.define(version: 20180928031017) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,20 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.datetime "updated_at"
     t.string   "otp_auth_key",    limit: 30
   end
+
+  create_table "beneficiaries", force: :cascade do |t|
+    t.integer  "identity_type_id"
+    t.integer  "created_by_id"
+    t.string   "identity_number"
+    t.string   "title"
+    t.string   "first_name"
+    t.string   "last_name"
+    t.string   "phone_number"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "beneficiaries", ["identity_type_id"], name: "index_beneficiaries_on_identity_type_id", using: :btree
 
   create_table "boxes", force: :cascade do |t|
     t.string   "box_number"
@@ -167,6 +181,12 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "identity_types", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "images", force: :cascade do |t|
@@ -607,6 +627,7 @@ ActiveRecord::Schema.define(version: 20180924074059) do
   add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
   add_index "versions", ["whodunnit"], name: "index_versions_on_whodunnit", using: :btree
 
+  add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
   add_foreign_key "organisations", "countries"

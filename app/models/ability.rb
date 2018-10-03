@@ -175,6 +175,7 @@ class Ability
     can [:index, :show, :update, :destroy], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :transition, :destroy], Order
+      can [:create, :index, :show, :update], Beneficiary
     end
   end
 
@@ -240,6 +241,7 @@ class Ability
     can [:fetch_packages], Package # for BrowseController
     can :index, DonorCondition
     can [:index, :show], District
+    can [:index, :show], IdentityType
     can [:index, :show], Territory
     can :index, Timeslot
     can :index, GogovanTransport
