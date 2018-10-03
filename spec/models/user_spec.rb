@@ -67,6 +67,15 @@ describe User, :type => :model do
       it { is_expected.to_not allow_value('abc@@gmail.com').for(:email) }
       it { is_expected.to_not allow_value('abc.gmail.com').for(:email) }
     end
+
+    context "title" do
+      it { is_expected.to allow_value('Mr').for(:title) }
+      it { is_expected.to allow_value('Mrs').for(:title) }
+      it { is_expected.to allow_value('Miss').for(:title) }
+      it { is_expected.to allow_value('Ms').for(:title) }
+      it { is_expected.to_not allow_value('Mister').for(:title) }
+      it { is_expected.to_not allow_value('').for(:title) }
+    end
   end
 
   describe '.creation_with_auth' do
