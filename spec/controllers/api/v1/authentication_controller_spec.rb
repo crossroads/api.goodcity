@@ -61,7 +61,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_admin_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        allow(controller).to receive(:app_name).and_return(ADMIN_APP)
+        expect(controller).to receive(:app_name).and_return(ADMIN_APP).twice
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -71,7 +71,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_stock_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        allow(controller).to receive(:app_name).and_return(STOCK_APP)
+        expect(controller).to receive(:app_name).and_return(STOCK_APP).twice
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -101,26 +101,24 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   context "send_pin" do
     it 'should find user by mobile', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
+      expect(User).to receive(:find_or_create_for_browse).with(true, mobile).and_return(user)
       expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
-      allow(controller).to receive(:app_name).and_return(DONOR_APP)
       post :send_pin, mobile: mobile
       expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
 
     it "where user does not exist" do
-      set_browse_app_header
-      expect(User).to receive(:find_by_mobile).with(mobile1).and_return(nil)
-      allow(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
+      expect(User).to receive(:find_or_create_for_browse).with(true, mobile1).and_return(user1)
       expect(controller).to receive(:otp_auth_key_for).with(user1).and_return(otp_auth_key)
       post :send_pin, mobile: mobile1
       expect(response.status).to eq(200)
     end
 
     it 'do not send pin if donor login into admin', :show_in_doc do
-      set_admin_app_header
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      allow(controller).to receive(:app_name).and_return(ADMIN_APP)
+      expect(controller).to receive(:app_name).and_return(ADMIN_APP).exactly(3).times
+      expect(User).to receive(:find_or_create_for_browse).with(false, mobile).and_return(user)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(401)
       expect(parsed_body["error"]).to eq("You are not authorized.")
@@ -128,8 +126,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it 'send pin if donor login into Browse', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
+      expect(User).to receive(:find_or_create_for_browse).with(true, mobile).and_return(user)
       expect(controller).to receive(:otp_auth_key_for).with(user).and_return(otp_auth_key)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
@@ -137,8 +135,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it 'send pin if reviewer login into Browse', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(reviewer)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
+      expect(User).to receive(:find_or_create_for_browse).with(true, mobile).and_return(reviewer)
       expect(controller).to receive(:otp_auth_key_for).with(reviewer).and_return(otp_auth_key)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
@@ -146,8 +144,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it 'send pin if supervisor logging into Browse', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
+      expect(User).to receive(:find_or_create_for_browse).with(true, mobile).and_return(supervisor)
       expect(controller).to receive(:otp_auth_key_for).with(supervisor).and_return(otp_auth_key)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
@@ -155,8 +153,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it 'sends otp_auth_key if charity_user logging into Browse', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
+      expect(User).to receive(:find_or_create_for_browse).with(true, mobile).and_return(charity_user)
       expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return(otp_auth_key)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
