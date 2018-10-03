@@ -113,14 +113,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a user's first or last name" do
-        submitter = FactoryBot.create :user, first_name: 'John', last_name: 'Smith'
+        submitter = FactoryBot.create :user, first_name: 'Jane', last_name: 'Doe'
         FactoryBot.create :order, :with_state_submitted, submitted_by: submitter
-        get :index, searchText: 'smit'
+        get :index, searchText: 'jan'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
         expect(parsed_body["designations"][0]['submitted_by_id']).to eq(submitter.id)
         expect(parsed_body['meta']['total_pages']).to eql(1)
-        expect(parsed_body['meta']['search']).to eql('smit')
+        expect(parsed_body['meta']['search']).to eql('jan')
       end
 
       it "can search orders from a user's full name" do
