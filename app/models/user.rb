@@ -141,6 +141,14 @@ class User < ActiveRecord::Base
     channels
   end
 
+  def self.find_or_create_for_browse(is_browse_app, mobile)
+    if is_browse_app
+      where(mobile: mobile).first_or_create
+    else
+      find_by_mobile(mobile)
+    end
+  end
+
   def self.current_user
     RequestStore.store[:current_user]
   end
