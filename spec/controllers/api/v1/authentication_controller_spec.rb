@@ -109,11 +109,12 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it "where user does not exist" do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
-      post :send_pin, mobile: mobile
-      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
+      set_browse_app_header
+      expect(User).to receive(:find_by_mobile).with(mobile1).and_return(nil)
+      allow(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller).to receive(:otp_auth_key_for).with(user1).and_return(otp_auth_key)
+      post :send_pin, mobile: mobile1
+      expect(response.status).to eq(200)
     end
 
     it 'do not send pin if donor login into admin', :show_in_doc do
