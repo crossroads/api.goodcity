@@ -111,7 +111,7 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
       before { generate_and_set_token(supervisor) }
 
       it "allows supervisor to create a beneficiary" do
-        FactoryBot.build(:beneficiary)
+        payload = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
         post :create, beneficiary: payload
         expect(response.status).to eq(201)
         expect(parsed_body['beneficiary']['created_by_id']).to eq(supervisor.id)
