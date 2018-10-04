@@ -30,17 +30,12 @@ module Api
 
       api :GET, '/v1/beneficiaries', "List all beneficiaries"
       def index
-        result = current_user.supervisor? ? @beneficiaries : @beneficiaries.my_beneficiaries
-        render json: result, each_serializer: serializer, status: 200
+        render json: @beneficiaries, each_serializer: serializer, status: 200
       end
 
       api :GET, '/v1/beneficiaries/1', "Get one beneficiary"
       def show
-        if !current_user.supervisor? and @beneficiary.created_by != current_user
-          render json: { error: "Forbidden." }, status: 403
-        else
-          render json: @beneficiary, serializer: serializer
-        end
+        render json: @beneficiary, serializer: serializer
       end
 
       api :POST, "/v1/beneficiaries", "Create a beneficiary"
@@ -53,12 +48,8 @@ module Api
       api :PUT, '/v1/beneficiaries/1', "Update user"
       param_group :beneficiary
       def update
-        if !current_user.supervisor? and @beneficiary.created_by != current_user
-          render json: { error: "Forbidden." }, status: 403
-        else
-          @beneficiary.update_attributes(beneficiary_params)
-          render json: @beneficiary, serializer: serializer
-        end
+        @beneficiary.update_attributes(beneficiary_params)
+        render json: @beneficiary, serializer: serializer
       end
 
       def serializer

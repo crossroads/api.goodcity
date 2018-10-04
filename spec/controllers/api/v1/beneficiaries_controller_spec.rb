@@ -4,7 +4,7 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
   let!(:beneficiary) { create :beneficiary }
   let(:identity_type) { create :identity_type }
   let(:supervisor) { create(:user, :supervisor, :with_can_manage_orders_permission )}
-  let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
+  let(:charity_user) { create :user, :charity }
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
 
@@ -59,21 +59,6 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
 
     end
 
-    context 'When logged in as a user without can_manage_orders permission' do
-      before { generate_and_set_token(no_permission_user) }
-  
-      it 'should be forbidden to list beneficiaries' do
-        get :index
-        expect(response.status).to eq(403)
-      end
-
-      it 'should be forbidden to view a single beneficiary' do
-        get :show, id: beneficiary.id
-        expect(response.status).to eq(403)
-      end
-
-    end
-
   end
 
   describe "POST /beneficiaries" do
@@ -83,16 +68,6 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
         payload = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
         post :create, beneficiary: payload
         expect(response.status).to eq(401)
-      end
-    end
-
-    context 'When logged in as a user without can_manage_orders permission' do
-      before { generate_and_set_token(no_permission_user) }
-
-      it "denies creation of a beneficiary" do
-        payload = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
-        post :create, beneficiary: payload
-        expect(response.status).to eq(403)
       end
     end
 
