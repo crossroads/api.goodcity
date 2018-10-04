@@ -1,3 +1,3 @@
 class IdentityType < ActiveRecord::Base
-    include CacheableJson
+  include CacheableJson
 end
