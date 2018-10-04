@@ -24,7 +24,7 @@ module Api
       end
 
       def beneficiary_params
-        attributes = [:identity_type_id, :identity_number, :title, :first_name, :last_name,:phone_number]
+        attributes = [:identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number]
         params.require(:beneficiary).permit(attributes)
       end
 
@@ -55,7 +55,6 @@ module Api
       def serializer
         Api::V1::BeneficiarySerializer
       end
-
     end
   end
 end

@@ -121,7 +121,7 @@ module Api
           @order.detail_type = "GoodCity"
         end
 
-        if order_params['beneficiary_attributes'] and  @order.beneficiary and @order.beneficiary.created_by == nil
+        if order_params['beneficiary_attributes'] and @order.beneficiary and @order.beneficiary.created_by.nil?
           # New nested beneficiary
           @order.beneficiary.created_by = current_user
         end
@@ -130,11 +130,21 @@ module Api
       end
 
       def order_params
-        params.require(:order).permit(:stockit_id, :code, :status, :created_at,
-          :organisation_id, :stockit_contact_id, :detail_id, :detail_type, :description,
-          :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :people_helped,
-          :beneficiary_id, :purpose_description, purpose_ids: [], cart_package_ids: [],
-          beneficiary_attributes: [:identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number])
+        params.require(:order).permit(
+          :stockit_id, :code, :status, :created_at,
+          :organisation_id, :stockit_contact_id, 
+          :detail_id, :detail_type, :description,
+          :state, :state_event, :stockit_organisation_id, 
+          :stockit_activity_id, :people_helped,
+          :beneficiary_id, :purpose_description, 
+          purpose_ids: [], cart_package_ids: [],
+          beneficiary_attributes: [
+            :identity_type_id, 
+            :identity_number, 
+            :title, :first_name, 
+            :last_name, 
+            :phone_number
+          ])
       end
 
       def serializer
