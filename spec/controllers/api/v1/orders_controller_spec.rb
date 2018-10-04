@@ -173,12 +173,25 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   describe "POST orders" do
     context 'If logged in user is Supervisor in Browse app ' do
       before { generate_and_set_token(user) }
+
       it 'should create an order via POST method' do
         set_browse_app_header
         post :create, order: order_params
         expect(response.status).to eq(201)
         expect(parsed_body['order']['people_helped']).to eq(order_params[:people_helped])
       end
+
+      it 'should create an order with nested beneficiary' do
+        set_browse_app_header
+        beneficiary_count = Beneficiary.count
+        order_params['beneficiary_attributes'] = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
+        post :create, order: order_params
+        expect(response.status).to eq(201)
+        expect(Beneficiary.count).to eq(beneficiary_count + 1)
+        beneficiary = Beneficiary.find_by(id: parsed_body['order']['beneficiary_id'])
+        expect(beneficiary.created_by_id).to eq(user.id)
+      end
+
     end
   end
 

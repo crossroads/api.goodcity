@@ -8,7 +8,7 @@ class Order < ActiveRecord::Base
   belongs_to :stockit_contact
   belongs_to :stockit_organisation
   belongs_to :organisation
-  belongs_to :beneficiary
+  belongs_to :beneficiary, class_name: 'Beneficiary'
   belongs_to :created_by, class_name: 'User'
   belongs_to :processed_by, class_name: 'User'
   belongs_to :cancelled_by, class_name: 'User'
@@ -31,6 +31,8 @@ class Order < ActiveRecord::Base
   before_create :assign_code
 
   after_destroy :delete_orders_packages
+
+  accepts_nested_attributes_for :beneficiary
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 

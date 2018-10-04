@@ -43,6 +43,7 @@ class Ability
 
   def define_abilities
     address_abilities
+    beneficiary_abilities
     contact_abilities
     deliveries_abilities
     gogovan_order_abilities
@@ -77,6 +78,14 @@ class Ability
     # Offer delivery address
     can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
     can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
+  end
+
+  def beneficiary_abilities
+    can :create, Beneficiary
+    can [:create, :index, :show, :update], Beneficiary, created_by_id: @user_id
+    if can_manage_orders? || @api_user
+      can [:create, :index, :show, :update], Beneficiary
+    end
   end
 
   def goodcity_request_abilitites
@@ -175,7 +184,6 @@ class Ability
     can [:index, :show, :update, :destroy], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :transition, :destroy], Order
-      can [:create, :index, :show, :update], Beneficiary
     end
   end
 
