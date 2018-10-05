@@ -174,8 +174,12 @@ FactoryBot.define do
       end
     end
 
-    trait :title do
-      title { ["Mr", "Mrs", "Miss", "Ms"].sample }
+    trait :title_en do
+      title_en { ["Mr", "Mrs", "Miss", "Ms"].sample }
+    end
+
+    trait :title_zh_tw do
+      title_zh_tw { ["Mr", "Mrs", "Miss", "Ms"].sample }
     end
 
     trait :with_organisation do
