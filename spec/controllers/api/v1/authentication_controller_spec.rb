@@ -18,7 +18,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   context "signup" do
     it 'new user successfully', :show_in_doc do
       expect_any_instance_of(User).to receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).and_return(otp_auth_key)
+      expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
       post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
       expect(parsed_body["otp_auth_key"]).to eq( otp_auth_key )
     end
@@ -109,16 +109,18 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     end
 
     it "where user does not exist" do
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
-      expect(User).to receive(:find_or_create_for_browse).with(true, mobile1).and_return(user1)
-      expect(controller).to receive(:otp_auth_key_for).with(user1).and_return(otp_auth_key)
-      post :send_pin, mobile: mobile1
-      expect(response.status).to eq(200)
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:otp_auth_key_for_user).and_return( otp_auth_key )
+      post :send_pin, mobile: mobile
+      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
 
     it 'do not send pin if donor login into admin', :show_in_doc do
-      expect(controller).to receive(:app_name).and_return(ADMIN_APP).exactly(3).times
-      expect(User).to receive(:find_or_create_for_browse).with(false, mobile).and_return(user)
+      set_admin_app_header
+      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+      expect(user).to_not receive(:send_verification_pin)
+      expect(controller).to receive(:app_name).and_return(ADMIN_APP)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(401)
       expect(parsed_body["error"]).to eq("You are not authorized.")
