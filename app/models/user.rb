@@ -31,7 +31,8 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true, allow_nil: true,
     format: { with: /\A[^@\s]+@[^@\s]+\Z/ }
 
-  validates :title, :inclusion => { :in => TITLE_OPTIONS }, :allow_nil => true
+  validates :title_en, :inclusion => { :in => TITLE_OPTIONS_EN }, :allow_nil => true
+  validates :title_zh_tw, :inclusion => { :in => TITLE_OPTIONS_ZH_TW }, :allow_nil => true
 
   after_create :generate_auth_token
 
@@ -141,12 +142,8 @@ class User < ActiveRecord::Base
     channels
   end
 
-  def self.find_or_create_for_browse(is_browse_app, mobile)
-    if is_browse_app
-      where(mobile: mobile).first_or_create
-    else
-      find_by_mobile(mobile)
-    end
+  def self.find_or_create_user(mobile)
+     where(mobile: mobile).first_or_create
   end
 
   def self.current_user
