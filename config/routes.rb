@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       post "auth/signup", to: "authentication#signup"
       post "auth/verify", to: "authentication#verify"
       post "auth/send_pin", to: "authentication#send_pin"
+      post "auth/register_user", to: "authentication#register_user"
       post "auth/register_device", to: "authentication#register_device"
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
