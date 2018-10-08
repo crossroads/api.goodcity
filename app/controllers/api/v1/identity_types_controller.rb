@@ -15,7 +15,9 @@ module Api
 
       def_param_group :identity_type do
         param :identity_type, Hash, required: true do
-          param :name, String, desc: "Name of the Identity type"
+          param :identifier, String, desc: "String used to identify of the Identity type"
+          param :name_en, String, desc: "English name of the Identity type"
+          param :name_zh_tw, String, desc: "Chinese name of the Identity type"
         end
       end
 
