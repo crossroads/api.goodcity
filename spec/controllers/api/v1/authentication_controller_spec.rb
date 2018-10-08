@@ -102,7 +102,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
-      expect(controller).to receive(:app_name).and_return(DONOR_APP)
+      expect(controller).to receive(:app_name).and_return(DONOR_APP).twice
       post :send_pin, mobile: mobile
       expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
@@ -161,7 +161,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
       expect(user).to_not receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return(otp_auth_key)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
+      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
       expect(parsed_body['otp_auth_key']).to eql(otp_auth_key)

@@ -109,7 +109,7 @@ describe User, :type => :model do
       expect(slack).to receive(:send_otp)
       expect(TwilioService).to receive(:new).with(user).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
-      user.send_verification_pin
+      user.send_verification_pin(DONOR_APP)
     end
 
   end
