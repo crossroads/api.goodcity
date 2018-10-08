@@ -2,10 +2,9 @@ require 'rails_helper'
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user_with_token) }
-  let(:supervisor) { create(:user_with_token, :supervisor) }
+  let(:supervisor) { create(:user_with_token, :supervisor, :with_organisation) }
   let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
-  let(:reviewer) { create(:user_with_token, :reviewer) }
   let(:order_fulfilment) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Order fulfilment' => ['can_login_to_stock']} )}
   let(:pin)    { user.most_recent_token[:otp_code] }
@@ -128,54 +127,42 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(parsed_body['otp_auth_key']).to eql( nil )
     end
 
-    context "register_user" do
-      it 'send pin and register if donor login into Browse', :show_in_doc do
+    context "register_user_and_send_pin" do
+      it 'if user exists in system but do not have any organisation assigned', :show_in_doc do
         expect(User).to receive(:find_or_create_user).with(mobile).and_return(user)
         expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
-        post :register_user, mobile: mobile
+        post :register_user_and_send_pin, mobile: mobile
         expect(response.status).to eq(200)
         expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
       end
 
-      it 'send pin and register if reviewer login into Browse', :show_in_doc do
-        expect(User).to receive(:find_or_create_user).with(mobile).and_return(reviewer)
-        expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
-        post :register_user, mobile: mobile
-        expect(response.status).to eq(200)
-        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
-      end
-
-      it 'send pin and register if supervisor logging into Browse', :show_in_doc do
+      it 'if user exists and have organisation assigned', :show_in_doc do
         expect(User).to receive(:find_or_create_user).with(mobile).and_return(supervisor)
         expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
-        post :register_user, mobile: mobile
+        post :register_user_and_send_pin, mobile: mobile
         expect(response.status).to eq(200)
         expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
       end
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+      it 'if mobile number does not exist it creates new user', :show_in_doc do
+        post :register_user_and_send_pin, mobile: mobile1
+        expect(response.status).to eq(200)
+        expect(User.count).to eql(2)
+      end
+
     it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
       allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
       expect(charity_user).to receive(:send_verification_pin)
       post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
-=======
+      expect(response.status).to eq(200)
+    end
+
     it 'sends otp_auth_key if charity_user logging into Browse', :show_in_doc do
       expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
       expect(User).to receive(:find_or_create_for_browse).with(true, mobile).and_return(charity_user)
       expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return(otp_auth_key)
       post :send_pin, mobile: mobile
->>>>>>> find_or_create_for_browse class method added in User model
       expect(response.status).to eq(200)
-=======
-      it 'send pin and register if charity_user logging into Browse', :show_in_doc do
-        expect(User).to receive(:find_or_create_user).with(mobile).and_return(charity_user)
-        expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
-        post :register_user, mobile: mobile
-        expect(response.status).to eq(200)
-        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
-      end
->>>>>>> seperate action added for user_register | title_en and title_zh_tw added for title field
     end
 
     context "where mobile is" do
