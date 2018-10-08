@@ -3,7 +3,7 @@ module Api::V1
     include SerializeTimeValue
 
     embed :ids, include: true
-    attributes :id, :first_name, :last_name, :permission_id, :mobile, :title_en, :title_zh_tw,
+    attributes :id, :first_name, :last_name, :permission_id, :mobile, :title,
       :created_at, :last_connected, :last_disconnected, :email, :user_roles_ids
 
     has_one :image, serializer: ImageSerializer

@@ -34,8 +34,7 @@ describe User, :type => :model do
     it{ is_expected.to  have_db_column(:email).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_connected).of_type(:datetime)}
     it{ is_expected.to  have_db_column(:last_disconnected).of_type(:datetime)}
-    it{ is_expected.to  have_db_column(:title_en).of_type(:string)}
-    it{ is_expected.to  have_db_column(:title_zh_tw).of_type(:string)}
+    it{ is_expected.to  have_db_column(:title).of_type(:string)}
   end
 
   describe "Validations" do
@@ -69,22 +68,13 @@ describe User, :type => :model do
       it { is_expected.to_not allow_value('abc.gmail.com').for(:email) }
     end
 
-    context "title_en" do
-      it { is_expected.to allow_value('Mr').for(:title_en) }
-      it { is_expected.to allow_value('Mrs').for(:title_en) }
-      it { is_expected.to allow_value('Miss').for(:title_en) }
-      it { is_expected.to allow_value('Ms').for(:title_en) }
-      it { is_expected.to_not allow_value('Mister').for(:title_en) }
-      it { is_expected.to_not allow_value('').for(:title_en) }
-    end
-
-    context "title_zh_tw" do
-      it { is_expected.to allow_value('Mr').for(:title_zh_tw) }
-      it { is_expected.to allow_value('Mrs').for(:title_zh_tw) }
-      it { is_expected.to allow_value('Miss').for(:title_zh_tw) }
-      it { is_expected.to allow_value('Ms').for(:title_zh_tw) }
-      it { is_expected.to_not allow_value('Mister').for(:title_zh_tw) }
-      it { is_expected.to_not allow_value('').for(:title_zh_tw) }
+    context "title" do
+      it { is_expected.to allow_value('Mr').for(:title) }
+      it { is_expected.to allow_value('Mrs').for(:title) }
+      it { is_expected.to allow_value('Miss').for(:title) }
+      it { is_expected.to allow_value('Ms').for(:title) }
+      it { is_expected.to_not allow_value('Mister').for(:title) }
+      it { is_expected.to_not allow_value('').for(:title) }
     end
   end
 

@@ -20,8 +20,7 @@ module Api
             param :last_name, String, desc: "Family name of user"
             param :mobile, String, desc: "Mobile number of user"
             param :email, String, desc: "Email of user"
-            param :title_en, String, desc: "English Title of user"
-            param :title_zh_tw, String, desc: "Chinese Title of user"
+            param :title, String, desc: "Title of user"
           end
         end
       end
@@ -50,7 +49,7 @@ module Api
 
       def organisations_user_params
         params.require(:organisations_user).permit(:organisation_id, :position, user_attributes: [:first_name,
-          :last_name, :mobile, :email, :title_en, :title_zh_tw])
+          :last_name, :mobile, :email, :title])
       end
 
       def serializer
