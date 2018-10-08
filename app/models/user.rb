@@ -31,8 +31,7 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true, allow_nil: true,
     format: { with: /\A[^@\s]+@[^@\s]+\Z/ }
 
-  validates :title_en, :inclusion => { :in => TITLE_OPTIONS_EN }, :allow_nil => true
-  validates :title_zh_tw, :inclusion => { :in => TITLE_OPTIONS_ZH_TW }, :allow_nil => true
+  validates :title, :inclusion => { :in => TITLE_OPTIONS }, :allow_nil => true
 
   after_create :generate_auth_token
 
