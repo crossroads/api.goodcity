@@ -184,7 +184,9 @@ ActiveRecord::Schema.define(version: 20181003055950) do
   end
 
   create_table "identity_types", force: :cascade do |t|
-    t.string   "name"
+    t.string   "identifier"
+    t.string   "name_en"
+    t.string   "name_zh_tw"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

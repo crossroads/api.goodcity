@@ -3,8 +3,7 @@ namespace :goodcity do
   task create_identity_types: :environment do
     id_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
     id_types.each_value do |record|
-      name = record[:name]
-      IdentityType.unscoped.where(name: name).first_or_create
+      IdentityType.find_or_create_by(record)
     end
   end
 end

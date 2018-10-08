@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :beneficiary do
-    identity_type { create(:identity_type, name: "HKID") }
+    identity_type { create(:identity_type) }
     identity_number "7359"
     title "Mr"
     first_name "John"

@@ -1,6 +1,10 @@
 ---
 1:
-  :name: HKID
+  :identifier: HKID
+  :name_en: Hong Kong Identity Card
+  :name_zh_tw: 香港身份證
 
 2:
-  :name: ASRF
+  :identifier: ASRF
+  :name_en: Asylum Seeker Recognizance Form
+  :name_zh_tw: 酷刑聲請人認證表

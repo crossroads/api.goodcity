@@ -7,6 +7,7 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
   let(:charity_user) { create :user, :charity }
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
+  let(:payload) { FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id') }
 
   describe "GET beneficiaries" do
 
@@ -65,7 +66,6 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
 
     context 'When not logged in' do
       it "denies creation of a beneficiary" do
-        payload = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
         post :create, beneficiary: payload
         expect(response.status).to eq(401)
       end
@@ -75,7 +75,6 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
       before { generate_and_set_token(charity_user) }
 
       it "allows charity user to create a beneficiary" do
-        payload = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
         post :create, beneficiary: payload
         expect(response.status).to eq(201)
         expect(parsed_body['beneficiary']['created_by_id']).to eq(charity_user.id)
@@ -86,7 +85,6 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
       before { generate_and_set_token(supervisor) }
 
       it "allows supervisor to create a beneficiary" do
-        payload = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
         post :create, beneficiary: payload
         expect(response.status).to eq(201)
         expect(parsed_body['beneficiary']['created_by_id']).to eq(supervisor.id)
@@ -98,7 +96,6 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
 
     context 'When not logged in' do
       it "denies update of a beneficiary" do
-        payload = beneficiary.attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
         put :update, id: beneficiary.id, beneficiary: payload
         expect(response.status).to eq(401)
       end
@@ -108,7 +105,6 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
       before { generate_and_set_token(no_permission_user) }
 
       it "denies update of a beneficiary" do
-        payload = beneficiary.attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
         put :update, id: beneficiary.id, beneficiary: payload
         expect(response.status).to eq(403)
       end
