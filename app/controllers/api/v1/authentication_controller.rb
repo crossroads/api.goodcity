@@ -2,8 +2,8 @@ module Api
   module V1
     class AuthenticationController < Api::V1::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
-        :current_user_rooms, :register_user]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :register_user]
+        :current_user_rooms, :register_user_and_send_pin]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :register_user_and_send_pin]
 
       resource_description do
         short "Handle user login and registration"
@@ -167,8 +167,8 @@ module Api
         render nothing: true, status: 204
       end
 
-      api :POST, '/v1/auth/register_user', "Search User by mobile number and create if user not found."
-      def register_user
+      api :POST, '/v1/auth/register_user_and_send_pin', "Search User by mobile number and create if user not found."
+      def register_user_and_send_pin
         @mobile = Mobile.new(params[:mobile])
 
         unless @mobile.valid?

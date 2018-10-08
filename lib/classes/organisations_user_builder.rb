@@ -14,10 +14,10 @@ class OrganisationsUserBuilder
     @organisations_user = OrganisationsUser.find_by_id(params['id']) if params['id']
     @organisation_id = params["organisation_id"].presence.try(:to_i)
     @user_attributes = params['user_attributes']
-    @mobile = @user_attributes['mobile']
+    @mobile = @user_attributes['mobile'].presence.try(:to_s)
     @position = params['position']
     fail_with_error(I18n.t('organisations_user_builder.organisation.blank')) unless @organisation_id
-    fail_with_error(I18n.t('organisations_user_builder.user.mobile.blank')) unless @mobile.present?
+    fail_with_error(I18n.t('organisations_user_builder.user.mobile.blank')) unless @mobile
   end
 
   def build
