@@ -77,7 +77,6 @@ describe OrganisationsUserBuilder do
   end
 
   context "update" do
-
     it "updates existing organisations user position" do
       update_organisations_user_builder.update
       expect(OrganisationsUser.first.position).to eq(update_organisations_user_params[:position])
