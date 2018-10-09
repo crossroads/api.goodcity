@@ -11,6 +11,6 @@ module Api::V1
                 :phone_number
 
     has_one  :created_by, serializer: UserSerializer, root: :user
-    has_one  :identity_type, serializer: IdentityTypeSerializer, root: :identity_type
+    has_one  :identity_type, serializer: IdentityTypeSerializer
   end
 end
