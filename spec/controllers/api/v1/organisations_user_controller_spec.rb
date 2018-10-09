@@ -4,15 +4,27 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
   let(:supervisor) { create(:user_with_token, :with_can_manage_organisations_users_permission, role_name: 'Supervisor') }
   before { generate_and_set_token(supervisor) }
   let(:organisation) { create :organisation }
+  let(:new_organisation) { create :organisation }
   let!(:charity_role) { create :charity_role }
   let(:user_attributes) do
     FactoryBot.attributes_for(:user, :with_email)
   end
+
+  let(:organisations_user) { create :organisations_user , organisation_id: "#{new_organisation.id}", user_id: "#{supervisor.id}"}
+
+  let(:update_user_attributes) do
+    FactoryBot.attributes_for(:user, :with_email, last_name: "Cooper")
+  end
+
   let(:organisations_user_params) do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", user_attributes: user_attributes)
   end
   let(:new_organisations_user_params) do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", user_attributes: user_attributes)
+  end
+
+  let(:update_organisations_user_params) do
+    FactoryBot.attributes_for(:organisations_user, organisation_id: "#{new_organisation.id}", user_attributes: update_user_attributes, id: "#{organisations_user.id}")
   end
 
   let(:subject) { JSON.parse(response.body) }
@@ -61,6 +73,23 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
       expect(subject["errors"]).to eq("User already exists in this organisation")
+    end
+  end
+
+  describe "PUT organisations_user/1" do
+    it "update user_attributes of organisations_user ", :show_in_doc do
+      organisations_user_id = update_organisations_user_params[:id]
+      put :update, id: organisations_user_id, organisations_user: update_organisations_user_params
+      organisations_user = OrganisationsUser.find_by_id(organisations_user_id)
+      expect(organisations_user.user.last_name).to eq(update_user_attributes[:last_name])
+    end
+
+    it "update position of organisations_user ", :show_in_doc do
+      organisations_user_id = update_organisations_user_params[:id]
+      update_organisations_user_params[:position] = "Admin"
+      put :update, id: organisations_user_id, organisations_user: update_organisations_user_params
+      organisations_user = OrganisationsUser.find_by_id(organisations_user_id)
+      expect(organisations_user.position).to eq("Admin")
     end
   end
 end
