@@ -86,7 +86,7 @@ module Api
       end
 
       def my_orders
-        render json: @orders.my_orders.goodcity_orders, each_serializer: serializer,
+        render json: @orders.my_orders.goodcity_orders, each_serializer: select_serializer,
           root: "orders", include_packages: false, browse_order: true
       end
 
@@ -98,10 +98,8 @@ module Api
       private
 
       def order_response(records)
-        is_shallow_render = params[:shallow] == true
-        selected_serializer = is_shallow_render ? shallow_serializer : serializer
         ActiveModel::ArraySerializer.new(records,
-          each_serializer: selected_serializer,
+          each_serializer: select_serializer,
           root: "designations",
           include_packages: true,
           include_order: false,
@@ -157,6 +155,11 @@ module Api
 
       def shallow_serializer
         Api::V1::OrderShallowSerializer
+      end
+
+      def select_serializer
+        is_shallow_render = params[:shallow] == true || params[:shallow] == 'true'
+        is_shallow_render ? shallow_serializer : serializer
       end
 
       def stockit_activity
