@@ -7,7 +7,7 @@ module Api::V1
     has_many :images, serializer: StockitImageSerializer
 
     attributes :id, :quantity, :length, :width, :height, :notes, :item_id,
-      :created_at, :updated_at, :package_type_id, :grade,
+      :created_at, :updated_at, :package_type_id, :grade, :inventory_number,
       :donor_condition_id, :stockit_sent_on, :order_id, :allow_web_publish
 
     def item_id
