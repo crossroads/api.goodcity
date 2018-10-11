@@ -6,6 +6,10 @@ FactoryBot.define do
     state         ["requested", "cancelled", "designated", "received", "dispatched"].sample
     quantity      2
 
+    trait :with_package_item do
+      association :package, :with_item
+    end
+
     trait :with_state_requested do
       state "requested"
     end
