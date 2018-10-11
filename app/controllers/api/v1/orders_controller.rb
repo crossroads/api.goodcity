@@ -98,8 +98,10 @@ module Api
       private
 
       def order_response(records)
+        is_shallow_render = params[:shallow] == true
+        selected_serializer = is_shallow_render ? shallow_serializer : serializer
         ActiveModel::ArraySerializer.new(records,
-          each_serializer: serializer,
+          each_serializer: selected_serializer,
           root: "designations",
           include_packages: true,
           include_order: false,
@@ -151,6 +153,10 @@ module Api
 
       def serializer
         Api::V1::OrderSerializer
+      end
+
+      def shallow_serializer
+        Api::V1::OrderShallowSerializer
       end
 
       def stockit_activity
