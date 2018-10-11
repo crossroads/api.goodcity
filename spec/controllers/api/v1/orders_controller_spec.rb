@@ -156,9 +156,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "should be able to fetch designations without their associations" do
-        get :index, shallow: true
+        get :index, shallow: 'true'
         expect(response.status).to eq(200)
-        expect(parsed_body.keys).to eq(['meta', 'designations'])
+        expect(parsed_body.keys.length).to eq(2)
+        expect(parsed_body).to have_key('designations')
+        expect(parsed_body).to have_key('meta')
       end
 
     end
