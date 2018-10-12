@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180723112054) do
+ActiveRecord::Schema.define(version: 20180924074059) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,19 @@ ActiveRecord::Schema.define(version: 20180723112054) do
     t.boolean  "disabled",   default: false
   end
 
+  create_table "goodcity_requests", force: :cascade do |t|
+    t.integer  "quantity"
+    t.integer  "package_type_id"
+    t.integer  "order_id"
+    t.text     "description"
+    t.integer  "created_by_id"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "goodcity_requests", ["order_id"], name: "index_goodcity_requests_on_order_id", using: :btree
+  add_index "goodcity_requests", ["package_type_id"], name: "index_goodcity_requests_on_package_type_id", using: :btree
+
   create_table "holidays", force: :cascade do |t|
     t.datetime "holiday"
     t.integer  "year"
@@ -261,7 +274,7 @@ ActiveRecord::Schema.define(version: 20180723112054) do
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
     t.datetime "created_at"
-    t.datetime "updated_at",              null: false
+    t.datetime "updated_at",                          null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
@@ -281,6 +294,7 @@ ActiveRecord::Schema.define(version: 20180723112054) do
     t.integer  "dispatch_started_by_id"
     t.integer  "submitted_by_id"
     t.datetime "submitted_at"
+    t.integer  "people_helped",           default: 0
   end
 
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
@@ -593,6 +607,8 @@ ActiveRecord::Schema.define(version: 20180723112054) do
   add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
   add_index "versions", ["whodunnit"], name: "index_versions_on_whodunnit", using: :btree
 
+  add_foreign_key "goodcity_requests", "orders"
+  add_foreign_key "goodcity_requests", "package_types"
   add_foreign_key "organisations", "countries"
   add_foreign_key "organisations", "districts"
   add_foreign_key "organisations", "organisation_types"

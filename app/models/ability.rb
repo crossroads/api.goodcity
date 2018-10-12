@@ -6,7 +6,7 @@ class Ability
 
   attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids, :user_permissions
 
-  PERMISSION_NAMES = ['can_manage_items', 'can_manage_packages',
+  PERMISSION_NAMES = ['can_manage_items', 'can_manage_goodcity_requests', 'can_manage_packages',
     'can_manage_offers', 'can_manage_organisations_users',
     'can_manage_deliveries', 'can_manage_delivery_address', 'can_manage_delivery_address',
     'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
@@ -46,6 +46,7 @@ class Ability
     contact_abilities
     deliveries_abilities
     gogovan_order_abilities
+    goodcity_request_abilitites
     holiday_abilities
     image_abilities
     item_abilities
@@ -76,6 +77,12 @@ class Ability
     # Offer delivery address
     can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
     can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
+  end
+
+  def goodcity_request_abilitites
+    if can_manage_goodcity_requests?
+      can [:create, :destroy, :update], GoodcityRequest
+    end
   end
 
   def contact_abilities
