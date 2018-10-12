@@ -20,6 +20,7 @@ module Api
           param :created_at, String
           param :stockit_contact_id, String
           param :stockit_organisation_id, String
+          param :people_helped, :number
           param :detail_id, String
           param :stockit_id, String, desc: "stockit designation record id"
         end
@@ -39,9 +40,9 @@ module Api
       def index
         return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
-        records = @orders.with_eager_load.
-          search(params['searchText'], params['toDesignateItem'].presence).latest.
-          page(params["page"]).per(params["per_page"])
+        records = @orders.with_eager_load
+          .search(params['searchText'], params['toDesignateItem'].presence).descending
+          .page(params["page"]).per(params["per_page"])
         orders = order_response(records)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
       end
@@ -124,7 +125,7 @@ module Api
       def order_params
         params.require(:order).permit(:stockit_id, :code, :status, :created_at,
           :organisation_id, :stockit_contact_id, :detail_id, :detail_type, :description,
-          :state, :state_event, :stockit_organisation_id, :stockit_activity_id,
+          :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :people_helped,
           :purpose_description, purpose_ids: [], cart_package_ids: [])
       end
 

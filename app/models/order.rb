@@ -18,8 +18,9 @@ class Order < ActiveRecord::Base
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: 'detail_id'
 
   has_many :packages
+  has_many :goodcity_requests
   has_many :purposes, through: :orders_purposes
-  has_many :orders_packages
+  has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport, dependent: :destroy
@@ -32,6 +33,8 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
 
+  INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
+
   scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
 
   scope :with_eager_load, -> {
@@ -40,9 +43,9 @@ class Order < ActiveRecord::Base
     ])
   }
 
-  scope :latest, -> { order('id desc') }
+  scope :descending, -> { order('id desc') }
 
-  scope :active_orders, -> { where('status NOT IN (?)', INACTIVE_STATUS) }
+  scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
 
   scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
 
@@ -241,9 +244,14 @@ class Order < ActiveRecord::Base
 
   def self.search(search_text, to_designate_item)
     fetch_orders(to_designate_item)
-    .where(" code LIKE :query OR stockit_organisations.name LIKE :query OR
-      stockit_local_orders.client_name LIKE :query OR
-      stockit_contacts.first_name LIKE :query OR stockit_contacts.last_name LIKE :query OR
+      .where("code ILIKE :query OR
+      description ILIKE :query OR
+      organisations.name_en ILIKE :query OR
+      organisations.name_zh_tw ILIKE :query OR
+      CONCAT(users.first_name, ' ', users.last_name) ILIKE :query OR
+      stockit_organisations.name ILIKE :query OR
+      stockit_local_orders.client_name ILIKE :query OR
+      stockit_contacts.first_name ILIKE :query OR stockit_contacts.last_name ILIKE :query OR
       stockit_contacts.mobile_phone_number LIKE :query OR
       stockit_contacts.phone_number LIKE :query", query: "%#{search_text}%")
   end
@@ -257,7 +265,11 @@ class Order < ActiveRecord::Base
   end
 
   def self.join_order_associations
-    joins("LEFT OUTER JOIN stockit_local_orders ON orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id")
+    joins("LEFT OUTER JOIN stockit_local_orders ON orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'
+    LEFT OUTER JOIN users ON orders.submitted_by_id = users.id or orders.created_by_id = users.id
+    LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
+    LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
+    LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id")
   end
 
   def self.recently_used(user_id)
