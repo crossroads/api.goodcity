@@ -121,7 +121,7 @@ module Api
           @order.detail_type = "GoodCity"
         end
 
-        if order_params['beneficiary_attributes'] and @order.beneficiary and @order.beneficiary.created_by.nil?
+        if order_params['beneficiary_attributes'] and @order.beneficiary.try(:created_by).nil?
           # New nested beneficiary
           @order.beneficiary.created_by = current_user
         end
