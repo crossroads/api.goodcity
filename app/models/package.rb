@@ -71,10 +71,27 @@ class Package < ActiveRecord::Base
       if item_id.presence
         where("item_id = ?", item_id)
       else
-        where("inventory_number ILIKE :query", query: "%#{search_text}%")
+        allowed_search_columns = [
+          'inventory_number', 
+          'designation_name', 
+          'notes', 
+          'state', 
+          'locations.building', 
+          'locations.area'
+        ]
+        with_associations.where(
+          allowed_search_columns
+            .map { |f| "#{f} ILIKE :query" }
+            .join(" OR "), 
+          query: "%#{search_text}%")
       end
     records = records.where(received_quantity: 1) unless show_quantity_item == "true"
     records
+  end
+
+  def self.with_associations
+    joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id 
+      LEFT OUTER JOIN locations ON locations.id = packages_locations.location_id")
   end
 
   # Workaround to set initial state for the state_machine
