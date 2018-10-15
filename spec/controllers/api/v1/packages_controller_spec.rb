@@ -488,9 +488,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
-  describe "search_stockit_items" do
+  describe "Items search" do
     before { generate_and_set_token(user) }
-    it 'find 2 of 4 items (excludes quantity items)' do
+    it 'should find items by inventory number (excludes quantity items)' do
       create :package, received_quantity: 1, inventory_number: "456222"
       create :package, received_quantity: 1, inventory_number: "456111"
       create :package, received_quantity: 1, inventory_number: "111111"
@@ -505,7 +505,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['items'][1]['inventory_number']).to eql("456111")
     end
 
-    it 'find 3 items (includes quantity items)' do
+    it 'should find items by inventory number (includes quantity items)' do
       create :package, received_quantity: 1, inventory_number: "456333"
       create :package, received_quantity: 2, inventory_number: "456222"
       create :package, received_quantity: 2, inventory_number: "456111"
@@ -518,6 +518,55 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['items'][0]['inventory_number']).to eql("456333")
       expect(subject['items'][1]['inventory_number']).to eql("456222")
       expect(subject['items'][2]['inventory_number']).to eql("456111")
+    end
+
+    it 'should find items by notes' do
+      create :package, received_quantity: 1, notes: "butter"
+      create :package, received_quantity: 1, notes: "butterfly"
+      create :package, received_quantity: 1, notes: "margarine"
+      get :search_stockit_items, searchText: "UTter", showQuantityItems: 'true'
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql("UTter")
+      expect(subject['items'].length).to eql(2)
+      expect(subject['items'][0]['notes']).to eql("butter")
+      expect(subject['items'][1]['notes']).to eql("butterfly")
+    end
+
+    it 'should find items by designation_name' do
+      create :package, received_quantity: 1, designation_name: "pepper"
+      create :package, received_quantity: 1, designation_name: "peppermint"
+      create :package, received_quantity: 1, designation_name: "garlic"
+      get :search_stockit_items, searchText: "peP", showQuantityItems: 'true'
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql("peP")
+      expect(subject['items'].length).to eql(2)
+      expect(subject['items'][0]['designation_name']).to eql("pepper")
+      expect(subject['items'][1]['designation_name']).to eql("peppermint")
+    end
+
+    it 'should find items by state' do
+      received_pkg = create :package, received_quantity: 1, state: 'received'
+      create :package, received_quantity: 1, state: 'expecting'
+      create :package, received_quantity: 1, state: 'expecting'
+      get :search_stockit_items, searchText: "rEC", showQuantityItems: 'true'
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql("rEC")
+      expect(subject['items'].length).to eql(1)
+      expect(subject['items'][0]['id']).to eql(received_pkg.id)
+    end
+
+    it 'should find items by location' do
+      pkg1 = create :package, :package_with_locations, received_quantity: 1
+      pkg2 = create :package, :package_with_locations, received_quantity: 1
+      pkg3 = create :package, :package_with_locations, received_quantity: 1
+      get :search_stockit_items, searchText: pkg1.locations[0].building, showQuantityItems: 'true'
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['items'].length).to eql(1)
+      expect(subject['items'][0]['id']).to eql(pkg1.id)
     end
   
   end
