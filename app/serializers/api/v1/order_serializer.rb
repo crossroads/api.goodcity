@@ -30,8 +30,7 @@ module Api::V1
       @options[:include_packages]
     end
 
-    def item_ids
-    end
+    def item_ids; end
 
     def item_ids__sql
       'package_ids'
