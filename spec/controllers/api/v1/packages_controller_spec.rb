@@ -559,12 +559,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by location' do
-      pkg1 = create :package, :package_with_locations, received_quantity: 1
-      pkg2 = create :package, :package_with_locations, received_quantity: 1
-      pkg3 = create :package, :package_with_locations, received_quantity: 1
-      get :search_stockit_items, searchText: pkg1.locations[0].building, showQuantityItems: 'true'
+      pkg1 = create :package, received_quantity: 1
+      pkg2 = create :package, received_quantity: 1
+      package_location = create :packages_location, location: create(:location, building: 'blue house'), package: pkg1
+      get :search_stockit_items, searchText: 'blue', showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql('blue')
       expect(subject['items'].length).to eql(1)
       expect(subject['items'][0]['id']).to eql(pkg1.id)
     end
