@@ -63,7 +63,7 @@ class User < ActiveRecord::Base
   end
 
   def allowed_login?(app_name)
-    if app_name == DONOR_APP
+    if SKIP_AUTH_APP_NAMES.include?(app_name)
       return true
     else
       user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
