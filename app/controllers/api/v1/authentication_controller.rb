@@ -188,7 +188,7 @@ module Api
       end
 
       def authenticated_user
-        warden.authenticated? && (is_browse_app? || @user.allowed_login?(app_name))
+        warden.authenticated? && @user.allowed_login?(app_name)
       end
 
       def current_user_channels

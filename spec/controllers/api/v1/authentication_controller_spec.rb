@@ -59,7 +59,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_admin_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        expect(controller).to receive(:app_name).and_return(ADMIN_APP).twice
+        expect(controller).to receive(:app_name).and_return(ADMIN_APP)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -69,7 +69,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_stock_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        expect(controller).to receive(:app_name).and_return(STOCK_APP).twice
+        expect(controller).to receive(:app_name).and_return(STOCK_APP)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
