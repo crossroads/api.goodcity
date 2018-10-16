@@ -547,15 +547,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by state' do
-      received_pkg = create :package, received_quantity: 1, state: 'received'
+      pkg = create :package, received_quantity: 1, state: 'missing'
       create :package, received_quantity: 1, state: 'expecting'
       create :package, received_quantity: 1, state: 'expecting'
-      get :search_stockit_items, searchText: "rEC", showQuantityItems: 'true'
+      get :search_stockit_items, searchText: "iss", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eql(1)
-      expect(subject['meta']['search']).to eql("rEC")
+      expect(subject['meta']['search']).to eql("iss")
       expect(subject['items'].length).to eql(1)
-      expect(subject['items'][0]['id']).to eql(received_pkg.id)
+      expect(subject['items'][0]['id']).to eql(pkg.id)
     end
 
     it 'should find items by location' do
