@@ -31,7 +31,7 @@ class Image < ActiveRecord::Base
 
   def clear_unused_transformed_images
     image_id = public_image_id
-    CloudinaryCleanTransformedImagesJob.perform_later(image_id, self.id) if image_id
+    CloudinaryCleanTransformedImagesJob.perform_later(image_id, id) if image_id
     true
   end
 

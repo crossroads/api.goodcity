@@ -30,7 +30,7 @@ class Offer < ActiveRecord::Base
       [:created_by, :reviewed_by, :closed_by,
         { delivery: [:schedule, :contact] },
         { messages: :sender },
-        { items: [:images, :packages, { messages: :sender } ] }]
+        { items: [:images, :packages, { messages: :sender }] }]
     )
   }
 
