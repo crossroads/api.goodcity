@@ -12,7 +12,6 @@ Rails.application.routes.draw do
       post "auth/signup", to: "authentication#signup"
       post "auth/verify", to: "authentication#verify"
       post "auth/send_pin", to: "authentication#send_pin"
-      post "auth/register_user_and_send_pin", to: "authentication#register_user_and_send_pin"
       post "auth/register_device", to: "authentication#register_device"
       get "auth/current_user_rooms", to: "authentication#current_user_rooms"
       get "auth/current_user_profile", to: "authentication#current_user_profile"
@@ -70,8 +69,10 @@ Rails.application.routes.draw do
       resources :holidays, only: [:index, :create, :destroy, :update]
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
-      resources :gc_organisations, only: [:index, :show]
       resources :organisations_users, only: [:create, :index, :update]
+      resources :gc_organisations, only: [:index, :show] do
+        get 'names', on: :collection
+      end
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]

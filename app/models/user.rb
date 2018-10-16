@@ -141,10 +141,6 @@ class User < ActiveRecord::Base
     channels
   end
 
-  def self.find_or_create_user(mobile)
-     where(mobile: mobile).first_or_create
-  end
-
   def self.current_user
     RequestStore.store[:current_user]
   end

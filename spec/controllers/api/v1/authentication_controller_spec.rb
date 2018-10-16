@@ -18,7 +18,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   context "signup" do
     it 'new user successfully', :show_in_doc do
       expect_any_instance_of(User).to receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
+      expect(controller).to receive(:otp_auth_key_for).and_return(otp_auth_key)
       post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
       expect(parsed_body["otp_auth_key"]).to eq( otp_auth_key )
     end
@@ -101,7 +101,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     it 'should find user by mobile', :show_in_doc do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for_user).and_return( otp_auth_key )
+      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
       expect(controller).to receive(:app_name).and_return(DONOR_APP)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
@@ -111,7 +111,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     it "where user does not exist" do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
       expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for_user).and_return( otp_auth_key )
+      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
       post :send_pin, mobile: mobile
       expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
@@ -127,42 +127,26 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(parsed_body['otp_auth_key']).to eql( nil )
     end
 
-    context "register_user_and_send_pin" do
+    context "signup for Browse app" do
       it 'sends otp_auth_key if user exists in system with no organisation assigned', :show_in_doc do
-        expect(User).to receive(:find_or_create_user).with(mobile).and_return(user)
-        expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
-        expect {
-          post :register_user_and_send_pin, mobile: mobile
-        }.to change{ User.count }.by(0)
+        allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+        expect(user).to receive(:send_verification_pin)
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
         expect(response.status).to eq(200)
-        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
       end
 
       it 'sends otp_auth_key if user exists and have organisation assigned', :show_in_doc do
-        expect(User).to receive(:find_or_create_user).with(mobile).and_return(supervisor)
-        expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
-        expect {
-          post :register_user_and_send_pin, mobile: mobile
-        }.to change{ User.count }.by(0)
-        expect(response.status).to eq(200)
-        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
-      end
-
-      it 'sends otp_auth_key if user do not exist with mobile number and creates new user with same mobile number', :show_in_doc do
-        expect {
-          post :register_user_and_send_pin, mobile: mobile1
-        }.to change{ User.count }.by(1)
+        allow(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
+        expect(supervisor).to receive(:send_verification_pin)
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
         expect(response.status).to eq(200)
       end
 
       it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
-        expect(User).to receive(:find_or_create_user).with(mobile).and_return(charity_user)
-        expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
-        expect{
-          post :register_user_and_send_pin, mobile: mobile
-        }.to change{ User.count }.by(0)
+        allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
+        expect(charity_user).to receive(:send_verification_pin)
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
         expect(response.status).to eq(200)
-        expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
       end
     end
 
