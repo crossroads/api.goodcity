@@ -549,11 +549,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it 'should find items by state' do
       pkg = create :package, received_quantity: 1, state: 'missing'
       create :package, received_quantity: 1, state: 'expecting'
-      create :package, received_quantity: 1, state: 'expecting'
-      get :search_stockit_items, searchText: "iss", showQuantityItems: 'true'
+      get :search_stockit_items, searchText: "missing", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eql(1)
-      expect(subject['meta']['search']).to eql("iss")
+      expect(subject['meta']['search']).to eql("missing")
       expect(subject['items'].length).to eql(1)
       expect(subject['items'][0]['id']).to eql(pkg.id)
     end
@@ -562,10 +561,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       pkg1 = create :package, received_quantity: 1
       pkg2 = create :package, received_quantity: 1
       package_location = create :packages_location, location: create(:location, building: 'blue house'), package: pkg1
-      get :search_stockit_items, searchText: 'blue', showQuantityItems: 'true'
+      get :search_stockit_items, searchText: 'blue Hou', showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eql(1)
-      expect(subject['meta']['search']).to eql('blue')
+      expect(subject['meta']['search']).to eql('blue Hou')
       expect(subject['items'].length).to eql(1)
       expect(subject['items'][0]['id']).to eql(pkg1.id)
     end
