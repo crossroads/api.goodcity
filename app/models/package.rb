@@ -205,7 +205,7 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && self.packages_locations.exists?
+    if GoodcitySync.request_from_stockit && packages_locations.exists?
       packages_locations.first.update(location_id: location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
@@ -288,7 +288,7 @@ class Package < ActiveRecord::Base
   end
 
   def orders_package_with_different_designation
-    if(orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
+    if (orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
       (orders_package != designation && orders_package.try(:state) != 'dispatched') && orders_package
     end
   end
