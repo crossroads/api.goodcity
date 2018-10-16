@@ -19,7 +19,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   context "signup" do
     it 'new user successfully', :show_in_doc do
       expect_any_instance_of(User).to receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for_user).and_return(otp_auth_key)
+      expect(controller).to receive(:otp_auth_key_for).and_return(otp_auth_key)
       post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
       expect(parsed_body["otp_auth_key"]).to eq( otp_auth_key )
     end
@@ -112,7 +112,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     it "where user does not exist" do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
       expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for_user).and_return( otp_auth_key )
+      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
       post :send_pin, mobile: mobile
       expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end

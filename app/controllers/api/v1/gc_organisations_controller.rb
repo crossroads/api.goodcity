@@ -29,7 +29,7 @@ module Api::V1
     end
 
     private
-
+    
     def organisation_serializer
       Api::V1::OrganisationSerializer
     end
