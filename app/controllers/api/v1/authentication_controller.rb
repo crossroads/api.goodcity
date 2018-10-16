@@ -2,8 +2,8 @@ module Api
   module V1
     class AuthenticationController < Api::V1::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
-        :current_user_rooms, :register_user_and_send_pin]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :register_user_and_send_pin]
+        :current_user_rooms]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms]
 
       resource_description do
         short "Handle user login and registration"
@@ -77,7 +77,7 @@ module Api
         elsif @user
           return render json: { error: "You are not authorized." }, status: 401
         end
-        render json: { otp_auth_key: otp_auth_key_for_user }
+        render json: { otp_auth_key: otp_auth_key_for(@user) }
       end
 
       api :POST, '/v1/auth/signup', "Register a new user"
@@ -116,7 +116,7 @@ module Api
       def signup
         @user = User.creation_with_auth(auth_params)
         if @user.valid? && @user.persisted?
-          render json: { otp_auth_key: otp_auth_key_for_user }, status: :ok
+          render json: { otp_auth_key: otp_auth_key_for(@user) }, status: :ok
         else
           render_error(@user.errors.full_messages.join('. '))
         end
@@ -167,23 +167,6 @@ module Api
         render nothing: true, status: 204
       end
 
-      api :POST, '/v1/auth/register_user_and_send_pin', "Search User by mobile number and create if user not found."
-      def register_user_and_send_pin
-        @mobile = Mobile.new(params[:mobile])
-
-        unless @mobile.valid?
-          return render_error(@mobile.errors.full_messages.join('. '))
-        end
-
-        @user = User.find_or_create_user(@mobile.mobile)
-        if @user.valid?
-          @user.send_verification_pin
-          render json: { otp_auth_key: otp_auth_key_for_user }, status: :ok
-        else
-          render_error(@user.errors.full_messages.join('. '))
-        end
-      end
-
       api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socket.io rooms the user can listen to"
       error 401, "Unauthorized"
       error 500, "Internal Server Error"
@@ -212,9 +195,9 @@ module Api
       # to successfully authenticate. This helps prevent man-in-the-middle attacks by ensuring that only this
       # client that can authenticate the OTP code with it.
       # Note: if user is nil, we generate a fake token so as to ward off unruly hackers.
-      def otp_auth_key_for_user
-        if @user.present?
-          @user.most_recent_token.otp_auth_key
+      def otp_auth_key_for(user)
+        if user.present?
+          user.most_recent_token.otp_auth_key
         else
           AuthToken.new.new_otp_auth_key
         end

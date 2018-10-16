@@ -275,7 +275,7 @@ class Ability
     can [:index, :show], Permission
     can [:index, :show], UserRole
     can [:index, :show], CancellationReason
-    can [:index, :show], Organisation
+    can [:names], Organisation
     if can_add_or_remove_inventory_number? || @api_user
       can [:create, :remove_number], InventoryNumber
     end
