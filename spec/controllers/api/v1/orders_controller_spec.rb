@@ -113,14 +113,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a user's first or last name" do
-        submitter = FactoryBot.create :user, first_name: 'John', last_name: 'Smith'
+        submitter = FactoryBot.create :user, first_name: 'Jane', last_name: 'Doe'
         FactoryBot.create :order, :with_state_submitted, submitted_by: submitter
-        get :index, searchText: 'smit'
+        get :index, searchText: 'jan'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
         expect(parsed_body["designations"][0]['submitted_by_id']).to eq(submitter.id)
         expect(parsed_body['meta']['total_pages']).to eql(1)
-        expect(parsed_body['meta']['search']).to eql('smit')
+        expect(parsed_body['meta']['search']).to eql('jan')
       end
 
       it "can search orders from a user's full name" do
@@ -173,12 +173,25 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   describe "POST orders" do
     context 'If logged in user is Supervisor in Browse app ' do
       before { generate_and_set_token(user) }
+
       it 'should create an order via POST method' do
         set_browse_app_header
         post :create, order: order_params
         expect(response.status).to eq(201)
         expect(parsed_body['order']['people_helped']).to eq(order_params[:people_helped])
       end
+
+      it 'should create an order with nested beneficiary' do
+        set_browse_app_header
+        beneficiary_count = Beneficiary.count
+        order_params['beneficiary_attributes'] = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
+        post :create, order: order_params
+        expect(response.status).to eq(201)
+        expect(Beneficiary.count).to eq(beneficiary_count + 1)
+        beneficiary = Beneficiary.find_by(id: parsed_body['order']['beneficiary_id'])
+        expect(beneficiary.created_by_id).to eq(user.id)
+      end
+
     end
   end
 

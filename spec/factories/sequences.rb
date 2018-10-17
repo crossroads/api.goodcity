@@ -36,6 +36,10 @@ FactoryBot.define do
     @territories ||= YAML.load_file("#{Rails.root}/db/territories.yml")
   end
 
+  sequence :identity_types do |n|
+    @beneficiaries ||= YAML.load_file("#{Rails.root}/db/identity_types.yml")
+  end
+
   sequence :item_types do |n|
     @item_types ||= YAML.load_file("#{Rails.root}/db/item_types.yml")
   end

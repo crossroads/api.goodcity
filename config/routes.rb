@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       post "braintree/make_transaction", to: "braintree#make_transaction"
 
       resources :districts, only: [:index, :show]
+      resources :identity_types, only: [:index, :show]
       resources :package_types, only: [:index, :create]
       resources :permissions, only: [:index, :show]
       resources :roles, only: [:index, :show]
@@ -115,6 +116,7 @@ Rails.application.routes.draw do
           put :transition
         end
       end
+      resources :beneficiaries, only: [:create, :show, :index, :update]
       resources :order_transports, only: [:create, :show, :index, :update]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
