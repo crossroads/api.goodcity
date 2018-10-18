@@ -168,6 +168,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
+    
     context 'should merge offline cart orders_packages on login with order' do
       it "if order is in draft state" do
         package = create :package, quantity: 1, received_quantity: 1
@@ -175,6 +176,18 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         put :update, id: draft_order.id, order: { cart_package_ids: package_ids.push(package.id) }
         expect(response.status).to eq(200)
         expect(draft_order.orders_packages.count).to eq(4)
+      end
+    end
+
+    context "If logged in user is Supervisor in Browse app" do
+      it 'should add an address to an order' do
+        set_browse_app_header
+        address = create :address
+        expect(order.address_id).to eq(nil)
+        put :update, id: order.id, order: { address_id: address.id }
+        expect(response.status).to eq(200)
+        saved_address_id = Order.find_by(id: order.id).address.id
+        expect(saved_address_id).to eq(address.id)
       end
     end
   end
@@ -199,6 +212,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(Beneficiary.count).to eq(beneficiary_count + 1)
         beneficiary = Beneficiary.find_by(id: parsed_body['order']['beneficiary_id'])
         expect(beneficiary.created_by_id).to eq(user.id)
+      end
+      
+      it 'should create an order with nested address' do
+        set_browse_app_header
+        address_count = Address.count
+        order_params['address_attributes'] = FactoryBot.build(:address).attributes.except('id', 'updated_at', 'created_at')
+        post :create, order: order_params
+        expect(response.status).to eq(201)
+        expect(Address.count).to eq(address_count + 1)
+        address = Address.find_by(id: parsed_body['order']['address_id'])
+        expect(address).not_to be_nil
       end
 
     end

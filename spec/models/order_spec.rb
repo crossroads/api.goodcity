@@ -29,6 +29,7 @@ RSpec.describe Order, type: :model do
     it { is_expected.to belong_to :stockit_organisation }
     it { is_expected.to belong_to :organisation }
     it { is_expected.to belong_to :beneficiary }
+    it { is_expected.to belong_to :address }
     it { is_expected.to belong_to(:created_by).class_name('User') }
     it { is_expected.to belong_to(:processed_by).class_name('User') }
 
@@ -59,6 +60,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:processed_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:processed_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
+    it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
   end
 
   describe 'state transitions' do

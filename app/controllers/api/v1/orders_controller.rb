@@ -24,6 +24,7 @@ module Api
           param :detail_id, String
           param :stockit_id, String, desc: "stockit designation record id"
           param :beneficiary_id, String
+          param :address_id, String
         end
       end
 
@@ -136,17 +137,19 @@ module Api
           :detail_id, :detail_type, :description,
           :state, :state_event, :stockit_organisation_id,
           :stockit_activity_id, :people_helped,
-          :beneficiary_id, :purpose_description,
+          :beneficiary_id, :purpose_description, :address_id,
           purpose_ids: [], cart_package_ids: [],
-          beneficiary_attributes: [
-            :identity_type_id,
-            :identity_number,
-            :title,
-            :first_name,
-            :last_name,
-            :phone_number
-          ]
+          beneficiary_attributes: beneficiary_attributes,
+          address_attributes: address_attributes
         )
+      end
+
+      def address_attributes
+        [:address_type, :district_id, :street, :flat, :building]
+      end
+
+      def beneficiary_attributes
+        [ :identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number ]
       end
 
       def serializer
