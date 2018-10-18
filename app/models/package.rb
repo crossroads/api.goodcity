@@ -72,18 +72,19 @@ class Package < ActiveRecord::Base
         where("item_id = ?", item_id)
       else
         allowed_search_columns = [
-          'inventory_number', 
-          'designation_name', 
-          'notes', 
+          'inventory_number',
+          'designation_name',
+          'notes',
           'state', 
-          'locations.building', 
+          'locations.building',
           'locations.area'
         ]
         with_associations.where(
           allowed_search_columns
             .map { |f| "#{f} ILIKE :query" }
-            .join(" OR "), 
-          query: "%#{search_text}%")
+            .join(" OR "),
+          query: "%#{search_text}%"
+        )
       end
     records = records.where(received_quantity: 1) unless show_quantity_item == "true"
     records
