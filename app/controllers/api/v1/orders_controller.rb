@@ -149,7 +149,7 @@ module Api
       end
 
       def beneficiary_attributes
-        [ :identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number ]
+        [:identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number]
       end
 
       def serializer
