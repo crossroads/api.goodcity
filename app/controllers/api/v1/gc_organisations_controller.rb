@@ -18,7 +18,7 @@ module Api::V1
 
     api :GET, '/v1/organisations/1', "Details of a package"
     def show
-      record =  Api::V1::OrganisationSerializer.new(@organisation, root: "gc_organisations").as_json
+      record = Api::V1::OrganisationSerializer.new(@organisation, root: "gc_organisations").as_json
       render json: record
     end
 
@@ -28,6 +28,7 @@ module Api::V1
     end
 
     private
+
     def organisation_serializer
       Api::V1::OrganisationSerializer
     end

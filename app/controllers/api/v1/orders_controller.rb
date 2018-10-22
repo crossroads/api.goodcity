@@ -23,6 +23,7 @@ module Api
           param :people_helped, :number
           param :detail_id, String
           param :stockit_id, String, desc: "stockit designation record id"
+          param :beneficiary_id, String
         end
       end
 
@@ -119,14 +120,33 @@ module Api
           @order.created_by = current_user
           @order.detail_type = "GoodCity"
         end
+
+        if order_params['beneficiary_attributes'] and @order.beneficiary.try(:created_by).nil?
+          # New nested beneficiary
+          @order.beneficiary.created_by = current_user
+        end
+
         @order
       end
 
       def order_params
-        params.require(:order).permit(:stockit_id, :code, :status, :created_at,
-          :organisation_id, :stockit_contact_id, :detail_id, :detail_type, :description,
-          :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :people_helped,
-          :purpose_description, purpose_ids: [], cart_package_ids: [])
+        params.require(:order).permit(
+          :stockit_id, :code, :status, :created_at,
+          :organisation_id, :stockit_contact_id,
+          :detail_id, :detail_type, :description,
+          :state, :state_event, :stockit_organisation_id,
+          :stockit_activity_id, :people_helped,
+          :beneficiary_id, :purpose_description,
+          purpose_ids: [], cart_package_ids: [],
+          beneficiary_attributes: [
+            :identity_type_id,
+            :identity_number,
+            :title,
+            :first_name,
+            :last_name,
+            :phone_number
+          ]
+        )
       end
 
       def serializer

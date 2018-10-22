@@ -6,7 +6,7 @@ module Api::V1
       :country_name, :state, :purpose_description, :created_by_id, :item_ids,
       :gc_organisation_id, :processed_at, :processed_by_id, :cancelled_at, :cancelled_by_id,
       :process_completed_at, :process_completed_by_id, :closed_at, :closed_by_id, :dispatch_started_at,
-      :dispatch_started_by_id, :submitted_at, :submitted_by_id, :people_helped
+      :dispatch_started_by_id, :submitted_at, :submitted_by_id, :people_helped, :beneficiary_id
 
     has_one :created_by, serializer: UserProfileSerializer, root: :user
     has_one :stockit_contact, serializer: StockitContactSerializer
@@ -25,13 +25,13 @@ module Api::V1
     has_one  :process_completed_by, serializer: UserSerializer
     has_one  :dispatch_started_by, serializer: UserSerializer
     has_one  :submitted_by, serializer: UserSerializer
+    has_one  :beneficiary, serializer: BeneficiarySerializer
 
     def include_packages?
       @options[:include_packages]
     end
 
-    def item_ids
-    end
+    def item_ids; end
 
     def item_ids__sql
       'package_ids'

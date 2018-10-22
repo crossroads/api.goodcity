@@ -17,8 +17,8 @@ module Api::V1
     end
 
     def recent_donation
-      object.braintree_transactions.where(is_success: true).
-      order("id desc").first
+      object.braintree_transactions.where(is_success: true)
+      .order("id desc").first
     end
 
     def donation_date
