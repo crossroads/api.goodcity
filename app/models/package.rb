@@ -75,7 +75,7 @@ class Package < ActiveRecord::Base
           'inventory_number',
           'designation_name',
           'notes',
-          'state', 
+          'state',
           'locations.building',
           'locations.area'
         ]
@@ -91,7 +91,7 @@ class Package < ActiveRecord::Base
   end
 
   def self.with_associations
-    joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id 
+    joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id
       LEFT OUTER JOIN locations ON locations.id = packages_locations.location_id")
   end
 
