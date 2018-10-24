@@ -217,7 +217,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         address = FactoryBot.build(:address)
         set_browse_app_header
         order_params['address_attributes'] = address.attributes.except('id', 'updated_at', 'created_at')
-        expect { post  :create, order: order_params }.to change(Order, :count).by(1)
+        expect { post  :create, order: order_params }.to change(Address, :count).by(1)
         expect(response.status).to eq(201)
         saved_address = Address.find_by(id: parsed_body['order']['address_id'])
         expect(saved_address).not_to be_nil
