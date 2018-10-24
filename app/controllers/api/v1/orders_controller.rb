@@ -86,7 +86,7 @@ module Api
       end
 
       def my_orders
-        render json: @orders.my_orders.goodcity_orders, each_serializer: serializer,
+        render json: @orders.my_orders.goodcity_orders, each_serializer: select_serializer,
           root: "orders", include_packages: false, browse_order: true
       end
 
@@ -99,7 +99,7 @@ module Api
 
       def order_response(records)
         ActiveModel::ArraySerializer.new(records,
-          each_serializer: serializer,
+          each_serializer: select_serializer,
           root: "designations",
           include_packages: true,
           include_order: false,
@@ -151,6 +151,14 @@ module Api
 
       def serializer
         Api::V1::OrderSerializer
+      end
+
+      def shallow_serializer
+        Api::V1::OrderShallowSerializer
+      end
+
+      def select_serializer
+        params[:shallow] == 'true' ? shallow_serializer : serializer
       end
 
       def stockit_activity
