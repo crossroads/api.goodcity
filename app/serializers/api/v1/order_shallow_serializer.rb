@@ -37,7 +37,7 @@ module Api::V1
     end
 
     def organisation_id__sql
-    "stockit_organisation_id"
+      "stockit_organisation_id"
     end
 
     def activity
