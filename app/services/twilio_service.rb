@@ -39,7 +39,7 @@ class TwilioService
 
   private
 
-  def pin_sms_text app_name
+  def pin_sms_text(app_name)
     pin = user.most_recent_token.otp_code
     if app_name == BROWSE_APP
       I18n.t('twilio.browse_sms_verification_pin', pin: pin)
