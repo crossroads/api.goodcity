@@ -7,7 +7,7 @@ class TwilioService
     @user = user
   end
 
-  def sms_verification_pin app_name
+  def sms_verification_pin(app_name)
     return unless allowed_to_send?
     options = {to: @user.mobile, body: pin_sms_text(app_name)}
     TwilioJob.perform_later(options)
