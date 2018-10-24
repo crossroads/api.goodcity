@@ -186,8 +186,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(order.address_id).to eq(nil)
         put :update, id: order.id, order: { address_id: address.id }
         expect(response.status).to eq(200)
-        saved_address_id = Order.find_by(id: order.id).address.id
-        expect(saved_address_id).to eq(address.id)
+        expect(order.reload.address.id).to eq(address.id)
       end
     end
   end
@@ -215,14 +214,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
       
       it 'should create an order with nested address' do
+        address = FactoryBot.build(:address)
         set_browse_app_header
-        address_count = Address.count
-        order_params['address_attributes'] = FactoryBot.build(:address).attributes.except('id', 'updated_at', 'created_at')
-        post :create, order: order_params
+        order_params['address_attributes'] = address.attributes.except('id', 'updated_at', 'created_at')
+        expect { post  :create, order: order_params }.to change(Order, :count).by(1)
         expect(response.status).to eq(201)
-        expect(Address.count).to eq(address_count + 1)
-        address = Address.find_by(id: parsed_body['order']['address_id'])
-        expect(address).not_to be_nil
+        saved_address = Address.find_by(id: parsed_body['order']['address_id'])
+        expect(saved_address).not_to be_nil
+        expect(saved_address.street).to eq(address.street)
+        expect(saved_address.flat).to eq(address.flat)
+        expect(saved_address.district_id).to eq(address.district_id)
+        expect(saved_address.building).to eq(address.building)
       end
 
     end
