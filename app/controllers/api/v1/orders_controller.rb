@@ -158,8 +158,7 @@ module Api
       end
 
       def select_serializer
-        is_shallow_render = params[:shallow] == 'true'
-        is_shallow_render ? shallow_serializer : serializer
+        params[:shallow] == 'true' ? shallow_serializer : serializer
       end
 
       def stockit_activity
