@@ -85,7 +85,7 @@ describe User, :type => :model do
       it "should create new user" do
         allow(new_user).to receive(:send_verification_pin)
         expect(User).to receive(:new).with(user_attributes).and_return(new_user)
-        User.creation_with_auth(user_attributes)
+        User.creation_with_auth(user_attributes, DONOR_APP)
       end
     end
 
@@ -94,14 +94,14 @@ describe User, :type => :model do
         user = create(:user, mobile: mobile)
         expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
         expect(user).to receive(:send_verification_pin)
-        User.creation_with_auth(user_attributes)
+        User.creation_with_auth(user_attributes, DONOR_APP)
       end
     end
 
     context "when mobile blank" do
       let(:mobile) { nil }
       it "should raise validation error" do
-        user = User.creation_with_auth(user_attributes)
+        user = User.creation_with_auth(user_attributes, DONOR_APP)
         expect(user.errors[:mobile]).to include("can't be blank")
         expect(user.errors[:mobile]).to include("is invalid")
       end

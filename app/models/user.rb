@@ -48,13 +48,13 @@ class User < ActiveRecord::Base
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
-  def self.creation_with_auth(user_params)
+  def self.creation_with_auth(user_params, app_name)
     mobile = user_params['mobile']
     user = find_by_mobile(mobile) if mobile.present?
     user ||= new(user_params)
     begin
       user.save if user.changed?
-      user.send_verification_pin if user.valid?
+      user.send_verification_pin(app_name) if user.valid?
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, '.').try(:first)
       user.errors.add(:base, msg)
