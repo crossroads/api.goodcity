@@ -16,7 +16,7 @@ class Ability
     'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
     'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
     'can_destroy_package_with_specific_states', 'can_manage_locations',
-    'can_read_versions', 'can_create_goodcity_requests'].freeze
+    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings'].freeze
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
@@ -43,6 +43,7 @@ class Ability
 
   def define_abilities
     address_abilities
+    appointment_slot_abilities
     beneficiary_abilities
     contact_abilities
     deliveries_abilities
@@ -78,6 +79,12 @@ class Ability
     # Offer delivery address
     can [:create, :show, :destroy], Address, addressable_type: "Contact", addressable: { delivery: { offer_id: @user_offer_ids } }
     can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
+  end
+
+  def appointment_slot_abilities
+    if can_manage_settings?
+      can [:create, :index, :destroy, :update], AppointmentSlotPreset
+    end
   end
 
   def beneficiary_abilities

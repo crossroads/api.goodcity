@@ -8,7 +8,7 @@ FactoryBot.define do
       permissions { %w(can_manage_offers, can_manage_packages)}
     end
 
-    ["Administrator", "Charity", "Order_fulfilment", "Reviewer", "Supervisor", "System"].each do |role|
+    ["Administrator", "Charity", "Order_fulfilment", "Order_administrator", "Reviewer", "Supervisor", "System"].each do |role|
       factory "#{role.downcase}_role".to_sym, parent: :role do
         name role.humanize
       end
@@ -151,6 +151,13 @@ FactoryBot.define do
         role.permissions << (create :permission, name: 'can_create_and_read_messages')
       end
     end
+
+    trait :with_can_manage_settings do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_settings')
+      end
+    end
+
   end
 
 end

@@ -59,8 +59,7 @@ api-write: []
 Charity:
 - can_login_to_browse
 - can_manage_orders_packages
-- can_create_goodcity_requests
-Order fulfilment:
+Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
 - can_manage_offers
@@ -86,3 +85,6 @@ Order fulfilment:
 - can_read_versions
 - can_access_packages_locations
 - can_login_to_stock
+Order administrator:
+- *order_fulfilment
+- can_manage_settings
