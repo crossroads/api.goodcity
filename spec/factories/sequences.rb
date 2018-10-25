@@ -65,7 +65,9 @@ FactoryBot.define do
   end
 
   sequence :permissions_roles do |n|
-    @permissions_roles ||= YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
+    roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
+    roles.each_pair { |key, value| value.flatten! }
+    @permissions_roles ||= roles
   end
 
   sequence :mobile do |n|

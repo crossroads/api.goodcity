@@ -5,6 +5,7 @@ namespace :goodcity do
 
     permissions_roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
     permissions_roles.each_pair do |role_name, permission_names|
+      permission_names.flatten!
       if(role = Role.where(name: role_name).first_or_create)
         permission_names.each do |permission_name|
           permission = Permission.where(name: permission_name).first_or_create

@@ -31,6 +31,13 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.datetime "deleted_at"
   end
 
+  create_table "appointment_slot_presets", force: :cascade do |t|
+    t.integer "day"
+    t.integer "hours"
+    t.integer "minutes"
+    t.integer "quota"
+  end
+
   create_table "auth_tokens", force: :cascade do |t|
     t.datetime "otp_code_expiry"
     t.string   "otp_secret_key"
