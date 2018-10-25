@@ -13,9 +13,7 @@ module Api::V1
 
     api :GET, '/v1/organisations', "List all organisations"
     def index
-      records = @organisations.search(params["searchText"]).page(params["page"]).per(params["per_page"])
-      data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
-      render json: { "meta": { "total_pages": records.total_pages, "search": params["searchText"] } }.merge(data)
+      find_record_and_render_json(organisation_serializer)
     end
 
     api :GET, '/v1/organisations/1', "Details of a package"
@@ -24,10 +22,25 @@ module Api::V1
       render json: record
     end
 
+    api :GET, '/v1/organisations/names', "List all organisations names"
+    def names
+      find_record_and_render_json(organisation_name_serializer)
+    end
+
     private
 
-    def serializer
+    def organisation_serializer
       Api::V1::OrganisationSerializer
+    end
+
+    def organisation_name_serializer
+      Api::V1::OrganisationNamesSerializer
+    end
+
+    def find_record_and_render_json(serializer)
+      records = @organisations.search(params["searchText"]).page(params["page"]).per(params["per_page"])
+      data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
+      render json: { "meta": { "total_pages": records.total_pages, "search": params["searchText"] } }.merge(data)
     end
   end
 end

@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true, allow_nil: true,
     format: { with: /\A[^@\s]+@[^@\s]+\Z/ }
 
+  validates :title, :inclusion => { :in => TITLE_OPTIONS }, :allow_nil => true
+
   after_create :generate_auth_token
 
   scope :donors,      -> { where(permission_id: nil) }
@@ -61,7 +63,7 @@ class User < ActiveRecord::Base
   end
 
   def allowed_login?(app_name)
-    if app_name == DONOR_APP
+    if [DONOR_APP, BROWSE_APP].include?(app_name)
       return true
     else
       user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])

@@ -212,8 +212,9 @@ class Ability
 
   def organisations_users_abilities
     if can_manage_organisations_users? || @api_user
-      can [:create, :show, :index], OrganisationsUser
+      can [:create, :show, :index, :update], OrganisationsUser
     end
+
   end
 
   def package_abilities
@@ -254,6 +255,7 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+    can [:create], OrganisationsUser
   end
 
   def packages_locations_abilities
@@ -283,6 +285,7 @@ class Ability
     can [:index, :show], Permission
     can [:index, :show], UserRole
     can [:index, :show], CancellationReason
+    can [:names], Organisation
     if can_add_or_remove_inventory_number? || @api_user
       can [:create, :remove_number], InventoryNumber
     end

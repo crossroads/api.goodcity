@@ -27,6 +27,17 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       expect(parsed_body['gc_organisations'][0]["id"]).to eq(organisation.id)
       expect(parsed_body['meta']['search']).to eql(name)
     end
+
+    it "returns serialized organisations name_en with matching search text" do
+      name = "Zuni"
+      organisation = create :organisation, name_en: name
+      get :names, searchText: name
+      expect(parsed_body['gc_organisations'].length ).to eq(1)
+      expect(parsed_body['gc_organisations'][0]["id"]).to eq(organisation.id)
+      expect(parsed_body['meta']['search']).to eql(name)
+      expect(parsed_body['gc_organisations'].first['name_en']).to eql(organisation.name_en)
+      expect(parsed_body['gc_organisations'].first['name_zh_tw']).to eql(organisation.name_zh_tw)
+    end
   end
 
   describe "GET GC Organisation" do

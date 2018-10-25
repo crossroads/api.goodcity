@@ -178,6 +178,11 @@ module Api
 
       private
 
+      def render_send_pin_json
+        @user.send_verification_pin
+        render json: { otp_auth_key: otp_auth_key_for(@user) }
+      end
+
       def render_error(error_message)
         render json: { errors: error_message }, status: 422
       end

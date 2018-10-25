@@ -2,14 +2,14 @@ require 'rails_helper'
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user_with_token) }
-  let(:supervisor) { create(:user_with_token, :supervisor) }
+  let(:supervisor) { create(:user_with_token, :supervisor, :with_organisation) }
   let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
-  let(:reviewer) { create(:user_with_token, :reviewer) }
   let(:order_fulfilment) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Order fulfilment' => ['can_login_to_stock']} )}
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
+  let(:mobile1) { generate(:mobile) }
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
   let(:jwt_token)    { Token.new.generate }
   let(:serialized_user) { JSON.parse(Api::V1::UserProfileSerializer.new(user).as_json.to_json) }
@@ -101,16 +101,17 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     it 'should find user by mobile', :show_in_doc do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).with(user).and_return( otp_auth_key )
+      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
       expect(controller).to receive(:app_name).and_return(DONOR_APP).twice
       post :send_pin, mobile: mobile
+      expect(response.status).to eq(200)
       expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
 
     it "where user does not exist" do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
       expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).with(nil).and_return( otp_auth_key )
+      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
       post :send_pin, mobile: mobile
       expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
     end
@@ -126,45 +127,35 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(parsed_body['otp_auth_key']).to eql( nil )
     end
 
-    it 'do not send pin if donor login into Browse', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
-      post :send_pin, mobile: mobile
-      expect(response.status).to eq(401)
-      expect(parsed_body['otp_auth_key']).to eql( nil )
-      expect(parsed_body['error']).to eql( "You are not authorized." )
-    end
+    context "signup for Browse app" do
+      it 'sends otp_auth_key if user exists in system with no organisation assigned', :show_in_doc do
+        allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
+        expect(user).to receive(:send_verification_pin)
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        expect(response.status).to eq(200)
+      end
 
-    it 'do not send pin if reviewer login into Browse', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(reviewer)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
-      post :send_pin, mobile: mobile
-      expect(response.status).to eq(401)
-      expect(parsed_body['otp_auth_key']).to eql( nil )
-      expect(parsed_body['error']).to eql("You are not authorized.")
-    end
+      it 'sends otp_auth_key if user exists and have organisation assigned', :show_in_doc do
+        allow(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
+        expect(supervisor).to receive(:send_verification_pin)
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        expect(response.status).to eq(200)
+      end
 
-    it 'does not send pin if supervisor logging into Browse', :show_in_doc do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP)
-      post :send_pin, mobile: mobile
-      expect(response.status).to eq(401)
-      expect(parsed_body['otp_auth_key']).to eql( nil )
-      expect(parsed_body['error']).to eql("You are not authorized.")
-    end
+      it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
+        allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
+        expect(charity_user).to receive(:send_verification_pin)
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        expect(response.status).to eq(200)
+      end
 
-    it 'sends otp_auth_key if charity_user logging into Browse', :show_in_doc do
-      set_admin_app_header
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).with(charity_user).and_return(otp_auth_key)
-      expect(controller).to receive(:app_name).and_return(BROWSE_APP).twice
-      post :send_pin, mobile: mobile
-      expect(response.status).to eq(200)
-      expect(parsed_body['otp_auth_key']).to eql(otp_auth_key)
+
+      it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
+        allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
+        expect(charity_user).to receive(:send_verification_pin)
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        expect(response.status).to eq(200)
+      end
     end
 
     context "where mobile is" do

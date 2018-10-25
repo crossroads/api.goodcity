@@ -34,6 +34,7 @@ describe User, :type => :model do
     it{ is_expected.to  have_db_column(:email).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_connected).of_type(:datetime)}
     it{ is_expected.to  have_db_column(:last_disconnected).of_type(:datetime)}
+    it{ is_expected.to  have_db_column(:title).of_type(:string)}
   end
 
   describe "Validations" do
@@ -65,6 +66,15 @@ describe User, :type => :model do
       it { is_expected.to_not allow_value('abc @ gmail.com').for(:email) }
       it { is_expected.to_not allow_value('abc@@gmail.com').for(:email) }
       it { is_expected.to_not allow_value('abc.gmail.com').for(:email) }
+    end
+
+    context "title" do
+      it { is_expected.to allow_value('Mr').for(:title) }
+      it { is_expected.to allow_value('Mrs').for(:title) }
+      it { is_expected.to allow_value('Miss').for(:title) }
+      it { is_expected.to allow_value('Ms').for(:title) }
+      it { is_expected.to_not allow_value('Mister').for(:title) }
+      it { is_expected.to_not allow_value('').for(:title) }
     end
   end
 
@@ -213,8 +223,8 @@ describe User, :type => :model do
         expect(order_fulfilment_user.allowed_login?(DONOR_APP)).to be_truthy
       end
 
-      it 'returns false if user has stock login permission and app is browse app' do
-        expect(order_fulfilment_user.allowed_login?(BROWSE_APP)).to be_falsey
+      it 'returns true if user has stock login permission and app is browse app' do
+        expect(order_fulfilment_user.allowed_login?(BROWSE_APP)).to be_truthy
       end
     end
 
@@ -239,8 +249,8 @@ describe User, :type => :model do
         expect(reviewer.allowed_login?(STOCK_APP)).to be_falsey
       end
 
-      it 'returns false if user has admin app login permission and app browse app' do
-        expect(supervisor.allowed_login?(BROWSE_APP)).to be_falsey
+      it 'returns true if user has admin app login permission and app browse app' do
+        expect(supervisor.allowed_login?(BROWSE_APP)).to be_truthy
       end
     end
 
@@ -249,8 +259,8 @@ describe User, :type => :model do
         expect(charity.allowed_login?(BROWSE_APP)).to be_truthy
       end
 
-      it 'returns false if user do not browse login permission and app is browse app' do
-        expect(supervisor.allowed_login?(BROWSE_APP)).to be_falsey
+      it 'returns true if user do not browse login permission and app is browse app' do
+        expect(supervisor.allowed_login?(BROWSE_APP)).to be_truthy
       end
 
       it 'returns false if user have browse login permission and app is not browse app' do

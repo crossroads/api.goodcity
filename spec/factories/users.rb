@@ -33,6 +33,7 @@ FactoryBot.define do
       end
     end
 
+
     trait :with_can_add_or_remove_inventory_number do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_add_or_remove_inventory_number, name: evaluator.role_name)
@@ -170,6 +171,16 @@ FactoryBot.define do
       mobile     SYSTEM_USER_MOBILE
       after(:create) do |user|
         user.roles << create(:system_role)
+      end
+    end
+
+    trait :title do
+      title { ["Mr", "Mrs", "Miss", "Ms"].sample }
+    end
+
+    trait :with_organisation do
+      after(:create) do |user|
+        user.organisations << create(:organisation)
       end
     end
 
