@@ -609,6 +609,7 @@ ActiveRecord::Schema.define(version: 20181003055950) do
     t.datetime "last_disconnected"
     t.boolean  "disabled",          default: false
     t.string   "email"
+    t.string   "title"
   end
 
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
