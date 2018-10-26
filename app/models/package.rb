@@ -66,28 +66,37 @@ class Package < ActiveRecord::Base
 
   attr_accessor :skip_set_relation_update, :request_from_admin
 
-  def self.search(search_text, item_id, show_quantity_item = false)
+  def self.search(search_text, item_id, options = {}) 
     records =
       if item_id.presence
         where("item_id = ?", item_id)
       else
-        allowed_search_columns = [
-          'inventory_number',
-          'designation_name',
-          'notes',
-          'state',
-          'locations.building',
-          'locations.area'
-        ]
+        state = options[:state]
+        queries = [search_query]
+        queries.push "inventory_number IS NOT NULL" if options[:with_inventory_no]
+        queries.push "state = :state" unless state.blank?
+
         with_associations.where(
-          allowed_search_columns
-            .map { |f| "#{f} ILIKE :query" }
-            .join(" OR "),
-          query: "%#{search_text}%"
+          queries.map { |q| "(#{q})" }.join(" AND "),
+          search_text: "%#{search_text}%",
+          state: state
         )
       end
-    records = records.where(received_quantity: 1) unless show_quantity_item == "true"
+    records = records.where(received_quantity: 1) unless options[:show_quantity_items]
     records
+  end
+
+  def self.search_query
+    fields_to_match = [
+      'inventory_number',
+      'designation_name',
+      'notes',
+      'locations.building',
+      'locations.area'
+    ]
+    fields_to_match
+      .map { |f| "#{f} ILIKE :search_text" }
+      .join(" OR ")
   end
 
   def self.with_associations
