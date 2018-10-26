@@ -129,9 +129,9 @@ module Api
           records = params["orderId"].present? ?
             @packages.undispatched : @packages
           records = records.search(
-            params['searchText'], 
-            params['itemId'], 
-            :show_quantity_items => params['showQuantityItems'] == 'true', 
+            params['searchText'],
+            params['itemId'],
+            :show_quantity_items => params['showQuantityItems'] == 'true',
             :state => params['state'],
             :with_inventory_no => params['withInventoryNumber'] == 'true'
           ).page(params["page"]).per(params["per_page"])

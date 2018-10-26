@@ -72,12 +72,12 @@ class Package < ActiveRecord::Base
         where("item_id = ?", item_id)
       else
         state = options[:state]
-        queries = [ search_query ]
+        queries = [search_query]
         queries.push "inventory_number IS NOT NULL" if options[:with_inventory_no]
-        queries.push "state = :state" if not state.nil? and not state.empty?
+        queries.push "state = :state" if  !state.nil? && !state.empty?
 
         with_associations.where(
-          queries.map {|q| "(#{q})"}.join(" AND "),
+          queries.map { |q| "(#{q})" }.join(" AND "),
           search_text: "%#{search_text}%",
           state: state
         )
