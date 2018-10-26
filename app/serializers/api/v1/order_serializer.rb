@@ -19,6 +19,7 @@ module Api::V1
     has_one  :dispatch_started_by, serializer: UserSerializer
     has_one  :submitted_by, serializer: UserSerializer
     has_one  :beneficiary, serializer: BeneficiarySerializer
+    has_one  :address, serializer: AddressSerializer
 
     def item_ids
     end
