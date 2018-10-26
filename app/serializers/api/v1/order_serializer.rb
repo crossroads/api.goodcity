@@ -96,7 +96,8 @@ module Api::V1
     end
 
     def include_orders_packages?
-      !@options[:include_packages] && !@options[:include_order]
+      true
+      #!@options[:include_packages] && !@options[:include_order]
     end
 
     alias_method :include_stockit_contact?, :include_non_browse_details?

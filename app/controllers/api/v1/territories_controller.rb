@@ -15,13 +15,13 @@ module Api
 
       api :GET, '/v1/territories', "List all territories"
       def index
-        if params[:ids].blank?
-          render json: Territory.cached_json
-          return
-        end
+        # if params[:ids].blank?
+        #   render json: Territory.cached_json
+        #   return
+        # end
         @territories = @territories.with_eager_load
-        @territories = @territories.where(id: params["ids"].split(",").flatten) if params["ids"].present?
-        render json: @territories, each_serializer: serializer, include_territory: false
+        # @territories = @territories.where(id: params["ids"].split(",").flatten) if params["ids"].present?
+        render json: @territories, each_serializer: serializer, include_territory: false, except: [:districts], only: [:id, :name]
       end
 
       api :GET, '/v1/territory/1', "List a territory"
