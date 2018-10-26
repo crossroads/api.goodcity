@@ -546,27 +546,29 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['items'][1]['designation_name']).to eql("peppermint")
     end
 
-    it 'should find items by state' do
-      pkg = create :package, received_quantity: 1, state: 'missing'
-      create :package, received_quantity: 1, state: 'expecting'
-      get :search_stockit_items, searchText: "missing", showQuantityItems: 'true'
-      expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
-      expect(subject['meta']['search']).to eql("missing")
-      expect(subject['items'].length).to eql(1)
-      expect(subject['items'][0]['id']).to eql(pkg.id)
-    end
-
     it 'should find items by location' do
       pkg1 = create :package, received_quantity: 1
-      pkg2 = create :package, received_quantity: 1
-      package_location = create :packages_location, location: create(:location, building: 'blue house'), package: pkg1
+      create :package, received_quantity: 1
+      create :packages_location, location: create(:location, building: 'blue house'), package: pkg1
       get :search_stockit_items, searchText: 'blue Hou', showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql('blue Hou')
       expect(subject['items'].length).to eql(1)
       expect(subject['items'][0]['id']).to eql(pkg1.id)
+    end
+
+    it 'should use filters to only find items that have an inventory number and are marked as received' do
+      create :package, received_quantity: 1, designation_name: "couch", inventory_number: '11111', state: 'received'
+      create :package, received_quantity: 1, designation_name: "couch", inventory_number: '22222', state: 'missing'
+      create :package, received_quantity: 1, designation_name: "couch", inventory_number: nil, state: 'received'
+      create :package, received_quantity: 1, designation_name: "couch", inventory_number: nil, state: 'missing'
+      get :search_stockit_items, searchText: 'couch', showQuantityItems: 'true', state: 'received', withInventoryNumber: 'true'
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql('couch')
+      expect(subject['items'].length).to eql(1)
+      expect(subject['items'][0]['inventory_number']).to eql('11111')
     end
   
   end
