@@ -168,6 +168,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
+    
     context 'should merge offline cart orders_packages on login with order' do
       it "if order is in draft state" do
         package = create :package, quantity: 1, received_quantity: 1
@@ -175,6 +176,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         put :update, id: draft_order.id, order: { cart_package_ids: package_ids.push(package.id) }
         expect(response.status).to eq(200)
         expect(draft_order.orders_packages.count).to eq(4)
+      end
+    end
+
+    context "If logged in user is Supervisor in Browse app" do
+      it 'should add an address to an order' do
+        set_browse_app_header
+        address = create :address
+        expect(order.address_id).to eq(nil)
+        put :update, id: order.id, order: { address_id: address.id }
+        expect(response.status).to eq(200)
+        expect(order.reload.address.id).to eq(address.id)
       end
     end
   end
@@ -199,6 +211,20 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(Beneficiary.count).to eq(beneficiary_count + 1)
         beneficiary = Beneficiary.find_by(id: parsed_body['order']['beneficiary_id'])
         expect(beneficiary.created_by_id).to eq(user.id)
+      end
+      
+      it 'should create an order with nested address' do
+        address = FactoryBot.build(:address)
+        set_browse_app_header
+        order_params['address_attributes'] = address.attributes.except('id', 'updated_at', 'created_at')
+        expect { post  :create, order: order_params }.to change(Address, :count).by(1)
+        expect(response.status).to eq(201)
+        saved_address = Address.find_by(id: parsed_body['order']['address_id'])
+        expect(saved_address).not_to be_nil
+        expect(saved_address.street).to eq(address.street)
+        expect(saved_address.flat).to eq(address.flat)
+        expect(saved_address.district_id).to eq(address.district_id)
+        expect(saved_address.building).to eq(address.building)
       end
 
     end
