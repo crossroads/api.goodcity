@@ -64,7 +64,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
     context 'When logged in as an order administrator' do
       before { generate_and_set_token(order_administrator) }
 
-      it "allows the order administrator to create a default appointment slot" do
+      it "allows the order administrator to create an appointment slot preset" do
         post :create, appointment_slot_preset: payload
         expect(response.status).to eq(201)
         expect(parsed_body['appointment_slot_preset']['quota']).to eq(payload['quota'])
@@ -72,34 +72,20 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
         expect(parsed_body['appointment_slot_preset']['minutes']).to eq(payload['minutes'])
         expect(parsed_body['appointment_slot_preset']['day']).to eq(payload['day'])
       end
-    end
-  end
 
-  describe "PUT /appointment_slot_presets/1" do
-    context 'When not logged in' do
-      it "denies update of an appointment slot preset" do
-        put :update, id: appt_slot.id, appointment_slot_preset: payload
-        expect(response.status).to eq(401)
-      end
-    end
+      it "should update an appointment slot preset if it exists already" do
+        existing_preset = FactoryBot.create :appointment_slot_preset, day: 1, hours: 14, minutes: 30, quota: 3
+        expect(AppointmentSlotPreset.count).to eq(1)
 
-    context 'When logged in as a user without can_manage_settings permission' do
-      before { generate_and_set_token(no_permission_user) }
-
-      it "denies update of an appointment slot preset" do
-        put :update, id: appt_slot.id, appointment_slot_preset: payload
-        expect(response.status).to eq(403)
-      end
-    end
-
-    context 'When logged in as a order administrator' do
-      before { generate_and_set_token(order_administrator) }
-
-      it "allows a supervisor to modify an appointment slot preset" do
-        new_preset = FactoryBot.create(:appointment_slot_preset)
-        put :update, id: new_preset.id, appointment_slot_preset: { day: 7 }
-        expect(response.status).to eq(200)
-        expect(parsed_body['appointment_slot_preset']['day']).to eq(7)
+        post :create, appointment_slot_preset: { day: 1, hours: 14, minutes: 30, quota: 10 }
+        expect(response.status).to eq(201)
+        expect(AppointmentSlotPreset.count).to eq(1)
+        expect(AppointmentSlotPreset.first.day).to eq(1)
+        expect(AppointmentSlotPreset.first.hours).to eq(14)
+        expect(AppointmentSlotPreset.first.minutes).to eq(30)
+        expect(AppointmentSlotPreset.first.quota).to eq(10)
+        expect(AppointmentSlotPreset.first.id).to eq(existing_preset.id)
+        expect(parsed_body['appointment_slot_preset']['id']).to eq(existing_preset.id)
       end
     end
   end

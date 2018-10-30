@@ -83,7 +83,8 @@ class Ability
 
   def appointment_slot_abilities
     if can_manage_settings?
-      can [:create, :index, :destroy, :update], AppointmentSlotPreset
+      can [:create, :index, :destroy], AppointmentSlotPreset
+      can [:create, :index, :destroy, :calendar], AppointmentSlot
     end
   end
 

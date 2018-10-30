@@ -38,6 +38,11 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.integer "quota"
   end
 
+  create_table "appointment_slots", force: :cascade do |t|
+    t.datetime "timestamp"
+    t.integer  "quota"
+  end
+
   create_table "auth_tokens", force: :cascade do |t|
     t.datetime "otp_code_expiry"
     t.string   "otp_secret_key"

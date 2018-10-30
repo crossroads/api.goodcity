@@ -33,17 +33,13 @@ module Api
       api :POST, "/v1/appointment_slot_presets", "Add a preset appointment slot"
       param_group :appointment_slot_preset
       def create
-        save_and_render_object(@appointment_slot_preset)
-      end
-
-      api :PUT, '/v1/appointment_slot_presets/1', "Update a preset appointment slot"
-      param_group :appointment_slot_preset
-      def update
-        if @appointment_slot_preset.update_attributes(appointment_slot_preset_params)
-          render json: @appointment_slot_preset, serializer: serializer
-        else
-          render json: @appointment_slot_preset.errors, status: 422
-        end
+        preset = AppointmentSlotPreset.find_or_create_by(
+          day: @appointment_slot_preset.day, 
+          hours: @appointment_slot_preset.hours, 
+          minutes: @appointment_slot_preset.minutes
+        )
+        preset.quota = @appointment_slot_preset.quota
+        save_and_render_object(preset)
       end
 
       api :DELETE, '/v1/appointment_slot_presets/1', "Delete a preset appointment slot"
