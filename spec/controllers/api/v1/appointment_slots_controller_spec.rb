@@ -5,6 +5,12 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
 
+  def assert_datetime_equals(dt1, dt2)
+    dt1 = DateTime.parse(dt1) if dt1.is_a?(String)
+    dt2 = DateTime.parse(dt2) if dt2.is_a?(String)
+    expect(dt1.utc.to_s).to eq(dt2.utc.to_s)
+  end
+  
   describe "GET /appointment_slots" do
 
     context 'When not logged in' do
@@ -34,8 +40,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         FactoryBot.create :appointment_slot, timestamp: now - 30  
         get :index
         expect(parsed_body['appointment_slots'].count).to eq(3)
-        saved_timestamp = DateTime.parse(parsed_body['appointment_slots'][0]['timestamp']);
-        expect(saved_timestamp.utc).to eq(now.utc);
+        assert_datetime_equals(parsed_body['appointment_slots'][0]['timestamp'], now)
       end
 
       it 'returns slots aggregated by date (/appointment_slots/calendar)' do
@@ -95,8 +100,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         t = DateTime.now
         post :create, appointment_slot: {quota: 5, timestamp: t.to_s}
         expect(response.status).to eq(201)
-        expect(DateTime.parse(parsed_body['appointment_slot']['timestamp']).utc.to_s(:db)).to eq(t.utc.to_s(:db))
         expect(parsed_body['appointment_slot']['quota']).to eq(5)
+        assert_datetime_equals(parsed_body['appointment_slot']['timestamp'], t)
       end
 
       it "should update an appointment slot if it exists already" do
@@ -145,5 +150,4 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
     end
   end
-
 end
