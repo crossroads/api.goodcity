@@ -35,7 +35,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         get :index
         expect(parsed_body['appointment_slots'].count).to eq(3)
         saved_timestamp = DateTime.parse(parsed_body['appointment_slots'][0]['timestamp']);
-        expect(saved_timestamp).to eq(now);
+        expect(saved_timestamp.utc).to eq(now.utc);
       end
 
       it 'returns slots aggregated by date (/appointment_slots/calendar)' do
