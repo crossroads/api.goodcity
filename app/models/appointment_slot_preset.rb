@@ -3,4 +3,6 @@ class AppointmentSlotPreset < ActiveRecord::Base
   validates :hours, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than: 24 }
   validates :minutes, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than: 60 }
   validates :quota, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+  scope :ascending, -> { order('hours ASC').order('minutes ASC') }
 end

@@ -73,7 +73,10 @@ Rails.application.routes.draw do
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
       end
-      resources :appointment_slot_presets, only: [:create, :update, :destroy, :index]
+      
+      get "appointment_slots/calendar", to: "appointment_slots#calendar"
+      resources :appointment_slots, only: [:create, :destroy, :index]
+      resources :appointment_slot_presets, only: [:create, :destroy, :index]
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]
