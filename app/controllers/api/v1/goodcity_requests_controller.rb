@@ -16,6 +16,7 @@ module Api
         param :goodcity_request, Hash, required: true do
           param :quantity, String, desc: "requested quantity"
           param :description, String, desc: "request description", allow_nil: true
+          param :item_specifics, String, desc: "request item specifics", allow_nil: true
         end
       end
 
@@ -45,7 +46,7 @@ module Api
       end
 
       def goodcity_request_params
-        params.require(:goodcity_request).permit(:quantity, :description, :package_type_id, :order_id)
+        params.require(:goodcity_request).permit(:quantity, :description, :package_type_id, :order_id, :item_specifics)
       end
     end
   end
