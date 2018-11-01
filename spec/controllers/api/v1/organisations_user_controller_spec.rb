@@ -10,7 +10,9 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
     FactoryBot.attributes_for(:user, :with_email)
   end
 
+  let(:user) { create :user}
   let(:organisations_user) { create :organisations_user , organisation_id: "#{new_organisation.id}", user_id: "#{supervisor.id}"}
+  let(:organisations_user_without_role) { create :organisations_user , organisation_id: "#{new_organisation.id}", user_id: "#{user.id}"}
 
   let(:update_user_attributes) do
     FactoryBot.attributes_for(:user, :with_email, last_name: "Cooper")
@@ -24,7 +26,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
   end
 
   let(:update_organisations_user_params) do
-    FactoryBot.attributes_for(:organisations_user, organisation_id: "#{new_organisation.id}", user_attributes: update_user_attributes, id: "#{organisations_user.id}")
+    FactoryBot.attributes_for(:organisations_user, organisation_id: "#{new_organisation.id}", user_attributes: update_user_attributes, id: "#{organisations_user_without_role.id}")
   end
 
   let(:subject) { JSON.parse(response.body) }
@@ -90,6 +92,14 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       put :update, id: organisations_user_id, organisations_user: update_organisations_user_params
       organisations_user = OrganisationsUser.find_by_id(organisations_user_id)
       expect(organisations_user.position).to eq("Admin")
+    end
+
+    it "it adds charity_role to organisations_user" do
+      update_organisations_user_params
+      organisations_user_id = update_organisations_user_params[:id]
+      put :update, id: organisations_user_id, organisations_user: update_organisations_user_params
+      organisations_user = OrganisationsUser.find_by_id(organisations_user_id)
+      expect(organisations_user.user.roles.pluck(:name)).to include("Charity")
     end
   end
 end
