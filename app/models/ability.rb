@@ -214,7 +214,7 @@ class Ability
     if can_manage_organisations_users? || @api_user
       can [:create, :show, :index, :update], OrganisationsUser
     end
-
+    can [:update], OrganisationsUser, user_id: @user_id
   end
 
   def package_abilities

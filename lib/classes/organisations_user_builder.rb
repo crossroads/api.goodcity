@@ -12,6 +12,7 @@ class OrganisationsUserBuilder
 
   def initialize(params)
     @organisations_user = OrganisationsUser.find_by_id(params['id']) if params['id']
+    @user = @organisations_user.user if @organisations_user
     @organisation_id = params["organisation_id"].presence.try(:to_i)
     @user_attributes = params['user_attributes']
     @mobile = @user_attributes['mobile'].presence.try(:to_s)
@@ -21,13 +22,12 @@ class OrganisationsUserBuilder
   end
 
   def build
-    user = User.where(mobile: @mobile).first_or_create(@user_attributes)
-    return fail_with_error(user.errors) unless user.valid?
+    @user = User.where(mobile: @mobile).first_or_create(@user_attributes)
+    return fail_with_error(@user.errors) unless @user.valid?
     return fail_with_error(I18n.t('organisations_user_builder.organisation.not_found')) unless organisation
-    if !user_belongs_to_organisation(user)
-      @organisations_user = OrganisationsUser.create!(organisation_id: @organisation_id, user_id: user.id, position: @position)
-      TwilioService.new(user).send_welcome_msg
-      user.roles << charity_role unless user.roles.include?(charity_role)
+    if !user_belongs_to_organisation(@user)
+      @organisations_user = OrganisationsUser.create!(organisation_id: @organisation_id, user_id: @user.id, position: @position)
+      TwilioService.new(@user).send_welcome_msg
       update_user
       return_success.merge!('organisations_user' => @organisations_user)
     else
@@ -48,7 +48,8 @@ class OrganisationsUserBuilder
   end
 
   def update_user
-    @organisations_user.user.update(@user_attributes)
+    @user.roles << charity_role unless @user.roles.include?(charity_role)
+    @user.update(@user_attributes)
   end
 
 
