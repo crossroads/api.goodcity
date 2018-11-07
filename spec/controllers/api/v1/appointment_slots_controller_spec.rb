@@ -43,7 +43,6 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         FactoryBot.create :appointment_slot, timestamp: ts + 2
         FactoryBot.create :appointment_slot, timestamp: ts - 30  
         get :index
-        pp parsed_body
         expect(parsed_body['appointment_slots'].count).to eq(3)
         assert_datetime_equals(parsed_body['appointment_slots'][0]['timestamp'], ts)
       end
