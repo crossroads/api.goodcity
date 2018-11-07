@@ -43,9 +43,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         assert_datetime_equals(parsed_body['appointment_slots'][0]['timestamp'], now)
       end
 
-      it 'returns slots aggregated by date (/appointment_slots/calendar)' do
+      it 'returns slots aggregated by date (/appointment_slots/calendar) - except those with 0 quota' do
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 16:30:00+08:00')  
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00')
+        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00'), quota: 0
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('31st Oct 2018 10:00:00+08:00')   
         get :calendar, from: '2018-10-16', to: '2018-10-31'
         expect(parsed_body.count).to eq(16)
@@ -104,18 +105,11 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         assert_datetime_equals(parsed_body['appointment_slot']['timestamp'], t)
       end
 
-      it "should update an appointment slot if it exists already" do
-        t = DateTime.parse('29th Oct 2018 14:00:00+08:00')
-        existing_slot = FactoryBot.create :appointment_slot, timestamp: t, quota: 10
-        expect(AppointmentSlot.count).to eq(1)
-
-        post :create, appointment_slot: {quota: 5, timestamp: t.to_s}
-        expect(response.status).to eq(201)
-        expect(AppointmentSlot.count).to eq(1)
-        expect(AppointmentSlot.first.timestamp).to eq(t)
-        expect(AppointmentSlot.first.quota).to eq(5)
-        expect(AppointmentSlot.first.id).to eq(existing_slot.id)
-        expect(parsed_body['appointment_slot']['id']).to eq(existing_slot.id)
+      it "fails to create an appointment slot if the slot is already taken" do
+        now = DateTime.now.change(sec: 0)
+        FactoryBot.create :appointment_slot, timestamp: now
+        post :create, appointment_slot: {quota: 5, timestamp: now.to_s }
+        expect(response.status).to eq(422)
       end
     end
   end

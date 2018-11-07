@@ -133,6 +133,12 @@ permissions_roles.each_pair do |role_name, permission_names|
   end
 end
 
+# Identity types
+id_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
+id_types.each_value do |record|
+  IdentityType.find_or_create_by(record)
+end
+
 # Create System User
 FactoryBot.create(:user, :system)
 
@@ -182,6 +188,14 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85262222224", first_name: "Octavia", last_name: "O'Connor624" },
   ]
   order_fulfiler_attributes.each {|attr| FactoryBot.create(:user, :order_fulfilment, attr) }
+
+  order_administrator_attributes = [
+    { mobile: "+85263333331", first_name: "Fred", last_name: "Mercury631" },
+    { mobile: "+85263333332", first_name: "Freddy", last_name: "Mercury632" },
+    { mobile: "+85263333333", first_name: "Frederic", last_name: "Mercury633" },
+    { mobile: "+85263333334", first_name: "Fredd", last_name: "Mercury634" },
+  ]
+  order_administrator_attributes.each {|attr| FactoryBot.create(:user, :order_administrator, attr) }
 end
 
 
