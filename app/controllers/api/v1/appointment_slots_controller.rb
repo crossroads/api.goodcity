@@ -43,7 +43,7 @@ module Api
         if AppointmentSlot.find_by(timestamp: @appointment_slot.timestamp)
           render_error('Timeslot already exists')
         else
-          save_and_render_with_timezone(@appointment_slot)
+          save_and_render_with_timezone(@appointment_slot, 201)
         end
       end
 
@@ -65,18 +65,19 @@ module Api
 
       private
 
-      def render_with_timezone(data)
+      def render_with_timezone(data, status = 200)
         if data.is_a?(AppointmentSlot)
           data.timestamp = data.timestamp.in_time_zone
+          render json: { appointment_slot: data }, status: status
         else
           data.each { |s| s.timestamp = s.timestamp.in_time_zone }
+          render json: { appointment_slots: data }, status: status
         end
-        render json: { appointment_slot: data }, status: 200
       end
 
-      def save_and_render_with_timezone(object)
+      def save_and_render_with_timezone(object, status = 200)
         if object.save
-          render_with_timezone object
+          render_with_timezone(object, status)
         else
           render json: object.errors, status: 422
         end
