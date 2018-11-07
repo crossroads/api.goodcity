@@ -55,6 +55,7 @@ Supervisor:
 - can_manage_messages
 - can_login_to_stock
 - can_login_to_admin
+- can_manage_settings
 api-write: []
 Charity:
 - can_login_to_browse

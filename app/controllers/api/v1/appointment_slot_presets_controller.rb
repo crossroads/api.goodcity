@@ -27,7 +27,7 @@ module Api
 
       api :GET, '/v1/appointment_slot_presets', "List all preset appointment slots"
       def index
-        render json: @appointment_slot_presets, each_serializer: serializer, status: 200
+        render json: @appointment_slot_presets.ascending, each_serializer: serializer, status: 200
       end
 
       api :POST, "/v1/appointment_slot_presets", "Add a preset appointment slot"
@@ -40,6 +40,16 @@ module Api
         )
         preset.quota = @appointment_slot_preset.quota
         save_and_render_object(preset)
+      end
+
+      api :PUT, '/v1/appointment_slot_presets/1', "Update a preset appointment slot"
+      param_group :appointment_slot_preset
+      def update
+        if @appointment_slot_preset.update_attributes(appointment_slot_preset_params)
+          render json: @appointment_slot_preset, serializer: serializer
+        else
+          render json: @appointment_slot_preset.errors, status: 422
+        end
       end
 
       api :DELETE, '/v1/appointment_slot_presets/1', "Delete a preset appointment slot"

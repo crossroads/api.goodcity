@@ -15,17 +15,18 @@ module Api
       def_param_group :appointment_slot do
         param :appointment_slot, Hash, required: true do
           param :timestamp, String
+          param :note, String
           param :quota, :number
         end
       end
 
       def appointment_slot_params
-        params.require(:appointment_slot).permit([:timestamp, :quota])
+        params.require(:appointment_slot).permit([:timestamp, :quota, :note])
       end
 
       api :GET, '/v1/appointment_slots', "List upcoming appointment slots"
       def index
-        render json: @appointment_slots.upcoming.ascending, each_serializer: serializer, status: 200
+        render_with_timezone(@appointment_slots.upcoming.ascending)
       end
 
       api :GET, '/v1/appointment_slots/calendar', "List upcoming appointment slots aggregated by dates"
@@ -35,12 +36,25 @@ module Api
         render json: AppointmentSlot.calendar(from, to).to_json, status: 200
       end
 
-      api :POST, "/v1/appointment_slots", "Add or update an appointment slot"
+      api :POST, "/v1/appointment_slots", "Add an appointment slot"
       param_group :appointment_slot
       def create
-        appt_slot = AppointmentSlot.find_or_create_by(timestamp: @appointment_slot.timestamp)
-        appt_slot.quota = @appointment_slot.quota
-        save_and_render_object(appt_slot)
+        @appointment_slot.timestamp = @appointment_slot.timestamp.change(sec: 0)
+        if AppointmentSlot.find_by(timestamp: @appointment_slot.timestamp)
+          render_error('Timeslot already exists')
+        else
+          save_and_render_with_timezone(@appointment_slot)
+        end
+      end
+
+      api :PUT, '/v1/appointment_slots/1', "Update an appointment slot"
+      param_group :appointment_slot
+      def update
+        if @appointment_slot.update_attributes(appointment_slot_params)
+          render_with_timezone(@appointment_slot)
+        else
+          render json: @appointment_slot.errors, status: 422
+        end
       end
 
       api :DELETE, '/v1/appointment_slots/1', "Delete a preset appointment slot"
@@ -51,8 +65,21 @@ module Api
 
       private
 
-      def serializer
-        Api::V1::AppointmentSlotSerializer
+      def render_with_timezone(data)
+        if data.is_a?(AppointmentSlot)
+          data.timestamp = data.timestamp.in_time_zone
+        else
+          data.each { |s| s.timestamp = s.timestamp.in_time_zone }
+        end
+        render json: { appointment_slot: data }, status: 200
+      end
+
+      def save_and_render_with_timezone(object)
+        if object.save
+          render_with_timezone object
+        else
+          render json: object.errors, status: 422
+        end
       end
 
     end

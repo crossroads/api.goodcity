@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 20181120115456) do
   create_table "appointment_slots", force: :cascade do |t|
     t.datetime "timestamp"
     t.integer  "quota"
+    t.string   "note",      default: ""
   end
 
   create_table "auth_tokens", force: :cascade do |t|
@@ -633,7 +634,6 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.datetime "last_disconnected"
     t.boolean  "disabled",          default: false
     t.string   "email"
-    t.string   "title"
   end
 
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree

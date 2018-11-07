@@ -75,8 +75,8 @@ Rails.application.routes.draw do
       end
       
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
-      resources :appointment_slots, only: [:create, :destroy, :index]
-      resources :appointment_slot_presets, only: [:create, :destroy, :index]
+      resources :appointment_slots, only: [:create, :destroy, :index, :update]
+      resources :appointment_slot_presets, only: [:create, :destroy, :index, :update]
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]

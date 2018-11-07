@@ -90,10 +90,37 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
     end
   end
 
+  describe "PUT /appointment_slot_presets/1" do
+    context 'When not logged in' do
+      it "denies update of an appointment slot preset" do
+        put :update, id: appt_slot.id, appointment_slot_preset: payload
+        expect(response.status).to eq(401)
+      end
+    end
+    
+    context 'When logged in as a user without can_manage_settings permission' do
+      before { generate_and_set_token(no_permission_user) }
+       it "denies update of an appointment slot preset" do
+        put :update, id: appt_slot.id, appointment_slot_preset: payload
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context 'When logged in as a order administrator' do
+      before { generate_and_set_token(order_administrator) }
+      it "allows a supervisor to modify an appointment slot preset" do
+        new_preset = FactoryBot.create(:appointment_slot_preset)
+        put :update, id: new_preset.id, appointment_slot_preset: { day: 7 }
+        expect(response.status).to eq(200)
+        expect(parsed_body['appointment_slot_preset']['day']).to eq(7)
+      end
+    end
+  end
+
   describe "DELETE /appointment_slot_presets/1" do
     context 'When not logged in' do
       it "denies destruction of an appointment slot preset" do
-        put :destroy, id: appt_slot.id
+        delete :destroy, id: appt_slot.id
         expect(response.status).to eq(401)
       end
     end
@@ -102,7 +129,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
       before { generate_and_set_token(no_permission_user) }
 
       it "denies destruction of an appointment slot preset" do
-        put :destroy, id: appt_slot.id
+        delete :destroy, id: appt_slot.id
         expect(response.status).to eq(403)
       end
     end
@@ -112,7 +139,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
 
       it "allows a supervisor to destroy an appointment slot preset" do
         id = appt_slot.id
-        put :destroy, id: id
+        delete :destroy, id: id
         expect(response.status).to eq(200)
         expect(AppointmentSlotPreset.find_by(id: id)).to eq(nil)
       end
