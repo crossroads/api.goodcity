@@ -4,4 +4,3 @@ module Api::V1
     attributes :id, :hours, :minutes, :quota, :day
   end
 end
-  

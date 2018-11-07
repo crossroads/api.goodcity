@@ -2,7 +2,7 @@ module Api
   module V1
     class AppointmentSlotPresetsController < Api::V1::ApiController
       load_and_authorize_resource :appointment_slot_preset, parent: false
-  
+
       resource_description do
         short 'Manage a list of appointment slot templates for days of the week.'
         formats ['json']
@@ -34,8 +34,8 @@ module Api
       param_group :appointment_slot_preset
       def create
         preset = AppointmentSlotPreset.find_or_create_by(
-          day: @appointment_slot_preset.day, 
-          hours: @appointment_slot_preset.hours, 
+          day: @appointment_slot_preset.day,
+          hours: @appointment_slot_preset.hours,
           minutes: @appointment_slot_preset.minutes
         )
         preset.quota = @appointment_slot_preset.quota
@@ -61,7 +61,6 @@ module Api
       def serializer
         Api::V1::AppointmentSlotPresetSerializer
       end
-
     end
   end
 end

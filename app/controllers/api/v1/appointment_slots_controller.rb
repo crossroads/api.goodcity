@@ -2,7 +2,7 @@ module Api
   module V1
     class AppointmentSlotsController < Api::V1::ApiController
       load_and_authorize_resource :appointment_slot, parent: false
-  
+
       resource_description do
         short 'Manage a list of appointment quotas for special days'
         formats ['json']
@@ -82,7 +82,6 @@ module Api
           render json: object.errors, status: 422
         end
       end
-
     end
   end
 end

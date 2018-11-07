@@ -4,4 +4,3 @@ module Api::V1
     attributes :id, :timestamp, :quota, :note
   end
 end
-  
