@@ -5,6 +5,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
 
+  def now
+    DateTime.now.change(sec: 0, usec: 0)
+  end
+
   def assert_datetime_equals(dt1, dt2)
     dt1 = DateTime.parse(dt1) if dt1.is_a?(String)
     dt2 = DateTime.parse(dt2) if dt2.is_a?(String)
@@ -33,14 +37,15 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
 
       it 'returns upcoming spectial slots' do
-        now = DateTime.now
-        FactoryBot.create :appointment_slot, timestamp: now
-        FactoryBot.create :appointment_slot, timestamp: now + 1
-        FactoryBot.create :appointment_slot, timestamp: now + 2
-        FactoryBot.create :appointment_slot, timestamp: now - 30  
+        ts = now()
+        FactoryBot.create :appointment_slot, timestamp: ts
+        FactoryBot.create :appointment_slot, timestamp: ts + 1
+        FactoryBot.create :appointment_slot, timestamp: ts + 2
+        FactoryBot.create :appointment_slot, timestamp: ts - 30  
         get :index
+        pp parsed_body
         expect(parsed_body['appointment_slots'].count).to eq(3)
-        assert_datetime_equals(parsed_body['appointment_slots'][0]['timestamp'], now)
+        assert_datetime_equals(parsed_body['appointment_slots'][0]['timestamp'], ts)
       end
 
       it 'returns slots aggregated by date (/appointment_slots/calendar) - except those with 0 quota' do
@@ -77,7 +82,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   end
 
   describe "POST /appointment_slots" do
-    let!(:payload) { {quota: 5, timestamp: DateTime.now.to_s} }
+    let!(:payload) { {quota: 5, timestamp: now.to_s} }
 
     context 'When not logged in' do
       it "denies creation of an appointment slot" do
@@ -98,7 +103,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       before { generate_and_set_token(order_administrator) }
 
       it "allows the order administrator to create an appointment slot" do
-        t = DateTime.now
+        t = now
         post :create, appointment_slot: {quota: 5, timestamp: t.to_s}
         expect(response.status).to eq(201)
         expect(parsed_body['appointment_slot']['quota']).to eq(5)
@@ -106,16 +111,16 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
 
       it "fails to create an appointment slot if the slot is already taken" do
-        now = DateTime.now.change(sec: 0)
-        FactoryBot.create :appointment_slot, timestamp: now
-        post :create, appointment_slot: {quota: 5, timestamp: now.to_s }
+        ts = now
+        FactoryBot.create :appointment_slot, timestamp: ts
+        post :create, appointment_slot: {quota: 5, timestamp: ts.to_s }
         expect(response.status).to eq(422)
       end
     end
   end
 
   describe "DELETE /appointment_slots/1" do
-    let!(:appt_slot) { FactoryBot.create :appointment_slot, timestamp: DateTime.now, quota: 10 }
+    let!(:appt_slot) { FactoryBot.create :appointment_slot, timestamp: now, quota: 10 }
 
     context 'When not logged in' do
       it "denies destruction of an appointment slot" do
