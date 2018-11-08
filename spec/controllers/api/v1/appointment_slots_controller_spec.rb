@@ -53,15 +53,16 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00'), quota: 0
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('31st Oct 2018 10:00:00+08:00')   
         get :calendar, from: '2018-10-16', to: '2018-10-31'
-        expect(parsed_body.count).to eq(16)
+        results = parsed_body['appointment_calendar_dates']
+        expect(results.count).to eq(16)
 
         # Check an auto-generated slot
-        oct_16th = parsed_body[0];
+        oct_16th = results[0];
         expect(oct_16th['date']).to eq("2018-10-16")
         expect(oct_16th['slots'].count).to eq(1)
         expect(oct_16th['slots'][0]['timestamp']).to eq("2018-10-16T10:30:00.000+08:00")
         # Check a special date
-        oct_29th = parsed_body[13];
+        oct_29th = results[13];
         expect(oct_29th['date']).to eq("2018-10-29")
         expect(oct_29th['slots'].count).to eq(2)
         expect(oct_29th['slots'][0]['timestamp']).to eq("2018-10-29T14:00:00.000+08:00")
