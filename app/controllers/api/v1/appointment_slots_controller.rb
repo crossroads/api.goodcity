@@ -1,6 +1,8 @@
 module Api
   module V1
     class AppointmentSlotsController < Api::V1::ApiController
+      MAX_CALENDAR_RANGE = 2.years
+
       load_and_authorize_resource :appointment_slot, parent: false
 
       resource_description do
@@ -32,19 +34,14 @@ module Api
       api :GET, '/v1/appointment_slots/calendar', "List upcoming appointment slots aggregated by dates"
       def calendar
         from = params[:from] ? Date.parse(params[:from]) : Date.today
-        to = Date.parse(params[:to])
-        render json: AppointmentSlot.calendar(from, to), status: 200
+        to = ceil(Date.parse(params[:to]), from + MAX_CALENDAR_RANGE)
+        render json: AppointmentSlot.calendar(from, to).to_json, status: 200
       end
 
       api :POST, "/v1/appointment_slots", "Add an appointment slot"
       param_group :appointment_slot
       def create
-        @appointment_slot.timestamp = @appointment_slot.timestamp.change(sec: 0)
-        if AppointmentSlot.find_by(timestamp: @appointment_slot.timestamp)
-          render_error('Timeslot already exists')
-        else
-          save_and_render_with_timezone(@appointment_slot, 201)
-        end
+        save_and_render_with_timezone(@appointment_slot, 201)
       end
 
       api :PUT, '/v1/appointment_slots/1', "Update an appointment slot"
@@ -82,6 +79,11 @@ module Api
           render json: object.errors, status: 422
         end
       end
+
+      def ceil(val, max)
+        return val > max ? max : val
+      end
+
     end
   end
 end
