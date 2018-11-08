@@ -7,7 +7,6 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
   let(:payload) { FactoryBot.build(:appointment_slot_preset, hours: 23, minutes: 0).attributes.except('id', 'updated_at', 'created_at') }
   let(:appt_slot) { create :appointment_slot_preset }
 
-
   describe "GET /appointment_slot_presets" do
 
     context 'When not logged in' do

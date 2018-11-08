@@ -1,13 +1,15 @@
 class AppointmentSlot < ActiveRecord::Base
   validates :quota, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validate :no_duplicate, on: [:create, :update]
+  before_save :truncate_seconds
 
+  scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.utc.to_s(:db)) }
+
+  scope :ascending, -> { order('timestamp ASC').order('quota ASC') }
+  
   def self.calendar(from, to)
     (from..to).map { |date| { date: date, slots: AppointmentSlot.for_date(date) } }
   end
-
-  scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.to_s(:db)) }
-
-  scope :ascending, -> { order('timestamp ASC').order('quota ASC') }
 
   def self.for_date(date)
     slots = where("date(timestamp) = ?", date).ascending
@@ -25,4 +27,21 @@ class AppointmentSlot < ActiveRecord::Base
         AppointmentSlot.new(quota: preset.quota, timestamp: t)
       }
   end
+
+  # Validators and Hooks
+
+  def truncate_seconds
+    self.timestamp = self.timestamp.change(sec: 0)
+  end
+
+  def no_duplicate
+    return if quota.zero?
+    records = AppointmentSlot
+      .where(timestamp: self.timestamp)
+      .where
+      .not(quota: 0)
+    records = records.where.not(id: self.id) unless self.new_record?
+    errors.add(:errors, "Timeslot already exists") unless records.empty?
+  end
+
 end

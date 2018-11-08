@@ -66,6 +66,11 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(oct_29th['slots'].count).to eq(2)
         expect(oct_29th['slots'][0]['timestamp']).to eq("2018-10-29T14:00:00.000+08:00")
       end
+
+      it 'limits the number of slots returned -> a maximum of 2 years worth of data should be returned' do
+        get :calendar, from: '2018-10-16', to: '2100-10-31'
+        expect(parsed_body.count).to eq(732)
+      end
     end
 
     context 'When logged in without any rights' do
@@ -112,7 +117,41 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       it "fails to create an appointment slot if the slot is already taken" do
         ts = now
         FactoryBot.create :appointment_slot, timestamp: ts
-        post :create, appointment_slot: {quota: 5, timestamp: ts.to_s }
+        post :create, appointment_slot: { quota: 5, timestamp: ts.to_s }
+        expect(response.status).to eq(422)
+      end
+    end
+  end
+
+  describe "PUT /appointment_slot/1" do
+    let!(:appt_slot) { FactoryBot.create :appointment_slot, timestamp: now, quota: 10 }
+
+    context 'When not logged in' do
+      it "denies update of an appointment slot" do
+        put :update, id: appt_slot.id, appointment_slot: {quota: 5}
+        expect(response.status).to eq(401)
+      end
+    end
+    
+    context 'When logged in as a user without can_manage_settings permission' do
+      before { generate_and_set_token(no_permission_user) }
+       it "denies update of an appointment slot" do
+        put :update, id: appt_slot.id, appointment_slot_preset: {quota: 5}
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context 'When logged in as a order administrator' do
+      before { generate_and_set_token(order_administrator) }
+      it "allows a supervisor to modify an appointment slot" do
+        put :update, id: appt_slot.id, appointment_slot: { day: 7 }
+        expect(response.status).to eq(200)
+      end
+
+      it "prevents updating a timestamp that conflicts with another slot's timestamp" do
+        timestamp = DateTime.parse('29th Oct 2018 16:30:00+08:00')
+        FactoryBot.create :appointment_slot, timestamp: timestamp, quota: 10
+        put :update, id: appt_slot.id, appointment_slot: { timestamp: timestamp }
         expect(response.status).to eq(422)
       end
     end
@@ -123,7 +162,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
     context 'When not logged in' do
       it "denies destruction of an appointment slot" do
-        put :destroy, id: appt_slot.id
+        delete :destroy, id: appt_slot.id
         expect(response.status).to eq(401)
       end
     end
@@ -132,7 +171,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       before { generate_and_set_token(no_permission_user) }
 
       it "denies destruction of an appointment slot" do
-        put :destroy, id: appt_slot.id
+        delete :destroy, id: appt_slot.id
         expect(response.status).to eq(403)
       end
     end
@@ -142,7 +181,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
       it "allows a supervisor to destroy an appointment slot" do
         id = appt_slot.id
-        put :destroy, id: id
+        delete :destroy, id: id
         expect(response.status).to eq(200)
         expect(AppointmentSlot.find_by(id: id)).to eq(nil)
       end
