@@ -70,7 +70,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
       it 'limits the number of slots returned -> a maximum of 2 years worth of data should be returned' do
         get :calendar, from: '2018-10-16', to: '2100-10-31'
-        expect(parsed_body.count).to eq(732)
+        expect(parsed_body['appointment_calendar_dates'].count).to eq(732)
       end
     end
 
