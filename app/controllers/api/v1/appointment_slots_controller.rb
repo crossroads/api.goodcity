@@ -35,7 +35,7 @@ module Api
       def calendar
         from = params[:from] ? Date.parse(params[:from]) : Date.today
         to = ceil(Date.parse(params[:to]), from + MAX_CALENDAR_RANGE)
-        render json: AppointmentSlot.calendar(from, to).to_json, status: 200
+        render json: { appointment_calendar_dates: AppointmentSlot.calendar(from, to) }, status: 200
       end
 
       api :POST, "/v1/appointment_slots", "Add an appointment slot"
