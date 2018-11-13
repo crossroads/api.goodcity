@@ -81,7 +81,6 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         get :index
         expect(response.status).to eq(403)
       end
-
     end
 
   end
