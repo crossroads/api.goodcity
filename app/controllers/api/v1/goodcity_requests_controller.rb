@@ -16,7 +16,6 @@ module Api
         param :goodcity_request, Hash, required: true do
           param :quantity, String, desc: "requested quantity"
           param :description, String, desc: "request description", allow_nil: true
-          param :item_specifics, String, desc: "request item specifics", allow_nil: true
         end
       end
 
