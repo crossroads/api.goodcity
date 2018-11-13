@@ -2,7 +2,7 @@ class Order < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   include PushUpdates
 
-  belongs_to :detail, polymorphic: true
+  belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
   belongs_to :country
   belongs_to :stockit_contact
@@ -20,7 +20,7 @@ class Order < ActiveRecord::Base
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: 'detail_id'
 
   has_many :packages
-  has_many :goodcity_requests
+  has_many :goodcity_requests, dependent: :destroy
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
