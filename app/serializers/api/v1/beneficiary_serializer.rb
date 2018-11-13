@@ -1,6 +1,7 @@
 
 module Api::V1
   class BeneficiarySerializer < ApplicationSerializer
+    embed :ids, include: true
     attributes  :id,
                 :identity_type_id,
                 :identity_number,
@@ -10,7 +11,6 @@ module Api::V1
                 :last_name,
                 :phone_number
 
-    has_one  :created_by, serializer: UserSerializer, root: :user
     has_one  :identity_type, serializer: IdentityTypeSerializer
   end
 end
