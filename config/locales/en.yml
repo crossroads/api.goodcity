@@ -64,6 +64,7 @@ en:
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."
+    split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
   orders_package:
     already_dispatched: "This has been already dispatched."
   organisations_user_builder:

@@ -131,7 +131,6 @@ module Api
           records = records.search(
             params['searchText'],
             params['itemId'],
-            :show_quantity_items => params['showQuantityItems'] == 'true',
             :state => params['state'],
             :with_inventory_no => params['withInventoryNumber'] == 'true'
           ).page(params["page"]).per(params["per_page"])
@@ -168,6 +167,16 @@ module Api
           send_stock_item_response
         else
           render json: { errors: result.errors.full_messages }, status: 422
+        end
+      end
+
+      def split_package
+        qty_to_split = package_params[:quantity].to_i
+        if @package.splittable?(qty_to_split)
+          @package.deduct_qty_and_make_copies(qty_to_split)
+          send_stock_item_response
+        else
+          render json: { errors: I18n.t('package.split_qty_error', qty: @package.quantity) }, status: 422
         end
       end
 
