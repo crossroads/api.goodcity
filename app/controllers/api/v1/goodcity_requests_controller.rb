@@ -45,7 +45,7 @@ module Api
       end
 
       def goodcity_request_params
-        params.require(:goodcity_request).permit(:quantity, :description, :package_type_id, :order_id, :item_specifics)
+        params.require(:goodcity_request).permit(:quantity, :description, :package_type_id, :order_id)
       end
     end
   end
