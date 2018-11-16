@@ -3,6 +3,7 @@ class OrderTransport < ActiveRecord::Base
   belongs_to :contact
   belongs_to :gogovan_order
   belongs_to :gogovan_transport
+  belongs_to :booking_type
 
   accepts_nested_attributes_for :contact
 

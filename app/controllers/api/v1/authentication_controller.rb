@@ -73,7 +73,7 @@ module Api
         @user = User.find_by_mobile(@mobile.mobile)
 
         if @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin(app_name)
+          @user.send_verification_pin
         elsif @user
           return render json: { error: "You are not authorized." }, status: 401
         end
@@ -178,17 +178,12 @@ module Api
 
       private
 
-      def render_send_pin_json
-        @user.send_verification_pin
-        render json: { otp_auth_key: otp_auth_key_for(@user) }
-      end
-
       def render_error(error_message)
         render json: { errors: error_message }, status: 422
       end
 
       def authenticated_user
-        warden.authenticated? && @user.allowed_login?(app_name)
+        warden.authenticated? && (is_browse_app? || @user.allowed_login?(app_name))
       end
 
       def current_user_channels

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181016071437) do
+ActiveRecord::Schema.define(version: 20181106130437) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,13 @@ ActiveRecord::Schema.define(version: 20181016071437) do
   end
 
   add_index "beneficiaries", ["identity_type_id"], name: "index_beneficiaries_on_identity_type_id", using: :btree
+
+  create_table "booking_types", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "boxes", force: :cascade do |t|
     t.string   "box_number"
@@ -170,6 +177,7 @@ ActiveRecord::Schema.define(version: 20181016071437) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["order_id"], name: "index_goodcity_requests_on_order_id", using: :btree
@@ -285,6 +293,7 @@ ActiveRecord::Schema.define(version: 20181016071437) do
     t.boolean  "need_over_6ft",        default: false
     t.integer  "gogovan_transport_id"
     t.string   "remove_net"
+    t.integer  "booking_type_id"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -447,6 +456,7 @@ ActiveRecord::Schema.define(version: 20181016071437) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin

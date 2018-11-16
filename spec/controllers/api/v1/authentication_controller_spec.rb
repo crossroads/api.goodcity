@@ -10,6 +10,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
   let(:mobile1) { generate(:mobile) }
+
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
   let(:jwt_token)    { Token.new.generate }
   let(:serialized_user) { JSON.parse(Api::V1::UserProfileSerializer.new(user).as_json.to_json) }
@@ -59,7 +60,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_admin_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        expect(controller).to receive(:app_name).and_return(ADMIN_APP)
+        expect(controller).to receive(:app_name).and_return(ADMIN_APP).twice
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -69,7 +70,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_stock_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
-        expect(controller).to receive(:app_name).and_return(STOCK_APP)
+        expect(controller).to receive(:app_name).and_return(STOCK_APP).twice
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -102,7 +103,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
-      expect(controller).to receive(:app_name).and_return(DONOR_APP).twice
+      expect(controller).to receive(:app_name).and_return(DONOR_APP)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
       expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
@@ -148,7 +149,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
         expect(response.status).to eq(200)
       end
-
 
       it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
@@ -230,7 +230,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       let(:expected_channels) { ["user_#{charity_user.id}_browse"] }
       it { expect(controller.send(:current_user_channels)).to eql(expected_channels) }
     end
-
   end
-
 end
+
+
+

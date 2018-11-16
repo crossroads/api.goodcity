@@ -41,6 +41,7 @@ module Api
       api :POST, "/v1/beneficiaries", "Create a beneficiary"
       param_group :beneficiary
       def create
+        @beneficiary.order = Order.find_by_id(params['order_id'])
         @beneficiary.created_by = current_user
         save_and_render_object(@beneficiary)
       end
