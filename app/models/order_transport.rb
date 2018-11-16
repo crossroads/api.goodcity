@@ -7,5 +7,7 @@ class OrderTransport < ActiveRecord::Base
 
   accepts_nested_attributes_for :contact
 
+  scope :for_orders, ->(order_ids) { joins(:order).where(orders: { id: order_ids }) }
+
   scope :user_orders, ->(user_id) { joins(:order).where(orders: { created_by_id: user_id }) }
 end
