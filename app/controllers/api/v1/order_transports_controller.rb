@@ -12,6 +12,13 @@ module Api
         save_and_render_object_with_errors(@order_transport)
       end
 
+      def index
+        if params[:order_ids]
+          @order_transports = @order_transports.for_orders(params[:order_ids].split(','))
+        end
+        render json: @order_transports, each_serializer: serializer, status: 200
+      end
+
       private
 
       def order_transport_params

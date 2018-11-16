@@ -56,7 +56,7 @@ module Api
           serializer: serializer,
           root: root,
           exclude_code_details: true,
-          include_packages: true,
+          include_packages: opt_bool_param(params[:include_packages], true),
           include_order: false,
           include_territory: true,
           include_images: true,
@@ -97,6 +97,11 @@ module Api
       end
 
       private
+      
+      def opt_bool_param(obj, default)
+        return default if obj.nil? 
+        obj.to_s == "true"
+      end
 
       def order_response(records)
         ActiveModel::ArraySerializer.new(records,
