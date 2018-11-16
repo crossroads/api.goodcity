@@ -1,3 +1,4 @@
+
 module Api::V1
   class GcOrganisationsController < Api::V1::ApiController
     load_and_authorize_resource :organisation, parent: false
@@ -28,7 +29,7 @@ module Api::V1
     end
 
     private
-
+    
     def organisation_serializer
       Api::V1::OrganisationSerializer
     end

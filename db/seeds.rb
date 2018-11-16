@@ -23,6 +23,13 @@ cancellation_reasons.each do |name_en, value|
     visible_to_admin: value[:visible_to_admin] )
 end
 
+booking_types = YAML.load_file("#{Rails.root}/db/booking_types.yml")
+booking_types.each do |name_en, value|
+  FactoryBot.create(:booking_type,
+    name_en: name_en,
+    name_zh_tw: value[:name_zh_tw] )
+end
+
 districts = YAML.load_file("#{Rails.root}/db/districts.yml")
 districts.each do |name_en, value|
   # FactoryBot creates the correct territory for us

@@ -1,3 +1,4 @@
+#rake goodcity:create_identity_types
 namespace :goodcity do
   desc 'Initialize the different identity types'
   task create_identity_types: :environment do

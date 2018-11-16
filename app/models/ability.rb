@@ -16,7 +16,7 @@ class Ability
     'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
     'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
     'can_destroy_package_with_specific_states', 'can_manage_locations',
-    'can_read_versions'].freeze
+    'can_read_versions', 'can_create_goodcity_requests'].freeze
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
@@ -89,6 +89,8 @@ class Ability
   end
 
   def goodcity_request_abilitites
+    can :create, GoodcityRequest if can_create_goodcity_requests?
+    can [:index, :show, :update, :destroy], GoodcityRequest, created_by_id: @user_id
     if can_manage_goodcity_requests?
       can [:create, :destroy, :update], GoodcityRequest
     end
@@ -255,7 +257,6 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
-    can [:create], OrganisationsUser
   end
 
   def packages_locations_abilities
@@ -286,6 +287,8 @@ class Ability
     can [:index, :show], UserRole
     can [:index, :show], CancellationReason
     can [:names], Organisation
+    can [:create, :show], OrganisationsUser
+
     if can_add_or_remove_inventory_number? || @api_user
       can [:create, :remove_number], InventoryNumber
     end
