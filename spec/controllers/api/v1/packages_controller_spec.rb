@@ -490,7 +490,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "Items search" do
     before { generate_and_set_token(user) }
-    it 'should find items by inventory number (excludes quantity items)' do
+    it 'should find items by inventory number' do
       create :package, received_quantity: 1, inventory_number: "456222"
       create :package, received_quantity: 1, inventory_number: "456111"
       create :package, received_quantity: 1, inventory_number: "111111"
@@ -499,7 +499,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("456")
-      expect(subject['items'].length).to eql(2)
+      expect(subject['items'].length).to eql(3)
       # 'id ASC' ordering is guaranteed by pagination
       expect(subject['items'][0]['inventory_number']).to eql("456222")
       expect(subject['items'][1]['inventory_number']).to eql("456111")
@@ -570,6 +570,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['items'].length).to eql(1)
       expect(subject['items'][0]['inventory_number']).to eql('11111')
     end
-  
+
   end
 end
