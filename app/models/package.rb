@@ -171,7 +171,7 @@ class Package < ActiveRecord::Base
   end
 
   def splittable?(qty_to_split)
-    qty_to_split.to_i > 0 || qty_to_split.to_i < quantity
+    qty_to_split.to_i.positive? || qty_to_split.to_i < quantity
   end
 
   def destroy_stale_packages_locations(new_quantity)
