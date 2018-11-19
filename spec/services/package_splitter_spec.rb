@@ -39,9 +39,10 @@ describe PackageSplitter do
       let(:package) { create(:package, quantity: 5, inventory_number: inventory_number) }
       it do
         expect{ package_splitter.split! }.to change(package.reload, :quantity).from(5).to(3)
-        packages = Package.where("inventory_number LIKE ?", "#{inventory_number}%")
+        packages = Package.where("inventory_number LIKE ?", "#{inventory_number}%").order(:created_at)
         expect(packages.count).to eql(3)
         packages.each do |pkg|
+          break if pkg.inventory_number == inventory_number
           expect(pkg.quantity).to eql(1)
           expect(pkg.received_quantity).to eql(1)
         end
