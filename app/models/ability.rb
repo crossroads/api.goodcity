@@ -226,7 +226,7 @@ class Ability
         :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,
         :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
-        :undispatch_stockit_item, :stockit_item_details], Package
+        :undispatch_stockit_item, :stockit_item_details, :split_package], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false

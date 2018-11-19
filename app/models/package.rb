@@ -66,7 +66,7 @@ class Package < ActiveRecord::Base
 
   attr_accessor :skip_set_relation_update, :request_from_admin
 
-  def self.search(search_text, item_id, options = {}) 
+  def self.search(search_text, item_id, options = {})
     records =
       if item_id.presence
         where("item_id = ?", item_id)
@@ -82,7 +82,6 @@ class Package < ActiveRecord::Base
           state: state
         )
       end
-    records = records.where(received_quantity: 1) unless options[:show_quantity_items]
     records
   end
 
@@ -171,6 +170,10 @@ class Package < ActiveRecord::Base
     Location.dispatch_location
   end
 
+  def splittable?(qty_to_split)
+    qty_to_split.to_i.positive? || qty_to_split.to_i < quantity
+  end
+
   def destroy_stale_packages_locations(new_quantity)
     if (singleton_package? || total_quantity_move_without_dispatch_location?(new_quantity))
       delete_associated_packages_locations
@@ -198,6 +201,13 @@ class Package < ActiveRecord::Base
     else
       create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
     end
+  end
+
+  def deduct_qty_and_make_copies(qty_to_split)
+    1..qty_to_split.times do
+      create_and_save_copy
+    end
+    update(quantity: quantity - qty_to_split)
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
@@ -601,6 +611,34 @@ class Package < ActiveRecord::Base
   end
 
   private
+
+  def create_and_save_copy
+    copy = dup
+    copy.quantity = 1
+    copy.received_quantity = 1
+    copy.inventory_number = generate_q_inventory_number
+    copy_and_save_images(copy) if copy.save
+  end
+
+  def generate_q_inventory_number
+    largest_q_number = Package.where("inventory_number LIKE ?", "#{inventory_number}Q%").order("ID DESC").limit(1)
+    if largest_q_number.presence
+      return  "#{inventory_number}Q#{largest_q_number.last.inventory_number.split('Q').last.to_i + 1}"
+    else
+      return "#{inventory_number}Q1"
+    end
+  end
+
+  def copy_and_save_images(copy)
+    copied_images = []
+    images.each do |image|
+      copied_image = image.dup
+      copied_image.imageable_id = copy.id
+      copied_image.save
+      copied_images << copied_image
+    end
+    copy.images << copied_images
+  end
 
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
