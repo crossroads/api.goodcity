@@ -11,7 +11,9 @@ class PackageSplitter
   end
 
   def splittable?
-    @qty_to_split > 1 && (@qty_to_split < @package.quantity) && @package.inventory_number.present?
+    @qty_to_split.positive? && 
+      (@qty_to_split < @package.quantity) &&
+      @package.inventory_number.present?
   end
 
   def split!
