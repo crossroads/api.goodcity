@@ -29,6 +29,8 @@ en:
       Thank you for placing order %{code} on GoodCity. Our team will be in touch with you soon.
     input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
     thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
+    unread_message_sms: |
+      You've got notifications in GoodCity, please check the latest updates. %{url}.
   activerecord:
     attributes:
       user:

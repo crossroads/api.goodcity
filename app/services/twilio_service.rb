@@ -37,6 +37,12 @@ class TwilioService
     TwilioJob.perform_later(options)
   end
 
+  def send_unread_message_sms(url)
+    return unless allowed_to_send?
+    options = { to: @user.mobile, body: reminder_sms_for_unread_sms(url) }
+    TwilioJob.perform_later(options)
+  end
+
   private
 
   def pin_sms_text(app_name)
@@ -75,5 +81,10 @@ class TwilioService
   def new_order_confirmed_text_to_charity(order)
     I18n.t('twilio.new_order_submitted_sms_to_charity',
       code: order.code)
+  end
+
+  def reminder_sms_for_unread_sms(url)
+    I18n.t('twilio.unread_message_sms',
+      url: url)
   end
 end
