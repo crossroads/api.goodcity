@@ -623,7 +623,7 @@ class Package < ActiveRecord::Base
   def generate_q_inventory_number
     largest_q_number = Package.where("inventory_number LIKE ?", "#{inventory_number}Q%").order("ID DESC").limit(1)
     if largest_q_number.presence
-      return  "#{inventory_number}Q#{largest_q_number.last.inventory_number.split("Q").last.to_i + 1}"
+      return  "#{inventory_number}Q#{largest_q_number.last.inventory_number.split('Q').last.to_i + 1}"
     else
       return "#{inventory_number}Q1"
     end
