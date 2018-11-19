@@ -182,3 +182,8 @@ unless ENV['LIVE'] == "true"
   ]
   order_fulfiler_attributes.each {|attr| FactoryBot.create(:user, :order_fulfilment, attr) }
 end
+
+
+# Might be worth adding the following rake tasks:
+#   rake goodcity:import_swd_organisations
+#   rake goodcity:populate_organisations
