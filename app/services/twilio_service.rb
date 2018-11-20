@@ -37,9 +37,9 @@ class TwilioService
     TwilioJob.perform_later(options)
   end
 
-  def send_unread_message_sms(url)
+  def send_unread_message_reminder(url)
     return unless allowed_to_send?
-    options = { to: @user.mobile, body: reminder_sms_for_unread_sms(url) }
+    options = { to: @user.mobile, body: unread_message_reminder(url) }
     TwilioJob.perform_later(options)
   end
 
@@ -83,7 +83,7 @@ class TwilioService
       code: order.code)
   end
 
-  def reminder_sms_for_unread_sms(url)
+  def unread_message_reminder(url)
     I18n.t('twilio.unread_message_sms',
       url: url)
   end
