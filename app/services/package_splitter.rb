@@ -35,7 +35,8 @@ class PackageSplitter
     copy.quantity = 1
     copy.received_quantity = 1
     copy.inventory_number = generate_q_inventory_number
-    copy_and_save_images(copy) if (copy.add_to_stockit && copy.save)
+    copy.add_to_stockit
+    copy_and_save_images(copy) if copy.save
   end
 
   def generate_q_inventory_number
