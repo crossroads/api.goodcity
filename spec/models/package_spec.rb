@@ -47,7 +47,7 @@ RSpec.describe Package, type: :model do
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
-        expect(Stockit::ItemSync).to receive(:create).with(package, package.request_from_admin)
+        expect(Stockit::ItemSync).to receive(:create).with(package)
         expect{
           package.mark_received
         }.to change(package, :received_at)
@@ -79,21 +79,21 @@ RSpec.describe Package, type: :model do
   describe "add_to_stockit" do
     it "should add API errors to package.errors" do
       api_response = {"errors" => {"code" => "can't be blank"}}
-      expect(Stockit::ItemSync).to receive(:create).with(package, package.request_from_admin).and_return(api_response)
+      expect(Stockit::ItemSync).to receive(:create).with(package).and_return(api_response)
       package.add_to_stockit
       expect(package.errors).to include(:code)
     end
 
     it "allows multi quantity stockit sync if package received from admin with inventory_number" do
       package = build :package, :received, request_from_admin: true
-      expect(Stockit::ItemSync).to receive(:create).with(package, package.request_from_admin).and_return({"status"=>201, "item_id"=> 12})
+      expect(Stockit::ItemSync).to receive(:create).with(package).and_return({"status"=>201, "item_id"=> 12})
       package.add_to_stockit
       expect(package.stockit_id).to eq(12)
     end
 
     it "do not allows multi quantity stockit sync if package is not received from admin" do
       package = build :package, :received, stockit_id: nil, request_from_admin: false
-      expect(Stockit::ItemSync).to receive(:create).with(package, package.request_from_admin).and_return({})
+      expect(Stockit::ItemSync).to receive(:create).with(package).and_return({})
       package.add_to_stockit
       expect(package.stockit_id).to be_nil
     end
@@ -166,7 +166,7 @@ RSpec.describe Package, type: :model do
     it 'update set_item_id value on receiving sibling package' do
       package = create :package, :stockit_package, item: item
       sibling_package = create :package, :stockit_package, item: item
-      expect(Stockit::ItemSync).to receive(:create).with(sibling_package, package.request_from_admin)
+      expect(Stockit::ItemSync).to receive(:create).with(sibling_package)
 
       expect {
         sibling_package.mark_received
