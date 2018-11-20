@@ -15,12 +15,12 @@ module Stockit
     end
 
     class << self
-      def create(package, allow_sync = nil)
-        new(package).create(allow_sync)
+      def create(package)
+        new(package).create
       end
 
-      def update(package, allow_sync = nil)
-        new(package).update(allow_sync)
+      def update(package)
+        new(package).update
       end
 
       def move(package)
@@ -49,15 +49,15 @@ module Stockit
       get(url, { offset: offset, per_page: per_page })
     end
 
-    def create(allow_sync)
-      if package.inventory_number.present? && (package.singleton_package? || allow_sync)
+    def create
+      if package.inventory_number.present?
         url = url_for("/api/v1/items")
         post(url, stockit_params)
       end
     end
 
-    def update(allow_sync)
-      if package.inventory_number.present? && (package.singleton_package? || allow_sync)
+    def update
+      if package.inventory_number.present?
         url = url_for("/api/v1/items/update")
         put(url, stockit_params)
       end
