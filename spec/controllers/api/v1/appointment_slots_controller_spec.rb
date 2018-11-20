@@ -5,6 +5,12 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
 
+  before {
+    FactoryBot.generate(:booking_types).values.each { |btype|
+      FactoryBot.create :booking_type, identifier: btype[:identifier]
+    }
+  }
+
   def now
     DateTime.now.change(sec: 0, usec: 0)
   end

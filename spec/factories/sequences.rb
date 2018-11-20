@@ -24,6 +24,10 @@ FactoryBot.define do
     @rejection_reasons ||= YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
   end
 
+  sequence :booking_types do |n|
+    @booking_types  ||= YAML.load_file("#{Rails.root}/db/booking_types.yml")
+  end
+
   sequence :cancellation_reasons do |n|
     @cancellation_reasons ||= YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
   end
