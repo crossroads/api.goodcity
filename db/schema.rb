@@ -191,7 +191,6 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["order_id"], name: "index_goodcity_requests_on_order_id", using: :btree
@@ -470,7 +469,6 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
@@ -634,6 +632,7 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.datetime "last_disconnected"
     t.boolean  "disabled",          default: false
     t.string   "email"
+    t.string   "title"
   end
 
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree

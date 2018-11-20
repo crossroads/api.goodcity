@@ -47,7 +47,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         assert_datetime_equals(parsed_body['appointment_slots'][0]['timestamp'], ts)
       end
 
-      it 'returns slots aggregated by date (/appointment_slots/calendar) - except those with 0 quota' do
+      it 'returns slots aggregated by date (/calendar) - except those with 0 quota' do
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 16:30:00+08:00')  
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00')
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00'), quota: 0
@@ -66,6 +66,68 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(oct_29th['date']).to eq("2018-10-29")
         expect(oct_29th['slots'].count).to eq(2)
         expect(oct_29th['slots'][0]['timestamp']).to eq("2018-10-29T14:00:00.000+08:00")
+      end
+
+      it 'specifies the number of remaining slots (/calendar)' do
+        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('29-10-2018'), timeslot: '10:30AM-11:30PM', booking_type: BookingType.appointment }
+        (1..3).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '10:30AM-11:30PM', booking_type: BookingType.appointment }
+        (1..5).each { |i| FactoryBot.create :order_transport, scheduled_at: Date.parse('30-10-2018'), timeslot: '2PM-3PM', booking_type: BookingType.appointment }
+        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 10:30:00+08:00'), quota: 5 # Monday
+        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 10:30:00+08:00'), quota: 5 # Tuesday
+        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 14:00:00+08:00'), quota: 5 # Tuesday
+
+        get :calendar, from: '2018-10-29', to: '2018-10-30'
+        results = parsed_body['appointment_calendar_dates']
+        expect(results.count).to eq(2)
+
+        oct_29th = results[0];
+        expect(oct_29th['date']).to eq("2018-10-29")
+        expect(oct_29th['isClosed']).to eq(true)
+        expect(oct_29th['slots'].count).to eq(1)
+        expect(oct_29th['slots'][0]['timestamp']).to eq("2018-10-29T10:30:00.000+08:00")
+        expect(oct_29th['slots'][0]['isClosed']).to eq(true)
+        expect(oct_29th['slots'][0]['remaining']).to eq(0)
+
+        oct_30th = results[1];
+        expect(oct_30th['date']).to eq("2018-10-30")
+        expect(oct_30th['isClosed']).to eq(false)
+        expect(oct_30th['slots'].count).to eq(2)
+        expect(oct_30th['slots'][0]['timestamp']).to eq("2018-10-30T10:30:00.000+08:00")
+        expect(oct_30th['slots'][0]['isClosed']).to eq(false)
+        expect(oct_30th['slots'][0]['remaining']).to eq(2)
+        expect(oct_30th['slots'][1]['timestamp']).to eq("2018-10-30T14:00:00.000+08:00")
+        expect(oct_30th['slots'][1]['isClosed']).to eq(true)
+        expect(oct_30th['slots'][1]['remaining']).to eq(0)
+      end
+
+      it 'should show public holidays as blocked' do
+        create(:holiday, holiday: DateTime.parse('17th Mar 2018 00:00:00'), name: "Saint Patrick's day")
+
+        get :calendar, from: '2018-03-17', to: '2018-03-17'
+        results = parsed_body['appointment_calendar_dates']
+        expect(results.count).to eq(1)
+
+        mar_17th = results[0];
+        expect(mar_17th['date']).to eq("2018-03-17")
+        expect(mar_17th['isClosed']).to eq(true)
+        expect(mar_17th['slots'].count).to eq(0)
+      end
+
+      it 'should show public holidays as available only if a special slot has been set for that day' do
+        create(:holiday, holiday: DateTime.parse('17th Mar 2018 00:00:00'), name: "Saint Patrick's day")
+        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('17th Mar 2018 14:00:00+08:00'), quota: 5
+
+        get :calendar, from: '2018-03-17', to: '2018-03-17'
+        results = parsed_body['appointment_calendar_dates']
+        expect(results.count).to eq(1)
+
+        mar_17th = results[0];
+        expect(mar_17th['date']).to eq("2018-03-17")
+        expect(mar_17th['isClosed']).to eq(false)
+        expect(mar_17th['slots'].count).to eq(1)
+        expect(mar_17th['slots'][0]['timestamp']).to eq("2018-03-17T14:00:00.000+08:00")
+        expect(mar_17th['slots'][0]['isClosed']).to eq(false)
+        expect(mar_17th['slots'][0]['remaining']).to eq(5)
       end
 
       it 'limits the number of slots returned -> a maximum of 2 years worth of data should be returned' do
