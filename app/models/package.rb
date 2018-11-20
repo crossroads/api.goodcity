@@ -332,8 +332,7 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    allow_multi_quantity_sync = request_from_admin && self.received?
-    response = Stockit::ItemSync.create(self, allow_multi_quantity_sync)
+    response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (item_id = response["item_id"]).present?
