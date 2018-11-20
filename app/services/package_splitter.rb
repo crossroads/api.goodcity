@@ -11,7 +11,7 @@ class PackageSplitter
   end
 
   def splittable?
-    @qty_to_split.positive? && 
+    @qty_to_split.positive? &&
       (@qty_to_split < @package.quantity) &&
       @package.inventory_number.present?
   end
@@ -35,7 +35,10 @@ class PackageSplitter
     copy.quantity = 1
     copy.received_quantity = 1
     copy.inventory_number = generate_q_inventory_number
-    copy_and_save_images(copy) if copy.save
+    if copy.save
+      copy_and_save_images(copy)
+      copy.add_to_stockit
+    end
   end
 
   def generate_q_inventory_number
