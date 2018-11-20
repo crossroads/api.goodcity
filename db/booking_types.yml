@@ -1,5 +1,10 @@
 ---
-Appointment:
+1:
+  :identifier: appointment
+  :name_en: Appointment
   :name_zh_tw: Appointment
-Delivery:
-  :name_zh_tw: Delivery
+
+2: 
+  :identifier: online-order
+  :name_en: Online Order
+  :name_zh_tw: Online Order
