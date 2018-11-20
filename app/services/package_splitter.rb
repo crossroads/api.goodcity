@@ -35,6 +35,7 @@ class PackageSplitter
     copy.quantity = 1
     copy.received_quantity = 1
     copy.inventory_number = generate_q_inventory_number
+    copy.stockit_id = nil
     copy.add_to_stockit
     copy_and_save_images(copy) if copy.save
   end

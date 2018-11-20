@@ -11,7 +11,7 @@ describe PackageSplitter do
       let(:package) { build(:package, quantity: 1, inventory_number: "F00001") }
       it { expect(package_splitter.send(:splittable?)).to eql(false) }
     end
-    
+
     context "should be false if qty to split > qty" do
       let(:qty_to_split) { 3 }
       let(:package) { build(:package, quantity: 2, inventory_number: "F00001") }
@@ -38,6 +38,7 @@ describe PackageSplitter do
       let(:inventory_number) { "F00001Q" }
       let(:package) { create(:package, quantity: 5, inventory_number: inventory_number) }
       it do
+        expect(Stockit::ItemSync).to receive(:create).exactly(2).times
         expect{ package_splitter.split! }.to change(package.reload, :quantity).from(5).to(3)
         packages = Package.where("inventory_number LIKE ?", "#{inventory_number}%").order(:created_at)
         expect(packages.count).to eql(3)
@@ -53,7 +54,7 @@ describe PackageSplitter do
   context "generate_q_inventory_number" do
     let(:qty_to_split) { 5 }
     let(:package) { create(:package, inventory_number: inventory_number) }
-    
+
     context "creates first sequential Q number" do
       let(:inventory_number) { "F00001" }
       it { expect(package_splitter.send(:generate_q_inventory_number)).to eql("F00001Q1") }
