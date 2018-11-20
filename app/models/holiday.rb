@@ -10,6 +10,10 @@ class Holiday < ActiveRecord::Base
   scope :within_days, ->(days) {
     between_times(Time.zone.now, Time.zone.now + days) }
 
+  def self.is_holiday(date)
+    Holiday.where("date(holiday) = ?", date.to_date).count > 0
+  end
+
   private
 
   def set_year
