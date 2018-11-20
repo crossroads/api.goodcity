@@ -172,8 +172,9 @@ module Api
 
       def split_package
         qty_to_split = package_params[:quantity].to_i
-        if @package.splittable?(qty_to_split)
-          @package.deduct_qty_and_make_copies(qty_to_split)
+        package_splitter = PackageSplitter.new(@package, qty_to_split)
+        if package_splitter.splittable?
+          package_splitter.split!
           send_stock_item_response
         else
           render json: { errors: I18n.t('package.split_qty_error', qty: @package.quantity) }, status: 422
