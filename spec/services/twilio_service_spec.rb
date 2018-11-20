@@ -86,4 +86,17 @@ describe TwilioService do
       twilio.order_submitted_sms_to_order_fulfilment_users(order)
     end
   end
+
+  context "send_unread_message_reminder" do
+    let(:donor) { create(:user, first_name: "John", last_name: "Lowe") }
+    let(:url) { "#{Rails.application.secrets.base_urls['app']}/offers" }
+
+    it "sends order submitted alert to order_fulfilment_user" do
+      body = "You've got notifications in GoodCity, please check the latest updates. #{url}."
+      expect(twilio).to receive(:allowed_to_send?).and_return(true)
+      expect(twilio).to receive(:unread_message_reminder).and_return( body )
+      expect(TwilioJob).to receive(:perform_later).with(to: mobile, body: body)
+      twilio.send_unread_message_reminder(url)
+    end
+  end
 end
