@@ -613,7 +613,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_stockit_item
-    StockitUpdateJob.perform_later(id, request_from_admin)
+    StockitUpdateJob.perform_later(id)
   end
 
   def save_inventory_number
