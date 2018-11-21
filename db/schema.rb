@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181120115456) do
+ActiveRecord::Schema.define(version: 20181121040221) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -292,7 +292,7 @@ ActiveRecord::Schema.define(version: 20181120115456) do
   end
 
   create_table "order_transports", force: :cascade do |t|
-    t.date     "scheduled_at"
+    t.datetime "scheduled_at"
     t.string   "timeslot"
     t.string   "transport_type"
     t.integer  "contact_id"

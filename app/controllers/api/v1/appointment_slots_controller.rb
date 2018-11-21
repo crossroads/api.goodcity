@@ -81,9 +81,8 @@ module Api
       end
 
       def ceil(val, max)
-        return val > max ? max : val
+        val > max ? max : val
       end
-
     end
   end
 end
