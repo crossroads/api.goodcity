@@ -37,7 +37,10 @@ class PackageSplitter
     copy.inventory_number = generate_q_inventory_number
     copy.stockit_id = nil
     copy.add_to_stockit
-    copy_and_save_images(copy) if copy.save
+    if copy.save
+      copy_and_save_images(copy)
+      copy_and_save_packages_locations(copy)
+    end
   end
 
   def generate_q_inventory_number
@@ -48,6 +51,17 @@ class PackageSplitter
     else
       return "#{inventory_number}Q1"
     end
+  end
+
+  def copy_and_save_packages_locations(copy)
+    copied_packages_locations = []
+    @package.packages_locations.each do |packages_location|
+      copied_packages_location = packages_location.dup
+      copied_packages_location.quantity = 1
+      copied_packages_location.reference_to_orders_package = nil
+      copied_packages_locations << copied_packages_location
+    end
+    copy.packages_locations << copied_packages_locations
   end
 
   def copy_and_save_images(copy)
