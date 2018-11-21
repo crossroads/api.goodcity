@@ -4,7 +4,7 @@ class SubscriptionsReminder
     sms_url = "#{Rails.application.secrets.base_urls['app']}/offers"
     donor_unread_subscriptions(donor_users).group_by(&:user_id).each do |user_id, subscriptions|
       begin
-        donor_unread_subscriptions(user_id).update_all(sms_reminder_sent_at: Time.now)
+        Subscription.where(id: subscriptions.map(&:id)).update_all(sms_reminder_sent_at: Time.now)
         TwilioService.new(User.find(user_id)).send_unread_message_reminder(sms_url)
         Rails.logger.info("\n Message sent to user: #{user_id}")
       rescue Exception => e

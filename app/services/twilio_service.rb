@@ -84,7 +84,6 @@ class TwilioService
   end
 
   def unread_message_reminder(url)
-    I18n.t('twilio.unread_message_sms',
-      url: url)
+    I18n.t('twilio.unread_message_sms', url: url)
   end
 end

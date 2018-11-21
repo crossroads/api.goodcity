@@ -6,5 +6,5 @@ every :tuesday, at: '5 pm' do
 end
 
 every 15.minutes do
-  rake 'goodcity:send_unread_messages_sms_to_user'
+  rake 'goodcity:send_unread_message_reminders'
 end
