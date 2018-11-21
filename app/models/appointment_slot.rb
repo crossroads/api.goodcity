@@ -9,17 +9,11 @@ class AppointmentSlot < ActiveRecord::Base
 
   def self.appointments_booked_for_slot(slot)
     appointment_type = BookingType.appointment.id
-    time_string = slot.timestamp.in_time_zone
-      .strftime("%I:%M %p")
-      .tr(' ', '')
-      .sub(':00', '')
-      .sub(/^[0]*/, '')
-    
-    OrderTransport
-      .where("booking_type_id = :appointment_type AND scheduled_at = :date AND timeslot ILIKE :time", 
-        date: slot.timestamp.to_date, 
-        appointment_type: appointment_type,
-        time: "#{time_string}%")
+    OrderTransport.where(
+      "booking_type_id = :appointment_type AND scheduled_at = :timestamp", 
+      timestamp: slot.timestamp, 
+      appointment_type: appointment_type
+    )
   end
 
   def self.wrap_slot(slot)
