@@ -35,7 +35,22 @@ RSpec.describe OrderTransport, type: :model do
       record = FactoryBot.create(:order_transport, scheduled_at: Date.parse('2018-03-17'), timeslot: '2PM-3PM')
       expect(record.scheduled_at.in_time_zone.hour).to eq(14) 
       expect(record.scheduled_at.in_time_zone.min).to eq(0) 
-      expect(record.scheduled_at.utc.to_s).to eq('2018-03-17 06:00:00 UTC') 
+      expect(record.scheduled_at.utc.to_s).to eq('2018-03-17 06:00:00 UTC')
+
+      record2 = FactoryBot.create(:order_transport, scheduled_at: Date.parse('2018-03-17'), timeslot: '10:30AM-3PM')
+      expect(record2.scheduled_at.in_time_zone.hour).to eq(10) 
+      expect(record2.scheduled_at.in_time_zone.min).to eq(30) 
+      expect(record2.scheduled_at.utc.to_s).to eq('2018-03-17 02:30:00 UTC') 
+
+      record3 = FactoryBot.create(:order_transport, scheduled_at: Date.parse('2018-03-17'), timeslot: '09AM')
+      expect(record3.scheduled_at.in_time_zone.hour).to eq(9) 
+      expect(record3.scheduled_at.in_time_zone.min).to eq(0) 
+      expect(record3.scheduled_at.utc.to_s).to eq('2018-03-17 01:00:00 UTC')
+
+      record4 = FactoryBot.create(:order_transport, scheduled_at: Date.parse('2018-03-17'), timeslot: 'invalid_format')
+      expect(record4.scheduled_at.in_time_zone.hour).to eq(0) 
+      expect(record4.scheduled_at.in_time_zone.min).to eq(0) 
+      expect(record4.scheduled_at.utc.to_s).to eq('2018-03-16 16:00:00 UTC')
     end
 
   end
