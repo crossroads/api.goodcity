@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181120115456) do
+ActiveRecord::Schema.define(version: 20181121040221) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,19 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "appointment_slot_presets", force: :cascade do |t|
+    t.integer "day"
+    t.integer "hours"
+    t.integer "minutes"
+    t.integer "quota"
+  end
+
+  create_table "appointment_slots", force: :cascade do |t|
+    t.datetime "timestamp"
+    t.integer  "quota"
+    t.string   "note",      default: ""
   end
 
   create_table "auth_tokens", force: :cascade do |t|
@@ -178,7 +191,6 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["order_id"], name: "index_goodcity_requests_on_order_id", using: :btree
@@ -280,7 +292,7 @@ ActiveRecord::Schema.define(version: 20181120115456) do
   end
 
   create_table "order_transports", force: :cascade do |t|
-    t.date     "scheduled_at"
+    t.datetime "scheduled_at"
     t.string   "timeslot"
     t.string   "transport_type"
     t.integer  "contact_id"
@@ -457,7 +469,6 @@ ActiveRecord::Schema.define(version: 20181120115456) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
