@@ -16,12 +16,14 @@ describe "Migrate OrderTransports to have scheduled_at as DateTime instead of da
   end
 
   before do
+    ActiveRecord::Migration.verbose = false
     if migration_has_been_run?(MIGRATION_VERSION)
       migration.migrate(:down)
     end
   end
 
   after do
+    ActiveRecord::Migration.verbose = true
     unless migration_has_been_run?(MIGRATION_VERSION)
       migration.migrate(:up)
     end

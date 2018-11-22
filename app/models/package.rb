@@ -90,6 +90,7 @@ class Package < ActiveRecord::Base
       'inventory_number',
       'designation_name',
       'notes',
+      'case_number',
       'locations.building',
       'locations.area'
     ]

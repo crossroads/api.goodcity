@@ -533,6 +533,19 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['items'][1]['notes']).to eql("butterfly")
     end
 
+    it 'should find items by case number' do
+      create :package, received_quantity: 1, case_number: "CAS-123"
+      create :package, received_quantity: 1, case_number: "CAS-124"
+      create :package, received_quantity: 1, case_number: "CAS-666"
+      get :search_stockit_items, searchText: "cas-12", showQuantityItems: 'true'
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql("cas-12")
+      expect(subject['items'].length).to eql(2)
+      expect(subject['items'][0]['case_number']).to eql("CAS-123")
+      expect(subject['items'][1]['case_number']).to eql("CAS-124")
+    end
+
     it 'should find items by designation_name' do
       create :package, received_quantity: 1, designation_name: "pepper"
       create :package, received_quantity: 1, designation_name: "peppermint"
