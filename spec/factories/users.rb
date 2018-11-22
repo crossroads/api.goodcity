@@ -17,7 +17,7 @@ FactoryBot.define do
       roles_and_permissions {}
     end
 
-    [:reviewer, :order_fulfilment, :supervisor, :administrator, :charity].each do |role|
+    [:reviewer, :order_fulfilment, :order_administrator, :supervisor, :administrator, :charity].each do |role|
       trait role do
         after(:create) do |user|
           user.roles << create("#{role}_role")
@@ -151,6 +151,12 @@ FactoryBot.define do
     trait :with_can_manage_locations_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_manage_locations_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_settings do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_settings, name: evaluator.role_name)
       end
     end
 
