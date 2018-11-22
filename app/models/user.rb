@@ -129,7 +129,7 @@ class User < ActiveRecord::Base
 
   def send_verification_pin(app_name)
     most_recent_token.cycle_otp_auth_key!
-    SlackPinService.new(self).send_otp
+    SlackPinService.new(self).send_otp(app_name)
     TwilioService.new(self).sms_verification_pin(app_name)
   end
 
