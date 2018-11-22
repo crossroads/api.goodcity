@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181121040221) do
+ActiveRecord::Schema.define(version: 20181121053137) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -591,10 +591,11 @@ ActiveRecord::Schema.define(version: 20181121040221) do
   end
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer "offer_id"
-    t.integer "user_id"
-    t.integer "message_id"
-    t.string  "state"
+    t.integer  "offer_id"
+    t.integer  "user_id"
+    t.integer  "message_id"
+    t.string   "state"
+    t.datetime "sms_reminder_sent_at"
   end
 
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
