@@ -109,8 +109,8 @@ module Stockit
 
     def item_params
       {
-        # quantity: package.singleton_package? ? package.received_quantity : package.quantity,
-        quantity: package.quantity,
+        quantity: package.singleton_package? ? package.received_quantity : package.quantity,
+        # quantity: package.quantity,
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.blank? ? nil : package.case_number,
