@@ -2,7 +2,7 @@ class ChangeOrderTransportScheduledAtToDatetime < ActiveRecord::Migration
 
   def has_valid_timeslot(transport)
     ts = transport.timeslot
-    transport.scheduled_at.present? && ts.present? && (/^\d{1,2}(:\d{2})?(AM|PM)/ =~ ts) == 0
+    transport.scheduled_at.present? && ts.present? && (/^\d{1,2}(:\d{2})?(AM|PM)/i =~ ts) == 0
   end
 
   def up
