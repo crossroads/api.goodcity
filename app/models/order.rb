@@ -38,9 +38,7 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled'].freeze
 
-  LOCKED_STATES = ['cancelled', 'closed'].freeze
-
-  INACTIVE_STATES = (LOCKED_STATES + ['draft']).freeze
+  INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
   scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
 
@@ -58,11 +56,11 @@ class Order < ActiveRecord::Base
     query = <<-SQL
       (
         submitted_at IS NOT NULL
-        AND (status NOT IN (:inactive_status) OR orders.state NOT IN (:locked_state))
+        AND (status NOT IN (:inactive_status) OR orders.state NOT IN (:inactive_states))
       )
       OR (state = 'draft' AND detail_type != 'GoodCity')
     SQL
-    where(query, inactive_status: INACTIVE_STATUS, locked_state: LOCKED_STATES)
+    where(query, inactive_status: INACTIVE_STATUS, inactive_states: INACTIVE_STATES)
   }
 
   scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
