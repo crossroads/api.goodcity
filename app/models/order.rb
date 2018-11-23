@@ -36,7 +36,7 @@ class Order < ActiveRecord::Base
   accepts_nested_attributes_for :beneficiary
   accepts_nested_attributes_for :address
 
-  INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
+  INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled'].freeze
 
   INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
@@ -51,6 +51,17 @@ class Order < ActiveRecord::Base
   scope :descending, -> { order('id desc') }
 
   scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
+
+  scope :designatable_orders, -> { 
+    query = <<-SQL
+      (
+        submitted_at IS NOT NULL
+        AND (status NOT IN (:inactive_status) OR orders.state NOT IN (:inactive_states))
+      )
+      OR (state = 'draft' AND detail_type != 'GoodCity')
+    SQL
+    where(query, inactive_status: INACTIVE_STATUS, inactive_states: INACTIVE_STATES)
+  }
 
   scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
 
@@ -263,7 +274,7 @@ class Order < ActiveRecord::Base
 
   def self.fetch_orders(to_designate_item)
     if to_designate_item
-      join_order_associations.active_orders
+      join_order_associations.designatable_orders
     else
       join_order_associations.non_draft_orders
     end
