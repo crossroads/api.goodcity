@@ -118,7 +118,7 @@ RSpec.describe Order, type: :model do
       before { allow(DateTime).to receive(:now).and_return(at_6pm_today) }
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
-        priority_order = create :order, state: "  ", order_transport: transport_before_6
+        priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
         non_priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_after_6
         expect(priority_order.is_priority).to eq(true)
         expect(non_priority_order.is_priority).to eq(false)
