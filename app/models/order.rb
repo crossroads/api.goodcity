@@ -94,17 +94,17 @@ class Order < ActiveRecord::Base
     last_6pm = now.change(hour: 18, min: 0, sec: 0)
     last_6pm -= 24.hours if now < last_6pm
 
-    case self.state
-      when "submitted" then
-        self.submitted_at && self.submitted_at <= now - 24.hours
-      when "processing" then
-        self.processed_at < last_6pm
-      when "awaiting_dispatch" then
-        self.order_transport.present? && self.order_transport.scheduled_at < DateTime.now
-      when "dispatching" then
-        self.dispatch_started_at && self.dispatch_started_at < last_6pm
-      else 
-        false
+    case state
+    when "submitted" then
+      submitted_at && submitted_at <= now - 24.hours
+    when "processing" then
+      processed_at < last_6pm
+    when "awaiting_dispatch" then
+      order_transport.present? && order_transport.scheduled_at < DateTime.now
+    when "dispatching" then
+      dispatch_started_at && dispatch_started_at < last_6pm
+    else 
+      false
     end
   end
 
