@@ -42,6 +42,8 @@ class Order < ActiveRecord::Base
 
   scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
 
+  ORDER_STATES = ['submitted', 'processing', 'awaiting_dispatch', 'dispatching']
+
   scope :with_eager_load, -> {
     includes([
       { packages: [:locations, :package_type] }
@@ -52,7 +54,7 @@ class Order < ActiveRecord::Base
 
   scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
 
-  scope :designatable_orders, -> { 
+  scope :designatable_orders, -> {
     query = <<-SQL
       (
         submitted_at IS NOT NULL
@@ -66,6 +68,19 @@ class Order < ActiveRecord::Base
   scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
+
+  class << self
+    ORDER_STATES.each do |state_type|
+      define_method "#{state_type}" do
+        where(state: state_type)
+      end
+
+      define_method "priority_#{state_type}" do
+        method_name = state_type
+        send(method_name).select { |order| order.is_priority? }
+      end
+    end
+  end
 
   def delete_orders_packages
     if self.orders_packages.exists?
@@ -101,7 +116,7 @@ class Order < ActiveRecord::Base
       order_transport.present? && order_transport.scheduled_at < Time.now
     when "dispatching"
       dispatch_started_at && dispatch_started_at < last_6pm
-    else 
+    else
       false
     end
   end

@@ -73,7 +73,7 @@ Rails.application.routes.draw do
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
       end
-      
+
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]
       resources :appointment_slot_presets, only: [:create, :destroy, :index, :update]
@@ -118,6 +118,7 @@ Rails.application.routes.draw do
       resources :stockit_contacts, only: [:create]
       resources :stockit_local_orders, only: [:create]
       resources :orders, only: [:create, :show, :index, :update, :destroy] do
+        get 'summary', on: :collection
         member do
           put :transition
         end

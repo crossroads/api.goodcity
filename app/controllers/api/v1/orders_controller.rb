@@ -42,7 +42,7 @@ module Api
       def index
         return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
-        records = @orders.with_eager_load
+        records = @orders.with_eager_load.send(params['type'])
           .search(params['searchText'], params['toDesignateItem'].presence).descending
           .page(params["page"]).per(params["per_page"])
         orders = order_response(records)
@@ -96,10 +96,24 @@ module Api
         render json: {}
       end
 
+      def summary
+        summary = {
+          'submitted' => Order.submitted.count,
+          'processing' => Order.processing.count,
+          'awaiting_dispatch' => Order.awaiting_dispatch.count,
+          'dispatching' => Order.dispatching.count,
+          'priority_submitted' => Order.priority_submitted.count,
+          'priority_processing' => Order.priority_processing.count,
+          'priority_dispatching' => Order.priority_dispatching.count,
+          'priority_awaiting_dispatch' => Order.priority_awaiting_dispatch.count
+        }
+        render json: summary
+      end
+
       private
-      
+
       def opt_bool_param(obj, default)
-        return default if obj.nil? 
+        return default if obj.nil?
         obj.to_s == "true"
       end
 
