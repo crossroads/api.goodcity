@@ -89,6 +89,23 @@ class Order < ActiveRecord::Base
     self.state ||= :draft
   end
 
+  def is_priority?
+    last_6pm = last_end_of_work_day
+
+    case state
+    when "submitted"
+      submitted_at && submitted_at <= Time.now - 24.hours
+    when "processing"
+      processed_at < last_6pm
+    when "awaiting_dispatch"
+      order_transport.present? && order_transport.scheduled_at < Time.now
+    when "dispatching"
+      dispatch_started_at && dispatch_started_at < last_6pm
+    else 
+      false
+    end
+  end
+
   state_machine :state, initial: :draft do
     state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch, :restart_process, :dispatching, :start_dispatching
 
@@ -335,5 +352,12 @@ class Order < ActiveRecord::Base
   #to satisfy push_updates
   def offer
     nil
+  end
+
+  def last_end_of_work_day
+    now = Time.now.in_time_zone
+    last_6pm = now.change(hour: 18, min: 0, sec: 0)
+    last_6pm -= 24.hours if now < last_6pm
+    last_6pm
   end
 end
