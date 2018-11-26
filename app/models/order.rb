@@ -90,7 +90,7 @@ class Order < ActiveRecord::Base
   end
 
   def is_priority?
-    now = DateTime.now.in_time_zone
+    now = Time.now.in_time_zone
     last_6pm = now.change(hour: 18, min: 0, sec: 0)
     last_6pm -= 24.hours if now < last_6pm
 
@@ -100,7 +100,7 @@ class Order < ActiveRecord::Base
     when "processing" then
       processed_at < last_6pm
     when "awaiting_dispatch" then
-      order_transport.present? && order_transport.scheduled_at < DateTime.now
+      order_transport.present? && order_transport.scheduled_at < now
     when "dispatching" then
       dispatch_started_at && dispatch_started_at < last_6pm
     else 
