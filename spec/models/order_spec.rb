@@ -63,6 +63,96 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
   end
 
+  describe 'priority rules' do
+    let(:at_6pm_today) { Time.now.in_time_zone.change(hour: 18) }
+    let(:at_6pm_yesterday) { at_6pm_today - 24.hours }
+    let(:after_6pm_today) { Time.now.in_time_zone.change(hour: 19) }
+    let(:after_6pm_yesterday) { after_6pm_today - 24.hours }
+    let(:before_6pm_today) { Time.now.in_time_zone.change(hour: 15) }
+    let(:before_6pm_yesterday) { before_6pm_today - 24.hours }
+
+    context 'A submitted order' do
+      it 'should be prioritised if it was submitted more than 24hours ago' do
+        old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
+        order = create :order, state: "submitted", submitted_at: Time.now - 23.hours
+        expect(old_order.is_priority?).to eq(true)
+        expect(order.is_priority?).to eq(false)
+      end
+    end
+
+    context 'An order under review (aka processing)' do
+      
+      after { Timecop.return }
+
+      context 'If we\'re past 6pm' do
+        before { Timecop.freeze(after_6pm_today) }
+
+        it 'should be prioritised if process was started before 6pm and hasn\'t finished' do
+          order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
+          order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
+          order_started_after_6 = create :order, state: "processing", processed_at: after_6pm_today
+          expect(order_started_before_6.is_priority?).to eq(true)
+          expect(order_started_before_6_ytd.is_priority?).to eq(true)
+          expect(order_started_after_6.is_priority?).to eq(false)
+        end
+      end
+
+      context 'If we\'re before 6pm' do
+        before { Timecop.freeze(before_6pm_today) }
+
+        it 'should be prioritised if process was started before 6pm the previous day and hasn\'t finished' do
+          order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
+          order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
+          order_started_after_6_ytd = create :order, state: "processing", processed_at: after_6pm_yesterday
+          expect(order_started_before_6_ytd.is_priority?).to eq(true)
+          expect(order_started_after_6_ytd.is_priority?).to eq(false)
+          expect(order_started_before_6.is_priority?).to eq(false)
+        end
+      end
+    end
+
+    context 'An order awaiting dispatch' do
+      let(:transport_before_6) { create :order_transport, scheduled_at: before_6pm_today, timeslot: "3PM" }
+      let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
+
+      before { Timecop.freeze(at_6pm_today) }
+
+      it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
+        priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
+        non_priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_after_6
+        expect(priority_order.is_priority?).to eq(true)
+        expect(non_priority_order.is_priority?).to eq(false)
+      end
+    end
+
+    context 'An order is dispatching' do
+
+      context 'If we\'re past 6pm' do
+        before { Timecop.freeze(after_6pm_today) }
+
+        it 'should be prioritised if it was started before 6pm' do
+          dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
+          dispatching_started_after_6 = create :order, state: "dispatching", dispatch_started_at: after_6pm_today
+          dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
+          expect(dispatching_started_before_6.is_priority?).to eq(true)
+          expect(dispatching_started_yesterday.is_priority?).to eq(true)
+          expect(dispatching_started_after_6.is_priority?).to eq(false)
+        end
+      end
+
+      context 'If we\'re before 6pm' do
+        before { Timecop.freeze(before_6pm_today) }
+
+        it 'should be prioritised if it was started before 6pm the previous day' do
+          dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
+          dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
+          expect(dispatching_started_before_6.is_priority?).to eq(false)
+          expect(dispatching_started_yesterday.is_priority?).to eq(true)
+        end
+      end
+    end
+  end
+
   describe 'state transitions' do
 
     before { User.current_user = user }
