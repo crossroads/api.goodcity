@@ -82,10 +82,10 @@ RSpec.describe Order, type: :model do
 
     context 'An order under review (aka processing)' do
       
-      after { allow(Time).to receive(:now).and_call_original } # un-stub
+      after { Timecop.return }
 
       context 'If we\'re past 6pm' do
-        before { allow(Time).to receive(:now).and_return(after_6pm_today) }
+        before { Timecop.freeze(after_6pm_today) }
 
         it 'should be prioritised if process was started before 6pm and hasn\'t finished' do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
@@ -98,7 +98,7 @@ RSpec.describe Order, type: :model do
       end
 
       context 'If we\'re before 6pm' do
-        before { allow(Time).to receive(:now).and_return(before_6pm_today) }
+        before { Timecop.freeze(before_6pm_today) }
 
         it 'should be prioritised if process was started before 6pm the previous day and hasn\'t finished' do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
@@ -115,7 +115,7 @@ RSpec.describe Order, type: :model do
       let(:transport_before_6) { create :order_transport, scheduled_at: before_6pm_today, timeslot: "3PM" }
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
-      before { allow(Time).to receive(:now).and_return(at_6pm_today) }
+      before { Timecop.freeze(at_6pm_today) }
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
@@ -128,7 +128,7 @@ RSpec.describe Order, type: :model do
     context 'An order is dispatching' do
 
       context 'If we\'re past 6pm' do
-        before { allow(Time).to receive(:now).and_return(after_6pm_today) }
+        before { Timecop.freeze(after_6pm_today) }
 
         it 'should be prioritised if it was started before 6pm' do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
@@ -141,7 +141,7 @@ RSpec.describe Order, type: :model do
       end
 
       context 'If we\'re before 6pm' do
-        before { allow(Time).to receive(:now).and_return(before_6pm_today) }
+        before { Timecop.freeze(before_6pm_today) }
 
         it 'should be prioritised if it was started before 6pm the previous day' do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
