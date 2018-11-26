@@ -64,17 +64,17 @@ RSpec.describe Order, type: :model do
   end
 
   describe 'priority rules' do
-    let(:at_6pm_today) { DateTime.now.in_time_zone.change(hour: 18) }
+    let(:at_6pm_today) { Time.now.in_time_zone.change(hour: 18) }
     let(:at_6pm_yesterday) { at_6pm_today - 24.hours }
-    let(:after_6pm_today) { DateTime.now.in_time_zone.change(hour: 19) }
+    let(:after_6pm_today) { Time.now.in_time_zone.change(hour: 19) }
     let(:after_6pm_yesterday) { after_6pm_today - 24.hours }
-    let(:before_6pm_today) { DateTime.now.in_time_zone.change(hour: 15) }
+    let(:before_6pm_today) { Time.now.in_time_zone.change(hour: 15) }
     let(:before_6pm_yesterday) { before_6pm_today - 24.hours }
 
     context 'A submitted order' do
       it 'should be prioritised if it was submitted more than 24hours ago' do
-        old_order = create :order, state: "submitted", submitted_at: DateTime.now - 25.hours
-        order = create :order, state: "submitted", submitted_at: DateTime.now - 23.hours
+        old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
+        order = create :order, state: "submitted", submitted_at: Time.now - 23.hours
         expect(old_order.is_priority?).to eq(true)
         expect(order.is_priority?).to eq(false)
       end
@@ -82,10 +82,10 @@ RSpec.describe Order, type: :model do
 
     context 'An order under review (aka processing)' do
       
-      after { allow(DateTime).to receive(:now).and_call_original } # un-stub
+      after { allow(Time).to receive(:now).and_call_original } # un-stub
 
       context 'If we\'re past 6pm' do
-        before { allow(DateTime).to receive(:now).and_return(after_6pm_today) }
+        before { allow(Time).to receive(:now).and_return(after_6pm_today) }
 
         it 'should be prioritised if process was started before 6pm and hasn\'t finished' do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
@@ -98,7 +98,7 @@ RSpec.describe Order, type: :model do
       end
 
       context 'If we\'re before 6pm' do
-        before { allow(DateTime).to receive(:now).and_return(before_6pm_today) }
+        before { allow(Time).to receive(:now).and_return(before_6pm_today) }
 
         it 'should be prioritised if process was started before 6pm and hasn\'t finished' do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
@@ -115,7 +115,7 @@ RSpec.describe Order, type: :model do
       let(:transport_before_6) { create :order_transport, scheduled_at: before_6pm_today, timeslot: "3PM" }
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
-      before { allow(DateTime).to receive(:now).and_return(at_6pm_today) }
+      before { allow(Time).to receive(:now).and_return(at_6pm_today) }
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
@@ -128,7 +128,7 @@ RSpec.describe Order, type: :model do
     context 'An order is dispatching' do
 
       context 'If we\'re past 6pm' do
-        before { allow(DateTime).to receive(:now).and_return(after_6pm_today) }
+        before { allow(Time).to receive(:now).and_return(after_6pm_today) }
 
         it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
@@ -141,7 +141,7 @@ RSpec.describe Order, type: :model do
       end
 
       context 'If we\'re before 6pm' do
-        before { allow(DateTime).to receive(:now).and_return(before_6pm_today) }
+        before { allow(Time).to receive(:now).and_return(before_6pm_today) }
 
         it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
