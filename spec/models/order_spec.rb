@@ -75,8 +75,8 @@ RSpec.describe Order, type: :model do
       it 'should be prioritised if it was submitted more than 24hours ago' do
         old_order = create :order, state: "submitted", submitted_at: DateTime.now - 25.hours
         order = create :order, state: "submitted", submitted_at: DateTime.now - 23.hours
-        expect(old_order.is_priority).to eq(true)
-        expect(order.is_priority).to eq(false)
+        expect(old_order.is_priority?).to eq(true)
+        expect(order.is_priority?).to eq(false)
       end
     end
 
@@ -91,9 +91,9 @@ RSpec.describe Order, type: :model do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
           order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
           order_started_after_6 = create :order, state: "processing", processed_at: after_6pm_today
-          expect(order_started_before_6.is_priority).to eq(true)
-          expect(order_started_before_6_ytd.is_priority).to eq(true)
-          expect(order_started_after_6.is_priority).to eq(false)
+          expect(order_started_before_6.is_priority?).to eq(true)
+          expect(order_started_before_6_ytd.is_priority?).to eq(true)
+          expect(order_started_after_6.is_priority?).to eq(false)
         end
       end
 
@@ -104,9 +104,9 @@ RSpec.describe Order, type: :model do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
           order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
           order_started_after_6_ytd = create :order, state: "processing", processed_at: after_6pm_yesterday
-          expect(order_started_before_6_ytd.is_priority).to eq(true)
-          expect(order_started_after_6_ytd.is_priority).to eq(false)
-          expect(order_started_before_6.is_priority).to eq(false)
+          expect(order_started_before_6_ytd.is_priority?).to eq(true)
+          expect(order_started_after_6_ytd.is_priority?).to eq(false)
+          expect(order_started_before_6.is_priority?).to eq(false)
         end
       end
     end
@@ -120,8 +120,8 @@ RSpec.describe Order, type: :model do
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
         non_priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_after_6
-        expect(priority_order.is_priority).to eq(true)
-        expect(non_priority_order.is_priority).to eq(false)
+        expect(priority_order.is_priority?).to eq(true)
+        expect(non_priority_order.is_priority?).to eq(false)
       end
     end
 
@@ -134,9 +134,9 @@ RSpec.describe Order, type: :model do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_after_6 = create :order, state: "dispatching", dispatch_started_at: after_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
-          expect(dispatching_started_before_6.is_priority).to eq(true)
-          expect(dispatching_started_yesterday.is_priority).to eq(true)
-          expect(dispatching_started_after_6.is_priority).to eq(false)
+          expect(dispatching_started_before_6.is_priority?).to eq(true)
+          expect(dispatching_started_yesterday.is_priority?).to eq(true)
+          expect(dispatching_started_after_6.is_priority?).to eq(false)
         end
       end
 
@@ -146,8 +146,8 @@ RSpec.describe Order, type: :model do
         it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
-          expect(dispatching_started_before_6.is_priority).to eq(false)
-          expect(dispatching_started_yesterday.is_priority).to eq(true)
+          expect(dispatching_started_before_6.is_priority?).to eq(false)
+          expect(dispatching_started_yesterday.is_priority?).to eq(true)
         end
       end
     end

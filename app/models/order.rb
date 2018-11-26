@@ -89,7 +89,7 @@ class Order < ActiveRecord::Base
     self.state ||= :draft
   end
 
-  def is_priority
+  def is_priority?
     now = DateTime.now.in_time_zone
     last_6pm = now.change(hour: 18, min: 0, sec: 0)
     last_6pm -= 24.hours if now < last_6pm
