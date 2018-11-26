@@ -100,7 +100,7 @@ RSpec.describe Order, type: :model do
       context 'If we\'re before 6pm' do
         before { allow(Time).to receive(:now).and_return(before_6pm_today) }
 
-        it 'should be prioritised if process was started before 6pm and hasn\'t finished' do
+        it 'should be prioritised if process was started before 6pm the previous day and hasn\'t finished' do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
           order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
           order_started_after_6_ytd = create :order, state: "processing", processed_at: after_6pm_yesterday
@@ -130,7 +130,7 @@ RSpec.describe Order, type: :model do
       context 'If we\'re past 6pm' do
         before { allow(Time).to receive(:now).and_return(after_6pm_today) }
 
-        it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
+        it 'should be prioritised if it was started before 6pm' do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_after_6 = create :order, state: "dispatching", dispatch_started_at: after_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
@@ -143,7 +143,7 @@ RSpec.describe Order, type: :model do
       context 'If we\'re before 6pm' do
         before { allow(Time).to receive(:now).and_return(before_6pm_today) }
 
-        it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
+        it 'should be prioritised if it was started before 6pm the previous day' do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
           expect(dispatching_started_before_6.is_priority?).to eq(false)
