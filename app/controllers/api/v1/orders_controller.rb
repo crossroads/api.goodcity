@@ -42,9 +42,15 @@ module Api
       def index
         return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
-        records = @orders.with_eager_load.send(params['type'])
+        if params['type']
+          records = @orders.with_eager_load.send(params['type'])
           .search(params['searchText'], params['toDesignateItem'].presence).descending
           .page(params["page"]).per(params["per_page"])
+        else
+          records = @orders.with_eager_load
+          .search(params['searchText'], params['toDesignateItem'].presence).descending
+          .page(params["page"]).per(params["per_page"])
+        end
         orders = order_response(records)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
       end
@@ -96,16 +102,21 @@ module Api
         render json: {}
       end
 
+      def filtered_order
+        records = Order.orders_state_count(params['order_type'])
+        render json: order_response(records)
+      end
+
       def summary
         summary = {
-          'submitted' => Order.submitted.count,
-          'processing' => Order.processing.count,
-          'awaiting_dispatch' => Order.awaiting_dispatch.count,
-          'dispatching' => Order.dispatching.count,
-          'priority_submitted' => Order.priority_submitted.count,
-          'priority_processing' => Order.priority_processing.count,
-          'priority_dispatching' => Order.priority_dispatching.count,
-          'priority_awaiting_dispatch' => Order.priority_awaiting_dispatch.count
+          'submitted' => Order.orders_state_count('submitted').count,
+          'processing' => Order.orders_state_count('processing').count,
+          'scheduled' => Order.orders_state_count('awaiting_dispatch').count,
+          'dispatching' => Order.orders_state_count('dispatching').count,
+          'priority_submitted' => Order.orders_priority_state_count('submitted').count,
+          'priority_processing' => Order.orders_priority_state_count('processing').count,
+          'priority_dispatching' => Order.orders_priority_state_count('dispatching').count,
+          'priority_scheduled' => Order.orders_priority_state_count('awaiting_dispatch').count
         }
         render json: summary
       end

@@ -42,8 +42,6 @@ class Order < ActiveRecord::Base
 
   scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
 
-  ORDER_STATES = ['submitted', 'processing', 'awaiting_dispatch', 'dispatching']
-
   scope :with_eager_load, -> {
     includes([
       { packages: [:locations, :package_type] }
@@ -69,17 +67,12 @@ class Order < ActiveRecord::Base
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
-  class << self
-    ORDER_STATES.each do |state_type|
-      define_method "#{state_type}" do
-        where(state: state_type)
-      end
+  def self.orders_state_count(state)
+    where(state: state)
+  end
 
-      define_method "priority_#{state_type}" do
-        method_name = state_type
-        send(method_name).select { |order| order.is_priority? }
-      end
-    end
+  def self.orders_priority_state_count(state)
+    orders_state_count(state).select { |order| order.is_priority? }
   end
 
   def delete_orders_packages
