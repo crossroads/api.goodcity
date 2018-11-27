@@ -274,7 +274,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['designations'].count).to eq(0)
           expect(parsed_body['meta']['total_pages']).to eql(0)
         end
-  
+
         it 'returns a draft stockit order' do
           record = create :order, :with_state_draft, detail_type: 'StockitLocalOrder'
           get :index, searchText: record.code, toDesignateItem: true
@@ -290,7 +290,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['designations'].count).to eq(0)
           expect(parsed_body['meta']['total_pages']).to eql(0)
         end
-  
+
         it 'returns a draft goodicty order if status marks it as active' do
           draft_order_with_status = create :order, state: 'draft', status: 'Processing', submitted_at: DateTime.now
           get :index, searchText: draft_order_with_status.code, toDesignateItem: true
@@ -305,7 +305,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
-    
+
     context 'should merge offline cart orders_packages on login with order' do
       it "if order is in draft state" do
         package = create :package, quantity: 1, received_quantity: 1
@@ -349,7 +349,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         beneficiary = Beneficiary.find_by(id: parsed_body['order']['beneficiary_id'])
         expect(beneficiary.created_by_id).to eq(user.id)
       end
-      
+
       it 'should create an order with nested address' do
         address = FactoryBot.build(:address)
         set_browse_app_header
