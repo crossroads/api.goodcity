@@ -137,6 +137,7 @@ class Ability
       can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
         record.imageable.offer.created_by_id == @user_id
       end
+      can [:show], Image, { imageable_type: "Package", imageable: { order: { created_by_id: @user_id } } }
     end
     can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
       state: ['draft', 'submitted', 'scheduled'] }
