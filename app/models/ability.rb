@@ -138,7 +138,10 @@ class Ability
         record.imageable.offer.created_by_id == @user_id
       end
       can [:show], Image do |img|
-        img.imageable.present? && img.imageable_type == "Package" && img.imageable.allow_web_publish
+        img.imageable_type == "Package" &&
+        img.imageable.present? &&
+        img.imageable.order.present? &&
+        img.imageable.order.created_by_id == @user_id
       end
     end
     can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
