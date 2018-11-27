@@ -4,6 +4,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
   let!(:order) { create :order, :with_state_submitted, created_by: charity_user }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
+  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder" }
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, created_by: user }
@@ -83,15 +84,22 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['meta']['search']).to eql(order.code)
       end
 
-      it 'returns empty response if search text is draft order' do
+      it 'returns empty response if search text is draft goodcity order' do
         get :index, searchText: draft_order.code
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(0)
         expect(parsed_body['meta']['total_pages']).to eql(0)
       end
 
+      it 'returns response if search text is draft stockit order' do
+        get :index, searchText: stockit_draft_order.code
+        expect(response.status).to eq(200)
+        expect(parsed_body['designations'].count).to eq(1)
+        expect(parsed_body['meta']['total_pages']).to eql(1)
+      end
+
       it 'can search orders using their description (case insensitive)' do
-        order = FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+        FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
         get :index, searchText: 'iphone'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)

@@ -41,7 +41,7 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
-  scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
+  scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
     includes([
