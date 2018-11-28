@@ -1,10 +1,10 @@
 ---
 1:
   :identifier: appointment
-  :name_en: Appointment
-  :name_zh_tw: Appointment
+  :name_en: appointment
+  :name_zh_tw: appointment
 
 2: 
   :identifier: online-order
-  :name_en: Online Order
-  :name_zh_tw: Online Order
+  :name_en: online Order
+  :name_zh_tw: online Order
