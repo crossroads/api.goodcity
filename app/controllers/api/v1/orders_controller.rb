@@ -42,7 +42,7 @@ module Api
       def index
         return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
-        records = @orders.with_eager_load
+        records = apply_filters(@orders).with_eager_load
           .search(params['searchText'], params['toDesignateItem'].presence).descending
           .page(params["page"]).per(params["per_page"])
         orders = order_response(records)
@@ -56,7 +56,7 @@ module Api
           serializer: serializer,
           root: root,
           exclude_code_details: true,
-          include_packages: opt_bool_param(params[:include_packages], true),
+          include_packages: bool_param(:include_packages, true),
           include_order: false,
           include_territory: true,
           include_images: true,
@@ -97,11 +97,6 @@ module Api
       end
 
       private
-      
-      def opt_bool_param(obj, default)
-        return default if obj.nil? 
-        obj.to_s == "true"
-      end
 
       def order_response(records)
         ActiveModel::ArraySerializer.new(records,
@@ -133,6 +128,22 @@ module Api
         end
 
         @order
+      end
+
+      def apply_filters(records)
+        states = array_param(:states)
+        types = array_param(:types)
+        priority = bool_param(:priority, false)
+        records.filter(states: states, types: types, priority: priority)
+      end
+
+      def array_param(key)
+        params.fetch(key, "").strip.split(',')
+      end
+
+      def bool_param(key, default)
+        return default if params[:key].nil? 
+        params[:key].to_s == "true"
       end
 
       def order_params

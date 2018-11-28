@@ -100,6 +100,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it 'can search orders using their description (case insensitive)' do
         FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+        FactoryBot.create :order, :with_state_submitted, description: 'Android T'
         get :index, searchText: 'iphone'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -147,6 +148,35 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body.keys.length).to eq(2)
         expect(parsed_body).to have_key('designations')
         expect(parsed_body).to have_key('meta')
+      end
+
+      describe "when filtering the search results" do
+        it 'returns only records with the specified states' do
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y'
+          FactoryBot.create :order, :with_status_processing, description: 'IPhone 100s'
+          FactoryBot.create :order, :with_state_draft, description: 'IPhone 100s'
+          get :index, searchText: 'iphone', state: 'draft,processing'
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(2)
+          expect(parsed_body["designations"][0]['state']).to eq('processing')
+          expect(parsed_body["designations"][0]['state']).to eq('draft')
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+          expect(parsed_body['meta']['search']).to eql('iphone')
+        end
+
+        it 'returns only priority records' do
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
+          FactoryBot.create :order, :with_status_processing, description: 'IPhone 100s'
+          FactoryBot.create :order, :with_status_processing, description: 'IPhone 100s'
+          get :index, searchText: 'iphone', states: 'draft,processing'
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(1)
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+          expect(parsed_body['meta']['search']).to eql('iphone')
+        end
+
       end
 
       describe "When designating an item ( ?toDesignateItem=true )" do
