@@ -14,8 +14,9 @@ describe Api::V1::TerritorySerializer do
   end
 
   it "translates JSON" do
-    I18n.locale = 'zh-tw'
-    expect(json['territory']['name']).to eql(territory.name_zh_tw)
+    in_locale 'zh-tw' do
+      expect(json['territory']['name']).to eql(territory.name_zh_tw)
+    end
   end
 
 end

@@ -38,6 +38,7 @@ RSpec.configure do |config|
   config.include Warden::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
   config.include ActiveJob::TestHelper
+  config.include LocaleSwitcher
 
   Warden.test_mode!
 
