@@ -24,7 +24,9 @@ class Order < ActiveRecord::Base
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
-  has_and_belongs_to_many :cart_packages, class_name: 'Package'
+  #Adding after_add callBack as after_create callBack for OrdersPackages is not getting called
+  #when any item is added to draft Order(means when Order is updated)
+  has_and_belongs_to_many :cart_packages, class_name: 'Package', after_add: :update_orders_package_quantity
   has_one :order_transport, dependent: :destroy
 
   after_initialize :set_initial_state
@@ -339,6 +341,14 @@ class Order < ActiveRecord::Base
   end
 
   private
+
+  #Doesn't work if parameter is not passes so optional parameter is used
+  #Logic needs to be updated for quantity packages
+  def update_orders_package_quantity(_package)
+    orders_packages.each do |orders_package|
+      orders_package.update_quantity
+    end
+  end
 
   def assign_code
     self.code = Order.generate_gc_code if goodcity_order?
