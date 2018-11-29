@@ -261,7 +261,6 @@ class Order < ActiveRecord::Base
   end
 
   def self.search(search_text, to_designate_item)
-    results = fetch_orders(to_designate_item)
     sql = <<-SQL 
       code ILIKE (:query) OR
       description ILIKE (:query) OR
