@@ -1,3 +1,4 @@
+# Filtering and priority logic for orders is extracted here to avoid cluttering the model class
 module OrderFiltering
   extend ActiveSupport::Concern
 
