@@ -28,8 +28,7 @@ class Order < ActiveRecord::Base
   has_one :order_transport, dependent: :destroy
 
   after_initialize :set_initial_state
-  after_create :update_orders_packages_quantity, if: :draft_goodcity_order?
-  after_update :update_orders_packages_quantity, if: :draft_goodcity_order?
+  after_commit :update_orders_packages_quantity, on: [:create, :update], if: :draft_goodcity_order?
   before_create :assign_code
 
   after_destroy :delete_orders_packages
