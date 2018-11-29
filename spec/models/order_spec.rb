@@ -167,6 +167,15 @@ RSpec.describe Order, type: :model do
         expect(records.priority.count).to eq(1)
         expect(records.priority.first.id).to eq(priority_order.id)
       end
+
+      it 'should filter prioritised orders awaiting dispatch' do
+        priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
+        create :order, state: "awaiting_dispatch", order_transport: transport_after_6
+        records = Order.where(state: 'awaiting_dispatch')
+        expect(records.count).to eq(2)
+        expect(records.priority.count).to eq(1)
+        expect(records.priority.first.id).to eq(priority_order.id)
+      end
     end
 
     context 'An order is dispatching' do
