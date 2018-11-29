@@ -131,8 +131,8 @@ module Api
       end
 
       def apply_filters(records)
-        states = array_param(:states)
-        types = array_param(:types)
+        states = array_param(:state)
+        types = array_param(:type)
         priority = bool_param(:priority, false)
         records.filter(states: states, types: types, priority: priority)
       end
@@ -142,8 +142,8 @@ module Api
       end
 
       def bool_param(key, default)
-        return default if params[:key].nil? 
-        params[:key].to_s == "true"
+        return default if params[key].nil? 
+        params[key].to_s == "true"
       end
 
       def order_params
