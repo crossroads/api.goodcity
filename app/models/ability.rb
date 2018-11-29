@@ -265,6 +265,7 @@ class Ability
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+    can :index, BookingType
   end
 
   def packages_locations_abilities
