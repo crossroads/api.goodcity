@@ -142,7 +142,7 @@ module Api
       end
 
       def bool_param(key, default)
-        return default if params[key].nil? 
+        return default if params[key].nil?
         params[key].to_s == "true"
       end
 

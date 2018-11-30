@@ -7,12 +7,11 @@ module OrderFiltering
   end
 
   module ClassMethods
-
     def priority
       join_order_transports.where <<-SQL
         (state = 'submitted' AND submitted_at::timestamptz <= timestamptz '#{one_day_ago}') OR
         (state = 'processing' AND processed_at::timestamptz < timestamptz '#{last_6pm}') OR
-        (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.now.to_s}') OR
+        (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.now}') OR
         (state = 'dispatching' AND dispatch_started_at::timestamptz < timestamptz '#{last_6pm}')
       SQL
     end
@@ -21,7 +20,7 @@ module OrderFiltering
     # Returns orders filtered using the following options :
     #   - states[] A list of string matching the 'state' column of the order
     #   - types[] A list of custom types, each defined by a combination or properties
-    #   - priority? Whether to only return orders deemed as 'high priority' or not 
+    #   - priority? Whether to only return orders deemed as 'high priority' or not
     #
     # Available types to filter on
     #   - appointment
@@ -45,12 +44,12 @@ module OrderFiltering
     end
 
     def where_types(types)
-      types = types.select { |t| self.respond_to?("#{t}_sql") }
+      types = types.select { |t| respond_to?("#{t}_sql") }
       return none if types.empty?
 
-      queries = types.map do |t| 
+      queries = types.map do |t|
         method = "#{t}_sql"
-        "(#{self.send(method)})"
+        "(#{send(method)})"
       end
       join_order_transports.where(queries.compact.join(" OR "))
     end
@@ -93,6 +92,5 @@ module OrderFiltering
     def one_day_ago
       (Time.now - 24.hours).to_s
     end
-
   end
 end
