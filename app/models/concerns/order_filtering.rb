@@ -86,11 +86,11 @@ module OrderFiltering
       now = Time.now.in_time_zone
       t = now.change(hour: 18, min: 0, sec: 0)
       t -= 24.hours if now < t
-      t.to_s
+      t
     end
 
     def one_day_ago
-      (Time.now - 24.hours).to_s
+      Time.now - 24.hours
     end
   end
 end
