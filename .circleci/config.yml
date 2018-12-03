@@ -29,9 +29,6 @@ jobs:
       - restore_cache:
          key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle check --path=vendor/bundle || bundle install --deployment --jobs=4 --retry=3
-      - run:
-          name: Install PostgreSQL Client (required to run migrations)
-          command: sudo apt-get install postgresql-client-9.6
       - save_cache:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
           paths:
@@ -57,6 +54,9 @@ jobs:
     environment:
       RAILS_ENV: test
     steps:
+      - run:
+        name: Install PostgreSQL Client (required to run migrations)
+        command: sudo apt-get install postgresql-client-9.6
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
