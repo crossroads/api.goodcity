@@ -44,10 +44,13 @@ jobs:
           paths:
             - cc-test-reporter
       # Install postgresql-client required for migrations
-      - run: echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
-      - run: wget --no-check-certificate -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O- | sudo -u root apt-key add -
-      - run: sudo apt-get update
-      - run: sudo apt-get install postgresql-client-9.6
+      - run:
+          name: Install PostgreSQL Client
+          command: |
+              echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+              wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+              sudo apt-get update
+              sudo apt-get install postgresql-client-9.6
 
   test:
     <<: *defaults
