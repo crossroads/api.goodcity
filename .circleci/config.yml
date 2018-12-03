@@ -70,7 +70,7 @@ jobs:
       - run: bundle exec rake db:create:all db:schema:load
       - run:
           name: Migrate 'timestamp without timezone' to 'timestamp with timezone'
-          command: bundle exec rake db:migrate:up VERSION=20181122111014
+          command: bundle exec rake db:migrate:up VERSION=20181122111014 RAILS_ENV=test
       - run:
           name: Rspec tests
           command: |
