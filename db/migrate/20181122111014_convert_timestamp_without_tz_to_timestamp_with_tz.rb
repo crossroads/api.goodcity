@@ -10,7 +10,7 @@ class ConvertTimestampWithoutTzToTimestampWithTz < ActiveRecord::Migration
     'package', 'packages_location', 'package_type', 'pallet', 'permission', 'purpose',
     'rejection_reason', 'role_permission', 'role', 'schedule', 'stockit_activity',
     'stockit_contact', 'stockit_local_order', 'stockit_organisation', 'subpackage_type',
-    'subscription', 'territory', 'timeslot', 'user', 'user_role', 'version'].freeze
+    'subscription', 'territory', 'timeslot', 'user', 'user_role', 'version', 'appointment_slot'].freeze
 
   def up
 

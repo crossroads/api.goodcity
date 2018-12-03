@@ -20,7 +20,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     dt2 = DateTime.parse(dt2) if dt2.is_a?(String)
     expect(dt1.utc.to_s).to eq(dt2.utc.to_s)
   end
-  
+
   describe "GET /appointment_slots" do
 
     context 'When not logged in' do
@@ -31,10 +31,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     end
 
     context 'When logged in as Supervisor' do
-      before { 
+      before {
         # Create presets
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
-        generate_and_set_token(order_administrator) 
+        generate_and_set_token(order_administrator)
       }
 
       it "returns 200", :show_in_doc do
@@ -47,17 +47,17 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         FactoryBot.create :appointment_slot, timestamp: ts
         FactoryBot.create :appointment_slot, timestamp: ts + 1
         FactoryBot.create :appointment_slot, timestamp: ts + 2
-        FactoryBot.create :appointment_slot, timestamp: ts - 30  
+        FactoryBot.create :appointment_slot, timestamp: ts - 30
         get :index
         expect(parsed_body['appointment_slots'].count).to eq(3)
         assert_datetime_equals(parsed_body['appointment_slots'][0]['timestamp'], ts)
       end
 
       it 'returns slots aggregated by date (/calendar) - except those with 0 quota' do
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 16:30:00+08:00')  
+        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 16:30:00+08:00')
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00')
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 14:00:00+08:00'), quota: 0
-        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('31st Oct 2018 10:00:00+08:00')   
+        FactoryBot.create :appointment_slot, timestamp: DateTime.parse('31st Oct 2018 10:00:00+08:00')
         get :calendar, from: '2018-10-16', to: '2018-10-31'
         results = parsed_body['appointment_calendar_dates']
         expect(results.count).to eq(16)
@@ -200,7 +200,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(response.status).to eq(401)
       end
     end
-    
+
     context 'When logged in as a user without can_manage_settings permission' do
       before { generate_and_set_token(no_permission_user) }
        it "denies update of an appointment slot" do
@@ -253,6 +253,39 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
         expect(response.status).to eq(200)
         expect(AppointmentSlot.find_by(id: id)).to eq(nil)
       end
+    end
+  end
+
+  describe "Testing potential timezone issues" do
+    before {
+      (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
+      generate_and_set_token(order_administrator)
+    }
+
+    it 'Should have a timestamp with timezone column' do
+      column = AppointmentSlot.columns.find { |col| col.name == 'timestamp' }
+      expect(column).to_not be_nil
+      expect(column.sql_type).to eq("timestamp with time zone")
+    end
+
+    it 'Should lock the following day if a utc timestamp is sent with a time >= 16:00' do
+      post :create, appointment_slot: { quota: 0, timestamp: "2018-12-19T16:00:00.000Z", notes: "Closed on the 20th of december" }
+      get :calendar, from: '2018-12-19', to: '2018-12-21'
+
+      results = parsed_body['appointment_calendar_dates']
+      expect(results.count).to eq(3)
+
+      dec_19th = results[0];
+      expect(dec_19th['date']).to eq("2018-12-19")
+      expect(dec_19th['isClosed']).to eq(false)
+
+      dec_20th = results[1];
+      expect(dec_20th['date']).to eq("2018-12-20")
+      expect(dec_20th['isClosed']).to eq(true)
+
+      dec_21th = results[2];
+      expect(dec_21th['date']).to eq("2018-12-21")
+      expect(dec_21th['isClosed']).to eq(false)
     end
   end
 end

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.6 (Ubuntu 10.6-1.pgdg18.04+1)
--- Dumped by pg_dump version 11.1 (Ubuntu 11.1-1.pgdg18.04+1)
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -14,6 +14,20 @@ SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
 
 --
 -- Name: btree_gin; Type: EXTENSION; Schema: -; Owner: -
@@ -125,7 +139,7 @@ ALTER SEQUENCE public.appointment_slot_presets_id_seq OWNED BY public.appointmen
 
 CREATE TABLE public.appointment_slots (
     id integer NOT NULL,
-    "timestamp" timestamp without time zone,
+    "timestamp" timestamp with time zone,
     quota integer,
     note character varying DEFAULT ''::character varying
 );
@@ -1902,7 +1916,8 @@ CREATE TABLE public.subscriptions (
     offer_id integer,
     user_id integer,
     message_id integer,
-    state character varying
+    state character varying,
+    sms_reminder_sent_at timestamp with time zone
 );
 
 
@@ -3574,6 +3589,8 @@ INSERT INTO schema_migrations (version) VALUES ('20181106130437');
 INSERT INTO schema_migrations (version) VALUES ('20181120115456');
 
 INSERT INTO schema_migrations (version) VALUES ('20181121040221');
+
+INSERT INTO schema_migrations (version) VALUES ('20181121053137');
 
 INSERT INTO schema_migrations (version) VALUES ('20181122103046');
 
