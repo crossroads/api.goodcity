@@ -1,7 +1,7 @@
 class AppointmentSlot < ActiveRecord::Base
   validates :quota, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :no_duplicate, on: [:create, :update]
-  before_save :truncate_seconds
+  before_save :clean_timestamp
 
   scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.utc.to_s(:db)) }
 
@@ -10,8 +10,8 @@ class AppointmentSlot < ActiveRecord::Base
   def self.appointments_booked_for_slot(slot)
     appointment_type = BookingType.appointment.id
     OrderTransport.where(
-      "booking_type_id = :appointment_type AND scheduled_at = :timestamp", 
-      timestamp: slot.timestamp, 
+      "booking_type_id = :appointment_type AND scheduled_at = :timestamp",
+      timestamp: slot.timestamp,
       appointment_type: appointment_type
     )
   end
@@ -35,10 +35,10 @@ class AppointmentSlot < ActiveRecord::Base
   end
 
   def self.for_date(date)
-    slots = where("date(timestamp) = ?", date).ascending
-    return slots.select { |sl| 
+    slots = unscoped.where("date(timestamp AT TIME ZONE 'HKT') = ?", date).ascending
+    return slots.select { |sl|
       sl.timestamp = sl.timestamp.in_time_zone
-      sl.quota.positive? 
+      sl.quota.positive?
     } unless slots.empty?
 
     return [] if Holiday.is_holiday(date)
@@ -55,8 +55,8 @@ class AppointmentSlot < ActiveRecord::Base
 
   # Validators and Hooks
 
-  def truncate_seconds
-    self.timestamp = self.timestamp.change(sec: 0)
+  def clean_timestamp
+    self.timestamp = self.timestamp.in_time_zone.change(sec: 0)
   end
 
   def no_duplicate

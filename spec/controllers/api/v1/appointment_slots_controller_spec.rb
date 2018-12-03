@@ -255,4 +255,31 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
     end
   end
+
+  describe "Testing potential timezone issues" do
+    before {
+      (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
+      generate_and_set_token(order_administrator)
+    }
+
+    it 'Should lock the following day if a utc timestamp is sent with a time >= 16:00' do
+      post :create, appointment_slot: { quota: 0, timestamp: "2018-12-19T16:00:00.000Z", notes: "Closed on the 20th of december" }
+      get :calendar, from: '2018-12-19', to: '2018-12-21'
+
+      results = parsed_body['appointment_calendar_dates']
+      expect(results.count).to eq(3)
+
+      dec_19th = results[0];
+      expect(dec_19th['date']).to eq("2018-12-19")
+      expect(dec_19th['isClosed']).to eq(false)
+
+      dec_20th = results[1];
+      expect(dec_20th['date']).to eq("2018-12-20")
+      expect(dec_20th['isClosed']).to eq(true)
+
+      dec_21th = results[2];
+      expect(dec_21th['date']).to eq("2018-12-21")
+      expect(dec_21th['isClosed']).to eq(false)
+    end
+  end
 end
