@@ -11,7 +11,7 @@ class Holiday < ActiveRecord::Base
     between_times(Time.zone.now, Time.zone.now + days) }
 
   def self.is_holiday(date)
-    Holiday.where("date(holiday) = ?", date.to_date).count > 0
+    Holiday.where(" date(holiday AT TIME ZONE 'HKT') = ?", date.to_date).count > 0
   end
 
   private
