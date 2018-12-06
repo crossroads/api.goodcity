@@ -23,6 +23,8 @@ module Api
           param :people_helped, :number
           param :detail_id, String
           param :stockit_id, String, desc: "stockit designation record id"
+          param :beneficiary_id, String
+          param :address_id, String
         end
       end
 
@@ -54,7 +56,7 @@ module Api
           serializer: serializer,
           root: root,
           exclude_code_details: true,
-          include_packages: true,
+          include_packages: opt_bool_param(params[:include_packages], true),
           include_order: false,
           include_territory: true,
           include_images: true,
@@ -85,7 +87,7 @@ module Api
       end
 
       def my_orders
-        render json: @orders.my_orders.goodcity_orders, each_serializer: serializer,
+        render json: @orders.my_orders.goodcity_orders, each_serializer: select_serializer,
           root: "orders", include_packages: false, browse_order: true
       end
 
@@ -95,10 +97,15 @@ module Api
       end
 
       private
+      
+      def opt_bool_param(obj, default)
+        return default if obj.nil? 
+        obj.to_s == "true"
+      end
 
       def order_response(records)
         ActiveModel::ArraySerializer.new(records,
-          each_serializer: serializer,
+          each_serializer: select_serializer,
           root: "designations",
           include_packages: true,
           include_order: false,
@@ -119,18 +126,47 @@ module Api
           @order.created_by = current_user
           @order.detail_type = "GoodCity"
         end
+
+        if order_params['beneficiary_attributes'] and @order.beneficiary.try(:created_by).nil?
+          # New nested beneficiary
+          @order.beneficiary.created_by = current_user
+        end
+
         @order
       end
 
       def order_params
-        params.require(:order).permit(:stockit_id, :code, :status, :created_at,
-          :organisation_id, :stockit_contact_id, :detail_id, :detail_type, :description,
-          :state, :state_event, :stockit_organisation_id, :stockit_activity_id, :people_helped,
-          :purpose_description, purpose_ids: [], cart_package_ids: [])
+        params.require(:order).permit(
+          :stockit_id, :code, :status, :created_at,
+          :organisation_id, :stockit_contact_id,
+          :detail_id, :detail_type, :description,
+          :state, :state_event, :stockit_organisation_id,
+          :stockit_activity_id, :people_helped,
+          :beneficiary_id, :purpose_description, :address_id,
+          purpose_ids: [], cart_package_ids: [],
+          beneficiary_attributes: beneficiary_attributes,
+          address_attributes: address_attributes
+        )
+      end
+
+      def address_attributes
+        [:address_type, :district_id, :street, :flat, :building]
+      end
+
+      def beneficiary_attributes
+        [:identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number]
       end
 
       def serializer
         Api::V1::OrderSerializer
+      end
+
+      def shallow_serializer
+        Api::V1::OrderShallowSerializer
+      end
+
+      def select_serializer
+        params[:shallow] == 'true' ? shallow_serializer : serializer
       end
 
       def stockit_activity

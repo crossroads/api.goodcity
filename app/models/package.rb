@@ -66,15 +66,42 @@ class Package < ActiveRecord::Base
 
   attr_accessor :skip_set_relation_update, :request_from_admin
 
-  def self.search(search_text, item_id, show_quantity_item = false)
+  def self.search(search_text, item_id, options = {})
     records =
       if item_id.presence
         where("item_id = ?", item_id)
       else
-        where("inventory_number ILIKE :query", query: "%#{search_text}%")
+        state = options[:state]
+        queries = [search_query]
+        queries.push "inventory_number IS NOT NULL" if options[:with_inventory_no]
+        queries.push "state = :state" unless state.blank?
+
+        with_associations.where(
+          queries.map { |q| "(#{q})" }.join(" AND "),
+          search_text: "%#{search_text}%",
+          state: state
+        )
       end
-    records = records.where(received_quantity: 1) unless show_quantity_item == "true"
     records
+  end
+
+  def self.search_query
+    fields_to_match = [
+      'inventory_number',
+      'designation_name',
+      'notes',
+      'case_number',
+      'locations.building',
+      'locations.area'
+    ]
+    fields_to_match
+      .map { |f| "#{f} ILIKE :search_text" }
+      .join(" OR ")
+  end
+
+  def self.with_associations
+    joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id
+      LEFT OUTER JOIN locations ON locations.id = packages_locations.location_id")
   end
 
   # Workaround to set initial state for the state_machine
@@ -205,7 +232,7 @@ class Package < ActiveRecord::Base
   end
 
   def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && self.packages_locations.exists?
+    if GoodcitySync.request_from_stockit && packages_locations.exists?
       packages_locations.first.update(location_id: location_id)
     elsif (packages_location = packages_locations.find_by(location_id: location_id))
       packages_location.update_quantity(received_quantity)
@@ -288,7 +315,7 @@ class Package < ActiveRecord::Base
   end
 
   def orders_package_with_different_designation
-    if(orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
+    if (orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
       (orders_package != designation && orders_package.try(:state) != 'dispatched') && orders_package
     end
   end
@@ -306,8 +333,7 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    allow_multi_quantity_sync = request_from_admin && self.received?
-    response = Stockit::ItemSync.create(self, allow_multi_quantity_sync)
+    response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (item_id = response["item_id"]).present?
@@ -588,7 +614,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_stockit_item
-    StockitUpdateJob.perform_later(id, request_from_admin)
+    StockitUpdateJob.perform_later(id)
   end
 
   def save_inventory_number

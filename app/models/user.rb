@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true, allow_nil: true,
     format: { with: /\A[^@\s]+@[^@\s]+\Z/ }
 
+  validates :title, :inclusion => { :in => TITLE_OPTIONS }, :allow_nil => true
+
   after_create :generate_auth_token
 
   scope :donors,      -> { where(permission_id: nil) }
@@ -46,13 +48,13 @@ class User < ActiveRecord::Base
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
-  def self.creation_with_auth(user_params)
+  def self.creation_with_auth(user_params, app_name)
     mobile = user_params['mobile']
     user = find_by_mobile(mobile) if mobile.present?
     user ||= new(user_params)
     begin
       user.save if user.changed?
-      user.send_verification_pin if user.valid?
+      user.send_verification_pin(app_name) if user.valid?
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, '.').try(:first)
       user.errors.add(:base, msg)
@@ -61,7 +63,7 @@ class User < ActiveRecord::Base
   end
 
   def allowed_login?(app_name)
-    if app_name == DONOR_APP
+    if [DONOR_APP, BROWSE_APP].include?(app_name)
       return true
     else
       user_permissions_names.include?(APP_NAME_AND_LOGIN_PERMISSION_MAPPING[app_name])
@@ -125,10 +127,10 @@ class User < ActiveRecord::Base
       (last_connected > last_disconnected) : false
   end
 
-  def send_verification_pin
+  def send_verification_pin(app_name)
     most_recent_token.cycle_otp_auth_key!
-    SlackPinService.new(self).send_otp
-    TwilioService.new(self).sms_verification_pin
+    SlackPinService.new(self).send_otp(app_name)
+    TwilioService.new(self).sms_verification_pin(app_name)
   end
 
   def channels

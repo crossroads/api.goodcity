@@ -55,7 +55,7 @@ module Api
         records = @locations.search(params['searchText']).
           page(params["page"]).per(params["per_page"])
         locations = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "locations").as_json
-        render json: {meta: {total_pages: records.total_pages, search: params['searchText']} }.merge(locations)
+        render json: { meta: { total_pages: records.total_pages, search: params['searchText'] } }.merge(locations)
       end
 
       def recent_locations

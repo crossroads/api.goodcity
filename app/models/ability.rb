@@ -16,7 +16,7 @@ class Ability
     'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
     'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
     'can_destroy_package_with_specific_states', 'can_manage_locations',
-    'can_read_versions'].freeze
+    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings'].freeze
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
@@ -43,6 +43,8 @@ class Ability
 
   def define_abilities
     address_abilities
+    appointment_slot_abilities
+    beneficiary_abilities
     contact_abilities
     deliveries_abilities
     gogovan_order_abilities
@@ -79,7 +81,23 @@ class Ability
     can [:create, :show, :destroy], Address, addressable_type: "Contact" if can_manage_delivery_address?
   end
 
+  def appointment_slot_abilities
+    return unless can_manage_settings?
+    can [:create, :index, :destroy, :update], AppointmentSlotPreset
+    can [:create, :index, :destroy, :update, :calendar], AppointmentSlot
+  end
+
+  def beneficiary_abilities
+    can :create, Beneficiary
+    can [:create, :index, :show, :update], Beneficiary, created_by_id: @user_id
+    if can_manage_orders? || @api_user
+      can [:create, :index, :show, :update], Beneficiary
+    end
+  end
+
   def goodcity_request_abilitites
+    can :create, GoodcityRequest if can_create_goodcity_requests?
+    can [:index, :show, :update, :destroy], GoodcityRequest, created_by_id: @user_id
     if can_manage_goodcity_requests?
       can [:create, :destroy, :update], GoodcityRequest
     end
@@ -119,6 +137,7 @@ class Ability
       can [:index, :show, :create, :update, :destroy], Image, Image.donor_images(@user_id) do |record|
         record.imageable.offer.created_by_id == @user_id
       end
+      can [:show], Image, { imageable_type: "Package", imageable: { order: { created_by_id: @user_id } } }
     end
     can :destroy, Image, imageable: { offer: { created_by_id: @user_id },
       state: ['draft', 'submitted', 'scheduled'] }
@@ -186,12 +205,12 @@ class Ability
 
   def order_transport_abilities
     can :create, OrderTransport
-    can [:index, :show, :update], OrderTransport, OrderTransport.user_orders(user_id) do |transport|
-      transport.order.created_by_id == @user_id
-    end
-
     if can_manage_order_transport?
       can [:create, :index, :show, :update], OrderTransport
+    else
+      can [:index, :show, :update], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
+        transport.order.created_by_id == @user_id
+      end
     end
   end
 
@@ -203,8 +222,9 @@ class Ability
 
   def organisations_users_abilities
     if can_manage_organisations_users? || @api_user
-      can [:create, :show, :index], OrganisationsUser
+      can [:create, :show, :index, :update], OrganisationsUser
     end
+    can [:update], OrganisationsUser, user_id: @user_id
   end
 
   def package_abilities
@@ -214,7 +234,7 @@ class Ability
         :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,
         :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
-        :undispatch_stockit_item, :stockit_item_details], Package
+        :undispatch_stockit_item, :stockit_item_details, :split_package], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
@@ -240,10 +260,13 @@ class Ability
     can [:fetch_packages], Package # for BrowseController
     can :index, DonorCondition
     can [:index, :show], District
+    can [:index, :show], IdentityType
     can [:index, :show], Territory
     can :index, Timeslot
     can :index, GogovanTransport
     can :index, CrossroadsTransport
+    can :index, BookingType
+    can :calendar, AppointmentSlot
   end
 
   def packages_locations_abilities
@@ -273,6 +296,9 @@ class Ability
     can [:index, :show], Permission
     can [:index, :show], UserRole
     can [:index, :show], CancellationReason
+    can [:names], Organisation
+    can [:create, :show], OrganisationsUser
+
     if can_add_or_remove_inventory_number? || @api_user
       can [:create, :remove_number], InventoryNumber
     end

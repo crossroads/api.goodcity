@@ -13,6 +13,7 @@ FactoryBot.define do
     association     :stockit_activity
     association     :organisation
     association     :stockit_contact
+    association     :beneficiary
     association     :country
 
     trait :with_orders_packages do

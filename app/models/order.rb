@@ -2,12 +2,14 @@ class Order < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   include PushUpdates
 
-  belongs_to :detail, polymorphic: true
+  belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
   belongs_to :country
   belongs_to :stockit_contact
   belongs_to :stockit_organisation
   belongs_to :organisation
+  belongs_to :beneficiary
+  belongs_to :address
   belongs_to :created_by, class_name: 'User'
   belongs_to :processed_by, class_name: 'User'
   belongs_to :cancelled_by, class_name: 'User'
@@ -18,7 +20,7 @@ class Order < ActiveRecord::Base
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: 'detail_id'
 
   has_many :packages
-  has_many :goodcity_requests
+  has_many :goodcity_requests, dependent: :destroy
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
@@ -27,11 +29,15 @@ class Order < ActiveRecord::Base
 
   after_initialize :set_initial_state
   after_create :update_orders_packages_quantity, if: :draft_goodcity_order?
+  after_update :update_orders_packages_quantity, if: :draft_goodcity_order?
   before_create :assign_code
 
   after_destroy :delete_orders_packages
 
-  INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled']
+  accepts_nested_attributes_for :beneficiary
+  accepts_nested_attributes_for :address
+
+  INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled'].freeze
 
   INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
@@ -46,6 +52,17 @@ class Order < ActiveRecord::Base
   scope :descending, -> { order('id desc') }
 
   scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
+
+  scope :designatable_orders, -> { 
+    query = <<-SQL
+      (
+        submitted_at IS NOT NULL
+        AND (status NOT IN (:inactive_status) OR orders.state NOT IN (:inactive_states))
+      )
+      OR (state = 'draft' AND detail_type != 'GoodCity')
+    SQL
+    where(query, inactive_status: INACTIVE_STATUS, inactive_states: INACTIVE_STATES)
+  }
 
   scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
 
@@ -71,6 +88,23 @@ class Order < ActiveRecord::Base
 
   def set_initial_state
     self.state ||= :draft
+  end
+
+  def is_priority?
+    last_6pm = last_end_of_work_day
+
+    case state
+    when "submitted"
+      submitted_at && submitted_at <= Time.now - 24.hours
+    when "processing"
+      processed_at < last_6pm
+    when "awaiting_dispatch"
+      order_transport.present? && order_transport.scheduled_at < Time.now
+    when "dispatching"
+      dispatch_started_at && dispatch_started_at < last_6pm
+    else 
+      false
+    end
   end
 
   state_machine :state, initial: :draft do
@@ -258,7 +292,7 @@ class Order < ActiveRecord::Base
 
   def self.fetch_orders(to_designate_item)
     if to_designate_item
-      join_order_associations.active_orders
+      join_order_associations.designatable_orders
     else
       join_order_associations.non_draft_orders
     end
@@ -319,5 +353,12 @@ class Order < ActiveRecord::Base
   #to satisfy push_updates
   def offer
     nil
+  end
+
+  def last_end_of_work_day
+    now = Time.now.in_time_zone
+    last_6pm = now.change(hour: 18, min: 0, sec: 0)
+    last_6pm -= 24.hours if now < last_6pm
+    last_6pm
   end
 end

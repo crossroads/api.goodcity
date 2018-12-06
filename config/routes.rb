@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       post "braintree/make_transaction", to: "braintree#make_transaction"
 
       resources :districts, only: [:index, :show]
+      resources :identity_types, only: [:index, :show]
       resources :package_types, only: [:index, :create]
       resources :permissions, only: [:index, :show]
       resources :roles, only: [:index, :show]
@@ -68,8 +69,14 @@ Rails.application.routes.draw do
       resources :holidays, only: [:index, :create, :destroy, :update]
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
-      resources :gc_organisations, only: [:index, :show]
-      resources :organisations_users, only: [:create, :index]
+      resources :organisations_users, only: [:create, :index, :update]
+      resources :gc_organisations, only: [:index, :show] do
+        get 'names', on: :collection
+      end
+      
+      get "appointment_slots/calendar", to: "appointment_slots#calendar"
+      resources :appointment_slots, only: [:create, :destroy, :index, :update]
+      resources :appointment_slot_presets, only: [:create, :destroy, :index, :update]
 
       post "confirm_delivery", to: "deliveries#confirm_delivery"
       resources :deliveries, only: [:create, :show, :update, :destroy]
@@ -84,6 +91,7 @@ Rails.application.routes.draw do
       get "available_dates", to: "holidays#available_dates"
       get "timeslots", to: "timeslots#index"
       get "gogovan_transports", to: "gogovan_transports#index"
+      get "booking_types", to: "booking_types#index"
       get "crossroads_transports", to: "crossroads_transports#index"
 
       post "twilio_inbound/voice", to: "twilio_inbound#voice"
@@ -115,6 +123,7 @@ Rails.application.routes.draw do
           put :transition
         end
       end
+      resources :beneficiaries, only: [:create, :show, :index, :update]
       resources :order_transports, only: [:create, :show, :index, :update]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
@@ -126,6 +135,7 @@ Rails.application.routes.draw do
       get "designations", to: "orders#index"
       get "designations/:id", to: "orders#show"
       get "items", to: "packages#search_stockit_items"
+      put "items/:id/split_item", to: "packages#split_package"
       put "items/:id/undesignate_partial_item", to: "packages#undesignate_partial_item"
       put "items/:id/designate_partial_item", to: "packages#designate_partial_item"
       put "items/:id/update_partial_quantity_of_same_designation", to: "packages#update_partial_quantity_of_same_designation"
