@@ -17,7 +17,7 @@ FactoryBot.define do
       roles_and_permissions {}
     end
 
-    [:reviewer, :order_fulfilment, :supervisor, :administrator, :charity].each do |role|
+    [:reviewer, :order_fulfilment, :order_administrator, :supervisor, :administrator, :charity].each do |role|
       trait role do
         after(:create) do |user|
           user.roles << create("#{role}_role")
@@ -32,6 +32,7 @@ FactoryBot.define do
         end
       end
     end
+
 
     trait :with_can_add_or_remove_inventory_number do
       after(:create) do |user, evaluator|
@@ -153,6 +154,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_settings do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_settings, name: evaluator.role_name)
+      end
+    end
+
     trait :api_user do
       after(:create) do |user|
         user.roles << create(:api_write_role)
@@ -170,6 +177,22 @@ FactoryBot.define do
       mobile     SYSTEM_USER_MOBILE
       after(:create) do |user|
         user.roles << create(:system_role)
+      end
+    end
+
+    trait :title do
+      title { ["Mr", "Mrs", "Miss", "Ms"].sample }
+    end
+
+    trait :with_organisation do
+      after(:create) do |user|
+        user.organisations << create(:organisation)
+      end
+    end
+
+    trait :with_organisation do
+      after(:create) do |user|
+        user.organisations << create(:organisation)
       end
     end
 

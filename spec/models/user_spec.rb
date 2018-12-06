@@ -34,6 +34,7 @@ describe User, :type => :model do
     it{ is_expected.to  have_db_column(:email).of_type(:string)}
     it{ is_expected.to  have_db_column(:last_connected).of_type(:datetime)}
     it{ is_expected.to  have_db_column(:last_disconnected).of_type(:datetime)}
+    it{ is_expected.to  have_db_column(:title).of_type(:string)}
   end
 
   describe "Validations" do
@@ -66,6 +67,15 @@ describe User, :type => :model do
       it { is_expected.to_not allow_value('abc@@gmail.com').for(:email) }
       it { is_expected.to_not allow_value('abc.gmail.com').for(:email) }
     end
+
+    context "title" do
+      it { is_expected.to allow_value('Mr').for(:title) }
+      it { is_expected.to allow_value('Mrs').for(:title) }
+      it { is_expected.to allow_value('Miss').for(:title) }
+      it { is_expected.to allow_value('Ms').for(:title) }
+      it { is_expected.to_not allow_value('Mister').for(:title) }
+      it { is_expected.to_not allow_value('').for(:title) }
+    end
   end
 
   describe '.creation_with_auth' do
@@ -75,7 +85,7 @@ describe User, :type => :model do
       it "should create new user" do
         allow(new_user).to receive(:send_verification_pin)
         expect(User).to receive(:new).with(user_attributes).and_return(new_user)
-        User.creation_with_auth(user_attributes)
+        User.creation_with_auth(user_attributes, DONOR_APP)
       end
     end
 
@@ -84,14 +94,14 @@ describe User, :type => :model do
         user = create(:user, mobile: mobile)
         expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
         expect(user).to receive(:send_verification_pin)
-        User.creation_with_auth(user_attributes)
+        User.creation_with_auth(user_attributes, DONOR_APP)
       end
     end
 
     context "when mobile blank" do
       let(:mobile) { nil }
       it "should raise validation error" do
-        user = User.creation_with_auth(user_attributes)
+        user = User.creation_with_auth(user_attributes, DONOR_APP)
         expect(user.errors[:mobile]).to include("can't be blank")
         expect(user.errors[:mobile]).to include("is invalid")
       end
@@ -109,7 +119,7 @@ describe User, :type => :model do
       expect(slack).to receive(:send_otp)
       expect(TwilioService).to receive(:new).with(user).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
-      user.send_verification_pin
+      user.send_verification_pin(DONOR_APP)
     end
 
   end
@@ -213,8 +223,8 @@ describe User, :type => :model do
         expect(order_fulfilment_user.allowed_login?(DONOR_APP)).to be_truthy
       end
 
-      it 'returns false if user has stock login permission and app is browse app' do
-        expect(order_fulfilment_user.allowed_login?(BROWSE_APP)).to be_falsey
+      it 'returns true if user has stock login permission and app is browse app' do
+        expect(order_fulfilment_user.allowed_login?(BROWSE_APP)).to be_truthy
       end
     end
 
@@ -239,8 +249,8 @@ describe User, :type => :model do
         expect(reviewer.allowed_login?(STOCK_APP)).to be_falsey
       end
 
-      it 'returns false if user has admin app login permission and app browse app' do
-        expect(supervisor.allowed_login?(BROWSE_APP)).to be_falsey
+      it 'returns true if user has admin app login permission and app browse app' do
+        expect(supervisor.allowed_login?(BROWSE_APP)).to be_truthy
       end
     end
 
@@ -249,8 +259,8 @@ describe User, :type => :model do
         expect(charity.allowed_login?(BROWSE_APP)).to be_truthy
       end
 
-      it 'returns false if user do not browse login permission and app is browse app' do
-        expect(supervisor.allowed_login?(BROWSE_APP)).to be_falsey
+      it 'returns true if user do not browse login permission and app is browse app' do
+        expect(supervisor.allowed_login?(BROWSE_APP)).to be_truthy
       end
 
       it 'returns false if user have browse login permission and app is not browse app' do

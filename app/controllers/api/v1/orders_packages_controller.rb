@@ -33,7 +33,7 @@ module Api
       api :DELETE, '/v1/orders_package/1', "Delete an orders_package"
       def destroy
         if @orders_package
-          @orders_package.destroy
+          @orders_package.delete_orders_package
         end
         render json: {}
       end

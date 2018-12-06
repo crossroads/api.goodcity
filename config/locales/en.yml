@@ -19,6 +19,8 @@ en:
     sms_verification_pin: |
       Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy donating
       your quality goods. (If you didn't request this message, please ignore)
+    browse_sms_verification_pin: |
+      Single-use pin is %{pin}. GoodCity.HK welcomes you! Enjoy browsing quality goods.(If you didn't request this message, please ignore)
     charity_user_welcome_sms: |
       %{full_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.
     order_submitted_sms_to_order_fulfilment_users: |
@@ -27,6 +29,8 @@ en:
       Thank you for placing order %{code} on GoodCity. Our team will be in touch with you soon.
     input_offer_id_message: "Please input an offer ID and we will forward you to the donor's number."
     thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
+    unread_message_sms: |
+      You've got notifications in GoodCity, please check the latest updates. %{url}.
   activerecord:
     attributes:
       user:
@@ -62,6 +66,7 @@ en:
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."
+    split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
   orders_package:
     already_dispatched: "This has been already dispatched."
   organisations_user_builder:

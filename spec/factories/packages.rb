@@ -55,6 +55,10 @@ FactoryBot.define do
       allow_web_publish true
     end
 
+    trait :with_images do
+      images { create_list(:image, 2) }
+    end
+
     trait :with_lightly_used_donor_condition do
       donor_condition { create(:donor_condition, name_en: "Lightly Used") }
     end

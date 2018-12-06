@@ -54,6 +54,38 @@ describe "Image abilities" do
     end
   end
 
+  context "As a Charity user" do
+    let(:donor) { create :user, id: 777}
+    let(:item) { create :item, offer: create(:offer, created_by: donor) }
+    let(:user) { create :user, :charity, :with_can_manage_orders_permission, id: 666}
+
+    context "trying to :show an image that belongs to an order the user created" do
+      let(:order) { create :order, :with_created_by, created_by: user }
+      let(:pkg) { create :package, received_quantity: 1, notes: "awesome furniture", item: item, order: order }
+      let(:img ) { create :image, favourite: true, imageable_id: pkg.id, imageable_type: "Package" }
+
+      let(:cannot) { [:index, :create, :update, :destroy] }
+      let(:can)  { [:show] }
+      it{ can.each do |do_action|
+        is_expected.to be_able_to(do_action, img)
+      end}
+      it{ cannot.each do |do_action|
+        is_expected.to_not be_able_to(do_action, img)
+      end}
+    end
+
+    context "trying to :show an image that doesn't belong to an order the user created" do
+      let(:order) { create :order }
+      let(:pkg) { create :package, received_quantity: 1, notes: "awesome furniture", item: item, order: order }
+      let(:img ) { create :image, favourite: true, imageable_id: pkg.id, imageable_type: "Package" }
+
+      let(:cannot) { [:show, :index, :create, :update, :destroy] }
+      it{ cannot.each do |do_action|
+        is_expected.to_not be_able_to(do_action, img)
+      end}
+    end
+  end
+
   context "when Owner" do
     let(:user)  { create :user }
     let(:offer) { create :offer, created_by: user }

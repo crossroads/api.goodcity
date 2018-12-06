@@ -15,14 +15,38 @@ describe TwilioService do
     end
   end
 
-  context "sms_verification_pin" do
+  describe "sms_verification_pin" do
     let(:otp_code) { "123456" }
-    it "should send the SMS via Twilio" do
-      allow(twilio).to receive(:allowed_to_send?).and_return(true)
-      allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
-      body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy donating\nyour quality goods. (If you didn't request this message, please ignore)\n"
-      expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
-      twilio.sms_verification_pin
+
+    context "based on app_name" do
+      before(:each) do
+        allow(twilio).to receive(:allowed_to_send?).and_return(true)
+        allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
+        body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy donating\nyour quality goods. (If you didn't request this message, please ignore)\n"
+        expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+      end
+
+      it "should send the SMS via Twilio for Donor App"  do
+        twilio.sms_verification_pin(DONOR_APP)
+      end
+
+      it "should send the SMS via Twilio for Stock App"  do
+        twilio.sms_verification_pin(ADMIN_APP)
+      end
+
+      it "should send the SMS via Twilio for Admin App"  do
+        twilio.sms_verification_pin(STOCK_APP)
+      end
+    end
+
+    context "based on app_name" do
+      it "should send the SMS via Twilio for Browse App"  do
+        allow(twilio).to receive(:allowed_to_send?).and_return(true)
+        allow(user).to receive_message_chain(:most_recent_token, :otp_code).and_return(otp_code)
+        body = "Single-use pin is #{otp_code}. GoodCity.HK welcomes you! Enjoy browsing quality goods.(If you didn't request this message, please ignore)\n"
+        expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
+        twilio.sms_verification_pin(BROWSE_APP)
+      end
     end
   end
 
@@ -60,6 +84,19 @@ describe TwilioService do
       body = "#{charity.full_name} from #{order.organisation.name_en} has just placed an order #{order.code} on GoodCity.\n"
       expect(TwilioJob).to receive(:perform_later).with(to: user.mobile, body: body)
       twilio.order_submitted_sms_to_order_fulfilment_users(order)
+    end
+  end
+
+  context "send_unread_message_reminder" do
+    let(:donor) { create(:user, first_name: "John", last_name: "Lowe") }
+    let(:url) { "#{Rails.application.secrets.base_urls['app']}/offers" }
+
+    it "sends unread messages sms to donor " do
+      body = "You've got notifications in GoodCity, please check the latest updates. #{url}."
+      expect(twilio).to receive(:allowed_to_send?).and_return(true)
+      expect(twilio).to receive(:unread_message_reminder).and_return( body )
+      expect(TwilioJob).to receive(:perform_later).with(to: mobile, body: body)
+      twilio.send_unread_message_reminder(url)
     end
   end
 end

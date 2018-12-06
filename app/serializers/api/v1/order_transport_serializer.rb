@@ -3,10 +3,12 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :order_id, :scheduled_at, :timeslot, :gogovan_transport_id,
       :transport_type, :need_english, :need_cart, :need_carry, :designation_id,
-      :need_over_6ft, :remove_net, :need_over_six_ft
+      :need_over_6ft, :remove_net, :need_over_six_ft, :booking_type_id
 
     has_one :contact, serializer: ContactSerializer
     has_one :gogovan_order, serializer: GogovanOrderSerializer
+    has_one :booking_type, serializer: BookingTypeSerializer
+
 
     def need_over_six_ft
       object.need_over_6ft

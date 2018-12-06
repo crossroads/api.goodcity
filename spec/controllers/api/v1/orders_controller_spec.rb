@@ -4,7 +4,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
   let!(:order) { create :order, :with_state_submitted, created_by: charity_user }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
-  let(:draft_order_with_status) { create :order, :with_orders_packages, :with_state_draft }
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, created_by: user }
@@ -113,14 +112,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a user's first or last name" do
-        submitter = FactoryBot.create :user, first_name: 'John', last_name: 'Smith'
+        submitter = FactoryBot.create :user, first_name: 'Jane', last_name: 'Doe'
         FactoryBot.create :order, :with_state_submitted, submitted_by: submitter
-        get :index, searchText: 'smit'
+        get :index, searchText: 'jan'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
         expect(parsed_body["designations"][0]['submitted_by_id']).to eq(submitter.id)
         expect(parsed_body['meta']['total_pages']).to eql(1)
-        expect(parsed_body['meta']['search']).to eql('smit')
+        expect(parsed_body['meta']['search']).to eql('jan')
       end
 
       it "can search orders from a user's full name" do
@@ -134,31 +133,62 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['meta']['search']).to eql('john smith')
       end
 
-      it 'returns goodcity order if search text is non draft goodcity order with toDesignateItem params' do
-        get :index, searchText: order.code, toDesignateItem: true
+      it "should be able to fetch designations without their associations" do
+        get :index, shallow: 'true'
         expect(response.status).to eq(200)
-        expect(parsed_body['designations'].count).to eq(1)
-        expect(parsed_body['meta']['total_pages']).to eql(1)
+        expect(parsed_body.keys.length).to eq(2)
+        expect(parsed_body).to have_key('designations')
+        expect(parsed_body).to have_key('meta')
       end
 
-      it 'do not returns goodcity order if search text is draft goodcity order with toDesignateItem params' do
-        get :index, searchText: draft_order.code, toDesignateItem: true
-        expect(response.status).to eq(200)
-        expect(parsed_body['designations'].count).to eq(0)
-        expect(parsed_body['meta']['total_pages']).to eql(0)
+      describe "When designating an item ( ?toDesignateItem=true )" do
+        it 'returns a non draft goodcity order with a submitted_at timestamp' do
+          record = create :order, :with_state_submitted, submitted_at: DateTime.now
+          get :index, searchText: record.code, toDesignateItem: true, submitted_at: DateTime.now
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(1)
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+        end
+
+        it 'doesnt return a non draft goodcity order with no submitted_at timestamp' do
+          record = create :order, :with_state_submitted, submitted_at: nil
+          get :index, searchText: record.code, toDesignateItem: true, submitted_at: DateTime.now
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(0)
+          expect(parsed_body['meta']['total_pages']).to eql(0)
+        end
+  
+        it 'returns a draft stockit order' do
+          record = create :order, :with_state_draft, detail_type: 'StockitLocalOrder'
+          get :index, searchText: record.code, toDesignateItem: true
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(1)
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+        end
+
+        it 'doesnt return a draft goodcity order' do
+          record = create :order, :with_state_draft, detail_type: 'GoodCity'
+          get :index, searchText: record.code, toDesignateItem: true
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(0)
+          expect(parsed_body['meta']['total_pages']).to eql(0)
+        end
+  
+        it 'returns a draft goodicty order if status marks it as active' do
+          draft_order_with_status = create :order, state: 'draft', status: 'Processing', submitted_at: DateTime.now
+          get :index, searchText: draft_order_with_status.code, toDesignateItem: true
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(1)
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+        end
       end
 
-      it 'returns goodicty order if search text is non-draft goodcity order with toDesignateItem params even if status is active_status list' do
-        get :index, searchText: draft_order_with_status.code, toDesignateItem: true
-        expect(response.status).to eq(200)
-        expect(parsed_body['designations'].count).to eq(1)
-        expect(parsed_body['meta']['total_pages']).to eql(1)
-      end
     end
   end
 
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
+    
     context 'should merge offline cart orders_packages on login with order' do
       it "if order is in draft state" do
         package = create :package, quantity: 1, received_quantity: 1
@@ -168,17 +198,55 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(draft_order.orders_packages.count).to eq(4)
       end
     end
+
+    context "If logged in user is Supervisor in Browse app" do
+      it 'should add an address to an order' do
+        set_browse_app_header
+        address = create :address
+        expect(order.address_id).to eq(nil)
+        put :update, id: order.id, order: { address_id: address.id }
+        expect(response.status).to eq(200)
+        expect(order.reload.address.id).to eq(address.id)
+      end
+    end
   end
 
   describe "POST orders" do
     context 'If logged in user is Supervisor in Browse app ' do
       before { generate_and_set_token(user) }
+
       it 'should create an order via POST method' do
         set_browse_app_header
         post :create, order: order_params
         expect(response.status).to eq(201)
         expect(parsed_body['order']['people_helped']).to eq(order_params[:people_helped])
       end
+
+      it 'should create an order with nested beneficiary' do
+        set_browse_app_header
+        beneficiary_count = Beneficiary.count
+        order_params['beneficiary_attributes'] = FactoryBot.build(:beneficiary).attributes.except('id', 'updated_at', 'created_at', 'created_by_id')
+        post :create, order: order_params
+        expect(response.status).to eq(201)
+        expect(Beneficiary.count).to eq(beneficiary_count + 1)
+        beneficiary = Beneficiary.find_by(id: parsed_body['order']['beneficiary_id'])
+        expect(beneficiary.created_by_id).to eq(user.id)
+      end
+      
+      it 'should create an order with nested address' do
+        address = FactoryBot.build(:address)
+        set_browse_app_header
+        order_params['address_attributes'] = address.attributes.except('id', 'updated_at', 'created_at')
+        expect { post  :create, order: order_params }.to change(Address, :count).by(1)
+        expect(response.status).to eq(201)
+        saved_address = Address.find_by(id: parsed_body['order']['address_id'])
+        expect(saved_address).not_to be_nil
+        expect(saved_address.street).to eq(address.street)
+        expect(saved_address.flat).to eq(address.flat)
+        expect(saved_address.district_id).to eq(address.district_id)
+        expect(saved_address.building).to eq(address.building)
+      end
+
     end
   end
 

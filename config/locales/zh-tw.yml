@@ -19,6 +19,8 @@ zh-tw:
     sms_verification_pin: |
       一次性驗證碼為 %{pin}。好人好市歡迎您！我們期待您的善心捐獻。
       （如你並沒有要求驗證碼，請忽略此信息）
+    browse_sms_verification_pin: |
+      一次性驗證碼為 %{pin}。好人好巿歡迎您！希望您享受瀏覽各項優質捐贈物品的過程。（如你並沒有要求驗證碼，請忽略此信息）
     charity_user_welcome_sms: |
       %{full_name} 已將閣下登記於好人好巿平台。請下載該應用程式及以此電話號碼登入。
     order_submitted_sms_to_order_fulfilment_users: |
@@ -27,6 +29,8 @@ zh-tw:
       Thank you for placing order %{code} on GoodCity. Our team will be in touch with you soon.
     input_offer_id_message: "請輸入捐獻號碼，提取捐贈人士的號碼。"
     thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
+    unread_message_sms: |
+      You've got notifications in GoodCity, please check the latest updates. %{url}.
   activerecord:
     attributes:
       user:
@@ -57,6 +61,7 @@ zh-tw:
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."
+    split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
   orders_package:
     already_dispatched: "This has been already dispatched."
   organisations_user_builder:

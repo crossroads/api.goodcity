@@ -92,7 +92,7 @@ module Api
 
       def image_params
         assign_imageable
-        params.require(:image).permit(:favourite,:cloudinary_id,:item_id, :angle,:imageable_type, :imageable_id)
+        params.require(:image).permit(:favourite, :cloudinary_id, :item_id, :angle, :imageable_type, :imageable_id)
       end
 
       def assign_imageable

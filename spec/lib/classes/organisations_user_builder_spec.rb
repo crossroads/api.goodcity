@@ -15,8 +15,18 @@ describe OrganisationsUserBuilder do
   let(:user_attributes) do
     FactoryBot.attributes_for(:user, :with_email, mobile:'+85252345678')
   end
+
+  let(:update_user_attributes) do
+    FactoryBot.attributes_for(:user, :with_email, mobile:'+85252345678', last_name: "Cooper")
+  end
+
+  let(:organisations_user) { create :organisations_user }
   let(:organisations_user_params) do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}" , user_attributes: user_attributes)
+  end
+
+  let(:update_organisations_user_params) do
+    FactoryBot.attributes_for(:organisations_user, id: "#{organisations_user.id}", position: "Updated position", user_attributes: update_user_attributes)
   end
 
   let(:user) { create :user }
@@ -24,6 +34,7 @@ describe OrganisationsUserBuilder do
   let(:position) { 'Admin' }
 
   let(:organisations_user_builder) { OrganisationsUserBuilder.new(organisations_user_params.stringify_keys) }
+  let(:update_organisations_user_builder) { OrganisationsUserBuilder.new(update_organisations_user_params.stringify_keys) }
   let(:mobile) { '+85251111111' }
   let!(:role) { create :charity_role }
   let(:subject) { JSON.parse(response.body) }
@@ -33,6 +44,7 @@ describe OrganisationsUserBuilder do
     it { expect(organisations_user_builder.instance_variable_get("@user_attributes")).to eql(user_attributes) }
     it { expect(organisations_user_builder.instance_variable_get("@mobile")).to eql(user_attributes['mobile']) }
     it { expect(organisations_user_builder.instance_variable_get("@position")).to eql(position) }
+    it { expect(update_organisations_user_builder.instance_variable_get("@organisations_user")).to eql(organisations_user) }
   end
 
   context "build" do
@@ -62,6 +74,18 @@ describe OrganisationsUserBuilder do
 
     it "twilio send_message after organisations_user creation" do
       allow(TwilioService.new(user)).to receive(:send_welcome_msg).and_return({:to=>"+85252345678", :body=>"#{user.full_name} has added you to the GoodCity for Charities platform. Please download the app and log in using this mobile number.\n"})
+    end
+  end
+
+  context "update" do
+    it "updates existing organisations user position" do
+      update_organisations_user_builder.update
+      expect(OrganisationsUser.first.position).to eq(update_organisations_user_params[:position])
+    end
+
+    it "updates user details belonging to organisation" do
+      update_organisations_user_builder.update
+      expect(OrganisationsUser.first.user.last_name).to eq(update_user_attributes[:last_name])
     end
   end
 end

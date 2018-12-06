@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180924074059) do
+ActiveRecord::Schema.define(version: 20181122111014) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,19 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.datetime "deleted_at"
   end
 
+  create_table "appointment_slot_presets", force: :cascade do |t|
+    t.integer "day"
+    t.integer "hours"
+    t.integer "minutes"
+    t.integer "quota"
+  end
+
+  create_table "appointment_slots", force: :cascade do |t|
+    t.datetime "timestamp"
+    t.integer  "quota"
+    t.string   "note",      default: ""
+  end
+
   create_table "auth_tokens", force: :cascade do |t|
     t.datetime "otp_code_expiry"
     t.string   "otp_secret_key"
@@ -38,6 +51,28 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "otp_auth_key",    limit: 30
+  end
+
+  create_table "beneficiaries", force: :cascade do |t|
+    t.integer  "identity_type_id"
+    t.integer  "created_by_id"
+    t.string   "identity_number"
+    t.string   "title"
+    t.string   "first_name"
+    t.string   "last_name"
+    t.string   "phone_number"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "beneficiaries", ["identity_type_id"], name: "index_beneficiaries_on_identity_type_id", using: :btree
+
+  create_table "booking_types", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "identifier"
   end
 
   create_table "boxes", force: :cascade do |t|
@@ -156,6 +191,7 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["order_id"], name: "index_goodcity_requests_on_order_id", using: :btree
@@ -167,6 +203,14 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "identity_types", force: :cascade do |t|
+    t.string   "identifier"
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "images", force: :cascade do |t|
@@ -249,7 +293,7 @@ ActiveRecord::Schema.define(version: 20180924074059) do
   end
 
   create_table "order_transports", force: :cascade do |t|
-    t.date     "scheduled_at"
+    t.datetime "scheduled_at"
     t.string   "timeslot"
     t.string   "transport_type"
     t.integer  "contact_id"
@@ -263,6 +307,7 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.boolean  "need_over_6ft",        default: false
     t.integer  "gogovan_transport_id"
     t.string   "remove_net"
+    t.integer  "booking_type_id"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -295,6 +340,8 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.integer  "submitted_by_id"
     t.datetime "submitted_at"
     t.integer  "people_helped",           default: 0
+    t.integer  "beneficiary_id"
+    t.integer  "address_id"
   end
 
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
@@ -423,6 +470,7 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
@@ -545,10 +593,11 @@ ActiveRecord::Schema.define(version: 20180924074059) do
   end
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer "offer_id"
-    t.integer "user_id"
-    t.integer "message_id"
-    t.string  "state"
+    t.integer  "offer_id"
+    t.integer  "user_id"
+    t.integer  "message_id"
+    t.string   "state"
+    t.datetime "sms_reminder_sent_at"
   end
 
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
@@ -586,6 +635,7 @@ ActiveRecord::Schema.define(version: 20180924074059) do
     t.datetime "last_disconnected"
     t.boolean  "disabled",          default: false
     t.string   "email"
+    t.string   "title"
   end
 
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
@@ -607,6 +657,7 @@ ActiveRecord::Schema.define(version: 20180924074059) do
   add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
   add_index "versions", ["whodunnit"], name: "index_versions_on_whodunnit", using: :btree
 
+  add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
   add_foreign_key "organisations", "countries"

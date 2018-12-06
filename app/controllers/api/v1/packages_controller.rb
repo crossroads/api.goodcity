@@ -128,7 +128,12 @@ module Api
         if params['searchText'].present?
           records = params["orderId"].present? ?
             @packages.undispatched : @packages
-          records = records.search(params['searchText'], params["itemId"], params['showQuantityItems']).page(params["page"]).per(params["per_page"])
+          records = records.search(
+            params['searchText'],
+            params['itemId'],
+            :state => params['state'],
+            :with_inventory_no => params['withInventoryNumber'] == 'true'
+          ).page(params["page"]).per(params["per_page"])
           pages = records.total_pages
         end
         packages = ActiveModel::ArraySerializer.new(records,
@@ -162,6 +167,17 @@ module Api
           send_stock_item_response
         else
           render json: { errors: result.errors.full_messages }, status: 422
+        end
+      end
+
+      def split_package
+        qty_to_split = package_params[:quantity].to_i
+        package_splitter = PackageSplitter.new(@package, qty_to_split)
+        if package_splitter.splittable?
+          package_splitter.split!
+          send_stock_item_response
+        else
+          render json: { errors: I18n.t('package.split_qty_error', qty: @package.quantity) }, status: 422
         end
       end
 

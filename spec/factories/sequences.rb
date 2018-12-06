@@ -24,6 +24,10 @@ FactoryBot.define do
     @rejection_reasons ||= YAML.load_file("#{Rails.root}/db/rejection_reasons.yml")
   end
 
+  sequence :booking_types do |n|
+    @booking_types  ||= YAML.load_file("#{Rails.root}/db/booking_types.yml")
+  end
+
   sequence :cancellation_reasons do |n|
     @cancellation_reasons ||= YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
   end
@@ -34,6 +38,10 @@ FactoryBot.define do
 
   sequence :territories do |n|
     @territories ||= YAML.load_file("#{Rails.root}/db/territories.yml")
+  end
+
+  sequence :identity_types do |n|
+    @beneficiaries ||= YAML.load_file("#{Rails.root}/db/identity_types.yml")
   end
 
   sequence :item_types do |n|
@@ -61,7 +69,9 @@ FactoryBot.define do
   end
 
   sequence :permissions_roles do |n|
-    @permissions_roles ||= YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
+    roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
+    roles.each_pair { |key, value| value.flatten! }
+    @permissions_roles ||= roles
   end
 
   sequence :mobile do |n|
