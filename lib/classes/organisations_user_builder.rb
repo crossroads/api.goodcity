@@ -15,6 +15,8 @@ class OrganisationsUserBuilder
     @user = @organisations_user.user if @organisations_user
     @organisation_id = params["organisation_id"].presence.try(:to_i)
     @user_attributes = params['user_attributes']
+    @user_address_attributes = params['user_address_attributes']
+    @district = District.find(@user_address_attributes['district_id'].presence&.to_i) rescue nil
     @mobile = @user_attributes['mobile'].presence.try(:to_s)
     @position = params['position']
     fail_with_error(I18n.t('organisations_user_builder.organisation.blank')) unless @organisation_id
@@ -48,10 +50,14 @@ class OrganisationsUserBuilder
   end
 
   def update_user
+    update_user_address if @user_address_attributes['district_id'] && @district
     @user.roles << charity_role unless @user.roles.include?(charity_role)
     @user.update(@user_attributes)
   end
 
+  def update_user_address
+    @user.address.update(district_id: @user_address_attributes['district_id'])
+  end
 
   def user_belongs_to_organisation(user)
     user.organisation_ids.include?(@organisation_id)
