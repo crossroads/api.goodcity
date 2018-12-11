@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.5
--- Dumped by pg_dump version 10.5
+-- Dumped from database version 9.5.7
+-- Dumped by pg_dump version 10.6 (Ubuntu 10.6-0ubuntu0.18.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -85,7 +85,6 @@ CREATE TABLE public.addresses (
 --
 
 CREATE SEQUENCE public.addresses_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -118,7 +117,6 @@ CREATE TABLE public.appointment_slot_presets (
 --
 
 CREATE SEQUENCE public.appointment_slot_presets_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -150,7 +148,6 @@ CREATE TABLE public.appointment_slots (
 --
 
 CREATE SEQUENCE public.appointment_slots_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -185,7 +182,6 @@ CREATE TABLE public.auth_tokens (
 --
 
 CREATE SEQUENCE public.auth_tokens_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -223,7 +219,6 @@ CREATE TABLE public.beneficiaries (
 --
 
 CREATE SEQUENCE public.beneficiaries_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -257,7 +252,6 @@ CREATE TABLE public.booking_types (
 --
 
 CREATE SEQUENCE public.booking_types_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -293,7 +287,6 @@ CREATE TABLE public.boxes (
 --
 
 CREATE SEQUENCE public.boxes_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -329,7 +322,6 @@ CREATE TABLE public.braintree_transactions (
 --
 
 CREATE SEQUENCE public.braintree_transactions_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -363,7 +355,6 @@ CREATE TABLE public.cancellation_reasons (
 --
 
 CREATE SEQUENCE public.cancellation_reasons_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -397,7 +388,6 @@ CREATE TABLE public.contacts (
 --
 
 CREATE SEQUENCE public.contacts_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -431,7 +421,6 @@ CREATE TABLE public.countries (
 --
 
 CREATE SEQUENCE public.countries_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -467,7 +456,6 @@ CREATE TABLE public.crossroads_transports (
 --
 
 CREATE SEQUENCE public.crossroads_transports_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -506,7 +494,6 @@ CREATE TABLE public.deliveries (
 --
 
 CREATE SEQUENCE public.deliveries_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -542,7 +529,6 @@ CREATE TABLE public.districts (
 --
 
 CREATE SEQUENCE public.districts_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -575,7 +561,6 @@ CREATE TABLE public.donor_conditions (
 --
 
 CREATE SEQUENCE public.donor_conditions_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -615,7 +600,6 @@ CREATE TABLE public.gogovan_orders (
 --
 
 CREATE SEQUENCE public.gogovan_orders_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -649,7 +633,6 @@ CREATE TABLE public.gogovan_transports (
 --
 
 CREATE SEQUENCE public.gogovan_transports_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -676,8 +659,7 @@ CREATE TABLE public.goodcity_requests (
     description text,
     created_by_id integer,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    item_specifics text
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -686,7 +668,6 @@ CREATE TABLE public.goodcity_requests (
 --
 
 CREATE SEQUENCE public.goodcity_requests_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -720,7 +701,6 @@ CREATE TABLE public.holidays (
 --
 
 CREATE SEQUENCE public.holidays_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -754,7 +734,6 @@ CREATE TABLE public.identity_types (
 --
 
 CREATE SEQUENCE public.identity_types_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -792,7 +771,6 @@ CREATE TABLE public.images (
 --
 
 CREATE SEQUENCE public.images_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -822,7 +800,6 @@ CREATE TABLE public.inventory_numbers (
 --
 
 CREATE SEQUENCE public.inventory_numbers_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -862,7 +839,6 @@ CREATE TABLE public.items (
 --
 
 CREATE SEQUENCE public.items_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -896,7 +872,6 @@ CREATE TABLE public.locations (
 --
 
 CREATE SEQUENCE public.locations_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -933,7 +908,6 @@ CREATE TABLE public.messages (
 --
 
 CREATE SEQUENCE public.messages_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -989,7 +963,6 @@ CREATE TABLE public.offers (
 --
 
 CREATE SEQUENCE public.offers_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1033,7 +1006,6 @@ CREATE TABLE public.order_transports (
 --
 
 CREATE SEQUENCE public.order_transports_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1093,7 +1065,6 @@ CREATE TABLE public.orders (
 --
 
 CREATE SEQUENCE public.orders_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1130,7 +1101,6 @@ CREATE TABLE public.orders_packages (
 --
 
 CREATE SEQUENCE public.orders_packages_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1161,7 +1131,6 @@ CREATE TABLE public.orders_purposes (
 --
 
 CREATE SEQUENCE public.orders_purposes_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1196,7 +1165,6 @@ CREATE TABLE public.organisation_types (
 --
 
 CREATE SEQUENCE public.organisation_types_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1237,7 +1205,6 @@ CREATE TABLE public.organisations (
 --
 
 CREATE SEQUENCE public.organisations_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1271,7 +1238,6 @@ CREATE TABLE public.organisations_users (
 --
 
 CREATE SEQUENCE public.organisations_users_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1305,7 +1271,6 @@ CREATE TABLE public.package_categories (
 --
 
 CREATE SEQUENCE public.package_categories_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1338,7 +1303,6 @@ CREATE TABLE public.package_categories_package_types (
 --
 
 CREATE SEQUENCE public.package_categories_package_types_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1377,7 +1341,6 @@ CREATE TABLE public.package_types (
 --
 
 CREATE SEQUENCE public.package_types_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1432,8 +1395,7 @@ CREATE TABLE public.packages (
     set_item_id integer,
     case_number character varying,
     allow_web_publish boolean,
-    received_quantity integer,
-    last_allow_web_published boolean
+    received_quantity integer
 );
 
 
@@ -1442,7 +1404,6 @@ CREATE TABLE public.packages (
 --
 
 CREATE SEQUENCE public.packages_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1477,7 +1438,6 @@ CREATE TABLE public.packages_locations (
 --
 
 CREATE SEQUENCE public.packages_locations_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1512,7 +1472,6 @@ CREATE TABLE public.pallets (
 --
 
 CREATE SEQUENCE public.pallets_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1544,7 +1503,6 @@ CREATE TABLE public.permissions (
 --
 
 CREATE SEQUENCE public.permissions_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1577,7 +1535,6 @@ CREATE TABLE public.purposes (
 --
 
 CREATE SEQUENCE public.purposes_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1610,7 +1567,6 @@ CREATE TABLE public.rejection_reasons (
 --
 
 CREATE SEQUENCE public.rejection_reasons_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1643,7 +1599,6 @@ CREATE TABLE public.role_permissions (
 --
 
 CREATE SEQUENCE public.role_permissions_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1675,7 +1630,6 @@ CREATE TABLE public.roles (
 --
 
 CREATE SEQUENCE public.roles_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1711,7 +1665,6 @@ CREATE TABLE public.schedules (
 --
 
 CREATE SEQUENCE public.schedules_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1753,7 +1706,6 @@ CREATE TABLE public.stockit_activities (
 --
 
 CREATE SEQUENCE public.stockit_activities_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1789,7 +1741,6 @@ CREATE TABLE public.stockit_contacts (
 --
 
 CREATE SEQUENCE public.stockit_contacts_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1825,7 +1776,6 @@ CREATE TABLE public.stockit_local_orders (
 --
 
 CREATE SEQUENCE public.stockit_local_orders_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1858,7 +1808,6 @@ CREATE TABLE public.stockit_organisations (
 --
 
 CREATE SEQUENCE public.stockit_organisations_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1892,7 +1841,6 @@ CREATE TABLE public.subpackage_types (
 --
 
 CREATE SEQUENCE public.subpackage_types_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1926,7 +1874,6 @@ CREATE TABLE public.subscriptions (
 --
 
 CREATE SEQUENCE public.subscriptions_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1959,7 +1906,6 @@ CREATE TABLE public.territories (
 --
 
 CREATE SEQUENCE public.territories_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1992,7 +1938,6 @@ CREATE TABLE public.timeslots (
 --
 
 CREATE SEQUENCE public.timeslots_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2025,7 +1970,6 @@ CREATE TABLE public.user_roles (
 --
 
 CREATE SEQUENCE public.user_roles_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2066,7 +2010,6 @@ CREATE TABLE public.users (
 --
 
 CREATE SEQUENCE public.users_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2104,7 +2047,6 @@ CREATE TABLE public.versions (
 --
 
 CREATE SEQUENCE public.versions_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2960,6 +2902,34 @@ ALTER TABLE ONLY public.versions
 
 
 --
+-- Name: index_addresses_on_addressable_id_and_addressable_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_addresses_on_addressable_id_and_addressable_type ON public.addresses USING btree (addressable_id, addressable_type);
+
+
+--
+-- Name: index_addresses_on_district_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_addresses_on_district_id ON public.addresses USING btree (district_id);
+
+
+--
+-- Name: index_auth_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_auth_tokens_on_user_id ON public.auth_tokens USING btree (user_id);
+
+
+--
+-- Name: index_beneficiaries_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_beneficiaries_on_created_by_id ON public.beneficiaries USING btree (created_by_id);
+
+
+--
 -- Name: index_beneficiaries_on_identity_type_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2967,10 +2937,66 @@ CREATE INDEX index_beneficiaries_on_identity_type_id ON public.beneficiaries USI
 
 
 --
+-- Name: index_boxes_on_pallet_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_boxes_on_pallet_id ON public.boxes USING btree (pallet_id);
+
+
+--
+-- Name: index_braintree_transactions_on_customer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_braintree_transactions_on_customer_id ON public.braintree_transactions USING btree (customer_id);
+
+
+--
+-- Name: index_deliveries_on_contact_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_deliveries_on_contact_id ON public.deliveries USING btree (contact_id);
+
+
+--
+-- Name: index_deliveries_on_gogovan_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_deliveries_on_gogovan_order_id ON public.deliveries USING btree (gogovan_order_id);
+
+
+--
+-- Name: index_deliveries_on_offer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_deliveries_on_offer_id ON public.deliveries USING btree (offer_id);
+
+
+--
+-- Name: index_deliveries_on_schedule_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_deliveries_on_schedule_id ON public.deliveries USING btree (schedule_id);
+
+
+--
+-- Name: index_districts_on_territory_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_districts_on_territory_id ON public.districts USING btree (territory_id);
+
+
+--
 -- Name: index_gogovan_orders_on_ggv_uuid; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_gogovan_orders_on_ggv_uuid ON public.gogovan_orders USING btree (ggv_uuid);
+
+
+--
+-- Name: index_goodcity_requests_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_goodcity_requests_on_created_by_id ON public.goodcity_requests USING btree (created_by_id);
 
 
 --
@@ -2985,6 +3011,300 @@ CREATE INDEX index_goodcity_requests_on_order_id ON public.goodcity_requests USI
 --
 
 CREATE INDEX index_goodcity_requests_on_package_type_id ON public.goodcity_requests USING btree (package_type_id);
+
+
+--
+-- Name: index_images_on_imageable_id_and_imageable_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_images_on_imageable_id_and_imageable_type ON public.images USING btree (imageable_id, imageable_type);
+
+
+--
+-- Name: index_items_on_donor_condition_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_items_on_donor_condition_id ON public.items USING btree (donor_condition_id);
+
+
+--
+-- Name: index_items_on_offer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_items_on_offer_id ON public.items USING btree (offer_id);
+
+
+--
+-- Name: index_items_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_items_on_package_type_id ON public.items USING btree (package_type_id);
+
+
+--
+-- Name: index_items_on_rejection_reason_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_items_on_rejection_reason_id ON public.items USING btree (rejection_reason_id);
+
+
+--
+-- Name: index_messages_on_item_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_messages_on_item_id ON public.messages USING btree (item_id);
+
+
+--
+-- Name: index_messages_on_offer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_messages_on_offer_id ON public.messages USING btree (offer_id);
+
+
+--
+-- Name: index_messages_on_sender_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_messages_on_sender_id ON public.messages USING btree (sender_id);
+
+
+--
+-- Name: index_offers_on_cancellation_reason_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_offers_on_cancellation_reason_id ON public.offers USING btree (cancellation_reason_id);
+
+
+--
+-- Name: index_offers_on_closed_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_offers_on_closed_by_id ON public.offers USING btree (closed_by_id);
+
+
+--
+-- Name: index_offers_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_offers_on_created_by_id ON public.offers USING btree (created_by_id);
+
+
+--
+-- Name: index_offers_on_crossroads_transport_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_offers_on_crossroads_transport_id ON public.offers USING btree (crossroads_transport_id);
+
+
+--
+-- Name: index_offers_on_gogovan_transport_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_offers_on_gogovan_transport_id ON public.offers USING btree (gogovan_transport_id);
+
+
+--
+-- Name: index_offers_on_received_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_offers_on_received_by_id ON public.offers USING btree (received_by_id);
+
+
+--
+-- Name: index_offers_on_reviewed_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_offers_on_reviewed_by_id ON public.offers USING btree (reviewed_by_id);
+
+
+--
+-- Name: index_order_transports_on_booking_type_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_order_transports_on_booking_type_id ON public.order_transports USING btree (booking_type_id);
+
+
+--
+-- Name: index_order_transports_on_contact_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_order_transports_on_contact_id ON public.order_transports USING btree (contact_id);
+
+
+--
+-- Name: index_order_transports_on_gogovan_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_order_transports_on_gogovan_order_id ON public.order_transports USING btree (gogovan_order_id);
+
+
+--
+-- Name: index_order_transports_on_gogovan_transport_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_order_transports_on_gogovan_transport_id ON public.order_transports USING btree (gogovan_transport_id);
+
+
+--
+-- Name: index_order_transports_on_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_order_transports_on_order_id ON public.order_transports USING btree (order_id);
+
+
+--
+-- Name: index_orders_on_address_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_address_id ON public.orders USING btree (address_id);
+
+
+--
+-- Name: index_orders_on_beneficiary_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_beneficiary_id ON public.orders USING btree (beneficiary_id);
+
+
+--
+-- Name: index_orders_on_cancelled_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_cancelled_by_id ON public.orders USING btree (cancelled_by_id);
+
+
+--
+-- Name: index_orders_on_closed_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_closed_by_id ON public.orders USING btree (closed_by_id);
+
+
+--
+-- Name: index_orders_on_country_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_country_id ON public.orders USING btree (country_id);
+
+
+--
+-- Name: index_orders_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_created_by_id ON public.orders USING btree (created_by_id);
+
+
+--
+-- Name: index_orders_on_detail_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_detail_id ON public.orders USING btree (detail_id);
+
+
+--
+-- Name: index_orders_on_detail_id_and_detail_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_detail_id_and_detail_type ON public.orders USING btree (detail_id, detail_type);
+
+
+--
+-- Name: index_orders_on_dispatch_started_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_dispatch_started_by_id ON public.orders USING btree (dispatch_started_by_id);
+
+
+--
+-- Name: index_orders_on_organisation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_organisation_id ON public.orders USING btree (organisation_id);
+
+
+--
+-- Name: index_orders_on_process_completed_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_process_completed_by_id ON public.orders USING btree (process_completed_by_id);
+
+
+--
+-- Name: index_orders_on_processed_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_processed_by_id ON public.orders USING btree (processed_by_id);
+
+
+--
+-- Name: index_orders_on_stockit_activity_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_stockit_activity_id ON public.orders USING btree (stockit_activity_id);
+
+
+--
+-- Name: index_orders_on_stockit_contact_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_stockit_contact_id ON public.orders USING btree (stockit_contact_id);
+
+
+--
+-- Name: index_orders_on_stockit_organisation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_stockit_organisation_id ON public.orders USING btree (stockit_organisation_id);
+
+
+--
+-- Name: index_orders_on_submitted_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_on_submitted_by_id ON public.orders USING btree (submitted_by_id);
+
+
+--
+-- Name: index_orders_packages_on_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_packages_on_order_id ON public.orders_packages USING btree (order_id);
+
+
+--
+-- Name: index_orders_packages_on_order_id_and_package_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_packages_on_order_id_and_package_id ON public.orders_packages USING btree (order_id, package_id);
+
+
+--
+-- Name: index_orders_packages_on_package_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_packages_on_package_id ON public.orders_packages USING btree (package_id);
+
+
+--
+-- Name: index_orders_packages_on_updated_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_packages_on_updated_by_id ON public.orders_packages USING btree (updated_by_id);
+
+
+--
+-- Name: index_orders_purposes_on_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_purposes_on_order_id ON public.orders_purposes USING btree (order_id);
+
+
+--
+-- Name: index_orders_purposes_on_purpose_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_orders_purposes_on_purpose_id ON public.orders_purposes USING btree (purpose_id);
 
 
 --
@@ -3044,6 +3364,13 @@ CREATE INDEX index_package_categories_package_types_on_package_type_id ON public
 
 
 --
+-- Name: index_package_types_on_location_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_package_types_on_location_id ON public.package_types USING btree (location_id);
+
+
+--
 -- Name: index_packages_locations_on_location_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3065,10 +3392,150 @@ CREATE INDEX index_packages_locations_on_package_id ON public.packages_locations
 
 
 --
+-- Name: index_packages_on_box_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_box_id ON public.packages USING btree (box_id);
+
+
+--
+-- Name: index_packages_on_donor_condition_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_donor_condition_id ON public.packages USING btree (donor_condition_id);
+
+
+--
+-- Name: index_packages_on_item_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_item_id ON public.packages USING btree (item_id);
+
+
+--
+-- Name: index_packages_on_location_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_location_id ON public.packages USING btree (location_id);
+
+
+--
+-- Name: index_packages_on_offer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_offer_id ON public.packages USING btree (offer_id);
+
+
+--
+-- Name: index_packages_on_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_order_id ON public.packages USING btree (order_id);
+
+
+--
+-- Name: index_packages_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_package_type_id ON public.packages USING btree (package_type_id);
+
+
+--
+-- Name: index_packages_on_pallet_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_pallet_id ON public.packages USING btree (pallet_id);
+
+
+--
+-- Name: index_packages_on_set_item_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_set_item_id ON public.packages USING btree (set_item_id);
+
+
+--
+-- Name: index_packages_on_stockit_designated_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_stockit_designated_by_id ON public.packages USING btree (stockit_designated_by_id);
+
+
+--
 -- Name: index_packages_on_stockit_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_packages_on_stockit_id ON public.packages USING btree (stockit_id);
+
+
+--
+-- Name: index_packages_on_stockit_moved_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_stockit_moved_by_id ON public.packages USING btree (stockit_moved_by_id);
+
+
+--
+-- Name: index_packages_on_stockit_sent_by_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_packages_on_stockit_sent_by_id ON public.packages USING btree (stockit_sent_by_id);
+
+
+--
+-- Name: index_role_permissions_on_permission_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_role_permissions_on_permission_id ON public.role_permissions USING btree (permission_id);
+
+
+--
+-- Name: index_role_permissions_on_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_role_permissions_on_role_id ON public.role_permissions USING btree (role_id);
+
+
+--
+-- Name: index_subpackage_types_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subpackage_types_on_package_type_id ON public.subpackage_types USING btree (package_type_id);
+
+
+--
+-- Name: index_subpackage_types_on_package_type_id_and_package_type_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subpackage_types_on_package_type_id_and_package_type_id ON public.subpackage_types USING btree (package_type_id, package_type_id);
+
+
+--
+-- Name: index_subpackage_types_on_subpackage_type_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subpackage_types_on_subpackage_type_id ON public.subpackage_types USING btree (subpackage_type_id);
+
+
+--
+-- Name: index_user_roles_on_role_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_roles_on_role_id ON public.user_roles USING btree (role_id);
+
+
+--
+-- Name: index_user_roles_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_user_roles_on_user_id ON public.user_roles USING btree (user_id);
+
+
+--
+-- Name: index_users_on_image_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_image_id ON public.users USING btree (image_id);
 
 
 --
@@ -3177,19 +3644,19 @@ CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING b
 
 
 --
--- Name: goodcity_requests fk_rails_1ebadd5bbf; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.goodcity_requests
-    ADD CONSTRAINT fk_rails_1ebadd5bbf FOREIGN KEY (package_type_id) REFERENCES public.package_types(id);
-
-
---
 -- Name: beneficiaries fk_rails_2c1fc874b0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.beneficiaries
     ADD CONSTRAINT fk_rails_2c1fc874b0 FOREIGN KEY (identity_type_id) REFERENCES public.identity_types(id);
+
+
+--
+-- Name: goodcity_requests fk_rails_3015d19682; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.goodcity_requests
+    ADD CONSTRAINT fk_rails_3015d19682 FOREIGN KEY (package_type_id) REFERENCES public.package_types(id);
 
 
 --
@@ -3225,11 +3692,11 @@ ALTER TABLE ONLY public.organisations
 
 
 --
--- Name: goodcity_requests fk_rails_f233a8028b; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodcity_requests fk_rails_b30d4199d6; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodcity_requests
-    ADD CONSTRAINT fk_rails_f233a8028b FOREIGN KEY (order_id) REFERENCES public.orders(id);
+    ADD CONSTRAINT fk_rails_b30d4199d6 FOREIGN KEY (order_id) REFERENCES public.orders(id);
 
 
 --
@@ -3592,7 +4059,7 @@ INSERT INTO schema_migrations (version) VALUES ('20181121040221');
 
 INSERT INTO schema_migrations (version) VALUES ('20181121053137');
 
-INSERT INTO schema_migrations (version) VALUES ('20181122103046');
-
 INSERT INTO schema_migrations (version) VALUES ('20181122111014');
+
+INSERT INTO schema_migrations (version) VALUES ('20181207070950');
 
