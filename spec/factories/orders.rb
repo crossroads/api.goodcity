@@ -36,6 +36,14 @@ FactoryBot.define do
       state "processing"
     end
 
+    trait :with_state_awaiting_dispatch do
+      state "awaiting_dispatch"
+    end
+
+    trait :with_state_dispatching do
+      state "dispatching"
+    end
+
     trait :with_state_draft do
       state "draft"
     end
