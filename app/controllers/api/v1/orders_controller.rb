@@ -84,8 +84,7 @@ module Api
       end
 
       def recent_designations
-        #records = Order.recently_used(User.current_user.id)
-        records = Order.recent_order(User.current_user.id)
+        records = Order.recently_used(User.current_user.id)
         render json: order_response(records.to_a)
       end
 
@@ -100,20 +99,20 @@ module Api
       end
 
       def summary
-        summary = Order.filter(states:["submitted", "processing", "awaiting_dispatch", "dispatching"]).group_by(&:state)
-        summary = order_count(summary)
+        active_orders = Order.orders_group_by_state(false)
+        active_orders_count = orders_count(active_orders)
 
-        priority_summary = Order.filter(states:["submitted", "processing", "awaiting_dispatch", "dispatching"], priority: true).group_by(&:state)
-        priority_summary = priority_summary.transform_keys{ |key| "priority_".concat(key) }
-        priority_summary = order_count(priority_summary)
-        summary.merge!(priority_summary)
-        render json: summary
+        priority_orders = Order.orders_group_by_state(true).transform_keys{ |key| "priority_".concat(key) }
+        priority_active_orders_count = orders_count(priority_orders)
+
+        active_orders_count.merge!(priority_active_orders_count)
+        render json: active_orders_count
       end
 
       private
 
-      def order_count(order)
-        order.each { |key, value|  order[key] = value.count }
+      def orders_count(orders)
+        orders.each { |key, value|  orders[key] = value.count }
       end
 
       def order_response(records)

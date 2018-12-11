@@ -64,22 +64,38 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
   end
 
-  describe 'recent_orders' do
+  describe 'recently_used' do
     let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-    let!(:orders) { (1..5).map { create :order, :with_state_draft, created_by_id: user.id, status: nil  } }
-    let!(:versions) { (1..5).map { create :order }.map { |o| create :version, item_type: 'Order', item_id: o.id, whodunnit: user.id } }
+
+    let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+
+    let!(:orders) { (1..6).map.with_index { |order, index| create :order, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + index+1.hour }.map { |order| order.versions.first.update(whodunnit: order.created_by_id) } }
+    let!(:non_gc_orders) { (1..6).map { create :order, :with_state_submitted, detail_type: 'StockitLocalOrder', created_by_id: user.id, submitted_by_id: user.id, status: nil }.map { |order| order.versions.first.update(whodunnit: order.created_by_id) } }
+
+    before(:each) {
+      User.current_user = user
+    }
 
     it "will show latest updated order as the first order" do
-      recent_order = Order.recent_order(user.id)
-      debugger
-      expect(Order.recent_order(user.id).first.code).to eq(orders.last.code)
+      expect(Order.recently_used(user.id).first).to eq(Order.where(detail_type: "GoodCity").last)
     end
 
     it "will show top 5 updated orders" do
+      expect(Order.recently_used(User.current_user.id).count).to eq(5)
     end
 
-    it "will only show logged in users order" do
+    it "will not show non-logged in users order" do
+      expect(Order.recently_used(user1.id).count).to eq(0)
+    end
+
+    it "will show logged in users order" do
+      expect(Order.recently_used(User.current_user.id).count).to eq(5)
+    end
+
+    it "will show only goodcity orders" do
+      expect(Order.recently_used(User.current_user.id).map(&:detail_type).uniq.first).to eq("GoodCity")
     end
 
   end
