@@ -78,6 +78,15 @@ RSpec.describe Order, type: :model do
         expect(old_order.is_priority?).to eq(true)
         expect(order.is_priority?).to eq(false)
       end
+
+      it 'should filter prioritised orders if it was submitted more than 24hours ago' do
+        create :order, state: "submitted", submitted_at: Time.now - 23.hours
+        old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
+        records = Order.where(state: 'submitted')
+        expect(records.count).to eq(2)
+        expect(records.priority.count).to eq(1)
+        expect(records.priority.first.id).to eq(old_order.id)
+      end
     end
 
     context 'An order under review (aka processing)' do
@@ -95,6 +104,19 @@ RSpec.describe Order, type: :model do
           expect(order_started_before_6_ytd.is_priority?).to eq(true)
           expect(order_started_after_6.is_priority?).to eq(false)
         end
+
+        it 'should be filter prioritised orders if process was started before 6pm and hasn\'t finished' do
+          order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
+          order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
+          create :order, state: "processing", processed_at: after_6pm_today
+          records = Order.where(state: 'processing')
+          expect(records.count).to eq(3)
+          expect(records.priority.count).to eq(2)
+          expect(records.priority.map(&:id)).to match_array [
+            order_started_before_6.id,
+            order_started_before_6_ytd.id
+          ]
+        end
       end
 
       context 'If we\'re before 6pm' do
@@ -108,6 +130,16 @@ RSpec.describe Order, type: :model do
           expect(order_started_after_6_ytd.is_priority?).to eq(false)
           expect(order_started_before_6.is_priority?).to eq(false)
         end
+
+        it 'should be filter prioritized orders if process was started before 6pm the previous day and hasn\'t finished' do
+          create :order, state: "processing", processed_at: before_6pm_today
+          create :order, state: "processing", processed_at: after_6pm_yesterday
+          order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
+          records = Order.where(state: 'processing')
+          expect(records.count).to eq(3)
+          expect(records.priority.count).to eq(1)
+          expect(records.priority.first.id).to eq(order_started_before_6_ytd.id)
+        end
       end
     end
 
@@ -115,13 +147,24 @@ RSpec.describe Order, type: :model do
       let(:transport_before_6) { create :order_transport, scheduled_at: before_6pm_today, timeslot: "3PM" }
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
-      before { Timecop.freeze(at_6pm_today) }
+      before {
+        Timecop.freeze(at_6pm_today) 
+      }
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
         non_priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_after_6
         expect(priority_order.is_priority?).to eq(true)
         #expect(non_priority_order.is_priority?).to eq(false)
+      end
+
+      it 'should filter prioritised orders awaiting dispatch' do
+        priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
+        create :order, state: "awaiting_dispatch", order_transport: transport_after_6
+        records = Order.where(state: 'awaiting_dispatch')
+        expect(records.count).to eq(2)
+        expect(records.priority.count).to eq(1)
+        expect(records.priority.first.id).to eq(priority_order.id)
       end
     end
 
@@ -138,6 +181,19 @@ RSpec.describe Order, type: :model do
           expect(dispatching_started_yesterday.is_priority?).to eq(true)
           expect(dispatching_started_after_6.is_priority?).to eq(false)
         end
+
+        it 'should filter prioritised orders if it was started before 6pm' do
+          create :order, state: "dispatching", dispatch_started_at: after_6pm_today
+          dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
+          dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
+          records = Order.where(state: 'dispatching')
+          expect(records.count).to eq(3)
+          expect(records.priority.count).to eq(2)
+          expect(records.priority.map(&:id)).to match_array([
+            dispatching_started_yesterday.id,
+            dispatching_started_before_6.id
+          ])
+        end
       end
 
       context 'If we\'re before 6pm' do
@@ -148,6 +204,15 @@ RSpec.describe Order, type: :model do
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
           expect(dispatching_started_before_6.is_priority?).to eq(false)
           expect(dispatching_started_yesterday.is_priority?).to eq(true)
+        end
+
+        it 'should filter prioritised orders if it was started before 6pm the previous day' do
+          create :order, state: "dispatching", dispatch_started_at: before_6pm_today
+          dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
+          records = Order.where(state: 'dispatching')
+          expect(records.count).to eq(2)
+          expect(records.priority.count).to eq(1)
+          expect(records.priority.first.id).to eq(dispatching_started_yesterday.id)
         end
       end
     end

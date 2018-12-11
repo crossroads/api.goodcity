@@ -32,6 +32,10 @@ FactoryBot.define do
       status "processing"
     end
 
+    trait :with_state_processing do
+      state "processing"
+    end
+
     trait :with_state_draft do
       state "draft"
     end
