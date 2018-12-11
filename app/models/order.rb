@@ -1,6 +1,7 @@
 class Order < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   include PushUpdates
+  include OrderFiltering
 
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
@@ -41,7 +42,7 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
-  scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
+  scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
     includes([
@@ -88,23 +89,6 @@ class Order < ActiveRecord::Base
 
   def set_initial_state
     self.state ||= :draft
-  end
-
-  def is_priority?
-    last_6pm = last_end_of_work_day
-
-    case state
-    when "submitted"
-      submitted_at && submitted_at <= Time.now - 24.hours
-    when "processing"
-      processed_at < last_6pm
-    when "awaiting_dispatch"
-      order_transport.present? && order_transport.scheduled_at < Time.now
-    when "dispatching"
-      dispatch_started_at && dispatch_started_at < last_6pm
-    else 
-      false
-    end
   end
 
   state_machine :state, initial: :draft do
@@ -277,17 +261,21 @@ class Order < ActiveRecord::Base
   end
 
   def self.search(search_text, to_designate_item)
-    fetch_orders(to_designate_item)
-      .where("code ILIKE :query OR
-      description ILIKE :query OR
-      organisations.name_en ILIKE :query OR
-      organisations.name_zh_tw ILIKE :query OR
-      CONCAT(users.first_name, ' ', users.last_name) ILIKE :query OR
-      stockit_organisations.name ILIKE :query OR
-      stockit_local_orders.client_name ILIKE :query OR
-      stockit_contacts.first_name ILIKE :query OR stockit_contacts.last_name ILIKE :query OR
-      stockit_contacts.mobile_phone_number LIKE :query OR
-      stockit_contacts.phone_number LIKE :query", query: "%#{search_text}%")
+    sql = <<-SQL
+      code ILIKE (:query) OR
+      description ILIKE (:query) OR
+      organisations.name_en ILIKE (:query) OR
+      organisations.name_zh_tw ILIKE (:query) OR
+      stockit_organisations.name ILIKE (:query) OR
+      stockit_local_orders.client_name ILIKE (:query) OR
+      stockit_contacts.first_name ILIKE (:query) OR stockit_contacts.last_name ILIKE (:query) OR
+      stockit_contacts.mobile_phone_number LIKE (:query) OR
+      stockit_contacts.phone_number LIKE (:query) OR
+      CONCAT(users.first_name, ' ', users.last_name) ILIKE (:query)
+    SQL
+    results = fetch_orders(to_designate_item)
+    results = results.where(sql, query: "%#{search_text}%") unless search_text.blank?
+    results
   end
 
   def self.fetch_orders(to_designate_item)
@@ -299,11 +287,13 @@ class Order < ActiveRecord::Base
   end
 
   def self.join_order_associations
-    joins("LEFT OUTER JOIN stockit_local_orders ON orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'
-    LEFT OUTER JOIN users ON orders.submitted_by_id = users.id or orders.created_by_id = users.id
-    LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
-    LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
-    LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id")
+    joins <<-SQL
+      LEFT OUTER JOIN stockit_local_orders ON orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'
+      LEFT OUTER JOIN users ON orders.submitted_by_id = users.id or orders.created_by_id = users.id
+      LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
+      LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
+      LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id
+    SQL
   end
 
   def self.recently_used(user_id)
@@ -353,12 +343,5 @@ class Order < ActiveRecord::Base
   #to satisfy push_updates
   def offer
     nil
-  end
-
-  def last_end_of_work_day
-    now = Time.now.in_time_zone
-    last_6pm = now.change(hour: 18, min: 0, sec: 0)
-    last_6pm -= 24.hours if now < last_6pm
-    last_6pm
   end
 end

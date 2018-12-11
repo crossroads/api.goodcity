@@ -4,11 +4,18 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
   let!(:order) { create :order, :with_state_submitted, created_by: charity_user }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
+  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder" }
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
   let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id) }
+
+  before {
+    FactoryBot.generate(:booking_types).values.each { |btype|
+      FactoryBot.create :booking_type, identifier: btype[:identifier]
+    }
+  }
 
   describe "GET orders" do
     context 'If logged in user is Supervisor in Browse app ' do
@@ -62,6 +69,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         request.headers["X-GOODCITY-APP-NAME"] = "stock.goodcity"
       }
 
+      it 'returns all the non goodcity-draft orders' do
+        5.times { FactoryBot.create :order, :with_state_submitted }
+        5.times { FactoryBot.create :order, :with_state_draft }
+        get :index
+        expect(parsed_body['designations'].count).to eq(Order.where.not(state: 'draft').count)
+        expect(parsed_body['designations'].map { |it| it['state'] }).to_not include('draft')
+      end
+
       it 'returns the number of items specified for the page' do
         5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
         get :index, page: 1, per_page: 5
@@ -83,15 +98,23 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['meta']['search']).to eql(order.code)
       end
 
-      it 'returns empty response if search text is draft order' do
+      it 'returns empty response if search text is draft goodcity order' do
         get :index, searchText: draft_order.code
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(0)
         expect(parsed_body['meta']['total_pages']).to eql(0)
       end
 
+      it 'returns response if search text is draft stockit order' do
+        get :index, searchText: stockit_draft_order.code
+        expect(response.status).to eq(200)
+        expect(parsed_body['designations'].count).to eq(1)
+        expect(parsed_body['meta']['total_pages']).to eql(1)
+      end
+
       it 'can search orders using their description (case insensitive)' do
-        order = FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+        FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+        FactoryBot.create :order, :with_state_submitted, description: 'Android T'
         get :index, searchText: 'iphone'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -139,6 +162,100 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body.keys.length).to eq(2)
         expect(parsed_body).to have_key('designations')
         expect(parsed_body).to have_key('meta')
+      end
+
+      describe "when filtering the search results" do
+        let(:online_order_transport_ggv) { create :order_transport, booking_type: BookingType.online_order, transport_type: 'ggv'}
+        let(:online_order_transport_self) { create :order_transport, booking_type: BookingType.online_order, transport_type: 'self'}
+        let(:appointment_transport) { create :order_transport, booking_type: BookingType.appointment}
+
+        it 'returns only records with the specified states' do
+          2.times { FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s' }
+          2.times { FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s' }
+          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s'
+
+          get :index, searchText: 'iphone', state: 'awaiting_dispatch,processing'
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(3)
+          expect(parsed_body["designations"].map { |it| it['state'] }).to match_array([
+            'awaiting_dispatch',
+            'awaiting_dispatch',
+            'processing'
+          ])
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+          expect(parsed_body['meta']['search']).to eql('iphone')
+        end
+
+        ['appointment', 'online_order_ggv', 'online_order_pickup', 'shipment', 'other'].each do |type|
+          it "should return a single order of type #{type}" do
+            FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: appointment_transport
+            FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_order_transport_ggv
+            FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', order_transport: online_order_transport_self
+            FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'shipment'
+            FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'other'
+
+            get :index, searchText: 'iphone', type: type
+            expect(response.status).to eq(200)
+            expect(parsed_body['designations'].count).to eq(1)
+            expect(parsed_body['meta']['total_pages']).to eql(1)
+            expect(parsed_body['meta']['search']).to eql('iphone')
+          end
+        end
+
+        it 'returns records with multuple specified types' do
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: appointment_transport
+          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_order_transport_ggv
+          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', order_transport: online_order_transport_self
+
+          get :index, searchText: 'iphone', type: 'appointment,online_order_ggv'
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(2)
+          expect(parsed_body["designations"].map { |it| it['state'] }).to match_array([
+            'submitted',
+            'awaiting_dispatch'
+          ])
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+          expect(parsed_body['meta']['search']).to eql('iphone')
+        end
+
+        it 'returns nothing if searching for an invalid type' do
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+          get :index, searchText: 'iphone', type: 'bad_type'
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(0)
+        end
+
+        it 'returns only priority records' do
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
+          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
+          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s'
+
+          get :index, searchText: 'iphone', priority: 'true'
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(2)
+          expect(parsed_body["designations"].map { |it| it['state'] }).to match_array([
+            'processing',
+            'submitted'
+          ])
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+          expect(parsed_body['meta']['search']).to eql('iphone')
+        end
+
+        it 'returns only priority records or a certain state' do
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
+          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
+          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s'
+
+          get :index, searchText: 'iphone', state: 'processing', priority: 'true'
+          expect(response.status).to eq(200)
+          expect(parsed_body['designations'].count).to eq(1)
+          expect(parsed_body["designations"][0]['state']).to eq('processing')
+          expect(parsed_body['meta']['total_pages']).to eql(1)
+          expect(parsed_body['meta']['search']).to eql('iphone')
+        end
+
       end
 
       describe "When designating an item ( ?toDesignateItem=true )" do
