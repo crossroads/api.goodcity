@@ -64,6 +64,26 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
   end
 
+  describe 'recent_orders' do
+    let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+    let!(:orders) { (1..5).map { create :order, :with_state_draft, created_by_id: user.id, status: nil  } }
+    let!(:versions) { (1..5).map { create :order }.map { |o| create :version, item_type: 'Order', item_id: o.id, whodunnit: user.id } }
+
+    it "will show latest updated order as the first order" do
+      recent_order = Order.recent_order(user.id)
+      debugger
+      expect(Order.recent_order(user.id).first.code).to eq(orders.last.code)
+    end
+
+    it "will show top 5 updated orders" do
+    end
+
+    it "will only show logged in users order" do
+    end
+
+  end
+
   describe 'priority rules' do
     let(:at_6pm_today) { Time.now.in_time_zone.change(hour: 18) }
     let(:at_6pm_yesterday) { at_6pm_today - 24.hours }

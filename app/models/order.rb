@@ -313,11 +313,12 @@ class Order < ActiveRecord::Base
     .select("DISTINCT ON (orders.id) orders.id AS key,  versions.created_at AS recently_used_at").
     joins("INNER JOIN versions ON ((object_changes -> 'order_id' ->> 1) = CAST(orders.id AS TEXT))").
     joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')").
-    where(" versions.event = 'update' AND
-      (object_changes ->> 'order_id') IS NOT NULL AND
-      CAST(whodunnit AS integer) = ? AND
-      versions.created_at >= ? ", user_id, 15.days.ago).
+    where(" versions.event = 'update' AND (object_changes ->> 'order_id') IS NOT NULL AND CAST(whodunnit AS integer) = ? AND versions.created_at >= ? ", user_id, 15.days.ago).
     order("key, recently_used_at DESC")
+  end
+
+  def self.recent_order(user_id)
+    active_orders.goodcity_orders.joins(:versions).where(versions: {id: Version.select(:id).where(whodunnit: user_id.to_s, item_type: "Order")}).distinct.order(updated_at: :desc).limit(5)
   end
 
   def self.generate_gc_code

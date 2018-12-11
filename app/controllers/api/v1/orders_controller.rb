@@ -84,8 +84,9 @@ module Api
       end
 
       def recent_designations
-        records = Order.recently_used(User.current_user.id)
-        render json: order_response(records)
+        #records = Order.recently_used(User.current_user.id)
+        records = Order.recent_order(User.current_user.id)
+        render json: order_response(records.to_a)
       end
 
       def my_orders
@@ -98,7 +99,22 @@ module Api
         render json: {}
       end
 
+      def summary
+        summary = Order.filter(states:["submitted", "processing", "awaiting_dispatch", "dispatching"]).group_by(&:state)
+        summary = order_count(summary)
+
+        priority_summary = Order.filter(states:["submitted", "processing", "awaiting_dispatch", "dispatching"], priority: true).group_by(&:state)
+        priority_summary = priority_summary.transform_keys{ |key| "priority_".concat(key) }
+        priority_summary = order_count(priority_summary)
+        summary.merge!(priority_summary)
+        render json: summary
+      end
+
       private
+
+      def order_count(order)
+        order.each { |key, value|  order[key] = value.count }
+      end
 
       def order_response(records)
         ActiveModel::ArraySerializer.new(records,
