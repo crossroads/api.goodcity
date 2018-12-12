@@ -60,6 +60,7 @@ api-write: []
 Charity:
 - can_login_to_browse
 - can_manage_orders_packages
+- can_create_goodcity_requests
 Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
