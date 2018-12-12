@@ -3,7 +3,7 @@ module OrderFiltering
   extend ActiveSupport::Concern
 
   def is_priority?
-    self.class.priority.exists?(self.id)
+    self.class.priority.exists?(self)
   end
 
   module ClassMethods
