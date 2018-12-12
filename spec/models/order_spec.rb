@@ -25,6 +25,7 @@ RSpec.describe Order, type: :model do
     it { is_expected.to belong_to :detail  }
     it { is_expected.to belong_to :stockit_activity }
     it { is_expected.to belong_to :country }
+    it { is_expected.to belong_to :district }
     it { is_expected.to belong_to :stockit_contact }
     it { is_expected.to belong_to :stockit_organisation }
     it { is_expected.to belong_to :organisation }
@@ -148,7 +149,7 @@ RSpec.describe Order, type: :model do
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
       before {
-        Timecop.freeze(at_6pm_today) 
+        Timecop.freeze(at_6pm_today)
       }
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do

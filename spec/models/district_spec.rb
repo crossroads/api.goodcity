@@ -7,6 +7,7 @@ RSpec.describe District, :type => :model do
   context "validations" do
     it { is_expected.to validate_presence_of(:name_en) }
     it { is_expected.to validate_presence_of(:territory_id) }
+    it { is_expected.to have_many(:orders) }
   end
 
   context "crossroads_address" do
