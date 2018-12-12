@@ -54,7 +54,7 @@ class Order < ActiveRecord::Base
 
   scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
 
-  scope :designatable_orders, -> { 
+  scope :designatable_orders, -> {
     query = <<-SQL
       (
         submitted_at IS NOT NULL
@@ -107,7 +107,7 @@ class Order < ActiveRecord::Base
     end
 
     event :cancel do
-      transition all - [:draft, :closed] => :cancelled
+      transition all - [:closed] => :cancelled
     end
 
     event :close do
