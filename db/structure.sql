@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.4
--- Dumped by pg_dump version 10.4
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -138,7 +138,7 @@ ALTER SEQUENCE public.appointment_slot_presets_id_seq OWNED BY public.appointmen
 
 CREATE TABLE public.appointment_slots (
     id integer NOT NULL,
-    "timestamp" timestamp with time zone,
+    "timestamp" timestamp without time zone,
     quota integer,
     note character varying DEFAULT ''::character varying
 );
@@ -663,7 +663,8 @@ CREATE TABLE public.goodcity_requests (
     description text,
     created_by_id integer,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    item_specifics text
 );
 
 
