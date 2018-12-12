@@ -3,11 +3,12 @@ require 'rails_helper'
 describe Api::V1::OrderSerializer do
   let(:country) { create :country }
   let(:user) { create :user }
+  let(:district) { create :district }
   let(:stockit_local_order) { create :stockit_local_order }
   let(:stockit_activity) { create :stockit_activity }
   let(:order) { create :order, country: country, detail: stockit_local_order,
     stockit_activity: stockit_activity, processed_by: user, cancelled_by_id: user.id,
-    process_completed_by_id: user.id, closed_by_id: user }
+    process_completed_by_id: user.id, closed_by_id: user, district: district }
   let(:serializer) { Api::V1::OrderSerializer.new(order).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
@@ -40,6 +41,7 @@ describe Api::V1::OrderSerializer do
     expect(json['order']['cancelled_at']).to eq(order.cancelled_at)
     expect(json['order']['process_completed_at']).to eq(order.process_completed_at)
     expect(json['order']['closed_at']).to eq(order.closed_at)
+    expect(json['order']['district_id']).to eq(order.district_id)
   end
 
   it 'returns organisation id as gc_organisation_id in json response if stockit_organisation is not assigned' do
