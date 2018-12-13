@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.7
--- Dumped by pg_dump version 10.6 (Ubuntu 10.6-0ubuntu0.18.04.1)
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -117,6 +117,7 @@ CREATE TABLE public.appointment_slot_presets (
 --
 
 CREATE SEQUENCE public.appointment_slot_presets_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -137,7 +138,7 @@ ALTER SEQUENCE public.appointment_slot_presets_id_seq OWNED BY public.appointmen
 
 CREATE TABLE public.appointment_slots (
     id integer NOT NULL,
-    "timestamp" timestamp with time zone,
+    "timestamp" timestamp without time zone,
     quota integer,
     note character varying DEFAULT ''::character varying
 );
@@ -148,6 +149,7 @@ CREATE TABLE public.appointment_slots (
 --
 
 CREATE SEQUENCE public.appointment_slots_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -219,6 +221,7 @@ CREATE TABLE public.beneficiaries (
 --
 
 CREATE SEQUENCE public.beneficiaries_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -252,6 +255,7 @@ CREATE TABLE public.booking_types (
 --
 
 CREATE SEQUENCE public.booking_types_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -668,6 +672,7 @@ CREATE TABLE public.goodcity_requests (
 --
 
 CREATE SEQUENCE public.goodcity_requests_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -734,6 +739,7 @@ CREATE TABLE public.identity_types (
 --
 
 CREATE SEQUENCE public.identity_types_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1056,7 +1062,8 @@ CREATE TABLE public.orders (
     submitted_at timestamp with time zone,
     people_helped integer DEFAULT 0,
     beneficiary_id integer,
-    address_id integer
+    address_id integer,
+    cancellation_reason text
 );
 
 
@@ -1395,7 +1402,8 @@ CREATE TABLE public.packages (
     set_item_id integer,
     case_number character varying,
     allow_web_publish boolean,
-    received_quantity integer
+    received_quantity integer,
+    last_allow_web_published boolean
 );
 
 
@@ -3577,7 +3585,7 @@ CREATE INDEX index_versions_on_whodunnit ON public.versions USING btree (whodunn
 -- Name: inventory_numbers_search_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX inventory_numbers_search_idx ON public.packages USING gin (inventory_number);
+CREATE INDEX inventory_numbers_search_idx ON public.packages USING gin (inventory_number public.gin_trgm_ops);
 
 
 --
@@ -3591,49 +3599,49 @@ CREATE UNIQUE INDEX offer_user_message ON public.subscriptions USING btree (offe
 -- Name: orders_code_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX orders_code_idx ON public.orders USING gin (code);
+CREATE INDEX orders_code_idx ON public.orders USING gin (code public.gin_trgm_ops);
 
 
 --
 -- Name: st_contacts_first_name_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX st_contacts_first_name_idx ON public.stockit_contacts USING gin (first_name);
+CREATE INDEX st_contacts_first_name_idx ON public.stockit_contacts USING gin (first_name public.gin_trgm_ops);
 
 
 --
 -- Name: st_contacts_last_name_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX st_contacts_last_name_idx ON public.stockit_contacts USING gin (last_name);
+CREATE INDEX st_contacts_last_name_idx ON public.stockit_contacts USING gin (last_name public.gin_trgm_ops);
 
 
 --
 -- Name: st_contacts_mobile_phone_number_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX st_contacts_mobile_phone_number_idx ON public.stockit_contacts USING gin (mobile_phone_number);
+CREATE INDEX st_contacts_mobile_phone_number_idx ON public.stockit_contacts USING gin (mobile_phone_number public.gin_trgm_ops);
 
 
 --
 -- Name: st_contacts_phone_number_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX st_contacts_phone_number_idx ON public.stockit_contacts USING gin (phone_number);
+CREATE INDEX st_contacts_phone_number_idx ON public.stockit_contacts USING gin (phone_number public.gin_trgm_ops);
 
 
 --
 -- Name: st_local_orders_client_name_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX st_local_orders_client_name_idx ON public.stockit_local_orders USING gin (client_name);
+CREATE INDEX st_local_orders_client_name_idx ON public.stockit_local_orders USING gin (client_name public.gin_trgm_ops);
 
 
 --
 -- Name: st_organisations_name_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX st_organisations_name_idx ON public.stockit_organisations USING gin (name);
+CREATE INDEX st_organisations_name_idx ON public.stockit_organisations USING gin (name public.gin_trgm_ops);
 
 
 --
@@ -3995,11 +4003,19 @@ INSERT INTO schema_migrations (version) VALUES ('20171213140618');
 
 INSERT INTO schema_migrations (version) VALUES ('20171218105636');
 
+INSERT INTO schema_migrations (version) VALUES ('20180109145337');
+
+INSERT INTO schema_migrations (version) VALUES ('20180110085957');
+
+INSERT INTO schema_migrations (version) VALUES ('20180214103014');
+
 INSERT INTO schema_migrations (version) VALUES ('20180214103728');
 
 INSERT INTO schema_migrations (version) VALUES ('20180214103753');
 
 INSERT INTO schema_migrations (version) VALUES ('20180214104436');
+
+INSERT INTO schema_migrations (version) VALUES ('20180525100416');
 
 INSERT INTO schema_migrations (version) VALUES ('20180528084205');
 
@@ -4062,4 +4078,6 @@ INSERT INTO schema_migrations (version) VALUES ('20181121053137');
 INSERT INTO schema_migrations (version) VALUES ('20181122111014');
 
 INSERT INTO schema_migrations (version) VALUES ('20181207070950');
+
+INSERT INTO schema_migrations (version) VALUES ('20181212060849');
 
