@@ -47,6 +47,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:code).of_type(:string)}
     it{ is_expected.to have_db_column(:detail_type).of_type(:string)}
     it{ is_expected.to have_db_column(:description).of_type(:text)}
+    it{ is_expected.to have_db_column(:cancellation_reason).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:purpose_description).of_type(:text)}
     it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
@@ -148,7 +149,7 @@ RSpec.describe Order, type: :model do
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
       before {
-        Timecop.freeze(at_6pm_today) 
+        Timecop.freeze(at_6pm_today)
       }
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
