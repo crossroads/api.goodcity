@@ -85,6 +85,7 @@ CREATE TABLE public.addresses (
 --
 
 CREATE SEQUENCE public.addresses_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -138,7 +139,7 @@ ALTER SEQUENCE public.appointment_slot_presets_id_seq OWNED BY public.appointmen
 
 CREATE TABLE public.appointment_slots (
     id integer NOT NULL,
-    "timestamp" timestamp without time zone,
+    "timestamp" timestamp with time zone,
     quota integer,
     note character varying DEFAULT ''::character varying
 );
@@ -184,6 +185,7 @@ CREATE TABLE public.auth_tokens (
 --
 
 CREATE SEQUENCE public.auth_tokens_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -291,6 +293,7 @@ CREATE TABLE public.boxes (
 --
 
 CREATE SEQUENCE public.boxes_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -326,6 +329,7 @@ CREATE TABLE public.braintree_transactions (
 --
 
 CREATE SEQUENCE public.braintree_transactions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -359,6 +363,7 @@ CREATE TABLE public.cancellation_reasons (
 --
 
 CREATE SEQUENCE public.cancellation_reasons_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -392,6 +397,7 @@ CREATE TABLE public.contacts (
 --
 
 CREATE SEQUENCE public.contacts_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -425,6 +431,7 @@ CREATE TABLE public.countries (
 --
 
 CREATE SEQUENCE public.countries_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -460,6 +467,7 @@ CREATE TABLE public.crossroads_transports (
 --
 
 CREATE SEQUENCE public.crossroads_transports_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -498,6 +506,7 @@ CREATE TABLE public.deliveries (
 --
 
 CREATE SEQUENCE public.deliveries_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -533,6 +542,7 @@ CREATE TABLE public.districts (
 --
 
 CREATE SEQUENCE public.districts_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -565,6 +575,7 @@ CREATE TABLE public.donor_conditions (
 --
 
 CREATE SEQUENCE public.donor_conditions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -604,6 +615,7 @@ CREATE TABLE public.gogovan_orders (
 --
 
 CREATE SEQUENCE public.gogovan_orders_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -637,6 +649,7 @@ CREATE TABLE public.gogovan_transports (
 --
 
 CREATE SEQUENCE public.gogovan_transports_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -663,8 +676,7 @@ CREATE TABLE public.goodcity_requests (
     description text,
     created_by_id integer,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    item_specifics text
+    updated_at timestamp with time zone NOT NULL
 );
 
 
@@ -707,6 +719,7 @@ CREATE TABLE public.holidays (
 --
 
 CREATE SEQUENCE public.holidays_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -778,6 +791,7 @@ CREATE TABLE public.images (
 --
 
 CREATE SEQUENCE public.images_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -807,6 +821,7 @@ CREATE TABLE public.inventory_numbers (
 --
 
 CREATE SEQUENCE public.inventory_numbers_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -846,6 +861,7 @@ CREATE TABLE public.items (
 --
 
 CREATE SEQUENCE public.items_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -879,6 +895,7 @@ CREATE TABLE public.locations (
 --
 
 CREATE SEQUENCE public.locations_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -915,6 +932,7 @@ CREATE TABLE public.messages (
 --
 
 CREATE SEQUENCE public.messages_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -970,6 +988,7 @@ CREATE TABLE public.offers (
 --
 
 CREATE SEQUENCE public.offers_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1013,6 +1032,7 @@ CREATE TABLE public.order_transports (
 --
 
 CREATE SEQUENCE public.order_transports_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1073,6 +1093,7 @@ CREATE TABLE public.orders (
 --
 
 CREATE SEQUENCE public.orders_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1109,6 +1130,7 @@ CREATE TABLE public.orders_packages (
 --
 
 CREATE SEQUENCE public.orders_packages_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1139,6 +1161,7 @@ CREATE TABLE public.orders_purposes (
 --
 
 CREATE SEQUENCE public.orders_purposes_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1173,6 +1196,7 @@ CREATE TABLE public.organisation_types (
 --
 
 CREATE SEQUENCE public.organisation_types_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1213,6 +1237,7 @@ CREATE TABLE public.organisations (
 --
 
 CREATE SEQUENCE public.organisations_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1246,6 +1271,7 @@ CREATE TABLE public.organisations_users (
 --
 
 CREATE SEQUENCE public.organisations_users_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1279,6 +1305,7 @@ CREATE TABLE public.package_categories (
 --
 
 CREATE SEQUENCE public.package_categories_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1311,6 +1338,7 @@ CREATE TABLE public.package_categories_package_types (
 --
 
 CREATE SEQUENCE public.package_categories_package_types_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1349,6 +1377,7 @@ CREATE TABLE public.package_types (
 --
 
 CREATE SEQUENCE public.package_types_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1403,8 +1432,7 @@ CREATE TABLE public.packages (
     set_item_id integer,
     case_number character varying,
     allow_web_publish boolean,
-    received_quantity integer,
-    last_allow_web_published boolean
+    received_quantity integer
 );
 
 
@@ -1413,6 +1441,7 @@ CREATE TABLE public.packages (
 --
 
 CREATE SEQUENCE public.packages_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1447,6 +1476,7 @@ CREATE TABLE public.packages_locations (
 --
 
 CREATE SEQUENCE public.packages_locations_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1481,6 +1511,7 @@ CREATE TABLE public.pallets (
 --
 
 CREATE SEQUENCE public.pallets_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1512,6 +1543,7 @@ CREATE TABLE public.permissions (
 --
 
 CREATE SEQUENCE public.permissions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1544,6 +1576,7 @@ CREATE TABLE public.purposes (
 --
 
 CREATE SEQUENCE public.purposes_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1576,6 +1609,7 @@ CREATE TABLE public.rejection_reasons (
 --
 
 CREATE SEQUENCE public.rejection_reasons_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1608,6 +1642,7 @@ CREATE TABLE public.role_permissions (
 --
 
 CREATE SEQUENCE public.role_permissions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1639,6 +1674,7 @@ CREATE TABLE public.roles (
 --
 
 CREATE SEQUENCE public.roles_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1674,6 +1710,7 @@ CREATE TABLE public.schedules (
 --
 
 CREATE SEQUENCE public.schedules_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1715,6 +1752,7 @@ CREATE TABLE public.stockit_activities (
 --
 
 CREATE SEQUENCE public.stockit_activities_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1750,6 +1788,7 @@ CREATE TABLE public.stockit_contacts (
 --
 
 CREATE SEQUENCE public.stockit_contacts_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1785,6 +1824,7 @@ CREATE TABLE public.stockit_local_orders (
 --
 
 CREATE SEQUENCE public.stockit_local_orders_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1817,6 +1857,7 @@ CREATE TABLE public.stockit_organisations (
 --
 
 CREATE SEQUENCE public.stockit_organisations_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1850,6 +1891,7 @@ CREATE TABLE public.subpackage_types (
 --
 
 CREATE SEQUENCE public.subpackage_types_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1883,6 +1925,7 @@ CREATE TABLE public.subscriptions (
 --
 
 CREATE SEQUENCE public.subscriptions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1915,6 +1958,7 @@ CREATE TABLE public.territories (
 --
 
 CREATE SEQUENCE public.territories_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1947,6 +1991,7 @@ CREATE TABLE public.timeslots (
 --
 
 CREATE SEQUENCE public.timeslots_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1979,6 +2024,7 @@ CREATE TABLE public.user_roles (
 --
 
 CREATE SEQUENCE public.user_roles_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2019,6 +2065,7 @@ CREATE TABLE public.users (
 --
 
 CREATE SEQUENCE public.users_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2056,6 +2103,7 @@ CREATE TABLE public.versions (
 --
 
 CREATE SEQUENCE public.versions_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4004,19 +4052,11 @@ INSERT INTO schema_migrations (version) VALUES ('20171213140618');
 
 INSERT INTO schema_migrations (version) VALUES ('20171218105636');
 
-INSERT INTO schema_migrations (version) VALUES ('20180109145337');
-
-INSERT INTO schema_migrations (version) VALUES ('20180110085957');
-
-INSERT INTO schema_migrations (version) VALUES ('20180214103014');
-
 INSERT INTO schema_migrations (version) VALUES ('20180214103728');
 
 INSERT INTO schema_migrations (version) VALUES ('20180214103753');
 
 INSERT INTO schema_migrations (version) VALUES ('20180214104436');
-
-INSERT INTO schema_migrations (version) VALUES ('20180525100416');
 
 INSERT INTO schema_migrations (version) VALUES ('20180528084205');
 
