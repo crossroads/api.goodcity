@@ -14,8 +14,9 @@ describe Api::V1::DonorConditionSerializer do
   end
 
   it "translates JSON" do
-    I18n.locale = 'zh-tw'
-    expect(json['donor_condition']['name']).to eql(donor_condition.name_zh_tw)
+    in_locale 'zh-tw' do
+      expect(json['donor_condition']['name']).to eql(donor_condition.name_zh_tw)
+    end
   end
 
 end
