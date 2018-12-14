@@ -67,7 +67,7 @@ jobs:
       - run:
           name: Wait for DB and Redis containers to start
           command: dockerize -wait tcp://localhost:5432 -wait tcp://localhost:6379 -timeout 1m
-      - run: bundle exec rake db:create:all db:structure:load
+      - run: bundle exec rake db:create:all db:schema:load
       #- run:
       #  name: Migrate 'timestamp without timezone' to 'timestamp with timezone'
       #  command: bundle exec rake db:migrate:redo VERSION=20181122111014 RAILS_ENV=test
