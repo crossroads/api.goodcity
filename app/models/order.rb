@@ -69,17 +69,6 @@ class Order < ActiveRecord::Base
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
-  def filter(opts = {})
-    query = FilterQueryBuilder.new
-      .with_state(opts.fetch(:state, []))
-      .with_type(opts.fetch(:type, []))
-      .build()
-
-    filtered_orders = where(query)
-    filtered_orders = filtered_orders.select { |o| o.is_priority? } if opts[:priority].present?
-    filtered_orders
-  end
-
   def delete_orders_packages
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
@@ -272,7 +261,6 @@ class Order < ActiveRecord::Base
   end
 
   def self.search(search_text, to_designate_item)
-    results = fetch_orders(to_designate_item)
     sql = <<-SQL
       code ILIKE (:query) OR
       description ILIKE (:query) OR
@@ -312,7 +300,7 @@ class Order < ActiveRecord::Base
     active_orders.goodcity_orders.joins(:versions).where(versions: {id: Version.select(:id).where(whodunnit: user_id.to_s, item_type: "Order")}).distinct.order(updated_at: :desc).limit(5)
   end
 
-  def self.orders_group_by_state(is_priority = false)
+  def self.orders_group_by_state(is_priority: false)
     filter(states: ACTIVE_ORDERS, priority: is_priority).group_by(&:state)
   end
 
@@ -351,84 +339,5 @@ class Order < ActiveRecord::Base
   #to satisfy push_updates
   def offer
     nil
-  end
-
-  def last_end_of_work_day
-    now = Time.now.in_time_zone
-    last_6pm = now.change(hour: 18, min: 0, sec: 0)
-    last_6pm -= 24.hours if now < last_6pm
-    last_6pm
-  end
-
-  class FilterQueryBuilder
-    @states = []
-    @types = []
-
-    def with_state(state)
-      if state.kind_of?(Array)
-        state.each { |st| with_state(st) }
-      else
-        @states.push state
-      end
-      self
-    end
-
-    def with_type(type)
-      if type.kind_of?(Array)
-        type.each { |t| with_type(t) }
-      else
-        @types.push type
-      end
-      self
-    end
-
-    def priority_only
-      @priority = true
-      self
-    end
-
-    def build()
-      ands = []
-      ands.push(states_query) unless @states.empty?
-      ands.push(types_query) unless @types.empty?
-      return ands
-        .map{ |str| "(#{str})" }
-        .join(" AND ");
-    end
-
-    private
-
-    def states_query
-      states_string = @states.map { |state| ActiveRecord::Base::sanitize(state) }.join(',')
-      "state IN (#{states_string}"
-    end
-
-    def types_query
-      @types
-        .map { |t| "#{t}_sql" }
-        .select { |method| self.respond_to?(method) }
-        .map { |method| "(#{self.send(method)})" }
-        .join(" OR ")
-    end
-
-    def appointment_sql
-      "order_transport.booking_type = #{BookingType.appointment.id}"
-    end
-
-    def online_order_pickup_sql
-      "order_transport.booking_type = #{BookingType.online_order.id} AND order_transport.transport_type = 'self"
-    end
-
-    def online_order_ggv_sql
-      "order_transport.booking_type = #{BookingType.online_order.id} AND order_transport.transport_type = 'ggv'"
-    end
-
-    def shipment_sql
-      "detail_type = 'shipment'"
-    end
-
-    def other_sql
-      "detail_type NOT IN (GoodCity, Shipment, StockItLocalOrder)"
-    end
   end
 end
