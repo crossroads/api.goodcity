@@ -99,10 +99,10 @@ module Api
       end
 
       def summary
-        active_orders = Order.orders_group_by_state(false)
+        active_orders = Order.orders_group_by_state(is_priority: false)
         active_orders_count = orders_count(active_orders)
 
-        priority_orders = Order.orders_group_by_state(true).transform_keys{ |key| "priority_".concat(key) }
+        priority_orders = Order.orders_group_by_state(is_priority: true).transform_keys{ |key| "priority_".concat(key) }
         priority_active_orders_count = orders_count(priority_orders)
 
         active_orders_count.merge!(priority_active_orders_count)
