@@ -85,7 +85,7 @@ module Api
 
       def recent_designations
         records = Order.recently_used(User.current_user.id)
-        render json: order_response(records.to_a)
+        render json: order_response(records)
       end
 
       def my_orders
