@@ -64,42 +64,6 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
   end
 
-  describe 'recently_used' do
-    let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-
-    let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-
-    let!(:orders) { (1..6).map.with_index { |order, index| create :order, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + index+1.hour }.map { |order| order.versions.first.update(whodunnit: order.created_by_id) } }
-    let!(:non_gc_orders) { (1..6).map { create :order, :with_state_submitted, detail_type: 'StockitLocalOrder', created_by_id: user.id, submitted_by_id: user.id, status: nil }.map { |order| order.versions.first.update(whodunnit: order.created_by_id) } }
-
-    before(:each) {
-      User.current_user = user
-    }
-
-    it "will show latest updated order as the first order" do
-      expect(Order.recently_used(user.id).first).to eq(Order.where(detail_type: "GoodCity").last)
-    end
-
-    it "will show top 5 updated orders" do
-      expect(Order.recently_used(User.current_user.id).count).to eq(5)
-    end
-
-    it "will not show non-logged in users order" do
-      expect(Order.recently_used(user1.id).count).to eq(0)
-    end
-
-    it "will show logged in users order" do
-      expect(Order.recently_used(User.current_user.id).count).to eq(5)
-    end
-
-    it "will show only goodcity orders" do
-      expect(Order.recently_used(User.current_user.id).map(&:detail_type).uniq.first).to eq("GoodCity")
-    end
-
-  end
-
   describe 'priority rules' do
     let(:at_6pm_today) { Time.now.in_time_zone.change(hour: 18) }
     let(:at_6pm_yesterday) { at_6pm_today - 24.hours }
@@ -193,15 +157,6 @@ RSpec.describe Order, type: :model do
         non_priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_after_6
         expect(priority_order.is_priority?).to eq(true)
         #expect(non_priority_order.is_priority?).to eq(false)
-      end
-
-      it 'should filter prioritised orders awaiting dispatch' do
-        priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
-        create :order, state: "awaiting_dispatch", order_transport: transport_after_6
-        records = Order.where(state: 'awaiting_dispatch')
-        expect(records.count).to eq(2)
-        expect(records.priority.count).to eq(1)
-        expect(records.priority.first.id).to eq(priority_order.id)
       end
 
       it 'should filter prioritised orders awaiting dispatch' do

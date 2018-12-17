@@ -20,6 +20,10 @@ FactoryBot.define do
       orders_packages { create_list :orders_package, 3, :with_state_requested}
     end
 
+    trait :with_goodcity_requests do
+      goodcity_requests { create_list :goodcity_request, 1}
+    end
+
     trait :with_stockit_id do
       sequence(:stockit_id) { |n| n }
     end
