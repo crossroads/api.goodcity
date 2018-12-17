@@ -308,8 +308,25 @@ class Order < ActiveRecord::Base
     order("key, recently_used_at DESC")
   end
 
-  def self.orders_group_by_state(is_priority: false)
-    filter(states: ACTIVE_ORDERS, priority: is_priority).group_by(&:state)
+  def self.non_priority_active_orders_count
+    active_orders_count_as_per_priority_and_state(is_priority: false)
+  end
+
+  def self.priority_active_orders_count
+    active_orders_count_as_per_priority_and_state(is_priority: true)
+  end
+
+  def self.active_orders_count_as_per_priority_and_state(is_priority: false)
+    orders = filter(states: ACTIVE_ORDERS, priority: is_priority).group_by(&:state)
+    if is_priority
+      orders_count_per_state(orders).transform_keys { |key| "priority_".concat(key) }
+    else
+      orders_count_per_state(orders)
+    end
+  end
+
+  def self.orders_count_per_state(orders)
+    orders.each { |key, value|  orders[key] = value.count }
   end
 
   def self.generate_gc_code
