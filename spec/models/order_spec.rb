@@ -434,4 +434,37 @@ RSpec.describe Order, type: :model do
       order_1.send_order_placed_sms_to_order_fulfilment_users
     end
   end
+
+  describe 'Order filtering rules' do
+    before do
+      create :order, state: "submitted", description: "A table", submitted_at: Time.now - 25.hours
+      create :order, state: "submitted", description: "Another table", submitted_at: Time.now - 25.hours
+      create :order, state: "submitted", description: "A dangerous weapon", submitted_at: Time.now - 25.hours
+      create :order, state: "processing", description: "A chair", processed_at: Time.now - 25.hours
+      create :order, state: "processing", description: "A third table", processed_at: Time.now - 25.hours
+      create :order, state: "closed", description: "A trampoline", closed_at: Time.now - 25.hours
+    end
+
+    it 'Should allow filtering a scoped relation' do
+      expect(Order.count).to eq(6)
+      expect(Order.where("description ILIKE '%table%'").count).to eq(3)
+      expect(Order.where("description ILIKE '%table%'").filter(states: ['submitted']).count).to eq(2)
+    end
+
+    it 'Should allow filtering an unscoped relation' do
+      expect(Order.count).to eq(6)
+      expect(Order.filter(states: ['submitted', 'closed']).count).to eq(4)
+    end
+
+    it 'Should allow chaining a scope' do
+      expect(Order.count).to eq(6)
+      expect(Order.filter(states: ['submitted']).where("description ILIKE '%table%'").count).to eq(2)
+    end
+
+    it 'Should not filter out anything if no explicit arguments are provided' do
+      expect(Order.count).to eq(6)
+      expect(Order.where("description ILIKE '%table%'").count).to eq(3)
+      expect(Order.where("description ILIKE '%table%'").filter().count).to eq(3)
+    end
+  end
 end

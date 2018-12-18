@@ -36,7 +36,7 @@ module OrderFiltering
     #   end
     #
     def filter(states: [], types: [], priority: false)
-      res = all
+      res = where(nil)
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
