@@ -2,18 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.7
--- Dumped by pg_dump version 10.6 (Ubuntu 10.6-0ubuntu0.18.04.1)
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
@@ -62,7 +57,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: addresses; Type: TABLE; Schema: public; Owner: -
+-- Name: addresses; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.addresses (
@@ -100,7 +95,7 @@ ALTER SEQUENCE public.addresses_id_seq OWNED BY public.addresses.id;
 
 
 --
--- Name: appointment_slot_presets; Type: TABLE; Schema: public; Owner: -
+-- Name: appointment_slot_presets; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.appointment_slot_presets (
@@ -132,7 +127,7 @@ ALTER SEQUENCE public.appointment_slot_presets_id_seq OWNED BY public.appointmen
 
 
 --
--- Name: appointment_slots; Type: TABLE; Schema: public; Owner: -
+-- Name: appointment_slots; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.appointment_slots (
@@ -163,7 +158,7 @@ ALTER SEQUENCE public.appointment_slots_id_seq OWNED BY public.appointment_slots
 
 
 --
--- Name: auth_tokens; Type: TABLE; Schema: public; Owner: -
+-- Name: auth_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.auth_tokens (
@@ -197,7 +192,7 @@ ALTER SEQUENCE public.auth_tokens_id_seq OWNED BY public.auth_tokens.id;
 
 
 --
--- Name: beneficiaries; Type: TABLE; Schema: public; Owner: -
+-- Name: beneficiaries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.beneficiaries (
@@ -234,7 +229,7 @@ ALTER SEQUENCE public.beneficiaries_id_seq OWNED BY public.beneficiaries.id;
 
 
 --
--- Name: booking_types; Type: TABLE; Schema: public; Owner: -
+-- Name: booking_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.booking_types (
@@ -267,7 +262,7 @@ ALTER SEQUENCE public.booking_types_id_seq OWNED BY public.booking_types.id;
 
 
 --
--- Name: boxes; Type: TABLE; Schema: public; Owner: -
+-- Name: boxes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.boxes (
@@ -302,7 +297,7 @@ ALTER SEQUENCE public.boxes_id_seq OWNED BY public.boxes.id;
 
 
 --
--- Name: braintree_transactions; Type: TABLE; Schema: public; Owner: -
+-- Name: braintree_transactions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.braintree_transactions (
@@ -337,7 +332,7 @@ ALTER SEQUENCE public.braintree_transactions_id_seq OWNED BY public.braintree_tr
 
 
 --
--- Name: cancellation_reasons; Type: TABLE; Schema: public; Owner: -
+-- Name: cancellation_reasons; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.cancellation_reasons (
@@ -370,7 +365,7 @@ ALTER SEQUENCE public.cancellation_reasons_id_seq OWNED BY public.cancellation_r
 
 
 --
--- Name: contacts; Type: TABLE; Schema: public; Owner: -
+-- Name: contacts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.contacts (
@@ -403,7 +398,7 @@ ALTER SEQUENCE public.contacts_id_seq OWNED BY public.contacts.id;
 
 
 --
--- Name: countries; Type: TABLE; Schema: public; Owner: -
+-- Name: countries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.countries (
@@ -436,7 +431,7 @@ ALTER SEQUENCE public.countries_id_seq OWNED BY public.countries.id;
 
 
 --
--- Name: crossroads_transports; Type: TABLE; Schema: public; Owner: -
+-- Name: crossroads_transports; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.crossroads_transports (
@@ -471,7 +466,7 @@ ALTER SEQUENCE public.crossroads_transports_id_seq OWNED BY public.crossroads_tr
 
 
 --
--- Name: deliveries; Type: TABLE; Schema: public; Owner: -
+-- Name: deliveries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.deliveries (
@@ -509,7 +504,7 @@ ALTER SEQUENCE public.deliveries_id_seq OWNED BY public.deliveries.id;
 
 
 --
--- Name: districts; Type: TABLE; Schema: public; Owner: -
+-- Name: districts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.districts (
@@ -544,7 +539,7 @@ ALTER SEQUENCE public.districts_id_seq OWNED BY public.districts.id;
 
 
 --
--- Name: donor_conditions; Type: TABLE; Schema: public; Owner: -
+-- Name: donor_conditions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.donor_conditions (
@@ -576,7 +571,7 @@ ALTER SEQUENCE public.donor_conditions_id_seq OWNED BY public.donor_conditions.i
 
 
 --
--- Name: gogovan_orders; Type: TABLE; Schema: public; Owner: -
+-- Name: gogovan_orders; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.gogovan_orders (
@@ -615,7 +610,7 @@ ALTER SEQUENCE public.gogovan_orders_id_seq OWNED BY public.gogovan_orders.id;
 
 
 --
--- Name: gogovan_transports; Type: TABLE; Schema: public; Owner: -
+-- Name: gogovan_transports; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.gogovan_transports (
@@ -648,7 +643,7 @@ ALTER SEQUENCE public.gogovan_transports_id_seq OWNED BY public.gogovan_transpor
 
 
 --
--- Name: goodcity_requests; Type: TABLE; Schema: public; Owner: -
+-- Name: goodcity_requests; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.goodcity_requests (
@@ -683,7 +678,7 @@ ALTER SEQUENCE public.goodcity_requests_id_seq OWNED BY public.goodcity_requests
 
 
 --
--- Name: holidays; Type: TABLE; Schema: public; Owner: -
+-- Name: holidays; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.holidays (
@@ -716,7 +711,7 @@ ALTER SEQUENCE public.holidays_id_seq OWNED BY public.holidays.id;
 
 
 --
--- Name: identity_types; Type: TABLE; Schema: public; Owner: -
+-- Name: identity_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.identity_types (
@@ -749,7 +744,7 @@ ALTER SEQUENCE public.identity_types_id_seq OWNED BY public.identity_types.id;
 
 
 --
--- Name: images; Type: TABLE; Schema: public; Owner: -
+-- Name: images; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.images (
@@ -786,7 +781,7 @@ ALTER SEQUENCE public.images_id_seq OWNED BY public.images.id;
 
 
 --
--- Name: inventory_numbers; Type: TABLE; Schema: public; Owner: -
+-- Name: inventory_numbers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.inventory_numbers (
@@ -815,7 +810,7 @@ ALTER SEQUENCE public.inventory_numbers_id_seq OWNED BY public.inventory_numbers
 
 
 --
--- Name: items; Type: TABLE; Schema: public; Owner: -
+-- Name: items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.items (
@@ -854,7 +849,7 @@ ALTER SEQUENCE public.items_id_seq OWNED BY public.items.id;
 
 
 --
--- Name: locations; Type: TABLE; Schema: public; Owner: -
+-- Name: locations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.locations (
@@ -887,7 +882,7 @@ ALTER SEQUENCE public.locations_id_seq OWNED BY public.locations.id;
 
 
 --
--- Name: messages; Type: TABLE; Schema: public; Owner: -
+-- Name: messages; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.messages (
@@ -923,7 +918,7 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 
 --
--- Name: offers; Type: TABLE; Schema: public; Owner: -
+-- Name: offers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.offers (
@@ -978,7 +973,7 @@ ALTER SEQUENCE public.offers_id_seq OWNED BY public.offers.id;
 
 
 --
--- Name: order_transports; Type: TABLE; Schema: public; Owner: -
+-- Name: order_transports; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.order_transports (
@@ -1021,7 +1016,7 @@ ALTER SEQUENCE public.order_transports_id_seq OWNED BY public.order_transports.i
 
 
 --
--- Name: orders; Type: TABLE; Schema: public; Owner: -
+-- Name: orders; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.orders (
@@ -1056,7 +1051,8 @@ CREATE TABLE public.orders (
     submitted_at timestamp with time zone,
     people_helped integer DEFAULT 0,
     beneficiary_id integer,
-    address_id integer
+    address_id integer,
+    cancellation_reason text
 );
 
 
@@ -1080,7 +1076,7 @@ ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
 
 
 --
--- Name: orders_packages; Type: TABLE; Schema: public; Owner: -
+-- Name: orders_packages; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.orders_packages (
@@ -1116,7 +1112,7 @@ ALTER SEQUENCE public.orders_packages_id_seq OWNED BY public.orders_packages.id;
 
 
 --
--- Name: orders_purposes; Type: TABLE; Schema: public; Owner: -
+-- Name: orders_purposes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.orders_purposes (
@@ -1146,7 +1142,7 @@ ALTER SEQUENCE public.orders_purposes_id_seq OWNED BY public.orders_purposes.id;
 
 
 --
--- Name: organisation_types; Type: TABLE; Schema: public; Owner: -
+-- Name: organisation_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.organisation_types (
@@ -1180,7 +1176,7 @@ ALTER SEQUENCE public.organisation_types_id_seq OWNED BY public.organisation_typ
 
 
 --
--- Name: organisations; Type: TABLE; Schema: public; Owner: -
+-- Name: organisations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.organisations (
@@ -1220,7 +1216,7 @@ ALTER SEQUENCE public.organisations_id_seq OWNED BY public.organisations.id;
 
 
 --
--- Name: organisations_users; Type: TABLE; Schema: public; Owner: -
+-- Name: organisations_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.organisations_users (
@@ -1253,7 +1249,7 @@ ALTER SEQUENCE public.organisations_users_id_seq OWNED BY public.organisations_u
 
 
 --
--- Name: package_categories; Type: TABLE; Schema: public; Owner: -
+-- Name: package_categories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.package_categories (
@@ -1286,7 +1282,7 @@ ALTER SEQUENCE public.package_categories_id_seq OWNED BY public.package_categori
 
 
 --
--- Name: package_categories_package_types; Type: TABLE; Schema: public; Owner: -
+-- Name: package_categories_package_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.package_categories_package_types (
@@ -1318,7 +1314,7 @@ ALTER SEQUENCE public.package_categories_package_types_id_seq OWNED BY public.pa
 
 
 --
--- Name: package_types; Type: TABLE; Schema: public; Owner: -
+-- Name: package_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.package_types (
@@ -1356,7 +1352,7 @@ ALTER SEQUENCE public.package_types_id_seq OWNED BY public.package_types.id;
 
 
 --
--- Name: packages; Type: TABLE; Schema: public; Owner: -
+-- Name: packages; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.packages (
@@ -1419,7 +1415,7 @@ ALTER SEQUENCE public.packages_id_seq OWNED BY public.packages.id;
 
 
 --
--- Name: packages_locations; Type: TABLE; Schema: public; Owner: -
+-- Name: packages_locations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.packages_locations (
@@ -1453,7 +1449,7 @@ ALTER SEQUENCE public.packages_locations_id_seq OWNED BY public.packages_locatio
 
 
 --
--- Name: pallets; Type: TABLE; Schema: public; Owner: -
+-- Name: pallets; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.pallets (
@@ -1487,7 +1483,7 @@ ALTER SEQUENCE public.pallets_id_seq OWNED BY public.pallets.id;
 
 
 --
--- Name: permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.permissions (
@@ -1518,7 +1514,7 @@ ALTER SEQUENCE public.permissions_id_seq OWNED BY public.permissions.id;
 
 
 --
--- Name: purposes; Type: TABLE; Schema: public; Owner: -
+-- Name: purposes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.purposes (
@@ -1550,7 +1546,7 @@ ALTER SEQUENCE public.purposes_id_seq OWNED BY public.purposes.id;
 
 
 --
--- Name: rejection_reasons; Type: TABLE; Schema: public; Owner: -
+-- Name: rejection_reasons; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.rejection_reasons (
@@ -1582,7 +1578,7 @@ ALTER SEQUENCE public.rejection_reasons_id_seq OWNED BY public.rejection_reasons
 
 
 --
--- Name: role_permissions; Type: TABLE; Schema: public; Owner: -
+-- Name: role_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.role_permissions (
@@ -1614,7 +1610,7 @@ ALTER SEQUENCE public.role_permissions_id_seq OWNED BY public.role_permissions.i
 
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: -
+-- Name: roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.roles (
@@ -1645,7 +1641,7 @@ ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
 
 
 --
--- Name: schedules; Type: TABLE; Schema: public; Owner: -
+-- Name: schedules; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.schedules (
@@ -1680,7 +1676,7 @@ ALTER SEQUENCE public.schedules_id_seq OWNED BY public.schedules.id;
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.schema_migrations (
@@ -1689,7 +1685,7 @@ CREATE TABLE public.schema_migrations (
 
 
 --
--- Name: stockit_activities; Type: TABLE; Schema: public; Owner: -
+-- Name: stockit_activities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.stockit_activities (
@@ -1721,7 +1717,7 @@ ALTER SEQUENCE public.stockit_activities_id_seq OWNED BY public.stockit_activiti
 
 
 --
--- Name: stockit_contacts; Type: TABLE; Schema: public; Owner: -
+-- Name: stockit_contacts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.stockit_contacts (
@@ -1756,7 +1752,7 @@ ALTER SEQUENCE public.stockit_contacts_id_seq OWNED BY public.stockit_contacts.i
 
 
 --
--- Name: stockit_local_orders; Type: TABLE; Schema: public; Owner: -
+-- Name: stockit_local_orders; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.stockit_local_orders (
@@ -1791,7 +1787,7 @@ ALTER SEQUENCE public.stockit_local_orders_id_seq OWNED BY public.stockit_local_
 
 
 --
--- Name: stockit_organisations; Type: TABLE; Schema: public; Owner: -
+-- Name: stockit_organisations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.stockit_organisations (
@@ -1823,7 +1819,7 @@ ALTER SEQUENCE public.stockit_organisations_id_seq OWNED BY public.stockit_organ
 
 
 --
--- Name: subpackage_types; Type: TABLE; Schema: public; Owner: -
+-- Name: subpackage_types; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.subpackage_types (
@@ -1856,7 +1852,7 @@ ALTER SEQUENCE public.subpackage_types_id_seq OWNED BY public.subpackage_types.i
 
 
 --
--- Name: subscriptions; Type: TABLE; Schema: public; Owner: -
+-- Name: subscriptions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.subscriptions (
@@ -1889,7 +1885,7 @@ ALTER SEQUENCE public.subscriptions_id_seq OWNED BY public.subscriptions.id;
 
 
 --
--- Name: territories; Type: TABLE; Schema: public; Owner: -
+-- Name: territories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.territories (
@@ -1921,7 +1917,7 @@ ALTER SEQUENCE public.territories_id_seq OWNED BY public.territories.id;
 
 
 --
--- Name: timeslots; Type: TABLE; Schema: public; Owner: -
+-- Name: timeslots; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.timeslots (
@@ -1953,7 +1949,7 @@ ALTER SEQUENCE public.timeslots_id_seq OWNED BY public.timeslots.id;
 
 
 --
--- Name: user_roles; Type: TABLE; Schema: public; Owner: -
+-- Name: user_roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.user_roles (
@@ -1985,7 +1981,7 @@ ALTER SEQUENCE public.user_roles_id_seq OWNED BY public.user_roles.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.users (
@@ -2025,7 +2021,7 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: versions; Type: TABLE; Schema: public; Owner: -
+-- Name: versions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE public.versions (
@@ -2062,399 +2058,399 @@ ALTER SEQUENCE public.versions_id_seq OWNED BY public.versions.id;
 
 
 --
--- Name: addresses id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.addresses ALTER COLUMN id SET DEFAULT nextval('public.addresses_id_seq'::regclass);
 
 
 --
--- Name: appointment_slot_presets id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.appointment_slot_presets ALTER COLUMN id SET DEFAULT nextval('public.appointment_slot_presets_id_seq'::regclass);
 
 
 --
--- Name: appointment_slots id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.appointment_slots ALTER COLUMN id SET DEFAULT nextval('public.appointment_slots_id_seq'::regclass);
 
 
 --
--- Name: auth_tokens id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.auth_tokens ALTER COLUMN id SET DEFAULT nextval('public.auth_tokens_id_seq'::regclass);
 
 
 --
--- Name: beneficiaries id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.beneficiaries ALTER COLUMN id SET DEFAULT nextval('public.beneficiaries_id_seq'::regclass);
 
 
 --
--- Name: booking_types id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.booking_types ALTER COLUMN id SET DEFAULT nextval('public.booking_types_id_seq'::regclass);
 
 
 --
--- Name: boxes id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.boxes ALTER COLUMN id SET DEFAULT nextval('public.boxes_id_seq'::regclass);
 
 
 --
--- Name: braintree_transactions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.braintree_transactions ALTER COLUMN id SET DEFAULT nextval('public.braintree_transactions_id_seq'::regclass);
 
 
 --
--- Name: cancellation_reasons id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cancellation_reasons ALTER COLUMN id SET DEFAULT nextval('public.cancellation_reasons_id_seq'::regclass);
 
 
 --
--- Name: contacts id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contacts ALTER COLUMN id SET DEFAULT nextval('public.contacts_id_seq'::regclass);
 
 
 --
--- Name: countries id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.countries ALTER COLUMN id SET DEFAULT nextval('public.countries_id_seq'::regclass);
 
 
 --
--- Name: crossroads_transports id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.crossroads_transports ALTER COLUMN id SET DEFAULT nextval('public.crossroads_transports_id_seq'::regclass);
 
 
 --
--- Name: deliveries id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.deliveries ALTER COLUMN id SET DEFAULT nextval('public.deliveries_id_seq'::regclass);
 
 
 --
--- Name: districts id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.districts ALTER COLUMN id SET DEFAULT nextval('public.districts_id_seq'::regclass);
 
 
 --
--- Name: donor_conditions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.donor_conditions ALTER COLUMN id SET DEFAULT nextval('public.donor_conditions_id_seq'::regclass);
 
 
 --
--- Name: gogovan_orders id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.gogovan_orders ALTER COLUMN id SET DEFAULT nextval('public.gogovan_orders_id_seq'::regclass);
 
 
 --
--- Name: gogovan_transports id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.gogovan_transports ALTER COLUMN id SET DEFAULT nextval('public.gogovan_transports_id_seq'::regclass);
 
 
 --
--- Name: goodcity_requests id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodcity_requests ALTER COLUMN id SET DEFAULT nextval('public.goodcity_requests_id_seq'::regclass);
 
 
 --
--- Name: holidays id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.holidays ALTER COLUMN id SET DEFAULT nextval('public.holidays_id_seq'::regclass);
 
 
 --
--- Name: identity_types id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.identity_types ALTER COLUMN id SET DEFAULT nextval('public.identity_types_id_seq'::regclass);
 
 
 --
--- Name: images id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.images ALTER COLUMN id SET DEFAULT nextval('public.images_id_seq'::regclass);
 
 
 --
--- Name: inventory_numbers id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory_numbers ALTER COLUMN id SET DEFAULT nextval('public.inventory_numbers_id_seq'::regclass);
 
 
 --
--- Name: items id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.items ALTER COLUMN id SET DEFAULT nextval('public.items_id_seq'::regclass);
 
 
 --
--- Name: locations id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.locations ALTER COLUMN id SET DEFAULT nextval('public.locations_id_seq'::regclass);
 
 
 --
--- Name: messages id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
 
 
 --
--- Name: offers id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.offers ALTER COLUMN id SET DEFAULT nextval('public.offers_id_seq'::regclass);
 
 
 --
--- Name: order_transports id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_transports ALTER COLUMN id SET DEFAULT nextval('public.order_transports_id_seq'::regclass);
 
 
 --
--- Name: orders id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
 
 
 --
--- Name: orders_packages id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_packages ALTER COLUMN id SET DEFAULT nextval('public.orders_packages_id_seq'::regclass);
 
 
 --
--- Name: orders_purposes id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_purposes ALTER COLUMN id SET DEFAULT nextval('public.orders_purposes_id_seq'::regclass);
 
 
 --
--- Name: organisation_types id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisation_types ALTER COLUMN id SET DEFAULT nextval('public.organisation_types_id_seq'::regclass);
 
 
 --
--- Name: organisations id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisations ALTER COLUMN id SET DEFAULT nextval('public.organisations_id_seq'::regclass);
 
 
 --
--- Name: organisations_users id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisations_users ALTER COLUMN id SET DEFAULT nextval('public.organisations_users_id_seq'::regclass);
 
 
 --
--- Name: package_categories id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.package_categories ALTER COLUMN id SET DEFAULT nextval('public.package_categories_id_seq'::regclass);
 
 
 --
--- Name: package_categories_package_types id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.package_categories_package_types ALTER COLUMN id SET DEFAULT nextval('public.package_categories_package_types_id_seq'::regclass);
 
 
 --
--- Name: package_types id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.package_types ALTER COLUMN id SET DEFAULT nextval('public.package_types_id_seq'::regclass);
 
 
 --
--- Name: packages id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.packages ALTER COLUMN id SET DEFAULT nextval('public.packages_id_seq'::regclass);
 
 
 --
--- Name: packages_locations id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.packages_locations ALTER COLUMN id SET DEFAULT nextval('public.packages_locations_id_seq'::regclass);
 
 
 --
--- Name: pallets id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.pallets ALTER COLUMN id SET DEFAULT nextval('public.pallets_id_seq'::regclass);
 
 
 --
--- Name: permissions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.permissions ALTER COLUMN id SET DEFAULT nextval('public.permissions_id_seq'::regclass);
 
 
 --
--- Name: purposes id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.purposes ALTER COLUMN id SET DEFAULT nextval('public.purposes_id_seq'::regclass);
 
 
 --
--- Name: rejection_reasons id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rejection_reasons ALTER COLUMN id SET DEFAULT nextval('public.rejection_reasons_id_seq'::regclass);
 
 
 --
--- Name: role_permissions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.role_permissions ALTER COLUMN id SET DEFAULT nextval('public.role_permissions_id_seq'::regclass);
 
 
 --
--- Name: roles id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
 
 
 --
--- Name: schedules id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.schedules ALTER COLUMN id SET DEFAULT nextval('public.schedules_id_seq'::regclass);
 
 
 --
--- Name: stockit_activities id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.stockit_activities ALTER COLUMN id SET DEFAULT nextval('public.stockit_activities_id_seq'::regclass);
 
 
 --
--- Name: stockit_contacts id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.stockit_contacts ALTER COLUMN id SET DEFAULT nextval('public.stockit_contacts_id_seq'::regclass);
 
 
 --
--- Name: stockit_local_orders id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.stockit_local_orders ALTER COLUMN id SET DEFAULT nextval('public.stockit_local_orders_id_seq'::regclass);
 
 
 --
--- Name: stockit_organisations id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.stockit_organisations ALTER COLUMN id SET DEFAULT nextval('public.stockit_organisations_id_seq'::regclass);
 
 
 --
--- Name: subpackage_types id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subpackage_types ALTER COLUMN id SET DEFAULT nextval('public.subpackage_types_id_seq'::regclass);
 
 
 --
--- Name: subscriptions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subscriptions ALTER COLUMN id SET DEFAULT nextval('public.subscriptions_id_seq'::regclass);
 
 
 --
--- Name: territories id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.territories ALTER COLUMN id SET DEFAULT nextval('public.territories_id_seq'::regclass);
 
 
 --
--- Name: timeslots id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.timeslots ALTER COLUMN id SET DEFAULT nextval('public.timeslots_id_seq'::regclass);
 
 
 --
--- Name: user_roles id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_roles ALTER COLUMN id SET DEFAULT nextval('public.user_roles_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Name: versions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.versions ALTER COLUMN id SET DEFAULT nextval('public.versions_id_seq'::regclass);
 
 
 --
--- Name: addresses addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.addresses
@@ -2462,7 +2458,7 @@ ALTER TABLE ONLY public.addresses
 
 
 --
--- Name: appointment_slot_presets appointment_slot_presets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: appointment_slot_presets_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.appointment_slot_presets
@@ -2470,7 +2466,7 @@ ALTER TABLE ONLY public.appointment_slot_presets
 
 
 --
--- Name: appointment_slots appointment_slots_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: appointment_slots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.appointment_slots
@@ -2478,7 +2474,7 @@ ALTER TABLE ONLY public.appointment_slots
 
 
 --
--- Name: auth_tokens auth_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: auth_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.auth_tokens
@@ -2486,7 +2482,7 @@ ALTER TABLE ONLY public.auth_tokens
 
 
 --
--- Name: beneficiaries beneficiaries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: beneficiaries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.beneficiaries
@@ -2494,7 +2490,7 @@ ALTER TABLE ONLY public.beneficiaries
 
 
 --
--- Name: booking_types booking_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: booking_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.booking_types
@@ -2502,7 +2498,7 @@ ALTER TABLE ONLY public.booking_types
 
 
 --
--- Name: boxes boxes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: boxes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.boxes
@@ -2510,7 +2506,7 @@ ALTER TABLE ONLY public.boxes
 
 
 --
--- Name: braintree_transactions braintree_transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: braintree_transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.braintree_transactions
@@ -2518,7 +2514,7 @@ ALTER TABLE ONLY public.braintree_transactions
 
 
 --
--- Name: cancellation_reasons cancellation_reasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cancellation_reasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.cancellation_reasons
@@ -2526,7 +2522,7 @@ ALTER TABLE ONLY public.cancellation_reasons
 
 
 --
--- Name: contacts contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.contacts
@@ -2534,7 +2530,7 @@ ALTER TABLE ONLY public.contacts
 
 
 --
--- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: countries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.countries
@@ -2542,7 +2538,7 @@ ALTER TABLE ONLY public.countries
 
 
 --
--- Name: crossroads_transports crossroads_transports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: crossroads_transports_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.crossroads_transports
@@ -2550,7 +2546,7 @@ ALTER TABLE ONLY public.crossroads_transports
 
 
 --
--- Name: deliveries deliveries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.deliveries
@@ -2558,7 +2554,7 @@ ALTER TABLE ONLY public.deliveries
 
 
 --
--- Name: districts districts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: districts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.districts
@@ -2566,7 +2562,7 @@ ALTER TABLE ONLY public.districts
 
 
 --
--- Name: donor_conditions donor_conditions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: donor_conditions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.donor_conditions
@@ -2574,7 +2570,7 @@ ALTER TABLE ONLY public.donor_conditions
 
 
 --
--- Name: gogovan_orders gogovan_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: gogovan_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.gogovan_orders
@@ -2582,7 +2578,7 @@ ALTER TABLE ONLY public.gogovan_orders
 
 
 --
--- Name: gogovan_transports gogovan_transports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: gogovan_transports_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.gogovan_transports
@@ -2590,7 +2586,7 @@ ALTER TABLE ONLY public.gogovan_transports
 
 
 --
--- Name: goodcity_requests goodcity_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodcity_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.goodcity_requests
@@ -2598,7 +2594,7 @@ ALTER TABLE ONLY public.goodcity_requests
 
 
 --
--- Name: holidays holidays_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: holidays_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.holidays
@@ -2606,7 +2602,7 @@ ALTER TABLE ONLY public.holidays
 
 
 --
--- Name: identity_types identity_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: identity_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.identity_types
@@ -2614,7 +2610,7 @@ ALTER TABLE ONLY public.identity_types
 
 
 --
--- Name: images images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: images_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.images
@@ -2622,7 +2618,7 @@ ALTER TABLE ONLY public.images
 
 
 --
--- Name: inventory_numbers inventory_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: inventory_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.inventory_numbers
@@ -2630,7 +2626,7 @@ ALTER TABLE ONLY public.inventory_numbers
 
 
 --
--- Name: items items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: items_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.items
@@ -2638,7 +2634,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- Name: locations locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.locations
@@ -2646,7 +2642,7 @@ ALTER TABLE ONLY public.locations
 
 
 --
--- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.messages
@@ -2654,7 +2650,7 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: offers offers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: offers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.offers
@@ -2662,7 +2658,7 @@ ALTER TABLE ONLY public.offers
 
 
 --
--- Name: order_transports order_transports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: order_transports_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.order_transports
@@ -2670,7 +2666,7 @@ ALTER TABLE ONLY public.order_transports
 
 
 --
--- Name: orders_packages orders_packages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_packages_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.orders_packages
@@ -2678,7 +2674,7 @@ ALTER TABLE ONLY public.orders_packages
 
 
 --
--- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.orders
@@ -2686,7 +2682,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: orders_purposes orders_purposes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_purposes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.orders_purposes
@@ -2694,7 +2690,7 @@ ALTER TABLE ONLY public.orders_purposes
 
 
 --
--- Name: organisation_types organisation_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: organisation_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.organisation_types
@@ -2702,7 +2698,7 @@ ALTER TABLE ONLY public.organisation_types
 
 
 --
--- Name: organisations organisations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: organisations_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.organisations
@@ -2710,7 +2706,7 @@ ALTER TABLE ONLY public.organisations
 
 
 --
--- Name: organisations_users organisations_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: organisations_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.organisations_users
@@ -2718,7 +2714,7 @@ ALTER TABLE ONLY public.organisations_users
 
 
 --
--- Name: package_categories_package_types package_categories_package_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: package_categories_package_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.package_categories_package_types
@@ -2726,7 +2722,7 @@ ALTER TABLE ONLY public.package_categories_package_types
 
 
 --
--- Name: package_categories package_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: package_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.package_categories
@@ -2734,7 +2730,7 @@ ALTER TABLE ONLY public.package_categories
 
 
 --
--- Name: package_types package_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: package_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.package_types
@@ -2742,7 +2738,7 @@ ALTER TABLE ONLY public.package_types
 
 
 --
--- Name: packages_locations packages_locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: packages_locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.packages_locations
@@ -2750,7 +2746,7 @@ ALTER TABLE ONLY public.packages_locations
 
 
 --
--- Name: packages packages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: packages_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.packages
@@ -2758,7 +2754,7 @@ ALTER TABLE ONLY public.packages
 
 
 --
--- Name: pallets pallets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pallets_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.pallets
@@ -2766,7 +2762,7 @@ ALTER TABLE ONLY public.pallets
 
 
 --
--- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.permissions
@@ -2774,7 +2770,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- Name: purposes purposes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: purposes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.purposes
@@ -2782,7 +2778,7 @@ ALTER TABLE ONLY public.purposes
 
 
 --
--- Name: rejection_reasons rejection_reasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: rejection_reasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.rejection_reasons
@@ -2790,7 +2786,7 @@ ALTER TABLE ONLY public.rejection_reasons
 
 
 --
--- Name: role_permissions role_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: role_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.role_permissions
@@ -2798,7 +2794,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.roles
@@ -2806,7 +2802,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: schedules schedules_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: schedules_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.schedules
@@ -2814,7 +2810,7 @@ ALTER TABLE ONLY public.schedules
 
 
 --
--- Name: stockit_activities stockit_activities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: stockit_activities_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.stockit_activities
@@ -2822,7 +2818,7 @@ ALTER TABLE ONLY public.stockit_activities
 
 
 --
--- Name: stockit_contacts stockit_contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: stockit_contacts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.stockit_contacts
@@ -2830,7 +2826,7 @@ ALTER TABLE ONLY public.stockit_contacts
 
 
 --
--- Name: stockit_local_orders stockit_local_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: stockit_local_orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.stockit_local_orders
@@ -2838,7 +2834,7 @@ ALTER TABLE ONLY public.stockit_local_orders
 
 
 --
--- Name: stockit_organisations stockit_organisations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: stockit_organisations_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.stockit_organisations
@@ -2846,7 +2842,7 @@ ALTER TABLE ONLY public.stockit_organisations
 
 
 --
--- Name: subpackage_types subpackage_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subpackage_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.subpackage_types
@@ -2854,7 +2850,7 @@ ALTER TABLE ONLY public.subpackage_types
 
 
 --
--- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.subscriptions
@@ -2862,7 +2858,7 @@ ALTER TABLE ONLY public.subscriptions
 
 
 --
--- Name: territories territories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: territories_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.territories
@@ -2870,7 +2866,7 @@ ALTER TABLE ONLY public.territories
 
 
 --
--- Name: timeslots timeslots_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: timeslots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.timeslots
@@ -2878,7 +2874,7 @@ ALTER TABLE ONLY public.timeslots
 
 
 --
--- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.user_roles
@@ -2886,7 +2882,7 @@ ALTER TABLE ONLY public.user_roles
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.users
@@ -2894,7 +2890,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: versions versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY public.versions
@@ -2902,749 +2898,749 @@ ALTER TABLE ONLY public.versions
 
 
 --
--- Name: index_addresses_on_addressable_id_and_addressable_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_addresses_on_addressable_id_and_addressable_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_addresses_on_addressable_id_and_addressable_type ON public.addresses USING btree (addressable_id, addressable_type);
 
 
 --
--- Name: index_addresses_on_district_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_addresses_on_district_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_addresses_on_district_id ON public.addresses USING btree (district_id);
 
 
 --
--- Name: index_auth_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_auth_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_auth_tokens_on_user_id ON public.auth_tokens USING btree (user_id);
 
 
 --
--- Name: index_beneficiaries_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_beneficiaries_on_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_beneficiaries_on_created_by_id ON public.beneficiaries USING btree (created_by_id);
 
 
 --
--- Name: index_beneficiaries_on_identity_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_beneficiaries_on_identity_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_beneficiaries_on_identity_type_id ON public.beneficiaries USING btree (identity_type_id);
 
 
 --
--- Name: index_boxes_on_pallet_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_boxes_on_pallet_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_boxes_on_pallet_id ON public.boxes USING btree (pallet_id);
 
 
 --
--- Name: index_braintree_transactions_on_customer_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_braintree_transactions_on_customer_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_braintree_transactions_on_customer_id ON public.braintree_transactions USING btree (customer_id);
 
 
 --
--- Name: index_deliveries_on_contact_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_deliveries_on_contact_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_deliveries_on_contact_id ON public.deliveries USING btree (contact_id);
 
 
 --
--- Name: index_deliveries_on_gogovan_order_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_deliveries_on_gogovan_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_deliveries_on_gogovan_order_id ON public.deliveries USING btree (gogovan_order_id);
 
 
 --
--- Name: index_deliveries_on_offer_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_deliveries_on_offer_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_deliveries_on_offer_id ON public.deliveries USING btree (offer_id);
 
 
 --
--- Name: index_deliveries_on_schedule_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_deliveries_on_schedule_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_deliveries_on_schedule_id ON public.deliveries USING btree (schedule_id);
 
 
 --
--- Name: index_districts_on_territory_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_districts_on_territory_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_districts_on_territory_id ON public.districts USING btree (territory_id);
 
 
 --
--- Name: index_gogovan_orders_on_ggv_uuid; Type: INDEX; Schema: public; Owner: -
+-- Name: index_gogovan_orders_on_ggv_uuid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_gogovan_orders_on_ggv_uuid ON public.gogovan_orders USING btree (ggv_uuid);
 
 
 --
--- Name: index_goodcity_requests_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_goodcity_requests_on_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_goodcity_requests_on_created_by_id ON public.goodcity_requests USING btree (created_by_id);
 
 
 --
--- Name: index_goodcity_requests_on_order_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_goodcity_requests_on_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_goodcity_requests_on_order_id ON public.goodcity_requests USING btree (order_id);
 
 
 --
--- Name: index_goodcity_requests_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_goodcity_requests_on_package_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_goodcity_requests_on_package_type_id ON public.goodcity_requests USING btree (package_type_id);
 
 
 --
--- Name: index_images_on_imageable_id_and_imageable_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_images_on_imageable_id_and_imageable_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_images_on_imageable_id_and_imageable_type ON public.images USING btree (imageable_id, imageable_type);
 
 
 --
--- Name: index_items_on_donor_condition_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_items_on_donor_condition_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_items_on_donor_condition_id ON public.items USING btree (donor_condition_id);
 
 
 --
--- Name: index_items_on_offer_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_items_on_offer_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_items_on_offer_id ON public.items USING btree (offer_id);
 
 
 --
--- Name: index_items_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_items_on_package_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_items_on_package_type_id ON public.items USING btree (package_type_id);
 
 
 --
--- Name: index_items_on_rejection_reason_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_items_on_rejection_reason_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_items_on_rejection_reason_id ON public.items USING btree (rejection_reason_id);
 
 
 --
--- Name: index_messages_on_item_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_messages_on_item_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_messages_on_item_id ON public.messages USING btree (item_id);
 
 
 --
--- Name: index_messages_on_offer_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_messages_on_offer_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_messages_on_offer_id ON public.messages USING btree (offer_id);
 
 
 --
--- Name: index_messages_on_sender_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_messages_on_sender_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_messages_on_sender_id ON public.messages USING btree (sender_id);
 
 
 --
--- Name: index_offers_on_cancellation_reason_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_offers_on_cancellation_reason_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_offers_on_cancellation_reason_id ON public.offers USING btree (cancellation_reason_id);
 
 
 --
--- Name: index_offers_on_closed_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_offers_on_closed_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_offers_on_closed_by_id ON public.offers USING btree (closed_by_id);
 
 
 --
--- Name: index_offers_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_offers_on_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_offers_on_created_by_id ON public.offers USING btree (created_by_id);
 
 
 --
--- Name: index_offers_on_crossroads_transport_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_offers_on_crossroads_transport_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_offers_on_crossroads_transport_id ON public.offers USING btree (crossroads_transport_id);
 
 
 --
--- Name: index_offers_on_gogovan_transport_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_offers_on_gogovan_transport_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_offers_on_gogovan_transport_id ON public.offers USING btree (gogovan_transport_id);
 
 
 --
--- Name: index_offers_on_received_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_offers_on_received_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_offers_on_received_by_id ON public.offers USING btree (received_by_id);
 
 
 --
--- Name: index_offers_on_reviewed_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_offers_on_reviewed_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_offers_on_reviewed_by_id ON public.offers USING btree (reviewed_by_id);
 
 
 --
--- Name: index_order_transports_on_booking_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_order_transports_on_booking_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_order_transports_on_booking_type_id ON public.order_transports USING btree (booking_type_id);
 
 
 --
--- Name: index_order_transports_on_contact_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_order_transports_on_contact_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_order_transports_on_contact_id ON public.order_transports USING btree (contact_id);
 
 
 --
--- Name: index_order_transports_on_gogovan_order_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_order_transports_on_gogovan_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_order_transports_on_gogovan_order_id ON public.order_transports USING btree (gogovan_order_id);
 
 
 --
--- Name: index_order_transports_on_gogovan_transport_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_order_transports_on_gogovan_transport_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_order_transports_on_gogovan_transport_id ON public.order_transports USING btree (gogovan_transport_id);
 
 
 --
--- Name: index_order_transports_on_order_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_order_transports_on_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_order_transports_on_order_id ON public.order_transports USING btree (order_id);
 
 
 --
--- Name: index_orders_on_address_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_address_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_address_id ON public.orders USING btree (address_id);
 
 
 --
--- Name: index_orders_on_beneficiary_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_beneficiary_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_beneficiary_id ON public.orders USING btree (beneficiary_id);
 
 
 --
--- Name: index_orders_on_cancelled_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_cancelled_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_cancelled_by_id ON public.orders USING btree (cancelled_by_id);
 
 
 --
--- Name: index_orders_on_closed_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_closed_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_closed_by_id ON public.orders USING btree (closed_by_id);
 
 
 --
--- Name: index_orders_on_country_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_country_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_country_id ON public.orders USING btree (country_id);
 
 
 --
--- Name: index_orders_on_created_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_created_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_created_by_id ON public.orders USING btree (created_by_id);
 
 
 --
--- Name: index_orders_on_detail_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_detail_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_detail_id ON public.orders USING btree (detail_id);
 
 
 --
--- Name: index_orders_on_detail_id_and_detail_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_detail_id_and_detail_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_detail_id_and_detail_type ON public.orders USING btree (detail_id, detail_type);
 
 
 --
--- Name: index_orders_on_dispatch_started_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_dispatch_started_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_dispatch_started_by_id ON public.orders USING btree (dispatch_started_by_id);
 
 
 --
--- Name: index_orders_on_organisation_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_organisation_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_organisation_id ON public.orders USING btree (organisation_id);
 
 
 --
--- Name: index_orders_on_process_completed_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_process_completed_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_process_completed_by_id ON public.orders USING btree (process_completed_by_id);
 
 
 --
--- Name: index_orders_on_processed_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_processed_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_processed_by_id ON public.orders USING btree (processed_by_id);
 
 
 --
--- Name: index_orders_on_stockit_activity_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_stockit_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_stockit_activity_id ON public.orders USING btree (stockit_activity_id);
 
 
 --
--- Name: index_orders_on_stockit_contact_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_stockit_contact_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_stockit_contact_id ON public.orders USING btree (stockit_contact_id);
 
 
 --
--- Name: index_orders_on_stockit_organisation_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_stockit_organisation_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_stockit_organisation_id ON public.orders USING btree (stockit_organisation_id);
 
 
 --
--- Name: index_orders_on_submitted_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_on_submitted_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_on_submitted_by_id ON public.orders USING btree (submitted_by_id);
 
 
 --
--- Name: index_orders_packages_on_order_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_packages_on_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_packages_on_order_id ON public.orders_packages USING btree (order_id);
 
 
 --
--- Name: index_orders_packages_on_order_id_and_package_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_packages_on_order_id_and_package_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_packages_on_order_id_and_package_id ON public.orders_packages USING btree (order_id, package_id);
 
 
 --
--- Name: index_orders_packages_on_package_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_packages_on_package_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_packages_on_package_id ON public.orders_packages USING btree (package_id);
 
 
 --
--- Name: index_orders_packages_on_updated_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_packages_on_updated_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_packages_on_updated_by_id ON public.orders_packages USING btree (updated_by_id);
 
 
 --
--- Name: index_orders_purposes_on_order_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_purposes_on_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_purposes_on_order_id ON public.orders_purposes USING btree (order_id);
 
 
 --
--- Name: index_orders_purposes_on_purpose_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_orders_purposes_on_purpose_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_orders_purposes_on_purpose_id ON public.orders_purposes USING btree (purpose_id);
 
 
 --
--- Name: index_organisations_on_country_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_organisations_on_country_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_organisations_on_country_id ON public.organisations USING btree (country_id);
 
 
 --
--- Name: index_organisations_on_district_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_organisations_on_district_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_organisations_on_district_id ON public.organisations USING btree (district_id);
 
 
 --
--- Name: index_organisations_on_organisation_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_organisations_on_organisation_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_organisations_on_organisation_type_id ON public.organisations USING btree (organisation_type_id);
 
 
 --
--- Name: index_organisations_users_on_organisation_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_organisations_users_on_organisation_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_organisations_users_on_organisation_id ON public.organisations_users USING btree (organisation_id);
 
 
 --
--- Name: index_organisations_users_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_organisations_users_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_organisations_users_on_user_id ON public.organisations_users USING btree (user_id);
 
 
 --
--- Name: index_package_categories_on_parent_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_package_categories_on_parent_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_package_categories_on_parent_id ON public.package_categories USING btree (parent_id);
 
 
 --
--- Name: index_package_categories_package_types_on_package_category_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_package_categories_package_types_on_package_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_package_categories_package_types_on_package_category_id ON public.package_categories_package_types USING btree (package_category_id);
 
 
 --
--- Name: index_package_categories_package_types_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_package_categories_package_types_on_package_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_package_categories_package_types_on_package_type_id ON public.package_categories_package_types USING btree (package_type_id);
 
 
 --
--- Name: index_package_types_on_location_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_package_types_on_location_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_package_types_on_location_id ON public.package_types USING btree (location_id);
 
 
 --
--- Name: index_packages_locations_on_location_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_locations_on_location_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_locations_on_location_id ON public.packages_locations USING btree (location_id);
 
 
 --
--- Name: index_packages_locations_on_location_id_and_package_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_locations_on_location_id_and_package_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_locations_on_location_id_and_package_id ON public.packages_locations USING btree (location_id, package_id);
 
 
 --
--- Name: index_packages_locations_on_package_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_locations_on_package_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_locations_on_package_id ON public.packages_locations USING btree (package_id);
 
 
 --
--- Name: index_packages_on_box_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_box_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_box_id ON public.packages USING btree (box_id);
 
 
 --
--- Name: index_packages_on_donor_condition_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_donor_condition_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_donor_condition_id ON public.packages USING btree (donor_condition_id);
 
 
 --
--- Name: index_packages_on_item_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_item_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_item_id ON public.packages USING btree (item_id);
 
 
 --
--- Name: index_packages_on_location_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_location_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_location_id ON public.packages USING btree (location_id);
 
 
 --
--- Name: index_packages_on_offer_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_offer_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_offer_id ON public.packages USING btree (offer_id);
 
 
 --
--- Name: index_packages_on_order_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_order_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_order_id ON public.packages USING btree (order_id);
 
 
 --
--- Name: index_packages_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_package_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_package_type_id ON public.packages USING btree (package_type_id);
 
 
 --
--- Name: index_packages_on_pallet_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_pallet_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_pallet_id ON public.packages USING btree (pallet_id);
 
 
 --
--- Name: index_packages_on_set_item_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_set_item_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_set_item_id ON public.packages USING btree (set_item_id);
 
 
 --
--- Name: index_packages_on_stockit_designated_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_stockit_designated_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_stockit_designated_by_id ON public.packages USING btree (stockit_designated_by_id);
 
 
 --
--- Name: index_packages_on_stockit_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_stockit_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_stockit_id ON public.packages USING btree (stockit_id);
 
 
 --
--- Name: index_packages_on_stockit_moved_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_stockit_moved_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_stockit_moved_by_id ON public.packages USING btree (stockit_moved_by_id);
 
 
 --
--- Name: index_packages_on_stockit_sent_by_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_packages_on_stockit_sent_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_packages_on_stockit_sent_by_id ON public.packages USING btree (stockit_sent_by_id);
 
 
 --
--- Name: index_role_permissions_on_permission_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_role_permissions_on_permission_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_role_permissions_on_permission_id ON public.role_permissions USING btree (permission_id);
 
 
 --
--- Name: index_role_permissions_on_role_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_role_permissions_on_role_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_role_permissions_on_role_id ON public.role_permissions USING btree (role_id);
 
 
 --
--- Name: index_subpackage_types_on_package_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_subpackage_types_on_package_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_subpackage_types_on_package_type_id ON public.subpackage_types USING btree (package_type_id);
 
 
 --
--- Name: index_subpackage_types_on_package_type_id_and_package_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_subpackage_types_on_package_type_id_and_package_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_subpackage_types_on_package_type_id_and_package_type_id ON public.subpackage_types USING btree (package_type_id, package_type_id);
 
 
 --
--- Name: index_subpackage_types_on_subpackage_type_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_subpackage_types_on_subpackage_type_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_subpackage_types_on_subpackage_type_id ON public.subpackage_types USING btree (subpackage_type_id);
 
 
 --
--- Name: index_user_roles_on_role_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_user_roles_on_role_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_user_roles_on_role_id ON public.user_roles USING btree (role_id);
 
 
 --
--- Name: index_user_roles_on_user_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_user_roles_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_user_roles_on_user_id ON public.user_roles USING btree (user_id);
 
 
 --
--- Name: index_users_on_image_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_image_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_users_on_image_id ON public.users USING btree (image_id);
 
 
 --
--- Name: index_users_on_mobile; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_mobile; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_users_on_mobile ON public.users USING btree (mobile);
 
 
 --
--- Name: index_users_on_permission_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_permission_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_users_on_permission_id ON public.users USING btree (permission_id);
 
 
 --
--- Name: index_versions_on_item_type_and_item_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_versions_on_item_type_and_item_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_versions_on_item_type_and_item_id ON public.versions USING btree (item_type, item_id);
 
 
 --
--- Name: index_versions_on_related_id_and_related_type; Type: INDEX; Schema: public; Owner: -
+-- Name: index_versions_on_related_id_and_related_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_versions_on_related_id_and_related_type ON public.versions USING btree (related_id, related_type);
 
 
 --
--- Name: index_versions_on_whodunnit; Type: INDEX; Schema: public; Owner: -
+-- Name: index_versions_on_whodunnit; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_versions_on_whodunnit ON public.versions USING btree (whodunnit);
 
 
 --
--- Name: inventory_numbers_search_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: inventory_numbers_search_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX inventory_numbers_search_idx ON public.packages USING gin (inventory_number);
+CREATE INDEX inventory_numbers_search_idx ON public.packages USING gin (inventory_number public.gin_trgm_ops);
 
 
 --
--- Name: offer_user_message; Type: INDEX; Schema: public; Owner: -
+-- Name: offer_user_message; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX offer_user_message ON public.subscriptions USING btree (offer_id, user_id, message_id);
 
 
 --
--- Name: orders_code_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: orders_code_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX orders_code_idx ON public.orders USING gin (code);
-
-
---
--- Name: st_contacts_first_name_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX st_contacts_first_name_idx ON public.stockit_contacts USING gin (first_name);
+CREATE INDEX orders_code_idx ON public.orders USING gin (code public.gin_trgm_ops);
 
 
 --
--- Name: st_contacts_last_name_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: st_contacts_first_name_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX st_contacts_last_name_idx ON public.stockit_contacts USING gin (last_name);
-
-
---
--- Name: st_contacts_mobile_phone_number_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX st_contacts_mobile_phone_number_idx ON public.stockit_contacts USING gin (mobile_phone_number);
+CREATE INDEX st_contacts_first_name_idx ON public.stockit_contacts USING gin (first_name public.gin_trgm_ops);
 
 
 --
--- Name: st_contacts_phone_number_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: st_contacts_last_name_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX st_contacts_phone_number_idx ON public.stockit_contacts USING gin (phone_number);
-
-
---
--- Name: st_local_orders_client_name_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX st_local_orders_client_name_idx ON public.stockit_local_orders USING gin (client_name);
+CREATE INDEX st_contacts_last_name_idx ON public.stockit_contacts USING gin (last_name public.gin_trgm_ops);
 
 
 --
--- Name: st_organisations_name_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: st_contacts_mobile_phone_number_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX st_organisations_name_idx ON public.stockit_organisations USING gin (name);
+CREATE INDEX st_contacts_mobile_phone_number_idx ON public.stockit_contacts USING gin (mobile_phone_number public.gin_trgm_ops);
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -
+-- Name: st_contacts_phone_number_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX st_contacts_phone_number_idx ON public.stockit_contacts USING gin (phone_number public.gin_trgm_ops);
+
+
+--
+-- Name: st_local_orders_client_name_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX st_local_orders_client_name_idx ON public.stockit_local_orders USING gin (client_name public.gin_trgm_ops);
+
+
+--
+-- Name: st_organisations_name_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX st_organisations_name_idx ON public.stockit_organisations USING gin (name public.gin_trgm_ops);
+
+
+--
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING btree (version);
 
 
 --
--- Name: beneficiaries fk_rails_2c1fc874b0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_2c1fc874b0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.beneficiaries
@@ -3652,7 +3648,7 @@ ALTER TABLE ONLY public.beneficiaries
 
 
 --
--- Name: goodcity_requests fk_rails_3015d19682; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_3015d19682; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodcity_requests
@@ -3660,7 +3656,7 @@ ALTER TABLE ONLY public.goodcity_requests
 
 
 --
--- Name: organisations_users fk_rails_3fb2fe50fb; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_3fb2fe50fb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisations_users
@@ -3668,7 +3664,7 @@ ALTER TABLE ONLY public.organisations_users
 
 
 --
--- Name: organisations fk_rails_574ca3be5d; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_574ca3be5d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisations
@@ -3676,7 +3672,7 @@ ALTER TABLE ONLY public.organisations
 
 
 --
--- Name: organisations fk_rails_69adf6173e; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_69adf6173e; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisations
@@ -3684,7 +3680,7 @@ ALTER TABLE ONLY public.organisations
 
 
 --
--- Name: organisations fk_rails_7b7111c3a1; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_7b7111c3a1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisations
@@ -3692,7 +3688,7 @@ ALTER TABLE ONLY public.organisations
 
 
 --
--- Name: goodcity_requests fk_rails_b30d4199d6; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_b30d4199d6; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodcity_requests
@@ -3700,7 +3696,7 @@ ALTER TABLE ONLY public.goodcity_requests
 
 
 --
--- Name: organisations_users fk_rails_fee009160b; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fk_rails_fee009160b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.organisations_users
@@ -3711,7 +3707,7 @@ ALTER TABLE ONLY public.organisations_users
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public;
+SET search_path TO "$user",public;
 
 INSERT INTO schema_migrations (version) VALUES ('20140625090842');
 
@@ -4062,4 +4058,6 @@ INSERT INTO schema_migrations (version) VALUES ('20181121053137');
 INSERT INTO schema_migrations (version) VALUES ('20181122111014');
 
 INSERT INTO schema_migrations (version) VALUES ('20181207070950');
+
+INSERT INTO schema_migrations (version) VALUES ('20181212060849');
 
