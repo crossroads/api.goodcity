@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
   let!(:order) { create :order, :with_state_submitted, created_by: charity_user }
+  let!(:dispatching_order) { create :order, :with_state_dispatching }
+  let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch }
+  let!(:processing_order) { create :order, :with_state_processing }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
   let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder" }
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
@@ -59,7 +62,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         request.headers["X-GOODCITY-APP-NAME"] = "admin.goodcity"
         get :index
         expect(response.status).to eq(200)
-        expect(parsed_body['designations'].count).to eq(2)
+        expect(parsed_body['designations'].count).to eq(5)
       end
     end
 
@@ -86,7 +89,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it 'returns the remaining items in the last page' do
         5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 non-draft orders in total
         get :index, page: 2, per_page: 5
-        expect(parsed_body['designations'].count).to eq(2)
+        expect(parsed_body['designations'].count).to eq(5)
       end
 
       it 'returns searched non-draft order as designation if search text is present' do
@@ -274,7 +277,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['designations'].count).to eq(0)
           expect(parsed_body['meta']['total_pages']).to eql(0)
         end
-  
+
         it 'returns a draft stockit order' do
           record = create :order, :with_state_draft, detail_type: 'StockitLocalOrder'
           get :index, searchText: record.code, toDesignateItem: true
@@ -290,7 +293,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['designations'].count).to eq(0)
           expect(parsed_body['meta']['total_pages']).to eql(0)
         end
-  
+
         it 'returns a draft goodicty order if status marks it as active' do
           draft_order_with_status = create :order, state: 'draft', status: 'Processing', submitted_at: DateTime.now
           get :index, searchText: draft_order_with_status.code, toDesignateItem: true
@@ -301,11 +304,29 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
     end
+
+    context 'Order Summary ' do
+
+      before { generate_and_set_token(user) }
+
+      it "returns 200", :show_in_doc do
+        get :summary
+        expect(response.status).to eq(200)
+      end
+
+      it 'returns orders count for each category' do
+        get :summary
+        expect(parsed_body['submitted']).to eq(2)
+        expect(parsed_body['awaiting_dispatch']).to eq(1)
+        expect(parsed_body['processing']).to eq(1)
+        expect(parsed_body['dispatching']).to eq(1)
+      end
+    end
   end
 
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
-    
+
     context 'should merge offline cart orders_packages on login with order' do
       it "if order is in draft state" do
         package = create :package, quantity: 1, received_quantity: 1
@@ -349,7 +370,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         beneficiary = Beneficiary.find_by(id: parsed_body['order']['beneficiary_id'])
         expect(beneficiary.created_by_id).to eq(user.id)
       end
-      
+
       it 'should create an order with nested address' do
         address = FactoryBot.build(:address)
         set_browse_app_header
