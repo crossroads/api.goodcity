@@ -3991,11 +3991,19 @@ INSERT INTO schema_migrations (version) VALUES ('20171213140618');
 
 INSERT INTO schema_migrations (version) VALUES ('20171218105636');
 
+INSERT INTO schema_migrations (version) VALUES ('20180109145337');
+
+INSERT INTO schema_migrations (version) VALUES ('20180110085957');
+
+INSERT INTO schema_migrations (version) VALUES ('20180214103014');
+
 INSERT INTO schema_migrations (version) VALUES ('20180214103728');
 
 INSERT INTO schema_migrations (version) VALUES ('20180214103753');
 
 INSERT INTO schema_migrations (version) VALUES ('20180214104436');
+
+INSERT INTO schema_migrations (version) VALUES ('20180525100416');
 
 INSERT INTO schema_migrations (version) VALUES ('20180528084205');
 

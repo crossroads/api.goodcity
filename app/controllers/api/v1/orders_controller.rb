@@ -98,6 +98,13 @@ module Api
         render json: {}
       end
 
+      def summary
+        priority_and_non_priority_active_orders_count = Order.non_priority_active_orders_count.merge(
+          Order.priority_active_orders_count
+        )
+        render json: priority_and_non_priority_active_orders_count
+      end
+
       private
 
       def order_response(records)
