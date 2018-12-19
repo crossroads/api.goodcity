@@ -30,7 +30,7 @@ describe "Migrate OrderTransports to have scheduled_at as DateTime instead of da
   end
 
   def type_of(column)
-    res = ActiveRecord::Base.connection.execute <<-SQL 
+    res = ActiveRecord::Base.connection.execute <<-SQL
       SELECT data_type
       FROM information_schema.columns
       WHERE table_name = 'order_transports' and column_name = '#{column}'
@@ -39,7 +39,7 @@ describe "Migrate OrderTransports to have scheduled_at as DateTime instead of da
   end
 
   def get_column_for_id(column, id)
-    res = ActiveRecord::Base.connection.execute <<-SQL 
+    res = ActiveRecord::Base.connection.execute <<-SQL
       SELECT #{column}
       FROM order_transports
       WHERE id = #{id}
@@ -56,13 +56,13 @@ describe "Migrate OrderTransports to have scheduled_at as DateTime instead of da
 
     migration.up
 
-    expect(type_of('scheduled_at')).to eq('timestamp without time zone')
+    expect(type_of('scheduled_at')).to eq('timestamp with time zone')
     expect(OrderTransport.count).to eq(1)
 
     new_timestamp = DateTime.parse(get_column_for_id('scheduled_at', record_id)).in_time_zone
-    expect(new_timestamp.in_time_zone.hour).to eq(14) 
-    expect(new_timestamp.in_time_zone.min).to eq(0) 
-    expect(new_timestamp.utc.to_s).to eq('2018-03-17 06:00:00 UTC') 
+    expect(new_timestamp.in_time_zone.hour).to eq(14)
+    expect(new_timestamp.in_time_zone.min).to eq(0)
+    expect(new_timestamp.utc.to_s).to eq('2018-03-17 06:00:00 UTC')
   end
 
 end
