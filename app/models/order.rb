@@ -6,6 +6,7 @@ class Order < ActiveRecord::Base
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
   belongs_to :country
+  belongs_to :district
   belongs_to :stockit_contact
   belongs_to :stockit_organisation
   belongs_to :organisation
