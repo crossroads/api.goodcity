@@ -11,7 +11,7 @@ module OrderFiltering
       join_order_transports.where <<-SQL
         (state = 'submitted' AND submitted_at::timestamptz <= timestamptz '#{one_day_ago}') OR
         (state = 'processing' AND processed_at::timestamptz < timestamptz '#{last_6pm}') OR
-        (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.now}') OR
+        (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.zone.now}') OR
         (state = 'dispatching' AND dispatch_started_at::timestamptz < timestamptz '#{last_6pm}')
       SQL
     end
