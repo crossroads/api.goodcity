@@ -384,6 +384,7 @@ ActiveRecord::Schema.define(version: 20181212060849) do
     t.integer  "people_helped",           default: 0
     t.integer  "beneficiary_id"
     t.integer  "address_id"
+    t.integer  "district_id"
     t.text     "cancellation_reason"
   end
 
@@ -539,6 +540,7 @@ ActiveRecord::Schema.define(version: 20181212060849) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
