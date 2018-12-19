@@ -20,6 +20,7 @@ module Api::V1
     has_one  :submitted_by, serializer: UserSerializer
     has_one  :beneficiary, serializer: BeneficiarySerializer
     has_one  :address, serializer: AddressSerializer
+    has_one  :district, serializer: DistrictSerializer
 
     def item_ids
     end

@@ -156,7 +156,7 @@ module Api
       end
 
       def order_params
-        params.require(:order).permit(
+        params.require(:order).permit(:district_id,
           :stockit_id, :code, :status, :created_at,
           :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,

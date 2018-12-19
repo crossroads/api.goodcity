@@ -15,6 +15,7 @@ FactoryBot.define do
     association     :stockit_contact
     association     :beneficiary
     association     :country
+    association     :district
 
     trait :with_orders_packages do
       orders_packages { create_list :orders_package, 3, :with_state_requested}
