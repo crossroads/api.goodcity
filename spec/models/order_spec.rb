@@ -64,6 +64,79 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
   end
 
+  describe '.recently_used' do
+    let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+
+    let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+    let(:package1) { create(:package)}
+    let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
+    let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
+
+    let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + 1.hour }
+    let!(:version2) {order2.versions.first.update(whodunnit: order2.created_by_id)}
+    let!(:non_gc_orders) { (1..6).map { create :order, :with_state_submitted, detail_type: 'StockitLocalOrder', created_by_id: user.id, submitted_by_id: user.id, status: nil }.map { |order| order.versions.first.update(whodunnit: order.created_by_id) } }
+
+    before(:each) {
+      User.current_user = user
+    }
+
+    it "will show latest updated order as the first order" do
+      order1.update(state: 'processing', processed_by_id: user.id, updated_at: Time.now + 2.day)
+      order1.versions.last.update(whodunnit: user.id)
+      expect(Order.recently_used(user.id).first.id).to eq(order1.id)
+      expect(Order.recently_used(user.id)).to include(order1)
+    end
+
+    it "will show top 5 updated orders" do
+      expect(Order.recently_used(User.current_user.id).count).to eq(2)
+    end
+
+    it "will not show updated position of order if other user has updated the record" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      order1.update(state: 'processing', processed_by_id: user1.id, updated_at: Time.now + 2.day)
+      expect(Order.recently_used(user.id).first).to eq(order2)
+    end
+
+    it "will not show updated order position if other user has added goodcity request" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user1.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      expect(Order.recently_used(user.id).first).to eq(order2)
+    end
+
+    it "will show updated order position if loggedin user has added goodcity request" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      gc_request1.versions.last.update(whodunnit: user.id)
+      expect(Order.recently_used(user.id).first).to eq(order1)
+    end
+
+    it "will not show updated order position if other user has added packages in order" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user1.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      expect(Order.recently_used(user.id).first).to eq(order2)
+    end
+
+    # it "will add show updated order position if loggedin user has added packages in order" do
+    #   expect(Order.recently_used(user.id).first).to eq(order2)
+    #   orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+    #   expect(Order.recently_used(user.id).first).to eq(order1)
+    # end
+
+    it "will not show non-logged in users order" do
+      expect(Order.recently_used(user1.id).count).to eq(0)
+    end
+
+    it "will show logged in users order" do
+      expect(Order.recently_used(User.current_user.id).count).to eq(2)
+    end
+
+    it "will show only goodcity orders" do
+      expect(Order.recently_used(User.current_user.id).map(&:detail_type).uniq.first).to eq("GoodCity")
+    end
+  end
+
   describe ".active_orders_count_as_per_priority_and_state" do
     before do
       non_priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 25.hours

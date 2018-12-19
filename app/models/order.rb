@@ -297,15 +297,13 @@ class Order < ActiveRecord::Base
   end
 
   def self.recently_used(user_id)
-    active_orders
-    .select("DISTINCT ON (orders.id) orders.id AS key,  versions.created_at AS recently_used_at").
-    joins("INNER JOIN versions ON ((object_changes -> 'order_id' ->> 1) = CAST(orders.id AS TEXT))").
-    joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')").
-    where(" versions.event = 'update' AND
-      (object_changes ->> 'order_id') IS NOT NULL AND
-      CAST(whodunnit AS integer) = ? AND
-      versions.created_at >= ? ", user_id, 15.days.ago).
-    order("key, recently_used_at DESC")
+    Order.find_by_sql("select orders.*, versions.created_at AS versions_created_at, versions.item_type
+    from orders
+    left join goodcity_requests on goodcity_requests.order_id = orders.id
+    join versions on versions.item_type in ('Order', 'GoodcityRequest') AND (versions.item_id = orders.id OR versions.item_id = goodcity_requests.id)
+    join orders_packages on orders_packages.order_id = orders.id
+    where orders.detail_type='GoodCity' AND versions.whodunnit = '#{user_id}' AND (orders.state not in ('cancelled', 'closed', 'draft') OR orders.status not in ('Closed', 'Sent', 'Cancelled'))
+    order by versions_created_at DESC").uniq.first(5)
   end
 
   def self.non_priority_active_orders_count
