@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181211124007) do
+ActiveRecord::Schema.define(version: 20181212060849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -208,7 +208,6 @@ ActiveRecord::Schema.define(version: 20181211124007) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -385,7 +384,7 @@ ActiveRecord::Schema.define(version: 20181211124007) do
     t.integer  "people_helped",           default: 0
     t.integer  "beneficiary_id"
     t.integer  "address_id"
-    t.integer  "district_id"
+    t.text     "cancellation_reason"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -540,7 +539,6 @@ ActiveRecord::Schema.define(version: 20181211124007) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
