@@ -18,8 +18,9 @@ describe Api::V1::OrganisationWithoutOrderSerializer do
   end
 
   it "translates JSON" do
-    I18n.locale = 'zh-tw'
-    expect(json['organisation_without_order']['name_zh_tw']).to eql(organisation_without_order.name_zh_tw)
-    expect(json['organisation_without_order']['description_zh_tw']).to eql(organisation_without_order.description_zh_tw)
+    in_locale 'zh-tw' do
+      expect(json['organisation_without_order']['name_zh_tw']).to eql(organisation_without_order.name_zh_tw)
+      expect(json['organisation_without_order']['description_zh_tw']).to eql(organisation_without_order.description_zh_tw)
+    end
   end
 end

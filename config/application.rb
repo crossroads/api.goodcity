@@ -29,7 +29,7 @@ module GoodCityServer
 
     config.autoload_paths += %W(#{config.root}/lib/classes)
 
-    config.active_record.schema_format = :sql
+    # config.active_record.schema_format = :sql
 
     config.i18n.available_locales = ['en', 'zh-tw']
 

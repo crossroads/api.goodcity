@@ -48,6 +48,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:code).of_type(:string)}
     it{ is_expected.to have_db_column(:detail_type).of_type(:string)}
     it{ is_expected.to have_db_column(:description).of_type(:text)}
+    it{ is_expected.to have_db_column(:cancellation_reason).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:purpose_description).of_type(:text)}
     it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
@@ -62,6 +63,32 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:processed_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
+  end
+
+  describe ".active_orders_count_as_per_priority_and_state" do
+    before do
+      non_priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 25.hours
+      priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 23.hours
+
+      non_priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 25.hours
+      priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 23.hours
+    end
+
+    context "for Non Priority Orders" do
+      it "returns non priority orders hash with state as key and its corresponding count as value" do
+        expect(Order.active_orders_count_as_per_priority_and_state(is_priority: false)).to eq(
+          {"submitted" => 2, "processing" => 2}
+        )
+      end
+    end
+
+    context "for Priority Orders" do
+      it "returns priority orders hash with state as key and its corresponding count as value" do
+        expect(Order.active_orders_count_as_per_priority_and_state(is_priority: true)).to eq(
+          {"priority_submitted" => 1, "priority_processing" => 2}
+        )
+      end
+    end
   end
 
   describe 'priority rules' do

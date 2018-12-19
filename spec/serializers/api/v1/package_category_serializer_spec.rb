@@ -15,8 +15,9 @@ describe Api::V1::PackageCategorySerializer do
   end
 
   it "translates JSON" do
-    I18n.locale = 'zh-tw'
-    expect(json['package_category']['name']).to eql(package_category.name_zh_tw)
+    in_locale 'zh-tw' do
+      expect(json['package_category']['name']).to eql(package_category.name_zh_tw)
+    end
   end
 
 end
