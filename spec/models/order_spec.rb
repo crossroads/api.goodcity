@@ -76,7 +76,6 @@ RSpec.describe Order, type: :model do
 
     let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + 1.hour }
     let!(:version2) {order2.versions.first.update(whodunnit: order2.created_by_id)}
-    let!(:non_gc_orders) { (1..6).map { create :order, :with_state_submitted, detail_type: 'StockitLocalOrder', created_by_id: user.id, submitted_by_id: user.id, status: nil }.map { |order| order.versions.first.update(whodunnit: order.created_by_id) } }
 
     before(:each) {
       User.current_user = user
@@ -118,11 +117,11 @@ RSpec.describe Order, type: :model do
       expect(Order.recently_used(user.id).first).to eq(order2)
     end
 
-    # it "will add show updated order position if loggedin user has added packages in order" do
-    #   expect(Order.recently_used(user.id).first).to eq(order2)
-    #   orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
-    #   expect(Order.recently_used(user.id).first).to eq(order1)
-    # end
+    it "will add show updated order position if loggedin user has added packages in order" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      expect(Order.recently_used(user.id).first).to eq(order1)
+    end
 
     it "will not show non-logged in users order" do
       expect(Order.recently_used(user1.id).count).to eq(0)
