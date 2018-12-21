@@ -15,7 +15,7 @@ class DateSet
       get_dates_list
       break if @dates.count >= @days
       @last = @start + @offset
-      @holidays = Holiday.within_days(@offset + @days.days)
+      @holidays = Holiday.within_days(@offset + @days.days).pluck(:holiday)
     end
     @dates[0..@days - 1]
   end
