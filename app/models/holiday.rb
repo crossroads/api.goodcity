@@ -8,7 +8,7 @@ class Holiday < ActiveRecord::Base
   before_save :set_year, if: :holiday_changed?
 
   scope :within_days, ->(days) {
-    between_times(Time.zone.now, Time.zone.now + days) }
+    between_times(Time.zone.now.beginning_of_day, Time.zone.now.end_of_day + days) }
 
   def self.is_holiday(date)
     Holiday.where(" date(holiday AT TIME ZONE 'HKT') = ?", date.to_date).count > 0
