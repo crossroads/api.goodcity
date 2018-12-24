@@ -63,6 +63,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:processed_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
+    it{ is_expected.to have_db_column(:order_type).of_type(:string)}
   end
 
   describe ".active_orders_count_as_per_priority_and_state" do
