@@ -22,6 +22,10 @@ RSpec.describe ApplicationController, type: :controller do
         expect(I18n.locale).to eql(:en)
       end
 
+      after do
+        I18n.locale = 'en'
+      end
+
     end
 
     context "current_user" do

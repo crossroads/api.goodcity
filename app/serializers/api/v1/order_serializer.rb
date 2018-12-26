@@ -1,6 +1,6 @@
 module Api::V1
   class OrderSerializer < OrderShallowSerializer
-    attributes :item_ids
+    attributes :item_ids, :cancellation_reason
     has_one :created_by, serializer: UserProfileSerializer, root: :user
     has_one :stockit_contact, serializer: StockitContactSerializer
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
@@ -20,6 +20,7 @@ module Api::V1
     has_one  :submitted_by, serializer: UserSerializer
     has_one  :beneficiary, serializer: BeneficiarySerializer
     has_one  :address, serializer: AddressSerializer
+    has_one  :district, serializer: DistrictSerializer
 
     def item_ids
     end

@@ -43,7 +43,7 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     event :cancel do
-      transition designated: :cancelled
+      transition [:requested, :designated] => :cancelled
     end
 
     before_transition on: :cancel do |orders_package, _transition|

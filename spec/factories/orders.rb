@@ -15,9 +15,14 @@ FactoryBot.define do
     association     :stockit_contact
     association     :beneficiary
     association     :country
+    association     :district
 
     trait :with_orders_packages do
       orders_packages { create_list :orders_package, 3, :with_state_requested}
+    end
+
+    trait :with_goodcity_requests do
+      goodcity_requests { create_list :goodcity_request, 1}
     end
 
     trait :with_stockit_id do
@@ -30,6 +35,18 @@ FactoryBot.define do
 
     trait :with_status_processing do
       status "processing"
+    end
+
+    trait :with_state_processing do
+      state "processing"
+    end
+
+    trait :with_state_awaiting_dispatch do
+      state "awaiting_dispatch"
+    end
+
+    trait :with_state_dispatching do
+      state "dispatching"
     end
 
     trait :with_state_draft do

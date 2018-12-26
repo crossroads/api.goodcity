@@ -1,10 +1,12 @@
 class Order < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   include PushUpdates
+  include OrderFiltering
 
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
   belongs_to :country
+  belongs_to :district
   belongs_to :stockit_contact
   belongs_to :stockit_organisation
   belongs_to :organisation
@@ -41,7 +43,7 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
-  scope :non_draft_orders, -> { where('state NOT IN (?)', 'draft') }
+  scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
     includes([
@@ -53,7 +55,7 @@ class Order < ActiveRecord::Base
 
   scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
 
-  scope :designatable_orders, -> { 
+  scope :designatable_orders, -> {
     query = <<-SQL
       (
         submitted_at IS NOT NULL
@@ -90,23 +92,6 @@ class Order < ActiveRecord::Base
     self.state ||= :draft
   end
 
-  def is_priority?
-    last_6pm = last_end_of_work_day
-
-    case state
-    when "submitted"
-      submitted_at && submitted_at <= Time.now - 24.hours
-    when "processing"
-      processed_at < last_6pm
-    when "awaiting_dispatch"
-      order_transport.present? && order_transport.scheduled_at < Time.now
-    when "dispatching"
-      dispatch_started_at && dispatch_started_at < last_6pm
-    else 
-      false
-    end
-  end
-
   state_machine :state, initial: :draft do
     state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch, :restart_process, :dispatching, :start_dispatching
 
@@ -123,7 +108,7 @@ class Order < ActiveRecord::Base
     end
 
     event :cancel do
-      transition all - [:draft, :closed] => :cancelled
+      transition all - [:closed] => :cancelled
     end
 
     event :close do
@@ -277,17 +262,21 @@ class Order < ActiveRecord::Base
   end
 
   def self.search(search_text, to_designate_item)
-    fetch_orders(to_designate_item)
-      .where("code ILIKE :query OR
-      description ILIKE :query OR
-      organisations.name_en ILIKE :query OR
-      organisations.name_zh_tw ILIKE :query OR
-      CONCAT(users.first_name, ' ', users.last_name) ILIKE :query OR
-      stockit_organisations.name ILIKE :query OR
-      stockit_local_orders.client_name ILIKE :query OR
-      stockit_contacts.first_name ILIKE :query OR stockit_contacts.last_name ILIKE :query OR
-      stockit_contacts.mobile_phone_number LIKE :query OR
-      stockit_contacts.phone_number LIKE :query", query: "%#{search_text}%")
+    sql = <<-SQL
+      code ILIKE (:query) OR
+      description ILIKE (:query) OR
+      organisations.name_en ILIKE (:query) OR
+      organisations.name_zh_tw ILIKE (:query) OR
+      stockit_organisations.name ILIKE (:query) OR
+      stockit_local_orders.client_name ILIKE (:query) OR
+      stockit_contacts.first_name ILIKE (:query) OR stockit_contacts.last_name ILIKE (:query) OR
+      stockit_contacts.mobile_phone_number LIKE (:query) OR
+      stockit_contacts.phone_number LIKE (:query) OR
+      CONCAT(users.first_name, ' ', users.last_name) ILIKE (:query)
+    SQL
+    results = fetch_orders(to_designate_item)
+    results = results.where(sql, query: "%#{search_text}%") unless search_text.blank?
+    results
   end
 
   def self.fetch_orders(to_designate_item)
@@ -299,23 +288,46 @@ class Order < ActiveRecord::Base
   end
 
   def self.join_order_associations
-    joins("LEFT OUTER JOIN stockit_local_orders ON orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'
-    LEFT OUTER JOIN users ON orders.submitted_by_id = users.id or orders.created_by_id = users.id
-    LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
-    LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
-    LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id")
+    joins <<-SQL
+      LEFT OUTER JOIN stockit_local_orders ON orders.detail_id = stockit_local_orders.id and orders.detail_type = 'LocalOrder'
+      LEFT OUTER JOIN users ON orders.submitted_by_id = users.id or orders.created_by_id = users.id
+      LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
+      LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
+      LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id
+    SQL
   end
 
   def self.recently_used(user_id)
-    active_orders
-    .select("DISTINCT ON (orders.id) orders.id AS key,  versions.created_at AS recently_used_at").
-    joins("INNER JOIN versions ON ((object_changes -> 'order_id' ->> 1) = CAST(orders.id AS TEXT))").
-    joins("INNER JOIN packages ON (packages.id = versions.item_id AND versions.item_type = 'Package')").
-    where(" versions.event = 'update' AND
-      (object_changes ->> 'order_id') IS NOT NULL AND
-      CAST(whodunnit AS integer) = ? AND
-      versions.created_at >= ? ", user_id, 15.days.ago).
-    order("key, recently_used_at DESC")
+    Order.find_by_sql(
+      ["select orders.*, versions.created_at AS versions_created_at, versions.item_type, orders_packages.updated_at AS orders_package_updated_at
+          from orders
+          left join goodcity_requests on goodcity_requests.order_id = orders.id
+          join versions on versions.item_type in ('Order', 'GoodcityRequest') AND (versions.item_id = orders.id OR versions.item_id = goodcity_requests.id)
+          LEFT join orders_packages on orders_packages.order_id = orders.id AND orders_packages.updated_by_id = ?
+          where orders.detail_type='GoodCity' AND versions.whodunnit = ? AND (orders.state not in ('cancelled', 'closed', 'draft') OR orders.status not in ('Closed', 'Sent', 'Cancelled'))
+          order by GREATEST(orders_packages.updated_at, versions.created_at) DESC", user_id, user_id.to_s]
+    ).uniq.first(5)
+  end
+
+  def self.non_priority_active_orders_count
+    active_orders_count_as_per_priority_and_state(is_priority: false)
+  end
+
+  def self.priority_active_orders_count
+    active_orders_count_as_per_priority_and_state(is_priority: true)
+  end
+
+  def self.active_orders_count_as_per_priority_and_state(is_priority: false)
+    orders = filter(states: ACTIVE_ORDERS, priority: is_priority).group_by(&:state)
+    if is_priority
+      orders_count_per_state(orders).transform_keys { |key| "priority_".concat(key) }
+    else
+      orders_count_per_state(orders)
+    end
+  end
+
+  def self.orders_count_per_state(orders)
+    orders.each { |key, value|  orders[key] = value.count }
   end
 
   def self.generate_gc_code
@@ -353,12 +365,5 @@ class Order < ActiveRecord::Base
   #to satisfy push_updates
   def offer
     nil
-  end
-
-  def last_end_of_work_day
-    now = Time.now.in_time_zone
-    last_6pm = now.change(hour: 18, min: 0, sec: 0)
-    last_6pm -= 24.hours if now < last_6pm
-    last_6pm
   end
 end

@@ -30,6 +30,7 @@ RSpec.describe Order, type: :model do
     it { is_expected.to belong_to :organisation }
     it { is_expected.to belong_to :beneficiary }
     it { is_expected.to belong_to :address }
+    it { is_expected.to belong_to :district }
     it { is_expected.to belong_to(:created_by).class_name('User') }
     it { is_expected.to belong_to(:processed_by).class_name('User') }
 
@@ -47,6 +48,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:code).of_type(:string)}
     it{ is_expected.to have_db_column(:detail_type).of_type(:string)}
     it{ is_expected.to have_db_column(:description).of_type(:text)}
+    it{ is_expected.to have_db_column(:cancellation_reason).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:purpose_description).of_type(:text)}
     it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
@@ -63,6 +65,104 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
   end
 
+  describe '.recently_used' do
+    let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+
+    let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+    let(:package1) { create(:package)}
+    let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
+    let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
+
+    let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + 1.hour }
+    let!(:version2) {order2.versions.first.update(whodunnit: order2.created_by_id)}
+
+    before(:each) {
+      User.current_user = user
+    }
+
+    it "will show latest updated order as the first order" do
+      order1.update(state: 'processing', processed_by_id: user.id, updated_at: Time.now + 2.day)
+      order1.versions.last.update(whodunnit: user.id)
+      expect(Order.recently_used(user.id).first.id).to eq(order1.id)
+      expect(Order.recently_used(user.id)).to include(order1)
+    end
+
+    it "will show top 5 updated orders" do
+      expect(Order.recently_used(User.current_user.id).count).to eq(2)
+    end
+
+    it "will not show updated position of order if other user has updated the record" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      order1.update(state: 'processing', processed_by_id: user1.id, updated_at: Time.now + 2.day)
+      expect(Order.recently_used(user.id).first).to eq(order2)
+    end
+
+    it "will not show updated order position if other user has added goodcity request" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user1.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      expect(Order.recently_used(user.id).first).to eq(order2)
+    end
+
+    it "will show updated order position if loggedin user has added goodcity request" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      gc_request1.versions.last.update(whodunnit: user.id)
+      expect(Order.recently_used(user.id).first).to eq(order1)
+    end
+
+    it "will not show updated order position if other user has added packages in order" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user1.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      expect(Order.recently_used(user.id).first).to eq(order2)
+    end
+
+    it "will add show updated order position if loggedin user has added packages in order" do
+      expect(Order.recently_used(user.id).first).to eq(order2)
+      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      expect(Order.recently_used(user.id).first).to eq(order1)
+    end
+
+    it "will not show non-logged in users order" do
+      expect(Order.recently_used(user1.id).count).to eq(0)
+    end
+
+    it "will show logged in users order" do
+      expect(Order.recently_used(User.current_user.id).count).to eq(2)
+    end
+
+    it "will show only goodcity orders" do
+      expect(Order.recently_used(User.current_user.id).map(&:detail_type).uniq.first).to eq("GoodCity")
+    end
+  end
+
+  describe ".active_orders_count_as_per_priority_and_state" do
+    before do
+      non_priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 25.hours
+      priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 23.hours
+
+      non_priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 25.hours
+      priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 23.hours
+    end
+
+    context "for Non Priority Orders" do
+      it "returns non priority orders hash with state as key and its corresponding count as value" do
+        expect(Order.active_orders_count_as_per_priority_and_state(is_priority: false)).to eq(
+          {"submitted" => 2, "processing" => 2}
+        )
+      end
+    end
+
+    context "for Priority Orders" do
+      it "returns priority orders hash with state as key and its corresponding count as value" do
+        expect(Order.active_orders_count_as_per_priority_and_state(is_priority: true)).to eq(
+          {"priority_submitted" => 1, "priority_processing" => 2}
+        )
+      end
+    end
+  end
+
   describe 'priority rules' do
     let(:at_6pm_today) { Time.now.in_time_zone.change(hour: 18) }
     let(:at_6pm_yesterday) { at_6pm_today - 24.hours }
@@ -77,6 +177,15 @@ RSpec.describe Order, type: :model do
         order = create :order, state: "submitted", submitted_at: Time.now - 23.hours
         expect(old_order.is_priority?).to eq(true)
         expect(order.is_priority?).to eq(false)
+      end
+
+      it 'should filter prioritised orders if it was submitted more than 24hours ago' do
+        create :order, state: "submitted", submitted_at: Time.now - 23.hours
+        old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
+        records = Order.where(state: 'submitted')
+        expect(records.count).to eq(2)
+        expect(records.priority.count).to eq(1)
+        expect(records.priority.first.id).to eq(old_order.id)
       end
     end
 
@@ -95,6 +204,19 @@ RSpec.describe Order, type: :model do
           expect(order_started_before_6_ytd.is_priority?).to eq(true)
           expect(order_started_after_6.is_priority?).to eq(false)
         end
+
+        it 'should be filter prioritised orders if process was started before 6pm and hasn\'t finished' do
+          order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
+          order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
+          create :order, state: "processing", processed_at: after_6pm_today
+          records = Order.where(state: 'processing')
+          expect(records.count).to eq(3)
+          expect(records.priority.count).to eq(2)
+          expect(records.priority.map(&:id)).to match_array [
+            order_started_before_6.id,
+            order_started_before_6_ytd.id
+          ]
+        end
       end
 
       context 'If we\'re before 6pm' do
@@ -108,6 +230,16 @@ RSpec.describe Order, type: :model do
           expect(order_started_after_6_ytd.is_priority?).to eq(false)
           expect(order_started_before_6.is_priority?).to eq(false)
         end
+
+        it 'should be filter prioritized orders if process was started before 6pm the previous day and hasn\'t finished' do
+          create :order, state: "processing", processed_at: before_6pm_today
+          create :order, state: "processing", processed_at: after_6pm_yesterday
+          order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
+          records = Order.where(state: 'processing')
+          expect(records.count).to eq(3)
+          expect(records.priority.count).to eq(1)
+          expect(records.priority.first.id).to eq(order_started_before_6_ytd.id)
+        end
       end
     end
 
@@ -115,13 +247,24 @@ RSpec.describe Order, type: :model do
       let(:transport_before_6) { create :order_transport, scheduled_at: before_6pm_today, timeslot: "3PM" }
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
-      before { Timecop.freeze(at_6pm_today) }
+      before {
+        Timecop.freeze(at_6pm_today)
+      }
 
       it 'should be prioritised if we\'re past it\'s planned dispatch schedule' do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
         non_priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_after_6
         expect(priority_order.is_priority?).to eq(true)
         #expect(non_priority_order.is_priority?).to eq(false)
+      end
+
+      it 'should filter prioritised orders awaiting dispatch' do
+        priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
+        create :order, state: "awaiting_dispatch", order_transport: transport_after_6
+        records = Order.where(state: 'awaiting_dispatch')
+        expect(records.count).to eq(2)
+        expect(records.priority.count).to eq(1)
+        expect(records.priority.first.id).to eq(priority_order.id)
       end
     end
 
@@ -138,6 +281,19 @@ RSpec.describe Order, type: :model do
           expect(dispatching_started_yesterday.is_priority?).to eq(true)
           expect(dispatching_started_after_6.is_priority?).to eq(false)
         end
+
+        it 'should filter prioritised orders if it was started before 6pm' do
+          create :order, state: "dispatching", dispatch_started_at: after_6pm_today
+          dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
+          dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
+          records = Order.where(state: 'dispatching')
+          expect(records.count).to eq(3)
+          expect(records.priority.count).to eq(2)
+          expect(records.priority.map(&:id)).to match_array([
+            dispatching_started_yesterday.id,
+            dispatching_started_before_6.id
+          ])
+        end
       end
 
       context 'If we\'re before 6pm' do
@@ -148,6 +304,15 @@ RSpec.describe Order, type: :model do
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
           expect(dispatching_started_before_6.is_priority?).to eq(false)
           expect(dispatching_started_yesterday.is_priority?).to eq(true)
+        end
+
+        it 'should filter prioritised orders if it was started before 6pm the previous day' do
+          create :order, state: "dispatching", dispatch_started_at: before_6pm_today
+          dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
+          records = Order.where(state: 'dispatching')
+          expect(records.count).to eq(2)
+          expect(records.priority.count).to eq(1)
+          expect(records.priority.first.id).to eq(dispatching_started_yesterday.id)
         end
       end
     end
@@ -366,6 +531,39 @@ RSpec.describe Order, type: :model do
       expect(TwilioService).to receive(:new).with(order_fulfiment_user_1).and_return(twilio)
       expect(twilio).to receive(:order_submitted_sms_to_order_fulfilment_users).with(order_1)
       order_1.send_order_placed_sms_to_order_fulfilment_users
+    end
+  end
+
+  describe 'Order filtering rules' do
+    before do
+      create :order, state: "submitted", description: "A table", submitted_at: Time.now - 25.hours
+      create :order, state: "submitted", description: "Another table", submitted_at: Time.now - 25.hours
+      create :order, state: "submitted", description: "A dangerous weapon", submitted_at: Time.now - 25.hours
+      create :order, state: "processing", description: "A chair", processed_at: Time.now - 25.hours
+      create :order, state: "processing", description: "A third table", processed_at: Time.now - 25.hours
+      create :order, state: "closed", description: "A trampoline", closed_at: Time.now - 25.hours
+    end
+
+    it 'Should allow filtering a scoped relation' do
+      expect(Order.count).to eq(6)
+      expect(Order.where("description ILIKE '%table%'").count).to eq(3)
+      expect(Order.where("description ILIKE '%table%'").filter(states: ['submitted']).count).to eq(2)
+    end
+
+    it 'Should allow filtering an unscoped relation' do
+      expect(Order.count).to eq(6)
+      expect(Order.filter(states: ['submitted', 'closed']).count).to eq(4)
+    end
+
+    it 'Should allow chaining a scope' do
+      expect(Order.count).to eq(6)
+      expect(Order.filter(states: ['submitted']).where("description ILIKE '%table%'").count).to eq(2)
+    end
+
+    it 'Should not filter out anything if no explicit arguments are provided' do
+      expect(Order.count).to eq(6)
+      expect(Order.where("description ILIKE '%table%'").count).to eq(3)
+      expect(Order.where("description ILIKE '%table%'").filter().count).to eq(3)
     end
   end
 end
