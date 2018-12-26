@@ -8,6 +8,10 @@ module Api
         render json: @user_roles, each_serializer: serializer
       end
 
+      def show
+        render json: @user_role, serializer: serializer
+      end
+
       private
 
       def serializer

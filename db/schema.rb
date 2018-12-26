@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181122111014) do
+ActiveRecord::Schema.define(version: 20181212060849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,9 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
   end
+
+  add_index "addresses", ["addressable_id", "addressable_type"], name: "index_addresses_on_addressable_id_and_addressable_type", using: :btree
+  add_index "addresses", ["district_id"], name: "index_addresses_on_district_id", using: :btree
 
   create_table "appointment_slot_presets", force: :cascade do |t|
     t.integer "day"
@@ -53,6 +56,8 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.string   "otp_auth_key",    limit: 30
   end
 
+  add_index "auth_tokens", ["user_id"], name: "index_auth_tokens_on_user_id", using: :btree
+
   create_table "beneficiaries", force: :cascade do |t|
     t.integer  "identity_type_id"
     t.integer  "created_by_id"
@@ -65,6 +70,7 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "updated_at",       null: false
   end
 
+  add_index "beneficiaries", ["created_by_id"], name: "index_beneficiaries_on_created_by_id", using: :btree
   add_index "beneficiaries", ["identity_type_id"], name: "index_beneficiaries_on_identity_type_id", using: :btree
 
   create_table "booking_types", force: :cascade do |t|
@@ -85,6 +91,8 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "updated_at",  null: false
   end
 
+  add_index "boxes", ["pallet_id"], name: "index_boxes_on_pallet_id", using: :btree
+
   create_table "braintree_transactions", force: :cascade do |t|
     t.string   "transaction_id"
     t.integer  "customer_id"
@@ -94,6 +102,8 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "updated_at",     null: false
     t.boolean  "is_success"
   end
+
+  add_index "braintree_transactions", ["customer_id"], name: "index_braintree_transactions_on_customer_id", using: :btree
 
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
@@ -142,6 +152,11 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "deleted_at"
   end
 
+  add_index "deliveries", ["contact_id"], name: "index_deliveries_on_contact_id", using: :btree
+  add_index "deliveries", ["gogovan_order_id"], name: "index_deliveries_on_gogovan_order_id", using: :btree
+  add_index "deliveries", ["offer_id"], name: "index_deliveries_on_offer_id", using: :btree
+  add_index "deliveries", ["schedule_id"], name: "index_deliveries_on_schedule_id", using: :btree
+
   create_table "districts", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
@@ -151,6 +166,8 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.float    "latitude"
     t.float    "longitude"
   end
+
+  add_index "districts", ["territory_id"], name: "index_districts_on_territory_id", using: :btree
 
   create_table "donor_conditions", force: :cascade do |t|
     t.string   "name_en"
@@ -191,9 +208,9 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
+  add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
   add_index "goodcity_requests", ["order_id"], name: "index_goodcity_requests_on_order_id", using: :btree
   add_index "goodcity_requests", ["package_type_id"], name: "index_goodcity_requests_on_package_type_id", using: :btree
 
@@ -225,6 +242,8 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.string   "imageable_type"
   end
 
+  add_index "images", ["imageable_id", "imageable_type"], name: "index_images_on_imageable_id_and_imageable_type", using: :btree
+
   create_table "inventory_numbers", force: :cascade do |t|
     t.string "code"
   end
@@ -242,6 +261,11 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "deleted_at"
     t.text     "rejection_comments"
   end
+
+  add_index "items", ["donor_condition_id"], name: "index_items_on_donor_condition_id", using: :btree
+  add_index "items", ["offer_id"], name: "index_items_on_offer_id", using: :btree
+  add_index "items", ["package_type_id"], name: "index_items_on_package_type_id", using: :btree
+  add_index "items", ["rejection_reason_id"], name: "index_items_on_rejection_reason_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
     t.string   "building"
@@ -261,6 +285,10 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.integer  "offer_id"
     t.integer  "item_id"
   end
+
+  add_index "messages", ["item_id"], name: "index_messages_on_item_id", using: :btree
+  add_index "messages", ["offer_id"], name: "index_messages_on_offer_id", using: :btree
+  add_index "messages", ["sender_id"], name: "index_messages_on_sender_id", using: :btree
 
   create_table "offers", force: :cascade do |t|
     t.string   "language"
@@ -292,6 +320,14 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.boolean  "saleable",                           default: false
   end
 
+  add_index "offers", ["cancellation_reason_id"], name: "index_offers_on_cancellation_reason_id", using: :btree
+  add_index "offers", ["closed_by_id"], name: "index_offers_on_closed_by_id", using: :btree
+  add_index "offers", ["created_by_id"], name: "index_offers_on_created_by_id", using: :btree
+  add_index "offers", ["crossroads_transport_id"], name: "index_offers_on_crossroads_transport_id", using: :btree
+  add_index "offers", ["gogovan_transport_id"], name: "index_offers_on_gogovan_transport_id", using: :btree
+  add_index "offers", ["received_by_id"], name: "index_offers_on_received_by_id", using: :btree
+  add_index "offers", ["reviewed_by_id"], name: "index_offers_on_reviewed_by_id", using: :btree
+
   create_table "order_transports", force: :cascade do |t|
     t.datetime "scheduled_at"
     t.string   "timeslot"
@@ -309,6 +345,12 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.string   "remove_net"
     t.integer  "booking_type_id"
   end
+
+  add_index "order_transports", ["booking_type_id"], name: "index_order_transports_on_booking_type_id", using: :btree
+  add_index "order_transports", ["contact_id"], name: "index_order_transports_on_contact_id", using: :btree
+  add_index "order_transports", ["gogovan_order_id"], name: "index_order_transports_on_gogovan_order_id", using: :btree
+  add_index "order_transports", ["gogovan_transport_id"], name: "index_order_transports_on_gogovan_transport_id", using: :btree
+  add_index "order_transports", ["order_id"], name: "index_order_transports_on_order_id", using: :btree
 
   create_table "orders", force: :cascade do |t|
     t.string   "status"
@@ -342,9 +384,27 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.integer  "people_helped",           default: 0
     t.integer  "beneficiary_id"
     t.integer  "address_id"
+    t.integer  "district_id"
+    t.text     "cancellation_reason"
   end
 
+  add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
+  add_index "orders", ["beneficiary_id"], name: "index_orders_on_beneficiary_id", using: :btree
+  add_index "orders", ["cancelled_by_id"], name: "index_orders_on_cancelled_by_id", using: :btree
+  add_index "orders", ["closed_by_id"], name: "index_orders_on_closed_by_id", using: :btree
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
+  add_index "orders", ["country_id"], name: "index_orders_on_country_id", using: :btree
+  add_index "orders", ["created_by_id"], name: "index_orders_on_created_by_id", using: :btree
+  add_index "orders", ["detail_id", "detail_type"], name: "index_orders_on_detail_id_and_detail_type", using: :btree
+  add_index "orders", ["detail_id"], name: "index_orders_on_detail_id", using: :btree
+  add_index "orders", ["dispatch_started_by_id"], name: "index_orders_on_dispatch_started_by_id", using: :btree
+  add_index "orders", ["organisation_id"], name: "index_orders_on_organisation_id", using: :btree
+  add_index "orders", ["process_completed_by_id"], name: "index_orders_on_process_completed_by_id", using: :btree
+  add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
+  add_index "orders", ["stockit_activity_id"], name: "index_orders_on_stockit_activity_id", using: :btree
+  add_index "orders", ["stockit_contact_id"], name: "index_orders_on_stockit_contact_id", using: :btree
+  add_index "orders", ["stockit_organisation_id"], name: "index_orders_on_stockit_organisation_id", using: :btree
+  add_index "orders", ["submitted_by_id"], name: "index_orders_on_submitted_by_id", using: :btree
 
   create_table "orders_packages", force: :cascade do |t|
     t.integer  "package_id"
@@ -357,10 +417,18 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "sent_on"
   end
 
+  add_index "orders_packages", ["order_id", "package_id"], name: "index_orders_packages_on_order_id_and_package_id", using: :btree
+  add_index "orders_packages", ["order_id"], name: "index_orders_packages_on_order_id", using: :btree
+  add_index "orders_packages", ["package_id"], name: "index_orders_packages_on_package_id", using: :btree
+  add_index "orders_packages", ["updated_by_id"], name: "index_orders_packages_on_updated_by_id", using: :btree
+
   create_table "orders_purposes", force: :cascade do |t|
     t.integer "order_id"
     t.integer "purpose_id"
   end
+
+  add_index "orders_purposes", ["order_id"], name: "index_orders_purposes_on_order_id", using: :btree
+  add_index "orders_purposes", ["purpose_id"], name: "index_orders_purposes_on_purpose_id", using: :btree
 
   create_table "organisation_types", force: :cascade do |t|
     t.string   "name_en"
@@ -434,6 +502,8 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.integer  "location_id"
   end
 
+  add_index "package_types", ["location_id"], name: "index_package_types_on_location_id", using: :btree
+
   create_table "packages", force: :cascade do |t|
     t.integer  "quantity"
     t.integer  "length"
@@ -473,8 +543,20 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.boolean  "last_allow_web_published"
   end
 
+  add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
+  add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
+  add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
+  add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
+  add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
+  add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
+  add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
+  add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
+  add_index "packages", ["set_item_id"], name: "index_packages_on_set_item_id", using: :btree
+  add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree
   add_index "packages", ["stockit_id"], name: "index_packages_on_stockit_id", using: :btree
+  add_index "packages", ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id", using: :btree
+  add_index "packages", ["stockit_sent_by_id"], name: "index_packages_on_stockit_sent_by_id", using: :btree
 
   create_table "packages_locations", force: :cascade do |t|
     t.integer  "package_id"
@@ -524,6 +606,9 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
   end
+
+  add_index "role_permissions", ["permission_id"], name: "index_role_permissions_on_permission_id", using: :btree
+  add_index "role_permissions", ["role_id"], name: "index_role_permissions_on_role_id", using: :btree
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"
@@ -592,6 +677,10 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "updated_at",                         null: false
   end
 
+  add_index "subpackage_types", ["package_type_id", "package_type_id"], name: "index_subpackage_types_on_package_type_id_and_package_type_id", using: :btree
+  add_index "subpackage_types", ["package_type_id"], name: "index_subpackage_types_on_package_type_id", using: :btree
+  add_index "subpackage_types", ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id", using: :btree
+
   create_table "subscriptions", force: :cascade do |t|
     t.integer  "offer_id"
     t.integer  "user_id"
@@ -623,6 +712,9 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.datetime "updated_at", null: false
   end
 
+  add_index "user_roles", ["role_id"], name: "index_user_roles_on_role_id", using: :btree
+  add_index "user_roles", ["user_id"], name: "index_user_roles_on_user_id", using: :btree
+
   create_table "users", force: :cascade do |t|
     t.string   "first_name"
     t.string   "last_name"
@@ -638,6 +730,7 @@ ActiveRecord::Schema.define(version: 20181122111014) do
     t.string   "title"
   end
 
+  add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
   add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
   add_index "users", ["permission_id"], name: "index_users_on_permission_id", using: :btree
 

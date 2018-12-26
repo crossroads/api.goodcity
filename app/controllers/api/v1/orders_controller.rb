@@ -42,7 +42,7 @@ module Api
       def index
         return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
-        records = @orders.with_eager_load
+        records = apply_filters(@orders).with_eager_load
           .search(params['searchText'], params['toDesignateItem'].presence).descending
           .page(params["page"]).per(params["per_page"])
         orders = order_response(records)
@@ -56,7 +56,7 @@ module Api
           serializer: serializer,
           root: root,
           exclude_code_details: true,
-          include_packages: opt_bool_param(params[:include_packages], true),
+          include_packages: bool_param(:include_packages, true),
           include_order: false,
           include_territory: true,
           include_images: true,
@@ -65,8 +65,10 @@ module Api
 
       def transition
         transition_event = params['transition'].to_sym
+        cancellation_reason = params["cancellation_reason"]
         if @order.state_events.include?(transition_event)
           @order.fire_state_event(transition_event)
+          @order.update(cancellation_reason: cancellation_reason) if cancellation_reason.presence
         end
         render json: @order, serializer: serializer
       end
@@ -96,12 +98,14 @@ module Api
         render json: {}
       end
 
-      private
-      
-      def opt_bool_param(obj, default)
-        return default if obj.nil? 
-        obj.to_s == "true"
+      def summary
+        priority_and_non_priority_active_orders_count = Order.non_priority_active_orders_count.merge(
+          Order.priority_active_orders_count
+        )
+        render json: priority_and_non_priority_active_orders_count
       end
+
+      private
 
       def order_response(records)
         ActiveModel::ArraySerializer.new(records,
@@ -135,15 +139,31 @@ module Api
         @order
       end
 
+      def apply_filters(records)
+        states = array_param(:state)
+        types = array_param(:type)
+        priority = bool_param(:priority, false)
+        records.filter(states: states, types: types, priority: priority)
+      end
+
+      def array_param(key)
+        params.fetch(key, "").strip.split(',')
+      end
+
+      def bool_param(key, default)
+        return default if params[key].nil?
+        params[key].to_s == "true"
+      end
+
       def order_params
-        params.require(:order).permit(
+        params.require(:order).permit(:district_id,
           :stockit_id, :code, :status, :created_at,
           :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
-          :state, :state_event, :stockit_organisation_id,
-          :stockit_activity_id, :people_helped,
-          :beneficiary_id, :purpose_description, :address_id,
-          purpose_ids: [], cart_package_ids: [],
+          :state, :cancellation_reason, :state_event,
+          :stockit_organisation_id, :stockit_activity_id,
+          :people_helped, :beneficiary_id, :purpose_description,
+          :address_id, purpose_ids: [], cart_package_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes
         )
