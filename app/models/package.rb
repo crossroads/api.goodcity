@@ -4,6 +4,7 @@ class Package < ActiveRecord::Base
   include StateMachineScope
   include PushUpdates
   include RollbarSpecification
+  include PackageFiltering
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
