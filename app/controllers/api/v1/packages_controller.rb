@@ -126,14 +126,11 @@ module Api
       def search_stockit_items
         records = {}; pages = 0
         if params['searchText'].present?
-          records = params["orderId"].present? ?
-            @packages.undispatched : @packages
-          records = records.search(
-            params['searchText'],
-            params['itemId'],
-            :state => params['state'],
-            :with_inventory_no => params['withInventoryNumber'] == 'true'
-          ).page(params["page"]).per(params["per_page"])
+          records = params["orderId"].present? ? @packages.undispatched : @packages
+          records = records
+            .search(params['searchText'], params['itemId'].presence, :with_inventory_no => params['withInventoryNumber'] == 'true', :state => params['state'])
+          records = apply_filters(records)
+            .page(params["page"]).per(params["per_page"])
           pages = records.total_pages
         end
         packages = ActiveModel::ArraySerializer.new(records,
@@ -143,6 +140,7 @@ module Api
           include_packages: false,
           exclude_stockit_set_item: true,
           include_images: true,
+          include_designation: true,
           include_stock_condition: is_stock_app?).as_json
         render json: {meta: { total_pages: pages, search: params['searchText'] } }.merge(packages)
       end
@@ -256,6 +254,21 @@ module Api
       end
 
       private
+
+      def array_param(key)
+        params.fetch(key, "").strip.split(',')
+      end
+
+      def bool_param(key, default)
+        return default if params[key].nil?
+        params[key].to_s == "true"
+      end
+
+      def apply_filters(records)
+        states = array_param(:state)
+        location = params[:location]
+        records.filter(states: states, location: location)
+      end
 
       def stock_serializer
         Api::V1::StockitItemSerializer
