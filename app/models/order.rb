@@ -232,7 +232,9 @@ class Order < ActiveRecord::Base
       category:   'new_order',
       message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
         code: code, submitter_name: submitted_by.full_name,
-        organisation_name: organisation.try(:name_en))
+        organisation_name: organisation.try(:name_en)),
+      order_id:   id,
+      author_id:  created_by_id
     }
   end
 
