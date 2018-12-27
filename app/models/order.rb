@@ -230,11 +230,9 @@ class Order < ActiveRecord::Base
   def send_new_order_notificationen
     PushService.new.send_notification Channel.goodcity_order_channel, STOCK_APP, {
       category:   'new_order',
-      message:    I18n.t("notification.new_order", organisation_name_en:
-        organisation.try(:name_en), organisation_name_zh_tw: organisation.try(:name_zh_tw),
-        contact_name: created_by.full_name),
-      order_id:   id,
-      author_id:  created_by_id
+      message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
+        code: code, submitter_name: submitted_by.full_name,
+        organisation_name: organisation.try(:name_en))
     }
   end
 
