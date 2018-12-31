@@ -19,6 +19,7 @@ module Api
         For a donor, this will be just themselves. For administrators, this will be all users.
       EOS
       def index
+        return search_user_and_render_json if params[:searchText].present?
         @users = @users.except_stockit_user
         @users = @users.find(params[:ids].split(",")) if params[:ids].present?
         render json: @users, each_serializer: serializer
@@ -47,6 +48,12 @@ module Api
 
       def serializer
         Api::V1::UserSerializer
+      end
+
+      def search_user_and_render_json
+        records = @users.search(params["searchText"], params["role_name"]).page(params["page"]).per(params["per_page"])
+        data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "users").as_json
+        render json: { "meta": { "total_pages": records.total_pages, "search": params["searchText"] } }.merge(data)
       end
 
       def user_params
