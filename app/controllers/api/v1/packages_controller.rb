@@ -128,7 +128,7 @@ module Api
         if params['searchText'].present?
           records = params["orderId"].present? ? @packages.undispatched : @packages
           records = records
-            .search(params['searchText'], params['itemId'].presence, :with_inventory_no => params['withInventoryNumber'] == 'true', :state => params['state'])
+            .search(params['searchText'], params['itemId'].presence, :with_inventory_no => params['withInventoryNumber'] == 'true')
           records = apply_filters(records)
             .page(params["page"]).per(params["per_page"])
           pages = records.total_pages
@@ -140,7 +140,6 @@ module Api
           include_packages: false,
           exclude_stockit_set_item: true,
           include_images: true,
-          include_designation: true,
           include_stock_condition: is_stock_app?).as_json
         render json: {meta: { total_pages: pages, search: params['searchText'] } }.merge(packages)
       end
