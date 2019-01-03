@@ -9,5 +9,6 @@ describe Api::V1::PurposeSerializer do
   it "creates JSON" do
     expect(json['purpose']['name_en']).to eql(purpose.name_en)
     expect(json['purpose']['name_zh_tw']).to eql(purpose.name_zh_tw)
+    expect(json['purpose']['identifier']).to eql(purpose.identifier)
   end
 end
