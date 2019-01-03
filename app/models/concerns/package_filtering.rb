@@ -5,10 +5,18 @@ module PackageFiltering
   module ClassMethods
     # Filter based on states, location, publish status and images
 
-    def filter(states: [], location: nil, published: nil, images: nil)
+    def filter(states: [], location: nil)
       res = where(nil)
-      res = res.where_states(states) unless states.empty?
+
+      package_state = states & ['in_stock', 'received', 'designated', 'dispatched']
+      res = res.where_states(package_state.presence || ['received'])
       res = res.filter_by_location(location) unless location.blank?
+
+      publish_filters = states & ['published', 'private']
+      res = res.filter_by_publish_status(publish_filters) if publish_filters.presence
+
+      image_filters = states & ['has_images', 'no_images']
+      res = res.filter_by_image_status(image_filters) if image_filters.presence
       res
     end
 
@@ -28,6 +36,10 @@ module PackageFiltering
       joins("LEFT OUTER JOIN orders_packages ON orders_packages.package_id = packages.id")
     end
 
+    def received_sql
+      "packages.state = 'received'"
+    end
+
     def in_stock_sql
       "packages.state = 'received' and packages.quantity > 0"
     end
@@ -38,6 +50,22 @@ module PackageFiltering
 
     def dispatched_sql
       "orders_packages.state = 'dispatched'"
+    end
+
+    def filter_by_publish_status(publish_filters)
+      if publish_filters.include?("published")
+        where(allow_web_publish: true)
+      elsif publish_filters.include? ("private")
+        where(allow_web_publish: false)
+      end
+    end
+
+    def filter_by_image_status(image_filters)
+      if image_filters.include?("has_images")
+        joins(:images).where("images.imageable_id = packages.id and images.imageable_type='Package'")
+      elsif image_filters.include? ("no_images")
+        includes(:images).where( :images => { :imageable_id => nil } )
+      end
     end
 
     def filter_by_location(location)

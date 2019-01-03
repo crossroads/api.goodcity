@@ -128,9 +128,13 @@ module Api
         if params['searchText'].present?
           records = params["orderId"].present? ? @packages.undispatched : @packages
           records = records
-            .search(params['searchText'], params['itemId'].presence, :with_inventory_no => params['withInventoryNumber'] == 'true')
-          records = apply_filters(records)
-            .page(params["page"]).per(params["per_page"])
+            .search(
+              params['searchText'],
+              params['itemId'].presence,
+              :with_inventory_no => params['withInventoryNumber'] == 'true'
+            )
+          #apply selected filters
+          records = apply_filters(records).page(params["page"]).per(params["per_page"])
           pages = records.total_pages
         end
         packages = ActiveModel::ArraySerializer.new(records,
@@ -258,15 +262,13 @@ module Api
         params.fetch(key, "").strip.split(',')
       end
 
-      def bool_param(key, default)
-        return default if params[key].nil?
-        params[key].to_s == "true"
-      end
-
       def apply_filters(records)
         states = array_param(:state)
         location = params[:location]
-        records.filter(states: states, location: location)
+        records.filter(
+          states: states,
+          location: location
+        )
       end
 
       def stock_serializer
