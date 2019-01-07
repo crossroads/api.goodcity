@@ -69,7 +69,7 @@ module PackageFiltering
     end
 
     def filter_by_location(location)
-      building_name, area_name = location.split('-')
+      building_name, area_name = location.split('-', 2)
       if area_name === "(All areas)"
         where("locations.building = (?)", building_name)
       else
