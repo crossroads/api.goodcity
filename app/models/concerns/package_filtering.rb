@@ -7,9 +7,8 @@ module PackageFiltering
 
     def filter(states: [], location: nil)
       res = where(nil)
-
-      package_state = states & ['in_stock', 'received', 'designated', 'dispatched']
-      res = res.where_states(package_state.presence || ['received'])
+      package_state = states & ['in_stock', 'expecting', 'received', 'designated', 'dispatched']
+      res = res.where_states(package_state) if package_state.any?
       res = res.filter_by_location(location) unless location.blank?
 
       publish_filters = states & ['published', 'private']
@@ -34,6 +33,10 @@ module PackageFiltering
 
     def join_order_packages
       joins("LEFT OUTER JOIN orders_packages ON orders_packages.package_id = packages.id")
+    end
+
+    def expecting_sql
+      "packages.state = 'expecting'"
     end
 
     def received_sql
