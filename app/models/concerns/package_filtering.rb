@@ -56,7 +56,7 @@ module PackageFiltering
       if publish_filters.include?("published")
         where(allow_web_publish: true)
       elsif publish_filters.include? ("private")
-        where(allow_web_publish: false)
+        where("(allow_web_publish IS NULL) or allow_web_publish = false")
       end
     end
 
