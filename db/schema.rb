@@ -208,6 +208,7 @@ ActiveRecord::Schema.define(version: 20190108032931) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -386,6 +387,7 @@ ActiveRecord::Schema.define(version: 20190108032931) do
     t.integer  "address_id"
     t.integer  "district_id"
     t.text     "cancellation_reason"
+    t.string   "order_type"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -592,6 +594,7 @@ ActiveRecord::Schema.define(version: 20190108032931) do
     t.string   "name_zh_tw"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "identifier"
   end
 
   create_table "rejection_reasons", force: :cascade do |t|
