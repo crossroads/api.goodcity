@@ -28,7 +28,7 @@ module PackageFiltering
         "(#{send(method)})"
       end
       states_sql = queries.compact.join(" OR ")
-      join_order_packages.where(states_sql)
+      join_order_packages.where(states_sql).uniq
     end
 
     def join_order_packages
