@@ -46,7 +46,7 @@ describe Package do
 
     it 'should return in stock items with images' do
       expect(Package.count).to eq(5)
-      expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'published', 'has_images']).count).to eq(2)
+      expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'published', 'has_images']).count).to eq(1)
     end
 
     it 'should return in stock items without images' do
