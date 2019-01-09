@@ -4,6 +4,7 @@ RSpec.describe PackageType, type: :model do
   describe "Database columns" do
     it { is_expected.to have_db_column(:code).of_type(:string) }
     it { is_expected.to have_db_column(:name_en).of_type(:string) }
+    it { is_expected.to have_db_column(:allow_requests).of_type(:boolean) }
     it { is_expected.to have_db_column(:name_zh_tw).of_type(:string) }
     it { is_expected.to have_db_column(:other_terms_en).of_type(:string) }
     it { is_expected.to have_db_column(:other_terms_zh_tw).of_type(:string) }
