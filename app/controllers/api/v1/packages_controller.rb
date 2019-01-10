@@ -127,13 +127,12 @@ module Api
         records = {}; pages = 0
         if params['searchText'].present?
           records = params["orderId"].present? ? @packages.undispatched : @packages
-          records = records
-            .search(
-              params['searchText'],
-              params['itemId'].presence,
-              :with_inventory_no => params['withInventoryNumber'] == 'true'
-            )
-          #apply selected filters
+          records = records.search(
+            params['searchText'],
+            params['itemId'].presence,
+            with_inventory_no: params['withInventoryNumber'] == 'true'
+          )
+          # apply selected filters
           records = apply_filters(records).page(params["page"]).per(params["per_page"])
           pages = records.total_pages
         end
