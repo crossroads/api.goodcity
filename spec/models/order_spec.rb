@@ -24,6 +24,7 @@ RSpec.describe Order, type: :model do
   describe "Associations" do
     it { is_expected.to belong_to :detail  }
     it { is_expected.to belong_to :stockit_activity }
+    it { is_expected.to belong_to :booking_type }
     it { is_expected.to belong_to :country }
     it { is_expected.to belong_to :stockit_contact }
     it { is_expected.to belong_to :stockit_organisation }
@@ -64,6 +65,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:order_type).of_type(:string)}
+    it{ is_expected.to have_db_column(:booking_type_id).of_type(:id)}
   end
 
   describe '.recently_used' do

@@ -12,6 +12,7 @@ class Order < ActiveRecord::Base
   belongs_to :organisation
   belongs_to :beneficiary
   belongs_to :address
+  belongs_to :booking_type
   belongs_to :created_by, class_name: 'User'
   belongs_to :processed_by, class_name: 'User'
   belongs_to :cancelled_by, class_name: 'User'
