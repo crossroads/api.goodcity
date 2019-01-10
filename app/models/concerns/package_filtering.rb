@@ -1,4 +1,4 @@
-# Filtering and priority logic for items is extracted here to avoid cluttering the model class
+# Filtering logic for items is extracted here to avoid cluttering the model class
 module PackageFiltering
   extend ActiveSupport::Concern
 
@@ -7,14 +7,14 @@ module PackageFiltering
 
     def filter(states: [], location: nil)
       res = where(nil)
-      package_state = states & ['in_stock', 'expecting', 'received', 'designated', 'dispatched']
+      package_state = states & %w[in_stock expecting received designated dispatched]
       res = res.where_states(package_state) if package_state.any?
       res = res.filter_by_location(location) unless location.blank?
 
-      publish_filters = states & ['published', 'private']
+      publish_filters = states & %w[published private]
       res = res.filter_by_publish_status(publish_filters) if publish_filters.presence
 
-      image_filters = states & ['has_images', 'no_images']
+      image_filters = states & %w[has_images no_images]
       res = res.filter_by_image_status(image_filters) if image_filters.presence
       res
     end
@@ -56,9 +56,9 @@ module PackageFiltering
     end
 
     def filter_by_publish_status(publish_filters)
-      if publish_filters.include?("published")
+      if publish_filters.include?('published')
         where(allow_web_publish: true)
-      elsif publish_filters.include? ("private")
+      elsif publish_filters.include?('private')
         where("(allow_web_publish IS NULL) or allow_web_publish = false")
       end
     end
@@ -66,14 +66,14 @@ module PackageFiltering
     def filter_by_image_status(image_filters)
       if image_filters.include?("has_images")
         joins(:images).where("images.imageable_id = packages.id and images.imageable_type='Package'")
-      elsif image_filters.include? ("no_images")
-        includes(:images).where( :images => { :imageable_id => nil } )
+      elsif image_filters.include?("no_images")
+        includes(:images).where(images: { imageable_id: nil })
       end
     end
 
     def filter_by_location(location)
       building_name, area_name = location.split('-', 2)
-      if area_name === "(All areas)"
+      if area_name == "(All areas)"
         where("locations.building = (?)", building_name)
       else
         where("locations.building = (?) AND locations.area = (?)", building_name, area_name)
