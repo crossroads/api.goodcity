@@ -262,11 +262,9 @@ module Api
       end
 
       def apply_filters(records)
-        states = array_param(:state)
-        location = params[:location]
         records.filter(
-          states: states,
-          location: location
+          states: array_param(:state),
+          location: params[:location]
         )
       end
 
