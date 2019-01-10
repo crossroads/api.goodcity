@@ -4,7 +4,6 @@ FactoryBot.define do
     timeslot        "2PM-3PM"
     transport_type  "self"
 
-    association     :booking_type
     association     :gogovan_order
     association     :order
     association     :contact
