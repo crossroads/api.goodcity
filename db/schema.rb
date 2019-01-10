@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190108032931) do
+ActiveRecord::Schema.define(version: 20190110123923) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -208,7 +208,6 @@ ActiveRecord::Schema.define(version: 20190108032931) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -388,10 +387,12 @@ ActiveRecord::Schema.define(version: 20190108032931) do
     t.integer  "district_id"
     t.text     "cancellation_reason"
     t.string   "order_type"
+    t.integer  "booking_type_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
   add_index "orders", ["beneficiary_id"], name: "index_orders_on_beneficiary_id", using: :btree
+  add_index "orders", ["booking_type_id"], name: "index_orders_on_booking_type_id", using: :btree
   add_index "orders", ["cancelled_by_id"], name: "index_orders_on_cancelled_by_id", using: :btree
   add_index "orders", ["closed_by_id"], name: "index_orders_on_closed_by_id", using: :btree
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
@@ -757,6 +758,7 @@ ActiveRecord::Schema.define(version: 20190108032931) do
   add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
+  add_foreign_key "orders", "booking_types"
   add_foreign_key "organisations", "countries"
   add_foreign_key "organisations", "districts"
   add_foreign_key "organisations", "organisation_types"
