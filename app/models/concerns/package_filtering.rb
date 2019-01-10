@@ -7,7 +7,7 @@ module PackageFiltering
 
     def filter(states: [], location: nil)
       res = where(nil)
-      package_state = states & %w[in_stock expecting received designated dispatched]
+      package_state = states & %w[in_stock received designated dispatched]
       res = res.where_states(package_state) if package_state.any?
       res = res.filter_by_location(location) unless location.blank?
 
@@ -25,7 +25,7 @@ module PackageFiltering
 
       queries = states.map do |t|
         method = "#{t}_sql"
-        "(#{send(method)})"
+        send(method)
       end
       states_sql = queries.compact.join(" OR ")
       join_order_packages.where(states_sql).uniq
@@ -33,10 +33,6 @@ module PackageFiltering
 
     def join_order_packages
       joins("LEFT OUTER JOIN orders_packages ON orders_packages.package_id = packages.id")
-    end
-
-    def expecting_sql
-      "packages.state = 'expecting'"
     end
 
     def received_sql
@@ -64,16 +60,16 @@ module PackageFiltering
     end
 
     def filter_by_image_status(image_filters)
-      if image_filters.include?("has_images")
+      if image_filters.include?('has_images')
         joins(:images).where("images.imageable_id = packages.id and images.imageable_type='Package'")
-      elsif image_filters.include?("no_images")
+      elsif image_filters.include?('no_images')
         includes(:images).where(images: { imageable_id: nil })
       end
     end
 
     def filter_by_location(location)
       building_name, area_name = location.split('-', 2)
-      if area_name == "(All areas)"
+      if area_name == '(All areas)'
         where("locations.building = (?)", building_name)
       else
         where("locations.building = (?) AND locations.area = (?)", building_name, area_name)

@@ -12,44 +12,44 @@ describe Package do
       create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
     end
 
-    it 'Should not filter out anything if no explicit arguments are provided/selected' do
+    it 'does not filter out anything if no explicit arguments are provided/selected' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter().count).to eq(5)
     end
 
-    it 'Should return in stock items where state is received and quantity > 0' do
+    it 'returns in stock items where state is received and quantity > 0' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock']).count).to eq(4)
     end
 
-    it 'should return in_stock items with/without published status' do
+    it 'returns in_stock items with/without published status' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'published_and_private']).count).to eq(4)
     end
 
-    it 'should return in stock items with published status' do
+    it 'returns in stock items with published status' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'published']).count).to eq(2)
     end
 
-    it 'should return in stock items with un-published status' do
+    it 'returns in stock items with un-published status' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'private']).count).to eq(2)
     end
 
-     it 'should return in_stock items with/without images' do
+     it 'returns in_stock items with/without images' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'published_and_private', 'with_and_without_images']).count).to eq(4)
     end
 
-    it 'should return in stock items with images' do
+    it 'returns in stock items with images' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'published', 'has_images']).count).to eq(1)
     end
 
-    it 'should return in stock items without images' do
+    it 'returns in stock items without images' do
       expect(Package.count).to eq(5)
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['in_stock', 'private', 'no_images']).count).to eq(1)
     end
@@ -63,13 +63,13 @@ describe Package do
       create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
     end
 
-    it 'Should not filter out anything if no explicit arguments are provided/selected' do
+    it 'does not filter out anything if no explicit arguments are provided/selected' do
       expect(Package.count).to eq(3)
       expect(Package.where("inventory_number ILIKE '%111%'").count).to eq(2)
       expect(Package.where("inventory_number ILIKE '%111%'").filter().count).to eq(2)
     end
 
-    it 'should filter out only designated packages' do
+    it 'filters out only designated packages' do
       package_inventory = @order_package.package.update(inventory_number: '111006')
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['designated']).count).to eq(1)
     end
@@ -83,32 +83,32 @@ describe Package do
       create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
     end
 
-    it 'Should not filter out anything if no explicit arguments are provided/selected' do
+    it 'does not filter out anything if no explicit arguments are provided/selected' do
       expect(Package.count).to eq(3)
       expect(Package.where("inventory_number ILIKE '%111%'").count).to eq(2)
       expect(Package.where("inventory_number ILIKE '%111%'").filter().count).to eq(2)
     end
 
-    it 'should filter out only dispatched packages' do
+    it 'filters out only dispatched packages' do
       package_inventory = @order_package.package.update(inventory_number: '111007')
       expect(Package.where("inventory_number ILIKE '%111%'").filter(states: ['dispatched']).count).to eq(1)
     end
   end
 
-  context 'filter based on location' do
+  context 'filters based on location' do
     before(:each) do
       @package_with_location = create(:package, :package_with_locations, inventory_number: "111003", state: 'received', quantity: 1)
       create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
       create(:package, :with_images, inventory_number: "111006", allow_web_publish: true, state: 'received', quantity: 1)
     end
 
-    it 'Should not filter out anything if no explicit arguments are provided/selected' do
+    it 'does not filter out anything if no explicit arguments are provided/selected' do
       expect(Package.count).to eq(3)
       expect(Package.where("inventory_number ILIKE '%111%'").count).to eq(3)
       expect(Package.where("inventory_number ILIKE '%111%'").filter().count).to eq(3)
     end
 
-    # it 'should filter out item based on location' do
+    # it 'filters out item based on location' do
     #   expect(Package.count).to eq(3)
     #   pkg_location_name = @package_with_location.locations.pluck(:building, :area).first.join('-')
     #   expect(Package.where("inventory_number ILIKE '%111%'")
