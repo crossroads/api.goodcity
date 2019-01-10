@@ -5,7 +5,6 @@ class OrderTransport < ActiveRecord::Base
   belongs_to :contact
   belongs_to :gogovan_order
   belongs_to :gogovan_transport
-  belongs_to :booking_type
 
   accepts_nested_attributes_for :contact
 
@@ -17,7 +16,7 @@ class OrderTransport < ActiveRecord::Base
     self.timeslot.blank? || (/^\d{1,2}(:\d{2})?(AM|PM)/ =~ self.timeslot) != 0
   end
 
-  def save_timeslot_to_schedule 
+  def save_timeslot_to_schedule
     return if invalid_timeslot || self.scheduled_at.blank?
     time = Time.parse self.timeslot.split('-').first
     self.scheduled_at = self
