@@ -392,7 +392,6 @@ ActiveRecord::Schema.define(version: 20190110123923) do
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
   add_index "orders", ["beneficiary_id"], name: "index_orders_on_beneficiary_id", using: :btree
-  add_index "orders", ["booking_type_id"], name: "index_orders_on_booking_type_id", using: :btree
   add_index "orders", ["cancelled_by_id"], name: "index_orders_on_cancelled_by_id", using: :btree
   add_index "orders", ["closed_by_id"], name: "index_orders_on_closed_by_id", using: :btree
   add_index "orders", ["code"], name: "orders_code_idx", using: :gin
@@ -758,7 +757,6 @@ ActiveRecord::Schema.define(version: 20190110123923) do
   add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
-  add_foreign_key "orders", "booking_types"
   add_foreign_key "organisations", "countries"
   add_foreign_key "organisations", "districts"
   add_foreign_key "organisations", "organisation_types"
