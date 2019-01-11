@@ -584,5 +584,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['items'][0]['inventory_number']).to eql('11111')
     end
 
+    it 'should filter out item with published, has_images, and in_stock status' do
+      create :package, inventory_number: "111000", state: 'received', quantity: 1
+      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 1
+      create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
+      params = {
+        searchText: '111',
+        showQuantityItems: 'true',
+        withInventoryNumber: 'true',
+        state:'in_stock,published,has_images'
+      }
+      get :search_stockit_items, params
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eql(1)
+      expect(subject['meta']['search']).to eql('111')
+      expect(subject['items'].length).to eql(1)
+      expect(subject['items'][0]['inventory_number']).to eql('111005')
+    end
+    
   end
 end
