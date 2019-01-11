@@ -168,9 +168,9 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       describe "when filtering the search results" do
-        let(:online_order_transport_ggv) { create :order_transport, booking_type: BookingType.online_order, transport_type: 'ggv'}
-        let(:online_order_transport_self) { create :order_transport, booking_type: BookingType.online_order, transport_type: 'self'}
-        let(:appointment_transport) { create :order_transport, booking_type: BookingType.appointment}
+        let(:online_order_transport_ggv) { create :order_transport, transport_type: 'ggv'}
+        let(:online_order_transport_self) { create :order_transport, transport_type: 'self'}
+        let(:order_transport) { create :order_transport }
 
         it 'returns only records with the specified states' do
           2.times { FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s' }
@@ -191,9 +191,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
         ['appointment', 'online_order_ggv', 'online_order_pickup', 'shipment', 'other'].each do |type|
           it "should return a single order of type #{type}" do
-            FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: appointment_transport
-            FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_order_transport_ggv
-            FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', order_transport: online_order_transport_self
+            FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s',
+            booking_type: BookingType.appointment, order_transport: order_transport
+            FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_order_transport_ggv, booking_type: BookingType.online_order
+            FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', order_transport: online_order_transport_self, booking_type: BookingType.online_order
             FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'shipment'
             FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'other'
 
@@ -206,9 +207,9 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         it 'returns records with multuple specified types' do
-          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: appointment_transport
-          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_order_transport_ggv
-          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', order_transport: online_order_transport_self
+          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: order_transport, booking_type: BookingType.appointment
+          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_order_transport_ggv, booking_type: BookingType.online_order
+          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', order_transport: online_order_transport_self, booking_type: BookingType.online_order
 
           get :index, searchText: 'iphone', type: 'appointment,online_order_ggv'
           expect(response.status).to eq(200)
