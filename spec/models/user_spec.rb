@@ -95,6 +95,20 @@ describe User, :type => :model do
     end
   end
 
+  describe ".recently_used_user" do
+    it "will return recent 5 users who created orders" do
+    end
+
+    it "will return recent 5 orders according to role type" do
+    end
+
+    it "will return recent users for orders authorised by Logged in User" do
+    end
+
+    it "will return nothing if logged user has not created any order" do
+    end
+  end
+
   describe '.creation_with_auth' do
 
     context "when mobile does not exist" do

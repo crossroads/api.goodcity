@@ -62,6 +62,12 @@ class User < ActiveRecord::Base
     user
   end
 
+  def self.recently_used_user(user_id)
+    joins("INNER JOIN orders ON users.id = orders.created_by_id").
+    where("orders.authorised_by_id = #{user_id}  AND (orders.state not in ('cancelled', 'closed', 'draft') OR orders.status not in ('Closed', 'Sent', 'Cancelled'))").
+    group("users.id").limit(5)
+  end
+
   def self.search(searchText, role)
     joins(:roles).where("roles.name = ?  AND first_name ILIKE ? OR last_name ILIKE ?", role, "%#{searchText}%", "%#{searchText}%").uniq
   end

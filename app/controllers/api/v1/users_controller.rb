@@ -44,6 +44,11 @@ module Api
         render json: @user, serializer: serializer
       end
 
+      def recent_users
+        @users = User.recently_used_user(User.current_user.id)
+        render json: @users, each_serializer: serializer
+      end
+
       private
 
       def serializer
