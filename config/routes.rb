@@ -74,6 +74,8 @@ Rails.application.routes.draw do
         get 'names', on: :collection
       end
 
+      get "recent_users", to: "users#recent_users"
+
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]
       resources :appointment_slot_presets, only: [:create, :destroy, :index, :update]
