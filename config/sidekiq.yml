@@ -5,6 +5,7 @@
 #  A queue with a weight of 2 will be checked twice as often as a queue with a weight of 1
 :queues:
   - default
+  - push_updates
   - mailers
   - low
   - gogovan_orders
