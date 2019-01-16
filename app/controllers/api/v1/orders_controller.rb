@@ -25,7 +25,7 @@ module Api
           param :stockit_id, String, desc: "stockit designation record id"
           param :beneficiary_id, String
           param :address_id, String
-          param :order_type, String, desc: "Type of order(online order or appointment)"
+          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)'
         end
       end
 
@@ -163,7 +163,7 @@ module Api
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
           :stockit_organisation_id, :stockit_activity_id,
-          :people_helped, :beneficiary_id, :purpose_description,
+          :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
           :address_id, :order_type, purpose_ids: [], cart_package_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes
