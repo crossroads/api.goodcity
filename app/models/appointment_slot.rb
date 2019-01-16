@@ -9,8 +9,8 @@ class AppointmentSlot < ActiveRecord::Base
 
   def self.appointments_booked_for_slot(slot)
     appointment_type = BookingType.appointment.id
-    OrderTransport.where(
-      "booking_type_id = :appointment_type AND scheduled_at = :timestamp",
+    OrderTransport.joins(:order).where(
+      "orders.booking_type_id = :appointment_type AND order_transports.scheduled_at= :timestamp",
       timestamp: slot.timestamp,
       appointment_type: appointment_type
     )
