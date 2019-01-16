@@ -16,7 +16,7 @@ module PackageFiltering
 
       image_filters = states & %w[has_images no_images]
       res = res.filter_by_image_status(image_filters) if image_filters.presence
-      res
+      res.uniq
     end
 
     def where_states(states)
@@ -28,7 +28,7 @@ module PackageFiltering
         send(method)
       end
       states_sql = queries.compact.join(" OR ")
-      join_order_packages.where(states_sql).uniq
+      join_order_packages.where(states_sql)
     end
 
     def join_order_packages
