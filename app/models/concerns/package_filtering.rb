@@ -16,7 +16,7 @@ module PackageFiltering
 
       image_filters = states & %w[has_images no_images]
       res = res.filter_by_image_status(image_filters) if image_filters.presence
-      res.uniq
+      res.distinct
     end
 
     def where_states(states)
