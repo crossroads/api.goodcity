@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190109072211) do
+ActiveRecord::Schema.define(version: 20190110123923) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -385,9 +385,9 @@ ActiveRecord::Schema.define(version: 20190109072211) do
     t.integer  "address_id"
     t.integer  "district_id"
     t.text     "cancellation_reason"
+    t.integer  "authorised_by_id"
     t.string   "order_type"
     t.integer  "booking_type_id"
-    t.integer  "authorised_by_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -542,6 +542,7 @@ ActiveRecord::Schema.define(version: 20190109072211) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
