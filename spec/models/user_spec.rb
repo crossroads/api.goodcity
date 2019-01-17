@@ -95,7 +95,7 @@ describe User, :type => :model do
     end
   end
 
-  describe ".recently_used_user" do
+  describe ".recent_orders_created_for" do
     it "will return recent 5 users who created orders" do
     end
 

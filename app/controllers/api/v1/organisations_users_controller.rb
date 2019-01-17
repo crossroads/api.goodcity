@@ -1,7 +1,8 @@
 module Api
   module V1
     class OrganisationsUsersController < Api::V1::ApiController
-      load_and_authorize_resource :organisations_user, parent: false
+      authorize_resource :organisations_user, parent: false
+      load_resource :organisations_user, only: [:show]
 
       resource_description do
         short "Get Organisations Users."
