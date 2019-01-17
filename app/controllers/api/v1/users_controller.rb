@@ -45,7 +45,7 @@ module Api
       end
 
       def recent_users
-        @users = User.recently_used_user(User.current_user.id)
+        @users = User.recent_orders_created_for(User.current_user.id)
         render json: @users, each_serializer: serializer
       end
 
