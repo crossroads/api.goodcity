@@ -95,19 +95,19 @@ describe User, :type => :model do
     end
   end
 
-  describe ".recent_orders_created_for" do
-    it "will return recent 5 users who created orders" do
-    end
+  # describe ".recent_orders_created_for" do
+  #   it "will return recent 5 users who created orders" do
+  #   end
 
-    it "will return recent 5 orders according to role type" do
-    end
+  #   it "will return recent 5 orders according to role type" do
+  #   end
 
-    it "will return recent users for orders authorised by Logged in User" do
-    end
+  #   it "will return recent users for orders authorised by Logged in User" do
+  #   end
 
-    it "will return nothing if logged user has not created any order" do
-    end
-  end
+  #   it "will return nothing if logged user has not created any order" do
+  #   end
+  # end
 
   describe '.creation_with_auth' do
 
