@@ -32,8 +32,9 @@ module Api
       api :POST, "/v1/orders", "Create or Update a order"
       param_group :order
       def create
+        root = is_browse_app? ? "order" : "designation"
         if order_record.save
-          render json: @order, serializer: serializer, status: 201
+          render json: @order, serializer: serializer, root: root, status: 201
         else
           render json: @order.errors, status: 422
         end
@@ -75,10 +76,11 @@ module Api
       end
 
       def update
+        root = is_browse_app? ? "order" : "designation"
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
         if @order.valid? and @order.save
-          render json: @order, serializer: serializer
+          render json: @order, root: root, serializer: serializer
         else
           render json: { errors: @order.errors.full_messages } , status: 422
         end
@@ -158,6 +160,7 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
+          :authorised_by_id, :created_by_id,
           :stockit_id, :code, :status, :created_at,
           :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
