@@ -6,6 +6,7 @@ class Message < ActiveRecord::Base
   belongs_to :sender, class_name: "User", inverse_of: :messages
   belongs_to :offer, inverse_of: :messages
   belongs_to :item, inverse_of: :messages
+  belongs_to :order, inverse_of: :messages
 
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions
