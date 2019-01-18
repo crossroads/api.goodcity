@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190110123923) do
+ActiveRecord::Schema.define(version: 20190118063915) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -283,10 +283,12 @@ ActiveRecord::Schema.define(version: 20190110123923) do
     t.datetime "deleted_at"
     t.integer  "offer_id"
     t.integer  "item_id"
+    t.integer  "order_id"
   end
 
   add_index "messages", ["item_id"], name: "index_messages_on_item_id", using: :btree
   add_index "messages", ["offer_id"], name: "index_messages_on_offer_id", using: :btree
+  add_index "messages", ["order_id"], name: "index_messages_on_order_id", using: :btree
   add_index "messages", ["sender_id"], name: "index_messages_on_sender_id", using: :btree
 
   create_table "offers", force: :cascade do |t|
@@ -680,9 +682,11 @@ ActiveRecord::Schema.define(version: 20190110123923) do
     t.integer  "message_id"
     t.string   "state"
     t.datetime "sms_reminder_sent_at"
+    t.integer  "order_id"
   end
 
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
+  add_index "subscriptions", ["order_id"], name: "index_subscriptions_on_order_id", using: :btree
 
   create_table "territories", force: :cascade do |t|
     t.string   "name_en"
@@ -746,9 +750,11 @@ ActiveRecord::Schema.define(version: 20190110123923) do
   add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
+  add_foreign_key "messages", "orders"
   add_foreign_key "organisations", "countries"
   add_foreign_key "organisations", "districts"
   add_foreign_key "organisations", "organisation_types"
   add_foreign_key "organisations_users", "organisations"
   add_foreign_key "organisations_users", "users"
+  add_foreign_key "subscriptions", "orders"
 end

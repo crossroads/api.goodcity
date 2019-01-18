@@ -28,6 +28,8 @@ class Order < ActiveRecord::Base
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
+  has_many :messages, dependent: :destroy, inverse_of: :order
+  has_many :subscriptions, dependent: :destroy, inverse_of: :order
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport, dependent: :destroy
 

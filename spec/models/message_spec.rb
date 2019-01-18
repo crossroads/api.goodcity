@@ -23,6 +23,7 @@ describe Message, type: :model do
     it { is_expected.to belong_to :sender }
     it { is_expected.to belong_to :offer }
     it { is_expected.to belong_to :item }
+    it { is_expected.to belong_to :order }
     it { is_expected.to have_many :subscriptions }
     it { is_expected.to have_many :offers_subscription }
   end
