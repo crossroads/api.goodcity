@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   belongs_to :image, dependent: :destroy
   has_many :moved_packages, class_name: "Package", foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
   has_many :used_locations, -> { order 'packages.stockit_moved_on DESC' }, class_name: "Location", through: :moved_packages, source: :location
+  has_many :created_orders, -> { order 'id DESC' }, class_name: 'Order', foreign_key: :created_by_id
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
@@ -60,6 +61,15 @@ class User < ActiveRecord::Base
       user.errors.add(:base, msg)
     end
     user
+  end
+
+  def self.recent_orders_created_for(user_id)
+    joins(:created_orders).where(orders: { authorised_by_id: user_id })
+    .order('orders.id DESC').limit(5)
+  end
+
+  def self.search(searchText, role)
+    joins(:roles).where("roles.name = ?  AND first_name ILIKE ? OR last_name ILIKE ?", role, "%#{searchText}%", "%#{searchText}%").uniq
   end
 
   def allowed_login?(app_name)

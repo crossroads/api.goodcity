@@ -8,6 +8,11 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   let(:users) { create_list(:user, 2) }
 
+  let(:charity_users) { (1..5).map { create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }}
+
+  let(:parsed_body) { JSON.parse(response.body) }
+
   describe "GET user" do
     before { generate_and_set_token(user) }
 
@@ -28,6 +33,27 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       get :index
       body = JSON.parse(response.body)
       expect( body['users'].length ).to eq(User.count)
+    end
+  end
+
+  describe "GET searched user" do
+    before { generate_and_set_token(user) }
+
+    it "returns searched user according to params" do
+      get :index, searchText: charity_users.first.first_name, role_name: "Charity"
+      expect(response.status).to eq(200)
+      expect(parsed_body['users'].count).to eq(1)
+      expect(parsed_body['meta']['total_pages']).to eql(1)
+    end
+
+    it "will not return any user if params does not matches any users" do
+      get :index, searchText: "zzzzzz", role_name: "Charity"
+      expect(parsed_body['users'].count).to eq(0)
+    end
+
+    it "will return charity user if params has role as 'Charity'" do
+      get :index, searchText: charity_users.first.first_name, role_name: "Charity"
+      expect(User.find(parsed_body["users"].first["id"]).roles.pluck(:name)).to include("Charity")
     end
   end
 
