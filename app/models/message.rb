@@ -25,9 +25,9 @@ class Message < ActiveRecord::Base
   attr_accessor :state_value, :is_call_log
 
   after_create do
-    subscribe_users_to_message
-    update_client_store
-    send_new_message_notification
+    # subscribe_users_to_message
+    # update_client_store
+    # send_new_message_notification
   end
 
   after_destroy :notify_deletion_to_subscribers
@@ -50,19 +50,32 @@ class Message < ActiveRecord::Base
   end
 
   def subscribe_users_to_message
-    users_ids = offer.subscribed_users(is_private) - [sender_id]
-    users_ids.each { |user_id| add_subscription("unread", offer_id, user_id) }
-    subscribe_sender unless sender.try(:system_user?)
-    subscribe_donor unless donor_subscribed?
-    subscribe_reviewer unless reviewer_subscribed?
+    if offer
+      users_ids = offer.subscribed_users(is_private) - [sender_id]
+      users_ids.each { |user_id| add_subscription("unread", offer_id, user_id) }
+      subscribe_sender unless sender.try(:system_user?)
+      subscribe_donor unless donor_subscribed?
+      subscribe_reviewer unless reviewer_subscribed?
+    elsif order
+      user_ids = order.subscribed_users(true) - [sender_id]
+      users_ids.each { |user_id| add_subscription("unread", order_id, user_id) }
+    end
   end
 
   def subscribe_reviewer
-    add_subscription("unread", offer_id, offer.reviewed_by_id)
+    if offer
+      add_subscription("unread", offer_id, offer.reviewed_by_id)
+    elsif order
+      add_subscription("unread", order_id, order.reviewed_by_id)
+    end
   end
 
   def subscribe_sender
-    add_subscription("read", offer_id, sender_id)
+    if offer
+      add_subscription("read", offer_id, sender_id)
+    elsif
+      add_subscription("read", order_id, sender_id)
+    end
   end
 
   def subscribe_donor
@@ -77,11 +90,12 @@ class Message < ActiveRecord::Base
     offer.reviewed_by_id.nil? || user_subscribed?(offer.reviewed_by_id)
   end
 
-  def add_subscription(state, offer_id, user_id)
+  def add_subscription(state, user_id, offer_id: nil, order_id: nil)
     subscriptions.create(
       state: state,
       message_id: id,
       offer_id: offer_id,
+      order_id: order_id,
       user_id: user_id)
   end
 
