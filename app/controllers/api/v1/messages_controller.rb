@@ -30,6 +30,7 @@ module Api
       def index
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
         @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
+        @messages = @messages.where(order_id: params[:order_id]) if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
         render json: @messages, each_serializer: serializer
       end
@@ -42,6 +43,7 @@ module Api
       api :POST, "/v1/messages", "Create an message"
       param_group :message
       def create
+        @message.order_id = params[:message][:designation_id].to_i if params[:message][:designation_id]
         @message.sender_id = current_user.id
         save_and_render_object(@message)
       end
@@ -60,7 +62,7 @@ module Api
 
       def message_params
         params.require(:message).permit(:body, :is_private,
-          :offer_id, :item_id)
+          :offer_id, :item_id, :order_id)
       end
     end
   end
