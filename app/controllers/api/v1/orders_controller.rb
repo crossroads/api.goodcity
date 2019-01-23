@@ -92,7 +92,7 @@ module Api
       end
 
       def my_orders
-        render json: @orders.my_orders.goodcity_orders, each_serializer: select_serializer,
+        render json: @orders.goodcity_orders.my_orders, each_serializer: select_serializer,
           root: "orders", include_packages: false, browse_order: true
       end
 

@@ -69,12 +69,19 @@ RSpec.describe Order, type: :model do
   end
 
   describe '.my_orders' do
-    let(:user) { create :user, :charity, :with_can_manage_orders_permission}
-    let!(:authorised_by_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    let(:user) { create :user, :charity, :with_can_manage_orders_permission }
+    let(:supervisor) { create :user, :supervisor, :with_can_manage_orders_permission }
+    let(:authorised_by_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
 
     let!(:orders) { (1..5).map { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: nil } }
-    let!(:authorised_order) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let(:submitted_authorised_order) { create :order, :with_state_submitted, created_by: user, authorised_by_id:  supervisor.id }
+    let(:processing_authorised_order) { create :order, :with_state_processing, created_by: user, authorised_by_id:  supervisor.id }
+    let(:awaiting_dispatch_authorised_order) { create :order, :with_state_awaiting_dispatch, created_by: user, authorised_by_id:  supervisor.id }
+    let(:dispatching_authorised_order) { create :order, :with_state_dispatching, created_by: user, authorised_by_id:  supervisor.id }
+    let(:authorised_order) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let(:cancelled_order) { create :order, :with_orders_packages, state: 'cancelled', created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let(:closed_order) { create :order, :with_orders_packages, state: 'closed', created_by_id: user.id, authorised_by_id: authorised_by_user.id }
     let!(:order_created_by_other_user) { create :order, :with_orders_packages, :with_state_draft, created_by_id: authorised_by_user.id, authorised_by_id: nil }
 
     before(:each) {
@@ -90,10 +97,45 @@ RSpec.describe Order, type: :model do
       expect(Order.my_orders).not_to include(order_created_by_other_user)
     end
 
-    it "will not show order having authored_by column" do
+    it "will not show order having authored_by draft orders" do
       expect(Order.my_orders.count).to eq(5)
       expect(Order.my_orders).not_to include(authorised_order)
-      expect(Order.my_orders).not_to include(nil)
+    end
+
+    it 'returns authorised submitted orders' do
+      submitted_authorised_order
+      expect(Order.my_orders.count).to eq(6)
+      expect(Order.my_orders).to include(submitted_authorised_order)
+    end
+
+    it 'returns authorised processing orders' do
+      processing_authorised_order
+      expect(Order.my_orders.count).to eq(6)
+      expect(Order.my_orders).to include(processing_authorised_order)
+    end
+
+    it 'returns authorised scheduled orders' do
+      awaiting_dispatch_authorised_order
+      expect(Order.my_orders.count).to eq(6)
+      expect(Order.my_orders).to include(awaiting_dispatch_authorised_order)
+    end
+
+    it 'returns authorised dispatch orders' do
+      dispatching_authorised_order
+      expect(Order.my_orders.count).to eq(6)
+      expect(Order.my_orders).to include(dispatching_authorised_order)
+    end
+
+    it 'returns authorised closed orders' do
+      closed_order
+      expect(Order.my_orders.count).to eq(6)
+      expect(Order.my_orders).to include(closed_order)
+    end
+
+    it 'returns authorised cancelled orders' do
+      cancelled_order
+      expect(Order.my_orders.count).to eq(6)
+      expect(Order.my_orders).to include(cancelled_order)
     end
   end
 
