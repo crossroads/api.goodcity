@@ -25,7 +25,7 @@ class Message < ActiveRecord::Base
   attr_accessor :state_value, :is_call_log
 
   after_create do
-    # subscribe_users_to_message
+    subscribe_users_to_message
     # update_client_store
     # send_new_message_notification
   end
@@ -52,34 +52,53 @@ class Message < ActiveRecord::Base
   def subscribe_users_to_message
     if offer
       users_ids = offer.subscribed_users(is_private) - [sender_id]
-      users_ids.each { |user_id| add_subscription("unread", offer_id, user_id) }
+      users_ids.each{ |user_id| add_subscription("unread", user_id, offer_id: offer_id ) }
       subscribe_sender unless sender.try(:system_user?)
       subscribe_donor unless donor_subscribed?
       subscribe_reviewer unless reviewer_subscribed?
     elsif order
-      user_ids = order.subscribed_users(true) - [sender_id]
-      users_ids.each { |user_id| add_subscription("unread", order_id, user_id) }
+      users_ids = order.subscribed_users(is_private) - [sender_id]
+      users_ids.each{ |user_id| add_subscription("unread", user_id, order_id: order_id) }
+      subscribe_sender unless sender.try(:system_user?)
+      subscribe_order_creator unless order_creator_subscribed?
+      subscribe_order_processor if order_processor_present? && !order_processor_subscribed?
     end
   end
 
   def subscribe_reviewer
-    if offer
-      add_subscription("unread", offer_id, offer.reviewed_by_id)
-    elsif order
-      add_subscription("unread", order_id, order.reviewed_by_id)
-    end
+    add_subscription("unread", offer.reviewed_by_id, offer_id: offer_id)
   end
 
   def subscribe_sender
     if offer
-      add_subscription("read", offer_id, sender_id)
-    elsif
-      add_subscription("read", order_id, sender_id)
+      add_subscription("read", sender_id, offer_id: offer_id)
+    elsif order
+      add_subscription("read", sender_id, order_id: order_id)
     end
   end
 
+  def subscribe_order_processor
+    add_subscription("unread", order.processed_by_id, order_id: order_id)
+  end
+
+  def subscribe_order_creator
+    add_subscription("unread", order.created_by_id, order_id: order_id)
+  end
+
   def subscribe_donor
-    add_subscription("unread", offer_id, offer.created_by_id)
+    add_subscription("unread", offer.created_by_id, offer_id: offer_id)
+  end
+
+  def order_creator_subscribed?
+    is_private || order.cancelled? || user_subscribed?(order.created_by_id)
+  end
+
+  def order_processor_present?
+    order.processed_by_id.present?
+  end
+
+  def order_processor_subscribed?
+    is_private || order.cancelled? || user_subscribed?(order.processed_by_id)
   end
 
   def donor_subscribed?
@@ -90,7 +109,7 @@ class Message < ActiveRecord::Base
     offer.reviewed_by_id.nil? || user_subscribed?(offer.reviewed_by_id)
   end
 
-  def add_subscription(state, user_id, offer_id: nil, order_id: nil)
+  def add_subscription(state, user_id, offer_id=nil, order_id=nil)
     subscriptions.create(
       state: state,
       message_id: id,
@@ -100,7 +119,11 @@ class Message < ActiveRecord::Base
   end
 
   def subscribed_user_channels
-    Channel.private(offer.subscribed_users(is_private))
+    if offer
+      Channel.private(offer.subscribed_users(is_private))
+    elsif order
+      Channel.private(order.subscribed_users(is_private))
+    end
   end
 
   def send_new_message_notification
