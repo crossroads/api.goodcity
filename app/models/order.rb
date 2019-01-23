@@ -68,7 +68,9 @@ class Order < ActiveRecord::Base
     where(query, inactive_status: INACTIVE_STATUS, inactive_states: INACTIVE_STATES)
   }
 
-  scope :my_orders, -> { where("created_by_id = (?) AND authorised_by_id is NULL", User.current_user.try(:id)) }
+  scope :my_orders, -> { my_draft_orders - my_non_orders }
+  scope :my_draft_orders, -> { where("created_by_id = (?)", User.current_user.try(:id) ) }
+  scope :my_non_orders, -> { where("created_by_id = (?) and authorised_by_id is not NULL and state = 'draft'", User.current_user.try(:id) ) }
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
