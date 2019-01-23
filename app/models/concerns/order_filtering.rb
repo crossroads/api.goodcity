@@ -40,7 +40,7 @@ module OrderFiltering
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
-      res
+      res.distinct
     end
 
     def where_types(types)
