@@ -68,6 +68,35 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:booking_type_id).of_type(:integer)}
   end
 
+  describe '.my_orders' do
+    let(:user) { create :user, :charity, :with_can_manage_orders_permission}
+    let!(:authorised_by_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+
+    let!(:orders) { (1..5).map { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: nil } }
+    let!(:authorised_order) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let!(:order_created_by_other_user) { create :order, :with_orders_packages, :with_state_draft, created_by_id: authorised_by_user.id, authorised_by_id: nil }
+
+    before(:each) {
+      User.current_user = user
+    }
+
+    it "will show orders created_by logged_in user" do
+      expect(Order.my_orders.count).to eq(5)
+    end
+
+    it "will not show orders created_by by other users" do
+      expect(Order.my_orders.count).to eq(5)
+      expect(Order.my_orders).not_to include(order_created_by_other_user)
+    end
+
+    it "will not show order having authored_by column" do
+      expect(Order.my_orders.count).to eq(5)
+      expect(Order.my_orders).not_to include(authorised_order)
+      expect(Order.my_orders).not_to include(nil)
+    end
+  end
+
   describe '.recently_used' do
     let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
