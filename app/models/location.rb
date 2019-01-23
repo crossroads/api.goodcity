@@ -4,10 +4,15 @@ class Location < ActiveRecord::Base
 
   has_many :packages_locations
   has_many :packages, through: :packages_locations
+  has_many :package_types, inverse_of: :location
 
   # to satisfy PushUpdate module
   def offer
     nil
+  end
+
+  def can_delete?
+    (packages_locations.count) == 0 && (package_types.count == 0)
   end
 
   def self.multiple_location
