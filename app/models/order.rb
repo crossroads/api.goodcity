@@ -93,6 +93,13 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def subscribed_users(is_private)
+    Message.unscoped.joins(:subscriptions)
+      .select("distinct subscriptions.user_id as user_id")
+      .where(is_private: is_private, order_id: id)
+      .map(&:user_id)
+  end
+
   def set_initial_state
     self.state ||= :draft
   end
