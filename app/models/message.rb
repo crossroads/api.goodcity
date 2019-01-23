@@ -2,6 +2,7 @@ class Message < ActiveRecord::Base
   has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
   include StateMachineScope
+  include MessageSubscription
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
   belongs_to :offer, inverse_of: :messages
@@ -25,7 +26,7 @@ class Message < ActiveRecord::Base
   attr_accessor :state_value, :is_call_log
 
   after_create do
-    subscribe_users_to_message
+    subscribe_users_to_message # MessageSubscription
     # update_client_store
     # send_new_message_notification
   end
@@ -39,83 +40,10 @@ class Message < ActiveRecord::Base
     send_update(self, serialized_user(reader), "read", Channel.private(reader), app_name)
   end
 
-  def user_subscribed?(user_id)
-    subscriptions.where(user_id: user_id).present?
-  end
-
   private
 
   def serialized_user(user)
     Api::V1::UserSerializer.new(user)
-  end
-
-  def subscribe_users_to_message
-    if offer
-      users_ids = offer.subscribed_users(is_private) - [sender_id]
-      users_ids.each{ |user_id| add_subscription("unread", user_id, offer_id: offer_id ) }
-      subscribe_sender unless sender.try(:system_user?)
-      subscribe_donor unless donor_subscribed?
-      subscribe_reviewer unless reviewer_subscribed?
-    elsif order
-      users_ids = order.subscribed_users(is_private) - [sender_id]
-      users_ids.each{ |user_id| add_subscription("unread", user_id, order_id: order_id) }
-      subscribe_sender unless sender.try(:system_user?)
-      subscribe_order_creator unless order_creator_subscribed?
-      subscribe_order_processor if order_processor_present? && !order_processor_subscribed?
-    end
-  end
-
-  def subscribe_reviewer
-    add_subscription("unread", offer.reviewed_by_id, offer_id: offer_id)
-  end
-
-  def subscribe_sender
-    if offer
-      add_subscription("read", sender_id, offer_id: offer_id)
-    elsif order
-      add_subscription("read", sender_id, order_id: order_id)
-    end
-  end
-
-  def subscribe_order_processor
-    add_subscription("unread", order.processed_by_id, order_id: order_id)
-  end
-
-  def subscribe_order_creator
-    add_subscription("unread", order.created_by_id, order_id: order_id)
-  end
-
-  def subscribe_donor
-    add_subscription("unread", offer.created_by_id, offer_id: offer_id)
-  end
-
-  def order_creator_subscribed?
-    is_private || order.cancelled? || user_subscribed?(order.created_by_id)
-  end
-
-  def order_processor_present?
-    order.processed_by_id.present?
-  end
-
-  def order_processor_subscribed?
-    is_private || order.cancelled? || user_subscribed?(order.processed_by_id)
-  end
-
-  def donor_subscribed?
-    is_private || offer.cancelled? || user_subscribed?(offer.created_by_id)
-  end
-
-  def reviewer_subscribed?
-    offer.reviewed_by_id.nil? || user_subscribed?(offer.reviewed_by_id)
-  end
-
-  def add_subscription(state, user_id, offer_id=nil, order_id=nil)
-    subscriptions.create(
-      state: state,
-      message_id: id,
-      offer_id: offer_id,
-      order_id: order_id,
-      user_id: user_id)
   end
 
   def subscribed_user_channels
