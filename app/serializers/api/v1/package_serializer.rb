@@ -16,6 +16,10 @@ module Api::V1
       object.order_id
     end
 
+    def include_orders_packages?
+      @options[:include_orders_packages]
+    end
+
     def designation_id__sql
       "order_id"
     end
