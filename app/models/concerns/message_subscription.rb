@@ -19,7 +19,7 @@ module MessageSubscription
     #   - Admin users processing the offer/order
     user_ids << obj.try(:created_by_id) unless obj.try('cancelled?')
     user_ids << sender_id
-    user_ids << Subscription.where(:"#{klass}_id" => obj.id).pluck(:user_id)
+    user_ids << Subscription.where("#{klass}_id": obj.id).pluck(:user_id)
     admin_user_fields.each{|field| user_ids << obj.try(:field)}
 
     # Remove the following users
