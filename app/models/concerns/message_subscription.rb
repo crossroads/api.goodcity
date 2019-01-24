@@ -28,7 +28,7 @@ module MessageSubscription
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
     user_ids -= obj.try(:created_by_id) if is_private
 
-    user_ids.uniq.compact.each do |user_id|
+    user_ids.flatten.compact.uniq.each do |user_id|
       state = (user_id == self.sender_id) ? "read" : "unread" # mark as read for sender
       add_subscription(state, user_id)
     end
