@@ -4,7 +4,7 @@ require "goodcity/rake_logger"
 namespace :goodcity do 
   task assign_online_order_booking_type_to_goodcity_orders: :environment  do
     log = Goodcity::RakeLogger.new("assign_online_order_booking_type_to_goodcity_orders")
-    online_order_booking_type_id = BookingType.online_order.try(:id)
+    online_order_booking_type_id = BookingType.online_order.id
 
     count = 0
 
