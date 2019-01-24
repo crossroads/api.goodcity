@@ -76,66 +76,136 @@ RSpec.describe Order, type: :model do
 
     let!(:orders) { (1..5).map { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: nil } }
     let(:submitted_authorised_order) { create :order, :with_state_submitted, created_by: user, authorised_by_id:  supervisor.id }
+    let(:submitted_unauthorised_order) { create :order, :with_state_submitted, created_by: user, authorised_by_id:  nil }
     let(:processing_authorised_order) { create :order, :with_state_processing, created_by: user, authorised_by_id:  supervisor.id }
+    let(:processing_unauthorised_order) { create :order, :with_state_processing, created_by: user, authorised_by_id:  nil }
     let(:awaiting_dispatch_authorised_order) { create :order, :with_state_awaiting_dispatch, created_by: user, authorised_by_id:  supervisor.id }
+    let(:awaiting_dispatch_unauthorised_order) { create :order, :with_state_awaiting_dispatch, created_by: user, authorised_by_id:  nil }
     let(:dispatching_authorised_order) { create :order, :with_state_dispatching, created_by: user, authorised_by_id:  supervisor.id }
-    let(:authorised_order) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: authorised_by_user.id }
-    let(:cancelled_order) { create :order, :with_orders_packages, state: 'cancelled', created_by_id: user.id, authorised_by_id: authorised_by_user.id }
-    let(:closed_order) { create :order, :with_orders_packages, state: 'closed', created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let(:dispatching_unauthorised_order) { create :order, :with_state_dispatching, created_by: user, authorised_by_id:  nil }
+    let(:authorised_draft_order) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let(:unauthorised_draft_order) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: nil }
+    let(:authorised_cancelled_order) { create :order, :with_orders_packages, state: 'cancelled', created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let(:unauthorised_cancelled_order) { create :order, :with_orders_packages, state: 'cancelled', created_by_id: user.id, authorised_by_id: nil }
+    let(:authorised_closed_order) { create :order, :with_orders_packages, state: 'closed', created_by_id: user.id, authorised_by_id: authorised_by_user.id }
+    let(:unauthorised_closed_order) { create :order, :with_orders_packages, state: 'closed', created_by_id: user.id, authorised_by_id: nil }
     let!(:order_created_by_other_user) { create :order, :with_orders_packages, :with_state_draft, created_by_id: authorised_by_user.id, authorised_by_id: nil }
 
     before(:each) {
       User.current_user = user
     }
 
-    it "will show orders created_by logged_in user" do
-      expect(Order.my_orders.count).to eq(5)
+    context "with current user" do
+      it "will show orders created_by logged_in user" do
+        expect(Order.my_orders.count).to eq(5)
+      end
+
+      it "will not show orders created_by by other users" do
+        expect(Order.my_orders.count).to eq(5)
+        expect(Order.my_orders).not_to include(order_created_by_other_user)
+      end
     end
 
-    it "will not show orders created_by by other users" do
-      expect(Order.my_orders.count).to eq(5)
-      expect(Order.my_orders).not_to include(order_created_by_other_user)
+    context 'with authorised_by_id' do
+      it "will not return authorised draft orders" do
+        authorised_draft_order
+        expect(Order.my_orders.count).to eq(5)
+        expect(Order.my_orders).not_to include(authorised_draft_order)
+      end
+
+      it 'returns authorised submitted orders' do
+        submitted_authorised_order
+        expect(Order.my_orders.count).to eq(6)
+        expect(Order.my_orders).to include(submitted_authorised_order)
+      end
+
+      it 'returns authorised processing orders' do
+        processing_authorised_order
+        expect(Order.my_orders.count).to eq(6)
+        expect(Order.my_orders).to include(processing_authorised_order)
+      end
+
+      it 'returns authorised scheduled orders' do
+        awaiting_dispatch_authorised_order
+        expect(Order.my_orders.count).to eq(6)
+        expect(Order.my_orders).to include(awaiting_dispatch_authorised_order)
+      end
+
+      it 'returns authorised dispatch orders' do
+        dispatching_authorised_order
+        expect(Order.my_orders.count).to eq(6)
+        expect(Order.my_orders).to include(dispatching_authorised_order)
+      end
+
+      it 'returns authorised closed orders' do
+        authorised_closed_order
+        expect(Order.my_orders.count).to eq(6)
+        expect(Order.my_orders).to include(authorised_closed_order)
+      end
+
+      it 'returns authorised cancelled orders' do
+        authorised_cancelled_order
+        expect(Order.my_orders.count).to eq(6)
+        expect(Order.my_orders).to include(authorised_cancelled_order)
+      end
     end
 
-    it "will not show order having authored_by draft orders" do
-      expect(Order.my_orders.count).to eq(5)
-      expect(Order.my_orders).not_to include(authorised_order)
-    end
+    context "without authorised_by_id" do
+      it "returns unauthorised draft orders" do
+        unauthorised_draft_order
+        authorised_draft_order
+        expect(Order.my_orders.count).to eq(6)
+        expect(Order.my_orders).not_to include(authorised_draft_order)
+        expect(Order.my_orders).to include(unauthorised_draft_order)
+      end
 
-    it 'returns authorised submitted orders' do
-      submitted_authorised_order
-      expect(Order.my_orders.count).to eq(6)
-      expect(Order.my_orders).to include(submitted_authorised_order)
-    end
+      it 'returns unauthorised submitted orders' do
+        submitted_unauthorised_order
+        submitted_authorised_order
+        expect(Order.my_orders.count).to eq(7)
+        expect(Order.my_orders).to include(submitted_unauthorised_order)
+        expect(Order.my_orders).to include(submitted_authorised_order)
+      end
 
-    it 'returns authorised processing orders' do
-      processing_authorised_order
-      expect(Order.my_orders.count).to eq(6)
-      expect(Order.my_orders).to include(processing_authorised_order)
-    end
+      it 'returns unauthorised processing orders' do
+        processing_authorised_order
+        processing_unauthorised_order
+        expect(Order.my_orders.count).to eq(7)
+        expect(Order.my_orders).to include(processing_authorised_order)
+        expect(Order.my_orders).to include(processing_unauthorised_order)
+      end
 
-    it 'returns authorised scheduled orders' do
-      awaiting_dispatch_authorised_order
-      expect(Order.my_orders.count).to eq(6)
-      expect(Order.my_orders).to include(awaiting_dispatch_authorised_order)
-    end
+      it 'returns unauthorised scheduled orders' do
+        awaiting_dispatch_authorised_order
+        awaiting_dispatch_unauthorised_order
+        expect(Order.my_orders.count).to eq(7)
+        expect(Order.my_orders).to include(awaiting_dispatch_authorised_order)
+        expect(Order.my_orders).to include(awaiting_dispatch_unauthorised_order)
+      end
 
-    it 'returns authorised dispatch orders' do
-      dispatching_authorised_order
-      expect(Order.my_orders.count).to eq(6)
-      expect(Order.my_orders).to include(dispatching_authorised_order)
-    end
+      it 'returns unauthorised dispatch orders' do
+        dispatching_authorised_order
+        dispatching_unauthorised_order
+        expect(Order.my_orders.count).to eq(7)
+        expect(Order.my_orders).to include(dispatching_authorised_order)
+        expect(Order.my_orders).to include(dispatching_unauthorised_order)
+      end
 
-    it 'returns authorised closed orders' do
-      closed_order
-      expect(Order.my_orders.count).to eq(6)
-      expect(Order.my_orders).to include(closed_order)
-    end
+      it 'returns unauthorised closed orders' do
+        authorised_closed_order
+        unauthorised_closed_order
+        expect(Order.my_orders.count).to eq(7)
+        expect(Order.my_orders).to include(authorised_closed_order)
+        expect(Order.my_orders).to include(unauthorised_closed_order)
+      end
 
-    it 'returns authorised cancelled orders' do
-      cancelled_order
-      expect(Order.my_orders.count).to eq(6)
-      expect(Order.my_orders).to include(cancelled_order)
+      it 'returns unauthorised cancelled orders' do
+        authorised_cancelled_order
+        unauthorised_cancelled_order
+        expect(Order.my_orders.count).to eq(7)
+        expect(Order.my_orders).to include(authorised_cancelled_order)
+        expect(Order.my_orders).to include(unauthorised_cancelled_order)
+      end
     end
   end
 
