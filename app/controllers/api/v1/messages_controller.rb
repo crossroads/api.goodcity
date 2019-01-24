@@ -20,6 +20,7 @@ module Api
           param :offer_id, String, desc: "Offer for which message has been posted", allow_nil: true
           param :item_id, String, desc: "Item for which message has been posted", allow_nil: true
           param :state, String, desc: "Current User's Subscription State e.g. unread, read "
+          param :order_id, String, desc: "Order id on which message is created"
         end
       end
 
@@ -27,6 +28,7 @@ module Api
       param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
       param :offer_id, String, desc: "Return messages for offer id."
       param :item_id, String, desc: "Return messages for item id."
+      param :order_id, String, desc: "Return messages for order id"
       def index
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
         @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
@@ -43,7 +45,7 @@ module Api
       api :POST, "/v1/messages", "Create an message"
       param_group :message
       def create
-        @message.order_id = params[:message][:designation_id].to_i if params[:message][:designation_id]
+        @message.order_id = order_id_params
         @message.sender_id = current_user.id
         save_and_render_object(@message)
       end
@@ -55,6 +57,16 @@ module Api
       end
 
       private
+
+      def order_id_params
+        if params[:message][:designation_id]
+          params[:message][:designation_id].to_i
+        elsif params[:message][:order_id]
+          params[:message][:order_id].to_i
+        else
+          nil
+        end
+      end
 
       def serializer
         Api::V1::MessageSerializer
