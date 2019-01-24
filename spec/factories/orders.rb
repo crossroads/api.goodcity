@@ -54,6 +54,14 @@ FactoryBot.define do
       state "draft"
     end
 
+    trait :with_state_cancelled do
+      state "cancelled"
+    end
+
+    trait :with_state_closed do
+      state "closed"
+    end
+
     trait :awaiting_dispatch do
       state 'awaiting_dispatch'
       :with_processed_by
