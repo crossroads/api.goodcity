@@ -62,6 +62,7 @@ Charity:
 - can_manage_orders
 - can_manage_orders_packages
 - can_create_goodcity_requests
+- can_create_and_read_messages
 Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
