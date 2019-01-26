@@ -13,6 +13,8 @@ set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
 set :rollbar_env, Proc.new { fetch :stage }
 set :rollbar_role, Proc.new { :app }
 
+after "deploy:updated", "newrelic:notice_deployment"
+
 namespace :deploy do
   desc 'Restart application'
   task :restart do
