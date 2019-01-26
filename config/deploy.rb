@@ -12,6 +12,7 @@ set :rvm_ruby_version, '2.5.1'
 set :rollbar_token, ENV['ROLLBAR_ACCESS_TOKEN']
 set :rollbar_env, Proc.new { fetch :stage }
 set :rollbar_role, Proc.new { :app }
+set :newrelic_user, Proc.new { ENV['CIRCLE_USERNAME'] || ENV['USER'] }
 
 after "deploy:updated", "newrelic:notice_deployment"
 
