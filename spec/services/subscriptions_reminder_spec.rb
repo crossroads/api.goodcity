@@ -37,15 +37,15 @@ end
 
 # Send a message if
 #   recipient is donor
-#   a NEW message has been created in last 4 hours
+#   unread messages that have arrived since I last got in touch with them
 #   AND it is still unread
 #   AND no other reminders have been sent in last 4 hours
 
 # Don't send message if
 #   no new message has been created
-#   OR new message has been created but it's not been at least 4 hours since the last reminder
+#   OR new message has been created but it's less than 4 hours since the user last received a reminder
 #   OR the new message has been read already
-#   OR it was written by the user
+#   OR it was sent by the user
 
 # Only ever alert for a message once
 #   set sms_reminder_sent_at time on all messages when the reminder is sent

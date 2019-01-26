@@ -1,10 +1,16 @@
 class SubscriptionsReminder
 
   def generate
-    users_to_remind.each do |user_id, subscriptions|
-      user = User.find(user_id)
-      user.update(sms_reminder_sent_at: Time.zone.now)
-      send_sms_reminder(user)
+    users_with_unread_messages.each do |user|
+
+      oldest_unread_message = user.subscriptions.unread.map{|s| s.message.created_at}.min
+      if oldest_unread_message > max(user.sms_reminder_sent_at, delta)
+        user.update(sms_reminder_sent_at: Time.zone.now)
+        send_sms_reminder(user)
+      end
+
+      # Better to start with messages created in last 'delta' hours and find users who haven't been reminded in last 4 hours
+
     end
   end
 
@@ -13,23 +19,15 @@ class SubscriptionsReminder
   # Get list of subscriptions distinct by user where user is donor and hasn't received reminder since
 
   def users_to_remind
-    donor_ids = Offer.distinct.pluck(:created_by_id).compact
+    user_ids = Offer.distinct.pluck(:created_by_id).compact
+    # User.joins(subscriptions: [:message]).where(id: user_ids, 'subscriptions.state': 'unread').group('users.id, sms_reminder_sent_at').having("MIN(messages.created_at) > sms_reminder_sent_at AND MIN(messages.created_at) > '#{delta}'").distinct(:id)    
+    # GREATEST(sms_reminder_sent_at, '#{delta}')").distinct(:id)
+  end
 
-    User.joins(subscriptions: [:messages]).where(
-     'id IN (?) AND
-     subscriptions.state = (?) AND
-     MIN(messages.created_at) > users.sms_reminder_sent_at AND
-     MIN(messages.created_at) > (?)',
-     donor_ids, 'unread', delta
-    ).distinct('id')
-
-    # Subscription.
-    #   joins(:message, :user).
-    #   where('users.id IN (?) AND 
-    #     subscriptions.state = (?) AND
-    #     MIN(messages.created_at) > users.sms_reminder_sent_at AND
-    #     MIN(messages.created_at) > (?)',
-    #     donor_ids, 'unread', delta)
+  def users_with_unread_messages
+    user_ids = Offer.distinct.pluck(:created_by_id).compact
+    User.joins(:subscriptions).
+      where(id: user_ids, 'subscriptions.state': 'unread').distinct(:id)
   end
 
   def send_sms_reminder(user)
