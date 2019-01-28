@@ -27,7 +27,7 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
       end
 
       it 'returns all beneficiaries' do
-        5.times { FactoryBot.create :beneficiary }        
+        5.times { FactoryBot.create :beneficiary }
         get :index
         expect(parsed_body['beneficiaries'].count).to eq(Beneficiary.count)
       end
@@ -141,6 +141,15 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
       end
     end
 
+  end
+
+  describe "DELETE beneficiaries/1" do
+    before { generate_and_set_token(supervisor) }
+
+    it "returns 200", :show_in_doc do
+      delete :destroy, id: beneficiary.id
+      expect(response.status).to eq(200)
+    end
   end
 
 end

@@ -91,7 +91,7 @@ class Ability
     can :create, Beneficiary
     can [:create, :index, :show, :update], Beneficiary, created_by_id: @user_id
     if can_manage_orders? || @api_user
-      can [:create, :index, :show, :update], Beneficiary
+      can [:create, :index, :show, :update, :destroy], Beneficiary
     end
   end
 

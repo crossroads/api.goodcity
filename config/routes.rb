@@ -126,7 +126,7 @@ Rails.application.routes.draw do
           put :transition
         end
       end
-      resources :beneficiaries, only: [:create, :show, :index, :update]
+      resources :beneficiaries, only: [:create, :show, :index, :update, :destroy]
       resources :order_transports, only: [:create, :show, :index, :update]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]
