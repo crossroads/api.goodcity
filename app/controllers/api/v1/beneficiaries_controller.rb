@@ -56,6 +56,12 @@ module Api
         end
       end
 
+      api :DELETE, '/v1/beneficiary/1', "Delete a beneficiary"
+      def destroy
+        @beneficiary.destroy
+        render json: {}
+      end
+
       def serializer
         Api::V1::BeneficiarySerializer
       end
