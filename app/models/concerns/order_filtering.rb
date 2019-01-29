@@ -64,12 +64,8 @@ module OrderFiltering
       "orders.booking_type_id = #{BookingType.appointment.id}"
     end
 
-    def online_order_pickup_sql
-      "orders.booking_type_id = #{BookingType.online_order.id} AND order_transports.transport_type = 'self'"
-    end
-
-    def online_order_ggv_sql
-      "orders.booking_type_id = #{BookingType.online_order.id} AND order_transports.transport_type = 'ggv'"
+    def online_orders_sql
+      "orders.booking_type_id = #{BookingType.online_order.id}"
     end
 
     def shipment_sql
