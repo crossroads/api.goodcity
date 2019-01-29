@@ -168,7 +168,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       describe "when filtering the search results" do
-        let(:online_orders)
+        let(:online_orders) { create :order_transport, transport_type: 'ggv'}
         let(:order_transport) { create :order_transport }
 
         it 'returns only records with the specified states' do
