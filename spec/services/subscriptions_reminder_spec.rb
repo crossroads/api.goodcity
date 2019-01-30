@@ -9,7 +9,7 @@ describe SubscriptionsReminder do
   let(:after_delta)      { delta - 2.hours } # a time less than '4' hours ago
 
   subject { SubscriptionsReminder.new }
-  
+
   let!(:message) { create(:message, offer: offer, sender: reviewer) }
 
   context "check spec setup" do
@@ -77,6 +77,32 @@ describe SubscriptionsReminder do
         user_with_offer.update_attribute(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
+    end
+  end
+
+  context "generate" do
+    let(:time) { Time.zone.now }
+    before(:each) do
+      allow(subject).to receive(:user_candidates_for_reminder).and_return([user_with_offer])
+      allow(Time).to receive_message_chain('zone.now').and_return(time)
+    end
+    it "sends SMS reminders" do
+      expect(subject).to receive(:send_sms_reminder).with(user_with_offer)
+      subject.generate
+    end
+    it "updates sms_reminder_sent_at" do
+      expect(user_with_offer).to receive(:update_attribute).with(:sms_reminder_sent_at, time)
+      subject.generate
+    end
+  end
+
+  context "send_sms_reminder" do
+    let(:sms_url) { "#{Rails.application.secrets.base_urls['app']}/offers" }
+    let(:ts)      { TwilioService.new(build :user) }
+    it "should call TwilioService with offer url in SMS body" do
+      expect(TwilioService).to receive(:new).and_return(ts)
+      expect(ts).to receive(:send_unread_message_reminder).with(sms_url)
+      subject.send(:send_sms_reminder, user_with_offer)
     end
   end
 
