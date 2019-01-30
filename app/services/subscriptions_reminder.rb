@@ -2,7 +2,7 @@ class SubscriptionsReminder
 
   def generate
     user_candidates_for_reminder.each do |user|
-      user.update(sms_reminder_sent_at: Time.zone.now)
+      user.update_attribute(:sms_reminder_sent_at, Time.zone.now)
       send_sms_reminder(user)
     end
   end
