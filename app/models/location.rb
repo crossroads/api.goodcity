@@ -12,7 +12,7 @@ class Location < ActiveRecord::Base
   end
 
   def can_delete?
-    (packages_locations.count) == 0 && (package_types.count == 0)
+    packages_locations.count.zero? && package_types.count.zero?
   end
 
   def self.multiple_location
