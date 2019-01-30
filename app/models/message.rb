@@ -3,6 +3,7 @@ class Message < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include MessageSubscription
+  include UpdateClientStoreAndSendNotification
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
   belongs_to :offer, inverse_of: :messages
@@ -27,91 +28,22 @@ class Message < ActiveRecord::Base
 
   after_create do
     subscribe_users_to_message # MessageSubscription
-    # update_client_store
-    # send_new_message_notification
+    update_client_store #UpdateClientStoreAndSendNotification
+    send_new_message_notification #UpdateClientStoreAndSendNotification
   end
 
   after_destroy :notify_deletion_to_subscribers
 
-  def mark_read!(user_id)
-    self.subscriptions.where(user_id: user_id).update_all(state: 'read')
-    reader = User.find_by(id: user_id)
-    app_name = reader.staff? ? ADMIN_APP : DONOR_APP
-    send_update(self, serialized_user(reader), "read", Channel.private(reader), app_name)
-  end
-
   private
-
-  def serialized_user(user)
-    Api::V1::UserSerializer.new(user)
-  end
-
-  def subscribed_user_channels
-    if offer
-      Channel.private(offer.subscribed_users(is_private))
-    elsif order
-      Channel.private(order.subscribed_users(is_private))
-    end
-  end
-
-  def send_new_message_notification
-    return if is_call_log
-    subscribed_user_channels = subscribed_user_channels()
-    current_channel = Channel.private(sender)
-
-    # notify subscribed users except sender
-    sender_channel = current_channel
-    channels = subscribed_user_channels - sender_channel - donor_channel
-
-    send_notification(donor_channel, DONOR_APP) unless is_private || offer.cancelled? || donor_channel == sender_channel
-    send_notification(channels, ADMIN_APP)
-
-    # notify all supervisors if no supervisor is subscribed in private thread
-    if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
-      send_notification(Channel.supervisor, ADMIN_APP)
-    end
-  end
-
-  def update_client_store
-    sender_channel = Channel.private(sender)
-    subscribed_user_channels = subscribed_user_channels() - sender_channel - donor_channel
-    unsubscribed_user_channels = admin_channel - subscribed_user_channels - sender_channel - donor_channel
-
-    user = serialized_user(sender)
-
-    if sender_channel == donor_channel
-      send_update self, user, "read", donor_channel, DONOR_APP unless offer.cancelled? || is_private
-    else
-      send_update self, user, "read", sender_channel, ADMIN_APP unless sender.system_user?
-      send_update self, user, "unread", donor_channel, DONOR_APP unless offer.cancelled? || is_private
-    end
-    send_update self, user, 'unread', subscribed_user_channels, ADMIN_APP
-    send_update self, user, 'never-subscribed', unsubscribed_user_channels, ADMIN_APP
-  end
-
-  def send_update(object, user, state, channel, app_name, operation = :create)
-    self.state_value = state
-    PushService.new.send_update_store channel, app_name, {
-      item: serialized_message(object), sender: user,
-      operation: operation } unless channel.empty?
-    self.state_value = nil
-  end
-
-  def send_notification(channel, app_name)
-    PushService.new.send_notification channel, app_name, {
-      category:   'message',
-      message:    body.truncate(150, separator: ' '),
-      is_private: is_private,
-      offer_id:   offer.id,
-      item_id:    item.try(:id),
-      author_id:  sender_id,
-      message_id: id
-    } unless channel.empty?
-  end
 
   def notify_deletion_to_subscribers
     send_update self, serialized_user(User.current_user), 'read',
-      admin_channel - donor_channel, ADMIN_APP, :delete
+      admin_channel - donor_channel - charity_user_channel, ADMIN_APP, :delete
+  end
+
+  def charity_user_channel
+    return [] unless order
+    Channel.private(order.submitted_by_id)
   end
 
   def admin_channel
@@ -119,15 +51,12 @@ class Message < ActiveRecord::Base
   end
 
   def donor_channel
+    return [] unless offer
     Channel.private(offer.created_by_id)
   end
 
-  def supervisors_channel
-    Channel.private(User.supervisors)
+  def serialized_user(user)
+    Api::V1::UserSerializer.new(user)
   end
 
-  def serialized_message(object)
-    associations = Message.reflections.keys.map(&:to_sym)
-    Api::V1::MessageSerializer.new(object, { exclude: associations })
-  end
 end
