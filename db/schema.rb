@@ -15,6 +15,8 @@ ActiveRecord::Schema.define(version: 20190126035002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "btree_gin"
+  enable_extension "pg_trgm"
 
   create_table "addresses", force: :cascade do |t|
     t.string   "flat"
@@ -206,7 +208,6 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -386,7 +387,6 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.integer  "district_id"
     t.text     "cancellation_reason"
     t.integer  "authorised_by_id"
-    t.string   "order_type"
     t.integer  "booking_type_id"
   end
 
@@ -394,6 +394,7 @@ ActiveRecord::Schema.define(version: 20190126035002) do
   add_index "orders", ["beneficiary_id"], name: "index_orders_on_beneficiary_id", using: :btree
   add_index "orders", ["cancelled_by_id"], name: "index_orders_on_cancelled_by_id", using: :btree
   add_index "orders", ["closed_by_id"], name: "index_orders_on_closed_by_id", using: :btree
+  add_index "orders", ["code"], name: "orders_code_idx", using: :gin
   add_index "orders", ["country_id"], name: "index_orders_on_country_id", using: :btree
   add_index "orders", ["created_by_id"], name: "index_orders_on_created_by_id", using: :btree
   add_index "orders", ["detail_id", "detail_type"], name: "index_orders_on_detail_id_and_detail_type", using: :btree
@@ -542,11 +543,11 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
+  add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
   add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
   add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
   add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
@@ -645,6 +646,11 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.datetime "updated_at",          null: false
   end
 
+  add_index "stockit_contacts", ["first_name"], name: "st_contacts_first_name_idx", using: :gin
+  add_index "stockit_contacts", ["last_name"], name: "st_contacts_last_name_idx", using: :gin
+  add_index "stockit_contacts", ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", using: :gin
+  add_index "stockit_contacts", ["phone_number"], name: "st_contacts_phone_number_idx", using: :gin
+
   create_table "stockit_local_orders", force: :cascade do |t|
     t.string   "client_name"
     t.string   "hkid_number"
@@ -655,12 +661,16 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.text     "purpose_of_goods"
   end
 
+  add_index "stockit_local_orders", ["client_name"], name: "st_local_orders_client_name_idx", using: :gin
+
   create_table "stockit_organisations", force: :cascade do |t|
     t.string   "name"
     t.integer  "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_index "stockit_organisations", ["name"], name: "st_organisations_name_idx", using: :gin
 
   create_table "subpackage_types", force: :cascade do |t|
     t.integer  "package_type_id"
