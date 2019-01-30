@@ -40,7 +40,7 @@ module OrderFiltering
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
-      res
+      res.distinct
     end
 
     def where_types(types)
@@ -61,15 +61,15 @@ module OrderFiltering
     # TYPES
 
     def appointment_sql
-      "order_transports.booking_type_id = #{BookingType.appointment.id}"
+      "orders.booking_type_id = #{BookingType.appointment.id}"
     end
 
     def online_order_pickup_sql
-      "order_transports.booking_type_id = #{BookingType.online_order.id} AND order_transports.transport_type = 'self'"
+      "orders.booking_type_id = #{BookingType.online_order.id} AND order_transports.transport_type = 'self'"
     end
 
     def online_order_ggv_sql
-      "order_transports.booking_type_id = #{BookingType.online_order.id} AND order_transports.transport_type = 'ggv'"
+      "orders.booking_type_id = #{BookingType.online_order.id} AND order_transports.transport_type = 'ggv'"
     end
 
     def shipment_sql

@@ -7,8 +7,6 @@ module Api::V1
 
     has_one :contact, serializer: ContactSerializer
     has_one :gogovan_order, serializer: GogovanOrderSerializer
-    has_one :booking_type, serializer: BookingTypeSerializer
-
 
     def need_over_six_ft
       object.need_over_6ft

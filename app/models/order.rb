@@ -12,6 +12,7 @@ class Order < ActiveRecord::Base
   belongs_to :organisation
   belongs_to :beneficiary
   belongs_to :address
+  belongs_to :booking_type
   belongs_to :created_by, class_name: 'User'
   belongs_to :processed_by, class_name: 'User'
   belongs_to :cancelled_by, class_name: 'User'
@@ -19,6 +20,7 @@ class Order < ActiveRecord::Base
   belongs_to :dispatch_started_by, class_name: 'User'
   belongs_to :closed_by, class_name: 'User'
   belongs_to :submitted_by, class_name: 'User'
+  belongs_to :authorised_by, class_name: 'User'
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: 'detail_id'
 
   has_many :packages
@@ -43,6 +45,8 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
+  MY_ORDERS_AUTHORISED_STATES = ['submitted', 'closed', 'cancelled', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
+
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
@@ -66,7 +70,7 @@ class Order < ActiveRecord::Base
     where(query, inactive_status: INACTIVE_STATUS, inactive_states: INACTIVE_STATES)
   }
 
-  scope :my_orders, -> { where("created_by_id = (?)", User.current_user.try(:id)) }
+  scope :my_orders, -> { where("created_by_id = (?) and ((state = 'draft' and authorised_by_id is NULL) OR state IN (?))", User.current_user.try(:id), MY_ORDERS_AUTHORISED_STATES) }
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
@@ -230,9 +234,9 @@ class Order < ActiveRecord::Base
   def send_new_order_notificationen
     PushService.new.send_notification Channel.goodcity_order_channel, STOCK_APP, {
       category:   'new_order',
-      message:    I18n.t("notification.new_order", organisation_name_en:
-        organisation.try(:name_en), organisation_name_zh_tw: organisation.try(:name_zh_tw),
-        contact_name: created_by.full_name),
+      message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
+        code: code, submitter_name: submitted_by.full_name,
+        organisation_name: organisation.try(:name_en)),
       order_id:   id,
       author_id:  created_by_id
     }

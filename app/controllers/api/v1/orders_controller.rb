@@ -25,14 +25,16 @@ module Api
           param :stockit_id, String, desc: "stockit designation record id"
           param :beneficiary_id, String
           param :address_id, String
+          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)'
         end
       end
 
       api :POST, "/v1/orders", "Create or Update a order"
       param_group :order
       def create
+        root = is_browse_app? ? "order" : "designation"
         if order_record.save
-          render json: @order, serializer: serializer, status: 201
+          render json: @order, serializer: serializer, root: root, status: 201
         else
           render json: @order.errors, status: 422
         end
@@ -74,10 +76,11 @@ module Api
       end
 
       def update
+        root = is_browse_app? ? "order" : "designation"
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
         if @order.valid? and @order.save
-          render json: @order, serializer: serializer
+          render json: @order, root: root, serializer: serializer
         else
           render json: { errors: @order.errors.full_messages } , status: 422
         end
@@ -157,12 +160,13 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
+          :authorised_by_id, :created_by_id,
           :stockit_id, :code, :status, :created_at,
           :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
           :stockit_organisation_id, :stockit_activity_id,
-          :people_helped, :beneficiary_id, :purpose_description,
+          :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
           :address_id, purpose_ids: [], cart_package_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes

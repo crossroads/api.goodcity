@@ -14,6 +14,9 @@ describe User, :type => :model do
   let(:charity) { create(:user, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Charity' => ['can_login_to_browse']})}
 
+  let(:charity_users) { (1..5).map { create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }}
+
   let(:invalid_user_attributes) { { 'mobile' => "85211111112", 'first_name' => "John2", 'last_name' => "Dey2" } }
 
   let(:user) { create :user }
@@ -77,6 +80,34 @@ describe User, :type => :model do
       it { is_expected.to_not allow_value('').for(:title) }
     end
   end
+
+  describe ".search" do
+    it "will return users according to searchText" do
+      expect(User.search(charity_users.first.first_name, 'Charity').pluck(:id)).to include(charity_users.first.id)
+    end
+
+    it "will return users according to role type" do
+      expect(User.search(charity_users.first.first_name, 'Charity').first.roles.pluck(:name)).to include("Charity")
+    end
+
+    it "will return nothing if searchText does not match any users" do
+      expect(User.search("zzzzz", 'Charity').length).to eq(0)
+    end
+  end
+
+  # describe ".recent_orders_created_for" do
+  #   it "will return recent 5 users who created orders" do
+  #   end
+
+  #   it "will return recent 5 orders according to role type" do
+  #   end
+
+  #   it "will return recent users for orders authorised by Logged in User" do
+  #   end
+
+  #   it "will return nothing if logged user has not created any order" do
+  #   end
+  # end
 
   describe '.creation_with_auth' do
 

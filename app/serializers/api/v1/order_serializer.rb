@@ -15,6 +15,7 @@ module Api::V1
     has_one  :closed_by, serializer: UserSerializer
     has_one  :processed_by, serializer: UserSerializer
     has_one  :cancelled_by, serializer: UserSerializer
+    has_one  :booking_type, serializer: BookingTypeSerializer
     has_one  :process_completed_by, serializer: UserSerializer
     has_one  :dispatch_started_by, serializer: UserSerializer
     has_one  :submitted_by, serializer: UserSerializer
