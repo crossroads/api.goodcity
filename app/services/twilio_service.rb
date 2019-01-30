@@ -8,39 +8,37 @@ class TwilioService
   end
 
   def sms_verification_pin(app_name)
-    return unless allowed_to_send?
-    options = {to: @user.mobile, body: pin_sms_text(app_name)}
-    TwilioJob.perform_later(options)
+    send_sms(body: pin_sms_text(app_name))
   end
 
   def send_welcome_msg
-    return unless allowed_to_send?
-    options = { to: @user.mobile, body: welcome_sms_text }
-    TwilioJob.perform_later(options)
+    send_sms(body: welcome_sms_text)
   end
 
   def order_confirmed_sms_to_charity(order)
-    return unless allowed_to_send?
-    options = { to: @user.mobile, body: new_order_confirmed_text_to_charity(order) }
-    TwilioJob.perform_later(options)
+    send_sms(body: new_order_confirmed_text_to_charity(order))
   end
 
   def order_submitted_sms_to_order_fulfilment_users(order)
-    return unless allowed_to_send?
-    options = { to: @user.mobile, body: new_order_placed_text_to_users(order) }
-    TwilioJob.perform_later(options)
+    send_sms(body: new_order_placed_text_to_users(order))
   end
 
   def new_offer_alert(offer)
-    return unless allowed_to_send?
-    options = {to: @user.mobile, body: new_offer_message(offer)}
-    TwilioJob.perform_later(options)
+    send_sms(body: new_offer_message(offer))
   end
 
   def send_unread_message_reminder(url)
-    return unless allowed_to_send?
-    options = { to: @user.mobile, body: unread_message_reminder(url) }
-    TwilioJob.perform_later(options)
+    send_sms(body: unread_message_reminder(url))
+  end
+
+  def send_sms(options)
+    options = {to: @user.mobile}.merge(options)
+    if send_to_twilio?
+      TwilioJob.perform_later(options)
+    else
+      message = "SlackSMS (#{options[:to]}) #{options[:body]}"
+      SlackMessageJob.perform_later(message, ENV['SLACK_PIN_CHANNEL'])
+    end
   end
 
   private
@@ -62,10 +60,10 @@ class TwilioService
 
   # Whitelisting happens only on staging.
   # On live, ALL mobiles are allowed
-  def allowed_to_send?
+  # All other ENVs send to Slack
+  def send_to_twilio?
     return true if Rails.env.production?
-    mobile = @user.mobile
-    ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).include?(mobile)
+    ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).include?(@user.mobile)
   end
 
   def welcome_sms_text
