@@ -36,12 +36,12 @@ module Api
       api :GET, "/v1/packages", "get all packages for the item"
       def index
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
-        render json: @packages, each_serializer: serializer
+        render json: @packages, each_serializer: serializer, include_orders_packages: true
       end
 
       api :GET, '/v1/packages/1', "Details of a package"
       def show
-        render json: @package, serializer: serializer
+        render json: @package, serializer: serializer, include_orders_packages: true
       end
 
       api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
@@ -50,6 +50,7 @@ module Api
           serializer: stock_serializer,
           root: "item",
           include_order: true,
+          include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
           include_images: @package.set_item_id.blank?,
           include_stock_condition: is_stock_app?
@@ -64,7 +65,7 @@ module Api
           if @package.valid? && @package.save
             if is_stock_app?
               render json: @package, serializer: stock_serializer, root: "item",
-            include_order: false
+            include_order: false, include_orders_packages: true
             else
               render json: @package, serializer: serializer, status: 201
             end
@@ -90,7 +91,7 @@ module Api
           if is_stock_app?
             stockit_item_details
           else
-            render json: @package, serializer: serializer
+            render json: @package, serializer: serializer, include_orders_packages: true
           end
         else
           render json: { errors: @package.errors.full_messages } , status: 422
@@ -126,14 +127,14 @@ module Api
       def search_stockit_items
         records = {}; pages = 0
         if params['searchText'].present?
-          records = params["orderId"].present? ?
-            @packages.undispatched : @packages
+          records = params["orderId"].present? ? @packages.undispatched : @packages
           records = records.search(
             params['searchText'],
-            params['itemId'],
-            :state => params['state'],
-            :with_inventory_no => params['withInventoryNumber'] == 'true'
-          ).page(params["page"]).per(params["per_page"])
+            params['itemId'].presence,
+            with_inventory_no: params['withInventoryNumber'] == 'true'
+          )
+          # apply selected filters
+          records = apply_filters(records).page(params["page"]).per(params["per_page"])
           pages = records.total_pages
         end
         packages = ActiveModel::ArraySerializer.new(records,
@@ -141,6 +142,7 @@ module Api
           root: "items",
           include_order: true,
           include_packages: false,
+          include_orders_packages: true,
           exclude_stockit_set_item: true,
           include_images: true,
           include_stock_condition: is_stock_app?).as_json
@@ -256,6 +258,17 @@ module Api
       end
 
       private
+
+      def array_param(key)
+        params.fetch(key, "").strip.split(',')
+      end
+
+      def apply_filters(records)
+        records.filter(
+          states: array_param(:state),
+          location: params[:location]
+        )
+      end
 
       def stock_serializer
         Api::V1::StockitItemSerializer

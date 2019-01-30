@@ -16,6 +16,7 @@ FactoryBot.define do
     association     :beneficiary
     association     :country
     association     :district
+    association     :booking_type
 
     trait :with_orders_packages do
       orders_packages { create_list :orders_package, 3, :with_state_requested}
@@ -51,6 +52,14 @@ FactoryBot.define do
 
     trait :with_state_draft do
       state "draft"
+    end
+
+    trait :with_state_cancelled do
+      state "cancelled"
+    end
+
+    trait :with_state_closed do
+      state "closed"
     end
 
     trait :awaiting_dispatch do

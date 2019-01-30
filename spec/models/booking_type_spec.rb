@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe BookingType, type: :model do
   describe "Associations" do
-    it { is_expected.to have_many :order_transports }
+    it { is_expected.to have_many :orders }
   end
 
   describe 'Database columns' do

@@ -62,7 +62,7 @@ module Api
         end
         @offers = filter_created_by(@offers)
         @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
-        render json: @offers.with_eager_load, each_serializer: serializer, exclude_messages: params["exclude_messages"] == "true"
+        render json: @offers.with_eager_load, each_serializer: serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true"
       end
 
       api :GET, '/v1/offers/1', "List an offer"

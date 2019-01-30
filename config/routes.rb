@@ -69,10 +69,12 @@ Rails.application.routes.draw do
       resources :holidays, only: [:index, :create, :destroy, :update]
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
-      resources :organisations_users, only: [:create, :index, :update]
+      resources :organisations_users, only: [:create, :index, :update, :show]
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
       end
+
+      get "recent_users", to: "users#recent_users"
 
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]

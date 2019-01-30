@@ -2,6 +2,7 @@ module Api
   module V1
     class OrganisationsUsersController < Api::V1::ApiController
       authorize_resource :organisations_user, parent: false
+      load_resource :organisations_user, only: [:show]
 
       resource_description do
         short "Get Organisations Users."
@@ -43,6 +44,10 @@ module Api
         else
           render_error(builder['errors'])
         end
+      end
+
+      def show
+        render json: @organisations_user, serializer: serializer
       end
 
       private

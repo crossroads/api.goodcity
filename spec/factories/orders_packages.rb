@@ -17,7 +17,12 @@ FactoryBot.define do
     trait :with_state_designated do
       state "designated"
     end
+
+    trait :with_state_dispatched do
+      state "dispatched"
+    end
   end
+
 
   trait :with_state_requested do
     state 'requested'

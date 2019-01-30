@@ -8,7 +8,6 @@ RSpec.describe OrderTransport, type: :model do
     it { is_expected.to belong_to :contact }
     it { is_expected.to belong_to :gogovan_order }
     it { is_expected.to belong_to :gogovan_transport }
-    it { is_expected.to belong_to :booking_type }
   end
 
   describe 'Database columns' do
