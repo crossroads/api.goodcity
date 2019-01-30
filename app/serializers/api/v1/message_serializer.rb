@@ -7,7 +7,7 @@ module Api::V1
     attributes :id, :body, :state, :is_private, :created_at,
       :updated_at, :offer_id, :item_id, :order_id, :designation_id
 
-    has_one :sender, serializer: UserSerializer, root: :user
+    has_one :sender, serializer: UserSerializer
 
     def designation_id
       object.order_id
