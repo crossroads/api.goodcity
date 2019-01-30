@@ -23,14 +23,12 @@ class TwilioService
     send_sms(body: new_order_placed_text_to_users(order))
   end
 
-  def new_offer_alert(offer)
-    send_sms(body: new_offer_message(offer))
-  end
-
   def send_unread_message_reminder(url)
     send_sms(body: unread_message_reminder(url))
   end
 
+  # options[:to] = "+85261111111"
+  # options[:body] = "SMS body"
   def send_sms(options)
     options = {to: @user.mobile}.merge(options)
     if send_to_twilio?
@@ -50,12 +48,6 @@ class TwilioService
     else
       I18n.t('twilio.sms_verification_pin', pin: pin)
     end
-  end
-
-  def new_offer_message(offer)
-    creator = offer.created_by
-    name = "#{creator.first_name} #{creator.last_name}"
-    "#{name} submitted new offer."
   end
 
   # Whitelisting happens only on staging.
