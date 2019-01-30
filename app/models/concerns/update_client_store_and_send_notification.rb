@@ -48,25 +48,17 @@ module UpdateClientStoreAndSendNotification
   end
 
   def send_new_message_notification
-    return if is_call_log
-    object = offer || order
+    # notifications are outsite initial scope for browse and stock and will be taken care later.
+    return if order || is_call_log
     subscribed_user_channels = subscribed_user_channels()
     current_channel = Channel.private(sender)
-    sender_channel = current_channel
-
-    app_name, channel_name = fetch_browse_or_donor(sender_channel)
 
     # notify subscribed users except sender
-    channels = subscribed_user_channels - sender_channel - donor_channel - charity_user_channel
+    sender_channel = current_channel
+    channels = subscribed_user_channels - sender_channel - donor_channel
 
-    # send notification to the defined app donor || browse
-    unless is_private || object.cancelled? || channel_name == sender_channel
-      (channel_name == nil &&  app_name == nil) ?
-        send_notification(donor_channel, DONOR_APP) : send_notification(channel_name, app_name)
-    end
-
-    send_notification(channels, STOCK_APP) if object == order && app_name == BROWSE_APP
-    send_notification(channels, ADMIN_APP) if object == offer && app_name == DONOR_APP
+    send_notification(donor_channel, DONOR_APP) unless is_private || offer.cancelled? || donor_channel == sender_channel
+    send_notification(channels, ADMIN_APP)
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
@@ -106,7 +98,6 @@ module UpdateClientStoreAndSendNotification
       message:    body.truncate(150, separator: ' '),
       is_private: is_private,
       offer_id:   offer.try(:id),
-      order_id:   order.try(:id),
       item_id:    item.try(:id),
       author_id:  sender_id,
       message_id: id
