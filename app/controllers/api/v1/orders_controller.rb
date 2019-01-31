@@ -160,9 +160,8 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
-          :authorised_by_id, :created_by_id,
-          :stockit_id, :code, :status, :created_at,
-          :organisation_id, :stockit_contact_id,
+          :created_by_id, :stockit_id, :code, :status, 
+          :created_at, :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
           :stockit_organisation_id, :stockit_activity_id,
