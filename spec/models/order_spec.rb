@@ -631,7 +631,8 @@ RSpec.describe Order, type: :model do
 
   describe '#send_new_order_confirmed_sms_to_charity' do
     let(:charity) { create(:user, :charity) }
-    let(:order) { build(:order, submitted_by: charity) }
+    let(:supervisor) { create(:user, :supervisor) }
+    let(:order) { build(:order, submitted_by: supervisor, created_by: charity) }
     let(:twilio)     { TwilioService.new(charity) }
 
     it "send order submission sms to charity user who submitted order" do
