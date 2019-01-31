@@ -144,7 +144,6 @@ class Order < ActiveRecord::Base
 
     before_transition on: :submit do |order|
       order.submitted_at = Time.now
-      # order.submitted_by = User.current_user
       order.add_to_stockit
     end
 
