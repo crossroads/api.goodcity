@@ -234,7 +234,7 @@ class Order < ActiveRecord::Base
     PushService.new.send_notification Channel.goodcity_order_channel, STOCK_APP, {
       category:   'new_order',
       message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
-        code: code, submitter_name: submitted_by.full_name,
+        code: code, submitter_name: created_by.full_name,
         organisation_name: organisation.try(:name_en)),
       order_id:   id,
       author_id:  created_by_id
@@ -242,7 +242,7 @@ class Order < ActiveRecord::Base
   end
 
   def send_new_order_confirmed_sms_to_charity
-    TwilioService.new(submitted_by).order_confirmed_sms_to_charity(self)
+    TwilioService.new(created_by).order_confirmed_sms_to_charity(self)
   end
 
   def send_order_placed_sms_to_order_fulfilment_users
