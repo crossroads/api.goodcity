@@ -67,44 +67,6 @@ class Package < ActiveRecord::Base
 
   attr_accessor :skip_set_relation_update, :request_from_admin
 
-  def self.search(search_text, item_id, options = {})
-    records =
-      if item_id.presence
-        where("item_id = ?", item_id)
-      else
-        state = options[:state]
-        queries = [search_query]
-        queries.push "inventory_number IS NOT NULL" if options[:with_inventory_no]
-        queries.push "state = :state" unless state.blank?
-
-        with_associations.where(
-          queries.map { |q| "(#{q})" }.join(" AND "),
-          search_text: "%#{search_text}%",
-          state: state
-        )
-      end
-    records
-  end
-
-  def self.search_query
-    fields_to_match = [
-      'inventory_number',
-      'designation_name',
-      'notes',
-      'case_number',
-      'locations.building',
-      'locations.area'
-    ]
-    fields_to_match
-      .map { |f| "#{f} ILIKE :search_text" }
-      .join(" OR ")
-  end
-
-  def self.with_associations
-    joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id
-      LEFT OUTER JOIN locations ON locations.id = packages_locations.location_id")
-  end
-
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
   # refer - https://github.com/pluginaweek/state_machine/issues/334
