@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190124105020) do
+ActiveRecord::Schema.define(version: 20190131083340) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -208,7 +208,6 @@ ActiveRecord::Schema.define(version: 20190124105020) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -275,6 +274,10 @@ ActiveRecord::Schema.define(version: 20190124105020) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_index "locations", ["area"], name: "index_locations_on_area", using: :gin
+  add_index "locations", ["building"], name: "index_locations_on_building", using: :gin
+  add_index "locations", ["stockit_id"], name: "index_locations_on_stockit_id", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "body"
@@ -387,8 +390,8 @@ ActiveRecord::Schema.define(version: 20190124105020) do
     t.integer  "address_id"
     t.integer  "district_id"
     t.text     "cancellation_reason"
-    t.integer  "booking_type_id"
     t.integer  "authorised_by_id"
+    t.integer  "booking_type_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -544,19 +547,24 @@ ActiveRecord::Schema.define(version: 20190124105020) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
+  add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
+  add_index "packages", ["case_number"], name: "index_packages_on_case_number", using: :gin
+  add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
   add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
   add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
+  add_index "packages", ["notes"], name: "index_packages_on_notes", using: :gin
   add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
+  add_index "packages", ["quantity"], name: "partial_index_quantity_greater_than_zero", where: "(quantity > 0)", using: :btree
   add_index "packages", ["set_item_id"], name: "index_packages_on_set_item_id", using: :btree
+  add_index "packages", ["state"], name: "index_packages_on_state", using: :gin
   add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree
   add_index "packages", ["stockit_id"], name: "index_packages_on_stockit_id", using: :btree
   add_index "packages", ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id", using: :btree
@@ -573,7 +581,9 @@ ActiveRecord::Schema.define(version: 20190124105020) do
 
   add_index "packages_locations", ["location_id", "package_id"], name: "index_packages_locations_on_location_id_and_package_id", using: :btree
   add_index "packages_locations", ["location_id"], name: "index_packages_locations_on_location_id", using: :btree
+  add_index "packages_locations", ["package_id", "location_id"], name: "index_packages_locations_on_package_id_and_location_id", using: :btree
   add_index "packages_locations", ["package_id"], name: "index_packages_locations_on_package_id", using: :btree
+  add_index "packages_locations", ["reference_to_orders_package"], name: "index_packages_locations_on_reference_to_orders_package", using: :btree
 
   create_table "pallets", force: :cascade do |t|
     t.string   "pallet_number"
