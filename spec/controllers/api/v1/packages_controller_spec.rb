@@ -500,9 +500,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("456")
       expect(subject['items'].length).to eql(3)
-      # 'id ASC' ordering is guaranteed by pagination
-      expect(subject['items'][0]['inventory_number']).to eql("456222")
-      expect(subject['items'][1]['inventory_number']).to eql("456111")
+      expect(subject['items'].map{|i| i['inventory_number']}).to include("456222")
+      expect(subject['items'].map{|i| i['inventory_number']}).to include("456111")
     end
 
     it 'should find items by inventory number (includes quantity items)' do
@@ -514,10 +513,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("456")
       expect(subject['items'].length).to eql(3)
-      # 'id ASC' ordering is guaranteed by pagination
-      expect(subject['items'][0]['inventory_number']).to eql("456333")
-      expect(subject['items'][1]['inventory_number']).to eql("456222")
-      expect(subject['items'][2]['inventory_number']).to eql("456111")
+      expect(subject['items'].map{|i| i['inventory_number']}).to include("456333")
+      expect(subject['items'].map{|i| i['inventory_number']}).to include("456222")
+      expect(subject['items'].map{|i| i['inventory_number']}).to include("456111")
     end
 
     it 'should find items by notes' do
@@ -529,8 +527,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("UTter")
       expect(subject['items'].length).to eql(2)
-      expect(subject['items'][0]['notes']).to eql("butter")
-      expect(subject['items'][1]['notes']).to eql("butterfly")
+      expect(subject['items'].map{|i| i['notes']}).to include("butter")
+      expect(subject['items'].map{|i| i['notes']}).to include("butterfly")
     end
 
     it 'should find items by case number' do
@@ -542,8 +540,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("cas-12")
       expect(subject['items'].length).to eql(2)
-      expect(subject['items'][0]['case_number']).to eql("CAS-123")
-      expect(subject['items'][1]['case_number']).to eql("CAS-124")
+      expect(subject['items'].map{|i| i['case_number']}).to include("CAS-123")
+      expect(subject['items'].map{|i| i['case_number']}).to include("CAS-124")
     end
 
     it 'should find items by designation_name' do
@@ -555,20 +553,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("peP")
       expect(subject['items'].length).to eql(2)
-      expect(subject['items'][0]['designation_name']).to eql("pepper")
-      expect(subject['items'][1]['designation_name']).to eql("peppermint")
-    end
-
-    it 'should find items by location' do
-      pkg1 = create :package, received_quantity: 1
-      create :package, received_quantity: 1
-      create :packages_location, location: create(:location, building: 'blue house'), package: pkg1
-      get :search_stockit_items, searchText: 'blue Hou', showQuantityItems: 'true'
-      expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
-      expect(subject['meta']['search']).to eql('blue Hou')
-      expect(subject['items'].length).to eql(1)
-      expect(subject['items'][0]['id']).to eql(pkg1.id)
+      expect(subject['items'].map{|i| i['designation_name']}).to include("pepper")
+      expect(subject['items'].map{|i| i['designation_name']}).to include("peppermint")
     end
 
     it 'should use filters to only find items that have an inventory number and are marked as received' do
@@ -581,7 +567,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql('couch')
       expect(subject['items'].length).to eql(1)
-      expect(subject['items'][0]['inventory_number']).to eql('11111')
+      expect(subject['items'].map{|i| i['inventory_number']}).to include("11111")
     end
 
     it 'should filter out item with published, has_images, and in_stock status' do
@@ -599,7 +585,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql('111')
       expect(subject['items'].length).to eql(1)
-      expect(subject['items'][0]['inventory_number']).to eql('111005')
+      expect(subject['items'].map{|i| i['inventory_number']}).to include("111005")
     end
     
   end
