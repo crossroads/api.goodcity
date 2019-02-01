@@ -75,7 +75,7 @@ class TwilioService
 
   def new_order_placed_text_to_users(order)
     I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
-      code: order.code, submitter_name: order.submitted_by.full_name, organisation_name: order.organisation.try(:name_en))
+      code: order.code, submitter_name: order.created_by.full_name, organisation_name: order.organisation.try(:name_en))
   end
 
   def new_order_confirmed_text_to_charity(order)
