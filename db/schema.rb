@@ -549,6 +549,7 @@ ActiveRecord::Schema.define(version: 20190131083340) do
     t.integer  "received_quantity"
   end
 
+  add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
   add_index "packages", ["case_number"], name: "index_packages_on_case_number", using: :gin
   add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
@@ -561,6 +562,7 @@ ActiveRecord::Schema.define(version: 20190131083340) do
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
+  add_index "packages", ["quantity"], name: "partial_index_quantity_greater_than_zero", where: "(quantity > 0)", using: :btree
   add_index "packages", ["set_item_id"], name: "index_packages_on_set_item_id", using: :btree
   add_index "packages", ["state"], name: "index_packages_on_state", using: :gin
   add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree

@@ -2,6 +2,26 @@
 module PackageFiltering
   extend ActiveSupport::Concern
 
+  included do
+    
+    # Free text search on packages
+    scope :search, -> (search_text, item_id, options = {}) {
+      if item_id.presence
+        where("item_id = ?", item_id)
+      else
+        search_query = ['inventory_number', 'designation_name', 'notes', 'case_number'].
+          map { |f| "#{f} ILIKE :search_text" }.
+          join(" OR ")
+        query = where(search_query, search_text: "%#{search_text}%")
+        query = query.where("inventory_number IS NOT NULL") if options[:with_inventory_no]
+        state = options[:state]
+        query = query.where(state: state) unless state.blank?
+        query
+      end
+    }
+
+  end
+
   module ClassMethods
 
     # Filter based on states, location, publish status and images
@@ -19,33 +39,7 @@ module PackageFiltering
       res.distinct
     end
 
-    # Free text search on packages
-    def self.search(search_text, item_id, options = {})
-      puts options.to_yaml
-      if item_id.presence
-        where("item_id = ?", item_id)
-      else
-        state = options[:state]
-        query = where(search_query, search_text: "%#{search_text}%")
-        query = query.where("inventory_number IS NOT NULL") if options[:with_inventory_no]
-        query = query.where(state: state) unless state.blank?
-        query
-      end
-    end
-
-    private
-  
-    def self.search_query
-      fields_to_match = [
-        'inventory_number',
-        'designation_name',
-        'notes',
-        'case_number'
-      ]
-      fields_to_match
-        .map { |f| "#{f} ILIKE :search_text" }
-        .join(" OR ")
-    end
+    # private
 
     def where_states(states)
       states = states.select { |t| respond_to?("#{t}_sql") }
