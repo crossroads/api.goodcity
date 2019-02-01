@@ -116,4 +116,60 @@ describe Package do
     #     .to eq(1)
     # end
   end
+
+  context "search" do
+    let(:item_id) { nil }
+    let(:options) { {} }
+    
+    subject { Package.search(search_text, item_id, options) }
+
+    context 'should find items by inventory number' do
+      let!(:pkg1) { create :package, received_quantity: 1, inventory_number: "456222" }
+      let!(:pkg2) { create :package, received_quantity: 1, inventory_number: "111111" }
+      let!(:pkg3) { create :package, received_quantity: 2, inventory_number: "456333" }
+      let(:search_text) { '456' }
+      it do
+        expect(subject.size).to eql(2)
+        expect(subject.to_a).to include(pkg1)
+        expect(subject.to_a).to include(pkg3)
+      end
+    end
+
+    context 'should find items by notes' do
+      let!(:pkg1) { create :package, received_quantity: 1, notes: "butter" }
+      let!(:pkg2) { create :package, received_quantity: 2, notes: "butterfly" }
+      let!(:pkg3) { create :package, received_quantity: 1, notes: "margarine" }
+      let(:search_text) { 'UTter' }
+      it do
+        expect(subject.size).to eql(2)
+        expect(subject.to_a).to include(pkg1)
+        expect(subject.to_a).to include(pkg2)
+      end
+    end
+
+    context 'should find items by notes' do
+      let!(:pkg1) { create :package, received_quantity: 1, case_number: "CAS-123" }
+      let!(:pkg2) { create :package, received_quantity: 2, case_number: "CAS-124" }
+      let!(:pkg3) { create :package, received_quantity: 1, case_number: "CAS-666" }
+      let(:search_text) { 'cas-12' }
+      it do
+        expect(subject.size).to eql(2)
+        expect(subject.to_a).to include(pkg1)
+        expect(subject.to_a).to include(pkg2)
+      end
+    end
+
+    context 'should find items by designation_name' do
+      let!(:pkg1) { create :package, received_quantity: 1, designation_name: "pepper" }
+      let!(:pkg2) { create :package, received_quantity: 2, designation_name: "peppermint" }
+      let!(:pkg3) { create :package, received_quantity: 1, designation_name: "garlic" }
+      let(:search_text) { 'peP' }
+      it do
+        expect(subject.size).to eql(2)
+        expect(subject.to_a).to include(pkg1)
+        expect(subject.to_a).to include(pkg2)
+      end
+    end
+
+  end
 end
