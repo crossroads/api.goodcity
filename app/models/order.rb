@@ -20,7 +20,6 @@ class Order < ActiveRecord::Base
   belongs_to :dispatch_started_by, class_name: 'User'
   belongs_to :closed_by, class_name: 'User'
   belongs_to :submitted_by, class_name: 'User'
-  belongs_to :authorised_by, class_name: 'User'
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: 'detail_id'
 
   has_many :packages
@@ -145,7 +144,6 @@ class Order < ActiveRecord::Base
 
     before_transition on: :submit do |order|
       order.submitted_at = Time.now
-      order.submitted_by = User.current_user
       order.add_to_stockit
     end
 
@@ -235,7 +233,7 @@ class Order < ActiveRecord::Base
     PushService.new.send_notification Channel.goodcity_order_channel, STOCK_APP, {
       category:   'new_order',
       message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
-        code: code, submitter_name: submitted_by.full_name,
+        code: code, submitter_name: created_by.full_name,
         organisation_name: organisation.try(:name_en)),
       order_id:   id,
       author_id:  created_by_id
@@ -243,7 +241,7 @@ class Order < ActiveRecord::Base
   end
 
   def send_new_order_confirmed_sms_to_charity
-    TwilioService.new(submitted_by).order_confirmed_sms_to_charity(self)
+    TwilioService.new(created_by).order_confirmed_sms_to_charity(self)
   end
 
   def send_order_placed_sms_to_order_fulfilment_users
