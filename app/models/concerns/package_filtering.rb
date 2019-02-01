@@ -1,10 +1,10 @@
-# Filtering logic for items is extracted here to avoid cluttering the model class
+# Search and filter logic for items is extracted here to avoid cluttering the model class
 module PackageFiltering
   extend ActiveSupport::Concern
 
   module ClassMethods
-    # Filter based on states, location, publish status and images
 
+    # Filter based on states, location, publish status and images
     def filter(states: [], location: nil)
       res = where(nil)
       package_state = states & %w[in_stock received designated dispatched]
@@ -17,6 +17,34 @@ module PackageFiltering
       image_filters = states & %w[has_images no_images]
       res = res.filter_by_image_status(image_filters) if image_filters.presence
       res.distinct
+    end
+
+    # Free text search on packages
+    def self.search(search_text, item_id, options = {})
+      puts options.to_yaml
+      if item_id.presence
+        where("item_id = ?", item_id)
+      else
+        state = options[:state]
+        query = where(search_query, search_text: "%#{search_text}%")
+        query = query.where("inventory_number IS NOT NULL") if options[:with_inventory_no]
+        query = query.where(state: state) unless state.blank?
+        query
+      end
+    end
+
+    private
+  
+    def self.search_query
+      fields_to_match = [
+        'inventory_number',
+        'designation_name',
+        'notes',
+        'case_number'
+      ]
+      fields_to_match
+        .map { |f| "#{f} ILIKE :search_text" }
+        .join(" OR ")
     end
 
     def where_states(states)
