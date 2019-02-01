@@ -57,6 +57,10 @@ module PackageFiltering
       joins("LEFT OUTER JOIN orders_packages ON orders_packages.package_id = packages.id")
     end
 
+    def join_packages_locations
+      joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id")
+    end
+
     def received_sql
       "packages.state = 'received'"
     end
@@ -89,12 +93,20 @@ module PackageFiltering
       end
     end
 
-    def filter_by_location(location)
-      building_name, area_name = location.split('-', 2)
-      if area_name == '(All areas)'
-        where("locations.building = (?)", building_name)
+    def filter_by_location(location_name)
+      # to use postgresql indexes search location first and join packages_locations after
+      building_name, area_name = location_name.split('-', 2)
+      location = 
+        if area_name == '(All areas)'
+          Location.where(building: building_name)
+        else
+          Location.where(building: building_name, area: area_name)
+        end
+      location_id = location.first.id.presence
+      if location_id
+        where('packages_locations.location_id = ?', location_id).join_packages_locations
       else
-        where("locations.building = (?) AND locations.area = (?)", building_name, area_name)
+        where(nil) # noop
       end
     end
   end
