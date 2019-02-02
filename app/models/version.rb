@@ -76,6 +76,15 @@ class Version < PaperTrail::Version
     joins("inner join users ON users.id = CAST(versions.whodunnit AS integer)")
   }
 
+  scope :item_location_changed, ->(user_id) {
+    select("object_changes -> 'location_id' -> 1 AS location_id").
+    where(event: ['create', 'update']).
+    where("object_changes ? 'location_id'").
+    where(whodunnit: user_id).
+    group("object_changes -> 'location_id' -> 1").
+    order('MAX(created_at) DESC')
+  }
+
   def to_s
     "id:#{id} #{item_type}##{item_id} #{event}"
   end
