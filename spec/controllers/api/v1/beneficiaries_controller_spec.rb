@@ -144,11 +144,22 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
   end
 
   describe "DELETE beneficiaries/1" do
-    before { generate_and_set_token(supervisor) }
+    context 'When logged in as a supervisor' do
+      before { generate_and_set_token(supervisor) }
 
-    it "returns 200", :show_in_doc do
-      delete :destroy, id: beneficiary.id
-      expect(response.status).to eq(200)
+      it "returns 200", :show_in_doc do
+        delete :destroy, id: beneficiary.id
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context 'When logged in as a user without can_manage_orders permission' do
+      before { generate_and_set_token(no_permission_user) }
+
+      it "denies deletion of a beneficiary" do
+        delete :destroy, id: beneficiary.id
+        expect(response.status).to eq(403)
+      end
     end
   end
 
