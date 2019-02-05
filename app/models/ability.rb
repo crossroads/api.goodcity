@@ -266,6 +266,7 @@ class Ability
     can :index, GogovanTransport
     can :index, CrossroadsTransport
     can :index, BookingType
+    can :index, Purpose
     can :calendar, AppointmentSlot
   end
 
