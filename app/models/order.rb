@@ -224,7 +224,9 @@ class Order < ActiveRecord::Base
         order.designate_orders_packages
         order.send_new_order_notificationen
         order.send_new_order_confirmed_sms_to_charity
-        order.send_order_placed_sms_to_order_fulfilment_users
+        # GCW-2368 Remove SMS notification for new orders
+        # Commenting out in case we want to use this in future
+        # order.send_order_placed_sms_to_order_fulfilment_users
       end
     end
   end
@@ -244,11 +246,11 @@ class Order < ActiveRecord::Base
     TwilioService.new(created_by).order_confirmed_sms_to_charity(self)
   end
 
-  def send_order_placed_sms_to_order_fulfilment_users
-    User.order_fulfilment.each do |user|
-      TwilioService.new(user).order_submitted_sms_to_order_fulfilment_users(self)
-    end
-  end
+  # def send_order_placed_sms_to_order_fulfilment_users
+  #   User.order_fulfilment.each do |user|
+  #     TwilioService.new(user).order_submitted_sms_to_order_fulfilment_users(self)
+  #   end
+  # end
 
   def nullify_columns(*columns)
     columns.map { |column| send("#{column}=", nil) }
