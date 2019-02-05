@@ -91,7 +91,7 @@ class Ability
     can :create, Beneficiary
     can [:create, :index, :show, :update], Beneficiary, created_by_id: @user_id
     if can_manage_orders? || @api_user
-      can [:create, :index, :show, :update], Beneficiary
+      can [:create, :index, :show, :update, :destroy], Beneficiary
     end
   end
 
@@ -266,6 +266,7 @@ class Ability
     can :index, GogovanTransport
     can :index, CrossroadsTransport
     can :index, BookingType
+    can :index, Purpose
     can :calendar, AppointmentSlot
   end
 
