@@ -43,7 +43,7 @@ class Message < ActiveRecord::Base
 
   def charity_user_channel
     return [] unless order
-    Channel.private(order.submitted_by_id)
+    Channel.private(order.created_by_id)
   end
 
   def admin_channel

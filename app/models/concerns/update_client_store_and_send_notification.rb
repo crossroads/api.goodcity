@@ -27,13 +27,14 @@ module UpdateClientStoreAndSendNotification
     object = offer || order
     user = serialized_user(sender)
     app_name, channel_name = fetch_browse_or_donor(sender_channel)
-
     if sender_channel == channel_name
+      # if message sent from browse || donor update self
       send_update self, user, "read", channel_name, app_name unless object.cancelled? || is_private
-    elsif sender_channel == stock_channel && object == order
+    elsif stock_channel.include?(sender_channel.first) && object == order
+      # update browse & stock if message sent from stock
       send_update self, user, "read", sender_channel, STOCK_APP unless object.cancelled? || is_private
       send_update self, user, 'unread', charity_user_channel, BROWSE_APP unless object.cancelled? || is_private
-    else
+    elsif object == offer
       send_update self, user, "read", sender_channel, ADMIN_APP unless sender.system_user?
       send_update self, user, "unread", donor_channel, DONOR_APP unless object.cancelled? || is_private
     end
@@ -109,7 +110,7 @@ module UpdateClientStoreAndSendNotification
   end
 
   def stock_channel
-    Channel.private(User.order_fulfilment)
+    Channel.private(User.staff)
   end
 
   def admin_channel
@@ -123,7 +124,7 @@ module UpdateClientStoreAndSendNotification
 
   def charity_user_channel
     return [] unless order
-    Channel.private(order.submitted_by_id)
+    Channel.private(order.created_by_id)
   end
 
   def supervisors_channel
