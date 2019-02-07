@@ -642,19 +642,6 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe '#send_order_placed_sms_to_order_fulfilment_users' do
-    let(:charity) { create(:user, :charity) }
-    let(:order_1) { create(:order, submitted_by: charity) }
-    let(:order_fulfiment_user_1) { create(:user, :order_fulfilment) }
-    let(:twilio)     { TwilioService.new(order_fulfiment_user_1) }
-
-    it "send new order submitted alert sms to order_fulfilment users" do
-      expect(TwilioService).to receive(:new).with(order_fulfiment_user_1).and_return(twilio)
-      expect(twilio).to receive(:order_submitted_sms_to_order_fulfilment_users).with(order_1)
-      order_1.send_order_placed_sms_to_order_fulfilment_users
-    end
-  end
-
   describe 'Order filtering rules' do
     before do
       create :order, state: "submitted", description: "A table", submitted_at: Time.now - 25.hours
