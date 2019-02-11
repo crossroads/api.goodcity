@@ -10,11 +10,11 @@ module Api::V1
       :address_id, :district_id, :booking_type_id, :unread_messages_count
 
     def unread_messages_count
-      object.subscriptions.where(state: 'unread').count
+      object.subscriptions.where(state: 'unread', user_id: object.created_by_id).count
     end
 
     def unread_messages_count__sql
-      "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread')"
+      "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread' and s.user_id = orders.created_by_id)"
     end
 
     def local_order_id
