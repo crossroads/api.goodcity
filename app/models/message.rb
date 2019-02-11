@@ -38,10 +38,10 @@ class Message < ActiveRecord::Base
 
   def notify_deletion_to_subscribers
     send_update self, serialized_user(User.current_user), 'read',
-      admin_channel - donor_channel - charity_user_channel, ADMIN_APP, :delete
+      admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
   end
 
-  def charity_user_channel
+  def browse_channel
     return [] unless order
     Channel.private(order.created_by_id)
   end
