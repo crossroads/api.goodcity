@@ -171,7 +171,7 @@ module Api
       error 401, "Unauthorized"
       error 500, "Internal Server Error"
       def current_user_rooms
-        return render json: ["browse"], root: false if is_browse_app?
+        return render json: browse_channels, root: false if is_browse_app?
         validate_token && authorize!(:current_user_profile, User)
         render json: current_user_channels, root: false
       end
@@ -188,6 +188,10 @@ module Api
 
       def current_user_channels
         Channel.channels_for_user_with_app_context(current_user, app_name)
+      end
+
+      def browse_channels
+        current_user_channels << "browse"
       end
 
       # Generate a token that contains the otp_auth_key.
