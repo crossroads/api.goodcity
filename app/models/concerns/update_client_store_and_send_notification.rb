@@ -20,9 +20,9 @@ module UpdateClientStoreAndSendNotification
 
   def update_client_store
     sender_channel = Channel.private(sender)
-    subscribed_user_channels = subscribed_user_channels() - sender_channel - donor_channel - charity_user_channel
+    subscribed_user_channels = subscribed_user_channels() - sender_channel - donor_channel - browse_channel
 
-    unsubscribed_user_channels = admin_channel - subscribed_user_channels - sender_channel - donor_channel - charity_user_channel
+    unsubscribed_user_channels = admin_channel - subscribed_user_channels - sender_channel - donor_channel - browse_channel
 
     object = offer || order
     user = serialized_user(sender)
@@ -32,8 +32,11 @@ module UpdateClientStoreAndSendNotification
       send_update self, user, "read", channel_name, app_name unless object.cancelled? || is_private
     elsif stock_channel.include?(sender_channel.first) && object == order
       # update browse & stock if message sent from stock
-      send_update self, user, "read", sender_channel, STOCK_APP unless object.cancelled? || is_private
-      send_update self, user, 'unread', charity_user_channel, BROWSE_APP unless object.cancelled? || is_private
+      unless object.cancelled? || is_private
+        debugger
+        send_update self, user, "read", sender_channel, STOCK_APP
+        send_update self, user, 'unread', browse_channel, BROWSE_APP
+      end
     elsif object == offer
       send_update self, user, "read", sender_channel, ADMIN_APP unless sender.system_user?
       send_update self, user, "unread", donor_channel, DONOR_APP unless object.cancelled? || is_private
@@ -73,9 +76,9 @@ module UpdateClientStoreAndSendNotification
     if sender_channel == donor_channel
       app_name  = DONOR_APP
       channel_name = donor_channel
-    elsif sender_channel == charity_user_channel
+    elsif sender_channel == browse_channel
       app_name = BROWSE_APP
-      channel_name = charity_user_channel
+      channel_name = browse_channel
     end
     return [app_name, channel_name]
   end
@@ -122,7 +125,7 @@ module UpdateClientStoreAndSendNotification
     Channel.private(offer.created_by_id)
   end
 
-  def charity_user_channel
+  def browse_channel
     return [] unless order
     Channel.private(order.created_by_id)
   end
