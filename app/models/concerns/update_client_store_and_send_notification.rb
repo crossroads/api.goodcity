@@ -27,13 +27,13 @@ module UpdateClientStoreAndSendNotification
     object = offer || order
     user = serialized_user(sender)
     app_name, channel_name = fetch_browse_or_donor(sender_channel)
+
     if sender_channel == channel_name
       # if message sent from browse || donor update self
       send_update self, user, "read", channel_name, app_name unless object.cancelled? || is_private
     elsif stock_channel.include?(sender_channel.first) && object == order
       # update browse & stock if message sent from stock
       unless object.cancelled? || is_private
-        debugger
         send_update self, user, "read", sender_channel, STOCK_APP
         send_update self, user, 'unread', browse_channel, BROWSE_APP
       end
