@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::V1::VersionSerializer do
   let(:object_changes) { {"state"=>["draft", "submitted"]} }
-  let(:version)   { build(:version, :with_item, :related_offer, object_changes: object_changes) }
+  let(:version)   { build(:version, :related_offer, object_changes: object_changes) }
   let(:serializer) { Api::V1::VersionSerializer.new(version).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
