@@ -50,12 +50,10 @@ class TwilioService
     end
   end
 
-  # Whitelisting happens only on staging.
-  # On live, ALL mobiles are allowed
-  # All other ENVs send to Slack
+  # On production env, send real SMS
+  # In all other environments, send to Slack
   def send_to_twilio?
-    return true if Rails.env.production?
-    ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).include?(@user.mobile)
+    Rails.env.production?
   end
 
   def welcome_sms_text

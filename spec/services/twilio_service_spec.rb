@@ -107,21 +107,17 @@ describe TwilioService do
     end
   end
 
+  # Be VERY careful here. Only stub prod env at last possible moment.
+  # Create everything first to avoid hazardous AR callbacks in production env.
   context "send_to_twilio?" do
-    let(:whitelisted_number) { ENV['VALID_SMS_NUMBERS'].split(",").map(&:strip).first }
     it "should return true if production" do
-      # Be VERY careful here. Only stub prod env at last possible moment. Create everything first to avoid hazardous AR callbacks in prod env.
       ts = TwilioService.new(user)
       expect(Rails).to receive_message_chain('env.production?').and_return(true)
       expect(ts.send(:send_to_twilio?)).to eql(true)
     end
-    it "should return true if staging but whitelisted" do
+    it "should return false if not production" do
       ts = TwilioService.new(user)
-      user.update(mobile: whitelisted_number)
-      expect(ts.send(:send_to_twilio?)).to eql(true)
-    end
-    it "should return false if staging" do
-      ts = TwilioService.new(user)
+      expect(Rails).to receive_message_chain('env.production?').and_return(false)
       expect(ts.send(:send_to_twilio?)).to eql(false)
     end
   end
