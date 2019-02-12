@@ -5,7 +5,7 @@ RSpec.describe Api::V1::VersionsController, type: :controller do
   let(:supervisor_offer) { create :offer, :with_items, items_count: 1, created_by: supervisor }
   let(:offer) { create :offer }
   let!(:version_1) { create :version, event: 'admin_called', item: supervisor_offer, related: supervisor_offer }
-  let!(:version_2) { create :version, :with_item, item: supervisor_offer.items.first, related: offer }
+  let!(:version_2) { create :version, item: supervisor_offer.items.first, related: offer }
 
   subject { JSON.parse(response.body) }
 
