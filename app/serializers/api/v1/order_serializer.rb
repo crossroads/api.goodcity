@@ -1,6 +1,6 @@
 module Api::V1
   class OrderSerializer < OrderShallowSerializer
-    attributes :item_ids, :cancellation_reason
+    attributes :item_ids, :cancellation_reason, :unread_messages_count
     has_one :created_by, serializer: UserProfileSerializer, root: :user
     has_one :stockit_contact, serializer: StockitContactSerializer
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
@@ -12,7 +12,7 @@ module Api::V1
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :orders_purposes, serializer: OrdersPurposeSerializer
     has_many :goodcity_requests, serializer: GoodcityRequestSerializer
-    # has_many :messages, serializer: MessageSerializer
+    has_many :messages, serializer: MessageSerializer
     has_one  :closed_by, serializer: UserSerializer
     has_one  :processed_by, serializer: UserSerializer
     has_one  :cancelled_by, serializer: UserSerializer
@@ -23,6 +23,15 @@ module Api::V1
     has_one  :beneficiary, serializer: BeneficiarySerializer
     has_one  :address, serializer: AddressSerializer
     has_one  :district, serializer: DistrictSerializer
+
+    def unread_messages_count
+      object.subscriptions.where(state: 'unread', user_id: object.created_by_id).count
+    end
+
+    def unread_messages_count__sql
+      "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread' and s.user_id = orders.created_by_id)"
+    end
+
 
     def item_ids
     end

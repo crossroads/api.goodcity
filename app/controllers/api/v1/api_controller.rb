@@ -19,7 +19,7 @@ module Api
           render json: object.errors, status: 422
         end
       end
-      
+
     def save_and_render_object_with_errors(object)
       if object.save
         render json: object, serializer: serializer_for(object), status: 201
