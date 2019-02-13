@@ -27,14 +27,28 @@ class Location < ActiveRecord::Base
     where("building || area ILIKE ?", "%#{key}%")
   end
 
+  # For a given user_id, return their 15 most recently used locations
   def self.recently_used(user_id)
-    select("DISTINCT ON (locations.id) locations.id, building, area, versions.created_at AS recently_used_at").
-    joins("INNER JOIN versions ON ((object_changes -> 'location_id' ->> 1) = CAST(locations.id AS TEXT))").
-    joins("INNER JOIN packages_locations ON (packages_locations.id = versions.item_id AND versions.item_type = 'PackagesLocation')").
-    where("versions.event IN (?) AND
-      (object_changes ->> 'location_id') IS NOT NULL AND
-      CAST(whodunnit AS integer) = ? AND
-      (object_changes ->> 'created_at') >= (?)", ['create', 'update'], user_id, 15.days.ago).
-    order("locations.id, recently_used_at DESC").where("building NOT IN (?)", ['Dispatched', 'Multiple'])
+    # the following SQL is carefully crafted to use versions.partial_index_recent_locations
+    # SELECT object_changes -> 'location_id' -> 1
+    # FROM versions
+    # WHERE
+    #   versions.event IN ('create', 'update') AND
+    #   (object_changes ? 'location_id') AND
+    #   whodunnit = '2'
+    # GROUP BY (object_changes -> 'location_id' -> 1)
+    # ORDER BY MAX(created_at) DESC
+    # LIMIT 15
+    location_ids = Version.
+      item_location_changed(user_id).
+      limit(15).
+      map(&:location_id)
+    locations = Location.
+      where(id: location_ids).
+      where("building NOT IN (?)", ['Dispatched', 'Multiple']).
+      inject({}) {|h,v| h[v.id] = v; h}
+    # We want most recently used first so preserve location_ids order
+    # and ensure possible nils are removed
+    location_ids.map{|id| locations[id]}.compact
   end
 end

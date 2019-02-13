@@ -11,8 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190131083340) do
-
+ActiveRecord::Schema.define(version: 20190201084112) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "btree_gin"
@@ -697,11 +696,10 @@ ActiveRecord::Schema.define(version: 20190131083340) do
   add_index "subpackage_types", ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id", using: :btree
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer  "offer_id"
-    t.integer  "user_id"
-    t.integer  "message_id"
-    t.string   "state"
-    t.datetime "sms_reminder_sent_at"
+    t.integer "offer_id"
+    t.integer "user_id"
+    t.integer "message_id"
+    t.string  "state"
   end
 
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
@@ -740,9 +738,10 @@ ActiveRecord::Schema.define(version: 20190131083340) do
     t.integer  "image_id"
     t.datetime "last_connected"
     t.datetime "last_disconnected"
-    t.boolean  "disabled",          default: false
+    t.boolean  "disabled",             default: false
     t.string   "email"
     t.string   "title"
+    t.datetime "sms_reminder_sent_at"
   end
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
@@ -754,15 +753,20 @@ ActiveRecord::Schema.define(version: 20190131083340) do
     t.integer  "item_id",        null: false
     t.string   "event",          null: false
     t.string   "whodunnit"
-    t.json     "object"
-    t.json     "object_changes"
+    t.jsonb    "object"
+    t.jsonb    "object_changes"
     t.integer  "related_id"
     t.string   "related_type"
     t.datetime "created_at"
   end
 
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
+  add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
-  add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
+  add_index "versions", ["item_type"], name: "index_versions_on_item_type", using: :btree
+  add_index "versions", ["related_type", "related_id"], name: "index_versions_on_related_type_and_related_id", using: :btree
+  add_index "versions", ["related_type"], name: "index_versions_on_related_type", using: :btree
   add_index "versions", ["whodunnit"], name: "index_versions_on_whodunnit", using: :btree
 
   add_foreign_key "beneficiaries", "identity_types"

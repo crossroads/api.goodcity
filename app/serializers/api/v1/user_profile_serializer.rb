@@ -3,7 +3,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :first_name, :last_name, :mobile, :donation_amount,
-      :donation_date
+      :donation_date, :last_connected, :last_disconnected
 
     has_one :address, serializer: AddressSerializer
     has_one :image, serializer: ImageSerializer

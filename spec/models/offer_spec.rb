@@ -214,35 +214,10 @@ RSpec.describe Offer, type: :model do
   end
 
   describe "send_new_offer_notification" do
-
     it "should send notification for new message" do
       donor_offer = create :offer
       expect(donor_offer).to receive(:send_new_offer_notification)
       donor_offer.submit
-    end
-  end
-
-  describe "#send_new_offer_alert" do
-    let(:user)  { build(:user) }
-    let(:offer) { create(:offer) }
-    let(:new_offer_alert_mobiles) { "+85252345678, +85261234567" }
-    let(:twilio) { TwilioService.new(user) }
-
-    it 'should send new offer alert SMS' do
-      ENV['NEW_OFFER_ALERT_MOBILES'] = new_offer_alert_mobiles
-      allow(offer).to receive(:send_thank_you_message) # bypass this
-      allow(offer).to receive(:send_new_offer_notification) # bypass this
-      expect(User).to receive(:where).with(mobile: new_offer_alert_mobiles.split(",").map(&:strip)).and_return([user])
-      expect(TwilioService).to receive(:new).with(user).and_return(twilio)
-      expect(twilio).to receive(:new_offer_alert).with(offer)
-      offer.submit
-    end
-
-    it 'should not send alert if NEW_OFFER_ALERT_MOBILES is blank' do
-      ENV['NEW_OFFER_ALERT_MOBILES'] = ""
-      allow(offer).to receive(:send_thank_you_message) # bypass this
-      expect(TwilioService).to_not receive(:new)
-      offer.submit
     end
   end
 
