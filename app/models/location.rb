@@ -47,7 +47,8 @@ class Location < ActiveRecord::Base
       where(id: location_ids).
       where("building NOT IN (?)", ['Dispatched', 'Multiple']).
       inject({}) {|h,v| h[v.id] = v; h}
-    # we want most recently used first so preserve location_ids order
-    location_ids.map{|id| locations[id]}
+    # We want most recently used first so preserve location_ids order
+    # and ensure possible nils are removed
+    location_ids.map{|id| locations[id]}.compact
   end
 end
