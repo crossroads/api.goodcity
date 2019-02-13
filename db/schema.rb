@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190126035002) do
+ActiveRecord::Schema.define(version: 20190202073014) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -274,6 +274,10 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_index "locations", ["area"], name: "index_locations_on_area", using: :gin
+  add_index "locations", ["building"], name: "index_locations_on_building", using: :gin
+  add_index "locations", ["stockit_id"], name: "index_locations_on_stockit_id", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "body"
@@ -545,16 +549,22 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.integer  "received_quantity"
   end
 
+  add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
+  add_index "packages", ["case_number"], name: "index_packages_on_case_number", using: :gin
+  add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
   add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
   add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
+  add_index "packages", ["notes"], name: "index_packages_on_notes", using: :gin
   add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
+  add_index "packages", ["quantity"], name: "partial_index_quantity_greater_than_zero", where: "(quantity > 0)", using: :btree
   add_index "packages", ["set_item_id"], name: "index_packages_on_set_item_id", using: :btree
+  add_index "packages", ["state"], name: "index_packages_on_state", using: :gin
   add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree
   add_index "packages", ["stockit_id"], name: "index_packages_on_stockit_id", using: :btree
   add_index "packages", ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id", using: :btree
@@ -571,7 +581,9 @@ ActiveRecord::Schema.define(version: 20190126035002) do
 
   add_index "packages_locations", ["location_id", "package_id"], name: "index_packages_locations_on_location_id_and_package_id", using: :btree
   add_index "packages_locations", ["location_id"], name: "index_packages_locations_on_location_id", using: :btree
+  add_index "packages_locations", ["package_id", "location_id"], name: "index_packages_locations_on_package_id_and_location_id", using: :btree
   add_index "packages_locations", ["package_id"], name: "index_packages_locations_on_package_id", using: :btree
+  add_index "packages_locations", ["reference_to_orders_package"], name: "index_packages_locations_on_reference_to_orders_package", using: :btree
 
   create_table "pallets", force: :cascade do |t|
     t.string   "pallet_number"
@@ -685,10 +697,11 @@ ActiveRecord::Schema.define(version: 20190126035002) do
   add_index "subpackage_types", ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id", using: :btree
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer "offer_id"
-    t.integer "user_id"
-    t.integer "message_id"
-    t.string  "state"
+    t.integer  "offer_id"
+    t.integer  "user_id"
+    t.integer  "message_id"
+    t.string   "state"
+    t.datetime "sms_reminder_sent_at"
   end
 
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
@@ -727,10 +740,9 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.integer  "image_id"
     t.datetime "last_connected"
     t.datetime "last_disconnected"
-    t.boolean  "disabled",             default: false
+    t.boolean  "disabled",          default: false
     t.string   "email"
     t.string   "title"
-    t.datetime "sms_reminder_sent_at"
   end
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
@@ -742,15 +754,20 @@ ActiveRecord::Schema.define(version: 20190126035002) do
     t.integer  "item_id",        null: false
     t.string   "event",          null: false
     t.string   "whodunnit"
-    t.json     "object"
-    t.json     "object_changes"
+    t.jsonb    "object"
+    t.jsonb    "object_changes"
     t.integer  "related_id"
     t.string   "related_type"
     t.datetime "created_at"
   end
 
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
+  add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
-  add_index "versions", ["related_id", "related_type"], name: "index_versions_on_related_id_and_related_type", using: :btree
+  add_index "versions", ["item_type"], name: "index_versions_on_item_type", using: :btree
+  add_index "versions", ["related_type", "related_id"], name: "index_versions_on_related_type_and_related_id", using: :btree
+  add_index "versions", ["related_type"], name: "index_versions_on_related_type", using: :btree
   add_index "versions", ["whodunnit"], name: "index_versions_on_whodunnit", using: :btree
 
   add_foreign_key "beneficiaries", "identity_types"
