@@ -2,7 +2,7 @@ class SubscriptionsReminder
 
   def generate
     user_candidates_for_reminder.each do |user|
-      user.update_attribute(:sms_reminder_sent_at, Time.zone.now)
+      user.update(sms_reminder_sent_at: Time.now)
       send_sms_reminder(user)
     end
   end
@@ -19,7 +19,7 @@ class SubscriptionsReminder
     user_ids = Offer.distinct.pluck(:created_by_id)
     User.joins(subscriptions: [:message]).
       where('users.id IN (?)', user_ids).
-      where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.to_s(:db)).
+      where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601).
       where('subscriptions.state': 'unread').
       where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)").
       where('messages.sender_id != users.id').
