@@ -20,35 +20,23 @@ module UpdateClientStoreAndSendNotification
 
   def update_client_store
     sender_channel = Channel.private(sender)
-    subscribed_user_channels = subscribed_user_channels() - sender_channel - donor_channel - browse_channel
-
-    unsubscribed_user_channels = admin_channel - subscribed_user_channels - sender_channel - donor_channel - browse_channel
-
     object = offer || order
-    user = serialized_user(sender)
     app_name, channel_name = fetch_browse_or_donor(sender_channel)
 
-    if sender_channel == channel_name
+    if from_donor_or_browse?(channel_name, object)
       # if message sent from browse || donor update self
-      send_update self, user, "read", channel_name, app_name unless object.cancelled? || is_private
-    elsif stock_channel.include?(sender_channel.first) && object == order
+      send_update_to_store(channel_name, app_name, "read")
+    elsif from_stock_app?(object)
       # update browse & stock if message sent from stock
-      unless object.cancelled? || is_private
-        send_update self, user, "read", sender_channel, STOCK_APP
-        send_update self, user, 'unread', browse_channel, BROWSE_APP
-      end
+      send_update_to_store(sender_channel, STOCK_APP, "read")
+      send_update_to_store(browse_channel, BROWSE_APP, "unread")
     elsif object == offer
-      send_update self, user, "read", sender_channel, ADMIN_APP unless sender.system_user?
-      send_update self, user, "unread", donor_channel, DONOR_APP unless object.cancelled? || is_private
+      # update admin and donor if message sent from admin
+      send_update_to_store(sender_channel, ADMIN_APP, "read")  unless sender.system_user?
+      send_update_to_store(donor_channel, DONOR_APP, "unread") unless object.cancelled? || is_private
     end
 
-    if object == order && app_name == BROWSE_APP
-      send_update self, user, 'unread', subscribed_user_channels.uniq, STOCK_APP
-      send_update self, user, 'never-subscribed', unsubscribed_user_channels.uniq, STOCK_APP
-    elsif object == offer && app_name == DONOR_APP
-      send_update self, user, 'unread', subscribed_user_channels.uniq, ADMIN_APP
-      send_update self, user, 'never-subscribed', unsubscribed_user_channels.uniq, ADMIN_APP
-    end
+    send_update_to_subscribed_and_unsubscribed_channels(app_name, object)
   end
 
   def send_new_message_notification
@@ -71,16 +59,52 @@ module UpdateClientStoreAndSendNotification
   end
 
   private
+
+  def send_update_to_subscribed_and_unsubscribed_channels(app_name, object)
+    discard_channels = sender_channel + donor_channel + browse_channel
+    subscribed_user_channels = (subscribed_user_channels() - discard_channels).uniq
+    unsubscribed_user_channels = (admin_channel - discard_channels).uniq
+
+    send_update_to_store(subscribed_user_channels, fetch_reciever_app(app_name, object), "unread")
+    send_update_to_store(unsubscribed_user_channels, fetch_reciever_app(app_name, object), 'never-subscribed')
+  end
+
+  def send_update_to_store(channels, app_name, state)
+    send_update(self, serialized_user(sender), state, channels, app_name)
+  end
+
+  def from_donor_or_browse?(channel_name, object)
+    sender_channel == channel_name && !object.cancelled? && !is_private
+  end
+
+  def from_browse_app?(app_name, object)
+    object == order && app_name == BROWSE_APP
+  end
+
+  def from_donor_app?(app_name, object)
+    object == offer && app_name == DONOR_APP
+  end
+
+  def from_stock_app?(object)
+    stock_channel.include?(sender_channel.first) && object == order && !object.cancelled? && !is_private?
+  end
+
+  def fetch_reciever_app(app_name, object)
+    if from_browse_app?(app_name, object)
+      STOCK_APP
+    elsif from_donor_app?(app_name, object)
+      ADMIN_APP
+    end
+  end
+
   # determine which app and which channel to send notification to.
   def fetch_browse_or_donor(sender_channel)
-    if sender_channel == donor_channel
-      app_name  = DONOR_APP
-      channel_name = donor_channel
-    elsif sender_channel == browse_channel
-      app_name = BROWSE_APP
-      channel_name = browse_channel
+    case sender_channel
+    when donor_channel
+      [DONOR_APP, donor_channel]
+    when browse_channel
+      [BROWSE_APP, browse_channel]
     end
-    return [app_name, channel_name]
   end
 
   def subscribed_user_channels
@@ -90,9 +114,10 @@ module UpdateClientStoreAndSendNotification
 
   def send_update(object, user, state, channel, app_name, operation = :create)
     self.state_value = state
+    message_from_stock = from_stock_app?(object.order) if object.order
     PushService.new.send_update_store channel, app_name, {
       item: serialized_message(object), sender: user,
-      operation: operation } unless channel.empty?
+      operation: operation, message_from_stock: message_from_stock } unless channel.empty?
     self.state_value = nil
   end
 
