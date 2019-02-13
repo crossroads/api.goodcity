@@ -8,6 +8,7 @@ FactoryBot.define do
     last_connected    { 2.days.ago }
     last_disconnected { 1.day.ago }
     disabled          { false }
+    sms_reminder_sent_at { nil }
     initialize_with   { User.find_or_initialize_by(mobile: mobile) }
 
     association :image
@@ -32,7 +33,6 @@ FactoryBot.define do
         end
       end
     end
-
 
     trait :with_can_add_or_remove_inventory_number do
       after(:create) do |user, evaluator|
@@ -190,9 +190,9 @@ FactoryBot.define do
       end
     end
 
-    trait :with_organisation do
+    trait :with_offer do
       after(:create) do |user|
-        user.organisations << create(:organisation)
+        user.offers << create(:offer)
       end
     end
 

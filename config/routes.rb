@@ -94,6 +94,7 @@ Rails.application.routes.draw do
       get "timeslots", to: "timeslots#index"
       get "gogovan_transports", to: "gogovan_transports#index"
       get "booking_types", to: "booking_types#index"
+      get "purposes", to: "purposes#index"
       get "crossroads_transports", to: "crossroads_transports#index"
 
       post "twilio_inbound/voice", to: "twilio_inbound#voice"
@@ -126,7 +127,7 @@ Rails.application.routes.draw do
           put :transition
         end
       end
-      resources :beneficiaries, only: [:create, :show, :index, :update]
+      resources :beneficiaries, only: [:create, :show, :index, :update, :destroy]
       resources :order_transports, only: [:create, :show, :index, :update]
       resources :stockit_activities, only: [:create]
       resources :countries, only: [:create]

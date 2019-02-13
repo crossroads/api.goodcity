@@ -1,26 +1,40 @@
 class SubscriptionsReminder
 
   def generate
-    sms_url = "#{Rails.application.secrets.base_urls['app']}/offers"
-    donor_unread_subscriptions(donor_users).group_by(&:user_id).each do |user_id, subscriptions|
-      begin
-        Subscription.where(id: subscriptions.map(&:id)).update_all(sms_reminder_sent_at: Time.zone.now)
-        TwilioService.new(User.find(user_id)).send_unread_message_reminder(sms_url)
-        Rails.logger.info("\n Message sent to user: #{user_id}")
-      rescue Exception => e
-        Rails.logger.error("\nError: #{e.message}")
-      end
+    user_candidates_for_reminder.each do |user|
+      user.update(sms_reminder_sent_at: Time.now)
+      send_sms_reminder(user)
     end
   end
 
   private
 
-  def donor_users
-    Offer.distinct.pluck(:created_by_id)
+  # Users who 
+  #   haven't been reminded in last X hours
+  #   have unread messages
+  #   are donors
+  #   aren't the author of the message
+  # If sms_reminder_sent_at is NULL then use created_at so we don't SMS user immediately
+  def user_candidates_for_reminder
+    user_ids = Offer.distinct.pluck(:created_by_id)
+    User.joins(subscriptions: [:message]).
+      where('users.id IN (?)', user_ids).
+      where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601).
+      where('subscriptions.state': 'unread').
+      where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)").
+      where('messages.sender_id != users.id').
+      distinct
   end
 
-  def donor_unread_subscriptions(users)
-    Subscription.where(state: 'unread', user_id: users).
-      where("sms_reminder_sent_at IS NULL OR sms_reminder_sent_at < ?", SUBSCRIPTION_REMINDER_TIME_DELTA.ago)
+  def send_sms_reminder(user)
+    sms_url = "#{Rails.application.secrets.base_urls['app']}/offers"
+    TwilioService.new(user).send_unread_message_reminder(sms_url)
+    Rails.logger.info("SMS reminder sent to user #{user.id}")
   end
+
+  # E.g. 4.hours.ago
+  def delta
+    SUBSCRIPTION_REMINDER_TIME_DELTA.ago
+  end
+
 end

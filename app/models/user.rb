@@ -64,7 +64,7 @@ class User < ActiveRecord::Base
   end
 
   def self.recent_orders_created_for(user_id)
-    joins(:created_orders).where(orders: { authorised_by_id: user_id })
+    joins(:created_orders).where(orders: { submitted_by_id: user_id })
     .order('orders.id DESC').limit(5)
   end
 
