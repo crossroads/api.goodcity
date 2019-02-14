@@ -388,8 +388,8 @@ ActiveRecord::Schema.define(version: 20190218025723) do
     t.integer  "people_helped",           default: 0
     t.integer  "beneficiary_id"
     t.integer  "address_id"
-    t.text     "cancellation_reason"
     t.integer  "district_id"
+    t.text     "cancellation_reason"
     t.integer  "authorised_by_id"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
@@ -704,7 +704,11 @@ ActiveRecord::Schema.define(version: 20190218025723) do
     t.string  "state"
   end
 
+  add_index "subscriptions", ["message_id"], name: "index_subscriptions_on_message_id", using: :btree
   add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
+  add_index "subscriptions", ["offer_id"], name: "index_subscriptions_on_offer_id", using: :btree
+  add_index "subscriptions", ["state"], name: "index_subscriptions_on_state", using: :btree
+  add_index "subscriptions", ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
 
   create_table "territories", force: :cascade do |t|
     t.string   "name_en"
