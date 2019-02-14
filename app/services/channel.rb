@@ -34,6 +34,7 @@ class Channel
     end
 
     # users - can be array or single instance of user id or user object
+    # TODO change name
     def private(users)
       [users].flatten.map{ |user| "user_#{user.is_a?(User) ? user.id : user}" }
     end
@@ -42,12 +43,19 @@ class Channel
       [channel_name].flatten.any? {|n| n.include?('user_')}
     end
 
+    def user_channels(user)
+      channels = Channel.private(user)
+      channels += reviewer if user.reviewer?
+      channels += supervisor if user.supervisor?
+      channels += order_fulfilment if user.order_fulfilment?
+      channels  
+    end
+
     # Gets the channels for a user and ensures the correct app_name context
     # E.g. user_1_admin, user_1_browse
-    def channels_for_user_with_app_context(current_user, app_name)
-      channels = current_user.channels
-      channels = Channel.add_app_name_suffix(channels, app_name)
-      channels
+    def channels_for_user_with_app_context(user, app_name)
+      channels = user_channels(user)
+      add_app_name_suffix(channels, app_name)
     end
 
     # add the appropriate app_name suffix on the user channels when registering the device
