@@ -120,4 +120,23 @@ describe Channel do
     end
   end
 
+  context "#user_channels" do
+    it "for donor" do
+      user = create(:user)
+      expect(Channel.user_channels(user)).to eq(["user_#{user.id}"])
+    end
+    it "for reviewer" do
+      user = create(:user, :reviewer)
+      expect(Channel.user_channels(user)).to match_array(["user_#{user.id}", "reviewer"])
+    end
+    it "for supervisor" do
+      user = create(:user, :supervisor)
+      expect(Channel.user_channels(user)).to match_array(["user_#{user.id}", "supervisor"])
+    end
+    it "for order_fulfilment" do
+      user = create(:user, :order_fulfilment)
+      expect(Channel.user_channels(user)).to match_array(["user_#{user.id}", "order_fulfilment"])
+    end
+  end
+
 end
