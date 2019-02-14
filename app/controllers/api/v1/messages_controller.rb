@@ -20,7 +20,7 @@ module Api
           param :offer_id, String, desc: "Offer for which message has been posted", allow_nil: true
           param :item_id, String, desc: "Item for which message has been posted", allow_nil: true
           param :state, String, desc: "Current User's Subscription State e.g. unread, read "
-          param :order_id, String, desc: "Order id on which message is created"
+          param :order_id, String, desc: "Order id on which message is created", allow_nil: true
         end
       end
 
@@ -30,18 +30,16 @@ module Api
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       def index
-        root = is_browse_app? || is_stock_app? ? "messages" : false
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
         @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
         @messages = @messages.where(order_id: params[:order_id]) if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
-        render json: @messages, each_serializer: serializer, root: root
+        render json: @messages, each_serializer: serializer, root: "messages"
       end
 
       api :GET, "/v1/messages/1", "List a message"
       def show
-        root = is_browse_app? || is_stock_app? ? "messages" : false
-        render json: @message, serializer: serializer, root: root
+        render json: @message, serializer: serializer, root: "messages"
       end
 
       api :POST, "/v1/messages", "Create an message"
@@ -54,34 +52,29 @@ module Api
 
       api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
       def mark_read
-        root = is_browse_app? || is_stock_app? ? "messages" : false
         @message.mark_read!(current_user.id)
-        render json: @message, serializer: serializer, root: root
+        render json: @message, serializer: serializer, root: "messages"
       end
 
       private
 
       def order_id
-        if params[:message][:designation_id]
-          params[:message][:designation_id].to_i
-        elsif params[:message][:order_id]
-          params[:message][:order_id].to_i
-        else
-          nil
-        end
+        params[:message][:designation_id].presence || params[:message][:order_id].presence
       end
 
       def serializer
-        if is_browse_app? || is_stock_app?
-          Api::V1::CharityMessageSerializer
-        else
-          Api::V1::MessageSerializer
-        end
+        is_charity_message? ? Api::V1::CharityMessageSerializer : Api::V1::MessageSerializer
+      end
+
+      def is_charity_message?
+        is_browse_app? || is_stock_app?
       end
 
       def message_params
-        params.require(:message).permit(:body, :is_private,
-          :offer_id, :item_id, :order_id)
+        params.require(:message).permit(
+          :body, :is_private,
+          :offer_id, :item_id, :order_id
+        )
       end
     end
   end
