@@ -1,69 +1,81 @@
 class Channel
+
+  # Channel definitions
+  REVIEWER_CHANNEL = 'reviewer'
+  SUPERVISOR_CHANNEL = 'supervisor'
+  BROWSE_CHANNEL = 'browse'
+  STOCK_CHANNEL = 'stock'
+  ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'
+
   class << self
 
+    # equivalent of [CHANNEL::REVIEWER_CHANNEL]
     def reviewer
-      ["reviewer"]
+      [REVIEWER_CHANNEL]
     end
 
     def supervisor
-      ["supervisor"]
+      [SUPERVISOR_CHANNEL]
     end
 
     def browse
-      ["browse"]
+      [BROWSE_CHANNEL]
     end
 
     def stock
-      ["stock"]
+      [STOCK_CHANNEL]
     end
 
     def order_fulfilment
-      ["order_fulfilment"]
+      [ORDER_FULFILMENT_CHANNEL]
     end
 
     def staff
-     [reviewer, supervisor].flatten
+     [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL]
     end
 
     def goodcity_order_channel
-      [order_fulfilment].flatten
+      [ORDER_FULFILMENT_CHANNEL]
     end
 
     def order_channel
-      [reviewer, supervisor, browse].flatten
+      [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL]
     end
 
     # users - can be array or single instance of user id or user object
-    # TODO change name
+    # TODO replace with private channels for
     def private(users)
       [users].flatten.map{ |user| "user_#{user.is_a?(User) ? user.id : user}" }
     end
-
-    def user_channel?(channel_name)
-      [channel_name].flatten.any? {|n| n.include?('user_')}
+    # Returns the users private channel with app_name suffix
+    # E.g. 'user_1' (donor app has no suffix)
+    #   'user_1_admin', 'user_1_stock', 'user_1_browse'
+    def private_channels_for(users, app_name)
+      [users].flatten.map do |user|
+        u = user.is_a?(User) ? user.id : user
+        (app_name == DONOR_APP) ? "user_#{u}" : "user_#{u}_#{app_name}"
+      end.compact.uniq
     end
 
-    def user_channels(user)
-      channels = Channel.private(user)
-      channels += reviewer if user.reviewer?
-      channels += supervisor if user.supervisor?
-      channels += order_fulfilment if user.order_fulfilment?
-      channels  
+    # Returns the channels a user should tune into given a particular app context
+    # E.g. ['user_1_admin']
+    #   ['user_1_browse', 'browse']
+    def channels_for(user, app_name)
+      channels = [private_channels_for(user, app_name)]
+      channels << REVIEWER_CHANNEL if user.reviewer? and app_name == ADMIN_APP
+      channels << SUPERVISOR_CHANNEL if user.supervisor? and app_name == ADMIN_APP
+      channels << ORDER_FULFILMENT_CHANNEL if user.order_fulfilment? and app_name == STOCK_APP
+      channels << BROWSE_CHANNEL if app_name == BROWSE_APP
+      channels.flatten.compact.uniq
     end
 
-    # Gets the channels for a user and ensures the correct app_name context
-    # E.g. user_1_admin, user_1_browse
-    def channels_for_user_with_app_context(user, app_name)
-      channels = user_channels(user)
-      add_app_name_suffix(channels, app_name)
-    end
-
+    # TODO remove this once deleted from PushService
     # add the appropriate app_name suffix on the user channels when registering the device
     # e.g. user_1 becomes user_1_admin, group channels (don't start with 'user_') are unaffected
     # note that donor app channel is just user_1
     def add_app_name_suffix(channel_name, app_name)
       [channel_name].flatten.compact.map do |channel|
-        if app_name != DONOR_APP && user_channel?(channel)
+        if app_name != DONOR_APP && channel.starts_with?('user_')
           "#{channel}_#{app_name}"
         else
           channel
