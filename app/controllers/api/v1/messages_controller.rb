@@ -30,35 +30,38 @@ module Api
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       def index
+        root = is_browse_app? || is_stock_app? ? "messages" : false
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
         @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
         @messages = @messages.where(order_id: params[:order_id]) if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
-        render json: @messages, each_serializer: serializer
+        render json: @messages, each_serializer: serializer, root: root
       end
 
       api :GET, "/v1/messages/1", "List a message"
       def show
-        render json: @message, serializer: serializer
+        root = is_browse_app? || is_stock_app? ? "messages" : false
+        render json: @message, serializer: serializer, root: root
       end
 
       api :POST, "/v1/messages", "Create an message"
       param_group :message
       def create
-        @message.order_id = order_id_params
+        @message.order_id = order_id
         @message.sender_id = current_user.id
         save_and_render_object(@message)
       end
 
       api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
       def mark_read
+        root = is_browse_app? || is_stock_app? ? "messages" : false
         @message.mark_read!(current_user.id)
-        render json: @message, serializer: serializer
+        render json: @message, serializer: serializer, root: root
       end
 
       private
 
-      def order_id_params
+      def order_id
         if params[:message][:designation_id]
           params[:message][:designation_id].to_i
         elsif params[:message][:order_id]
@@ -69,7 +72,11 @@ module Api
       end
 
       def serializer
-        Api::V1::MessageSerializer
+        if is_browse_app? || is_stock_app?
+          Api::V1::CharityMessageSerializer
+        else
+          Api::V1::MessageSerializer
+        end
       end
 
       def message_params

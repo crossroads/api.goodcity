@@ -1,5 +1,6 @@
 #
-# Updation of client store logic for messages is extracted here to avoid cluttering the model class
+# Updation of client store logic for messages is extracted here
+# to avoid cluttering the model class
 module UpdateClientStoreAndSendNotification
   extend ActiveSupport::Concern
 
