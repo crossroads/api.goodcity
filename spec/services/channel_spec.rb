@@ -2,35 +2,35 @@ require "rails_helper"
 
 describe Channel do
 
-  context 'channels_for_user_with_app_context' do
+  context 'channels_for' do
   
-    subject { Channel.channels_for_user_with_app_context(current_user, app_name) }
+    subject { Channel.channels_for(user, app_name) }
 
     context 'donor app' do
       let(:app_name) { DONOR_APP }
-      let(:current_user) { create :user }
-      let(:expected_channels) { ["user_#{current_user.id}"] }
+      let(:user) { create :user }
+      let(:expected_channels) { ["user_#{user.id}"] }
       it { expect(subject).to eql(expected_channels) }
     end
 
     context 'supervisor on admin app' do
       let(:app_name) { ADMIN_APP }
-      let(:current_user) { create :user, :supervisor }
-      let(:expected_channels) { ["user_#{current_user.id}_admin", 'supervisor'] }
+      let(:user) { create :user, :supervisor }
+      let(:expected_channels) { ["user_#{user.id}_admin", 'supervisor'] }
       it { expect(subject).to eql(expected_channels) }
     end
 
     context 'order_fulfilment on stock app' do
       let(:app_name) { STOCK_APP }
-      let(:current_user) { create :user, :order_fulfilment }
-      let(:expected_channels) { ["user_#{current_user.id}_stock", 'order_fulfilment'] }
+      let(:user) { create :user, :order_fulfilment }
+      let(:expected_channels) { ["user_#{user.id}_stock", 'order_fulfilment'] }
       it { expect(subject).to eql(expected_channels) }
     end
 
     context 'charity on browse app' do
       let(:app_name) { BROWSE_APP }
-      let(:current_user) { create :user, :charity }
-      let(:expected_channels) { ["user_#{current_user.id}_browse"] }
+      let(:user) { create :user, :charity }
+      let(:expected_channels) { ["user_#{user.id}_browse", "browse"] }
       it { expect(subject).to eql(expected_channels) }
     end
   
@@ -117,25 +117,6 @@ describe Channel do
     context "order_channel" do
       let(:channel) { 'order_channel' }
       it { expect(subject).to eql(['reviewer', 'supervisor', 'browse']) }
-    end
-  end
-
-  context "#user_channels" do
-    it "for donor" do
-      user = create(:user)
-      expect(Channel.user_channels(user)).to eq(["user_#{user.id}"])
-    end
-    it "for reviewer" do
-      user = create(:user, :reviewer)
-      expect(Channel.user_channels(user)).to match_array(["user_#{user.id}", "reviewer"])
-    end
-    it "for supervisor" do
-      user = create(:user, :supervisor)
-      expect(Channel.user_channels(user)).to match_array(["user_#{user.id}", "supervisor"])
-    end
-    it "for order_fulfilment" do
-      user = create(:user, :order_fulfilment)
-      expect(Channel.user_channels(user)).to match_array(["user_#{user.id}", "order_fulfilment"])
     end
   end
 
