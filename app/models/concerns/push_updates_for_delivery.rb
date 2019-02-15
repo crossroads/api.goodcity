@@ -1,15 +1,14 @@
 #
 # Logic for who gets notified about changes to deliveries
 #
-# When a delivery is created/updated, send push updates to:
-#   - the offer donor
-#   - admin staff (since this will be an active offer)
-#
 module PushUpdatesForDelivery
   extend ActiveSupport::Concern
   
+  # When a delivery is created/updated, send:
+  #  - data updates to the offer donor
+  #  - data updates admin staff (since this will be an active offer)
   def send_updates(operation = nil)
-    records.compact.each do |record|
+    records.each do |record|
       operation ||= (record.class == 'Delivery' ? "update" : "create")
       data = { item: serialized_object(record), sender: serialized_sender, operation: operation }
       push_updates(data)
@@ -17,11 +16,22 @@ module PushUpdatesForDelivery
     return true
   end
 
+  # In-app and mobile notification to reviewers
+  #   that a delivery has been scheduled (new or existing)
+  def notify_reviewers
+    PushService.new.send_notification(Channel::REVIEWER_CHANNEL, ADMIN_APP, {
+      category: 'offer_delivery',
+      message:   delivery_notify_message,
+      offer_id:  offer.id,
+      author_id: offer.created_by_id
+    })
+  end
+
   private
 
   # In it's own method to make it easier to test
   def records
-    [gogovan_order, contact.try(:address), contact, schedule, self]
+    [gogovan_order, contact.try(:address), contact, schedule, self].compact
   end
 
   # Send to donor on donor app
@@ -45,6 +55,14 @@ module PushUpdatesForDelivery
   def serialized_object(record)
     associations = record.class.reflections.keys.map(&:to_sym)
     "Api::V1::#{record.class}Serializer".constantize.new(record, { exclude: associations })
+  end
+
+  def delivery_notify_message
+    formatted_date = schedule.scheduled_at.strftime("%a #{schedule.scheduled_at.day.ordinalize} %b %Y")
+    I18n.t("delivery.#{delivery_type.downcase.tr(' ', '_')}_message",
+      name: donor.full_name,
+      time: schedule.slot_name,
+      date: formatted_date)
   end
   
 end

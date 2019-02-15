@@ -13,7 +13,7 @@ class Delivery < ActiveRecord::Base
   before_save :update_offer_state
   before_destroy :push_back_offer_state
   after_save :send_updates, if: :successfully_scheduled? # PushUpdatesForDelivery
-  after_save :notify_reviewers, if: :successfully_scheduled?
+  after_save :notify_reviewers, if: :successfully_scheduled? # PushUpdatesForDelivery
   after_destroy { send_updates(:delete) unless Rails.env.test? } # PushUpdatesForDelivery
 
   def update_offer_state
@@ -45,20 +45,4 @@ class Delivery < ActiveRecord::Base
     (contact_id_changed? && contact.present?) || (delivery_type == 'Drop Off' && schedule_id_changed? && schedule.present?)
   end
 
-  def notify_reviewers
-    PushService.new.send_notification(Channel::REVIEWER_CHANNEL, ADMIN_APP, {
-      category: 'offer_delivery',
-      message:   delivery_notify_message,
-      offer_id:  offer.id,
-      author_id: offer.created_by_id
-    })
-  end
-
-  def delivery_notify_message
-    formatted_date = schedule.scheduled_at.strftime("%a #{schedule.scheduled_at.day.ordinalize} %b %Y")
-    I18n.t("delivery.#{delivery_type.downcase.tr(' ', '_')}_message",
-      name: offer.created_by.full_name,
-      time: schedule.slot_name,
-      date: formatted_date)
-  end
 end
