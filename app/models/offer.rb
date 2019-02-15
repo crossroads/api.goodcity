@@ -244,16 +244,16 @@ class Offer < ActiveRecord::Base
   end
 
   def reviewer_channel
-    reviewed_by_id && "user_#{reviewed_by_id}"
+    Channel.private_channels_for(reviewed_by_id, ADMIN_APP)
   end
 
   def call_notify_channels
-    channel_names = Channel.private(subscribed_users(true))
-    if (channel_names - [reviewer_channel]).blank?
-      channel_names = Channel.private(User.supervisors.pluck(:id))
+    channel_names = Channel.private_channels_for(subscribed_users(true), ADMIN_APP)
+    if (channel_names - reviewer_channel).blank?
+      channel_names = Channel.private_channels_for(User.supervisors.pluck(:id), ADMIN_APP)
     end
-    channel_names << reviewer_channel
-    channel_names.uniq.compact
+    channel_names += reviewer_channel
+    channel_names.flatten.uniq.compact
   end
 
   def has_single_item?

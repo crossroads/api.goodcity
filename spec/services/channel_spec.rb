@@ -96,4 +96,57 @@ describe Channel do
     it { expect(Channel.const_get("ORDER_CHANNEL")).to eql(['reviewer', 'supervisor', 'browse']) }
   end
 
+  context "private_channels_for" do
+    context "donor on donor app" do
+      let(:user) { create :user }
+      let(:app_name) { DONOR_APP }
+      let(:channels) { ["user_#{user.id}"] }
+      it { expect(Channel.private_channels_for(user, app_name)).to eq(channels) }
+    end
+    context "reviewer"
+      let(:user) { create :user, :reviewer }
+      let(:channels) { ["user_#{user.id}_#{app_name}"] }
+      context "on admin app" do
+        let(:app_name) { ADMIN_APP }
+        it { expect(Channel.private_channels_for(user, app_name)).to eq(channels) }
+      end
+      context "on stock app" do
+        let(:app_name) { STOCK_APP }
+        it { expect(Channel.private_channels_for(user, app_name)).to eq(channels) }
+      end
+      context "on browse app" do
+        let(:app_name) { BROWSE_APP }
+        it { expect(Channel.private_channels_for(user, app_name)).to eq(channels) }
+      end
+    context "order fulfiller on stock app" do
+      let(:user) { create :user, :order_fulfilment }
+      let(:app_name) { STOCK_APP }
+      it { expect(Channel.private_channels_for(user, app_name)).to eq(channels) }
+    end
+    context "charity on browse app" do
+      let(:user) { create :user, :charity }
+      let(:app_name) { BROWSE_APP }
+      it { expect(Channel.private_channels_for(user, app_name)).to eq(channels) }
+    end
+    context "with no app_name" do
+      let(:user) { create :user, :charity }
+      let(:app_name) { nil }
+      let(:channels) { ["user_#{user.id}"] }
+      it { expect(Channel.private_channels_for(user, app_name)).to eq(channels) }
+    end
+    context "with mulitple users" do
+      let(:users) { create_list :user, 2, :reviewer }
+      let(:app_name) { ADMIN_APP }
+      let(:channels) { users.map{|user| "user_#{user.id}_#{app_name}" } }
+      it { expect(Channel.private_channels_for(users, app_name)).to match_array(channels) }
+    end
+    context "with no users" do
+      let(:users) { nil }
+      let(:app_name) { ADMIN_APP }
+      let(:channels) { [] }
+      it { expect(Channel.private_channels_for(users, app_name)).to match_array(channels) }
+    end
+    
+  end
+
 end

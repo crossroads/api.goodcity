@@ -19,11 +19,15 @@ class Channel
     # Returns the users private channel with app_name suffix
     # E.g. 'user_1' (donor app has no suffix)
     #   'user_1_admin', 'user_1_stock', 'user_1_browse'
-    def private_channels_for(users, app_name)
-      [users].flatten.map do |user|
+    def private_channels_for(users, app_name = '')
+      [users].flatten.compact.map do |user|
         u = user.is_a?(User) ? user.id : user
-        (app_name == DONOR_APP) ? "user_#{u}" : "user_#{u}_#{app_name}"
-      end.compact.uniq
+        if (app_name.blank? or app_name == DONOR_APP)
+          "user_#{u}"
+        else
+          "user_#{u}_#{app_name}"
+        end
+      end.uniq
     end
 
     # Returns the channels a user should tune into given a particular app context
@@ -44,7 +48,7 @@ class Channel
     # note that donor app channel is just user_1
     def add_app_name_suffix(channel_name, app_name)
       [channel_name].flatten.compact.map do |channel|
-        if app_name != DONOR_APP && channel.starts_with?('user_')
+        if app_name != DONOR_APP && channel.starts_with?('user_') && !channel.ends_with?(app_name)
           "#{channel}_#{app_name}"
         else
           channel

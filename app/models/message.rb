@@ -43,16 +43,16 @@ class Message < ActiveRecord::Base
 
   def browse_channel
     return [] unless order
-    Channel.private(order.created_by_id)
+    Channel.private_channels_for(order.created_by_id, BROWSE_APP)
   end
 
   def admin_channel
-    Channel.private(User.staff)
+    Channel.private_channels_for(User.staff, ADMIN_APP)
   end
 
   def donor_channel
     return [] unless offer
-    Channel.private(offer.created_by_id)
+    Channel.private_channels_for(offer.created_by_id, DONOR_APP)
   end
 
   def serialized_user(user)

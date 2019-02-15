@@ -29,7 +29,7 @@ module PushUpdates
     data  = { item: data_updates(type, operation), sender: user, operation: operation }
 
     unless offer.nil?
-      donor_channel = Channel.private(offer.created_by_id)
+      donor_channel = Channel.private_channels_for(offer.created_by_id, DONOR_APP)
       # update donor on his offer-cancellation
       if offer.try(:cancelled?) && self == offer
         offer_data = { item: { "#{type}": {id: self.id} }, sender: user, operation: :delete }

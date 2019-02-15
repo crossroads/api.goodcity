@@ -58,7 +58,7 @@ class Delivery < ActiveRecord::Base
 
   def push_updates(donor, data)
     PushService.new.send_update_store(Channel::STAFF_CHANNEL, ADMIN_APP, data)
-    PushService.new.send_update_store(Channel.private(donor), DONOR_APP, data)
+    PushService.new.send_update_store(Channel.private_channels_for(donor, DONOR_APP), DONOR_APP, data)
   end
 
   def serialized_user(donor)

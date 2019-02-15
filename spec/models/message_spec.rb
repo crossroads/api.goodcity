@@ -92,20 +92,20 @@ describe Message, type: :model do
 
       message = build_message(sender_id: donor.id)
       allow(message).to receive(:service).and_return(pusher)
-
+      
       #note unfortunately expect :update_store is working here based on the order it's called in code
-      expect(message).to receive(:send_update) do |item, user, state, channel|
+      expect(message).to receive(:send_update) do |state, channel, app_name|
         expect(channel).to match_array(["user_#{donor.id}"])
         expect(state).to eq("read")
       end
 
-      expect(message).to receive(:send_update) do |item, user, state, channel|
+      expect(message).to receive(:send_update) do |state, channel, app_name|
         expect(channel).to eq(["user_#{subscribed_user.id}"])
         expect(state).to eq("unread")
       end
 
-      expect(message).to receive(:send_update) do |item, user, state, channel|
-        expect(channel).to eq(["user_#{unsubscribed_user.id}"])
+      expect(message).to receive(:send_update) do |state, channel, app_name|
+        expect(channel).to match_array(["user_#{unsubscribed_user.id}"])
         expect(state).to eq("never-subscribed")
       end
 
@@ -138,8 +138,8 @@ describe Message, type: :model do
       User.current_user = reviewer
 
       expect(message).to receive(:send_update) do |item, user, state, channel, app_name, operation|
-        expect(channel).to include("user_#{subscribed_user.id}")
-        expect(channel).to include("user_#{unsubscribed_user.id}")
+        expect(channel).to include("user_#{subscribed_user.id}_admin")
+        expect(channel).to include("user_#{unsubscribed_user.id}_admin")
         expect(channel).to_not include("user_#{donor.id}")
         expect(operation).to eq(:delete)
       end
