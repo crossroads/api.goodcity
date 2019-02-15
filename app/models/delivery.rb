@@ -57,7 +57,7 @@ class Delivery < ActiveRecord::Base
   end
 
   def push_updates(donor, data)
-    PushService.new.send_update_store(Channel.staff, ADMIN_APP, data)
+    PushService.new.send_update_store(Channel::STAFF_CHANNEL, ADMIN_APP, data)
     PushService.new.send_update_store(Channel.private(donor), DONOR_APP, data)
   end
 
@@ -71,12 +71,12 @@ class Delivery < ActiveRecord::Base
   end
 
   def notify_reviewers
-    PushService.new.send_notification Channel.reviewer, ADMIN_APP, {
+    PushService.new.send_notification(Channel::REVIEWER_CHANNEL, ADMIN_APP, {
       category: 'offer_delivery',
       message:   delivery_notify_message,
       offer_id:  offer.id,
       author_id: offer.created_by_id
-    }
+    })
   end
 
   def delivery_notify_message

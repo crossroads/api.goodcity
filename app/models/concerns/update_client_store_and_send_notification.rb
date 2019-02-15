@@ -59,7 +59,7 @@ module UpdateClientStoreAndSendNotification
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
-      send_notification(Channel.supervisor, ADMIN_APP)
+      send_notification(Channel::SUPERVISOR_CHANNEL, ADMIN_APP)
     end
   end
 
@@ -114,8 +114,8 @@ module UpdateClientStoreAndSendNotification
     self.state_value = nil
   end
 
-  def send_notification(channel, app_name)
-    PushService.new.send_notification channel, app_name, {
+  def send_notification(channels, app_name)
+    PushService.new.send_notification(channels, app_name, {
       category:   'message',
       message:    body.truncate(150, separator: ' '),
       is_private: is_private,
@@ -123,7 +123,7 @@ module UpdateClientStoreAndSendNotification
       item_id:    item.try(:id),
       author_id:  sender_id,
       message_id: id
-    } unless channel.empty?
+    })
   end
 
   def sender_channel

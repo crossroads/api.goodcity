@@ -6,41 +6,10 @@ class Channel
   BROWSE_CHANNEL = 'browse'
   STOCK_CHANNEL = 'stock'
   ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'
+  STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL]
+  ORDER_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL]
 
   class << self
-
-    # equivalent of [CHANNEL::REVIEWER_CHANNEL]
-    def reviewer
-      [REVIEWER_CHANNEL]
-    end
-
-    def supervisor
-      [SUPERVISOR_CHANNEL]
-    end
-
-    def browse
-      [BROWSE_CHANNEL]
-    end
-
-    def stock
-      [STOCK_CHANNEL]
-    end
-
-    def order_fulfilment
-      [ORDER_FULFILMENT_CHANNEL]
-    end
-
-    def staff
-     [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL]
-    end
-
-    def goodcity_order_channel
-      [ORDER_FULFILMENT_CHANNEL]
-    end
-
-    def order_channel
-      [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL]
-    end
 
     # users - can be array or single instance of user id or user object
     # TODO replace with private channels for

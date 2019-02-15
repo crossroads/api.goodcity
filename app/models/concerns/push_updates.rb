@@ -22,7 +22,7 @@ module PushUpdates
     unless order.nil?
       json =  Api::V1::OrderSerializer.new(order).as_json
       order_data = { item: { designation: json[:order] }, operation: operation}
-      service.send_update_store(Channel.order_channel, DONOR_APP, order_data)
+      service.send_update_store(Channel::ORDER_CHANNEL, DONOR_APP, order_data)
       return
     end
 
@@ -38,14 +38,14 @@ module PushUpdates
     end
 
     user.options[:user_summary] = false
-    service.send_update_store(Channel.staff, ADMIN_APP, data)
+    service.send_update_store(Channel::STAFF_CHANNEL, ADMIN_APP, data)
     browse_updates(operation) if type == "Package"
   end
 
   def browse_updates(operation)
     json = Api::V1::BrowsePackageSerializer.new(self).as_json
     data = { item: { package: json[:browse_package], items: json[:items], images: json[:images] }, operation: operation }
-    service.send_update_store(Channel.browse, DONOR_APP, data)
+    service.send_update_store(Channel::BROWSE_CHANNEL, DONOR_APP, data)
   end
 
   def data_updates(type, operation)

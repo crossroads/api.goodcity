@@ -87,37 +87,13 @@ describe Channel do
 
   # since these are important channels, we should test for their existence
   context 'reserved channels' do
-    
-    subject { Channel.send(channel) }
-    
-    context 'reviewer' do
-      let(:channel) { 'reviewer' }
-      it { expect(subject).to eql([channel]) }
-    end
-    context 'supervisor' do
-      let(:channel) { 'supervisor' }
-      it { expect(subject).to eql([channel]) }
-    end
-    context 'browse' do
-      let(:channel) { 'browse' }
-      it { expect(subject).to eql([channel]) }
-    end
-    context 'order_fulfilment' do
-      let(:channel) { 'order_fulfilment' }
-      it { expect(subject).to eql([channel]) }
-    end
-    context "staff" do
-      let(:channel) { 'staff' }
-      it { expect(subject).to eql(['reviewer', 'supervisor']) }
-    end
-    context "goodcity_order_channel" do
-      let(:channel) { 'goodcity_order_channel' }
-      it { expect(subject).to eql(['order_fulfilment']) }
-    end
-    context "order_channel" do
-      let(:channel) { 'order_channel' }
-      it { expect(subject).to eql(['reviewer', 'supervisor', 'browse']) }
-    end
+    it { expect(Channel.const_get("REVIEWER_CHANNEL")).to eql('reviewer') }
+    it { expect(Channel.const_get("SUPERVISOR_CHANNEL")).to eql('supervisor') }
+    it { expect(Channel.const_get("BROWSE_CHANNEL")).to eql('browse') }
+    it { expect(Channel.const_get("STOCK_CHANNEL")).to eql('stock') }
+    it { expect(Channel.const_get("ORDER_FULFILMENT_CHANNEL")).to eql('order_fulfilment') }
+    it { expect(Channel.const_get("STAFF_CHANNEL")).to eql(['reviewer', 'supervisor']) }
+    it { expect(Channel.const_get("ORDER_CHANNEL")).to eql(['reviewer', 'supervisor', 'browse']) }
   end
 
 end
