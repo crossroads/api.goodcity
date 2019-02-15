@@ -115,27 +115,6 @@ module UpdateClientStoreAndSendNotification
     Channel.private(object.subscribed_users(is_private))
   end
 
-  def send_update(obj, user, state, channel, app_name, operation = :create)
-    self.state_value = state
-    message_from_stock = from_stock_app? if obj.order
-    PushService.new.send_update_store channel, app_name, {
-      item: serialized_message(obj), sender: user,
-      operation: operation, message_from_stock: message_from_stock } unless channel.empty?
-    self.state_value = nil
-  end
-
-  def send_notification(channels, app_name)
-    PushService.new.send_notification(channels, app_name, {
-      category:   'message',
-      message:    body.truncate(150, separator: ' '),
-      is_private: is_private,
-      offer_id:   offer.try(:id),
-      item_id:    item.try(:id),
-      author_id:  sender_id,
-      message_id: id
-    })
-  end
-
   def sender_channel
     Channel.private(sender)
   end
