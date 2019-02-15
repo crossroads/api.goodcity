@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Offer do
+describe PushUpdates do
   let(:user) {create :user}
   before {User.current_user = user}
   let(:offer) {
