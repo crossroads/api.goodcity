@@ -39,7 +39,7 @@ module PushUpdates
     if offer.present?
       donor_channel = Channel.private_channels_for(offer.created_by_id, DONOR_APP)
       # update donor on his offer-cancellation
-      if offer.try(:cancelled?) && self == offer
+      if offer.cancelled? && self == offer
         offer_data = { item: { "#{type}": {id: self.id} }, sender: user, operation: :delete }
       end
       service.send_update_store(donor_channel, DONOR_APP, offer_data || data)
