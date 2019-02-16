@@ -3,7 +3,7 @@ class Message < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include MessageSubscription
-  include UpdateClientStoreAndSendNotification
+  include PushUpdatesForMessage
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
   belongs_to :offer, inverse_of: :messages
@@ -28,8 +28,8 @@ class Message < ActiveRecord::Base
 
   after_create do
     subscribe_users_to_message # MessageSubscription
-    update_client_store #UpdateClientStoreAndSendNotification
-    send_new_message_notification #UpdateClientStoreAndSendNotification
+    update_client_store # PushUpdatesForMessage
+    send_new_message_notification # PushUpdatesForMessage
   end
 
   after_destroy :notify_deletion_to_subscribers

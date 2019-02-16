@@ -1,7 +1,11 @@
 #
-# Updation of client store logic for messages is extracted here
-# to avoid cluttering the model class
-module UpdateClientStoreAndSendNotification
+# Send Object Updates and Push Notifications related to Messages.
+# When a message is created, updated or deleted, send push updates
+#   and in-app/mobile notifications to:
+#   - the sender
+#   - the message subscribers
+#
+module PushUpdatesForMessage
   extend ActiveSupport::Concern
 
   def mark_read!(user_id)
