@@ -3,7 +3,7 @@ class Message < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include MessageSubscription
-  include UpdateClientStoreAndSendNotification
+  include PushUpdatesForMessage
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
   belongs_to :offer, inverse_of: :messages
@@ -28,35 +28,22 @@ class Message < ActiveRecord::Base
 
   after_create do
     subscribe_users_to_message # MessageSubscription
-    update_client_store #UpdateClientStoreAndSendNotification
-    send_new_message_notification #UpdateClientStoreAndSendNotification
+    update_client_store # PushUpdatesForMessage
+    send_new_message_notification # PushUpdatesForMessage
   end
 
   after_destroy :notify_deletion_to_subscribers
 
-  private
-
-  def notify_deletion_to_subscribers
-    send_update self, serialized_user(User.current_user), 'read',
-      admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
-  end
-
-  def browse_channel
-    return [] unless order
-    Channel.private(order.created_by_id)
-  end
-
-  def admin_channel
-    Channel.private(User.staff)
-  end
-
-  def donor_channel
-    return [] unless offer
-    Channel.private(offer.created_by_id)
-  end
-
-  def serialized_user(user)
-    Api::V1::UserSerializer.new(user)
+  # Marks all messages as read for a user
+  # Some refactoring required here. Doesn't understand that an admin may
+  # be logged in to Stock and Admin apps and doesn't want all messages to be
+  # marked as read
+  def mark_read!(user_id)
+    subscriptions.where(user_id: user_id).update_all(state: 'read')
+    reader = User.find_by(id: user_id)
+    # TODO adjust this to include STOCK and BROWSE
+    app_name = reader.staff? ? ADMIN_APP : DONOR_APP
+    send_update('read', Channel.private_channels_for(reader, app_name), app_name)
   end
 
 end

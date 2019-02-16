@@ -1,18 +1,16 @@
 #
-# Updation of client store logic for messages is extracted here
-# to avoid cluttering the model class
-module UpdateClientStoreAndSendNotification
+# Send Object Updates and Push Notifications related to Messages.
+# When a message is created, updated or deleted, send push updates
+#   and in-app/mobile notifications to:
+#   - the sender
+#   - the message subscribers
+#
+module PushUpdatesForMessage
   extend ActiveSupport::Concern
 
-  def mark_read!(user_id)
-    subscriptions.where(user_id: user_id).update_all(state: 'read')
-    reader = User.find_by(id: user_id)
-    app_name = reader.staff? ? ADMIN_APP : DONOR_APP
-    send_update('read', Channel.private(reader), app_name)
-  end
-
+  # Logic to decide which user/apps to send the message push_update to
   def update_client_store
-    sender_channel = Channel.private(sender)
+    sender_channel = Channel.private_channels_for(sender)
     app_name, channel_name = fetch_browse_or_donor(sender_channel)
 
     if from_donor_or_browse?(channel_name)
@@ -38,7 +36,7 @@ module UpdateClientStoreAndSendNotification
     return if order || is_call_log
 
     subscribed_user_channels = subscribed_user_channels()
-    current_channel = Channel.private(sender)
+    current_channel = Channel.private_channels_for(sender)
 
     # notify subscribed users except sender
     sender_channel = current_channel
@@ -51,8 +49,13 @@ module UpdateClientStoreAndSendNotification
 
     # notify all supervisors if no supervisor is subscribed in private thread
     if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
-      send_notification(Channel.supervisor, ADMIN_APP)
+      send_notification(Channel::SUPERVISOR_CHANNEL, ADMIN_APP)
     end
+  end
+
+  def notify_deletion_to_subscribers
+    send_update self, serialized_user(User.current_user), 'read',
+      admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
   end
 
   private
@@ -112,35 +115,33 @@ module UpdateClientStoreAndSendNotification
   end
 
   def subscribed_user_channels
-    Channel.private(object.subscribed_users(is_private))
+    Channel.private_channels_for(object.subscribed_users(is_private))
   end
 
   def sender_channel
-    Channel.private(sender)
+    Channel.private_channels_for(sender)
   end
 
   def stock_channel
-    Channel.private(User.staff)
+    Channel.private_channels_for(User.staff)
   end
 
   def admin_channel
-    Channel.private(User.staff)
+    Channel.private_channels_for(User.staff, ADMIN_APP)
   end
 
   def donor_channel
     return [] unless offer
-
-    Channel.private(offer.created_by_id)
+    Channel.private_channels_for(offer.created_by_id, DONOR_APP)
   end
 
   def browse_channel
     return [] unless order
-
-    Channel.private(order.created_by_id)
+    Channel.private_channels_for(order.created_by_id, BROWSE_APP)
   end
 
   def supervisors_channel
-    Channel.private(User.supervisors)
+    Channel.private_channels_for(User.supervisors)
   end
 
   def serialized_user(user)
@@ -155,4 +156,5 @@ module UpdateClientStoreAndSendNotification
   def object
     offer || order
   end
+
 end
