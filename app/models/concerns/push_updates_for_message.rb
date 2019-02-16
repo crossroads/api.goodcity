@@ -8,14 +8,6 @@
 module PushUpdatesForMessage
   extend ActiveSupport::Concern
 
-  def mark_read!(user_id)
-    subscriptions.where(user_id: user_id).update_all(state: 'read')
-    reader = User.find_by(id: user_id)
-    # TODO adjust this to include STOCK and BROWSE
-    app_name = reader.staff? ? ADMIN_APP : DONOR_APP
-    send_update('read', Channel.private_channels_for(reader, app_name), app_name)
-  end
-
   # Logic to decide which user/apps to send the message push_update to
   def update_client_store
     sender_channel = Channel.private_channels_for(sender)

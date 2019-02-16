@@ -34,4 +34,16 @@ class Message < ActiveRecord::Base
 
   after_destroy :notify_deletion_to_subscribers
 
+  # Marks all messages as read for a user
+  # Some refactoring required here. Doesn't understand that an admin may
+  # be logged in to Stock and Admin apps and doesn't want all messages to be
+  # marked as read
+  def mark_read!(user_id)
+    subscriptions.where(user_id: user_id).update_all(state: 'read')
+    reader = User.find_by(id: user_id)
+    # TODO adjust this to include STOCK and BROWSE
+    app_name = reader.staff? ? ADMIN_APP : DONOR_APP
+    send_update('read', Channel.private_channels_for(reader, app_name), app_name)
+  end
+
 end
