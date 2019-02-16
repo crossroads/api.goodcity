@@ -61,6 +61,11 @@ module PushUpdatesForMessage
     end
   end
 
+  def notify_deletion_to_subscribers
+    send_update self, serialized_user(User.current_user), 'read',
+      admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
+  end
+
   private
 
   def send_update_to_subscribed_and_unsubscribed_channels
@@ -130,17 +135,17 @@ module PushUpdatesForMessage
   end
 
   def admin_channel
-    Channel.private_channels_for(User.staff)
+    Channel.private_channels_for(User.staff, ADMIN_APP)
   end
 
   def donor_channel
     return [] unless offer
-    Channel.private_channels_for(offer.created_by_id)
+    Channel.private_channels_for(offer.created_by_id, DONOR_APP)
   end
 
   def browse_channel
     return [] unless order
-    Channel.private_channels_for(order.created_by_id)
+    Channel.private_channels_for(order.created_by_id, BROWSE_APP)
   end
 
   def supervisors_channel
@@ -159,4 +164,5 @@ module PushUpdatesForMessage
   def object
     offer || order
   end
+
 end
