@@ -1,5 +1,13 @@
+#
+# This is the generic Push Update store that sends websocket updates
+#   whenever the following classes are saved:
+#   Address, GogovanOrder, Image, Item, Location, User, Version
+# We will refactor out the following updates which 
+# Offer, Order, Package
+
 module PushUpdates
   extend ActiveSupport::Concern
+  include PushUpdatesBase
 
   included do
     after_create { update_client_store :create unless Rails.env.test? }
@@ -28,7 +36,7 @@ module PushUpdates
 
     data  = { item: data_updates(type, operation), sender: user, operation: operation }
 
-    unless offer.nil?
+    if offer.present?
       donor_channel = Channel.private_channels_for(offer.created_by_id, DONOR_APP)
       # update donor on his offer-cancellation
       if offer.try(:cancelled?) && self == offer
@@ -42,48 +50,12 @@ module PushUpdates
     browse_updates(operation) if type == "Package"
   end
 
+  private
+
   def browse_updates(operation)
     json = Api::V1::BrowsePackageSerializer.new(self).as_json
     data = { item: { package: json[:browse_package], items: json[:items], images: json[:images] }, operation: operation }
     service.send_update_store(Channel::BROWSE_CHANNEL, DONOR_APP, data)
   end
 
-  def data_updates(type, operation)
-    object = {}
-    if operation == :create
-      object = serializer
-    elsif operation == :update
-      object[type] = { id: id }
-      object = updated_attributes(object, type)
-      return if object.length == 0
-    else # delete
-      object[type] = { id: id }
-    end
-    object
-  end
-
-  def updated_attributes(object, type)
-    changed
-      .find_all{ |i| serializer.respond_to?(i) || serializer.respond_to?(i.sub('_id', '')) }
-      .map{ |i| i.to_sym }
-      .each{ |i| object[type][i] = self[i] }
-    object.values.first.merge!(serialized_object(object))
-    object
-  end
-
-  def serializer
-    name = self.class
-    exclude_relationships = { exclude: name.reflections.keys.map(&:to_sym) }
-    "Api::V1::#{name}Serializer".constantize.new(self, exclude_relationships)
-  end
-
-  def serialized_object(object)
-    serializer_name = "Api::V1::#{self.class}Serializer".constantize
-    object_key = object.keys[0].downcase.to_sym
-    serializer_name.new(serializer.object).as_json[object_key] || {}
-  end
-
-  def service
-    PushService.new
-  end
 end
