@@ -65,6 +65,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:booking_type_id).of_type(:integer)}
+    it{ is_expected.to have_db_column(:staff_note).of_type(:string)}
   end
 
   describe '.my_orders' do

@@ -11,7 +11,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190201084112) do
+ActiveRecord::Schema.define(version: 20190218025723) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "btree_gin"
@@ -364,7 +365,7 @@ ActiveRecord::Schema.define(version: 20190201084112) do
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
     t.datetime "created_at"
-    t.datetime "updated_at",                          null: false
+    t.datetime "updated_at",                           null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
@@ -387,10 +388,11 @@ ActiveRecord::Schema.define(version: 20190201084112) do
     t.integer  "people_helped",           default: 0
     t.integer  "beneficiary_id"
     t.integer  "address_id"
-    t.integer  "district_id"
     t.text     "cancellation_reason"
+    t.integer  "district_id"
     t.integer  "authorised_by_id"
     t.integer  "booking_type_id"
+    t.string   "staff_note",              default: ""
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
