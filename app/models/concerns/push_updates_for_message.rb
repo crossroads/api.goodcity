@@ -54,8 +54,8 @@ module PushUpdatesForMessage
   end
 
   def notify_deletion_to_subscribers
-    send_update self, serialized_user(User.current_user), 'read',
-      admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
+
+    send_update 'read', admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
   end
 
   private
