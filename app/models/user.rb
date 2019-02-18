@@ -143,14 +143,6 @@ class User < ActiveRecord::Base
     TwilioService.new(self).sms_verification_pin(app_name)
   end
 
-  def channels
-    channels = Channel.private(self)
-    channels += Channel.reviewer if reviewer?
-    channels += Channel.supervisor if supervisor?
-    channels += Channel.order_fulfilment if order_fulfilment?
-    channels
-  end
-
   def self.current_user
     RequestStore.store[:current_user]
   end
