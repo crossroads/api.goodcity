@@ -26,7 +26,8 @@ module MessageSubscription
     #   - SystemUser and StockitUser
     #   - donor/charity user if the message is private (supervisor channel)
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
-    user_ids -= obj.try(:created_by_id) if is_private
+    user_ids.flatten!
+    user_ids -= [obj.try(:created_by_id)] if is_private
 
     user_ids.flatten.compact.uniq.each do |user_id|
       state = (user_id == self.sender_id) ? "read" : "unread" # mark as read for sender
