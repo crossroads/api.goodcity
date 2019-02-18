@@ -35,6 +35,7 @@ Supervisor:
 - can_manage_order_transport
 - can_check_organisations
 - can_manage_packages_locations
+- can_create_and_read_messages
 - can_manage_items
 - can_add_package_types
 - can_manage_images
