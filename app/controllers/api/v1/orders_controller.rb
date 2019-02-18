@@ -170,7 +170,7 @@ module Api
           :address_id,:submitted_by_id, :staff_note,
           purpose_ids: [], cart_package_ids: [],
           beneficiary_attributes: beneficiary_attributes,
-          address_attributes: address_attributes,
+          address_attributes: address_attributes
         )
       end
 
