@@ -54,7 +54,6 @@ module PushUpdatesForMessage
   end
 
   def notify_deletion_to_subscribers
-
     send_update 'read', admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
   end
 
@@ -71,11 +70,10 @@ module PushUpdatesForMessage
 
   def send_update(state, channel, app_name, operation = :create)
     self.state_value = state
-    message_from_stock = from_stock_app? if order
 
     PushService.new.send_update_store channel, app_name, {
       item: serialized_message(self), sender: serialized_user(sender),
-      operation: operation, message_from_stock: message_from_stock } unless channel.empty?
+      operation: operation } unless channel.empty?
     self.state_value = nil
   end
 

@@ -5,9 +5,17 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :offer_id, :item_id
+      :updated_at, :offer_id, :item_id, :designation_id, :order_id
 
     has_one :sender, serializer: UserSerializer, root: :user
+
+    def designation_id
+      object.order_id
+    end
+
+    def designation_id__sql
+      'order_id'
+    end
 
     def state
       if object.state_value.present?
