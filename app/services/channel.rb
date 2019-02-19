@@ -1,13 +1,13 @@
 class Channel
 
   # Channel definitions
-  REVIEWER_CHANNEL = 'reviewer'
-  SUPERVISOR_CHANNEL = 'supervisor'
-  BROWSE_CHANNEL = 'browse'
-  STOCK_CHANNEL = 'stock'
-  ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'
-  STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL]
-  ORDER_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL]
+  REVIEWER_CHANNEL = 'reviewer'.freeze
+  SUPERVISOR_CHANNEL = 'supervisor'.freeze
+  BROWSE_CHANNEL = 'browse'.freeze
+  STOCK_CHANNEL = 'stock'.freeze
+  ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'.freeze
+  STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL].freeze
+  ORDER_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL].freeze
 
   class << self
 
@@ -55,6 +55,5 @@ class Channel
         end
       end.reject(&:blank?)
     end
-
   end
 end
