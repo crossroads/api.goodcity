@@ -28,8 +28,7 @@ class Message < ActiveRecord::Base
 
   after_create do
     subscribe_users_to_message # MessageSubscription
-    # update_client_store # PushUpdatesForMessage
-    # send_new_message_notification # PushUpdatesForMessage
+    update_client_store # PushUpdatesForMessage (must come after subscribe_users_to_message)
   end
 
   after_destroy :notify_deletion_to_subscribers
@@ -44,6 +43,11 @@ class Message < ActiveRecord::Base
     # TODO adjust this to include STOCK and BROWSE
     app_name = reader.staff? ? ADMIN_APP : DONOR_APP
     send_update('read', Channel.private_channels_for(reader, app_name), app_name)
+  end
+
+  # To make up for the lack of polymorphism between offer/item/order. Cached
+  def related_object
+    @_obj ||= (offer || order || item)
   end
 
 end

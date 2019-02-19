@@ -5,7 +5,7 @@ class Subscription < ActiveRecord::Base
   belongs_to :offer
   belongs_to :order, inverse_of: :subscriptions
 
-  after_create :subscribe_users_to_message # PushUpdatesForSubscription
+  after_create :send_new_message_notification # PushUpdatesForSubscription
 
   scope :unread, -> { where(state: 'unread') }
 end

@@ -8,7 +8,11 @@ describe PushService do
   let(:message) { "New message" }
   let(:time)     { Time.now }
   
-  before { allow(Time).to receive(:now).and_return(time) }    
+  before { allow(Time).to receive(:now).and_return(time) }
+
+  context "send_update_store" do
+    pending "should send updates"
+  end
 
   context "send_notification" do
     
