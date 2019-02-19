@@ -5,7 +5,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :offer_id, :item_id, :order_id, :designation_id
+      :updated_at, :offer_id, :item_id, :designation_id, :order_id
 
     has_one :sender, serializer: UserSerializer, root: :user
 

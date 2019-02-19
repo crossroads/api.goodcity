@@ -8,7 +8,7 @@ every :tuesday, at: '5 pm' do
 end
 
 if environment.to_s == "staging"
-  every '*/15 0-12 * * *' do
+  every '*/5 0-12 * * *' do
     rake 'goodcity:send_unread_message_reminders'
   end
 end
