@@ -2,99 +2,71 @@ require 'rails_helper'
 
 context PushUpdatesForMessage do
 
-  let(:donor) { create :user }
-  let(:reviewer) { create :user, :reviewer }
-  let(:offer) { create :offer, created_by_id: donor.id }
+  # Base case: reviewer1 sends message to donor
+  let!(:message) { create :message, sender: reviewer1 }
+  let(:donor) { message.offer.created_by }
+  let(:donor_channel) { "user_#{donor.id}" }
+  let(:reviewer1) { create :user, :reviewer }
+  let(:reviewer1_channel) { "user_#{reviewer1.id}_admin" }
+  # let(:data) { { item: item_data, sender: sender } }
+  # let(:item_data) {}
+  # let(:sender) { reviewer }
+  let(:push_service) { PushService.new }
 
-  def create_message(options = {})
-    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
-    create :message, options
+  before(:each) do
+    allow(PushService).to receive(:new).and_return(push_service)
   end
 
-  def build_message(options = {})
-    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
-    build :message, options
+  context "update_client_store" do
+
+    context "should send a push update to" do
+
+      it "message sender" do
+        not_subscribed = (User.staff.to_a - [reviewer1]).flatten.uniq
+        expect(message).to receive(:send_update).with('unread', [donor_channel])
+        expect(message).to receive(:send_update).with('read', [reviewer1_channel])
+        expect(message).to receive(:send_update).with('never-subscribed', not_subscribed)
+        message.update_client_store
+      end
+      it "offer creator"
+      it "subscribed reviewer"
+      it "not-yet-subscribed reviewer"
+    end
+
+    context "should not send a push update to" do
+      it "a system user"
+      it "a donor when message is private"
+      it "a donor when offer is cancelled"
+    end
+
+    context "should group channels together by state"
+
+    it "with more detailed sender info"
+
   end
 
-  describe "send_new_message_notification" do
-    it "notify subscribed users except sender" do
-      message1 = create_message(sender_id: donor.id)
-      message2 = build_message(sender_id: reviewer.id, body: "Sample message")
-      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, channel, app_name, data|
-        expect(data[:message]).to eq("Sample message")
-        expect(data[:author_id]).to eq(reviewer.id)
-        expect(channel).to eq(["user_#{donor.id}"])
-      end
-      message2.save
-    end
-
-    it "donor is not notified for private messages" do
-      supervisor = create :user, :supervisor
-      message1 = create_message(sender_id: donor.id)
-      message2 = create_message(sender_id: supervisor.id, is_private: true)
-      message3 = build_message(sender_id: reviewer.id, is_private: true)
-      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, channel, app_name, data|
-        expect(data[:author_id]).to eq(reviewer.id)
-        expect(channel).to_not include(["user_#{donor.id}"])
-      end
-      message3.save
-    end
-
-    it "notify all supervisors if no supervisor is subscribed in private thread" do
-      message = build_message(sender_id: reviewer.id, body: "Sample message", is_private: true)
-      expect_any_instance_of(PushService).to receive(:send_notification) do |obj, channel, app_name, data|
-        expect(channel).to eq("supervisor")
-      end
-      message.save
-    end
-  end
-
-  describe "update_client_store" do
-    let(:push_service) { PushService.new }
+  context "send_update" do
+    let(:state) { 'unread' }
+    let(:test_channels) { 'test_channel' }
     it do
-      unsubscribed_user = create :user, :reviewer
-      subscribed_user = create :user, :reviewer
-      create_message(sender_id: subscribed_user.id)
-
-      message = build_message(sender_id: donor.id)
-      allow(message).to receive(:service).and_return(push_service)
-      
-      #note unfortunately expect :update_store is working here based on the order it's called in code
-      expect(message).to receive(:send_update) do |state, channel, app_name|
-        expect(channel).to match_array(["user_#{donor.id}"])
-        expect(state).to eq("read")
+      expect(push_service).to receive(:send_update_store) do |channels, app_name, data|
+        expect(channels).to eql(test_channels)
+        # expect(data[:sender].attributes[:id]).to eq(reviewer.id)
+        expect(data[:operation]).to eql(:create)
       end
-
-      expect(message).to receive(:send_update) do |state, channel, app_name|
-        expect(channel).to eq(["user_#{subscribed_user.id}_admin"])
-        expect(state).to eq("unread")
-      end
-
-      expect(message).to receive(:send_update) do |state, channel, app_name|
-        expect(channel).to match_array(["user_#{unsubscribed_user.id}_admin"])
-        expect(state).to eq("never-subscribed")
-      end
-
-      message.update_client_store
+      message.send(:send_update, state, test_channels)
     end
   end
 
-  describe 'notify_deletion_to_subscribers' do
-    it "should not allow donor to access private messages" do
-      unsubscribed_user = create :user, :reviewer
-      subscribed_user = create :user, :reviewer
-      message = create_message(sender_id: subscribed_user.id)
-      User.current_user = reviewer
+  context "app_name_for_user" do
+  end
 
-      expect(message).to receive(:send_update) do |item, user, state, channel, app_name, operation|
-        expect(channel).to include("user_#{subscribed_user.id}_admin")
-        expect(channel).to include("user_#{unsubscribed_user.id}_admin")
-        expect(channel).to_not include("user_#{donor.id}")
-        expect(operation).to eq(:delete)
-      end
+  context "state_for_user" do
+  end
 
-      message.destroy
-    end
+  context "notify_deletion_to_subscribers" do
+    it "should send delete push update to all admins"
+    it "should not send delete push update to offer donor"
   end
 
 end
