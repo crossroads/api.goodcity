@@ -1,13 +1,13 @@
 class Channel
 
   # Channel definitions
-  REVIEWER_CHANNEL = 'reviewer'
-  SUPERVISOR_CHANNEL = 'supervisor'
-  BROWSE_CHANNEL = 'browse'
-  STOCK_CHANNEL = 'stock'
-  ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'
-  STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL]
-  ORDER_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL]
+  REVIEWER_CHANNEL = 'reviewer'.freeze
+  SUPERVISOR_CHANNEL = 'supervisor'.freeze
+  BROWSE_CHANNEL = 'browse'.freeze
+  STOCK_CHANNEL = 'stock'.freeze
+  ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'.freeze
+  STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL].freeze
+  ORDER_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL].freeze
 
   class << self
 
@@ -42,19 +42,30 @@ class Channel
       channels.flatten.compact.uniq
     end
 
-    # TODO remove this once deleted from PushService
+    def check_channel_suffix(channel)
+      [STOCK_APP, ADMIN_APP, BROWSE_APP].flatten.
+        any?{ |app_name| channel.ends_with?(app_name) }
+    end
+
+    def add_suffix?(app_name, channel)
+      app_name != DONOR_APP &&
+        channel.starts_with?('user_') &&
+        !check_channel_suffix(channel)
+    end
+
+    # TODO: remove this once deleted from PushService
     # add the appropriate app_name suffix on the user channels when registering the device
     # e.g. user_1 becomes user_1_admin, group channels (don't start with 'user_') are unaffected
     # note that donor app channel is just user_1
+
     def add_app_name_suffix(channel_name, app_name)
       [channel_name].flatten.compact.map do |channel|
-        if app_name != DONOR_APP && channel.starts_with?('user_') && !channel.ends_with?(app_name)
+        if add_suffix?(app_name, channel)
           "#{channel}_#{app_name}"
         else
           channel
         end
       end.reject(&:blank?)
     end
-
   end
 end

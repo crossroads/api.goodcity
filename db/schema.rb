@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190201084112) do
+ActiveRecord::Schema.define(version: 20190218025723) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -367,7 +367,7 @@ ActiveRecord::Schema.define(version: 20190201084112) do
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
     t.datetime "created_at"
-    t.datetime "updated_at",                          null: false
+    t.datetime "updated_at",                           null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
@@ -394,6 +394,7 @@ ActiveRecord::Schema.define(version: 20190201084112) do
     t.text     "cancellation_reason"
     t.integer  "booking_type_id"
     t.integer  "authorised_by_id"
+    t.string   "staff_note",              default: ""
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
