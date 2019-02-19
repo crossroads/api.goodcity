@@ -345,6 +345,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(order.reload.address.id).to eq(address.id)
       end
     end
+
+    context "Updating properties" do
+      before { generate_and_set_token(user) }
+
+      it "should update the staff note property" do
+        expect(order.staff_note).to eq("")
+        put :update, id: order.id, order: { staff_note: 'hello' }
+        expect(response.status).to eq(200)
+        expect(order.reload.staff_note).to eq('hello')
+      end
+    end
   end
 
   describe "POST orders" do
