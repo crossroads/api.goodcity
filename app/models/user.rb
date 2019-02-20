@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   has_many :messages, class_name: 'Message', foreign_key: :sender_id, inverse_of: :sender
 
   has_many :subscriptions, dependent: :destroy
-  has_many :offers_subscription, class_name: "Offer", through: :subscriptions
+  has_many :offers_subscription, class_name: "Offer", through: :subscriptions, source: 'offer'
 
   has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
