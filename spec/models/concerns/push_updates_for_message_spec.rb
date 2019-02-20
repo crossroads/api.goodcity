@@ -8,6 +8,9 @@ context PushUpdatesForMessage do
   let(:donor_channel) { "user_#{donor.id}" }
   let(:reviewer1) { create :user, :reviewer }
   let(:reviewer1_channel) { "user_#{reviewer1.id}_admin" }
+  let(:reviewer2) { create :user, :reviewer }
+  let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
+  let(:system_user) { create :user, :system }
   # let(:data) { { item: item_data, sender: sender } }
   # let(:item_data) {}
   # let(:sender) { reviewer }
@@ -21,20 +24,22 @@ context PushUpdatesForMessage do
 
     context "should send a push update to" do
 
-      it "message sender" do
-        not_subscribed = (User.staff.to_a - [reviewer1]).flatten.uniq
+      it "donor, message sender / offer reviewer, other reviewers" do
+        reviewer2 # create this user but don't use it
         expect(message).to receive(:send_update).with('unread', [donor_channel])
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
-        expect(message).to receive(:send_update).with('never-subscribed', not_subscribed)
+        expect(message).to receive(:send_update).with('never-subscribed', [reviewer2_channel])
         message.update_client_store
       end
-      it "offer creator"
-      it "subscribed reviewer"
-      it "not-yet-subscribed reviewer"
     end
 
     context "should not send a push update to" do
-      it "a system user"
+      it "a system user" do 
+        system_user # create this user and subscribe them just to really be sure
+        expect(message).to receive(:send_update).with('unread', [donor_channel])
+        expect(message).to receive(:send_update).with('read', [reviewer1_channel])
+        message.update_client_store
+      end
       it "a donor when message is private"
       it "a donor when offer is cancelled"
     end

@@ -15,9 +15,9 @@ module PushUpdatesForMessage
     user_ids << self.sender_id
 
     # All reviewers/supervisors/order_fulfillers
-    user_ids += User.reviewers
-    user_ids += User.supervisors
-    user_ids += User.order_fulfilment
+    user_ids += User.reviewers.pluck(:id)
+    user_ids += User.supervisors.pluck(:id)
+    user_ids += User.order_fulfilment.pluck(:id)
 
     # Don't send updates to system users
     # Don't send to donor/charity if is private message or offer/order is cancelled
@@ -30,7 +30,7 @@ module PushUpdatesForMessage
       state = state_for_user(user_id)
       app_name = app_name_for_user(user_id)
       channel = Channel.private_channels_for(user_id, app_name)
-      state_groups[state] = ((state_groups[state] || []) << channel)
+      state_groups[state] = ((state_groups[state] || []) + channel)
     end
 
     # For each message state (read/unread/never-subscribed) send 
