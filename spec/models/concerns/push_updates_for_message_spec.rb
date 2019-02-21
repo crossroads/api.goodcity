@@ -91,6 +91,28 @@ context PushUpdatesForMessage do
   end
 
   context "app_name_for_user" do
+    subject { message.send(:app_name_for_user, user_id) }
+    context "when Order" do
+      let(:message) { create :message, :with_order }
+      context "creator" do
+        let(:user_id) { message.order.created_by_id }
+        it { expect(subject).to eql(BROWSE_APP) }
+      end
+      context "but not creator" do
+        let(:user_id) { reviewer1.id }
+        it { expect(subject).to eql(STOCK_APP) }
+      end
+    end
+    context "when Offer" do
+      context "creator" do
+        let(:user_id) { message.offer.created_by_id }
+        it { expect(subject).to eql(DONOR_APP) }
+      end
+      context "but not creator" do
+        let(:user_id) { reviewer1.id }
+        it { expect(subject).to eql(ADMIN_APP) }
+      end
+    end
   end
 
   context "notify_deletion_to_subscribers" do
