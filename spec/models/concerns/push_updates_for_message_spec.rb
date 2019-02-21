@@ -40,11 +40,19 @@ context PushUpdatesForMessage do
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
         message.update_client_store
       end
-      it "a donor when message is private"
-      it "a donor when offer is cancelled"
+      it "a donor when message is private" do
+        message.is_private = true
+        expect(message).to_not receive(:send_update).with('unread', [donor_channel])
+        expect(message).to receive(:send_update).with('read', [reviewer1_channel])
+        message.update_client_store
+      end
+      it "a donor when offer is cancelled" do
+        message.offer.cancel!
+        expect(message).to_not receive(:send_update).with('unread', [donor_channel])
+        expect(message).to receive(:send_update).with('read', [reviewer1_channel])
+        message.update_client_store
+      end
     end
-
-    context "should group channels together by state"
 
     it "with more detailed sender info"
 
@@ -53,20 +61,36 @@ context PushUpdatesForMessage do
   context "send_update" do
     let(:state) { 'unread' }
     let(:test_channels) { 'test_channel' }
+    before(:each) { allow(message).to receive(:sender).and_return(reviewer1) }
     it do
       expect(push_service).to receive(:send_update_store) do |channels, app_name, data|
         expect(channels).to eql(test_channels)
-        # expect(data[:sender].attributes[:id]).to eq(reviewer.id)
+        expect(data[:item].attributes[:state]).to eq(state)
+        expect(data[:sender].attributes[:id]).to eq(reviewer1.id)
         expect(data[:operation]).to eql(:create)
       end
       message.send(:send_update, state, test_channels)
     end
   end
 
-  context "app_name_for_user" do
+  context "state_for_user" do
+    subject { message.send(:state_for_user, user_id) }
+    context "when user is message sender" do
+      let(:user_id) { message.sender_id }
+      it { expect(subject).to eql('read') }
+    end
+    context "when user is subscribed" do
+      let(:user_id) { reviewer2.id }
+      before(:each) { allow(message).to receive(:subscribed_user_ids).and_return([reviewer2.id])}
+      it { expect(subject).to eql('unread') }
+    end
+    context "when user is not subscribed" do
+      let(:user_id) { reviewer2.id }
+      it { expect(subject).to eql('never-subscribed') }
+    end
   end
 
-  context "state_for_user" do
+  context "app_name_for_user" do
   end
 
   context "notify_deletion_to_subscribers" do
