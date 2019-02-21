@@ -40,12 +40,13 @@ module PushUpdatesForMessage
     end
   end
 
+  # All reviewers/supervisors/order_fulfillers
   def notify_deletion_to_subscribers
-    # All reviewers/supervisors/order_fulfillers
-    user_ids = [User.reviewers, User.supervisors, User.order_fulfilment]
-    user_ids = user_ids.flatten.compact.uniq
-    app_name = (object_class == "Order") ? STOCK_APP : ADMIN_APP
-    channels = Channel.private_channels_for(user_ids, app_name)
+    if object_class == "Order"
+      channels = [Channel::ORDER_FULFILMENT_CHANNEL]
+    else # Offer/Item
+      channels = [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL]
+    end
     send_update('read', channels, :delete)
   end
 
