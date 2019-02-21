@@ -116,8 +116,18 @@ context PushUpdatesForMessage do
   end
 
   context "notify_deletion_to_subscribers" do
-    it "should send delete push update to all admins"
-    it "should not send delete push update to offer donor"
+    before(:each) do
+      expect(message).to receive(:send_update).with('read', channels, :delete)
+    end
+    context "should send delete push update to reviewers and supervisors channels" do
+      let(:message) { create :message, :with_order}
+      let(:channels) { [Channel::ORDER_FULFILMENT_CHANNEL] }
+      it { message.send(:notify_deletion_to_subscribers) }
+    end
+    context "should send delete push update to order_fullfillers channel" do
+      let(:channels) { [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL] }
+      it { message.send(:notify_deletion_to_subscribers) }
+    end
   end
 
 end
