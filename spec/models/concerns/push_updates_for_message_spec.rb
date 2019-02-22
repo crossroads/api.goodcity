@@ -63,7 +63,7 @@ context PushUpdatesForMessage do
     let(:test_channels) { 'test_channel' }
     before(:each) { allow(message).to receive(:sender).and_return(reviewer1) }
     it do
-      expect(push_service).to receive(:send_update_store) do |channels, app_name, data|
+      expect(push_service).to receive(:send_update_store) do |channels, data|
         expect(channels).to eql(test_channels)
         expect(data[:item].attributes[:state]).to eq(state)
         expect(data[:sender].attributes[:id]).to eq(reviewer1.id)

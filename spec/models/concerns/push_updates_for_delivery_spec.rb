@@ -39,8 +39,8 @@ context PushUpdatesForDelivery do
   
   context "push_updates" do
     it "to donor and admin" do
-      expect(push_service).to receive(:send_update_store).with(Channel::STAFF_CHANNEL, ADMIN_APP, data)
-      expect(push_service).to receive(:send_update_store).with(donor_channel, DONOR_APP, data)
+      expect(push_service).to receive(:send_update_store).with(Channel::STAFF_CHANNEL, data)
+      expect(push_service).to receive(:send_update_store).with(donor_channel, data)
       delivery.send(:push_updates, data)
     end
   end

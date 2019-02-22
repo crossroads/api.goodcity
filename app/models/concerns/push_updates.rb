@@ -30,7 +30,7 @@ module PushUpdates
     unless order.nil?
       json =  Api::V1::OrderSerializer.new(order).as_json
       order_data = { item: { designation: json[:order] }, operation: operation}
-      service.send_update_store(Channel::ORDER_CHANNEL, DONOR_APP, order_data)
+      service.send_update_store(Channel::ORDER_CHANNEL, order_data)
       return
     end
 
@@ -42,11 +42,11 @@ module PushUpdates
       if offer.cancelled? && self == offer
         offer_data = { item: { "#{type}": {id: self.id} }, sender: user, operation: :delete }
       end
-      service.send_update_store(donor_channel, DONOR_APP, offer_data || data)
+      service.send_update_store(donor_channel, offer_data || data)
     end
 
     user.options[:user_summary] = false
-    service.send_update_store(Channel::STAFF_CHANNEL, ADMIN_APP, data)
+    service.send_update_store(Channel::STAFF_CHANNEL, data)
     browse_updates(operation) if type == "Package"
   end
 
@@ -55,7 +55,7 @@ module PushUpdates
   def browse_updates(operation)
     json = Api::V1::BrowsePackageSerializer.new(self).as_json
     data = { item: { package: json[:browse_package], items: json[:items], images: json[:images] }, operation: operation }
-    service.send_update_store(Channel::BROWSE_CHANNEL, DONOR_APP, data)
+    service.send_update_store(Channel::BROWSE_CHANNEL, data)
   end
 
 end

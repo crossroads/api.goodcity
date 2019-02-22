@@ -53,8 +53,7 @@ module PushUpdatesForMessage
   private
 
   def send_update(state, channels, operation = :create)
-    app_name = '' # no longer required, phasing out
-    PushService.new.send_update_store(channels, app_name, {
+    PushService.new.send_update_store(channels, {
       item: serialized_message(state),
       sender: serialized_user(sender),
       operation: operation

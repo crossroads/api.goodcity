@@ -24,14 +24,12 @@ context PushUpdatesForOffer do
         allow(offer).to receive(:sender).and_return(reviewer) # Bypass user serialization
       end
       it do
-        expect(push_service).to receive(:send_update_store) do |channel, app_name, data|
+        expect(push_service).to receive(:send_update_store) do |channel, data|
           expect(channel).to eql(donor_channel)
-          expect(app_name).to eql(DONOR_APP)
           expect(data[:sender]).to eq(reviewer)
         end
-        expect(push_service).to receive(:send_update_store)  do |channel, app_name, data|
+        expect(push_service).to receive(:send_update_store)  do |channel, data|
           expect(channel).to eql(Channel::STAFF_CHANNEL)
-          expect(app_name).to eql(ADMIN_APP)
           expect(data[:sender]).to eq(reviewer)
         end
         offer.update_client_store(operation)
