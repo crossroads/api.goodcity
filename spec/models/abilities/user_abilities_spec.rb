@@ -4,7 +4,7 @@ require 'cancan/matchers'
 describe "User abilities" do
 
   subject(:ability) { Ability.new(user) }
-  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :current_user_profile] }
+  let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :current_user_profile, :current_user_rooms] }
 
   context "when Administrator" do
     let(:user)   { create(:user, :administrator) }
@@ -15,7 +15,7 @@ describe "User abilities" do
   context "when Supervisor" do
     let(:user)   { create(:user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor') }
     let(:person) { create :user }
-    let(:can)    { [:index, :show, :update, :current_user_profile] }
+    let(:can)    { [:index, :show, :update, :current_user_profile, :current_user_rooms] }
     let(:cannot) { [:create, :destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)
@@ -28,7 +28,7 @@ describe "User abilities" do
   context "when Reviewer" do
     let(:user)   { create(:user, :with_can_read_or_modify_user_permission, role_name: 'Reviewer') }
     let(:person) { create :user }
-    let(:can)    { [:index, :show, :update, :current_user_profile] }
+    let(:can)    { [:index, :show, :update, :current_user_profile, :current_user_rooms] }
     let(:cannot) { [:create, :destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)
@@ -41,7 +41,7 @@ describe "User abilities" do
   context "when Owner" do
     let(:user)   { create :user }
     let(:person) { user }
-    let(:can)    { [:show, :update, :current_user_profile] }
+    let(:can)    { [:show, :update, :current_user_profile, :current_user_rooms] }
     let(:cannot) { [:index, :create, :destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)
@@ -54,7 +54,7 @@ describe "User abilities" do
   context "when not Owner" do
     let(:user)   { create :user }
     let(:person) { create :user }
-    let(:can)    { [:current_user_profile] }
+    let(:can)    { [:current_user_profile, :current_user_rooms] }
     let(:cannot) { [:show, :update, :index, :create, :destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)

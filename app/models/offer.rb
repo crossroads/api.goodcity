@@ -216,13 +216,6 @@ class Offer < ActiveRecord::Base
     messages.create(body: body, sender: user) unless body.blank?
   end
 
-  def subscribed_users(is_private)
-    Message.unscoped.joins(:subscriptions)
-      .select("distinct subscriptions.user_id as user_id")
-      .where(is_private: is_private, offer_id: id)
-      .map(&:user_id)
-  end
-
   def assign_reviewer(reviewer)
     update_attributes(
       reviewed_by_id: reviewer.id,
@@ -230,7 +223,7 @@ class Offer < ActiveRecord::Base
   end
 
   def send_new_offer_notification
-    PushService.new.send_notification Channel.staff, ADMIN_APP, {
+    PushService.new.send_notification Channel::STAFF_CHANNEL, ADMIN_APP, {
       category:   'new_offer',
       message:    I18n.t("notification.new_offer", name: created_by.full_name),
       offer_id:   id,
@@ -240,19 +233,6 @@ class Offer < ActiveRecord::Base
 
   def send_ggv_cancel_order_message(ggv_time)
     send_message(cancel_message(ggv_time), User.system_user)
-  end
-
-  def reviewer_channel
-    reviewed_by_id && "user_#{reviewed_by_id}"
-  end
-
-  def call_notify_channels
-    channel_names = Channel.private(subscribed_users(true))
-    if (channel_names - [reviewer_channel]).blank?
-      channel_names = Channel.private(User.supervisors.pluck(:id))
-    end
-    channel_names << reviewer_channel
-    channel_names.uniq.compact
   end
 
   def has_single_item?

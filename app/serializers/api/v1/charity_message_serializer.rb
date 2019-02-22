@@ -1,13 +1,10 @@
 module Api::V1
-  class MessageSerializer < ApplicationSerializer
-    include SerializeTimeValue
-
+  class CharityMessageSerializer < ApplicationSerializer
     embed :ids, include: true
-
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :offer_id, :item_id, :designation_id, :order_id
+      :updated_at, :order_id, :designation_id
 
-    has_one :sender, serializer: UserSerializer, root: :user
+    has_one :sender, serializer: UserSerializer
 
     def designation_id
       object.order_id

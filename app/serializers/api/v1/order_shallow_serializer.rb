@@ -7,7 +7,15 @@ module Api::V1
       :gc_organisation_id, :processed_at, :processed_by_id, :cancelled_at, :cancelled_by_id,
       :process_completed_at, :process_completed_by_id, :closed_at, :closed_by_id, :dispatch_started_at,
       :dispatch_started_by_id, :submitted_at, :submitted_by_id, :people_helped, :beneficiary_id,
-      :address_id, :district_id, :booking_type_id, :staff_note
+      :address_id, :district_id, :booking_type_id, :staff_note, :unread_messages_count
+
+    def unread_messages_count
+      object.subscriptions.where(state: 'unread', user_id: object.created_by_id).count
+    end
+
+    def unread_messages_count__sql
+      "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread' and s.user_id = orders.created_by_id)"
+    end
 
     def local_order_id
       (object.detail_type == "LocalOrder" || object.detail_type == "StockitLocalOrder") ? object.detail_id : nil
