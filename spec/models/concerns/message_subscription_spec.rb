@@ -64,7 +64,7 @@ context MessageSubscription do
     end
 
     context "private messages" do
-      let(:message) { create :message, is_private: true }
+      let(:message) { create :message, is_private: true, sender: reviewer }
       
       context "should not subscribe donor" do
         let(:user_id) { message.offer.created_by_id }
@@ -74,14 +74,14 @@ context MessageSubscription do
         end
       end
 
-      # TODO: move this to notification logic, NOT push update
-      # context "should subscribe all supervisors if none are already participating" do
-      #   before(:each) { message.sender = message.offer.created_by } # message sent by donor
-      #   it do
-      #     expect(User).to receive(:supervisors).with(anything, user_id)
-      #     message.subscribe_users_to_message
-      #   end
-      # end
+      context "should subscribe all supervisors if none are already participating" do
+        let!(:supervisor) { create :user, :supervisor }
+        it do
+          expect(message).to receive(:add_subscription).with('read', reviewer.id) # sender
+          expect(message).to receive(:add_subscription).with('unread', supervisor.id) # unsubscribed supervisor
+          message.subscribe_users_to_message
+        end
+      end
 
     end
 
