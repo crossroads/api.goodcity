@@ -53,11 +53,12 @@ module PushUpdatesForMessage
   private
 
   def send_update(state, channels, operation = :create)
-    PushService.new.send_update_store(channels, {
+    data = {
       item: serialized_message(state),
       sender: serialized_user(sender),
       operation: operation
-    })
+    }
+    PushService.new.send_update_store(channels, data)
   end
 
   # Need to inject subscription.state into message data 

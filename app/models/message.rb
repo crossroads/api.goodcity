@@ -42,7 +42,7 @@ class Message < ActiveRecord::Base
     reader = User.find_by(id: user_id)
     # TODO adjust this to include STOCK and BROWSE
     app_name = reader.staff? ? ADMIN_APP : DONOR_APP
-    send_update('read', Channel.private_channels_for(reader, app_name), app_name)
+    send_update('read', Channel.private_channels_for(reader, app_name), 'update')
   end
 
   # To make up for the lack of polymorphism between offer/item/order. Cached
