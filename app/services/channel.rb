@@ -11,11 +11,6 @@ class Channel
 
   class << self
 
-    # users - can be array or single instance of user id or user object
-    # TODO replace with private channels for
-    def private(users)
-      [users].flatten.map{ |user| "user_#{user.is_a?(User) ? user.id : user}" }
-    end
     # Returns the users private channel with app_name suffix
     # E.g. 'user_1' (donor app has no suffix)
     #   'user_1_admin', 'user_1_stock', 'user_1_browse'
@@ -42,30 +37,5 @@ class Channel
       channels.flatten.compact.uniq
     end
 
-    def check_channel_suffix(channel)
-      [STOCK_APP, ADMIN_APP, BROWSE_APP].flatten.
-        any?{ |app_name| channel.ends_with?(app_name) }
-    end
-
-    def add_suffix?(app_name, channel)
-      app_name != DONOR_APP &&
-        channel.starts_with?('user_') &&
-        !check_channel_suffix(channel)
-    end
-
-    # TODO: remove this once deleted from PushService
-    # add the appropriate app_name suffix on the user channels when registering the device
-    # e.g. user_1 becomes user_1_admin, group channels (don't start with 'user_') are unaffected
-    # note that donor app channel is just user_1
-
-    def add_app_name_suffix(channel_name, app_name)
-      [channel_name].flatten.compact.map do |channel|
-        if add_suffix?(app_name, channel)
-          "#{channel}_#{app_name}"
-        else
-          channel
-        end
-      end.reject(&:blank?)
-    end
   end
 end

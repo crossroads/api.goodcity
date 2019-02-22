@@ -72,6 +72,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       current_user = user
       put :mark_read, id: subscription.message_id
       expect(response.status).to eq(200)
+      expect(subject['message']['body']).to eql(message.body)
     end
   end
 end

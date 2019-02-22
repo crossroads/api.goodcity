@@ -216,14 +216,6 @@ class Offer < ActiveRecord::Base
     messages.create(body: body, sender: user) unless body.blank?
   end
 
-  # TODO: delete this and move into message class
-  def subscribed_users(is_private)
-    Message.unscoped.joins(:subscriptions)
-      .select("distinct subscriptions.user_id as user_id")
-      .where(is_private: is_private, offer_id: id)
-      .map(&:user_id)
-  end
-
   def assign_reviewer(reviewer)
     update_attributes(
       reviewed_by_id: reviewer.id,
@@ -241,19 +233,6 @@ class Offer < ActiveRecord::Base
 
   def send_ggv_cancel_order_message(ggv_time)
     send_message(cancel_message(ggv_time), User.system_user)
-  end
-
-  def reviewer_channel
-    Channel.private_channels_for(reviewed_by_id, ADMIN_APP)
-  end
-
-  def call_notify_channels
-    channel_names = Channel.private_channels_for(subscribed_users(true), ADMIN_APP)
-    if (channel_names - reviewer_channel).blank?
-      channel_names = Channel.private_channels_for(User.supervisors.pluck(:id), ADMIN_APP)
-    end
-    channel_names += reviewer_channel
-    channel_names.flatten.uniq.compact
   end
 
   def has_single_item?

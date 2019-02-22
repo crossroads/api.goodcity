@@ -1,12 +1,12 @@
 require 'rails_helper'
 
-describe TwilioInboundCallManager do
+context TwilioInboundCallManager do
 
-  let(:mobile) { generate(:mobile) }
+  let(:mobile) { user.mobile }
   let(:user) { create :user }
   let(:record_link) { FFaker::Internet.http_url }
 
-  let!(:call_manager) {
+  let(:call_manager) {
     TwilioInboundCallManager.new({
       mobile: mobile,
       user_id: user.id,
@@ -33,7 +33,7 @@ describe TwilioInboundCallManager do
     end
   end
 
-  describe "#caller_has_active_offer?" do
+  context "#caller_has_active_offer?" do
     let(:user) { create :user }
 
     context "should return false for empty mobile" do
@@ -42,30 +42,25 @@ describe TwilioInboundCallManager do
     end
 
     context "should return false if user doesn't have an offer" do
-      let(:mobile) { user.mobile }
       it { expect(call_manager.caller_has_active_offer?).to eq(false) }
     end
 
     context "should return false for user with only draft-offer" do
       before { create :offer, created_by: user, state: "draft" }
-      let(:mobile) { user.mobile }
       it { expect(call_manager.caller_has_active_offer?).to eq(false) }
     end
 
     context "should return true for user with non-draft-offer" do
       before { create :offer, :submitted, created_by: user }
-      let(:mobile) { user.mobile }
       it { expect(call_manager.caller_has_active_offer?).to eq(true) }
     end
 
     context "should return false for old user" do
-      let(:mobile) { user.mobile }
       before{ allow(Version).to receive(:past_month_activities).and_return([]) }
       it { expect(call_manager.caller_has_active_offer?).to eq(false) }
     end
 
     context "should return true for user with only draft offer and has activities" do
-      let(:mobile) { user.mobile }
       before do
         create :offer, :reviewed, created_by: user
         allow(Version).to receive(:past_month_activities).and_return([Version.new])
@@ -73,4 +68,30 @@ describe TwilioInboundCallManager do
       it { expect(call_manager.caller_has_active_offer?).to eq(true) }
     end
   end
+
+  context "call_notify_channels" do
+    let(:offer) { create(:offer, :reviewed, reviewed_by: reviewer) }
+    let(:reviewer) { create :user, :reviewer }
+    let(:reviewer_channel) { "user_#{reviewer.id}_admin" }
+    let!(:supervisor) { create :user, :supervisor }
+    let(:supervisor_channel) { "user_#{supervisor.id}_admin" }
+    
+    before(:each) do
+      allow(call_manager).to receive(:offer).and_return(offer)
+    end
+    subject{ call_manager.send(:call_notify_channels) }
+    
+    context "when donor calling, reviewer should be notified" do
+      # it { expect(subject).to eql([reviewer_channel]) }
+    end
+
+    context "when donor calling and no reviewer then, all supervisors should be notified" do
+      before(:each) do
+        offer.reviewed_by_id = nil
+      end
+      it { expect(subject).to eql([supervisor_channel]) }
+    end
+
+  end
+
 end
