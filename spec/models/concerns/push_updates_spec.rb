@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-describe Offer do
+describe PushUpdates do
   let(:user) {create :user}
-  before {User.current_user = user}
-  let(:offer) {
-    offer = create :offer
+  let(:offer) { create :offer }
+  let(:service) { PushService.new }
+  
+  before(:each) do
+    User.current_user = user
     allow(offer).to receive(:service).and_return(service)
-    offer
-  }
-  let(:service) {PushService.new}
-
+  end
+  
   it 'update - changed properties are included' do
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, app_name, data|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data|
       expect(data[:item]['Offer'].to_json).to include("\"id\":#{offer.id},\"notes\":\"New test note\"")
     end
     offer.notes = 'New test note'
@@ -19,7 +19,7 @@ describe Offer do
   end
 
   it 'update - foreign key property changes are handled' do
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, app_name, data|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data|
       expect(data[:item]['Offer'].to_json).to include("\"id\":#{offer.id},\"reviewed_by_id\":#{user.id}")
     end
     offer.reviewed_by_id = user.id
@@ -38,10 +38,10 @@ describe Offer do
     reviewer = create :user, :reviewer
     User.current_user = reviewer
     json_checked = false
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, app_name, data|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data|
       unless (channel.include?("reviewer") || channel.include?("user_#{reviewer.id}"))
-        expect(data[:sender].to_json.include?("mobile")).to eq(false)
-        expect(data[:sender].to_json.include?("address")).to eq(false)
+        expect(data[:sender].attributes.keys).to_not include(:mobile)
+        # expect(data[:sender].attributes.keys).to_not include(:email)
         json_checked = true
       end
     end
@@ -52,10 +52,10 @@ describe Offer do
 
   it 'should include private donor details when sending to reviewer' do
     json_checked = false
-    expect(service).to receive(:send_update_store).at_least(:once) do |channel, app_name, data|
+    expect(service).to receive(:send_update_store).at_least(:once) do |channel, data|
       if channel.include?("reviewer") || channel.exclude?("user_#{offer.created_by_id}")
-        expect(data[:sender].to_json.include?("mobile")).to eq(true)
-        expect(data[:sender].to_json.include?("address")).to eq(true)
+        expect(data[:sender].attributes.keys).to include(:mobile)
+        expect(data[:sender].attributes.keys).to include(:email)
         json_checked = true
       end
     end

@@ -35,6 +35,7 @@ Supervisor:
 - can_manage_order_transport
 - can_check_organisations
 - can_manage_packages_locations
+- can_create_and_read_messages
 - can_manage_items
 - can_add_package_types
 - can_manage_images
@@ -62,6 +63,7 @@ Charity:
 - can_manage_orders
 - can_manage_orders_packages
 - can_create_goodcity_requests
+- can_create_and_read_messages
 Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests

@@ -325,7 +325,7 @@ class Ability
   end
 
   def user_abilities
-    can :current_user_profile, User
+    can [:current_user_profile, :current_user_rooms], User
     can [:show, :update], User, id: @user_id
     can [:index, :show, :update, :recent_users], User if can_read_or_modify_user?
   end

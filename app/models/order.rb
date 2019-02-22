@@ -27,6 +27,8 @@ class Order < ActiveRecord::Base
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
+  has_many :messages, dependent: :destroy, inverse_of: :order
+  has_many :subscriptions, dependent: :destroy, inverse_of: :order
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport, dependent: :destroy
 
@@ -229,14 +231,14 @@ class Order < ActiveRecord::Base
   end
 
   def send_new_order_notificationen
-    PushService.new.send_notification Channel.goodcity_order_channel, STOCK_APP, {
+    PushService.new.send_notification(Channel::ORDER_FULFILMENT_CHANNEL, STOCK_APP, {
       category:   'new_order',
       message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
         code: code, submitter_name: created_by.full_name,
         organisation_name: organisation.try(:name_en)),
       order_id:   id,
       author_id:  created_by_id
-    }
+    })
   end
 
   def send_new_order_confirmed_sms_to_charity
