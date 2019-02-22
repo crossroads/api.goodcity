@@ -4,6 +4,7 @@ describe PushService do
 
   let(:service) { PushService.new }
   let(:channel) { ['user_1'] }
+  let(:admin_channel) { 'user_1_admin' }
   let(:data)    { {message: message} }
   let(:message) { "New message" }
   let(:time)     { Time.now }
@@ -30,9 +31,9 @@ describe PushService do
       let(:app_name) { ADMIN_APP }
       it do
         payload = data.merge(date: time).to_json
-        expect(SocketioSendJob).to receive(:perform_later).with(['user_1_admin'], "notification", payload)
-        expect(AzureNotifyJob).to receive(:perform_later).with(['user_1_admin'], data, app_name)
-        service.send_notification(channel, app_name, data)
+        expect(SocketioSendJob).to receive(:perform_later).with([admin_channel], "notification", payload)
+        expect(AzureNotifyJob).to receive(:perform_later).with([admin_channel], data, app_name)
+        service.send_notification(admin_channel, app_name, data)
       end
     end
     
