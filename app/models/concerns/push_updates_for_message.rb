@@ -1,158 +1,108 @@
-#
-# Send Object Updates and Push Notifications related to Messages.
-# When a message is created, updated or deleted, send push updates
-#   and in-app/mobile notifications to:
-#   - the sender
-#   - the message subscribers
-#
+# For each new message, send a push update to the
+# - sender
+# - creator (unless is_private or offer/order cancelled)
+# - reviewers/supervisors/order_fulfillers individually so we can 
+#     include message state: 'read', 'unread', 'never-subscribed'
 module PushUpdatesForMessage
   extend ActiveSupport::Concern
 
-  # Logic to decide which user/apps to send the message push_update to
   def update_client_store
-    sender_channel = Channel.private_channels_for(sender)
-    app_name, channel_name = fetch_browse_or_donor(sender_channel)
+    user_ids = []
+    obj = self.related_object
 
-    if from_donor_or_browse?(channel_name)
-      # if message sent from browse || donor update self
-      send_update('read', channel_name, app_name)
-    elsif from_stock_app?
-      # update browse & stock if message sent from stock
-      send_update('read', sender_channel, STOCK_APP)
-      send_update('unread', browse_channel, BROWSE_APP)
-    elsif object == offer
-      # update admin and donor if message sent from admin
-      send_update('read', sender_channel, ADMIN_APP) unless sender.system_user?
-      send_update('unread', donor_channel, DONOR_APP) unless object.cancelled? || is_private
+    # Send update to creator (donor or charity)
+    user_ids << obj.try(:created_by_id)
+    user_ids << self.sender_id
+
+    # All reviewers/supervisors/order_fulfillers
+    user_ids += User.reviewers.pluck(:id)
+    user_ids += User.supervisors.pluck(:id)
+    user_ids += User.order_fulfilment.pluck(:id)
+
+    # Don't send updates to system users
+    # Don't send to donor/charity if is private message or offer/order is cancelled
+    user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
+    user_ids -= [obj.try(:created_by_id)] if is_private or obj.try(:cancelled?)
+
+    # Group all the channels by state
+    state_groups = {}
+    user_ids.flatten.compact.uniq.each do |user_id|
+      state = state_for_user(user_id)
+      app_name = app_name_for_user(user_id)
+      channel = Channel.private_channels_for(user_id, app_name)
+      state_groups[state] = ((state_groups[state] || []) + channel)
     end
 
-    send_update_to_subscribed_and_unsubscribed_channels
-  end
-
-  def send_new_message_notification
-    # notifications are outsite initial scope for browse and
-    # stock and will be taken care later.
-
-    return if order || is_call_log
-
-    subscribed_user_channels = subscribed_user_channels()
-    current_channel = Channel.private_channels_for(sender)
-
-    # notify subscribed users except sender
-    sender_channel = current_channel
-    channels = subscribed_user_channels - sender_channel - donor_channel
-
-    unless is_private || offer.cancelled? || donor_channel == sender_channel
-      send_notification(donor_channel, DONOR_APP)
-    end
-    send_notification(channels, ADMIN_APP)
-
-    # notify all supervisors if no supervisor is subscribed in private thread
-    if is_private && ((supervisors_channel - current_channel) & subscribed_user_channels).empty?
-      send_notification(Channel::SUPERVISOR_CHANNEL, ADMIN_APP)
+    # For each message state (read/unread/never-subscribed) send 
+    #   push updates to all the channels
+    state_groups.each do |state, channels|
+      send_update(state, channels.flatten)
     end
   end
 
+  # All reviewers/supervisors/order_fulfillers
   def notify_deletion_to_subscribers
-    send_update 'read', admin_channel - donor_channel - browse_channel, ADMIN_APP, :delete
+    if object_class == "Order"
+      channels = [Channel::ORDER_FULFILMENT_CHANNEL]
+    else # Offer/Item
+      channels = [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL]
+    end
+    send_update('read', channels, :delete)
   end
 
   private
 
-  def send_update_to_subscribed_and_unsubscribed_channels
-    discard_channels = sender_channel + donor_channel + browse_channel
-    subscribed_user_channels = (subscribed_user_channels() - discard_channels).uniq
-    unsubscribed_user_channels = (admin_channel - discard_channels).uniq
-
-    send_update('unread', subscribed_user_channels, fetch_reciever_app)
-    send_update('never-subscribed', unsubscribed_user_channels, fetch_reciever_app)
+  def send_update(state, channels, operation = :create)
+    data = {
+      item: serialized_message(state),
+      sender: serialized_user(sender),
+      operation: operation
+    }
+    PushService.new.send_update_store(channels, data)
   end
 
-  def send_update(state, channel, app_name, operation = :create)
-    self.state_value = state
-
-    PushService.new.send_update_store channel, app_name, {
-      item: serialized_message(self), sender: serialized_user(sender),
-      operation: operation } unless channel.empty?
-    self.state_value = nil
-  end
-
-  def send_notification(channel, app_name)
-    PushService.new.send_notification channel, app_name, {
-      category:   'message',
-      message:    body.truncate(150, separator: ' '),
-      is_private: is_private,
-      offer_id:   offer.try(:id),
-      item_id:    item.try(:id),
-      author_id:  sender_id,
-      message_id: id
-    } unless channel.empty?
-  end
-
-  def from_donor_or_browse?(channel_name)
-    sender_channel == channel_name && !object.cancelled? && !is_private
-  end
-
-  def from_stock_app?
-    stock_channel.include?(sender_channel.first) &&
-      object == order && !object.cancelled? && !is_private?
-  end
-
-  def fetch_reciever_app
-    object == offer ? ADMIN_APP : STOCK_APP
-  end
-
-  # determine which app and which channel to send notification to.
-  def fetch_browse_or_donor(sender_channel)
-    case sender_channel
-    when donor_channel
-      [DONOR_APP, donor_channel]
-    when browse_channel
-      [BROWSE_APP, browse_channel]
-    end
-  end
-
-  def subscribed_user_channels
-    Channel.private_channels_for(object.subscribed_users(is_private))
-  end
-
-  def sender_channel
-    Channel.private_channels_for(sender)
-  end
-
-  def stock_channel
-    Channel.private_channels_for(User.staff)
-  end
-
-  def admin_channel
-    Channel.private_channels_for(User.staff, ADMIN_APP)
-  end
-
-  def donor_channel
-    return [] unless offer
-    Channel.private_channels_for(offer.created_by_id, DONOR_APP)
-  end
-
-  def browse_channel
-    return [] unless order
-    Channel.private_channels_for(order.created_by_id, BROWSE_APP)
-  end
-
-  def supervisors_channel
-    Channel.private_channels_for(User.supervisors)
+  # Need to inject subscription.state into message data 
+  #   because read/unread state is per subscription not per message
+  def serialized_message(state)
+    message = self.tap{|m| m.state_value = state}
+    associations = Message.reflections.keys.map(&:to_sym)
+    Api::V1::MessageSerializer.new(message, { exclude: associations })
   end
 
   def serialized_user(user)
+    # TODO: handle (user_summary: true) option
     Api::V1::UserSerializer.new(user)
   end
 
-  def serialized_message(obj)
-    associations = Message.reflections.keys.map(&:to_sym)
-    Api::V1::MessageSerializer.new(obj, { exclude: associations })
+  def object_class
+    self.related_object.class.name
   end
 
-  def object
-    offer || order
+  # Mark message state as
+  #  'read' if user is message sender
+  #  'never-subscribed' if going to an admin who hasn't messaged on the thread
+  #  'unread' - for subscribed users
+  def state_for_user(user_id)
+    if self.sender_id == user_id
+      'read'
+    else
+      subscribed_user_ids.include?(user_id) ? 'unread' : 'never-subscribed'
+    end
+  end
+
+  def app_name_for_user(user_id)
+    obj = self.related_object
+    created_by_id = obj.try(:created_by_id) || obj.try(:offer).try(:created_by_id)
+    if object_class == 'Order'
+      (created_by_id == user_id) ? BROWSE_APP : STOCK_APP
+    else # Offer/Item
+      (created_by_id == user_id) ? DONOR_APP : ADMIN_APP
+    end
+  end
+
+  # Cached array of user ids subscribed to the message
+  def subscribed_user_ids
+    @subscribed_user_ids ||= self.subscriptions.pluck(:user_id)
   end
 
 end

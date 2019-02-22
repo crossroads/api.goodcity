@@ -36,55 +36,6 @@ describe Channel do
   
   end
 
-  context 'add_app_name_suffix' do
-    let(:channel_name) { ['user_1', 'reviewer'] }
-
-    context 'donor app' do
-      let(:app_name) { DONOR_APP }
-      it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql(['user_1', 'reviewer']) }
-    end
-
-    context 'admin app' do
-      let(:app_name) { ADMIN_APP }
-      it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql(['user_1_admin', 'reviewer']) }
-    end
-
-    context 'stock app' do
-      let(:app_name) { STOCK_APP }
-      it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql(['user_1_stock', 'reviewer']) }
-    end
-
-    context 'browse app' do
-      let(:app_name) { BROWSE_APP }
-      it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql(['user_1_browse', 'reviewer']) }
-    end
-
-    context 'with nil channel name' do
-      let(:channel_name) { nil }
-      context 'on donor app' do
-        let(:app_name) { DONOR_APP }
-        it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql([]) }
-      end
-      context 'on admin app' do
-        let(:app_name) { ADMIN_APP }
-        it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql([]) }
-      end
-    end
-
-    context 'with blank channel name' do
-      let(:channel_name) { '' }
-      context 'on donor app' do
-        let(:app_name) { DONOR_APP }
-        it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql([]) }
-      end
-      context 'on admin app' do
-        let(:app_name) { ADMIN_APP }
-        it { expect(Channel.add_app_name_suffix(channel_name, app_name)).to eql([]) }
-      end
-    end
-
-  end
-
   # since these are important channels, we should test for their existence
   context 'reserved channels' do
     it { expect(Channel.const_get("REVIEWER_CHANNEL")).to eql('reviewer') }

@@ -37,8 +37,8 @@ module PushUpdatesForDelivery
   # Send to donor on donor app
   # Send to staff on admin app
   def push_updates(data)
-    PushService.new.send_update_store(Channel::STAFF_CHANNEL, ADMIN_APP, data)
-    PushService.new.send_update_store(Channel.private_channels_for(donor, DONOR_APP), DONOR_APP, data)
+    PushService.new.send_update_store(Channel::STAFF_CHANNEL, data)
+    PushService.new.send_update_store(Channel.private_channels_for(donor, DONOR_APP), data)
   end
 
   # A delivery doesn't have a 'created_by' record so if an admin creates the delivery
