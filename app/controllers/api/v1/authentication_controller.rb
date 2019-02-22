@@ -172,7 +172,7 @@ module Api
       error 500, "Internal Server Error"
       def current_user_rooms
         if is_browse_app? and current_user.nil?
-          render json: [Channel::BROWSE_CHANNEL], root: false 
+          render json: [Channel::BROWSE_CHANNEL], root: false
         else
           validate_token && authorize!(:current_user_rooms, User)
           render json: Channel.channels_for(current_user, app_name), root: false
@@ -222,7 +222,7 @@ module Api
       def register_device_for_notifications
         AzureRegisterJob.perform_later(
           params[:handle],
-          current_user_channels,
+          current_user_rooms,
           params[:platform],
           app_name)
       end
