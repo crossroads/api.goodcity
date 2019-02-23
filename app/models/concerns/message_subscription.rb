@@ -26,8 +26,11 @@ module MessageSubscription
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
     user_ids -= [obj.try(:created_by_id)] if self.is_private or obj.try('cancelled?')
 
-    # For private messages, subscribe all supervisors when there are no others subscribed.
-    user_ids += User.supervisors.pluck(:id) if self.is_private and user_ids.size < 2
+    # For private messages, subscribe all supervisors
+    user_ids += User.supervisors.pluck(:id) if self.is_private
+
+    # If donor sends a message but no one else is listening, subscribe all reviewers.
+    user_ids += User.reviewers.pluck(:id) if [self.sender_id] == user_ids
 
     user_ids.flatten.compact.uniq.each do |user_id|
       state = (user_id == self.sender_id) ? "read" : "unread" # mark as read for sender
