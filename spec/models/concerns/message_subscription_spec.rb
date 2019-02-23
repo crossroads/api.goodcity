@@ -45,6 +45,18 @@ context MessageSubscription do
       end
     end
 
+    context "should subscribe all reviewers if donor sends messages but offer has no reviewer" do
+      let!(:reviewer) { create :user, :reviewer }
+      let(:offer) { create :offer }
+      let(:message) { create :message, sender: offer.created_by, offer: offer }
+      it do
+        expect(message.offer.reviewed_by_id).to eql(nil)
+        # expect(message).to receive(:add_subscription).with('read', message.offer.created_by_id)
+        expect(message).to receive(:add_subscription).with('unread', reviewer.id)
+        message.subscribe_users_to_message
+      end
+    end
+
     context "should not subscribe system users" do
       let(:sender) { create :user, :system }
       before(:each) { allow(message).to receive(:sender_id).and_return(sender.id) }
@@ -74,7 +86,7 @@ context MessageSubscription do
         end
       end
 
-      context "should subscribe all supervisors if none are already participating" do
+      context "should subscribe all supervisors" do
         let!(:supervisor) { create :user, :supervisor }
         it do
           expect(message).to receive(:add_subscription).with('read', reviewer.id) # sender
