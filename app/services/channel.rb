@@ -28,11 +28,15 @@ class Channel
     # Returns the channels a user should tune into given a particular app context
     # E.g. ['user_1_admin']
     #   ['user_1_browse', 'browse']
+    # Also handles case when user is nil and they are on browse app
     def channels_for(user, app_name)
-      channels = [private_channels_for(user, app_name)]
-      channels << REVIEWER_CHANNEL if user.reviewer? and app_name == ADMIN_APP
-      channels << SUPERVISOR_CHANNEL if user.supervisor? and app_name == ADMIN_APP
-      channels << ORDER_FULFILMENT_CHANNEL if user.order_fulfilment? and app_name == STOCK_APP
+      channels = []
+      if user.present?
+        channels += [private_channels_for(user, app_name)]
+        channels << REVIEWER_CHANNEL if user.reviewer? and app_name == ADMIN_APP
+        channels << SUPERVISOR_CHANNEL if user.supervisor? and app_name == ADMIN_APP
+        channels << ORDER_FULFILMENT_CHANNEL if user.order_fulfilment? and app_name == STOCK_APP
+      end
       channels << BROWSE_CHANNEL if app_name == BROWSE_APP
       channels.flatten.compact.uniq
     end
