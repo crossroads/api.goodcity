@@ -1,10 +1,11 @@
 #
 # This is the generic Push Update store that sends websocket updates
 #   whenever the following classes are saved:
-#   Address, GogovanOrder, Image, Item, Location, User, Version
-# We will refactor out the following updates which 
-# Offer, Order, Package
-
+#   Offer, Item, Address, GogovanOrder, Image, Location, User, Version
+#
+# Message, Subscription, Delivery have their own push_updates_for_* modules
+# TODO: need to move Order and Package to their own module logic
+#
 module PushUpdates
   extend ActiveSupport::Concern
   include PushUpdatesBase
