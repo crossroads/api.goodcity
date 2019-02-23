@@ -33,6 +33,30 @@ describe Channel do
       let(:expected_channels) { ["user_#{user.id}_browse", "browse"] }
       it { expect(subject).to eql(expected_channels) }
     end
+
+    context 'unauthenticated user' do
+    
+      context 'on browse app' do
+        let(:app_name) { BROWSE_APP }
+        let(:user) { nil }
+        it { expect(subject).to eql(["browse"]) }
+      end
+      context 'on admin app' do
+        let(:app_name) { ADMIN_APP }
+        let(:user) { nil }
+        it { expect(subject).to eql([]) }
+      end
+      context 'on donr app' do
+        let(:app_name) { DONOR_APP }
+        let(:user) { nil }
+        it { expect(subject).to eql([]) }
+      end
+      context 'on stock app' do
+        let(:app_name) { STOCK_APP }
+        let(:user) { nil }
+        it { expect(subject).to eql([]) }
+      end
+    end
   
   end
 

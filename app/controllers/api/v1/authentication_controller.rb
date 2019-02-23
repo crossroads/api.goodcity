@@ -167,16 +167,12 @@ module Api
         render nothing: true, status: 204
       end
 
-      api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socket.io rooms the user can listen to"
-      error 401, "Unauthorized"
+      api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socketio rooms the user can listen to"
       error 500, "Internal Server Error"
       def current_user_rooms
-        if is_browse_app? and current_user.nil?
-          render json: [Channel::BROWSE_CHANNEL], root: false
-        else
-          validate_token && authorize!(:current_user_rooms, User)
-          render json: Channel.channels_for(current_user, app_name), root: false
-        end
+        # It's ok for current_user to be nil e.g. Anonymous Browse app users
+        channels = Channel.channels_for(current_user, app_name)
+        render json: channels, root: false
       end
 
       private
@@ -220,9 +216,10 @@ module Api
       end
 
       def register_device_for_notifications
+        channels = Channel.channels_for(User.current_user, app_name)
         AzureRegisterJob.perform_later(
           params[:handle],
-          current_user_rooms,
+          channels,
           params[:platform],
           app_name)
       end
