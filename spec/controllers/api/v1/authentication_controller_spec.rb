@@ -242,8 +242,15 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_browse_app_header
         get :current_user_rooms
       end
-      let(:expected_channels) { ["browse"] }
-      it { expect(parsed_body).to eql(expected_channels) }
+      it { expect(parsed_body).to eql(["browse"]) }
+    end
+
+    context 'stock app with anonymous user' do
+      before do
+        set_stock_app_header
+        get :current_user_rooms
+      end
+      it { expect(parsed_body).to eql([]) }
     end
   end
 
