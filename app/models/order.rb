@@ -31,6 +31,8 @@ class Order < ActiveRecord::Base
   has_many :subscriptions, dependent: :destroy, inverse_of: :order
   has_and_belongs_to_many :cart_packages, class_name: 'Package'
   has_one :order_transport, dependent: :destroy
+  has_many :process_checklists, through: :orders_process_checklists
+  has_many :orders_process_checklists, inverse_of: :order
 
   after_initialize :set_initial_state
   after_create :update_orders_packages_quantity, if: :draft_goodcity_order?
@@ -41,6 +43,7 @@ class Order < ActiveRecord::Base
 
   accepts_nested_attributes_for :beneficiary
   accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :orders_process_checklists, allow_destroy: true
 
   INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled'].freeze
 
@@ -228,6 +231,12 @@ class Order < ActiveRecord::Base
         order.send_new_order_confirmed_sms_to_charity
       end
     end
+  end
+
+  def can_transition
+    return true unless processing?
+    required_process_checks = ProcessChecklist.for_booking_type(booking_type)
+    return (required_process_checks - process_checklists).empty?
   end
 
   def send_new_order_notificationen
