@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
+  let(:booking_type) { create :booking_type }
   let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
-  let!(:order) { create :order, :with_state_submitted, created_by: charity_user }
+  let!(:order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: booking_type }
   let!(:dispatching_order) { create :order, :with_state_dispatching }
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch }
   let!(:processing_order) { create :order, :with_state_processing }
@@ -347,6 +348,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
 
     context "Updating properties" do
+      let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
+      let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
+      let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
+
       before { generate_and_set_token(user) }
 
       it "should update the staff note property" do
@@ -354,6 +359,36 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         put :update, id: order.id, order: { staff_note: 'hello' }
         expect(response.status).to eq(200)
         expect(order.reload.staff_note).to eq('hello')
+      end
+
+      it 'should update the checklist through nested attributes' do
+        order.state = 'processing'
+        order.save
+
+        expect(order.process_checklists.count).to eq(0)
+
+        # Add one
+        payload = {}
+        payload['orders_process_checklists_attributes'] = [{ order_id: order.id, process_checklist_id: checklist_it1.id }]
+        put :update, id: order.id, order: payload
+        expect(order.reload.process_checklists.count).to eq(1)
+        expect(order.can_transition).to eq(false)
+
+        # Add some more
+        payload['orders_process_checklists_attributes'] = [
+          { order_id: order.id, process_checklist_id: checklist_it2.id },
+          { order_id: order.id, process_checklist_id: checklist_it3.id },
+        ]
+        put :update, id: order.id, order: payload
+        expect(order.reload.process_checklists.count).to eq(3)
+        expect(order.can_transition).to eq(true)
+
+        # Delete one
+        payload['orders_process_checklists_attributes'] = order.orders_process_checklists.as_json
+        payload['orders_process_checklists_attributes'][0]['_destroy'] = true
+        put :update, id: order.id, order: payload
+        expect(order.reload.process_checklists.count).to eq(2)
+        expect(order.can_transition).to eq(false)
       end
     end
   end

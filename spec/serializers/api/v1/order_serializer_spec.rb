@@ -6,8 +6,9 @@ describe Api::V1::OrderSerializer do
   let(:district) { create :district }
   let(:stockit_local_order) { create :stockit_local_order }
   let(:stockit_activity) { create :stockit_activity }
+  let(:process_checklist) { create :process_checklist }
   let(:order) { create :order, country: country, detail: stockit_local_order,
-    stockit_activity: stockit_activity, processed_by: user, cancelled_by_id: user.id,
+    stockit_activity: stockit_activity, processed_by: user, cancelled_by_id: user.id, process_checklists: [process_checklist],
     process_completed_by_id: user.id, closed_by_id: user, district: district, staff_note: 'this is a note' }
   let(:serializer) { Api::V1::OrderSerializer.new(order).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
@@ -43,6 +44,11 @@ describe Api::V1::OrderSerializer do
     expect(json['order']['closed_at']).to eq(order.closed_at)
     expect(json['order']['district_id']).to eq(order.district_id)
     expect(json['order']['staff_note']).to eq(order.staff_note)
+    expect(json['order']['staff_note']).to eq(order.staff_note)
+    expect(json['order']['orders_process_checklist_ids'].count).to eq(1)
+    order_process_checklist = OrdersProcessChecklist.find(json['order']['orders_process_checklist_ids'][0])
+    expect(order_process_checklist.order_id).to eq(order.id)
+    expect(order_process_checklist.process_checklist_id).to eq(order.process_checklists[0].id)
   end
 
   it 'returns organisation id as gc_organisation_id in json response if stockit_organisation is not assigned' do
