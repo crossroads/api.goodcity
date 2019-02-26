@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190218025723) do
+ActiveRecord::Schema.define(version: 20190222023048) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -390,10 +390,10 @@ ActiveRecord::Schema.define(version: 20190218025723) do
     t.integer  "people_helped",           default: 0
     t.integer  "beneficiary_id"
     t.integer  "address_id"
-    t.integer  "district_id"
     t.text     "cancellation_reason"
-    t.integer  "booking_type_id"
+    t.integer  "district_id"
     t.integer  "authorised_by_id"
+    t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
   end
 
@@ -430,6 +430,14 @@ ActiveRecord::Schema.define(version: 20190218025723) do
   add_index "orders_packages", ["order_id"], name: "index_orders_packages_on_order_id", using: :btree
   add_index "orders_packages", ["package_id"], name: "index_orders_packages_on_package_id", using: :btree
   add_index "orders_packages", ["updated_by_id"], name: "index_orders_packages_on_updated_by_id", using: :btree
+
+  create_table "orders_process_checklists", force: :cascade do |t|
+    t.integer "order_id"
+    t.integer "process_checklist_id"
+  end
+
+  add_index "orders_process_checklists", ["order_id"], name: "index_orders_process_checklists_on_order_id", using: :btree
+  add_index "orders_process_checklists", ["process_checklist_id"], name: "index_orders_process_checklists_on_process_checklist_id", using: :btree
 
   create_table "orders_purposes", force: :cascade do |t|
     t.integer "order_id"
@@ -550,7 +558,6 @@ ActiveRecord::Schema.define(version: 20190218025723) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -603,6 +610,14 @@ ActiveRecord::Schema.define(version: 20190218025723) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "process_checklists", force: :cascade do |t|
+    t.string  "text_en"
+    t.string  "text_zh_tw"
+    t.integer "booking_type_id"
+  end
+
+  add_index "process_checklists", ["booking_type_id"], name: "index_process_checklists_on_booking_type_id", using: :btree
 
   create_table "purposes", force: :cascade do |t|
     t.string   "name_en"
@@ -784,10 +799,13 @@ ActiveRecord::Schema.define(version: 20190218025723) do
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
   add_foreign_key "messages", "orders"
+  add_foreign_key "orders_process_checklists", "orders"
+  add_foreign_key "orders_process_checklists", "process_checklists"
   add_foreign_key "organisations", "countries"
   add_foreign_key "organisations", "districts"
   add_foreign_key "organisations", "organisation_types"
   add_foreign_key "organisations_users", "organisations"
   add_foreign_key "organisations_users", "users"
+  add_foreign_key "process_checklists", "booking_types"
   add_foreign_key "subscriptions", "orders"
 end

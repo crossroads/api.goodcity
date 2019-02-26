@@ -170,7 +170,8 @@ module Api
           :address_id,:submitted_by_id, :staff_note,
           purpose_ids: [], cart_package_ids: [],
           beneficiary_attributes: beneficiary_attributes,
-          address_attributes: address_attributes
+          address_attributes: address_attributes,
+          orders_process_checklists_attributes: orders_process_checklists_attributes
         )
       end
 
@@ -180,6 +181,10 @@ module Api
 
       def beneficiary_attributes
         [:identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number]
+      end
+
+      def orders_process_checklists_attributes
+        [:id, :order_id, :process_checklist_id, :_destroy]
       end
 
       def serializer
