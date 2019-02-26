@@ -70,8 +70,7 @@ module PushUpdatesForMessage
   end
 
   def serialized_user(user)
-    # TODO: handle (user_summary: true) option
-    Api::V1::UserSerializer.new(user)
+    Api::V1::UserSerializer.new(user, user_summary: true)
   end
 
   def object_class

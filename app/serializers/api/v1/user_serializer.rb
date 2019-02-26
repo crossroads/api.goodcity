@@ -33,6 +33,7 @@ module Api::V1
     end
     alias_method :include_address?, :include_attribute?
     alias_method :include_mobile?, :include_attribute?
+    alias_method :include_email?, :include_attribute?
     alias_method :include_last_connected?, :include_attribute?
     alias_method :include_last_disconnected?, :include_attribute?
   end
