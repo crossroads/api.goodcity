@@ -394,7 +394,6 @@ ActiveRecord::Schema.define(version: 20190222023048) do
     t.integer  "district_id"
     t.integer  "authorised_by_id"
     t.integer  "booking_type_id"
-    t.integer  "authorised_by_id"
     t.string   "staff_note",              default: ""
   end
 
@@ -559,7 +558,6 @@ ActiveRecord::Schema.define(version: 20190222023048) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -788,7 +786,7 @@ ActiveRecord::Schema.define(version: 20190222023048) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
@@ -808,6 +806,6 @@ ActiveRecord::Schema.define(version: 20190222023048) do
   add_foreign_key "organisations", "organisation_types"
   add_foreign_key "organisations_users", "organisations"
   add_foreign_key "organisations_users", "users"
-  add_foreign_key "subscriptions", "orders"
   add_foreign_key "process_checklists", "booking_types"
+  add_foreign_key "subscriptions", "orders"
 end
