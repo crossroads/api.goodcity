@@ -27,7 +27,8 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  validates :mobile, presence: true, uniqueness: true, format: { with: Mobile::HONGKONGMOBILEREGEXP }
+  validates :mobile, presence: true, uniqueness: true,
+   format: { with: Mobile::HONGKONGMOBILEREGEXP }, unless: :request_from_stock
 
   validates :email, uniqueness: true, allow_nil: true,
     format: { with: /\A[^@\s]+@[^@\s]+\Z/ }
@@ -46,6 +47,9 @@ class User < ActiveRecord::Base
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
+
+  #added to allow sign_up without mobile number from stock app.
+  attr_accessor :request_from_stock
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
