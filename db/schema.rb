@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190222023048) do
+ActiveRecord::Schema.define(version: 20190227162128) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -208,6 +208,7 @@ ActiveRecord::Schema.define(version: 20190222023048) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -390,10 +391,10 @@ ActiveRecord::Schema.define(version: 20190222023048) do
     t.integer  "people_helped",           default: 0
     t.integer  "beneficiary_id"
     t.integer  "address_id"
-    t.text     "cancellation_reason"
     t.integer  "district_id"
-    t.integer  "authorised_by_id"
+    t.text     "cancellation_reason"
     t.integer  "booking_type_id"
+    t.integer  "authorised_by_id"
     t.string   "staff_note",              default: ""
   end
 
@@ -558,6 +559,7 @@ ActiveRecord::Schema.define(version: 20190222023048) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -771,7 +773,7 @@ ActiveRecord::Schema.define(version: 20190222023048) do
   end
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
-  add_index "users", ["mobile"], name: "index_users_on_mobile", unique: true, using: :btree
+  add_index "users", ["mobile"], name: "index_users_on_mobile", using: :btree
   add_index "users", ["permission_id"], name: "index_users_on_permission_id", using: :btree
 
   create_table "versions", force: :cascade do |t|

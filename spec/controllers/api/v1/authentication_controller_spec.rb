@@ -38,7 +38,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     it "with blank mobile number" do
       post :signup, format: 'json', user_auth: { mobile: "", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
-      expect(parsed_body["errors"]).to eq( "Mobile can't be blank. Mobile is invalid" )
+      expect(parsed_body["errors"]).to eq("Mobile is invalid. Mobile can't be blank")
     end
 
   end
