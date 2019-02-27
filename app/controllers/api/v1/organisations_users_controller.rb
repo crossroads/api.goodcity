@@ -29,7 +29,7 @@ module Api
       api :POST, "/v1/organisations_user", "Create a package"
       param_group :organisations_user
       def create
-        builder = OrganisationsUserBuilder.new(params['organisations_user'].to_hash).build
+        builder = OrganisationsUserBuilder.new(params['organisations_user'].to_hash).build(is_stock_app?)
         if builder['result']
           save_and_render_object_with_errors(builder['organisations_user'])
         else
