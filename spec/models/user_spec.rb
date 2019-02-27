@@ -50,6 +50,26 @@ describe User, :type => :model do
           expect(user.tap(&:valid?).errors[:mobile]).to include("has already been taken")
         end
       end
+
+      context "for stock" do 
+        it 'allows blank'do 
+          user = User.new(mobile: '')
+          user.request_from_stock = true
+          expect(user.valid?).to be_truthy
+        end
+
+        it 'allows valid mobile number' do
+          user = User.new(mobile: '+85251234567')
+          user.request_from_stock = true
+          expect(user.valid?).to be_truthy 
+        end
+        
+        it 'do not allows invalid hk number' do 
+          user = User.new(mobile: '+44123456675')
+          user.request_from_stock = true
+          expect(user.valid?).to be_falsey
+        end
+      end
       it { is_expected.to allow_value('+85251234567').for(:mobile) }
       it { is_expected.to allow_value('+85261234567').for(:mobile) }
       it { is_expected.to allow_value('+85291234567').for(:mobile) }
