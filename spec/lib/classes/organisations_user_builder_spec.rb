@@ -55,19 +55,19 @@ describe OrganisationsUserBuilder do
 
     it "adds new user if mobile does not exist and associates it with organisation" do
       expect{
-        organisations_user_builder.build
+        organisations_user_builder.build(false)
       }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
     end
 
     it "do not add user to organisation if mobile number already in organisation" do
       organisations_user1 = create :organisations_user, user: user1, organisation: organisation
-      expect(organisations_user_builder.build).to eq({ 'result' => false, 'errors' => "Mobile has already been taken" })
+      expect(organisations_user_builder.build(false)).to eq({ 'result' => false, 'errors' => "Mobile has already been taken" })
       expect(OrganisationsUser.count).to eq(1)
     end
 
     it "associates charity_role to user if user added in organisation" do
       expect{
-        organisations_user_builder.build
+        organisations_user_builder.build(false)
       }.to change{OrganisationsUser.count}.by(1)
       expect(OrganisationsUser.last.user.roles).to include(role)
     end
