@@ -14,12 +14,10 @@ class User < ActiveRecord::Base
 
   has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
-  has_many :braintree_transactions, class_name: "BraintreeTransaction", foreign_key: :customer_id
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
   has_many :user_roles
   has_many :roles, through: :user_roles
-
   belongs_to :image, dependent: :destroy
   has_many :moved_packages, class_name: "Package", foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
   has_many :used_locations, -> { order 'packages.stockit_moved_on DESC' }, class_name: "Location", through: :moved_packages, source: :location

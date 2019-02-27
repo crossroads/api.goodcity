@@ -98,8 +98,6 @@ GEM
     arel (6.0.4)
     aws_cf_signer (0.1.3)
     barby (0.6.6)
-    braintree (2.90.0)
-      builder (>= 2.0.0)
     builder (3.2.3)
     bullet (5.7.6)
       activesupport (>= 3.0.0)
@@ -423,7 +421,6 @@ DEPENDENCIES
   active_record_union
   annotate
   apipie-rails!
-  braintree
   bullet
   by_star!
   byebug
