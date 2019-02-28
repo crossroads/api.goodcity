@@ -497,7 +497,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 2, inventory_number: "456333"
       get :search_stockit_items, searchText: "456"
       expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("456")
       expect(subject['items'].length).to eql(3)
       expect(subject['items'].map{|i| i['inventory_number']}).to include("456222")
@@ -510,7 +509,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 2, inventory_number: "456111"
       get :search_stockit_items, searchText: "456", showQuantityItems: 'true'
       expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("456")
       expect(subject['items'].length).to eql(3)
       expect(subject['items'].map{|i| i['inventory_number']}).to include("456333")
@@ -524,7 +522,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 1, notes: "margarine"
       get :search_stockit_items, searchText: "UTter", showQuantityItems: 'true'
       expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("UTter")
       expect(subject['items'].length).to eql(2)
       expect(subject['items'].map{|i| i['notes']}).to include("butter")
@@ -537,7 +534,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 1, case_number: "CAS-666"
       get :search_stockit_items, searchText: "cas-12", showQuantityItems: 'true'
       expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("cas-12")
       expect(subject['items'].length).to eql(2)
       expect(subject['items'].map{|i| i['case_number']}).to include("CAS-123")
@@ -550,7 +546,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 1, designation_name: "garlic"
       get :search_stockit_items, searchText: "peP", showQuantityItems: 'true'
       expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql("peP")
       expect(subject['items'].length).to eql(2)
       expect(subject['items'].map{|i| i['designation_name']}).to include("pepper")
@@ -564,7 +559,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 1, designation_name: "couch", inventory_number: nil, state: 'missing'
       get :search_stockit_items, searchText: 'couch', showQuantityItems: 'true', state: 'received', withInventoryNumber: 'true'
       expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql('couch')
       expect(subject['items'].length).to eql(1)
       expect(subject['items'].map{|i| i['inventory_number']}).to include("11111")
@@ -582,11 +576,77 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }
       get :search_stockit_items, params
       expect(response.status).to eq(200)
-      expect(subject['meta']['total_pages']).to eql(1)
       expect(subject['meta']['search']).to eql('111')
       expect(subject['items'].length).to eql(1)
       expect(subject['items'].map{|i| i['inventory_number']}).to include("111005")
     end
     
   end
+
+  context "page" do
+    subject { controller.page }
+    
+    before(:each) do
+      controller.params[:page] = page
+    end
+    
+    context "1st page" do
+      let(:page) { '1' }
+      it { expect(subject).to eql(1) }
+    end
+
+    context "2nd page" do
+      let(:page) { '2' }
+      it { expect(subject).to eql(2) }
+    end
+
+    context "nil page" do
+      let(:page) { nil }
+      it { expect(subject).to eql(1) }
+    end
+
+    context "blank page" do
+      let(:page) { '' }
+      it { expect(subject).to eql(1) }
+    end
+
+    context "blah page" do
+      let(:page) { 'blah' }
+      it { expect(subject).to eql(1) }
+    end
+  end
+
+  context "per_page" do
+    subject { controller.per_page }
+    
+    before(:each) do
+      controller.params[:per_page] = per_page
+    end
+    
+    context "20 per page" do
+      let(:per_page) { '20' }
+      it { expect(subject).to eql(20) }
+    end
+
+    context "30 per_page (limit is 25)" do
+      let(:per_page) { '30' }
+      it { expect(subject).to eql(25) }
+    end
+
+    context "nil per_page" do
+      let(:per_page) { nil }
+      it { expect(subject).to eql(25) }
+    end
+
+    context "blank per_page" do
+      let(:per_page) { '' }
+      it { expect(subject).to eql(25) }
+    end
+
+    context "blah per_page" do
+      let(:per_page) { 'blah' }
+      it { expect(subject).to eql(25) }
+    end
+  end
+
 end
