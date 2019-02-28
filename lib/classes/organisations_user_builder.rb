@@ -21,8 +21,8 @@ class OrganisationsUserBuilder
     fail_with_error(I18n.t('organisations_user_builder.user.mobile.blank')) unless @mobile
   end
 
-  def build
-    @user = User.where(mobile: @mobile).first_or_create(@user_attributes)
+  def build(is_stock_app)
+    @user = build_user(is_stock_app)
     return fail_with_error(@user.errors) unless @user.valid?
     return fail_with_error(I18n.t('organisations_user_builder.organisation.not_found')) unless organisation
     if !user_belongs_to_organisation(@user)
@@ -33,6 +33,13 @@ class OrganisationsUserBuilder
     else
       return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
     end
+  end
+
+  def build_user(is_stock_app)
+    @user = User.where(mobile: @mobile).first_or_initialize(@user_attributes)
+    @user.request_from_stock = is_stock_app
+    @user.save 
+    @user
   end
 
   def update

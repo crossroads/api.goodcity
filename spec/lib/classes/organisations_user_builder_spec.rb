@@ -16,6 +16,10 @@ describe OrganisationsUserBuilder do
     FactoryBot.attributes_for(:user, :with_email, mobile:'+85252345678')
   end
 
+  let(:user_attributes_without_mobile) do 
+    FactoryBot.attributes_for(:user, :with_email)
+  end
+
   let(:update_user_attributes) do
     FactoryBot.attributes_for(:user, :with_email, mobile:'+85252345678', last_name: "Cooper")
   end
@@ -23,6 +27,10 @@ describe OrganisationsUserBuilder do
   let(:organisations_user) { create :organisations_user }
   let(:organisations_user_params) do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}" , user_attributes: user_attributes)
+  end
+
+  let(:organisation_user_params_without_mobile) do 
+    FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}" , user_attributes: user_attributes_without_mobile)
   end
 
   let(:update_organisations_user_params) do
@@ -34,6 +42,7 @@ describe OrganisationsUserBuilder do
   let(:position) { 'Admin' }
 
   let(:organisations_user_builder) { OrganisationsUserBuilder.new(organisations_user_params.stringify_keys) }
+  let(:organisations_user_builder_without_mobile) { OrganisationsUserBuilder.new(organisation_user_params_without_mobile.stringify_keys) }
   let(:update_organisations_user_builder) { OrganisationsUserBuilder.new(update_organisations_user_params.stringify_keys) }
   let(:mobile) { '+85251111111' }
   let!(:role) { create :charity_role }
@@ -53,21 +62,29 @@ describe OrganisationsUserBuilder do
       User.current_user = user
     }
 
+    context 'for stock app' do 
+      it "adds new user if mobile is blank and associates it with organisation" do
+        expect{
+          organisations_user_builder_without_mobile.build(true)
+        }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
+      end
+    end
+
     it "adds new user if mobile does not exist and associates it with organisation" do
       expect{
-        organisations_user_builder.build
+        organisations_user_builder.build(false)
       }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
     end
 
     it "do not add user to organisation if mobile number already in organisation" do
       organisations_user1 = create :organisations_user, user: user1, organisation: organisation
-      expect(organisations_user_builder.build).to eq({ 'result' => false, 'errors' => "Mobile has already been taken" })
+      expect(organisations_user_builder.build(false)).to eq({ 'result' => false, 'errors' => "Mobile has already been taken" })
       expect(OrganisationsUser.count).to eq(1)
     end
 
     it "associates charity_role to user if user added in organisation" do
       expect{
-        organisations_user_builder.build
+        organisations_user_builder.build(false)
       }.to change{OrganisationsUser.count}.by(1)
       expect(OrganisationsUser.last.user.roles).to include(role)
     end
