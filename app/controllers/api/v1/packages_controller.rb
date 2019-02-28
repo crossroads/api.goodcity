@@ -127,16 +127,11 @@ module Api
       def search_stockit_items
         records = @packages # security
         records = records.undispatched if params["orderId"].present?
-        if params['searchText'].present?
-          records = records.search(
-            params['searchText'],
-            params['itemId'].presence,
-            with_inventory_no: params['withInventoryNumber'] == 'true'
-          )
-        end
-        # apply selected filters
-        records = apply_filters(records).page(params["page"]).per(params["per_page"])
-        pages = records.total_pages
+        records = records.search(search_text: params['searchText'], item_id: params['itemId'],
+          with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
+        params_for_filter = ['state', 'location'].inject({}){|h, k| h[k] = params[k] if params[k].present?; h}
+        records = records.filter(params_for_filter)
+        records = records.order('id desc').offset(page).limit(per_page)
         packages = ActiveModel::ArraySerializer.new(records,
           each_serializer: stock_serializer,
           root: "items",
@@ -146,7 +141,19 @@ module Api
           exclude_stockit_set_item: true,
           include_images: true,
           include_stock_condition: is_stock_app?).as_json
-        render json: {meta: { total_pages: pages, search: params['searchText'] } }.merge(packages)
+        render json: {meta: { search: params['searchText'] } }.merge(packages)
+      end
+
+      # nil.to_i = 0
+      def page
+        @page = params['page'].to_i
+        (@page == 0) ? 1 : @page
+      end
+
+      # max limit is 25
+      def per_page
+        @per_page = params['per_page'].to_i
+        (@per_page == 0 or @per_page > 25) ? 25 : @per_page
       end
 
       def designate_stockit_item(order_id)
@@ -258,17 +265,6 @@ module Api
       end
 
       private
-
-      def array_param(key)
-        params.fetch(key, "").strip.split(',')
-      end
-
-      def apply_filters(records)
-        records.filter(
-          states: array_param(:state),
-          location: params[:location]
-        )
-      end
 
       def stock_serializer
         Api::V1::StockitItemSerializer
