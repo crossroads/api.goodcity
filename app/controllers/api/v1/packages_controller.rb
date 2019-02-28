@@ -131,7 +131,7 @@ module Api
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].inject({}){|h, k| h[k] = params[k] if params[k].present?; h}
         records = records.filter(params_for_filter)
-        records = records.order('id desc').offset(page).limit(per_page)
+        records = records.order('id desc').offset(page - 1).limit(per_page)
         packages = ActiveModel::ArraySerializer.new(records,
           each_serializer: stock_serializer,
           root: "items",

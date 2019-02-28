@@ -498,9 +498,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, searchText: "456"
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("456")
-      expect(subject['items'].length).to eql(3)
-      expect(subject['items'].map{|i| i['inventory_number']}).to include("456222")
-      expect(subject['items'].map{|i| i['inventory_number']}).to include("456111")
+      expect(subject['items'].map{|i| i['inventory_number']}).to match_array(['456222', '456111', '456333'])
     end
 
     it 'should find items by inventory number (includes quantity items)' do
@@ -510,10 +508,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, searchText: "456", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("456")
-      expect(subject['items'].length).to eql(3)
-      expect(subject['items'].map{|i| i['inventory_number']}).to include("456333")
-      expect(subject['items'].map{|i| i['inventory_number']}).to include("456222")
-      expect(subject['items'].map{|i| i['inventory_number']}).to include("456111")
+      expect(subject['items'].map{|i| i['inventory_number']}).to match_array(['456222', '456111', '456333'])
     end
 
     it 'should find items by notes' do
@@ -523,9 +518,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, searchText: "UTter", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("UTter")
-      expect(subject['items'].length).to eql(2)
-      expect(subject['items'].map{|i| i['notes']}).to include("butter")
-      expect(subject['items'].map{|i| i['notes']}).to include("butterfly")
+      expect(subject['items'].map{|i| i['notes']}).to match_array(['butter', 'butterfly'])
     end
 
     it 'should find items by case number' do
@@ -535,9 +528,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, searchText: "cas-12", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("cas-12")
-      expect(subject['items'].length).to eql(2)
-      expect(subject['items'].map{|i| i['case_number']}).to include("CAS-123")
-      expect(subject['items'].map{|i| i['case_number']}).to include("CAS-124")
+      expect(subject['items'].map{|i| i['case_number']}).to match_array(['CAS-123', 'CAS-124'])
     end
 
     it 'should find items by designation_name' do
@@ -547,9 +538,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, searchText: "peP", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("peP")
-      expect(subject['items'].length).to eql(2)
-      expect(subject['items'].map{|i| i['designation_name']}).to include("pepper")
-      expect(subject['items'].map{|i| i['designation_name']}).to include("peppermint")
+      expect(subject['items'].map{|i| i['designation_name']}).to match_array(['pepper', 'peppermint'])
     end
 
     it 'should use filters to only find items that have an inventory number and are marked as received' do
@@ -560,8 +549,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, searchText: 'couch', showQuantityItems: 'true', state: 'received', withInventoryNumber: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql('couch')
-      expect(subject['items'].length).to eql(1)
-      expect(subject['items'].map{|i| i['inventory_number']}).to include("11111")
+      expect(subject['items'].map{|i| i['inventory_number']}).to match_array(['11111'])
+      
     end
 
     it 'should filter out item with published, has_images, and in_stock status' do
@@ -577,8 +566,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, params
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql('111')
-      expect(subject['items'].length).to eql(1)
-      expect(subject['items'].map{|i| i['inventory_number']}).to include("111005")
+      expect(subject['items'].map{|i| i['inventory_number']}).to match_array(['111005'])
+      
     end
     
   end
