@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190227162128) do
+ActiveRecord::Schema.define(version: 20190301085907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,18 +92,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
   end
 
   add_index "boxes", ["pallet_id"], name: "index_boxes_on_pallet_id", using: :btree
-
-  create_table "braintree_transactions", force: :cascade do |t|
-    t.string   "transaction_id"
-    t.integer  "customer_id"
-    t.decimal  "amount"
-    t.string   "status"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.boolean  "is_success"
-  end
-
-  add_index "braintree_transactions", ["customer_id"], name: "index_braintree_transactions_on_customer_id", using: :btree
 
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
@@ -208,7 +196,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -393,8 +380,8 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.integer  "address_id"
     t.integer  "district_id"
     t.text     "cancellation_reason"
-    t.integer  "booking_type_id"
     t.integer  "authorised_by_id"
+    t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
   end
 
@@ -559,7 +546,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -788,7 +774,7 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree

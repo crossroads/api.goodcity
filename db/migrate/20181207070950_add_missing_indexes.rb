@@ -10,7 +10,7 @@ class AddMissingIndexes < ActiveRecord::Migration
     add_index :packages, :offer_id
     add_index :packages, :package_type_id
     add_index :packages, :location_id
-    
+
     add_index :offers, :created_by_id
     add_index :messages, :offer_id
     add_index :messages, :item_id
@@ -21,7 +21,6 @@ class AddMissingIndexes < ActiveRecord::Migration
     add_index :auth_tokens, :user_id
     add_index :beneficiaries, :created_by_id
     add_index :boxes, :pallet_id
-    add_index :braintree_transactions, :customer_id
     add_index :deliveries, :contact_id
     add_index :deliveries, :gogovan_order_id
     add_index :deliveries, :offer_id
