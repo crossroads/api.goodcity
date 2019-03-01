@@ -1,4 +1,4 @@
-#rake goodcity:booking_types
+#rake goodcity:process_checklists
 namespace :goodcity do
   desc 'Initialize the different process checklists'
   task process_checklists: :environment do
