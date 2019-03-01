@@ -1,0 +1,14 @@
+---
+online-order:
+  - :text_en: 'Stock availability'
+    :text_zh_tw: 'Stock availability'
+
+  - :text_en: 'Transport: Address, payment, labor, timing, etc'
+    :text_zh_tw: 'Transport: Address, payment, labor, timing, etc'
+
+appointment:
+  - :text_en: 'Stock availability'
+    :text_zh_tw: 'Stock availability'
+
+  - :text_en: 'Transport: Address, payment, labor, timing, etc'
+    :text_zh_tw: 'Transport: Address, payment, labor, timing, etc'
