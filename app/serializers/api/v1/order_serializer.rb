@@ -12,7 +12,6 @@ module Api::V1
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :orders_purposes, serializer: OrdersPurposeSerializer
     has_many :goodcity_requests, serializer: GoodcityRequestSerializer
-    has_many :messages, serializer: CharityMessageSerializer, root: :messages
     has_many :orders_process_checklists, serializer: OrderProcessChecklistSerializer
     has_one  :closed_by, serializer: UserSerializer
     has_one  :processed_by, serializer: UserSerializer

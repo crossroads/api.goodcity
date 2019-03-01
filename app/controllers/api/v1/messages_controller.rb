@@ -34,12 +34,12 @@ module Api
         @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
         @messages = @messages.where(order_id: params[:order_id]) if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
-        render json: @messages, each_serializer: serializer, root: 'messages'
+        render json: @messages, each_serializer: serializer
       end
 
       api :GET, "/v1/messages/1", "List a message"
       def show
-        render json: @message, serializer: serializer, root: 'message'
+        render json: @message, serializer: serializer
       end
 
       api :POST, "/v1/messages", "Create an message"
@@ -53,7 +53,7 @@ module Api
       api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
       def mark_read
         @message.mark_read!(current_user.id)
-        render json: @message, serializer: serializer, root: 'message'
+        render json: @message, serializer: serializer
       end
 
       private
@@ -63,11 +63,7 @@ module Api
       end
 
       def serializer
-        is_charity_message? ? Api::V1::CharityMessageSerializer : Api::V1::MessageSerializer
-      end
-
-      def is_charity_message?
-        is_browse_app? || is_stock_app?
+        Api::V1::MessageSerializer
       end
 
       def message_params
