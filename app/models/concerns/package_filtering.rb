@@ -5,17 +5,19 @@ module PackageFiltering
   included do
     
     # Free text search on packages
-    scope :search, -> (search_text, item_id, options = {}) {
-      if item_id.presence
+    scope :search, -> (options = {}) {
+      search_text = options[:search_text] || ''
+      item_id = options[:item_id] || ''
+      state = options[:state] || ''
+      if item_id.present?
         where("item_id = ?", item_id)
       else
         search_query = ['inventory_number', 'designation_name', 'notes', 'case_number'].
           map { |f| "#{f} ILIKE :search_text" }.
           join(" OR ")
         query = where(search_query, search_text: "%#{search_text}%")
-        query = query.where("inventory_number IS NOT NULL") if options[:with_inventory_no]
-        state = options[:state]
-        query = query.where(state: state) unless state.blank?
+        query = query.where("inventory_number IS NOT NULL") if options[:with_inventory_no].present?
+        query = query.where(state: state) if state.present?
         query
       end
     }
@@ -25,56 +27,38 @@ module PackageFiltering
   module ClassMethods
 
     # Filter based on states, location, publish status and images
-    def filter(states: [], location: nil)
-      res = where(nil)
-      package_state = states & %w[in_stock received designated dispatched]
-      res = res.where_states(package_state) if package_state.any?
-      res = res.filter_by_location(location) unless location.blank?
+    # options
+    #   state
+    #     in_stock, received, designated, dispatched
+    #     either 'published' or 'private',
+    #     either 'has_images' or 'no_images'
+    #   location
+    #     (building_name)-(area_name)
+    #     28-(All areas)
+    #     28-Room1
+    def filter(options={})
+      states = (options['state'] || '').strip.split(',') || []
+      location = options['location']
+
+      query = where(nil)
+      state_filters = states & %w[in_stock received designated dispatched]
+      query = query.where_states(state_filters) if state_filters.any?
+      query = query.filter_by_location(location) if location.present?
 
       publish_filters = states & %w[published private]
-      res = res.filter_by_publish_status(publish_filters) if publish_filters.presence
+      query = query.filter_by_publish_status(publish_filters) if publish_filters.any?
 
       image_filters = states & %w[has_images no_images]
-      res = res.filter_by_image_status(image_filters) if image_filters.presence
-      res.distinct
+      query = query.filter_by_image_status(image_filters) if image_filters.any?
+      query.distinct
     end
-
-    # private
 
     def where_states(states)
-      states = states.select { |t| respond_to?("#{t}_sql") }
-      return none if states.empty?
-
-      queries = states.map do |t|
-        method = "#{t}_sql"
-        send(method)
-      end
-      states_sql = queries.compact.join(" OR ")
-      join_order_packages.where(states_sql)
-    end
-
-    def join_order_packages
-      joins("LEFT OUTER JOIN orders_packages ON orders_packages.package_id = packages.id")
-    end
-
-    def join_packages_locations
-      joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id")
-    end
-
-    def received_sql
-      "packages.state = 'received'"
-    end
-
-    def in_stock_sql
-      "packages.state = 'received' and packages.quantity > 0"
-    end
-
-    def designated_sql
-      "orders_packages.state = 'designated'"
-    end
-
-    def dispatched_sql
-      "orders_packages.state = 'dispatched'"
+      sql_query = states.map{|state| send("#{state}_sql") }.join(' OR ')
+      return none if sql_query.blank?
+      query = where(sql_query)
+      query = query.join_order_packages if (states & ['designated', 'dispatched']).any?
+      query
     end
 
     def filter_by_publish_status(publish_filters)
@@ -82,6 +66,8 @@ module PackageFiltering
         where(allow_web_publish: true)
       elsif publish_filters.include?('private')
         where("(allow_web_publish IS NULL) or allow_web_publish = false")
+      else
+        where(nil)
       end
     end
 
@@ -104,10 +90,34 @@ module PackageFiltering
         end
       location_id = location.first.id.presence
       if location_id
-        where('packages_locations.location_id = ?', location_id).join_packages_locations
+        where('packages_locations.location_id = ?', location_id).
+          joins("LEFT OUTER JOIN packages_locations ON packages_locations.package_id = packages.id")
       else
         where(nil) # noop
       end
     end
+
+    def join_order_packages
+      joins("LEFT OUTER JOIN orders_packages ON orders_packages.package_id = packages.id")
+    end
+
+    private
+
+    def received_sql
+      "packages.state = 'received'"
+    end
+
+    def in_stock_sql
+      "packages.state = 'received' AND packages.quantity > 0"
+    end
+
+    def designated_sql
+      "orders_packages.state = 'designated'"
+    end
+
+    def dispatched_sql
+      "orders_packages.state = 'dispatched'"
+    end
+
   end
 end
