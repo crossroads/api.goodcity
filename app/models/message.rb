@@ -40,7 +40,7 @@ class Message < ActiveRecord::Base
   # be logged in to Stock and Admin apps and doesn't want all messages to be
   # marked as read
   def mark_read!(user_id)
-    subscriptions.where(user_id: user_id, message_id: id).update_all(state: 'read')
+    subscriptions.where(user_id: user_id).update_all(state: 'read')
     reader = User.find_by(id: user_id)
 
     app_name = app_name_for_reader(reader)
@@ -50,7 +50,10 @@ class Message < ActiveRecord::Base
 
   def app_name_for_reader(reader)
     is_staff_reader = reader.staff?
-    return is_staff_reader ? STOCK_APP : BROWSE_APP if object_class.eql?('Order')
+
+    if object_class.eql?('Order')
+      return is_staff_reader ? STOCK_APP : BROWSE_APP
+    end
 
     is_staff_reader ? ADMIN_APP : DONOR_APP
   end
