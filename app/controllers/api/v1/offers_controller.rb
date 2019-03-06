@@ -67,7 +67,7 @@ module Api
 
       api :GET, '/v1/offers/1', "List an offer"
       def show
-        render json: @offer, serializer: serializer, exclude_messages: params["exclude_messages"] == "true"
+        render json: serializer.new(@offer, exclude_messages: params["exclude_messages"] == "true").as_json
       end
 
       api :PUT, '/v1/offers/1', "Update an offer"
