@@ -128,6 +128,41 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "GET offers/summary" do
+    context "as an admin" do
+      before { generate_and_set_token(supervisor) }
+
+      it "should return a 200" do
+        get :summary
+        expect(response.status).to eq(200)
+      end
+
+      it "should return the orders with the users associations" do
+        2.times{ create :offer }
+        get :summary
+        body = JSON.parse(response.body)
+        expect( body['offers'].length ).to eq(2)
+        expect( body['user'] ).not_to be_nil
+      end
+
+      it "should not return items or messages (to avoid a large payload)" do
+        get :summary
+        body = JSON.parse(response.body)
+        expect(body).not_to include('items')
+        expect(body).not_to include('messages')
+      end
+    end
+
+    context "as a user" do
+      before { generate_and_set_token(user) }
+
+      it "should return a 403" do
+        get :summary
+        expect(response.status).to eq(403)
+      end
+    end
+  end
+
   describe "GET offer/1" do
     before { generate_and_set_token(user) }
     it "returns 200" do
