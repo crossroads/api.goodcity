@@ -3,7 +3,7 @@ require "goodcity/offer_utils"
 module Api
   module V1
     class OffersController < Api::V1::ApiController
-      before_action :eager_load_offer, except: [:index, :create, :finished]
+      before_action :eager_load_offer, except: [:index, :summary, :create, :finished]
       load_and_authorize_resource :offer, parent: false
 
       resource_description do
@@ -49,25 +49,21 @@ module Api
       param :reviewed_by_id, String, desc: "Return offers reviewed by the given user id."
       param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
       def index
-        states = params["states"]
-        if states.present?
-          @offers =
-            if User.current_user.staff?
-              @offers.in_states(states)
-                .union(User.current_user.offers_with_unread_messages)
-                .union(Offer.active_from_past_fortnight)
-            else
-              @offers.in_states(states)
-            end
-        end
-        @offers = filter_created_by(@offers)
-        @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
-        render json: @offers.with_eager_load, each_serializer: serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true"
+        list_offers
+      end
+
+      api :GET, '/v1/offers/summary', "List all offers without their asociations"
+      param :states, Array, in: Offer.valid_states + ["active", "not_active", "nondraft", "for_donor", "donor_non_draft"], desc: "Filter by offer states. Note: you can also use the pseudo states 'not_active' or 'nondraft' which mean states=['#{Offer.not_active_states.join('\', \'')}'] and states=['#{Offer.nondraft_states.join('\', \'')}'] respectively."
+      param :created_by_id, String, desc: "Return offers created by the given user id."
+      param :reviewed_by_id, String, desc: "Return offers reviewed by the given user id."
+      param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
+      def summary
+        list_offers(summary_serializer);
       end
 
       api :GET, '/v1/offers/1', "List an offer"
       def show
-        render json: serializer.new(@offer, exclude_messages: params["exclude_messages"] == "true").as_json
+        render json: offer_serializer.new(@offer, exclude_messages: params["exclude_messages"] == "true").as_json
       end
 
       api :PUT, '/v1/offers/1', "Update an offer"
@@ -75,7 +71,7 @@ module Api
       param :saleable, [true, false], desc: "Can these items be sold?"
       def update
         @offer.update_attributes(offer_params)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :DELETE, '/v1/offers/1', "Delete an offer"
@@ -91,7 +87,7 @@ module Api
         @offer.with_lock do
           @offer.assign_reviewer(current_user) if @offer.submitted?
         end
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
@@ -103,28 +99,28 @@ module Api
       def complete_review
         @offer.update_attributes(review_offer_params)
         @offer.send_message(params["complete_review_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
       def close_offer
         @offer.update_attributes({ state_event: 'mark_unwanted' })
         @offer.send_message(params["complete_review_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/receive_offer', "Mark Offer as received."
       def receive_offer
         @offer.update_attributes({ state_event: 'receive' })
         @offer.send_message(params["close_offer_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
       def mark_inactive
         @offer.update_attributes({ state_event: 'mark_inactive' })
         @offer.send_message(params["offer"]["inactive_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       def merge_offer
@@ -133,6 +129,23 @@ module Api
       end
 
       private
+
+      def list_offers(serializer = offer_serializer)
+        states = params["states"]
+        if states.present?
+          @offers =
+            if User.current_user.staff?
+              @offers.in_states(states)
+                .union(User.current_user.offers_with_unread_messages)
+                .union(Offer.active_from_past_fortnight)
+            else
+              @offers.in_states(states)
+            end
+        end
+        @offers = filter_created_by(@offers)
+        @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
+        render json: @offers.with_eager_load, each_serializer: serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true"
+      end
 
       def filter_created_by(offers)
         if (user_id = params["created_by_id"] || User.current_user.treat_user_as_donor && User.current_user.id)
@@ -160,8 +173,12 @@ module Api
         params.require(:offer).permit(attributes)
       end
 
-      def serializer
+      def offer_serializer
         Api::V1::OfferSerializer
+      end
+
+      def summary_serializer
+        Api::V1::OfferSummarySerializer
       end
     end
   end

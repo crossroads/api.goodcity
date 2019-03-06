@@ -184,7 +184,7 @@ class Ability
       'submitted', 'reviewed', 'scheduled', 'under_review', 'inactive']
 
     if can_manage_offers?
-      can [:index, :show, :update, :complete_review, :close_offer,
+      can [:index, :summary, :show, :update, :complete_review, :close_offer,
         :finished, :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer
     end
   end
