@@ -23,7 +23,7 @@ module Api::V1
       elsif User.current_user.nil?
         "never-subscribed"
       else
-        object.subscriptions.where(user_id: User.current_user.id).pluck(:state).first
+        object.subscriptions.where(user_id: User.current_user.id).pluck(:state).first || 'never-subscribed'
       end
     end
 
