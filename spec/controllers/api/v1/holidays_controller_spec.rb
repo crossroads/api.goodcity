@@ -34,7 +34,6 @@ RSpec.describe Api::V1::HolidaysController, type: :controller do
       it "Should not include current day if it is a holiday", :show_in_doc do
         create(:holiday, holiday: Time.now.beginning_of_day)
         get :available_dates, schedule_days: 6
-        pp response.body
         body = JSON.parse(response.body)
         expect(body.length).to eq(6)
         expect(body).to_not include(Time.now.to_date.to_s)

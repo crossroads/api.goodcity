@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   has_many :messages, class_name: 'Message', foreign_key: :sender_id, inverse_of: :sender
 
   has_many :subscriptions, dependent: :destroy
-  has_many :offers_subscription, class_name: "Offer", through: :subscriptions
+  has_many :offers_subscription, class_name: "Offer", through: :subscriptions, source: 'offer'
 
   has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
   after_create :generate_auth_token
 
   scope :donors,      -> { where(permission_id: nil) }
-  scope :reviewers,   -> { where(roles: { name: 'Reviewer'   }).joins(:roles) }
+  scope :reviewers,   -> { where(roles: { name: 'Reviewer' }).joins(:roles) }
   scope :supervisors, -> { where(roles: { name: 'Supervisor' }).joins(:roles) }
   scope :order_fulfilment, -> { where(roles: { name: 'Order fulfilment' }).joins(:roles) }
   scope :system,      -> { where(roles: { name: 'System' }).joins(:roles) }
@@ -146,14 +146,6 @@ class User < ActiveRecord::Base
     most_recent_token.cycle_otp_auth_key!
     SlackPinService.new(self).send_otp(app_name)
     TwilioService.new(self).sms_verification_pin(app_name)
-  end
-
-  def channels
-    channels = Channel.private(self)
-    channels += Channel.reviewer if reviewer?
-    channels += Channel.supervisor if supervisor?
-    channels += Channel.order_fulfilment if order_fulfilment?
-    channels
   end
 
   def self.current_user

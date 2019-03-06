@@ -214,32 +214,6 @@ describe User, :type => :model do
     end
   end
 
-  describe "#channels" do
-    describe "should return array of channels" do
-
-      it "for donor" do
-        user = create(:user)
-        expect(user.channels).to eq(["user_#{user.id}"])
-      end
-
-      it "for reviewer" do
-        user = create(:user, :reviewer)
-        expect(user.channels).to match_array(["user_#{user.id}", "reviewer"])
-      end
-
-      it "for supervisor" do
-        user = create(:user, :supervisor)
-        expect(user.channels).to match_array(["user_#{user.id}", "supervisor"])
-      end
-
-      it "for order_fulfilment" do
-        user = create(:user, :order_fulfilment)
-        expect(user.channels).to match_array(["user_#{user.id}", "order_fulfilment"])
-      end
-
-    end
-  end
-
   describe '#user_role_names' do
     it 'returns role names for user' do
       user = create :user, :reviewer
