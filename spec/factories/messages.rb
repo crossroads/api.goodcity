@@ -32,6 +32,11 @@ FactoryBot.define do
     trait :private do
       is_private  true
     end
+
+    trait :with_order do
+      offer nil
+      order
+    end
   end
 
   sequence :message_body do |n|

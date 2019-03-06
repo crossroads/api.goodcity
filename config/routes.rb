@@ -94,6 +94,7 @@ Rails.application.routes.draw do
       get "timeslots", to: "timeslots#index"
       get "gogovan_transports", to: "gogovan_transports#index"
       get "booking_types", to: "booking_types#index"
+      get "process_checklists", to: "process_checklists#index"
       get "purposes", to: "purposes#index"
       get "crossroads_transports", to: "crossroads_transports#index"
 

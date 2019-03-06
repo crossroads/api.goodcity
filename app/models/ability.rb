@@ -194,6 +194,7 @@ class Ability
     can [:index, :show, :update, :destroy], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :transition, :destroy, :summary], Order
+      can :index, ProcessChecklist
     end
   end
 
@@ -325,7 +326,7 @@ class Ability
   end
 
   def user_abilities
-    can :current_user_profile, User
+    can [:current_user_profile], User
     can [:show, :update], User, id: @user_id
     can [:index, :show, :update, :recent_users], User if can_read_or_modify_user?
   end

@@ -119,7 +119,7 @@ class TwilioInboundCallManager
   end
 
   def send_calling_notification
-    PushService.new.send_notification offer.call_notify_channels, ADMIN_APP, {
+    PushService.new.send_notification call_notify_channels, ADMIN_APP, {
       category:  'incoming_call',
       message:   "#{user.full_name} calling now..",
       author_id: @user_id,
@@ -141,7 +141,7 @@ class TwilioInboundCallManager
   end
 
   def call_accepted_notify_channels
-    offer.call_notify_channels - ["user_#{caller.id}"]
+    call_notify_channels - ["user_#{caller.id}"]
   end
 
   def user
@@ -160,4 +160,22 @@ class TwilioInboundCallManager
   def caller
     @caller ||= User.find_by_mobile(@mobile) if @mobile.present?
   end
+
+  # TODO: ask Matt if we should change the logic here to always include all reviewers
+  # Notify all the offer's subscribed admins that a new call is incoming
+  # If none exist, notify all supervisors
+  def call_notify_channels
+    reviewer_channel = Channel.private_channels_for(offer.reviewed_by_id, ADMIN_APP)
+    subscribed_staff = Message.unscoped.joins(:subscriptions)
+      .select("distinct subscriptions.user_id as user_id")
+      .where(is_private: true, offer_id: offer.id)
+      .map(&:user_id)
+    channel_names = Channel.private_channels_for(subscribed_staff, ADMIN_APP)
+    if (channel_names - reviewer_channel).blank?
+      channel_names = Channel.private_channels_for(User.supervisors.pluck(:id), ADMIN_APP)
+    end
+    channel_names += reviewer_channel
+    channel_names.flatten.uniq.compact
+  end
+
 end

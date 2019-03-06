@@ -37,10 +37,13 @@ RSpec.describe Order, type: :model do
 
     it { is_expected.to have_many :packages }
     it { is_expected.to have_many :goodcity_requests }
+    it { is_expected.to have_many :messages }
+    it { is_expected.to have_many :subscriptions }
     it { is_expected.to have_many(:purposes).through(:orders_purposes) }
     it { is_expected.to have_and_belong_to_many(:cart_packages).class_name('Package')}
     it { is_expected.to have_many :orders_packages }
     it { is_expected.to have_many :orders_purposes }
+    it { is_expected.to have_many(:process_checklists).through(:orders_process_checklists) }
     it { is_expected.to have_one :order_transport }
   end
 
@@ -65,6 +68,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:booking_type_id).of_type(:integer)}
+    it{ is_expected.to have_db_column(:staff_note).of_type(:string)}
   end
 
   describe '.my_orders' do
@@ -672,6 +676,35 @@ RSpec.describe Order, type: :model do
       expect(Order.count).to eq(6)
       expect(Order.where("description ILIKE '%table%'").count).to eq(3)
       expect(Order.where("description ILIKE '%table%'").filter().count).to eq(3)
+    end
+  end
+
+  describe 'Processing checklist' do
+    let!(:booking_type) { create :booking_type }
+    let!(:booking_type2) { create :booking_type }
+    let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
+    let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
+    let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
+    let!(:checklist_unrequired) { create :process_checklist, booking_type: booking_type2 }
+    let!(:order) { create :order, booking_type: booking_type, state: "processing", description: "", process_checklists: [checklist_it1] }
+
+
+    it 'Should be allowed to transition only if all checklist items have been added to the order' do
+      expect(order.process_checklists.count).to eq(1)
+      expect(order.can_transition).to eq(false) # 1/3
+
+      order.process_checklists.push checklist_it2
+      order.save
+      expect(order.process_checklists.count).to eq(2)
+      expect(order.can_transition).to eq(false) # 2/3
+
+      order.process_checklists.push checklist_it3
+      order.save
+      expect(order.process_checklists.count).to eq(3)
+      expect(order.can_transition).to eq(true) # 3/3, can transition
+
+      create :process_checklist, booking_type: booking_type
+      expect(order.can_transition).to eq(false) # 3/4
     end
   end
 end

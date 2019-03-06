@@ -7,8 +7,7 @@ namespace :azure do
 
       doc = res.body
       newtag = user.permission.name.downcase
-      oldtag = Channel.private(user)
-      oldtag = Channel.add_app_name_suffix(oldtag, ADMIN_APP)
+      oldtag = Channel.private_channels_for(user, ADMIN_APP)
       tags = [newtag, oldtag].flatten
 
       platform = ""
