@@ -7,7 +7,7 @@ default: &default
 
 development:
   <<: *default
-  database: from_staging
+  database: goodcity_server_development
 
 test:
   <<: *default

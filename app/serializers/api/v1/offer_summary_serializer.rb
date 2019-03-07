@@ -14,6 +14,12 @@ module Api::V1
     has_one  :closed_by, serializer: UserSerializer, root: :user
     has_one  :created_by, serializer: UserSerializer, root: :user
     has_one  :reviewed_by, serializer: UserSerializer, root: :user
+    has_one  :display_image, serializer: ImageSerializer, root: :images
 
+    def display_image
+      it_with_images = object.items.detect { |it| it.images.any? }
+      return nil unless it_with_images
+      return it_with_images.images.first
+    end
   end
 end
