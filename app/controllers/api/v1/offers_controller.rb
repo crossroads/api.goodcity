@@ -62,7 +62,7 @@ module Api
         end
         @offers = filter_created_by(@offers)
         @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
-        render json: @offers.with_eager_load, each_serializer: serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true", root: 'offers'
+        render json: @offers.with_eager_load, each_serializer: select_serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true", root: 'offers'
       end
 
       api :GET, '/v1/offers/1', "List an offer"
@@ -168,7 +168,7 @@ module Api
         Api::V1::OfferSummarySerializer
       end
 
-      def serializer
+      def select_serializer
         params[:summarize] == 'true' ? summary_serializer : offer_serializer
       end
     end
