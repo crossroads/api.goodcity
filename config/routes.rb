@@ -39,7 +39,6 @@ Rails.application.routes.draw do
       end
 
       resources :offers, only: [:create, :update, :index, :summary, :show, :destroy] do
-        get :summary, on: :collection
         member do
           get :messages
           put :review

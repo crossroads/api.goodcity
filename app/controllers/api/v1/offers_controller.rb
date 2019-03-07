@@ -49,16 +49,20 @@ module Api
       param :reviewed_by_id, String, desc: "Return offers reviewed by the given user id."
       param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
       def index
-        list_offers
-      end
-
-      api :GET, '/v1/offers/summary', "List all offers without their asociations"
-      param :states, Array, in: Offer.valid_states + ["active", "not_active", "nondraft", "for_donor", "donor_non_draft"], desc: "Filter by offer states. Note: you can also use the pseudo states 'not_active' or 'nondraft' which mean states=['#{Offer.not_active_states.join('\', \'')}'] and states=['#{Offer.nondraft_states.join('\', \'')}'] respectively."
-      param :created_by_id, String, desc: "Return offers created by the given user id."
-      param :reviewed_by_id, String, desc: "Return offers reviewed by the given user id."
-      param :exclude_messages, ["true", "false"], desc: "If true, API response will not include messages."
-      def summary
-        list_offers(summary_serializer);
+        states = params["states"]
+        if states.present?
+          @offers =
+            if User.current_user.staff?
+              @offers.in_states(states)
+                .union(User.current_user.offers_with_unread_messages)
+                .union(Offer.active_from_past_fortnight)
+            else
+              @offers.in_states(states)
+            end
+        end
+        @offers = filter_created_by(@offers)
+        @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
+        render json: @offers.with_eager_load, each_serializer: serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true", root: 'offers'
       end
 
       api :GET, '/v1/offers/1', "List an offer"
@@ -130,23 +134,6 @@ module Api
 
       private
 
-      def list_offers(serializer = offer_serializer)
-        states = params["states"]
-        if states.present?
-          @offers =
-            if User.current_user.staff?
-              @offers.in_states(states)
-                .union(User.current_user.offers_with_unread_messages)
-                .union(Offer.active_from_past_fortnight)
-            else
-              @offers.in_states(states)
-            end
-        end
-        @offers = filter_created_by(@offers)
-        @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
-        render json: @offers.with_eager_load, each_serializer: serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true"
-      end
-
       def filter_created_by(offers)
         if (user_id = params["created_by_id"] || User.current_user.treat_user_as_donor && User.current_user.id)
           offers.created_by(user_id)
@@ -179,6 +166,10 @@ module Api
 
       def summary_serializer
         Api::V1::OfferSummarySerializer
+      end
+
+      def serializer
+        params[:shallow] == 'true' ? summary_serializer : offer_serializer
       end
     end
   end
