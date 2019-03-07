@@ -1,6 +1,7 @@
 module Api::V1
   class OrderSerializer < OrderShallowSerializer
     attributes :item_ids, :cancellation_reason
+
     has_one :created_by, serializer: UserProfileSerializer, root: :user
     has_one :stockit_contact, serializer: StockitContactSerializer
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
@@ -23,6 +24,38 @@ module Api::V1
     has_one  :beneficiary, serializer: BeneficiarySerializer
     has_one  :address, serializer: AddressSerializer
     has_one  :district, serializer: DistrictSerializer
+
+    def unread_messages_count
+      object.subscriptions.where(state: 'unread', user_id: object.created_by_id).count
+    end
+
+    def unread_messages_count__sql
+      "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread' and s.user_id = orders.created_by_id)"
+    end
+
+    def user_submitted_count
+      Order.where(state: 'submitted', created_by_id: object.created_by_id).count
+    end
+
+    def user_submitted_count__sql
+      "(select count(*) from orders where orders.state = 'submitted' and orders.created_by_id = orders.created_by_id)"
+    end
+
+    def user_awaiting_dispatch_count
+      Order.where(state: 'awaiting_dispatch', created_by_id: object.created_by_id).count
+    end
+
+    def user_awaiting_dispatch_count__sql
+      "(select count(*) from orders where orders.state = 'awaiting_dispatch' and orders.created_by_id = orders.created_by_id)"
+    end
+
+    def user_cancelled_count
+      Order.where(state: 'cancelled', created_by_id: object.created_by_id).count
+    end
+
+    def user_cancelled_count__sql
+      "(select count(*) from orders where orders.state = 'cancelled' and orders.created_by_id = created_by_id)"
+    end
 
     def item_ids
     end
