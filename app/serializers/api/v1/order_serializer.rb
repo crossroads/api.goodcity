@@ -1,6 +1,8 @@
 module Api::V1
   class OrderSerializer < OrderShallowSerializer
-    attributes :item_ids, :cancellation_reason, :unread_messages_count
+    attributes :item_ids, :cancellation_reason, :unread_messages_count,
+      :user_submitted_count, :user_awaiting_dispatch_count, :user_cancelled_count
+
     has_one :created_by, serializer: UserProfileSerializer, root: :user
     has_one :stockit_contact, serializer: StockitContactSerializer
     has_one :stockit_organisation, serializer: StockitOrganisationSerializer, root: :organisation
@@ -33,6 +35,29 @@ module Api::V1
       "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread' and s.user_id = orders.created_by_id)"
     end
 
+    def user_submitted_count
+      Order.where(state: 'submitted', created_by_id: object.created_by_id).count
+    end
+
+    def user_submitted_count__sql
+      "(select count(*) from orders where orders.state = 'submitted' and orders.created_by_id = orders.created_by_id)"
+    end
+
+    def user_awaiting_dispatch_count
+      Order.where(state: 'awaiting_dispatch', created_by_id: object.created_by_id).count
+    end
+
+    def user_awaiting_dispatch_count__sql
+      "(select count(*) from orders where orders.state = 'awaiting_dispatch' and orders.created_by_id = orders.created_by_id)"
+    end
+
+    def user_cancelled_count
+      Order.where(state: 'cancelled', created_by_id: object.created_by_id).count
+    end
+
+    def user_cancelled_count__sql
+      "(select count(*) from orders where orders.state = 'cancelled' and orders.created_by_id = created_by_id)"
+    end
 
     def item_ids
     end
