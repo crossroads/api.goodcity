@@ -53,7 +53,6 @@ gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
 gem 'request_store'
 gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
-gem 'braintree'
 gem 'active_record_union'
 gem 'kaminari'
 gem 'sidekiq-scheduler'
