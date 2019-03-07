@@ -19,9 +19,5 @@ module Api::V1
     def display_image
       Image.where(imageable: offer.items).limit(1).first
     end
-      it_with_images = object.items.detect { |it| it.images.any? }
-      return nil unless it_with_images
-      return it_with_images.images.first
-    end
   end
 end
