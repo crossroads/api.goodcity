@@ -17,6 +17,8 @@ module Api::V1
     has_one  :display_image, serializer: ImageSerializer, root: :images
 
     def display_image
+      Image.where(imageable: offer.items).limit(1).first
+    end
       it_with_images = object.items.detect { |it| it.images.any? }
       return nil unless it_with_images
       return it_with_images.images.first
