@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190307114429) do
+ActiveRecord::Schema.define(version: 20190308142745) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -382,7 +382,6 @@ ActiveRecord::Schema.define(version: 20190307114429) do
     t.integer  "district_id"
     t.text     "cancellation_reason"
     t.integer  "booking_type_id"
-    t.integer  "authorised_by_id"
     t.string   "staff_note",              default: ""
   end
 
