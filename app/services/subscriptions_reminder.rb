@@ -12,11 +12,11 @@ class SubscriptionsReminder
   # Users who 
   #   haven't been reminded in last X hours
   #   have unread messages
-  #   are donors
+  #   are donors with active, non_draft offers
   #   aren't the author of the message
   # If sms_reminder_sent_at is NULL then use created_at so we don't SMS user immediately
   def user_candidates_for_reminder
-    user_ids = Offer.distinct.pluck(:created_by_id)
+    user_ids = Offer.active.non_draft.distinct.pluck(:created_by_id)
     User.joins(subscriptions: [:message]).
       where('users.id IN (?)', user_ids).
       where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601).
