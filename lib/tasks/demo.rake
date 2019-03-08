@@ -160,7 +160,7 @@ namespace :demo do
     end
 
     def reviewer
-      User.where(permission_id: 3).sample||FactoryBot.create(:user, :reviewer)
+      User.reviewers.sample || FactoryBot.create(:user, :reviewer)
     end
 
     # Choose a donor from seed data

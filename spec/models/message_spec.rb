@@ -19,6 +19,10 @@ describe Message, type: :model do
     build :message, options
   end
 
+  describe 'Validations' do
+    it { is_expected.to validate_presence_of(:body) }
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to :sender }
     it { is_expected.to belong_to :offer }
