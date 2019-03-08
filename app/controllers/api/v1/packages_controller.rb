@@ -41,7 +41,7 @@ module Api
 
       api :GET, '/v1/packages/1', "Details of a package"
       def show
-        render json: @package, serializer: serializer, include_orders_packages: true
+        render json: serializer.new(@package, include_orders_packages: true).as_json
       end
 
       api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
