@@ -71,6 +71,51 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:staff_note).of_type(:string)}
   end
 
+  describe '.users_order_count' do
+    let(:user) { create :user }
+    let(:user1) { create :user }
+    TOTAL_REQUESTS_STATES.each do |state|
+      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id, status: nil }
+    end
+
+    it "will return submitted order for the user" do
+      expect(Order.users_order_count(user.id, 'submitted')).to eq(1)
+    end
+
+    it "will return awaiting_dispatch order for the user" do
+      expect(Order.users_order_count(user.id, 'awaiting_dispatch')).to eq(1)
+    end
+
+    it "will return closed order for the user" do
+      expect(Order.users_order_count(user.id, 'closed')).to eq(1)
+    end
+
+    it "will return cancelled order for the user" do
+      expect(Order.users_order_count(user.id, 'cancelled')).to eq(1)
+    end
+
+    it "will not return orders count of other user" do
+      expect(Order.users_order_count(user1.id, 'submitted')).to eq(0)
+      expect(Order.users_order_count(user1.id, 'awaiting_dispatch')).to eq(0)
+      expect(Order.users_order_count(user1.id, 'cancelled')).to eq(0)
+      expect(Order.users_order_count(user1.id, 'closed')).to eq(0)
+    end
+
+    it "will not return orders count if user_id is not provided" do
+      expect(Order.users_order_count(nil, 'submitted')).to eq(0)
+      expect(Order.users_order_count(nil, 'awaiting_dispatch')).to eq(0)
+      expect(Order.users_order_count(nil, 'cancelled')).to eq(0)
+      expect(Order.users_order_count(nil, 'closed')).to eq(0)
+    end
+
+    it "will not return orders count if order_state is not provided" do
+      expect(Order.users_order_count(user.id, '')).to eq(0)
+      expect(Order.users_order_count(user.id, '')).to eq(0)
+      expect(Order.users_order_count(user.id, '')).to eq(0)
+      expect(Order.users_order_count(user.id, '')).to eq(0)
+    end
+  end
+
   describe '.my_orders' do
     let(:user) { create :user, :charity, :with_can_manage_orders_permission }
     let(:supervisor) { create :user, :supervisor, :with_can_manage_orders_permission }

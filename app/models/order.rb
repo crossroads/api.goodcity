@@ -78,6 +78,8 @@ class Order < ActiveRecord::Base
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
+  scope :users_order_count, ->(user_id, state) { where("state = (?) and created_by_id = (?)", state, user_id).count }
+
   def delete_orders_packages
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
