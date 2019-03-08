@@ -39,23 +39,11 @@ class Message < ActiveRecord::Base
   # Some refactoring required here. Doesn't understand that an admin may
   # be logged in to Stock and Admin apps and doesn't want all messages to be
   # marked as read
-  def mark_read!(user_id)
+  def mark_read!(user_id, app_name)
     subscriptions.where(user_id: user_id).update_all(state: 'read')
     reader = User.find_by(id: user_id)
 
-    app_name = app_name_for_reader(reader)
-
     send_update('read', Channel.private_channels_for(reader, app_name), 'update')
-  end
-
-  def app_name_for_reader(reader)
-    is_staff_reader = reader.staff?
-
-    if object_class.eql?('Order')
-      return is_staff_reader ? STOCK_APP : BROWSE_APP
-    end
-
-    is_staff_reader ? ADMIN_APP : DONOR_APP
   end
 
   # To make up for the lack of polymorphism between offer/item/order. Cached
