@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::V1::OrderSerializer do
-  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "cancelled"]
+  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
   let(:country) { create :country }
   let(:user) { create :user }
   TOTAL_REQUESTS_STATES.each do |state|
@@ -51,9 +51,10 @@ describe Api::V1::OrderSerializer do
     expect(json['order']['staff_note']).to eq(order.staff_note)
     expect(json['order']['staff_note']).to eq(order.staff_note)
     expect(json['order']['orders_process_checklist_ids'].count).to eq(1)
-    expect(json['order']['user_submitted_count']).to eq(1)
-    expect(json['order']['user_awaiting_dispatch_count']).to eq(1)
-    expect(json['order']['user_cancelled_count']).to eq(1)
+    expect(json['order']['user_submitted_order_count']).to eq(1)
+    expect(json['order']['user_awaiting_dispatch_order_count']).to eq(1)
+    expect(json['order']['user_cancelled_order_count']).to eq(1)
+    expect(json['order']['user_closed_order_count']).to eq(1)
     order_process_checklist = OrdersProcessChecklist.find(json['order']['orders_process_checklist_ids'][0])
     expect(order_process_checklist.order_id).to eq(order.id)
     expect(order_process_checklist.process_checklist_id).to eq(order.process_checklists[0].id)
