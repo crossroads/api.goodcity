@@ -1,7 +1,5 @@
 module Api::V1
   class MessageSerializer < ApplicationSerializer
-    include SerializeTimeValue
-
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,

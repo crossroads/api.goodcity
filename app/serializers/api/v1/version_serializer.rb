@@ -1,7 +1,5 @@
 module Api::V1
   class VersionSerializer < ApplicationSerializer
-    include SerializeTimeValue
-
     embed :ids, include: true
     attributes :id, :event, :item_id, :item_type, :whodunnit, :whodunnit_name,
       :state, :created_at
