@@ -86,6 +86,8 @@ class Order < ActiveRecord::Base
     ORDER_UNPROCESSED_STATES.include?(state)
   end
 
+  scope :users_order_count, ->(user_id, state) { where("state = (?) and created_by_id = (?)", state, user_id).count }
+
   def delete_orders_packages
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
