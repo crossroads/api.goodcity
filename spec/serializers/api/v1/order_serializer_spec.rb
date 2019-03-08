@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 describe Api::V1::OrderSerializer do
-  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
   let(:country) { create :country }
   let(:user) { create :user }
   TOTAL_REQUESTS_STATES.each do |state|

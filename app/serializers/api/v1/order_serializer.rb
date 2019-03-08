@@ -35,35 +35,39 @@ module Api::V1
     end
 
     def user_submitted_order_count
-      Order.where(state: 'submitted', created_by_id: object.created_by_id).count
+      Order.users_order_count(object.created_by_id, 'submitted')
     end
 
     def user_submitted_order_count__sql
-      "(select count(*) from orders where orders.state = 'submitted' and orders.created_by_id = orders.created_by_id)"
+      "(select count(*) from orders where orders.state = 'submitted'
+        and orders.created_by_id = orders.created_by_id)"
     end
 
     def user_awaiting_dispatch_order_count
-      Order.where(state: 'awaiting_dispatch', created_by_id: object.created_by_id).count
+      Order.users_order_count(object.created_by_id, 'awaiting_dispatch')
     end
 
     def user_awaiting_dispatch_order_count__sql
-      "(select count(*) from orders where orders.state = 'awaiting_dispatch' and orders.created_by_id = orders.created_by_id)"
+      "(select count(*) from orders where orders.state = 'awaiting_dispatch'
+        and orders.created_by_id = orders.created_by_id)"
     end
 
     def user_cancelled_order_count
-      Order.where(state: 'cancelled', created_by_id: object.created_by_id).count
+      Order.users_order_count(object.created_by_id, 'cancelled')
     end
 
     def user_cancelled_order_count__sql
-      "(select count(*) from orders where orders.state = 'cancelled' and orders.created_by_id = created_by_id)"
+      "(select count(*) from orders where orders.state = 'cancelled'
+        and orders.created_by_id = created_by_id)"
     end
 
     def user_closed_order_count
-      Order.where(state: 'closed', created_by_id: object.created_by_id).count
+      Order.users_order_count(object.created_by_id, 'closed')
     end
 
     def user_closed_order_count__sql
-      "(select count(*) from orders where orders.state = 'closed' and orders.created_by_id = created_by_id)"
+      "(select count(*) from orders where orders.state = 'closed'
+        and orders.created_by_id = created_by_id)"
     end
 
     def item_ids
