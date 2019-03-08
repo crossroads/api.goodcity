@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190227162128) do
+ActiveRecord::Schema.define(version: 20190228150258) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -762,7 +762,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.string   "mobile"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "permission_id"
     t.integer  "image_id"
     t.datetime "last_connected"
     t.datetime "last_disconnected"
@@ -774,7 +773,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
   add_index "users", ["mobile"], name: "index_users_on_mobile", using: :btree
-  add_index "users", ["permission_id"], name: "index_users_on_permission_id", using: :btree
 
   create_table "versions", force: :cascade do |t|
     t.string   "item_type",      null: false

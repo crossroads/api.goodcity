@@ -62,12 +62,12 @@ module Api
         end
         @offers = filter_created_by(@offers)
         @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
-        render json: @offers.with_eager_load, each_serializer: serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true"
+        render json: ActiveModel::ArraySerializer.new(@offers.with_eager_load, each_serializer: select_serializer, include_orders_packages: false, exclude_messages: params["exclude_messages"] == "true", root: 'offers').as_json
       end
 
       api :GET, '/v1/offers/1', "List an offer"
       def show
-        render json: serializer.new(@offer, exclude_messages: params["exclude_messages"] == "true").as_json
+        render json: offer_serializer.new(@offer, exclude_messages: params["exclude_messages"] == "true").as_json
       end
 
       api :PUT, '/v1/offers/1', "Update an offer"
@@ -75,7 +75,7 @@ module Api
       param :saleable, [true, false], desc: "Can these items be sold?"
       def update
         @offer.update_attributes(offer_params)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :DELETE, '/v1/offers/1', "Delete an offer"
@@ -91,7 +91,7 @@ module Api
         @offer.with_lock do
           @offer.assign_reviewer(current_user) if @offer.submitted?
         end
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/complete_review', "Mark review as completed"
@@ -103,28 +103,28 @@ module Api
       def complete_review
         @offer.update_attributes(review_offer_params)
         @offer.send_message(params["complete_review_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/close_offer', "Mark Offer as closed."
       def close_offer
         @offer.update_attributes({ state_event: 'mark_unwanted' })
         @offer.send_message(params["complete_review_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/receive_offer', "Mark Offer as received."
       def receive_offer
         @offer.update_attributes({ state_event: 'receive' })
         @offer.send_message(params["close_offer_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       api :PUT, '/v1/offers/1/mark_inactive', "Mark offer as inactive"
       def mark_inactive
         @offer.update_attributes({ state_event: 'mark_inactive' })
         @offer.send_message(params["offer"]["inactive_message"], User.current_user)
-        render json: @offer, serializer: serializer
+        render json: @offer, serializer: offer_serializer
       end
 
       def merge_offer
@@ -160,8 +160,16 @@ module Api
         params.require(:offer).permit(attributes)
       end
 
-      def serializer
+      def offer_serializer
         Api::V1::OfferSerializer
+      end
+
+      def summary_serializer
+        Api::V1::OfferSummarySerializer
+      end
+
+      def select_serializer
+        params[:summarize] == 'true' ? summary_serializer : offer_serializer
       end
     end
   end
