@@ -128,25 +128,25 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "GET offers without associations (shallow=true)" do
+  describe "GET offers without associations (summarize=true)" do
     context "as an admin" do
       before { generate_and_set_token(supervisor) }
 
       it "should return a 200" do
-        get :index, shallow: 'true'
+        get :index, summarize: 'true'
         expect(response.status).to eq(200)
       end
 
       it "should return the orders with the users associations" do
         2.times{ create :offer }
-        get :index, shallow: 'true'
+        get :index, summarize: 'true'
         body = JSON.parse(response.body)
         expect( body['offers'].length ).to eq(2)
         expect( body['user'] ).not_to be_nil
       end
 
       it "should not return items or messages (to avoid a large payload)" do
-        get :index, shallow: 'true'
+        get :index, summarize: 'true'
         body = JSON.parse(response.body)
         expect(body).not_to include('items')
         expect(body).not_to include('messages')
