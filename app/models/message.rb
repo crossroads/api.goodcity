@@ -5,13 +5,15 @@ class Message < ActiveRecord::Base
   include MessageSubscription
   include PushUpdatesForMessage
 
-  belongs_to :sender, class_name: "User", inverse_of: :messages
+  belongs_to :sender, class_name: 'User', inverse_of: :messages
   belongs_to :offer, inverse_of: :messages
   belongs_to :item, inverse_of: :messages
   belongs_to :order, inverse_of: :messages
 
   has_many :subscriptions, dependent: :destroy
-  has_many :offers_subscription, class_name: "Offer", through: :subscriptions
+  has_many :offers_subscription, class_name: 'Offer', through: :subscriptions
+
+  validates :body, presence: true
 
   default_scope do
     unless User.current_user.try(:staff?)
