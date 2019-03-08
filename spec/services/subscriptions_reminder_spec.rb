@@ -42,6 +42,16 @@ describe SubscriptionsReminder do
         expect(donor.subscriptions.unread.size).to eql(2)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([donor])
       end
+      it "donor's offer is received" do
+        Offer.update_all(state: 'received')
+        donor.update_column(:sms_reminder_sent_at, before_delta.ago)
+        expect(subject.send(:user_candidates_for_reminder).to_a).to eql([donor])
+      end
+      it "donor's offer is inactive" do
+        Offer.update_all(state: 'inactive')
+        donor.update_column(:sms_reminder_sent_at, before_delta.ago)
+        expect(subject.send(:user_candidates_for_reminder).to_a).to eql([donor])
+      end
     end
 
     context "doesn't include user when" do
