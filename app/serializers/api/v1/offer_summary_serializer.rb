@@ -17,7 +17,7 @@ module Api::V1
     has_one  :display_image, serializer: ImageSerializer, root: :images
 
     def display_image
-      Image.where(imageable: offer.items).limit(1).first
+      Image.where(imageable: object.items).limit(1).first
     end
   end
 end
