@@ -52,7 +52,7 @@ module Api
 
       api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
       def mark_read
-        @message.mark_read!(current_user.id)
+        @message.mark_read!(current_user.id, app_name)
         render json: @message, serializer: serializer, root: 'message'
       end
 
