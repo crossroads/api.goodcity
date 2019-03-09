@@ -7,8 +7,9 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
   let(:serialized_order) { Api::V1::GogovanOrderSerializer.new(gogovan_order).as_json }
   let(:serialized_order_json) { JSON.parse(serialized_order.to_json) }
   let(:parsed_body) { JSON.parse(response.body) }
-  let(:offer) { create(:offer, :with_transport) }
-  let(:ggv_order) { create(:gogovan_order, :with_delivery) }
+  let(:offer) { create(:offer, state: 'scheduled', delivery: delivery) }
+  let(:delivery) { create(:gogovan_delivery, gogovan_order: ggv_order)}
+  let(:ggv_order) { create(:gogovan_order) }
   let(:order_attributes) {
     {
       "pickupTime" => "Wed Nov 26 2014 21:30:00 GMT+0530 (IST)",
@@ -48,10 +49,6 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
     }
   }
 
-  let(:order_details_hash) {
-    Hash[order_details['gogovan_order'].map{|(k,v)| [k.camelize(:lower),v]}]
-  }
-
   describe "POST gogovan_orders/calculate_price" do
     context "donor" do
       before { generate_and_set_token(user) }
@@ -66,8 +63,9 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
 
   describe "GET gogovan_orders/driver_details" do
     before { generate_and_set_token(user) }
+    let(:ggv_uuid) { offer.delivery.gogovan_order.ggv_uuid }
     it "returns 200" do
-      get :driver_details, id: ggv_order.ggv_uuid
+      get :driver_details, id: ggv_uuid
       expect(response.status).to eq(200)
       expect(parsed_body.keys).to include("gogovan_orders")
     end
