@@ -11,9 +11,6 @@ context PushUpdatesForMessage do
   let(:reviewer2) { create :user, :reviewer }
   let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
   let(:system_user) { create :user, :system }
-  # let(:data) { { item: item_data, sender: sender } }
-  # let(:item_data) {}
-  # let(:sender) { reviewer }
   let(:push_service) { PushService.new }
 
   before(:each) do
@@ -53,8 +50,6 @@ context PushUpdatesForMessage do
         message.update_client_store
       end
     end
-
-    it "with more detailed sender info"
 
   end
 
@@ -112,6 +107,13 @@ context PushUpdatesForMessage do
         let(:user_id) { reviewer1.id }
         it { expect(subject).to eql(ADMIN_APP) }
       end
+    end
+  end
+
+  context "serialized_user" do
+    it "UserSerializer should only send summary info (no email or mobile)" do
+      expect(Api::V1::UserSerializer).to receive(:new).with(donor, user_summary: true)
+      message.send(:serialized_user, donor)
     end
   end
 
