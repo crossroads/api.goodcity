@@ -16,6 +16,7 @@ class Offer < ActiveRecord::Base
   belongs_to :cancellation_reason
 
   has_many :items, inverse_of: :offer, dependent: :destroy
+  has_many :images, through: :items
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_one  :delivery, dependent: :destroy
@@ -32,6 +33,10 @@ class Offer < ActiveRecord::Base
         { messages: :sender },
         { items: [:images, :packages, { messages: :sender }] }]
     )
+  }
+
+  scope :with_summary_eager_load, -> {
+    includes([:created_by, :reviewed_by, :closed_by, :images])
   }
 
   scope :active_from_past_fortnight, -> {

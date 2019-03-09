@@ -9,13 +9,13 @@ module Api::V1
       :delivered_by, :closed_by_id, :cancelled_at, :received_by_id,
       :start_receiving_at, :cancellation_reason_id, :cancel_reason
 
-    has_one  :closed_by, serializer: UserSerializer, root: :user
-    has_one  :created_by, serializer: UserSerializer, root: :user
-    has_one  :reviewed_by, serializer: UserSerializer, root: :user
+    has_one  :closed_by, serializer: UserSummarySerializer, root: :user
+    has_one  :created_by, serializer: UserSummarySerializer, root: :user
+    has_one  :reviewed_by, serializer: UserSummarySerializer, root: :user
     has_one  :display_image, serializer: ImageSerializer, root: :images
 
     def display_image
-      Image.where(imageable: object.items).limit(1).first
+      object.images.first
     end
   end
 end
