@@ -28,21 +28,26 @@ FactoryBot.define do
     trait :reviewed do
       under_review
       review_completed_at { Time.now }
+      with_transport
       state       'reviewed'
-      association :reviewed_by, :reviewer, factory: :user
     end
 
     trait :scheduled do
       reviewed
-      with_transport
+      with_delivery
       state 'scheduled'
+    end
+
+    trait :receiving do
+      scheduled
+      start_receiving_at { Time.now }
+      association :received_by, :reviewer, factory: :user
+      state "receiving"
     end
     
     trait :received do
-      scheduled
-      start_receiving_at { Time.now }
+      receiving
       received_at { Time.now }
-      association :received_by, :reviewer, factory: :user
       state "received"
     end
 
@@ -81,6 +86,15 @@ FactoryBot.define do
       end
       after(:create) do |offer, evaluator|
         evaluator.items_count.times { create :demo_item, offer: offer }
+      end
+    end
+
+    trait :with_delivery do
+      transient do
+        delivery_type { [:crossroads_delivery, :drop_off_delivery].sample }
+      end
+      after(:create) do |offer, evaluator|
+        create evaluator.delivery_type, offer: offer
       end
     end
 

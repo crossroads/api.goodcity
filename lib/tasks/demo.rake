@@ -18,24 +18,12 @@ namespace :demo do
     end
 
     def create_offers
-      puts "Offers:\tCreating #{count} submitted, #{count} under_review, #{count} reviewed, #{count} scheduled , #{count} closed, #{count} receiving, #{count} received Offers"
-      count.times do
-        offer = create_submitted_offer
-        puts "\t\tCreated Offer #{offer.id} in 'submitted' state"
-        offer = create_reviewing_offer
-        puts "\t\tCreated Offer #{offer.id} in 'under_review' state"
-        offer = create_reviewed_offer
-        puts "\t\tCreated Offer #{offer.id} in 'reviewed' state"
-        offer = create_scheduled_offer
-        puts "\t\tCreated Offer #{offer.id} in 'scheduled' state"
-        offer = create_closed_offer
-        puts "\t\tCreated Offer #{offer.id} in 'closed' state"
-        offer = create_inactive_offer
-        puts "\t\tCreated Offer #{offer.id} in 'inactive' state"
-        offer = create_receiving_offer
-        puts "\t\tCreated Offer #{offer.id} in 'receiving' state"
-        offer = create_recieved_offer
-        puts "\t\tCreated Offer #{offer.id} in 'received' state"
+      actions = %w(create_submitted_offer create_reviewing_offer create_reviewed_offer
+         create_scheduled_offer create_closed_offer create_inactive_offer 
+         create_receiving_offer create_received_offer)
+      actions.each do |action|
+        puts "Creating #{count} #{action}"
+        count.times { send(action) }
       end
     end
 
@@ -50,44 +38,40 @@ namespace :demo do
     end
 
     def create_submitted_offer
-      FactoryBot.create(:offer, :with_demo_items, :with_messages, created_by: donor).tap(&:submit)
+      FactoryBot.create(:offer, :submitted, :with_demo_items, :with_messages, created_by: donor)
     end
 
     def create_reviewing_offer
-      User.current_user = reviewer
-      create_submitted_offer.tap(&:start_review)
+      FactoryBot.create(:offer, :under_review, :with_demo_items, :with_messages, created_by: donor, reviewed_by: reviewer)
     end
 
     def create_reviewed_offer
-      offer = create_reviewing_offer
-      offer.update(reviewed_by: reviewer)
-      offer.reload.items.each do |item|
-        item.accept
-      end
-      offer.tap(&:finish_review)
+      FactoryBot.create(:offer, :reviewed, :with_demo_items, :with_messages, created_by: donor, reviewed_by: reviewer)
     end
 
     def create_scheduled_offer
-      offer = create_reviewed_offer.tap(&:schedule)
-      delivery_type = ["crossroads_delivery", "drop_off_delivery"].sample.to_sym
-      FactoryBot.create(delivery_type, offer: offer)
-      offer
+      FactoryBot.create(:offer, :scheduled, :with_demo_items, :with_messages, created_by: donor, reviewed_by: reviewer)
     end
 
     def create_inactive_offer
-      create_reviewing_offer.tap(&:mark_inactive)
+      FactoryBot.create(:offer, :inactive, :with_demo_items, :with_messages, created_by: donor)
     end
 
     def create_closed_offer
-      create_reviewed_offer.tap(&:mark_unwanted)
+      FactoryBot.create(:offer, :closed, :with_demo_items, :with_messages, created_by: donor, reviewed_by: reviewer, closed_by: reviewer)
+    end
+
+    def create_cancelled_offer
+      FactoryBot.create(:offer, :cancelled, :with_demo_items, :with_messages, created_by: donor, reviewed_by: reviewer)
     end
 
     def create_receiving_offer
-      create_reviewed_offer.tap(&:start_receiving)
+      FactoryBot.create(:offer, :receiving, :with_demo_items, :with_messages, created_by: donor, reviewed_by: reviewer, received_by: reviewer)
     end
 
-    def create_recieved_offer
-      inventory_offer_packages(create_receiving_offer).tap(&:receive)
+    def create_received_offer
+      offer = FactoryBot.create(:offer, :receiving, :with_demo_items, :with_messages, created_by: donor, reviewed_by: reviewer, received_by: reviewer)
+      inventory_offer_packages(offer)
     end
 
     def inventory_offer_packages(offer)
@@ -101,7 +85,6 @@ namespace :demo do
         end
       end
       offer.update(delivered_by: FactoryBot.generate(:delivered_by))
-      offer
     end
 
     def create_single_order
@@ -110,7 +93,7 @@ namespace :demo do
 
     def create_designated_packages
       order = create_single_order
-      offer = create_recieved_offer
+      offer = create_received_offer
       orders_packages_ids = []
       offer.reload.items.each do |item|
         item.packages.each do |pkg|
