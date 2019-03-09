@@ -12,6 +12,7 @@ module Api::V1
     has_one  :closed_by, serializer: UserSummarySerializer, root: :user
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
     has_one  :reviewed_by, serializer: UserSummarySerializer, root: :user
+    has_one  :received_by, serializer: UserSummarySerializer, root: :user
     has_one  :display_image, serializer: ImageSerializer, root: :images
 
     def display_image
