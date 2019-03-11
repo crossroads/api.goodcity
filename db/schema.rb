@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190228150258) do
+ActiveRecord::Schema.define(version: 20190307114429) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,18 +92,6 @@ ActiveRecord::Schema.define(version: 20190228150258) do
   end
 
   add_index "boxes", ["pallet_id"], name: "index_boxes_on_pallet_id", using: :btree
-
-  create_table "braintree_transactions", force: :cascade do |t|
-    t.string   "transaction_id"
-    t.integer  "customer_id"
-    t.decimal  "amount"
-    t.string   "status"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.boolean  "is_success"
-  end
-
-  add_index "braintree_transactions", ["customer_id"], name: "index_braintree_transactions_on_customer_id", using: :btree
 
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
