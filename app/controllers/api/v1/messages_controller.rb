@@ -31,9 +31,9 @@ module Api
       param :order_id, String, desc: "Return messages for order id"
       def index
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
-        @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
-        @messages = @messages.where(order_id: params[:order_id]) if params[:order_id].present?
-        @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
+        @messages = @messages.where(offer_id: params[:offer_id].split(",")) if params[:offer_id].present?
+        @messages = @messages.where(order_id: params[:order_id].split(",")) if params[:order_id].present?
+        @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
         render json: @messages, each_serializer: serializer, root: 'messages'
       end
 
