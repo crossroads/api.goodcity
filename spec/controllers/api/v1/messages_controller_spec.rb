@@ -67,7 +67,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         expect(subject['messages'].length).to eq(3)
       end
 
-      it "for multiple offers" do
+      it "for multiple orders" do
         3.times { create :message, order: order }
         3.times { create :message, order: order2 }
         get :index, order_id: "#{order.id},#{order2.id}"
