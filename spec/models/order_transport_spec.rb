@@ -19,7 +19,6 @@ RSpec.describe OrderTransport, type: :model do
     it{ is_expected.to have_db_column(:gogovan_order_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:gogovan_transport_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:order_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:booking_type_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:updated_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:need_english).of_type(:boolean)}
