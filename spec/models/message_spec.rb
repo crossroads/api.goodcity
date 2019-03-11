@@ -4,8 +4,8 @@ describe Message, type: :model do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
-  let(:donor) { create :user }
-  let(:reviewer) { create :user, :reviewer }
+  let!(:donor) { create :user }
+  let!(:reviewer) { create :user, :reviewer }
   let(:offer) { create :offer, created_by_id: donor.id }
   let(:item)  { create :item, offer_id: offer.id }
 
@@ -33,9 +33,9 @@ describe Message, type: :model do
   end
 
   describe "subscribe_users_to_message" do
-    it "sender subscription state is unread" do
+    it "sender subscription state is read" do
       message = create_message(sender_id: donor.id)
-      expect(message.subscriptions.count).to eq(1)
+      expect(message.subscriptions.count).to eq(2)
       expect(message.subscriptions).to include(have_attributes(user_id: donor.id, state: "read"))
     end
 
@@ -47,10 +47,25 @@ describe Message, type: :model do
     end
 
     it "subscribes users to message in unread state" do
-      message1 = create_message(sender_id: donor.id)
-      message2 = create_message(sender_id: reviewer.id)
-      expect(message2.subscriptions.count).to eq(2)
-      expect(message2.subscriptions).to include(have_attributes(user_id: donor.id, state: "unread"))
+      message = create_message(sender_id: reviewer.id)
+      expect(message.subscriptions.count).to eq(2)
+      expect(message.subscriptions).to include(have_attributes(user_id: donor.id, state: "unread"))
+    end
+  end
+
+  context 'filtering by state' do
+    let!(:message) { create_message(sender_id: donor.id) }
+    let!(:message2) { create_message(sender_id: donor.id) }
+    let!(:message3) { create_message(sender_id: reviewer.id) }
+
+    it 'should only return unread messages' do
+      expect(Message.with_user_read_state(reviewer, 'unread').count).to eq(2)
+      expect(Message.with_user_read_state(donor, 'unread').count).to eq(1)
+    end
+
+    it 'should return all read messages' do
+      expect(Message.with_user_read_state(reviewer, 'read').count).to eq(1)
+      expect(Message.with_user_read_state(donor, 'read').count).to eq(2)
     end
   end
 

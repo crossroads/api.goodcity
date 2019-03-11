@@ -32,7 +32,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       expect(subject['messages'].length).to eq(2)
     end
 
-    describe do
+    describe 'filtering messages' do
       before { 2.times { create :message } }
 
       it "for one item" do
@@ -71,6 +71,14 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         3.times { create :message, order: order }
         3.times { create :message, order: order2 }
         get :index, order_id: "#{order.id},#{order2.id}"
+        expect(subject['messages'].length).to eq(6)
+      end
+
+      it "for a certain state" do
+        3.times { create :message, offer: offer }
+        3.times { create :message, offer: offer, sender_id: user.id }
+        3.times { create :message, offer: offer2 }
+        get :index, offer_id: "#{offer.id},#{offer2.id}", state: 'unread'
         expect(subject['messages'].length).to eq(6)
       end
     end
