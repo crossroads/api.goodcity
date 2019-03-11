@@ -9,6 +9,8 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:offer2) { create(:offer, created_by: user) }
   let(:item) { create(:item, offer: offer) }
   let(:item2) { create(:item, offer: offer) }
+  let(:order) { create(:order) }
+  let(:order2) { create(:order) }
   let(:message) { create :message, sender: user, offer: offer, item: item }
   let(:subscription) { message.subscriptions.where(user_id: user.id).first }
   let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
@@ -56,6 +58,19 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         3.times { create :message, offer: offer }
         3.times { create :message, offer: offer2 }
         get :index, offer_id: "#{offer.id},#{offer2.id}"
+        expect(subject['messages'].length).to eq(6)
+      end
+
+      it "for one order" do
+        3.times { create :message, order: order }
+        get :index, order_id: order.id
+        expect(subject['messages'].length).to eq(3)
+      end
+
+      it "for multiple offers" do
+        3.times { create :message, order: order }
+        3.times { create :message, order: order2 }
+        get :index, order_id: "#{order.id},#{order2.id}"
         expect(subject['messages'].length).to eq(6)
       end
     end
