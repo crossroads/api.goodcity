@@ -12,7 +12,7 @@ module Api::V1
     end
 
     def designation_id__sql
-      'order_id'
+      'messages.order_id'
     end
 
     def state
