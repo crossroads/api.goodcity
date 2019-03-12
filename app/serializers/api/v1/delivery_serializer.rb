@@ -6,5 +6,11 @@ module Api::V1
     has_one :contact, serializer: ContactSerializer
     has_one :schedule, serializer: ScheduleSerializer
     has_one :gogovan_order, serializer: GogovanOrderSerializer
+
+    # include if nil or false.
+    # Used to exclude contacts in OfferSummarySerializer
+    def include_contact?
+      !(@options[:summary] == true)
+    end
   end
 end

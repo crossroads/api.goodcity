@@ -36,7 +36,9 @@ class Offer < ActiveRecord::Base
   }
 
   scope :with_summary_eager_load, -> {
-    includes([:created_by, :reviewed_by, :received_by, :closed_by, :images])
+    includes([:created_by, :reviewed_by, :received_by, :closed_by, :images,
+      { delivery: [:schedule, :gogovan_order ] }
+    ])
   }
 
   scope :active_from_past_fortnight, -> {
