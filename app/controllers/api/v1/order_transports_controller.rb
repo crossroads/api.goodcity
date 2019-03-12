@@ -25,7 +25,7 @@ module Api
         params.require(:order_transport).permit(:order_id, :scheduled_at,
           :timeslot, :transport_type, :contact_id, :gogovan_order_id,
           :need_english, :need_cart, :need_carry, :need_over_6ft,
-          :gogovan_transport_id, :remove_net, :booking_type_id,
+          :gogovan_transport_id, :remove_net, 
           contact_attributes: [:name, :mobile, { address_attributes: [:district_id] }])
       end
 
