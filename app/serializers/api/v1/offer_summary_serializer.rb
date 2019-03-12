@@ -11,9 +11,17 @@ module Api::V1
     has_one  :reviewed_by, serializer: UserSummarySerializer, root: :user
     has_one  :received_by, serializer: UserSummarySerializer, root: :user
     has_one  :display_image, serializer: ImageSerializer, root: :images
+    has_one  :delivery, serializer: DeliverySerializer, root: :delivery
 
     def display_image
       object.images.first
     end
+
+    # For Admin app offer summary, only show 
+    # deliveries and schedules for actively scheduled offers
+    def include_delivery?
+      object.state.include?('scheduled')
+    end
+
   end
 end
