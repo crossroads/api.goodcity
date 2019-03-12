@@ -6,7 +6,11 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
   let(:user) { create(:user_with_token) }
   let(:offer) { create(:offer, created_by: user) }
+  let(:offer2) { create(:offer, created_by: user) }
   let(:item) { create(:item, offer: offer) }
+  let(:item2) { create(:item, offer: offer) }
+  let(:order) { create(:order) }
+  let(:order2) { create(:order) }
   let(:message) { create :message, sender: user, offer: offer, item: item }
   let(:subscription) { message.subscriptions.where(user_id: user.id).first }
   let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
@@ -28,19 +32,54 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       expect(subject['messages'].length).to eq(2)
     end
 
-    describe do
+    describe 'filtering messages' do
       before { 2.times { create :message } }
 
-      it "for item" do
+      it "for one item" do
         3.times { create :message, item: item }
         get :index, item_id: item.id
         expect(subject['messages'].length).to eq(3)
       end
 
-      it "for offer" do
+      it "for multiple items" do
+        3.times { create :message, item: item }
+        3.times { create :message, item: item2 }
+        get :index, item_id: "#{item.id},#{item2.id}"
+        expect(subject['messages'].length).to eq(6)
+      end
+
+      it "for one offer" do
         3.times { create :message, offer: offer }
         get :index, offer_id: offer.id
         expect(subject['messages'].length).to eq(3)
+      end
+
+      it "for multiple offers" do
+        3.times { create :message, offer: offer }
+        3.times { create :message, offer: offer2 }
+        get :index, offer_id: "#{offer.id},#{offer2.id}"
+        expect(subject['messages'].length).to eq(6)
+      end
+
+      it "for one order" do
+        3.times { create :message, order: order }
+        get :index, order_id: order.id
+        expect(subject['messages'].length).to eq(3)
+      end
+
+      it "for multiple orders" do
+        3.times { create :message, order: order }
+        3.times { create :message, order: order2 }
+        get :index, order_id: "#{order.id},#{order2.id}"
+        expect(subject['messages'].length).to eq(6)
+      end
+
+      it "for a certain state" do
+        3.times { create :message, offer: offer }
+        3.times { create :message, offer: offer, sender_id: user.id }
+        3.times { create :message, offer: offer2 }
+        get :index, offer_id: "#{offer.id},#{offer2.id}", state: 'unread'
+        expect(subject['messages'].length).to eq(6)
       end
     end
   end
