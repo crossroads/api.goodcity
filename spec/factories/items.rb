@@ -49,6 +49,11 @@ FactoryBot.define do
       end
     end
 
+    trait :accepted do
+      with_received_packages
+      state 'accepted'
+    end
+
     trait :rejected do
       state              'rejected'
       association        :rejection_reason
@@ -61,6 +66,7 @@ FactoryBot.define do
       transient do
         demo_key { generate(:cloudinary_demo_images).keys.sample } # e.g. red_chair
       end
+      state 'accepted'
       donor_description { generate(:cloudinary_demo_images)[demo_key][:donor_description] }
       images            { create_list(:demo_image, rand(3)+1, demo_key.to_sym, favourite: true) }
       packages          { create_list(:package, rand(3)+1, notes: donor_description) }
