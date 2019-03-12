@@ -16,7 +16,6 @@ class Offer < ActiveRecord::Base
   belongs_to :cancellation_reason
 
   has_many :items, inverse_of: :offer, dependent: :destroy
-  has_many :draft_items, -> { where(state: 'draft') }
   has_many :submitted_items, -> { where(state: 'submitted') }, class_name: 'Item'
   has_many :accepted_items, -> { where(state: 'accepted') }, class_name: 'Item'
   has_many :rejected_items, -> { where(state: 'rejected') }, class_name: 'Item'
