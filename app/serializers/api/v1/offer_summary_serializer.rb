@@ -5,7 +5,7 @@ module Api::V1
     attributes :id, :state, :created_at, :inactive_at,
       :updated_at, :submitted_at, :reviewed_at, :review_completed_at,
       :received_at, :cancelled_at, :start_receiving_at,
-      :pending_items_count, :accepted_items_count, :rejected_items_count
+      :submitted_items_count, :accepted_items_count, :rejected_items_count
 
     has_one  :closed_by, serializer: UserSummarySerializer, root: :user
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
@@ -24,7 +24,7 @@ module Api::V1
       object.state.include?('scheduled')
     end
 
-    def pending_items_count
+    def submitted_items_count
       object.submitted_items.size
     end
 
