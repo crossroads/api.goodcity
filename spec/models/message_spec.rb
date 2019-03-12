@@ -59,13 +59,13 @@ describe Message, type: :model do
     let!(:message3) { create_message(sender_id: reviewer.id) }
 
     it 'should only return unread messages' do
-      expect(Message.with_user_read_state(reviewer, 'unread').count).to eq(2)
-      expect(Message.with_user_read_state(donor, 'unread').count).to eq(1)
+      expect(Message.with_state_for_user(reviewer, 'unread').count).to eq(2)
+      expect(Message.with_state_for_user(donor, 'unread').count).to eq(1)
     end
 
     it 'should return all read messages' do
-      expect(Message.with_user_read_state(reviewer, 'read').count).to eq(1)
-      expect(Message.with_user_read_state(donor, 'read').count).to eq(2)
+      expect(Message.with_state_for_user(reviewer, 'read').count).to eq(1)
+      expect(Message.with_state_for_user(donor, 'read').count).to eq(2)
     end
   end
 

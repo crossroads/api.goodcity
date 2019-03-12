@@ -35,7 +35,7 @@ module Api
         @messages = @messages.where(offer_id: params[:offer_id].split(",")) if params[:offer_id].present?
         @messages = @messages.where(order_id: params[:order_id].split(",")) if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
-        @messages = @messages.with_user_read_state(User.current_user, params[:state]) if params[:state].present?
+        @messages = @messages.with_state_for_user(User.current_user, params[:state]) if params[:state].present?
         render json: @messages, each_serializer: serializer, root: 'messages'
       end
 
