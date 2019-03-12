@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190308142745) do
+ActiveRecord::Schema.define(version: 20190311144106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -338,10 +338,8 @@ ActiveRecord::Schema.define(version: 20190308142745) do
     t.boolean  "need_over_6ft",        default: false
     t.integer  "gogovan_transport_id"
     t.string   "remove_net"
-    t.integer  "booking_type_id"
   end
 
-  add_index "order_transports", ["booking_type_id"], name: "index_order_transports_on_booking_type_id", using: :btree
   add_index "order_transports", ["contact_id"], name: "index_order_transports_on_contact_id", using: :btree
   add_index "order_transports", ["gogovan_order_id"], name: "index_order_transports_on_gogovan_order_id", using: :btree
   add_index "order_transports", ["gogovan_transport_id"], name: "index_order_transports_on_gogovan_transport_id", using: :btree
