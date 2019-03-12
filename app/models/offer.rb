@@ -16,6 +16,9 @@ class Offer < ActiveRecord::Base
   belongs_to :cancellation_reason
 
   has_many :items, inverse_of: :offer, dependent: :destroy
+  has_many :submitted_items, -> { where(state: 'submitted') }, class_name: 'Item'
+  has_many :accepted_items, -> { where(state: 'accepted') }, class_name: 'Item'
+  has_many :rejected_items, -> { where(state: 'rejected') }, class_name: 'Item'
   has_many :images, through: :items
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
@@ -37,6 +40,7 @@ class Offer < ActiveRecord::Base
 
   scope :with_summary_eager_load, -> {
     includes([:created_by, :reviewed_by, :received_by, :closed_by, :images,
+      :submitted_items, :accepted_items, :rejected_items,
       { delivery: [:schedule, :gogovan_order ] }
     ])
   }
