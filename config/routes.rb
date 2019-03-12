@@ -38,7 +38,7 @@ Rails.application.routes.draw do
         put :mark_read, on: :member
       end
 
-      resources :offers, only: [:create, :update, :index, :show, :destroy] do
+      resources :offers, only: [:create, :update, :index, :summary, :show, :destroy] do
         member do
           get :messages
           put :review
