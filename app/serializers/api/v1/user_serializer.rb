@@ -1,9 +1,7 @@
 module Api::V1
   class UserSerializer < ApplicationSerializer
-    include SerializeTimeValue
-
     embed :ids, include: true
-    attributes :id, :first_name, :last_name, :permission_id, :mobile, :title,
+    attributes :id, :first_name, :last_name, :mobile, :title,
       :created_at, :last_connected, :last_disconnected, :email, :user_roles_ids, :organisations_users_ids
 
     has_one :image, serializer: ImageSerializer
@@ -33,6 +31,7 @@ module Api::V1
     end
     alias_method :include_address?, :include_attribute?
     alias_method :include_mobile?, :include_attribute?
+    alias_method :include_email?, :include_attribute?
     alias_method :include_last_connected?, :include_attribute?
     alias_method :include_last_disconnected?, :include_attribute?
   end
