@@ -6,8 +6,9 @@ module PushUpdatesForSubscription
   # E.g. after_create :send_new_message_notification
   def send_new_message_notification
     message = self.message
-    # Don't notify the message sender themselves
-    return if message.sender_id == self.user_id
+    # Don't notify the message sender themselves or for order messages
+    return if message.sender_id == user_id || is_order_message?
+
     data = {
       category:   'message',
       message:    message.body.truncate(150, separator: ' '),
@@ -38,4 +39,7 @@ module PushUpdatesForSubscription
     end
   end
 
+  def is_order_message?
+    (app_name == BROWSE_APP || app_name == STOCK_APP) && !message.order_id.nil?
+  end
 end
