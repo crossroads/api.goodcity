@@ -12,41 +12,56 @@ module Api::V1
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
     has_one  :reviewed_by, serializer: UserSummarySerializer, root: :user
     has_one  :received_by, serializer: UserSummarySerializer, root: :user
-    has_one  :display_image, serializer: ImageSerializer, root: :images
+    has_many :images, serializer: ImageSerializer, root: :images
     has_one  :delivery, serializer: DeliverySerializer, root: :delivery
-
-    def display_image
-      object.images.first
-    end
-
-    # For Admin app offer summary, only show 
-    # deliveries and schedules for actively scheduled offers
-    def include_delivery?
-      object.state.include?('scheduled')
-    end
 
     def submitted_items_count
       object.submitted_items.size
     end
 
+    def submitted_items_count__sql
+      "(SELECT COUNT(*) FROM items i WHERE i.offer_id = offers.id AND i.state = 'submitted')"
+    end
+
     def accepted_items_count
       object.accepted_items.size
+    end
+
+    def accepted_items_count__sql
+      "(SELECT COUNT(*) FROM items i WHERE i.offer_id = offers.id AND i.state = 'accepted')"
     end
     
     def rejected_items_count
       object.rejected_items.size
     end
 
+    def rejected_items_count__sql
+      "(SELECT COUNT(*) FROM items i WHERE i.offer_id = offers.id AND i.state = 'rejected')"
+    end
+
     def expecting_packages_count
       object.expecting_packages.size
+    end
+
+    # offers.id is the ID of the offer in the PES parent query
+    def expecting_packages_count__sql
+      "(SELECT COUNT(*) FROM packages LEFT JOIN items ON items.id = packages.item_id LEFT JOIN offers o ON o.id = items.offer_id WHERE offers.id = o.id AND packages.state = 'expecting')"
     end
 
     def missing_packages_count
       object.missing_packages.size
     end
 
+    def missing_packages_count__sql
+      "(SELECT COUNT(*) FROM packages LEFT JOIN items ON items.id = packages.item_id LEFT JOIN offers o ON o.id = items.offer_id WHERE offers.id = o.id AND packages.state = 'missing')"
+    end
+
     def received_packages_count
       object.received_packages.size
+    end
+
+    def received_packages_count__sql
+      "(SELECT COUNT(*) FROM packages LEFT JOIN items ON items.id = packages.item_id LEFT JOIN offers o ON o.id = items.offer_id WHERE offers.id = o.id AND packages.state = 'received')"
     end
 
   end
