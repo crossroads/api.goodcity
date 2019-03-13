@@ -18,15 +18,6 @@ context Api::V1::OfferSummarySerializer do
     expect(subject.keys).not_to include("cancellation_reason")
   end
 
-  it "should include a display image" do
-    rec = subject['offer']
-    expect(rec['display_image_id']).not_to be_nil
-    expect(rec['display_image_id']).to eq(offer.items.first.images.first.id)
-
-    img = subject['images'].detect { |im| im['id'] == rec['display_image_id'] }
-    expect(img).not_to eq(nil)
-  end
-
   it "should include count attributes on offer" do
     expect(subject['offer'].keys).to include("submitted_items_count")
     expect(subject['offer'].keys).to include("accepted_items_count")
