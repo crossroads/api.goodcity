@@ -6,14 +6,22 @@ module Api::V1
       :updated_at, :submitted_at, :reviewed_at, :review_completed_at,
       :received_at, :cancelled_at, :start_receiving_at,
       :submitted_items_count, :accepted_items_count, :rejected_items_count,
-      :expecting_packages_count, :missing_packages_count, :received_packages_count
+      :expecting_packages_count, :missing_packages_count, :received_packages_count,
+      :display_image_id
 
     has_one  :closed_by, serializer: UserSummarySerializer, root: :user
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
     has_one  :reviewed_by, serializer: UserSummarySerializer, root: :user
     has_one  :received_by, serializer: UserSummarySerializer, root: :user
-    has_many :images, serializer: ImageSerializer, root: :images
     has_one  :delivery, serializer: DeliverySerializer, root: :delivery
+
+    def display_image_id
+      images.first.id
+    end
+
+    def display_image_id__sql
+      "(SELECT cloudinary_id FROM images LEFT JOIN items ON items.id = images.item_id LEFT JOIN offers o ON o.id = items.offer_id ORDER BY images.id ASC LIMIT 1)"
+    end
 
     def submitted_items_count
       object.submitted_items.size
