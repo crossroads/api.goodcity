@@ -72,7 +72,10 @@ class User < ActiveRecord::Base
   end
 
   def self.search(searchText, role)
-    joins(:roles).where("roles.name = ?  AND first_name ILIKE ? OR last_name ILIKE ?", role, "%#{searchText}%", "%#{searchText}%").uniq
+    joins(:roles)
+    .where("roles.name = ?  AND first_name ILIKE ? OR last_name ILIKE ?
+    OR mobile ILIKE ? OR email ILIKE ?", role, "%#{searchText}%",
+    "%#{searchText}%", "%#{searchText}%","%#{searchText}%").uniq
   end
 
   def allowed_login?(app_name)
