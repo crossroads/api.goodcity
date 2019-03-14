@@ -20,7 +20,7 @@ class Ability
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
-      user_permissions.include?(permission_name)
+      @user_permissions.include?(permission_name)
     end
   end
 
