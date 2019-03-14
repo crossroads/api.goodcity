@@ -48,22 +48,31 @@ class User < ActiveRecord::Base
   attr :treat_user_as_donor
 
   #added to allow sign_up without mobile number from stock app.
-  attr_accessor :request_from_stock
+  attr_accessor :request_from_stock,:request_from_browse
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params, app_name)
-    mobile = user_params['mobile']
-    user = find_by_mobile(mobile) if mobile.present?
+    mobile = user_params[:mobile].presence
+    email = user_params[:email].presence
+    user = find_user_by_mobile_or_email(mobile, email)
     user ||= new(user_params)
     begin
       user.save if user.changed?
-      user.send_verification_pin(app_name) if user.valid?
+      user.send_verification_pin(app_name, mobile, email) if user.valid?
     rescue Twilio::REST::RequestError => e
       msg = e.message.try(:split, '.').try(:first)
       user.errors.add(:base, msg)
     end
     user
+  end
+
+  def self.find_user_by_mobile_or_email(user_params, app_name)
+    if(mobile = user_params['mobile'].presence)
+      find_by_mobile(mobile)
+    else
+      find_by_email(user_params['email'])
+    end
   end
 
   def self.recent_orders_created_for(user_id)
@@ -140,10 +149,14 @@ class User < ActiveRecord::Base
       (last_connected > last_disconnected) : false
   end
 
-  def send_verification_pin(app_name)
+  def send_verification_pin(app_name, mobile, email)
     most_recent_token.cycle_otp_auth_key!
     SlackPinService.new(self).send_otp(app_name)
-    TwilioService.new(self).sms_verification_pin(app_name)
+    if mobile
+      TwilioService.new(self).sms_verification_pin(app_name)
+    elsif email
+      
+    end
   end
 
   def self.current_user

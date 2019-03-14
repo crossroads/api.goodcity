@@ -199,7 +199,7 @@ module Api
       end
 
       def auth_params
-        attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
+        attributes = [:mobile, :email, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
         params.require(:user_auth).permit(attributes)
       end
 
