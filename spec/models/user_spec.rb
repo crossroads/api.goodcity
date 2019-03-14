@@ -103,23 +103,29 @@ describe User, :type => :model do
 
   describe ".search" do
     it "will return users according to searchText" do
-      expect(User.search(charity_users.first.first_name, 'Charity').pluck(:id)).to include(charity_users.first.id)
+      search_options = {search_text: charity_users.first.first_name, role_name: 'Charity'}
+      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
     end
 
     it "will return users according to role type" do
-      expect(User.search(charity_users.first.first_name, 'Charity').first.roles.pluck(:name)).to include("Charity")
+      search_options = {search_text: charity_users.first.first_name, role_name: 'Charity'}
+      expect(User.search(search_options).first.roles.pluck(:name)).to include("Charity")
     end
 
     it "will return users based on email from search text" do
-      expect(User.search(charity_users.first.email, 'Charity').pluck(:id)).to include(charity_users.first.id)
+      charity_users.first.update(email: 'charity@abc.com')
+      search_options = {search_text: charity_users.first.email, role_name: 'Charity'}
+      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
     end
 
     it "will return users based on mobile from search text" do
-      expect(User.search(charity_users.first.mobile, 'Charity').pluck(:id)).to include(charity_users.first.id)
+      search_options = {search_text: charity_users.first.mobile, role_name: 'Charity'}
+      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
     end
 
     it "will return nothing if searchText does not match any users" do
-      expect(User.search("zzzzz", 'Charity').length).to eq(0)
+      search_options = { search_text: "zzzzz", role_name: 'Charity'}
+      expect(User.search(search_options).length).to eq(0)
     end
   end
 
