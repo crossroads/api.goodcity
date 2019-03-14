@@ -25,7 +25,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       2.times{ create :offer }
       get :index
       body = JSON.parse(response.body)
-      expect( body['offers'].length ).to eq(2)
+      expect( body['offers'].size ).to eq(2)
     end
 
     context "exclude_messages" do
@@ -141,7 +141,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         2.times{ create :offer }
         get :index, summarize: 'true'
         body = JSON.parse(response.body)
-        expect( body['offers'].length ).to eq(2)
+        expect( body['offers'].size ).to eq(2)
         expect( body['user'] ).not_to be_nil
       end
 
@@ -154,7 +154,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "GET offer/1" do
+  describe "GET offers/1" do
     before { generate_and_set_token(user) }
     it "returns 200" do
       get :show, id: offer.id
@@ -162,7 +162,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "POST offer/1" do
+  describe "POST offers/1" do
     before { generate_and_set_token(user) }
     it "returns 201", :show_in_doc do
       post :create, offer: offer_params
@@ -170,7 +170,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "PUT offer/1" do
+  describe "PUT offers/1" do
     context "owner" do
       before { generate_and_set_token(user) }
       it "owner can submit", :show_in_doc do
@@ -183,7 +183,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "PUT offer/1/review" do
+  describe "PUT offers/1/review" do
     context "reviewer" do
       before { generate_and_set_token(reviewer) }
       it "can review", :show_in_doc do
@@ -195,7 +195,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "PUT offer/1/complete_review" do
+  describe "PUT offers/1/complete_review" do
     let(:gogovan_transport) { create :gogovan_transport }
     let(:crossroads_transport) { create :crossroads_transport }
 
@@ -217,7 +217,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "PUT offer/1/close_offer" do
+  describe "PUT offers/1/close_offer" do
     context "reviewer" do
       before { generate_and_set_token(reviewer) }
       it "can close offer", :show_in_doc do
@@ -231,7 +231,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "PUT offer/1/receive_offer" do
+  describe "PUT offers/1/receive_offer" do
     context "reviewer" do
       before { generate_and_set_token(reviewer) }
       it "can close offer", :show_in_doc do
@@ -245,7 +245,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "PUT offer/1/merge_offer" do
+  describe "PUT offers/1/merge_offer" do
     context "reviewer" do
       before { generate_and_set_token(reviewer) }
 
@@ -292,4 +292,68 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
     end
   end
+
+  context "GET offers/search" do
+    before(:each) { generate_and_set_token(reviewer) }
+    subject { JSON.parse(response.body) }
+
+    context "matches" do
+      context "offers.notes" do
+        let!(:offer1) { create :offer, notes: 'Test' }
+        let!(:offer2) { create :offer, notes: 'Tester' }
+        let!(:offer3) { create :offer, notes: 'Empty' }
+        it do
+          get :search, searchText: 'Test'
+          expect(response.status).to eq(200)
+          expect(subject['offers'].size).to eq(2)
+        end
+      end
+
+      context "user.first_name" do
+        let!(:offer1) { create :offer, created_by: (create :user, first_name: 'Test') }
+        let!(:offer2) { create :offer, created_by: (create :user, first_name: 'Tester') }
+        let!(:offer3) { create :offer, created_by: (create :user, first_name: 'Empty') }
+        it do
+          get :search, searchText: 'Test'
+          expect(response.status).to eq(200)
+          expect(subject['offers'].size).to eq(2)
+        end
+      end
+
+      context "user.last_name" do
+        let!(:offer1) { create :offer, created_by: (create :user, last_name: 'Test') }
+        let!(:offer2) { create :offer, created_by: (create :user, last_name: 'Tester') }
+        let!(:offer3) { create :offer, created_by: (create :user, last_name: 'Empty') }
+        it do
+          get :search, searchText: 'Test'
+          expect(response.status).to eq(200)
+          expect(subject['offers'].size).to eq(2)
+        end
+      end
+
+      context "user.email" do
+        let!(:offer1) { create :offer, created_by: (create :user, email: 'mr_test@example.com') }
+        let!(:offer2) { create :offer, created_by: (create :user, email: 'mr_tester@example.com') }
+        let!(:offer3) { create :offer, created_by: (create :user, email: 'mr_empty@example.com') }
+        it do
+          get :search, searchText: 'Test'
+          expect(response.status).to eq(200)
+          expect(subject['offers'].size).to eq(2)
+        end
+      end
+
+      context "user.mobile" do
+        let!(:offer1) { create :offer, created_by: (create :user, mobile: '+85251111111') }
+        let!(:offer2) { create :offer, created_by: (create :user, mobile: '+85251111112') }
+        let!(:offer3) { create :offer, created_by: (create :user, mobile: '+85253333333') }
+        it do
+          get :search, searchText: '5111111'
+          expect(response.status).to eq(200)
+          expect(subject['offers'].size).to eq(2)
+        end
+      end
+
+    end
+  end
+
 end
