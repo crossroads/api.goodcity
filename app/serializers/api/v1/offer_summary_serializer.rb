@@ -16,7 +16,7 @@ module Api::V1
     has_one  :delivery, serializer: DeliverySerializer, root: :delivery
 
     def display_image_cloudinary_id
-      images.first.id
+      object.images.first.id
     end
 
     def display_image_cloudinary_id__sql
