@@ -51,8 +51,8 @@ describe User, :type => :model do
         end
       end
 
-      context "for stock" do 
-        it 'allows blank'do 
+      context "for stock" do
+        it 'allows blank'do
           user = User.new(mobile: '')
           user.request_from_stock = true
           expect(user.valid?).to be_truthy
@@ -61,10 +61,10 @@ describe User, :type => :model do
         it 'allows valid mobile number' do
           user = User.new(mobile: '+85251234567')
           user.request_from_stock = true
-          expect(user.valid?).to be_truthy 
+          expect(user.valid?).to be_truthy
         end
-        
-        it 'do not allows invalid hk number' do 
+
+        it 'do not allows invalid hk number' do
           user = User.new(mobile: '+44123456675')
           user.request_from_stock = true
           expect(user.valid?).to be_falsey
@@ -108,6 +108,14 @@ describe User, :type => :model do
 
     it "will return users according to role type" do
       expect(User.search(charity_users.first.first_name, 'Charity').first.roles.pluck(:name)).to include("Charity")
+    end
+
+    it "will return users based on email from search text" do
+      expect(User.search(charity_users.first.email, 'Charity').pluck(:id)).to include(charity_users.first.id)
+    end
+
+    it "will return users based on mobile from search text" do
+      expect(User.search(charity_users.first.mobile, 'Charity').pluck(:id)).to include(charity_users.first.id)
     end
 
     it "will return nothing if searchText does not match any users" do
