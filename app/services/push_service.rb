@@ -2,7 +2,7 @@ class PushService
   def send_update_store(channels, data)
     channels = [channels].flatten.uniq
     if channels.any?
-      SocketioSendJob.perform_later(channels, "update_store", data.to_json, true)
+      SocketioSendJob.perform_later(channels, "update_store", data.to_json, false)
     end
   end
 
