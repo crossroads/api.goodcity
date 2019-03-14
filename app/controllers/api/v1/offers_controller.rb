@@ -64,7 +64,7 @@ module Api
         @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
         @options = { each_serializer: select_serializer, include_orders_packages: false,
           exclude_messages: params["exclude_messages"] == "true", root: 'offers' }
-        @options.merge!(summary: true) if params[:summarize] == 'true'
+        @options.merge!(summarize: true) if params[:summarize] == 'true'
         render json: @offers, **@options
       end
 
