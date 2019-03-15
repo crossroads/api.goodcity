@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   include PushUpdates
   include RollbarSpecification
+  include UserSearch
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
@@ -69,10 +70,6 @@ class User < ActiveRecord::Base
   def self.recent_orders_created_for(user_id)
     joins(:created_orders).where(orders: { submitted_by_id: user_id })
     .order('orders.id DESC').limit(5)
-  end
-
-  def self.search(searchText, role)
-    joins(:roles).where("roles.name = ?  AND first_name ILIKE ? OR last_name ILIKE ?", role, "%#{searchText}%", "%#{searchText}%").uniq
   end
 
   def allowed_login?(app_name)
