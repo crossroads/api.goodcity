@@ -9,7 +9,6 @@ context Api::V1::OfferSummarySerializer do
 
   it "should only have the user and images associations" do
     expect(subject.keys).to include("user")
-    expect(subject.keys).to include("images")
     expect(subject.keys).to include("offer")
     expect(subject.keys).not_to include("items")
     expect(subject.keys).not_to include("messages")

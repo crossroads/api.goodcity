@@ -10,7 +10,7 @@ module Api::V1
     # include if nil or false.
     # Used to exclude contacts in OfferSummarySerializer
     def include_contact?
-      !(@options[:summary] == true)
+      !(@options[:summarize] == true)
     end
   end
 end
