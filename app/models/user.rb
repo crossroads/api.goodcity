@@ -100,7 +100,7 @@ class User < ActiveRecord::Base
   end
 
   def user_role_names
-    roles.pluck(:name)
+    @user_role_names ||= roles.pluck(:name)
   end
 
   def reviewer?
@@ -128,7 +128,7 @@ class User < ActiveRecord::Base
   end
 
   def donor?
-    !roles.exists? || @treat_user_as_donor == true
+    user_role_names.empty? || @treat_user_as_donor == true
   end
 
   def api_user?

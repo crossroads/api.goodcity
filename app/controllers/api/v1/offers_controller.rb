@@ -3,7 +3,7 @@ require "goodcity/offer_utils"
 module Api
   module V1
     class OffersController < Api::V1::ApiController
-      before_action :eager_load_offer, except: [:index, :create, :finished]
+      before_action :eager_load_offer, except: [:index, :create, :search]
       load_and_authorize_resource :offer, parent: false
 
       resource_description do
@@ -62,12 +62,17 @@ module Api
         end
         @offers = filter_created_by(@offers)
         @offers = @offers.reviewed_by(params["reviewed_by_id"]) if params["reviewed_by_id"].present?
-        #@offers = (params[:summarize] == 'true') ? @offers.with_summary_eager_load : @offers.with_eager_load
         @options = { each_serializer: select_serializer, include_orders_packages: false,
           exclude_messages: params["exclude_messages"] == "true", root: 'offers' }
-        @options.merge!(summary: true) if params[:summarize] == 'true'
-        # render json: ActiveModel::ArraySerializer.new(@offers, @options).as_json
-        render json: @offers.with_eager_load, **@options # PES
+        @options.merge!(summarize: true) if params[:summarize] == 'true'
+        render json: @offers, **@options
+      end
+
+      api :GET, '/v1/offers/search?searchText=xyz', "Search for offers"
+      def search
+        @offers = @offers.search(search_text: params['searchText'])
+        @offers = @offers.order('created_at desc').limit(25)
+        render json: @offers, each_serializer: summary_serializer, summarize: true
       end
 
       api :GET, '/v1/offers/1', "List an offer"

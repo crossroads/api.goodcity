@@ -16,7 +16,7 @@ context Api::V1::DeliverySerializer do
   end
 
   context "doesn't include contact if summary = true" do
-    let(:serializer) { Api::V1::DeliverySerializer.new(delivery, summary: true).as_json }
+    let(:serializer) { Api::V1::DeliverySerializer.new(delivery, summarize: true).as_json }
     it { expect(json.keys).to_not include('contacts') }
   end
 

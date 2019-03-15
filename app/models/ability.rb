@@ -20,7 +20,7 @@ class Ability
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
-      user_permissions.include?(permission_name)
+      @user_permissions.include?(permission_name)
     end
   end
 
@@ -184,8 +184,8 @@ class Ability
       'submitted', 'reviewed', 'scheduled', 'under_review', 'inactive']
 
     if can_manage_offers?
-      can [:index, :show, :update, :complete_review, :close_offer,
-        :finished, :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer
+      can [:index, :show, :update, :complete_review, :close_offer, :search,
+        :destroy, :review, :mark_inactive, :merge_offer, :receive_offer], Offer
     end
   end
 
