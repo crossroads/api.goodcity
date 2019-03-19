@@ -7,8 +7,6 @@ every :tuesday, at: '5 pm' do
   rake 'goodcity:import_swd_organisations'
 end
 
-# if environment.to_s == "staging"
-#   every '*/5 0-12 * * *' do
-#     rake 'goodcity:send_unread_message_reminders'
-#   end
+# every '*/5 0-12 * * *' do
+#   rake 'goodcity:send_unread_message_reminders'
 # end

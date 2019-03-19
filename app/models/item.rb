@@ -12,6 +12,9 @@ class Item < ActiveRecord::Base
   has_many   :messages, dependent: :destroy
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :packages, dependent: :destroy
+  has_many   :expecting_packages, -> { where(state: 'expecting') }, class_name: "Package" # Used in Offer
+  has_many   :missing_packages,   -> { where(state: 'missing') },   class_name: "Package" # Used in Offer
+  has_many   :received_packages,  -> { where(state: 'received') },  class_name: "Package" # Used in Offer
   has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 
   scope :with_eager_load, -> {

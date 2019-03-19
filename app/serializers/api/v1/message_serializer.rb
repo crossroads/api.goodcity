@@ -1,7 +1,5 @@
 module Api::V1
   class MessageSerializer < ApplicationSerializer
-    include SerializeTimeValue
-
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
@@ -14,7 +12,7 @@ module Api::V1
     end
 
     def designation_id__sql
-      'order_id'
+      'messages.order_id'
     end
 
     def state
@@ -23,7 +21,7 @@ module Api::V1
       elsif User.current_user.nil?
         "never-subscribed"
       else
-        object.subscriptions.where(user_id: User.current_user.id).pluck(:state).first
+        object.subscriptions.where(user_id: User.current_user.id).pluck(:state).first || 'never-subscribed'
       end
     end
 

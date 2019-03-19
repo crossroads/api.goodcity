@@ -10,49 +10,65 @@ FactoryBot.define do
     parking        { [false, true].sample }
     estimated_size { [1,2,3,4].sample.to_s }
     notes          { FFaker::Lorem.paragraph }
-    created_by     {|m| m.association(:user) }
-    reviewed_by_id nil
-    reviewed_at    nil
-    received_at    nil
-    review_completed_at nil
     saleable       true
+    association    :created_by, factory: :user
 
     trait :submitted do
       submitted_at { Time.now }
       state        'submitted'
     end
 
+    trait :under_review do
+      submitted
+      reviewed_at { Time.now }
+      state       'under_review'
+      association :reviewed_by, :reviewer, factory: :user
+    end
+
+    trait :reviewed do
+      under_review
+      review_completed_at { Time.now }
+      with_transport
+      state       'reviewed'
+    end
+
+    trait :scheduled do
+      reviewed
+      with_delivery
+      state 'scheduled'
+    end
+
+    trait :receiving do
+      scheduled
+      start_receiving_at { Time.now }
+      association :received_by, :reviewer, factory: :user
+      state "receiving"
+    end
+    
     trait :received do
-      state "received"
+      receiving
       received_at { Time.now }
+      state "received"
     end
 
     trait :closed do
-      reviewed_at { Time.now }
+      received
+      association :closed_by, :reviewer, factory: :user
       state "closed"
     end
 
     trait :cancelled do
+      reviewed
       cancelled_at { Time.now }
       state "cancelled"
+      association :cancellation_reason
+      cancel_reason "This offer is cancelled because it is not suitable."
     end
 
-    trait :reviewed do
-      reviewed_at { Time.now }
-      state       'reviewed'
-      association :reviewed_by, factory: :user
-      review_completed_at { Time.now }
-
-    end
-
-    trait :under_review do
-      reviewed_at { Time.now }
-      state       'under_review'
-      association :reviewed_by, factory: :user
-    end
-
-    trait :scheduled do
-      state 'scheduled'
+    trait :inactive do
+      submitted
+      inactive_at { Time.now }
+      state "inactive"
     end
 
     trait :with_items do
@@ -70,6 +86,15 @@ FactoryBot.define do
       end
       after(:create) do |offer, evaluator|
         evaluator.items_count.times { create :demo_item, offer: offer }
+      end
+    end
+
+    trait :with_delivery do
+      transient do
+        delivery_type { [:crossroads_delivery, :drop_off_delivery].sample }
+      end
+      after(:create) do |offer, evaluator|
+        create evaluator.delivery_type, offer: offer
       end
     end
 
