@@ -29,15 +29,17 @@ module Api
       param :offer_id, String, desc: "Return messages for offer id."
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
+      param :state, String, desc: "Message state (unread|read) to filter on"
       def index
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
-        @messages = @messages.where(offer_id: params[:offer_id]) if params[:offer_id].present?
-        @messages = @messages.where(order_id: params[:order_id]) if params[:order_id].present?
-        @messages = @messages.where(item_id: params[:item_id]) if params[:item_id].present?
+        @messages = @messages.where(offer_id: params[:offer_id].split(",")) if params[:offer_id].present?
+        @messages = @messages.where(order_id: params[:order_id].split(",")) if params[:order_id].present?
+        @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
+        @messages = @messages.with_state_for_user(User.current_user, params[:state]) if params[:state].present?
         render json: @messages, each_serializer: serializer, root: 'messages'
       end
 
-      api :GET, "/v1/messages/1", "List a message"
+      api :GET, "/v1/messages/1", "Get a message"
       def show
         render json: @message, serializer: serializer, root: 'message'
       end
@@ -52,7 +54,7 @@ module Api
 
       api :PUT, "/v1/messages/:id/mark_read", "Mark message as read"
       def mark_read
-        @message.mark_read!(current_user.id)
+        @message.mark_read!(current_user.id, app_name)
         render json: @message, serializer: serializer, root: 'message'
       end
 

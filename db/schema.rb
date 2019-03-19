@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190227162128) do
+ActiveRecord::Schema.define(version: 20190311144106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,18 +92,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
   end
 
   add_index "boxes", ["pallet_id"], name: "index_boxes_on_pallet_id", using: :btree
-
-  create_table "braintree_transactions", force: :cascade do |t|
-    t.string   "transaction_id"
-    t.integer  "customer_id"
-    t.decimal  "amount"
-    t.string   "status"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.boolean  "is_success"
-  end
-
-  add_index "braintree_transactions", ["customer_id"], name: "index_braintree_transactions_on_customer_id", using: :btree
 
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
@@ -350,10 +338,8 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.boolean  "need_over_6ft",        default: false
     t.integer  "gogovan_transport_id"
     t.string   "remove_net"
-    t.integer  "booking_type_id"
   end
 
-  add_index "order_transports", ["booking_type_id"], name: "index_order_transports_on_booking_type_id", using: :btree
   add_index "order_transports", ["contact_id"], name: "index_order_transports_on_contact_id", using: :btree
   add_index "order_transports", ["gogovan_order_id"], name: "index_order_transports_on_gogovan_order_id", using: :btree
   add_index "order_transports", ["gogovan_transport_id"], name: "index_order_transports_on_gogovan_transport_id", using: :btree
@@ -394,7 +380,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.integer  "district_id"
     t.text     "cancellation_reason"
     t.integer  "booking_type_id"
-    t.integer  "authorised_by_id"
     t.string   "staff_note",              default: ""
   end
 
@@ -762,7 +747,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
     t.string   "mobile"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "permission_id"
     t.integer  "image_id"
     t.datetime "last_connected"
     t.datetime "last_disconnected"
@@ -774,7 +758,6 @@ ActiveRecord::Schema.define(version: 20190227162128) do
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
   add_index "users", ["mobile"], name: "index_users_on_mobile", using: :btree
-  add_index "users", ["permission_id"], name: "index_users_on_permission_id", using: :btree
 
   create_table "versions", force: :cascade do |t|
     t.string   "item_type",      null: false

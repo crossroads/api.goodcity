@@ -21,7 +21,6 @@ class AddMissingIndexes < ActiveRecord::Migration
     add_index :auth_tokens, :user_id
     add_index :beneficiaries, :created_by_id
     add_index :boxes, :pallet_id
-    add_index :braintree_transactions, :customer_id
     add_index :deliveries, :contact_id
     add_index :deliveries, :gogovan_order_id
     add_index :deliveries, :offer_id

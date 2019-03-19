@@ -8,22 +8,22 @@ describe PushService do
   let(:data)    { {message: message} }
   let(:message) { "New message" }
   let(:time)     { Time.now }
-  
-  
+
+
   before { allow(Time).to receive(:now).and_return(time) }
 
   context "send_update_store" do
     context "should send updates" do
       it "with single channel string" do
-        expect(SocketioSendJob).to receive(:perform_later).with(['user_1'], 'update_store', data.to_json, true)
+        expect(SocketioSendJob).to receive(:perform_later).with(['user_1'], 'update_store', data.to_json, false)
         service.send_update_store('user_1', data)
       end
       it "with single channel array" do
-        expect(SocketioSendJob).to receive(:perform_later).with(['user_1'], 'update_store', data.to_json, true)
+        expect(SocketioSendJob).to receive(:perform_later).with(['user_1'], 'update_store', data.to_json, false)
         service.send_update_store(['user_1'], data)
       end
       it "with mixed channel array" do
-        expect(SocketioSendJob).to receive(:perform_later).with(['user_1', 'user_2', 'user_3', 'user_4'], 'update_store', data.to_json, true)
+        expect(SocketioSendJob).to receive(:perform_later).with(['user_1', 'user_2', 'user_3', 'user_4'], 'update_store', data.to_json, false)
         service.send_update_store(['user_1', ['user_2', 'user_3'], 'user_4'], data)
       end
     end
@@ -41,7 +41,7 @@ describe PushService do
 
   context "send_notification" do
     let(:payload) { data.merge(date: time).to_json }
-    
+
     context "donor app" do
       let(:app_name) { DONOR_APP }
       it do
@@ -59,7 +59,7 @@ describe PushService do
         service.send_notification(admin_channel, app_name, data)
       end
     end
-    
+
   end
 
 end

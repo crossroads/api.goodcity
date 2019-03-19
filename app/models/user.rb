@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
   include PushUpdates
   include RollbarSpecification
+  include UserSearch
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
@@ -14,7 +15,6 @@ class User < ActiveRecord::Base
 
   has_many :unread_subscriptions, -> { where state: 'unread' }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
-  has_many :braintree_transactions, class_name: "BraintreeTransaction", foreign_key: :customer_id
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
   has_many :user_roles
@@ -38,7 +38,6 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  scope :donors,      -> { where(permission_id: nil) }
   scope :reviewers,   -> { where(roles: { name: 'Reviewer' }).joins(:roles) }
   scope :supervisors, -> { where(roles: { name: 'Supervisor' }).joins(:roles) }
   scope :order_fulfilment, -> { where(roles: { name: 'Order fulfilment' }).joins(:roles) }
@@ -73,10 +72,6 @@ class User < ActiveRecord::Base
     .order('orders.id DESC').limit(5)
   end
 
-  def self.search(searchText, role)
-    joins(:roles).where("roles.name = ?  AND first_name ILIKE ? OR last_name ILIKE ?", role, "%#{searchText}%", "%#{searchText}%").uniq
-  end
-
   def allowed_login?(app_name)
     if [DONOR_APP, BROWSE_APP].include?(app_name)
       return true
@@ -102,7 +97,7 @@ class User < ActiveRecord::Base
   end
 
   def user_role_names
-    roles.pluck(:name)
+    @user_role_names ||= roles.pluck(:name)
   end
 
   def reviewer?
@@ -130,7 +125,7 @@ class User < ActiveRecord::Base
   end
 
   def donor?
-    !roles.exists? || @treat_user_as_donor == true
+    user_role_names.empty? || @treat_user_as_donor == true
   end
 
   def api_user?

@@ -1,7 +1,7 @@
 class ConvertTimestampWithoutTzToTimestampWithTz < ActiveRecord::Migration
 
   MODEL_NAMES = ['address', 'auth_token', 'beneficiary', 'booking_type', 'box',
-    'braintree_transaction', 'cancellation_reason', 'contact', 'country',
+    'cancellation_reason', 'contact', 'country',
     'crossroads_transport', 'delivery', 'district', 'donor_condition', 'gogovan_order',
     'gogovan_transport', 'goodcity_request', 'holiday', 'identity_type', 'image',
     'inventory_number', 'item', 'location', 'message', 'offer', 'order', 'orders_package',

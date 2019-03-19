@@ -78,12 +78,12 @@ RSpec.describe Order, type: :model do
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
 
     ALL_ORDER_STATES.each do |state|
-      let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, authorised_by_id:  supervisor.id }
-      let(:"unauthorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, authorised_by_id:  nil }
+      let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  supervisor.id }
+      let(:"unauthorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  nil }
     end
 
-    let!(:orders) { (1..5).map { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, authorised_by_id: nil } }
-    let(:order_created_by_other_user) { create :order, :with_orders_packages, :with_state_draft, created_by_id: authorised_by_user.id, authorised_by_id: nil }
+    let!(:orders) { (1..5).map { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: nil } }
+    let(:order_created_by_other_user) { create :order, :with_orders_packages, :with_state_draft, created_by_id: authorised_by_user.id, submitted_by_id: nil }
 
     before(:each) {
       User.current_user = user
@@ -100,7 +100,7 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    context 'with authorised_by_id' do
+    context 'with submitted_by_id' do
       it "will not return authorised draft orders" do
         authorised_draft_order
         expect(Order.my_orders.count).to eq(5)
@@ -144,7 +144,7 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    context "without authorised_by_id" do
+    context "without submitted_by_id" do
       it "returns unauthorised draft orders" do
         unauthorised_draft_order
         expect(Order.my_orders.count).to eq(6)
