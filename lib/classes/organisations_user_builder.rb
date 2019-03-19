@@ -28,7 +28,7 @@ class OrganisationsUserBuilder
     if !user_belongs_to_organisation(@user)
       @organisations_user = OrganisationsUser.create!(organisation_id: @organisation_id, user_id: @user.id, position: @position)
       TwilioService.new(@user).send_welcome_msg
-      update_user
+      return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
       return_success.merge!('organisations_user' => @organisations_user)
     else
       return fail_with_error(I18n.t('organisations_user_builder.existing_user.present'))
@@ -43,7 +43,7 @@ class OrganisationsUserBuilder
   end
 
   def update
-    update_user
+    return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
     @organisations_user.update(position: @position)
     return_success.merge!('organisations_user' => @organisations_user.reload)
   end
@@ -56,7 +56,11 @@ class OrganisationsUserBuilder
 
   def update_user
     @user.roles << charity_role unless @user.roles.include?(charity_role)
-    @user.update(@user_attributes)
+    if @user.update(@user_attributes)
+      @user
+    else
+      fail_with_error(@user.errors.full_messages.join(' '))
+    end
   end
 
 
