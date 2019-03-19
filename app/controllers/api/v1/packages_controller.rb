@@ -126,7 +126,6 @@ module Api
       api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
       def search_stockit_items
         records = @packages # security
-        records = records.undispatched if params["orderId"].present?
         records = records.search(search_text: params['searchText'], item_id: params['itemId'],
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
@@ -161,16 +160,21 @@ module Api
       end
 
       def undesignate_partial_item
-        OrdersPackage.undesignate_partially_designated_item(params[:package])
-        @package.undesignate_from_stockit_order
+        undesignate_from_stock_and_stockit(params[:package])
         send_stock_item_response
       end
 
       def designate_partial_item
-        result = OrdersPackage.add_partially_designated_item(
-          order_id: params[:package][:order_id],
-          package_id: params[:package][:package_id],
-          quantity: params[:package][:quantity])
+        if params[:package][:quantity].to_i.zero?
+          orders_package = OrdersPackage.find(params[:package][:orders_package_id])
+          if orders_package.order_id === (params[:package][:order_id]).to_i
+            render json: { errors: "Already designated to this Order" } , status: 422
+            return
+          end
+          params[:package][:quantity] = params[:package][:received_quantity]
+          undesignate_from_stock_and_stockit({"0" => params[:package]})
+        end
+        result = add_partially_designated_item
         if result.errors.blank?
           designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
@@ -268,6 +272,18 @@ module Api
 
       def stock_serializer
         Api::V1::StockitItemSerializer
+      end
+
+      def add_partially_designated_item
+        OrdersPackage.add_partially_designated_item(
+          order_id: params[:package][:order_id],
+          package_id: params[:package][:package_id],
+          quantity: params[:package][:quantity].to_i.zero? ? params[:package][:received_quantity] : params[:package][:quantity])
+      end
+
+      def undesignate_from_stock_and_stockit(package)
+        OrdersPackage.undesignate_partially_designated_item(package)
+        @package.undesignate_from_stockit_order
       end
 
       def remove_stockit_prefix(stockit_inventory_number)
