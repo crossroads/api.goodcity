@@ -299,20 +299,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
     context "matches" do
       context "offers.notes" do
-        let!(:offer1) { create :offer, notes: 'Test' }
-        let!(:offer2) { create :offer, notes: 'Tester' }
-        let!(:offer3) { create :offer, notes: 'Empty' }
+        let!(:offer1) { create :offer, :submitted, notes: 'Test' }
+        let!(:offer2) { create :offer, :submitted, notes: 'Tester' }
+        let!(:offer3) { create :offer, :submitted, notes: 'Empty' }
         it do
           get :search, searchText: 'Test'
           expect(response.status).to eq(200)
-          expect(subject['offers'].size).to eq(2)
+          expect(subject['offers'].size).to eql(2)
         end
       end
 
       context "user.first_name" do
-        let!(:offer1) { create :offer, created_by: (create :user, first_name: 'Test') }
-        let!(:offer2) { create :offer, created_by: (create :user, first_name: 'Tester') }
-        let!(:offer3) { create :offer, created_by: (create :user, first_name: 'Empty') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, first_name: 'Test') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, first_name: 'Tester') }
+        let!(:offer3) { create :offer, :submitted, created_by: (create :user, first_name: 'Empty') }
         it do
           get :search, searchText: 'Test'
           expect(response.status).to eq(200)
@@ -321,9 +321,9 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       context "user.last_name" do
-        let!(:offer1) { create :offer, created_by: (create :user, last_name: 'Test') }
-        let!(:offer2) { create :offer, created_by: (create :user, last_name: 'Tester') }
-        let!(:offer3) { create :offer, created_by: (create :user, last_name: 'Empty') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, last_name: 'Test') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, last_name: 'Tester') }
+        let!(:offer3) { create :offer, :submitted, created_by: (create :user, last_name: 'Empty') }
         it do
           get :search, searchText: 'Test'
           expect(response.status).to eq(200)
@@ -332,9 +332,9 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       context "user.email" do
-        let!(:offer1) { create :offer, created_by: (create :user, email: 'mr_test@example.com') }
-        let!(:offer2) { create :offer, created_by: (create :user, email: 'mr_tester@example.com') }
-        let!(:offer3) { create :offer, created_by: (create :user, email: 'mr_empty@example.com') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, email: 'mr_test@example.com') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, email: 'mr_tester@example.com') }
+        let!(:offer3) { create :offer, :submitted, created_by: (create :user, email: 'mr_empty@example.com') }
         it do
           get :search, searchText: 'Test'
           expect(response.status).to eq(200)
@@ -343,9 +343,9 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       context "user.mobile" do
-        let!(:offer1) { create :offer, created_by: (create :user, mobile: '+85251111111') }
-        let!(:offer2) { create :offer, created_by: (create :user, mobile: '+85251111112') }
-        let!(:offer3) { create :offer, created_by: (create :user, mobile: '+85253333333') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, mobile: '+85251111111') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, mobile: '+85251111112') }
+        let!(:offer3) { create :offer, :submitted, created_by: (create :user, mobile: '+85253333333') }
         it do
           get :search, searchText: '5111111'
           expect(response.status).to eq(200)
