@@ -20,6 +20,7 @@ module OfferSearch
           join(" OR ")
         where(search_query, search_text: "%#{search_text}%").
           joins("LEFT OUTER JOIN users ON offers.created_by_id = users.id")
+        where(state: Offer.nondraft_states)
       else
         none
       end
