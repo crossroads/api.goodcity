@@ -32,6 +32,28 @@ context OfferSearch do
       let!(:offer2) { create :offer, state: 'draft', notes: 'test notes' }
       it { expect(Offer.search(search_text: 'test notes').to_a).to match_array([offer1]) }
     end
+
+    context "offer messages content" do
+      let(:message) { create(:message, body: 'Test message body') }
+      let!(:offer1) { create :offer, :submitted, messages: [message] }
+      it { expect(Offer.search(search_text: 'Test message body').to_a).to match_array([offer1]) }
+    end
+
+    context "offer item messages content" do
+      let(:message) { create(:message, body: 'Test message body') }
+      let(:item) { create :item, messages: [message] }
+      let!(:offer1) { create :offer, :submitted, items: [item] }
+      it { expect(Offer.search(search_text: 'Test message body').to_a).to match_array([offer1]) }
+    end
+
+    context "offer item package_type name" do
+      let(:package_type) { create(:package_type, code: 'BBC') }
+      let(:package) { create(:package, package_type: package_type ) }
+      let(:item) { create :item, packages: [package] }
+      let!(:offer1) { create :offer, :submitted, items: [item] }
+      it { expect(Offer.search(search_text: package_type.name_en).to_a).to match_array([offer1]) }
+    end
+
   end
 
 end
