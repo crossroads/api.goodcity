@@ -2,8 +2,7 @@ require 'rails_helper'
 
 context OfferSearch do
   
-  let(:offer) { create :offer, :reviewed }
-  let(:offer) { create :offer, state: 'draft'}
+  let!(:offer) { create :offer, :submitted } # exists to confirm we never find it.
 
   # integration tests are located in offers_controller_spec for "GET offers/search"
   context "searches for" do
