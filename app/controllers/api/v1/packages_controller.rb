@@ -166,14 +166,16 @@ module Api
       end
 
       def designate_partial_item
-        if params[:package][:quantity].to_i.zero?
-          check_and_undesignate = Package.package_already_used?(params[:package], @package)
-          if check_and_undesignate
-            render json: { errors: check_and_undesignate[:errors] }, status: 422
+        designator = Designator.new(@package, params[:package])
+        if designator.designated?
+          if designator.already_designated_to_same_order?
+            render json: { errors: "Already designated to this Order" }, status: 422
             return
+          else
+            designator.undesignate
           end
         end
-        result = add_partially_designated_item
+        result = designator.designate
         if result.errors.blank?
           designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
