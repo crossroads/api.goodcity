@@ -111,6 +111,19 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def self.package_already_used?(package_params, package)
+    orders_package = OrdersPackage.find(package_params[:orders_package_id])
+    if orders_package.order_id === (package_params[:order_id]).to_i
+      errors = { errors: "Already designated to this Order"}
+    else
+      undesignate_package = {}
+      package_params[:quantity] = package_params[:received_quantity]
+      undesignate_package["0"] = package_params
+      OrdersPackage.undesignate_partially_designated_item(undesignate_package)
+      package.undesignate_from_stockit_order
+    end
+  end
+
   def assign_stockit_sent_by_and_designated_by
     if stockit_sent_on.presence && stockit_designated_on.presence
       self.stockit_sent_by = User.stockit_user
