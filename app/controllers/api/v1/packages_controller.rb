@@ -160,19 +160,18 @@ module Api
       end
 
       def undesignate_partial_item
-        undesignate_from_stock_and_stockit(params[:package])
+        OrdersPackage.undesignate_partially_designated_item(params[:package])
+        @package.undesignate_from_stockit_order
         send_stock_item_response
       end
 
       def designate_partial_item
         if params[:package][:quantity].to_i.zero?
-          orders_package = OrdersPackage.find(params[:package][:orders_package_id])
-          if orders_package.order_id === (params[:package][:order_id]).to_i
-            render json: { errors: "Already designated to this Order" } , status: 422
+          check_and_undesignate = Package.package_already_used?(params[:package], @package)
+          if check_and_undesignate
+            render json: { errors: check_and_undesignate[:errors] }, status: 422
             return
           end
-          params[:package][:quantity] = params[:package][:received_quantity]
-          undesignate_from_stock_and_stockit({"0" => params[:package]})
         end
         result = add_partially_designated_item
         if result.errors.blank?
@@ -279,11 +278,6 @@ module Api
           order_id: params[:package][:order_id],
           package_id: params[:package][:package_id],
           quantity: params[:package][:quantity].to_i.zero? ? params[:package][:received_quantity] : params[:package][:quantity])
-      end
-
-      def undesignate_from_stock_and_stockit(package)
-        OrdersPackage.undesignate_partially_designated_item(package)
-        @package.undesignate_from_stockit_order
       end
 
       def remove_stockit_prefix(stockit_inventory_number)
