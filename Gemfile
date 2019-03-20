@@ -45,6 +45,7 @@ gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch:
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
 gem 'nokogiri'
+gem 'postmark-rails'
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
