@@ -31,11 +31,14 @@ module GoodCityServer
 
     # config.active_record.schema_format = :sql
 
-    config.i18n.available_locales = ['en', 'zh-tw']
+    config.i18n.available_locales = ["en", "zh-tw"]
 
     config.filter_parameters << :otp_secret_key
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.action_mailer.delivery_method = :postmark
+    config.action_mailer.postmark_settings = {api_token: ENV["POSTMARK_API_KEY"]}
 
     config.lograge.enabled = true
     config.lograge.enabled = Lograge::Formatters::Json.new
