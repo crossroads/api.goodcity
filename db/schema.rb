@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190311144106) do
+ActiveRecord::Schema.define(version: 20190325202945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -196,7 +196,6 @@ ActiveRecord::Schema.define(version: 20190311144106) do
     t.integer  "created_by_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
-    t.text     "item_specifics"
   end
 
   add_index "goodcity_requests", ["created_by_id"], name: "index_goodcity_requests_on_created_by_id", using: :btree
@@ -465,8 +464,9 @@ ActiveRecord::Schema.define(version: 20190311144106) do
     t.integer  "organisation_id"
     t.integer  "user_id"
     t.string   "position"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.string   "preferred_contact_number"
   end
 
   add_index "organisations_users", ["organisation_id"], name: "index_organisations_users_on_organisation_id", using: :btree
