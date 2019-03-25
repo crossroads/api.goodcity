@@ -5,12 +5,16 @@ describe PushService do
   let(:service) { PushService.new }
   let(:channels) { ['user_1'] }
   let(:admin_channel) { 'user_1_admin' }
-  let(:data)    { {message: message} }
+  let(:device_id) { '123' }
+  let(:data)    { {device_id: device_id, message: message} }
   let(:message) { "New message" }
   let(:time)     { Time.now }
 
 
-  before { allow(Time).to receive(:now).and_return(time) }
+  before do
+    User.current_device_id = device_id
+    allow(Time).to receive(:now).and_return(time)
+  end
 
   context "send_update_store" do
     context "should send updates" do

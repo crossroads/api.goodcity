@@ -25,7 +25,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
       end
 
       it 'returns all preset slots' do
-        5.times { FactoryBot.create :appointment_slot_preset }        
+        5.times { FactoryBot.create :appointment_slot_preset }
         get :index
         expect(parsed_body['appointment_slot_presets'].count).to eq(AppointmentSlotPreset.count)
       end
@@ -96,7 +96,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
         expect(response.status).to eq(401)
       end
     end
-    
+
     context 'When logged in as a user without can_manage_settings permission' do
       before { generate_and_set_token(no_permission_user) }
        it "denies update of an appointment slot preset" do
@@ -112,6 +112,13 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
         put :update, id: new_preset.id, appointment_slot_preset: { day: 7 }
         expect(response.status).to eq(200)
         expect(parsed_body['appointment_slot_preset']['day']).to eq(7)
+      end
+
+      it "prevents updating a slot with a time that already exists" do
+        p1 = FactoryBot.create(:appointment_slot_preset, hours: 23, minutes: 0, day: 2)
+        p2 = FactoryBot.create(:appointment_slot_preset, hours: 22, minutes: 0, day: 2)
+        put :update, id: p2.id, appointment_slot_preset: { hours: p1.hours }
+        expect(response.status).to eq(422)
       end
     end
   end
