@@ -36,6 +36,7 @@ class Channel
         channels << REVIEWER_CHANNEL if user.reviewer? and app_name == ADMIN_APP
         channels << SUPERVISOR_CHANNEL if user.supervisor? and app_name == ADMIN_APP
         channels << ORDER_FULFILMENT_CHANNEL if user.order_fulfilment? and app_name == STOCK_APP
+        channels << STOCK_CHANNEL if app_name == STOCK_APP
       end
       channels << BROWSE_CHANNEL if app_name == BROWSE_APP
       channels.flatten.compact.uniq
