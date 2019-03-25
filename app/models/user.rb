@@ -54,8 +54,8 @@ class User < ActiveRecord::Base
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params, app_name)
-    mobile = user_params[:mobile].presence
-    email = user_params[:email].presence
+    mobile = user_params["mobile"].presence
+    email = user_params["email"].presence
     user = find_user_by_mobile_or_email(mobile, email)
     user ||= new(user_params)
     user.save if user.changed?
@@ -64,11 +64,8 @@ class User < ActiveRecord::Base
   end
 
   def self.find_user_by_mobile_or_email(mobile, email)
-    if mobile
-      find_by_mobile(mobile)
-    else
-      find_by_email(email)
-    end
+    return find_by_mobile(mobile) if mobile
+    find_by_email(email) if email
   end
 
   def send_sms(app_name)
