@@ -8,8 +8,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   let(:users) { create_list(:user, 2) }
 
-  let(:charity_users) { (1..5).map { create(:user, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }}
+  let(:charity_users) { (1..26).map { create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}, last_name: 'Jones')}}
 
   let(:parsed_body) { JSON.parse(response.body) }
 
@@ -43,6 +43,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       get :index, searchText: charity_users.first.first_name, role_name: "Charity"
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(1)
+    end
+
+    it "returns only first 25 results" do
+      get :index, searchText: charity_users.first.last_name, role_name: "Charity"
+      expect(response.status).to eq(200)
+      expect(parsed_body['users'].count).to eq(25)
     end
 
     it "will not return any user if params does not matches any users" do
