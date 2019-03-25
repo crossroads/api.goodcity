@@ -43,7 +43,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       get :index, searchText: charity_users.first.first_name, role_name: "Charity"
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(1)
-      expect(parsed_body['meta']['total_pages']).to eql(1)
     end
 
     it "will not return any user if params does not matches any users" do

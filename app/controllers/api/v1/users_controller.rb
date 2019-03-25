@@ -58,11 +58,9 @@ module Api
       def search_user_and_render_json
         records = @users.search({
                     search_text: params['searchText'],
-                    role_name: params['role_name']})
-                  .page(params['page'])
-                  .per(params['per_page'])
+                    role_name: params['role_name']}).limit(25)
         data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "users").as_json
-        render json: { "meta": { "total_pages": records.total_pages, "search": params["searchText"] } }.merge(data)
+        render json: { "meta": {"search": params["searchText"] } }.merge(data)
       end
 
       def user_params
