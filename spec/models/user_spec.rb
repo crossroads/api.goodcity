@@ -180,7 +180,6 @@ describe User, :type => :model do
         user_attributes["mobile"] = nil
         user_attributes["email"] = "abc@example.com"
         expect(User).to receive(:find_user_by_mobile_or_email).with(nil, "abc@example.com").and_return(user)
-        expect(user).to receive(:send_verification_pin)
         User.creation_with_auth(user_attributes, BROWSE_APP)
       end
     end

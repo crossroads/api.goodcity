@@ -16,5 +16,9 @@ RSpec.describe OrganisationsUser, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:organisation_id) }
     it { is_expected.to validate_presence_of(:user_id) }
+    it "validates preferred_contact_number" do
+      is_expected.to allow_value("88888888").for(:preferred_contact_number)
+      is_expected.to_not allow_value("8888888811").for(:preferred_contact_number)
+    end
   end
 end
