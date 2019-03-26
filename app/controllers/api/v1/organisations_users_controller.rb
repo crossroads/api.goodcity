@@ -31,7 +31,7 @@ module Api
       param_group :organisations_user
 
       def create
-        builder = OrganisationsUserBuilder.new(params["organisations_user"].to_hash).build(is_stock_app?)
+        builder = OrganisationsUserBuilder.new(params["organisations_user"].to_hash).build(app_name)
         if builder["result"]
           save_and_render_object_with_errors(builder["organisations_user"])
         else

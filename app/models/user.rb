@@ -53,12 +53,12 @@ class User < ActiveRecord::Base
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
-  def self.creation_with_auth(user_params, app_name, is_browse_app)
+  def self.creation_with_auth(user_params, app_name)
     mobile = user_params["mobile"].presence
     email = user_params["email"].presence
     user = find_user_by_mobile_or_email(mobile, email)
     user ||= new(user_params)
-    user.request_from_browse = is_browse_app
+    user.request_from_browse = (app_name == BROWSE_APP)
     user.save if user.changed?
     user.send_verification_pin(app_name, mobile, email) if user.valid?
     user

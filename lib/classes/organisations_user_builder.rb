@@ -17,14 +17,15 @@ class OrganisationsUserBuilder
     @organisation_id = params["organisation_id"].presence.try(:to_i)
     @user_attributes = params["user_attributes"]
     @mobile = @user_attributes["mobile"].presence.try(:to_s)
+    @email = @user_attributes["email"].presence
     @position = params["position"]
     @preferred_contact_number = params["preferred_contact_number"]
     fail_with_error(I18n.t("organisations_user_builder.organisation.blank")) unless @organisation_id
     fail_with_error(I18n.t("organisations_user_builder.user.mobile.blank")) unless @mobile
   end
 
-  def build(is_stock_app)
-    @user = build_user(is_stock_app)
+  def build(app_name)
+    @user = build_user(app_name)
     return fail_with_error(@user.errors) unless @user.valid?
     return fail_with_error(I18n.t("organisations_user_builder.organisation.not_found")) unless organisation
     if !user_belongs_to_organisation(@user)
@@ -37,11 +38,16 @@ class OrganisationsUserBuilder
     end
   end
 
-  def build_user(is_stock_app)
-    @user = User.where(mobile: @mobile).first_or_initialize(@user_attributes)
-    @user.request_from_stock = is_stock_app
+  def build_user(app_name)
+    @user = User.where("email = (?) OR mobile = (?)", @email, @mobile).first_or_initialize(@user_attributes)
+    assign_user_app_acessor(app_name)
     @user.save
     @user
+  end
+
+  def assign_user_app_acessor(app_name)
+    @user.request_from_stock = (app_name == STOCK_APP)
+    @user.request_from_browse = (app_name == BROWSE_APP)
   end
 
   def update

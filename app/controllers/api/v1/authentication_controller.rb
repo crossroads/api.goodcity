@@ -115,7 +115,7 @@ module Api
       error 500, "Internal Server Error"
 
       def signup
-        @user = User.creation_with_auth(auth_params, app_name, is_browse_app?)
+        @user = User.creation_with_auth(auth_params, app_name)
         if @user.valid? && @user.persisted?
           render json: {otp_auth_key: otp_auth_key_for(@user)}, status: :ok
         else
