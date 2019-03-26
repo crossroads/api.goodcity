@@ -49,8 +49,6 @@ class Package < ActiveRecord::Base
     chans
   end
 
-  after_touch { update_client_store :update }
-
   validates :package_type_id, :quantity, presence: true
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity, numericality: { greater_than: 0 }
