@@ -160,24 +160,15 @@ module Api
       end
 
       def undesignate_partial_item
-        OrdersPackage.undesignate_partially_designated_item(params[:package])
-        @package.undesignate_from_stockit_order
+        designator = Designator.new(@package, params[:package])
+        designator.undesignate
         send_stock_item_response
       end
 
       def designate_partial_item
         designator = Designator.new(@package, params[:package])
-        if designator.designated?
-          if designator.already_designated_to_same_order?
-            render json: { errors: "Already designated to this Order" }, status: 422
-            return
-          else
-            designator.undesignate
-          end
-        end
-        result = designator.designate
+        result = designator.check_designated_and_designate_item
         if result.errors.blank?
-          designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
         else
           render json: { errors: result.errors.full_messages }, status: 422
@@ -248,6 +239,7 @@ module Api
       end
 
       def send_stock_item_response
+        @package.reload
         if @package.errors.blank? && @package.valid? && @package.save
           render json: @package,
             serializer: stock_serializer,
