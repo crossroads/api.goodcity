@@ -25,8 +25,10 @@ FactoryBot.define do
 
     trait :package_with_locations do
       after(:create) do |package|
-        package_location = create :packages_location, package: package, quantity: package.received_quantity
+        package_location = create :packages_location, package_id: package.id, quantity: package.received_quantity
         package.location_id = package_location.location_id
+        package.packages_locations ||= []
+        package.packages_locations << package_location
         package.save
       end
     end
@@ -53,6 +55,11 @@ FactoryBot.define do
     trait :published do
       with_inventory_number
       allow_web_publish true
+    end
+
+    trait :unpublished do
+      with_inventory_number
+      allow_web_publish false
     end
 
     trait :with_images do

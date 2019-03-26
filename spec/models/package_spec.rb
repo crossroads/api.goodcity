@@ -143,13 +143,13 @@ RSpec.describe Package, type: :model do
 
   describe "after_update" do
     it "#update_packages_location_quantity" do
-      @package = create(:package, :received)
+      package = create(:package, :received, :package_with_locations)
       new_quantity = 4
-      @packages_location = @package.packages_locations.first
+      packages_location = package.packages_locations.first
       expect {
-        @package.update(received_quantity: new_quantity)
-        @packages_location.reload
-      }.to change(@packages_location, :quantity).from(@package.received_quantity).to(new_quantity)
+        package.update(received_quantity: new_quantity)
+        packages_location.reload
+      }.to change(packages_location, :quantity).from(package.received_quantity).to(new_quantity)
     end
 
     it "#received_quantity_changed_and_locations_exists?" do
@@ -598,6 +598,80 @@ RSpec.describe Package, type: :model do
 
     it 'check package has designation and received quantity is one or not' do
       expect(package.singleton_and_has_designation?).to be_truthy
+    end
+  end
+
+  describe "Live updates" do
+    let(:push_service) { PushService.new }
+    let!(:package) { create :package, received_quantity: 1, quantity: 0 }
+    let!(:package_with_item) { create :package, received_quantity: 1, quantity: 0, item_id: 1 }
+
+    before(:each) do
+      allow(PushService).to receive(:new).and_return(push_service)
+    end
+
+    it "should call push_changes upon change" do
+      expect(package).to receive(:push_changes)
+      package.quantity = 2
+      package.save
+    end
+
+    it "should send changes to the stock channel" do
+      expect(push_service).to receive(:send_update_store) do |channels, data|
+        expect(channels.length).to eq(1)
+        expect(channels).to eq([ Channel::STOCK_CHANNEL ])
+      end
+      package.quantity = 2
+      package.save
+    end
+
+    it "should send changes to the staff if the package has an item" do
+      expect(push_service).to receive(:send_update_store) do |channels, data|
+        expect(channels.length).to eq(2)
+        expect(channels).to eq([ Channel::STOCK_CHANNEL, Channel::STAFF_CHANNEL ])
+      end
+      package_with_item.quantity = 2
+      package_with_item.save
+    end
+
+    describe 'for an UNPUBLISHED package' do
+      let!(:package_unpublished) { create :package, :unpublished, received_quantity: 1, quantity: 0 }
+
+      it "should not be sent to the browse app" do
+        expect(push_service).to receive(:send_update_store) do |channels, data|
+          expect(channels).not_to include(Channel::BROWSE_CHANNEL)
+        end
+        package_unpublished.quantity = 2
+        package_unpublished.save
+      end
+
+      it "should be sent to the browse app if it gets published" do
+        expect(push_service).to receive(:send_update_store) do |channels, data|
+          expect(channels).to include(Channel::BROWSE_CHANNEL)
+        end
+        package_unpublished.allow_web_publish = true
+        package_unpublished.save
+      end
+    end
+
+    describe 'for a PUBLISHED package' do
+      let!(:package_published) { create :package, :published, received_quantity: 1, quantity: 0 }
+
+      it "should be sent to the browse app" do
+        expect(push_service).to receive(:send_update_store) do |channels, data|
+          expect(channels).to include(Channel::BROWSE_CHANNEL)
+        end
+        package_published.allow_web_publish = true
+        package_published.save
+      end
+
+      it "should be sent to the browse app if it gets unpublished" do
+        expect(push_service).to receive(:send_update_store) do |channels, data|
+          expect(channels).to include(Channel::BROWSE_CHANNEL)
+        end
+        package_published.allow_web_publish = false
+        package_published.save
+      end
     end
   end
 end

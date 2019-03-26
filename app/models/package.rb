@@ -2,7 +2,7 @@ class Package < ActiveRecord::Base
   has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
   include StateMachineScope
-  include PushUpdates
+  include PushUpdatesMinimal
   include RollbarSpecification
   include PackageFiltering
 
@@ -38,6 +38,16 @@ class Package < ActiveRecord::Base
   after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   after_save :dispatch_orders_package, if: :dispatch_from_stockit?
+
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |record|
+    chans = [ Channel::STOCK_CHANNEL ]
+    chans << Channel::STAFF_CHANNEL if record.item_id
+    chans << Channel::BROWSE_CHANNEL if (record.allow_web_publish || record.allow_web_publish_was)
+    chans
+  end
 
   after_touch { update_client_store :update }
 
