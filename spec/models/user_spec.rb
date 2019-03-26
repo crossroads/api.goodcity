@@ -160,25 +160,55 @@ describe User, :type => :model do
       it "should create new user" do
         allow(new_user).to receive(:send_verification_pin)
         expect(User).to receive(:new).with(user_attributes).and_return(new_user)
-        User.creation_with_auth(user_attributes, DONOR_APP, false)
+        User.creation_with_auth(user_attributes, DONOR_APP)
       end
     end
 
     context "when mobile does exist" do
       it "should send pin to existing user" do
         user = create(:user, mobile: mobile)
+        user_attributes["email"] = nil
         expect(User).to receive(:find_user_by_mobile_or_email).with(mobile, nil).and_return(user)
         expect(user).to receive(:send_verification_pin)
-        User.creation_with_auth(user_attributes, DONOR_APP, false)
+        User.creation_with_auth(user_attributes, DONOR_APP)
+      end
+    end
+
+    context "when email does exist" do
+      it "should send pin to existing user" do
+        user = create(:user, email: "abc@example.com")
+        user_attributes["mobile"] = nil
+        user_attributes["email"] = "abc@example.com"
+        expect(User).to receive(:find_user_by_mobile_or_email).with(nil, "abc@example.com").and_return(user)
+        expect(user).to receive(:send_verification_pin)
+        User.creation_with_auth(user_attributes, BROWSE_APP)
+      end
+    end
+
+    context "when email does not exist" do
+      let(:new_user) { build(:user, mobile: nil) }
+      it "should create new user" do
+        allow(new_user).to receive(:send_verification_pin)
+        expect(User).to receive(:new).with(user_attributes).and_return(new_user)
+        User.creation_with_auth(user_attributes, BROWSE_APP)
       end
     end
 
     context "when mobile blank" do
       let(:mobile) { nil }
+      let(:email) { "abc@example.com" }
+      let(:new_user) { build(:user, mobile: nil) }
+
       it "should raise validation error" do
-        user = User.creation_with_auth(user_attributes, DONOR_APP, false)
+        user = User.creation_with_auth(user_attributes, DONOR_APP)
         expect(user.errors[:mobile]).to include("can't be blank")
         expect(user.errors[:mobile]).to include("is invalid")
+      end
+
+      it "accepts when browse app" do
+        allow(new_user).to receive(:send_verification_pin)
+        expect(User).to receive(:new).with(user_attributes).and_return(new_user)
+        user = User.creation_with_auth(user_attributes, BROWSE_APP)
       end
     end
   end
