@@ -3,11 +3,15 @@ module PushUpdatesMinimal
 
   module ClassMethods
     attr_reader :target_channels
+    attr_reader :target_channels_func
 
     private
 
-    def push_targets(channels = [])
+    def push_targets(channels = [], &block)
       @target_channels = channels
+      if block_given?
+        @target_channels_func = block
+      end
     end
   end
 
@@ -19,6 +23,9 @@ module PushUpdatesMinimal
   end
 
   def target_channels
+    if self.class.target_channels_func
+      return self.class.target_channels_func.call(self)
+    end
     self.class.target_channels
   end
 
