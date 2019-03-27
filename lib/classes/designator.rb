@@ -8,13 +8,11 @@ class Designator
     @orders_package = @package.orders_packages.new
   end
 
-  def check_designated_and_designate_item
+  #checks if already designated before redesignating
+  def designate_or_redesignate
     if designated?
-      if already_designated_to_same_order?&.errors
-        return already_designated_to_same_order?
-      else
-        undesignate_before_designate
-      end
+      return designated_to_same_order? unless designated_to_same_order?&.errors.blank?
+      redesignate
     end
     designate_to_goodcity_and_stockit
   end
@@ -28,7 +26,7 @@ class Designator
     @orders_package
   end
 
-  def undesignate(undesignate_package = nil)
+  def undesignate(undesignate_package = nil) #undesignate_package params is passed from redesignate
     packages = undesignate_package ? undesignate_package : @params
     OrdersPackage.undesignate_partially_designated_item(packages)
     @package.undesignate_from_stockit_order
@@ -38,9 +36,10 @@ class Designator
     @package.designate_to_stockit_order(@order_id_param)
   end
 
-  def already_designated_to_same_order?
+  def designated_to_same_order?
     orders_package = OrdersPackage.find_by_id(@params[:orders_package_id])
-    return add_error(orders_package,"order_id", "Already designated to this Order") if orders_package.try(:order_id) === @order_id
+    orders_package.errors.add("package_id", "Already designated to this Order") if orders_package.try(:order_id) === @order_id
+    return orders_package
   end
 
   private
@@ -53,12 +52,7 @@ class Designator
     @params[:quantity].to_i.zero? ? @params[:received_quantity] : @params[:quantity]
   end
 
-  def add_error(orders_package, field, message)
-    orders_package.errors.add(field, message)
-    orders_package
-  end
-
-  def undesignate_before_designate
+  def redesignate
     undesignate_package = {}
     @params[:quantity] = @params[:received_quantity]
     undesignate_package["0"] = @params
@@ -69,6 +63,4 @@ class Designator
     return designate if designate.errors
     designate_stockit_item
   end
-
-
 end
