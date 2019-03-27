@@ -29,7 +29,7 @@ module Api::V1
     end
 
     private
-    
+
     def organisation_serializer
       Api::V1::OrganisationSerializer
     end
@@ -39,9 +39,9 @@ module Api::V1
     end
 
     def find_record_and_render_json(serializer)
-      records = @organisations.search(params["searchText"]).page(params["page"]).per(params["per_page"])
+      records = @organisations.search(params["searchText"]).limit(25)
       data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
-      render json: { "meta": { "total_pages": records.total_pages, "search": params["searchText"] } }.merge(data)
+      render json: { "meta": { "search": params["searchText"] } }.merge(data)
     end
   end
 end
