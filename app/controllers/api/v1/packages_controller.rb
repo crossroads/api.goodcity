@@ -167,7 +167,7 @@ module Api
 
       def designate_partial_item
         designator = Designator.new(@package, params[:package])
-        result = designator.check_designated_and_designate_item
+        result = designator.designate_or_redesignate
         if result.errors.blank?
           send_stock_item_response
         else
@@ -265,13 +265,6 @@ module Api
 
       def stock_serializer
         Api::V1::StockitItemSerializer
-      end
-
-      def add_partially_designated_item
-        OrdersPackage.add_partially_designated_item(
-          order_id: params[:package][:order_id],
-          package_id: params[:package][:package_id],
-          quantity: params[:package][:quantity].to_i.zero? ? params[:package][:received_quantity] : params[:package][:quantity])
       end
 
       def remove_stockit_prefix(stockit_inventory_number)
