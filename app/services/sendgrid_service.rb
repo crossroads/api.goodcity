@@ -31,8 +31,8 @@ class SendgridService
     I18n.locale == :en ? "SENDGRID_PIN_TEMPLATE_ID_EN" : "SENDGRID_PIN_TEMPLATE_ID_ZH_TW"
   end
 
-  def mail #base
-    @mail.from = sendgrid_email_formation(ENV["FROM_EMAIL"])
+  def mail
+    @mail.from = sendgrid_email_formation(ENV["FROM_EMAIL"], I18n.t("email_from_name"))
     set_personalizaton_variables
     @mail
   end
@@ -41,13 +41,13 @@ class SendgridService
     @sengrid_instance ||= SendGrid::API.new(api_key: ENV["SENDGRID_API_KEY"])
   end
 
-  def sendgrid_email_formation(email) #base
-    SendGrid::Email.new(email: email)
+  def sendgrid_email_formation(email, name = nil)
+    SendGrid::Email.new(email: email, name: name)
   end
 
   private
 
   def send_to_sendgrid?
-    Rails.env.production?
+    Rails.env.production? || Rails.env.staging?
   end
 end
