@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   validates :mobile, presence: true, uniqueness: true, unless: :request_from_stock_without_mobile?
 
   validates :email, uniqueness: true, allow_blank: true,
-                    format: {with: /\A[^@\s]+@[^@\s]+\Z/}
+                    format: {with: /\A[^@\s]+@[^@\s]+\Z/}, fake_email: true
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
 
