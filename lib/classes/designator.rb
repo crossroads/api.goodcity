@@ -33,7 +33,7 @@ class Designator
   end
 
   def designate_stockit_item
-    @package.designate_to_stockit_order(@order_id_param)
+    @package.designate_to_stockit_order(@order_id)
   end
 
   def designated_to_same_order?
@@ -45,11 +45,11 @@ class Designator
   private
 
   def designated?
-    @params[:quantity].to_i.zero?
+    @params[:quantity].eql?("0")
   end
 
   def quantity
-    @params[:quantity].to_i.zero? ? @params[:received_quantity] : @params[:quantity]
+    designated? ? @params[:received_quantity] : @params[:quantity]
   end
 
   def redesignate
