@@ -73,7 +73,7 @@ module Api
         @user = User.find_by_mobile(@mobile.mobile)
 
         if @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin(app_name)
+          @user.send_verification_pin(app_name, params[:mobile])
         elsif @user
           return render json: {error: "You are not authorized."}, status: 401
         end
