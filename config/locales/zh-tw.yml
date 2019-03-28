@@ -1,6 +1,7 @@
 ---
 zh-tw:
   success: 成功
+  email_from_name: "好人好巿 (慈善組織)"
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -73,4 +74,3 @@ zh-tw:
         blank: "Mobile can't be blank"
     existing_user:
       present: "User already exists in this organisation"
-

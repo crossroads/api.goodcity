@@ -2,20 +2,21 @@ FactoryBot.define do
   factory :user, aliases: [:sender] do
     association :address
 
-    first_name        { FFaker::Name.first_name }
-    last_name         { FFaker::Name.last_name }
-    mobile            { generate(:mobile) }
-    last_connected    { 2.days.ago }
+    first_name { FFaker::Name.first_name }
+    last_name { FFaker::Name.last_name }
+    mobile { generate(:mobile) }
+    email { FFaker::Internet.email }
+    last_connected { 2.days.ago }
     last_disconnected { 1.day.ago }
-    disabled          { false }
+    disabled { false }
     sms_reminder_sent_at { nil }
-    initialize_with   { User.find_or_initialize_by(mobile: mobile) }
+    initialize_with { User.find_or_initialize_by(mobile: mobile) }
 
     association :image
 
     transient do
       role_name { generate(:permissions_roles).keys.sample }
-      roles_and_permissions {}
+      roles_and_permissions { }
     end
 
     [:reviewer, :order_fulfilment, :order_administrator, :supervisor, :administrator, :charity].each do |role|
@@ -168,13 +169,13 @@ FactoryBot.define do
 
     trait :stockit_user do
       first_name "Stockit"
-      last_name  "User"
+      last_name "User"
     end
 
     trait :system do
       first_name "GoodCity"
-      last_name  "Team"
-      mobile     SYSTEM_USER_MOBILE
+      last_name "Team"
+      mobile SYSTEM_USER_MOBILE
       after(:create) do |user|
         user.roles << create(:system_role)
       end

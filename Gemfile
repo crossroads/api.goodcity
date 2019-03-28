@@ -59,6 +59,7 @@ gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
 gem 'slack-ruby-client'
 gem 'whenever', '~>  0.9.5', require: false
+gem 'sendgrid-ruby'
 
 group :development do
   gem 'spring'
