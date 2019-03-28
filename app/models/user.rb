@@ -86,7 +86,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def send_verification_pin(app_name, mobile, email)
+  def send_verification_pin(app_name, mobile, email = nil)
     SlackPinService.new(self).send_otp(app_name)
     return send_sms(app_name) if mobile
     send_pin_email if email
