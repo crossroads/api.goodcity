@@ -167,7 +167,7 @@ module Api
 
       def designate_partial_item
         designator = Designator.new(@package, params[:package])
-        result = designator.designate_or_redesignate
+        result = designator.designate
         if result.errors.blank?
           send_stock_item_response
         else
