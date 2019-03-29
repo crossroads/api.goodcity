@@ -60,6 +60,7 @@ gem 'rake-progressbar'
 gem 'slack-ruby-client'
 gem 'whenever', '~>  0.9.5', require: false
 gem 'sendgrid-ruby'
+gem 'fake_email_validator'
 
 group :development do
   gem 'spring'
