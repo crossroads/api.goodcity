@@ -72,7 +72,7 @@ describe SendgridService do
         expect(sendgrid).to receive(:send_email) do
           data_sent = sendgrid.substitution_hash
           expect(data_sent['order_code']).to eq(order.code)
-          expect(Time.parse(data_sent['scheduled_at']).to_s).to eq(order.order_transport.scheduled_at.to_s)
+          expect(data_sent['scheduled_at']).to eq(order.order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %H:%M%p"))
           expect(data_sent['client']).not_to be_nil
           expect(data_sent['client'][:name]).to eq(order.beneficiary.first_name + ' ' + order.beneficiary.last_name)
           expect(data_sent['client'][:phone]).to eq(order.beneficiary.phone_number)
