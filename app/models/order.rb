@@ -227,8 +227,14 @@ class Order < ActiveRecord::Base
     after_transition on: :submit do |order|
       if order.detail_type == "GoodCity"
         order.designate_orders_packages
-        order.send_new_order_notificationen
+        order.send_new_order_notification
         order.send_new_order_confirmed_sms_to_charity
+      end
+    end
+
+    after_transition on: :finish_processing do |order|
+      if order.awaiting_dispatch?
+        order.send_confirmation_email
       end
     end
   end
@@ -239,7 +245,16 @@ class Order < ActiveRecord::Base
     return (required_process_checks - process_checklists).empty?
   end
 
-  def send_new_order_notificationen
+  def send_confirmation_email
+    return if booking_type != BookingType.appointment || created_by.nil?
+    begin
+      SendgridService.new(created_by).send_appointment_confirmation_email self
+    rescue => e
+      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
+    end
+  end
+
+  def send_new_order_notification
     PushService.new.send_notification(Channel::ORDER_FULFILMENT_CHANNEL, STOCK_APP, {
       category:   'new_order',
       message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
@@ -355,6 +370,31 @@ class Order < ActiveRecord::Base
 
   def delete_if_no_orders_packages
     self.destroy if draft_goodcity_order? and !orders_packages.exists?
+  end
+
+  def email_properties
+    props = {}
+    props["order_code"] = code
+    if order_transport
+      props["scheduled_at"] = order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %H:%M%p")
+    end
+    if beneficiary.present?
+      props["client"] = {
+        name: beneficiary.first_name + ' ' + beneficiary.last_name,
+        phone: beneficiary.phone_number,
+        id_type: beneficiary.identity_type.name_en,
+        id_no: beneficiary.identity_number
+      }
+    end
+    props['requests'] = goodcity_requests.map do |gc|
+      {
+        quantity: gc.quantity,
+        type_en: gc.package_type.name_en,
+        type_zh_tw: gc.package_type.name_zh_tw,
+        description: gc.description
+      }
+    end
+    props
   end
 
   private
