@@ -12,8 +12,9 @@ module PushUpdatesForSubscription
       category:   'message',
       message:    message.body.truncate(150, separator: ' '),
       is_private: message.is_private,
-      offer_id:   message.offer.try(:id),
-      item_id:    message.item.try(:id),
+      offer_id:   message.offer_id,
+      order_id:   message.order_id,
+      item_id:    message.item_id,
       author_id:  message.sender_id,
       message_id: message.id
     }

@@ -2,7 +2,7 @@ module Api
   module V1
     class AuthenticationController < Api::V1::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
-        :current_user_rooms]
+                                                 :current_user_rooms]
       skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms]
 
       resource_description do
@@ -32,7 +32,7 @@ module Api
         <code>Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTc1NzkwMTQsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxNzU4MDgxNH0.x-N_aUb3S5wcNy5i2w2WUZjEA2ud_81u8yQV0JfsT6A</code>
 
         EOS
-        formats ['json']
+        formats ["json"]
       end
 
       def_param_group :user_auth do
@@ -47,7 +47,7 @@ module Api
         end
       end
 
-      api :POST, '/v1/auth/send_pin', "Send SMS code to the registered mobile"
+      api :POST, "/v1/auth/send_pin", "Send SMS code to the registered mobile"
       description <<-EOS
       Send an OTP code via SMS if the given mobile number has an account in the system.
 
@@ -67,20 +67,20 @@ module Api
       def send_pin
         @mobile = Mobile.new(params[:mobile])
         unless @mobile.valid?
-          return render_error(@mobile.errors.full_messages.join('. '))
+          return render_error(@mobile.errors.full_messages.join(". "))
         end
 
         @user = User.find_by_mobile(@mobile.mobile)
 
         if @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin(app_name)
+          @user.send_verification_pin(app_name, params[:mobile])
         elsif @user
-          return render json: { error: "You are not authorized." }, status: 401
+          return render json: {error: "You are not authorized."}, status: 401
         end
-        render json: { otp_auth_key: otp_auth_key_for(@user) }
+        render json: {otp_auth_key: otp_auth_key_for(@user)}
       end
 
-      api :POST, '/v1/auth/signup', "Register a new user"
+      api :POST, "/v1/auth/signup", "Register a new user"
       description <<-EOS
       Create a new user and send an OTP token to the user's mobile.
 
@@ -113,16 +113,17 @@ module Api
       param_group :user_auth
       error 422, "Validation Error"
       error 500, "Internal Server Error"
+
       def signup
         @user = User.creation_with_auth(auth_params, app_name)
         if @user.valid? && @user.persisted?
-          render json: { otp_auth_key: otp_auth_key_for(@user) }, status: :ok
+          render json: {otp_auth_key: otp_auth_key_for(@user)}, status: :ok
         else
-          render_error(@user.errors.full_messages.join('. '))
+          render_error(@user.errors.full_messages.join(". "))
         end
       end
 
-      api :POST, '/v1/auth/verify', "Verify OTP code"
+      api :POST, "/v1/auth/verify", "Verify OTP code"
       description <<-EOS
       Verify the OTP code (sent via SMS)
       * If verified, generate and send back an authenticated +jwt_token+ and +user+ object
@@ -140,18 +141,20 @@ module Api
       error 403, "Forbidden"
       error 422, "Validation Error"
       error 500, "Internal Server Error"
+
       def verify
         @user = warden.authenticate(:pin)
         if authenticated_user
-          render json: { jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user) }
+          render json: {jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user)}
         else
-          render_error({ pin: I18n.t('auth.invalid_pin') })
+          render_error({pin: I18n.t("auth.invalid_pin")})
         end
       end
 
       api :GET, "/v1/auth/current_user_profile", "Retrieve current authenticated user profile details"
       error 401, "Unauthorized"
       error 500, "Internal Server Error"
+
       def current_user_profile
         authorize!(:current_user_profile, User)
         render json: current_user, serializer: Api::V1::UserProfileSerializer
@@ -160,6 +163,7 @@ module Api
       api :POST, "/v1/auth/register_device", "Register a mobile device to receive notifications"
       param :handle, String, desc: "The registration id for the push messaging service for the platform i.e. gcm registration id for android"
       param :platform, String, desc: "The azure notification platform name, this should be `gcm` for android"
+
       def register_device
         authorize!(:register, :device)
         return render text: platform_error, status: 400 unless valid_platform?
@@ -169,6 +173,7 @@ module Api
 
       api :GET, "/v1/auth/current_user_rooms", "Retrieve the list of socketio rooms the user can listen to"
       error 500, "Internal Server Error"
+
       def current_user_rooms
         # It's ok for current_user to be nil e.g. Anonymous Browse app users
         channels = Channel.channels_for(current_user, app_name)
@@ -178,7 +183,7 @@ module Api
       private
 
       def render_error(error_message)
-        render json: { errors: error_message }, status: 422
+        render json: {errors: error_message}, status: 422
       end
 
       def authenticated_user
@@ -199,16 +204,16 @@ module Api
       end
 
       def auth_params
-        attributes = [:mobile, :first_name, :last_name, address_attributes: [:district_id, :address_type]]
+        attributes = [:mobile, :first_name, :last_name, :email, address_attributes: [:district_id, :address_type]]
         params.require(:user_auth).permit(attributes)
       end
 
       def warden
-        request.env['warden']
+        request.env["warden"]
       end
 
       def valid_platform?
-        ['gcm', 'aps', 'wns'].include?(params[:platform])
+        ["gcm", "aps", "wns"].include?(params[:platform])
       end
 
       def platform_error
@@ -221,7 +226,8 @@ module Api
           params[:handle],
           channels,
           params[:platform],
-          app_name)
+          app_name
+        )
       end
     end
   end

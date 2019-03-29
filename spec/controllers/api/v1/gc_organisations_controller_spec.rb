@@ -6,6 +6,16 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
   before { generate_and_set_token(supervisor) }
 
+  describe "search gc organisations" do
+    let(:organisations) { create_list(:organisation, 27)}
+
+    it "returns first 25 results only" do
+      organisations.map{|org| org.update_column(:name_en, org.name_en + " (HongKong)")}
+      get :index, searchText: "(HongKong)"
+      expect(parsed_body['gc_organisations'].length).to eq(25)
+    end
+  end
+
   describe 'GET gc organisations' do
     let(:organisations) { create_list(:organisation, 2) }
 
