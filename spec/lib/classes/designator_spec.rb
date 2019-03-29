@@ -11,11 +11,11 @@ require "rails_helper"
   end
 
   let(:designate_package_params) {
-    { quantity: 1,order_id: order.id,package_id: package.id,received_quantity: 1,orders_package_id: '' }
+    { quantity: "1",order_id: order.id,package_id: package.id,received_quantity: "1",orders_package_id: '' }
   }
 
   let(:redesignate_package_params) {
-    { quantity: 0,order_id: order1.id,package_id: package1.id,received_quantity: 1,orders_package_id: designated_orders_package.id }
+    { quantity: "0",order_id: order1.id,package_id: package1.id,received_quantity: "1",orders_package_id: designated_orders_package.id }
   }
 
   let(:designator) { Designator.new(package, designate_package_params) }
@@ -29,7 +29,7 @@ require "rails_helper"
     it { expect(designator.instance_variable_get("@orders_package").package_id).to eql(orders_package.package_id) }
   end
 
-  context ".designate_or_redesignate" do
+  context ".designate?" do
     before(:all) do
       WebMock.disable!
     end
@@ -39,25 +39,23 @@ require "rails_helper"
     end
 
     it "designates packages to order if not designated" do
-      designator.designate_or_redesignate
+      designator.designate
       expect(order.orders_packages.length).to eq(1)
       expect(order.orders_packages.first.order_id).to eq(order.id)
     end
 
     it "undesignate before designating to new order" do
-      designator_with_designated_package.designate_or_redesignate
+      designator_with_designated_package.designate
       expect(order1.orders_packages.first.order_id).to eq(redesignate_package_params[:order_id])
       expect(order.orders_packages.length).to eq(0)
     end
-  end
 
-  context ".designated_to_same_order?" do
     it "return error message if package already designated to same order" do
-      expect(designator_with_designated_package.designated_to_same_order?.errors.full_messages).to eq(["Package Already designated to this Order"])
+      expect(designator_with_designated_package.designate.errors.full_messages).to eq(["Package Already designated to this Order"])
     end
 
     it "return no error message if package is not designated to same order" do
-      expect(designator.designated_to_same_order?).to eq(nil)
+      expect(designator.designate&.errors.full_messages).to eq([])
     end
 
   end
