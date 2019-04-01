@@ -375,6 +375,7 @@ class Order < ActiveRecord::Base
   def email_properties
     props = {}
     props["order_code"] = code
+    props["order_id"] = id
     if order_transport
       props["scheduled_at"] = order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %H:%M%p")
     end
