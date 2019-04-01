@@ -18,6 +18,10 @@ describe TwilioService do
   describe "sms_verification_pin" do
     let(:otp_code) { "123456" }
 
+    before {
+      I18n.locale = :en
+    }
+
     context "based on app_name" do
       before(:each) do
         allow(twilio).to receive(:send_to_twilio?).and_return(true)

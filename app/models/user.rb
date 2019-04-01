@@ -196,6 +196,17 @@ class User < ActiveRecord::Base
     end
   end
 
+  def email_properties
+    props = {}
+    props["contact_name"] = "#{first_name} #{last_name}"
+    org = organisations.first
+    if org
+      props["contact_organisation_name_en"] = org.name_en
+      props["contact_organisation_name_zh_tw"] = org.name_zh_tw
+    end
+    props
+  end
+
   private
 
   def request_from_stock_without_mobile?
