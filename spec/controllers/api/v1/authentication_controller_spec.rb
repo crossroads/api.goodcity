@@ -45,12 +45,25 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   context "verify" do
     context "with successful authentication" do
+      it 'should allow access to user and verify email after signed in on browse', :show_in_doc do
+        set_browse_app_header
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
+        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(controller).to receive(:generate_token).with(user_id: user.id).and_return(jwt_token)
+        post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234', pin_for: 'email'
+        expect(parsed_body["user"]["user_profile"]["is_email_verified"]).to be_truthy
+        expect(parsed_body["jwt_token"]).to eq(jwt_token)
+        expect(parsed_body["user"]).to eq(serialized_user)
+        expect(response.status).to eq(200)
+      end
+
       it 'should allow access to user after signed-in', :show_in_doc do
         set_donor_app_header
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(controller).to receive(:generate_token).with(user_id: user.id).and_return(jwt_token)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
+        expect(parsed_body["user"]["user_profile"]["is_mobile_verified"]).to be_truthy
         expect(parsed_body["jwt_token"]).to eq(jwt_token)
         expect(parsed_body["user"]).to eq(serialized_user)
         expect(response.status).to eq(200)
