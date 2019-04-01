@@ -2,7 +2,7 @@ module Api::V1
   class UserProfileSerializer < ApplicationSerializer
     embed :ids, include: true
 
-    attributes :id, :first_name, :last_name, :mobile, :email, :last_connected, :last_disconnected
+    attributes :id, :first_name, :last_name, :mobile, :email, :last_connected, :last_disconnected, :is_email_verified, :is_mobile_verified
 
     has_one :address, serializer: AddressSerializer
     has_one :image, serializer: ImageSerializer
