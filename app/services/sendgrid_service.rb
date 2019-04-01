@@ -21,14 +21,27 @@ class SendgridService
   end
 
   def send_pin_email
+    return unless user.email.present?
     pin = user.most_recent_token.otp_code
     substitution_hash["pin"] = pin
-    @mail.template_id = ENV[template_id_based_on_locale]
+    @mail.template_id = ENV[pin_template_id]
     send_email
   end
 
-  def template_id_based_on_locale
+  def send_appointment_confirmation_email(order)
+    return unless user.email.present?
+    substitution_hash.merge!(user.email_properties)
+    substitution_hash.merge!(order.email_properties)
+    @mail.template_id = ENV[appointment_template_id]
+    send_email
+  end
+
+  def pin_template_id
     I18n.locale == :en ? "SENDGRID_PIN_TEMPLATE_ID_EN" : "SENDGRID_PIN_TEMPLATE_ID_ZH_TW"
+  end
+
+  def appointment_template_id
+    "SENDGRID_APPOINTMENT_TEMPLATE_ID"
   end
 
   def mail
