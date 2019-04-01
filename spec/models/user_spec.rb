@@ -49,6 +49,8 @@ describe User, :type => :model do
     it { is_expected.to have_db_column(:last_connected).of_type(:datetime) }
     it { is_expected.to have_db_column(:last_disconnected).of_type(:datetime) }
     it { is_expected.to have_db_column(:title).of_type(:string) }
+    it { is_expected.to have_db_column(:is_mobile_verified).of_type(:boolean) }
+    it { is_expected.to have_db_column(:is_email_verified).of_type(:boolean) }
   end
 
   describe "Validations" do
@@ -222,6 +224,30 @@ describe User, :type => :model do
       expect(TwilioService).to receive(:new).with(user).and_return(twilio)
       expect(twilio).to receive(:sms_verification_pin)
       user.send_verification_pin(DONOR_APP, user.mobile, nil)
+    end
+  end
+
+  describe "#set_verified_flag for email and mobile" do
+    let(:user) { create(:user) }
+
+    it "should set verified flag for email" do
+      expect(user.is_email_verified).to be_falsey
+      user.set_verified_flag('email')
+      expect(user.is_email_verified).to be_truthy
+    end
+
+    it "should set verified flag for mobile" do
+      expect(user.is_mobile_verified).to be_falsey
+      user.set_verified_flag('mobile')
+      expect(user.is_mobile_verified).to be_truthy
+    end
+
+    it "should set verified flag for mobile if nil params come" do
+      # to verify login from other apps
+      user.update_column(:is_mobile_verified, false)
+      expect(user.is_mobile_verified).to be_falsey
+      user.set_verified_flag(nil)
+      expect(user.is_mobile_verified).to be_truthy
     end
   end
 
