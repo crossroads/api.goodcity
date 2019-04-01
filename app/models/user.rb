@@ -94,6 +94,11 @@ class User < ActiveRecord::Base
     send_pin_email if email
   end
 
+  def set_verified_flag(pin_for)
+    flag = pin_for.eql?('email') ? :is_email_verified : :is_mobile_verified
+    update_column(flag, true) unless send(flag)
+  end
+
   def self.recent_orders_created_for(user_id)
     joins(:created_orders).where(orders: {submitted_by_id: user_id})
       .order("orders.id DESC").limit(5)
