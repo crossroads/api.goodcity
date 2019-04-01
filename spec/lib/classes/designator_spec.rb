@@ -29,7 +29,7 @@ require "rails_helper"
     it { expect(designator.instance_variable_get("@orders_package").package_id).to eql(orders_package.package_id) }
   end
 
-  context ".designate?" do
+  context ".designate" do
     before(:all) do
       WebMock.disable!
     end

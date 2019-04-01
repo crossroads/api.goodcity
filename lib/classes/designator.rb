@@ -8,14 +8,15 @@ class Designator
     @orders_package = @package.orders_packages.new
   end
 
-  #checks if already designated before redesignating
+  # checks if already designated before redesignating
   def designate
-    return already_designated_error! unless designated_to_order?&.errors.blank?
+    return designated_to_existing_order_error if existing_orders_package_error&.errors.present?
     redesignate if designated?
     designate_to_goodcity_and_stockit
   end
 
-  def undesignate(undesignate_package = nil) #undesignate_package params is passed from redesignate
+  # undesignate_package params is passed from redesignate
+  def undesignate(undesignate_package = nil)
     packages = undesignate_package ? undesignate_package : @params
     OrdersPackage.undesignate_partially_designated_item(packages)
     @package.undesignate_from_stockit_order
@@ -56,14 +57,13 @@ class Designator
     @orders_package
   end
 
-  def already_designated_error!
-    return designated_to_order? if designated?
+  def designated_to_existing_order_error
+    existing_orders_package_error if designated?
   end
 
-  def designated_to_order?
+  def existing_orders_package_error
     orders_package = OrdersPackage.find_by_id(@params[:orders_package_id])
-    orders_package && orders_package.check_valid_order!(@order_id)
+    orders_package&.check_valid_order!(@order_id)
     orders_package
   end
-
 end
