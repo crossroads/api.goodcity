@@ -65,6 +65,7 @@ zh-tw:
     split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
   orders_package:
     already_dispatched: "This has been already dispatched."
+    order_status_error: "You need to complete processing Order first before dispatching."
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"

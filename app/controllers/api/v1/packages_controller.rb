@@ -199,6 +199,9 @@ module Api
 
       def dispatch_stockit_item
         @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
+        order = @orders_package.order
+        render_order_status_error and return if order.prohibit_item_dispatch?
+
         if @orders_package.dispatch_orders_package
           @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
           send_stock_item_response
@@ -261,6 +264,10 @@ module Api
       end
 
       private
+
+      def render_order_status_error
+        render json: { errors: I18n.t('orders_package.order_status_error') }, status: 403
+      end
 
       def stock_serializer
         Api::V1::StockitItemSerializer
