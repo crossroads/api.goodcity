@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true, allow_blank: true,
                     format: {with: /\A[^@\s]+@[^@\s]+\Z/}
 
-  validates :email, fake_email: true, :if => lambda { Rails.env.staging? || Rails.env.production? }
+  validates :email, fake_email: true, :if => lambda { Rails.env.production? }
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
 
