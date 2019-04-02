@@ -10,7 +10,7 @@ class Designator
 
   # checks if already designated before redesignating
   def designate
-    return designated_to_existing_order_error if existing_orders_package_error&.errors.present?
+    return designate_package_to_existing_order if designated_to_existing_order?
     redesignate if designated?
     designate_to_goodcity_and_stockit
   end
@@ -57,11 +57,11 @@ class Designator
     @orders_package
   end
 
-  def designated_to_existing_order_error
-    existing_orders_package_error if designated?
+  def designated_to_existing_order?
+    designated? && designate_package_to_existing_order&.errors.present?
   end
 
-  def existing_orders_package_error
+  def designate_package_to_existing_order
     orders_package = OrdersPackage.find_by_id(@params[:orders_package_id])
     orders_package&.check_valid_order!(@order_id)
     orders_package
