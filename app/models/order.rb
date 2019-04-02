@@ -80,6 +80,10 @@ class Order < ActiveRecord::Base
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
+  def prohibit_item_dispatch?
+    ['draft', 'submitted', 'processing', INACTIVE_STATES].flatten.uniq.include?(state)
+  end
+
   def delete_orders_packages
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
