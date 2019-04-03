@@ -169,6 +169,7 @@ module Api
         designator = Designator.new(@package, params[:package])
         result = designator.designate
         if result.errors.blank?
+          designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
         else
           render json: { errors: result.errors.full_messages }, status: 422
@@ -239,6 +240,7 @@ module Api
       end
 
       def send_stock_item_response
+        @package.reload
         if @package.errors.blank? && @package.valid? && @package.save
           render json: @package,
             serializer: stock_serializer,
