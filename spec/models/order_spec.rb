@@ -606,8 +606,8 @@ RSpec.describe Order, type: :model do
     end
 
     describe '#prohibit_item_dispatch' do
-      it 'should be truthy for submitted state' do
-        order = create :order, state: 'submitted'
+      it 'should be truthy for unprocessed states' do
+        order = create :order, state:  Order::ORDER_NOT_PROCESSED_STATES.sample
         expect(order.prohibit_item_dispatch?).to be_truthy
       end
 
