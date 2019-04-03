@@ -19,6 +19,14 @@ module Api
         end
       end
 
+      api :GET, '/v1/goodcity_requests', "List goodcity_requests"
+      def index
+        if params[:order_ids]
+          @goodcity_requests = @goodcity_requests.where(order_id: params[:order_ids].split(','))
+        end
+        render json: @goodcity_requests, each_serializer: serializer, status: 200
+      end
+
       api :POST, '/v1/goodcity_requests', "Create goodcity_request"
       param_group :goodcity_request
       def create
