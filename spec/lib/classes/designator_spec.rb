@@ -47,7 +47,7 @@ require "rails_helper"
     it "undesignate before designating to new order" do
       designator_with_designated_package.designate
       expect(order1.orders_packages.first.order_id).to eq(redesignate_package_params[:order_id])
-      expect(order.orders_packages.length).to eq(0)
+      expect(order.orders_packages.reload.length).to eq(0)
     end
 
     it "return error message if package already designated to same order" do
