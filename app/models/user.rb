@@ -29,10 +29,12 @@ class User < ActiveRecord::Base
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
 
-  validates :mobile, presence: true, uniqueness: true, unless: :request_from_stock_without_mobile?
+  validates :mobile, presence: true, unless: :request_from_stock_without_mobile?
+  validates :mobile, uniqueness: true, if: 'mobile.present?'
 
-  validates :email, uniqueness: true, allow_blank: true,
+  validates :email, allow_blank: true,
                     format: {with: /\A[^@\s]+@[^@\s]+\Z/}
+  validates :email, uniqueness: true, if: 'email.present?'
 
   validates :email, fake_email: true, :if => lambda { Rails.env.staging? || Rails.env.production? }
 
