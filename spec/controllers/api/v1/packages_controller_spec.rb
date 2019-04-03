@@ -47,6 +47,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       put :dispatch_stockit_item, id: package.id, package: {
         order_package_id: orders_package.id }
       expect(response.status).to eq(403)
+      expect(subject['errors']).to eq('You need to complete processing Order first before dispatching.')
     end
   end
 
