@@ -148,11 +148,6 @@ class OrdersPackage < ActiveRecord::Base
     )
   end
 
-  def check_valid_order!(order_id)
-    self.errors.add("package_id", "Already designated to this Order") if self.order_id === order_id
-    self
-  end
-
   private
 
   def recalculate_quantity(operation)

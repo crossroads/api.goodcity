@@ -40,7 +40,7 @@ require "rails_helper"
 
     it "designates packages to order if not designated" do
       designator.designate
-      expect(order.orders_packages.length).to eq(1)
+      expect(order.orders_packages.reload.length).to eq(1)
       expect(order.orders_packages.first.order_id).to eq(order.id)
     end
 

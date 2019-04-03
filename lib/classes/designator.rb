@@ -6,64 +6,49 @@ class Designator
     @params = package_params
     @order_id = package_params[:order_id].to_i
     @orders_package = @package.orders_packages.new
+    @existing_designation =  OrdersPackage.find_by_id(@params[:orders_package_id])
   end
 
-  # checks if already designated before redesignating
   def designate
-    return designate_package_to_existing_order if designated_to_existing_order?
-    redesignate if designated?
-    designate_to_goodcity_and_stockit
+    if designating_to_existing_designation?
+      add_error_and_return_existing_designation
+    else
+      undesignate_designated_package if @package.quantity.zero?
+      designate_item
+    end
   end
 
-  # undesignate_package params is passed from redesignate
+  # undesignate_package params is passed from 'undesignate_designated_package'
   def undesignate(undesignate_package = nil)
     packages = undesignate_package ? undesignate_package : @params
     OrdersPackage.undesignate_partially_designated_item(packages)
     @package.undesignate_from_stockit_order
   end
 
-  def redesignate
+  def undesignate_designated_package
     undesignate_package = {}
-    @params[:quantity] = @params[:received_quantity]
+    @params[:quantity] = @package.received_quantity
     undesignate_package["0"] = @params
     undesignate(undesignate_package)
   end
 
   private
 
-  def designated?
-    @params[:quantity].eql?("0")
+  def add_error_and_return_existing_designation
+    @existing_designation.errors.add("package_id", "Already designated to this Order")
+    @existing_designation
   end
 
-  def quantity
-    designated? ? @params[:received_quantity] : @params[:quantity]
-  end
-
-  def designate_to_goodcity_and_stockit
-    return designate_item if designate_item.errors
-    designate_stockit_item
-  end
-
-  def designate_stockit_item
-    @package.designate_to_stockit_order(@order_id)
+  def designating_to_existing_designation?
+    @existing_designation&.order_id == @params[:order_id].to_i
   end
 
   def designate_item
     @orders_package.order_id = @order_id
-    @orders_package.quantity = quantity.to_i
+    @orders_package.quantity = @params[:quantity_to_designate] ? @params[:quantity_to_designate] :  @params[:quantity]
     @orders_package.updated_by = User.current_user
     @orders_package.state = 'designated'
     @orders_package.save
     @orders_package
-  end
-
-  def designated_to_existing_order?
-    designated? && designate_package_to_existing_order&.errors.present?
-  end
-
-  def designate_package_to_existing_order
-    orders_package = OrdersPackage.find_by_id(@params[:orders_package_id])
-    orders_package&.check_valid_order!(@order_id)
-    orders_package
   end
 end
