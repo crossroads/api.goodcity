@@ -72,7 +72,7 @@ RSpec.describe OrderTransport, type: :model do
 
     it "should send changes to the browse app of the social worker" do
       expect(push_service).to receive(:send_update_store) do |channels, data|
-        expect(channels).to include(user_browse_channel)
+        expect(channels.flatten).to include(user_browse_channel)
       end
       order_transport.scheduled_at = Time.now + 10.days
       order_transport.save
