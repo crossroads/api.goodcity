@@ -605,6 +605,18 @@ RSpec.describe Order, type: :model do
       end
     end
 
+    describe '#prohibit_item_dispatch' do
+      it 'should be truthy for submitted state' do
+        order = create :order, state: 'submitted'
+        expect(order.prohibit_item_dispatch?).to be_truthy
+      end
+
+      it 'should be falsey for awaiting_dispatch state' do
+        order = create :order, state: 'awaiting_dispatch'
+        expect(order.prohibit_item_dispatch?).to be_falsey
+      end
+    end
+
     describe '#dispatch_later' do
       it 'nullyfies dispatch_started_at and dispatch_started_by if order is in dispatching state' do
         order = create :order, state: 'dispatching', dispatch_started_at: Time.now, dispatch_started_by_id: user.id

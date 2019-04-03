@@ -53,6 +53,8 @@ class Order < ActiveRecord::Base
 
   MY_ORDERS_AUTHORISED_STATES = ['submitted', 'closed', 'cancelled', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
 
+  ORDER_NOT_PROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
+
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
@@ -81,7 +83,7 @@ class Order < ActiveRecord::Base
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
 
   def prohibit_item_dispatch?
-    ['draft', 'submitted', 'processing', INACTIVE_STATES].flatten.uniq.include?(state)
+    ORDER_NOT_PROCESSED_STATES.include?(state)
   end
 
   def delete_orders_packages
