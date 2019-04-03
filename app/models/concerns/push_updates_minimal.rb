@@ -16,10 +16,11 @@ module PushUpdatesMinimal
   end
 
   def push_changes
-    record = self
-    operation = read_operation record
-    data = { item: serialize(record), sender: user, operation: operation }
-    PushService.new.send_update_store target_channels, data
+    PushService.new.send_update_store target_channels, {
+      item: serialize(self),
+      sender: user,
+      operation: read_operation(self)
+    }
   end
 
   def target_channels
