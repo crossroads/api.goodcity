@@ -49,6 +49,8 @@ class Order < ActiveRecord::Base
 
   INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
 
+  ACTIVE_STATES = ['submitted', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
+
   MY_ORDERS_AUTHORISED_STATES = ['submitted', 'closed', 'cancelled', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
 
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
