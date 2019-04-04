@@ -6,11 +6,13 @@ RSpec.describe Mobile, type: :model do
       it "is not a valid number if length of mobile is greater than 8" do
         mobile = Mobile.new("+852#{n}123456789")
         expect(mobile.valid?).to be_falsy
+        expect(mobile.errors.messages[:mobile][0]).to eq(I18n.t('activerecord.errors.models.user.attributes.mobile.invalid'))
       end
 
       it "is not a valid number if length of mobile is greater than 8 and invalid mobile characters are there" do
         mobile = Mobile.new("+852#{n}sdaf93284")
         expect(mobile.valid?).to be_falsy
+        expect(mobile.errors.messages[:mobile][0]).to eq(I18n.t('activerecord.errors.models.user.attributes.mobile.invalid'))
       end
     end
 
@@ -18,6 +20,7 @@ RSpec.describe Mobile, type: :model do
       it "is not valid if number is starting with #{n}" do
         mobile = Mobile.new("+852#{n}1234567")
         expect(mobile.valid?).to be_falsey
+        expect(mobile.errors.messages[:mobile][0]).to eq(I18n.t('activerecord.errors.models.user.attributes.mobile.invalid'))
       end
     end
 
