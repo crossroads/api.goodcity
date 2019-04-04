@@ -126,7 +126,6 @@ module Api
       api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
       def search_stockit_items
         records = @packages # security
-        records = records.undispatched if params["orderId"].present?
         records = records.search(search_text: params['searchText'], item_id: params['itemId'],
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
@@ -161,21 +160,17 @@ module Api
       end
 
       def undesignate_partial_item
-        OrdersPackage.undesignate_partially_designated_item(params[:package])
-        @package.undesignate_from_stockit_order
+        Designator.new(@package, params[:package]).undesignate
         send_stock_item_response
       end
 
       def designate_partial_item
-        result = OrdersPackage.add_partially_designated_item(
-          order_id: params[:package][:order_id],
-          package_id: params[:package][:package_id],
-          quantity: params[:package][:quantity])
-        if result.errors.blank?
+        designator = Designator.new(@package, params[:package]).designate
+        if designator.errors.blank?
           designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
         else
-          render json: { errors: result.errors.full_messages }, status: 422
+          render json: { errors: designator.errors.full_messages }, status: 422
         end
       end
 
@@ -243,6 +238,7 @@ module Api
       end
 
       def send_stock_item_response
+        @package.reload
         if @package.errors.blank? && @package.valid? && @package.save
           render json: @package,
             serializer: stock_serializer,
