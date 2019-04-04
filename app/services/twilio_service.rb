@@ -58,7 +58,7 @@ class TwilioService
 
   def welcome_sms_text
     I18n.t('twilio.charity_user_welcome_sms',
-      full_name: User.current_user.full_name)
+      full_name: @user.full_name)
   end
 
   def new_order_placed_text_to_users(order)
