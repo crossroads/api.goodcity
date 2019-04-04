@@ -160,19 +160,17 @@ module Api
       end
 
       def undesignate_partial_item
-        designator = Designator.new(@package, params[:package])
-        designator.undesignate
+        Designator.new(@package, params[:package]).undesignate
         send_stock_item_response
       end
 
       def designate_partial_item
-        designator = Designator.new(@package, params[:package])
-        result = designator.designate
-        if result.errors.blank?
+        designator = Designator.new(@package, params[:package]).designate
+        if designator.errors.blank?
           designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
         else
-          render json: { errors: result.errors.full_messages }, status: 422
+          render json: { errors: designator.errors.full_messages }, status: 422
         end
       end
 
