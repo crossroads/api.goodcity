@@ -205,7 +205,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
         end
 
-        it 'returns records with multuple specified types' do
+        it 'returns records with multiple specified types' do
           FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: order_transport, booking_type: BookingType.appointment
           FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_orders, booking_type: BookingType.online_order
 
@@ -258,6 +258,48 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['meta']['search']).to eql('iphone')
         end
 
+        context 'Search results sorting' do
+          let(:timeslot) { '5:30PM' }
+          let(:moment) { Time.parse('2019-04-03 17:00:00 +0800') }
+          let(:orders_fetched) { parsed_body['designations'].map { |o| Order.find(o['id']) } }
+
+          def create_order_with_transport(state)
+            o = create(:order, state: state)
+            create :order_transport, order: o, scheduled_at: moment + rand(1..100).day, timeslot: timeslot
+            return o
+          end
+
+          context 'When filtering on active states (Submitted, Processing, Scheduled, Dispatching)' do
+            Order::ACTIVE_STATES.each do |state|
+              it "returns the orders sorted by due date (earliest one first) for #{state}" do
+                Order.delete_all
+                (1..5).each { create_order_with_transport(state) }
+
+                get :index, state: state
+                orders_fetched.each_with_index do |o, i|
+                  next_o = orders_fetched[i + 1]
+                  if next_o.present?
+                    expect(o.order_transport.scheduled_at).to be <= next_o.order_transport.scheduled_at
+                  end
+                end
+              end
+            end
+          end
+
+          context 'When filtering only on inactive states (Closed, cancelled)' do
+            Order::INACTIVE_STATES.each do |state|
+              it "returns the orders unsorted for #{state} (defaults to id DESC)" do
+                Order.delete_all
+                unsorted_orders = (1..5).map { create_order_with_transport(state) }.reverse
+
+                get :index, state: state
+                orders_fetched.each_with_index do |o, i|
+                  expect(o.id).to eq(unsorted_orders[i].id)
+                end
+              end
+            end
+          end
+        end
       end
 
       describe "When designating an item ( ?toDesignateItem=true )" do
