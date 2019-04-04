@@ -30,10 +30,11 @@ class TwilioService
   # options[:to] = "+85261111111"
   # options[:body] = "SMS body"
   def send_sms(options)
-    options = {to: @user.mobile}.merge(options)
     if send_to_twilio?
+      options = { to: @user.mobile }.merge(options)
       TwilioJob.perform_later(options)
     else
+      options = { to: @user.mobile.presence || @user.email.presence } .merge(options)
       message = "SlackSMS (#{options[:to]}) #{options[:body]}"
       SlackMessageJob.perform_later(message, ENV['SLACK_PIN_CHANNEL'])
     end
@@ -58,7 +59,7 @@ class TwilioService
 
   def welcome_sms_text
     I18n.t('twilio.charity_user_welcome_sms',
-      full_name: @user.full_name)
+      full_name: User.current_user.full_name)
   end
 
   def new_order_placed_text_to_users(order)
