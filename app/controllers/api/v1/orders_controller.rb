@@ -48,8 +48,18 @@ module Api
         records = apply_filters(@orders).with_eager_load
           .search(params['searchText'], params['toDesignateItem'].presence).descending
           .page(params["page"]).per(params["per_page"])
-        orders = order_response(records)
+        orders = order_response sort_by_urgency(records)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
+      end
+
+      def sort_by_urgency(records)
+        states = array_param(:state)
+        if (states & Order::ACTIVE_STATES).present?
+          records = records.sort_by do |r|
+            r.order_transport.nil? ? -1 : r.order_transport.scheduled_at.to_i
+          end
+        end
+        records
       end
 
       api :GET, '/v1/designations/1', "Get a order"

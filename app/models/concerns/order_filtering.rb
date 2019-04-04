@@ -26,13 +26,16 @@ module OrderFiltering
     #     "detail_type = 'shipment'"
     #   end
     #
-    def filter(states: [], types: [], priority: false)
+    def filter(states: [], types: [], priority: false, enable_sorting: false)
       res = where(nil)
+      res = res.join_order_transports
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
-      res = res.order_by_urgency if (states & Order::ACTIVE_STATES).present?
-      res
+      if enable_sorting && (states & Order::ACTIVE_STATES).present?
+        res = res.order_by_urgency
+      end
+      res.distinct
     end
 
     def priority
@@ -49,7 +52,7 @@ module OrderFiltering
     end
 
     def order_by_urgency
-      join_order_transports.order('order_transports.scheduled_at ASC')
+      order('orders.id, order_transports.scheduled_at ASC')
     end
 
     # TYPES
