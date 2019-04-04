@@ -28,7 +28,6 @@ module OrderFiltering
     #
     def filter(states: [], types: [], priority: false)
       res = where(nil)
-      res = res.join_order_transports
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
@@ -37,7 +36,7 @@ module OrderFiltering
     end
 
     def priority
-      where <<-SQL
+      join_order_transports.where <<-SQL
         (state = 'submitted' AND submitted_at::timestamptz <= timestamptz '#{one_day_ago}') OR
         (state = 'processing' AND processed_at::timestamptz < timestamptz '#{last_6pm}') OR
         (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.zone.now}') OR
@@ -50,7 +49,7 @@ module OrderFiltering
     end
 
     def order_by_urgency
-      order('order_transports.scheduled_at ASC')
+      join_order_transports.order('order_transports.scheduled_at ASC')
     end
 
     # TYPES
@@ -63,7 +62,7 @@ module OrderFiltering
         method = "#{t}_sql"
         "(#{send(method)})"
       end
-      where(queries.compact.join(" OR "))
+      join_order_transports.where(queries.compact.join(" OR "))
     end
 
     def appointment_sql
