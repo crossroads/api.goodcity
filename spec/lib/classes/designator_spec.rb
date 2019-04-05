@@ -11,11 +11,11 @@ require "rails_helper"
   end
 
   let(:designate_package_params) {
-    { quantity: "1",order_id: order.id,package_id: package.id,received_quantity: "1",orders_package_id: '' }
+    { quantity: "1",order_id: order.id,package_id: package.id,orders_package_id: '' }
   }
 
   let(:redesignate_package_params) {
-    { quantity: "0",order_id: order1.id,package_id: package1.id,received_quantity: "1",orders_package_id: designated_orders_package.id }
+    { quantity: "0",order_id: order1.id,package_id: package1.id,orders_package_id: designated_orders_package.id }
   }
 
   let(:designator) { Designator.new(package, designate_package_params) }

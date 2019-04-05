@@ -22,12 +22,11 @@ class Designator
   def undesignate(undesignate_package = nil)
     packages = undesignate_package ? undesignate_package : @params
     OrdersPackage.undesignate_partially_designated_item(packages)
-    @package.undesignate_from_stockit_order
+    @package.reload.undesignate_from_stockit_order
   end
 
   def form_nested_params_for_undesignate
     undesignate_package = {}
-    @params[:quantity] = @package.received_quantity
     undesignate_package["0"] = @params
     undesignate(undesignate_package)
   end
@@ -45,7 +44,7 @@ class Designator
 
   def designate_item
     @orders_package.order_id = @order_id
-    @orders_package.quantity = @params[:quantity_to_designate] ? @params[:quantity_to_designate] : @params[:quantity]
+    @orders_package.quantity = @params[:quantity]
     @orders_package.updated_by = User.current_user
     @orders_package.state = 'designated'
     @orders_package.save
