@@ -15,12 +15,10 @@ class SendgridService
   end
 
   def send_email
-    if send_to_sendgrid?
-      sendgrid_instance.client.mail._("send").post(request_body: mail.to_json)
-    else
-      message = "SlackSMS ('#{user.email}') #{message_body}"
-      SlackMessageJob.perform_later(message, ENV["SLACK_PIN_CHANNEL"])
-    end
+    sendgrid_instance.client.mail._("send").post(request_body: mail.to_json)
+
+    message = "SlackSMS ('#{user.email}') #{message_body}"
+    SlackMessageJob.perform_later(message, ENV["SLACK_PIN_CHANNEL"])
   end
 
   def send_pin_email
