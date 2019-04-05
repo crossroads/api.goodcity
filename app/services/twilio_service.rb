@@ -33,7 +33,7 @@ class TwilioService
     options = {to: @user.mobile}.merge(options)
     if send_to_twilio?
       TwilioJob.perform_later(options)
-    else
+    elsif options[:to]
       message = "SlackSMS (#{options[:to]}) #{options[:body]}"
       SlackMessageJob.perform_later(message, ENV['SLACK_PIN_CHANNEL'])
     end

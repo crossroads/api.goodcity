@@ -17,6 +17,9 @@ class SendgridService
   def send_email
     if send_to_sendgrid?
       sendgrid_instance.client.mail._("send").post(request_body: mail.to_json)
+    else
+      message = "SlackSMS ('#{user.email}') #{message_body}"
+      SlackMessageJob.perform_later(message, ENV["SLACK_PIN_CHANNEL"])
     end
   end
 
@@ -59,6 +62,11 @@ class SendgridService
   end
 
   private
+
+  def message_body
+    pin = user.most_recent_token.otp_code
+    I18n.t('twilio.browse_sms_verification_pin', pin: pin)
+  end
 
   def send_to_sendgrid?
     Rails.env.production? || Rails.env.staging?
