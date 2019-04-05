@@ -605,15 +605,15 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    describe '#prohibit_item_dispatch' do
+    describe '#can_dispatch_item' do
       it 'should be truthy for unprocessed states' do
-        order = create :order, state:  Order::ORDER_NOT_PROCESSED_STATES.sample
-        expect(order.prohibit_item_dispatch?).to be_truthy
+        order = create :order, state:  Order::ORDER_UNPROCESSED_STATES.sample
+        expect(order.can_dispatch_item?).to be_truthy
       end
 
       it 'should be falsey for awaiting_dispatch state' do
         order = create :order, state: 'awaiting_dispatch'
-        expect(order.prohibit_item_dispatch?).to be_falsey
+        expect(order.can_dispatch_item?).to be_falsey
       end
     end
 

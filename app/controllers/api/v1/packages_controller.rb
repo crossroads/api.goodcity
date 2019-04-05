@@ -199,8 +199,7 @@ module Api
 
       def dispatch_stockit_item
         @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
-        order = @orders_package.order
-        render_order_status_error and return if order.prohibit_item_dispatch?
+        return render_order_status_error if @orders_package.order.can_dispatch_item?
 
         if @orders_package.dispatch_orders_package
           @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)

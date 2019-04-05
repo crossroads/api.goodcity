@@ -40,7 +40,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "Dispatching item" do
     before { generate_and_set_token(user) }
-    let(:order) { create :order, state: Order::ORDER_NOT_PROCESSED_STATES.sample}
+    let(:order) { create :order, state: Order::ORDER_UNPROCESSED_STATES.sample}
     let(:orders_package) { create :orders_package, package: package, order: order }
 
     it "throws error if order is not processed" do
