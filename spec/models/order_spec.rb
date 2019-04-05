@@ -605,6 +605,18 @@ RSpec.describe Order, type: :model do
       end
     end
 
+    describe '#can_dispatch_item' do
+      it 'should be truthy for unprocessed states' do
+        order = create :order, state:  Order::ORDER_UNPROCESSED_STATES.sample
+        expect(order.can_dispatch_item?).to be_truthy
+      end
+
+      it 'should be falsey for awaiting_dispatch state' do
+        order = create :order, state: 'awaiting_dispatch'
+        expect(order.can_dispatch_item?).to be_falsey
+      end
+    end
+
     describe '#dispatch_later' do
       it 'nullyfies dispatch_started_at and dispatch_started_by if order is in dispatching state' do
         order = create :order, state: 'dispatching', dispatch_started_at: Time.now, dispatch_started_by_id: user.id

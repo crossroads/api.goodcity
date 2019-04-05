@@ -53,6 +53,8 @@ class Order < ActiveRecord::Base
 
   MY_ORDERS_AUTHORISED_STATES = ['submitted', 'closed', 'cancelled', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
 
+  ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
+
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
@@ -79,6 +81,10 @@ class Order < ActiveRecord::Base
   scope :my_orders, -> { where("created_by_id = (?) and ((state = 'draft' and submitted_by_id is NULL) OR state IN (?))", User.current_user.try(:id), MY_ORDERS_AUTHORISED_STATES) }
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
+
+  def can_dispatch_item?
+    ORDER_UNPROCESSED_STATES.include?(state)
+  end
 
   def delete_orders_packages
     if self.orders_packages.exists?
