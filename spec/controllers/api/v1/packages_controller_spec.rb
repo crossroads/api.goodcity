@@ -38,6 +38,19 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     expect(package.locations.first.building).to eq 'Dispatched'
   end
 
+  describe "Dispatching item" do
+    before { generate_and_set_token(user) }
+    let(:order) { create :order, state: Order::ORDER_UNPROCESSED_STATES.sample}
+    let(:orders_package) { create :orders_package, package: package, order: order }
+
+    it "throws error if order is not processed" do
+      put :dispatch_stockit_item, id: package.id, package: {
+        order_package_id: orders_package.id }
+      expect(response.status).to eq(403)
+      expect(subject['errors']).to eq('You need to complete processing Order first before dispatching.')
+    end
+  end
+
   describe "GET packages for Item" do
    before { generate_and_set_token(user) }
     it "returns 200" do
