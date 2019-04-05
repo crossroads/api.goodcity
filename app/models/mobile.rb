@@ -3,7 +3,7 @@ class Mobile
 
   attr_accessor :mobile
 
-  HONGKONGMOBILEREGEXP = /\A\+852[569]\d{7}\z/
+  HONGKONGMOBILEREGEXP = /\A\+852[456789]\d{7}\z/
   validates :mobile, format: { with: HONGKONGMOBILEREGEXP, message: I18n.t('activerecord.errors.models.user.attributes.mobile.invalid') }
 
   def initialize(mobile)
