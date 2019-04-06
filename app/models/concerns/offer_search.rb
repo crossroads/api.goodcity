@@ -16,7 +16,7 @@ module OfferSearch
       if search_text.present?
         search_query = ['offers.notes', 'users.first_name', 'users.last_name',
            'users.email', 'users.mobile', 'items.donor_description',
-           'messages.body', 'package_types.name_en'].
+           'messages.body', 'package_types.name_en', 'package_types.name_zh_tw'].
           map { |f| "#{f} ILIKE :search_text" }.
           join(" OR ")
         where(search_query, search_text: "%#{search_text}%").
