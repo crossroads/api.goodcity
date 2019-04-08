@@ -18,11 +18,11 @@ class AppointmentSlotPreset < ActiveRecord::Base
 
   def no_conflict
     conflicts = AppointmentSlotPreset
-      .where({ day: self.day, hours: self.hours, minutes: self.minutes })
+      .where({ day: day, hours: hours, minutes: minutes })
       .where.not({ id: self.id })
       .count
 
-    if conflicts > 0
+    if conflicts.positive?
       errors.add(:base, "An appointment slot already exists for this time")
     end
   end
