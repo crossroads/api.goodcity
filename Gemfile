@@ -61,6 +61,7 @@ gem 'slack-ruby-client'
 gem 'whenever', '~>  0.9.5', require: false
 gem 'sendgrid-ruby'
 gem 'fake_email_validator'
+gem 'email_verifier', '~> 0.1.0'
 
 group :development do
   gem 'spring'

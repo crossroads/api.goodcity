@@ -37,6 +37,7 @@ class User < ActiveRecord::Base
   validates :email, uniqueness: true, if: lambda { email.present? }
 
   validates :email, fake_email: true, :if => lambda { Rails.env.production? }
+  validates_email_realness_of :email
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
 
