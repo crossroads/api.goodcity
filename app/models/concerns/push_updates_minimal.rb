@@ -34,7 +34,7 @@ module PushUpdatesMinimal
 
   def serialize(record)
     associations = record.class.reflections.keys.map(&:to_sym)
-    "Api::V1::#{record.class}Serializer".constantize.new(record, { exclude: associations })
+    "Api::V1::#{record.class}Serializer".safe_constantize.new(record, { exclude: associations })
   end
 
   def user
