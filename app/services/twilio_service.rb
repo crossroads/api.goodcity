@@ -12,7 +12,7 @@ class TwilioService
   end
 
   def send_welcome_msg
-    user_name = User.current_user&.full_name
+    user_name = User.current_user&.full_name.presence
     send_sms(body: welcome_sms_text(user_name)) if user_name
   end
 
