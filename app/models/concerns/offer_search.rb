@@ -20,16 +20,16 @@ module OfferSearch
            'gogovan_orders.driver_name', 'gogovan_orders.driver_mobile', 'gogovan_orders.driver_license'].
           map { |f| "#{f} ILIKE :search_text" }.
           join(" OR ")
-        where(search_query, search_text: "%#{search_text}%").
-          where(state: Offer.nondraft_states).
-          joins("LEFT OUTER JOIN users ON offers.created_by_id = users.id").
-          joins("LEFT OUTER JOIN items ON offers.id = items.offer_id").
-          joins("LEFT OUTER JOIN messages ON offers.id = messages.offer_id OR items.id = messages.item_id").
-          joins("LEFT OUTER JOIN packages ON packages.item_id = items.id").
-          joins("LEFT OUTER JOIN package_types ON package_types.id = packages.package_type_id").
-          joins("LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id").
-          joins("LEFT OUTER JOIN gogovan_orders ON gogovan_orders.id = deliveries.gogovan_order_id").
-        distinct
+        where(search_query, search_text: "%#{search_text}%")
+          .where(state: Offer.nondraft_states)
+          .joins("LEFT OUTER JOIN users ON offers.created_by_id = users.id")
+          .joins("LEFT OUTER JOIN items ON offers.id = items.offer_id")
+          .joins("LEFT OUTER JOIN messages ON offers.id = messages.offer_id OR items.id = messages.item_id")
+          .joins("LEFT OUTER JOIN packages ON packages.item_id = items.id")
+          .joins("LEFT OUTER JOIN package_types ON package_types.id = packages.package_type_id")
+          .joins("LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id")
+          .joins("LEFT OUTER JOIN gogovan_orders ON gogovan_orders.id = deliveries.gogovan_order_id")
+          .distinct
       else
         none
       end
