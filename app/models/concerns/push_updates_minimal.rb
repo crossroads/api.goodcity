@@ -45,6 +45,6 @@ module PushUpdatesMinimal
     if record.destroyed?
       return :delete
     end
-    record.id_changed? ? :create : :update
+    record.new_record? ? :create : :update
   end
 end

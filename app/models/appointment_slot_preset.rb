@@ -23,7 +23,7 @@ class AppointmentSlotPreset < ActiveRecord::Base
       .count
 
     if conflicts.positive?
-      errors.add(:base, "An appointment slot already exists for this time")
+      errors.add(:base, I18n.t("appointment_slots.already_exists"))
     end
   end
 end
