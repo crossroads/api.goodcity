@@ -1,4 +1,6 @@
 class OrderTransport < ActiveRecord::Base
+  include PushUpdatesMinimal
+
   before_save :save_timeslot_to_schedule
 
   belongs_to :order, inverse_of: :order_transport
@@ -11,6 +13,16 @@ class OrderTransport < ActiveRecord::Base
   scope :for_orders, ->(order_ids) { joins(:order).where(orders: { id: order_ids }) }
 
   scope :user_orders, ->(user_id) { joins(:order).where(orders: { created_by_id: user_id }) }
+
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |record|
+    [
+      Channel.private_channels_for(record.order.created_by_id, BROWSE_APP),
+      Channel::ORDER_CHANNEL
+    ]
+  end
 
   def invalid_timeslot
     self.timeslot.blank? || (/^\d{1,2}(:\d{2})?(AM|PM)/ =~ self.timeslot) != 0

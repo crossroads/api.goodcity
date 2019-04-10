@@ -80,3 +80,5 @@ en:
         blank: "Mobile can't be blank"
     existing_user:
       present: "User already exists in this organisation"
+  appointment_slots:
+    already_exists: "An appointment slot already exists for this time"
