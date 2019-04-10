@@ -179,6 +179,14 @@ class User < ActiveRecord::Base
     RequestStore.store[:current_user] = user
   end
 
+  def self.current_device_id
+    RequestStore.store[:current_device_id]
+  end
+
+  def self.current_device_id=(device_id)
+    RequestStore.store[:current_device_id] = device_id
+  end
+
   def self.system_user
     User.system.order(:id).first
   end

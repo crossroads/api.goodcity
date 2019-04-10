@@ -53,4 +53,49 @@ RSpec.describe OrderTransport, type: :model do
 
   end
 
+  describe "Live updates" do
+    let!(:push_service) { PushService.new }
+    let!(:user) { create :user }
+    let!(:order) { create :order, created_by: user }
+    let!(:order_transport) { create :order_transport, order: order }
+    let(:user_browse_channel) { "user_#{user.id}_browse" }
+
+    before(:each) do
+      allow(PushService).to receive(:new).and_return(push_service)
+    end
+
+    it "should call push_changes upon change" do
+      expect(order_transport).to receive(:push_changes)
+      order_transport.scheduled_at = Time.now + 10.days
+      order_transport.save
+    end
+
+    it "should send changes to the browse app of the social worker" do
+      expect(push_service).to receive(:send_update_store) do |channels, data|
+        expect(channels.flatten).to include(user_browse_channel)
+      end
+      order_transport.scheduled_at = Time.now + 10.days
+      order_transport.save
+    end
+
+    it "should not send changes to any other browse user" do
+      expect(push_service).to receive(:send_update_store) do |channels, data|
+        channels -= [ user_browse_channel]
+        channels.each do |c|
+          expect(c).not_to include('browse')
+        end
+      end
+      order_transport.scheduled_at = Time.now + 10.days
+      order_transport.save
+    end
+
+    it "should send changes to the stock app via the ORDER_CHANNEL" do
+      expect(push_service).to receive(:send_update_store) do |channels, data|
+        expect(channels.length).to eq(2)
+        expect(channels).to include(Channel::ORDER_CHANNEL)
+      end
+      order_transport.scheduled_at = Time.now + 10.days
+      order_transport.save
+    end
+  end
 end
