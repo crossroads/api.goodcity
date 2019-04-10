@@ -55,15 +55,7 @@ module Api
       api :GET, '/v1/designations/1', "Get a order"
       def show
         root = is_browse_app? ? "order" : "designation"
-        render json: @order,
-          serializer: serializer,
-          root: root,
-          exclude_code_details: true,
-          include_packages: bool_param(:include_packages, true),
-          include_order: false,
-          include_territory: true,
-          include_images: true,
-          exclude_stockit_set_item: true
+        render json: Api::V1::OrderSerializer.new(order_with_orders_count, root: root).to_json
       end
 
       def transition
@@ -119,6 +111,13 @@ module Api
           include_order: false,
           include_images: true,
           exclude_stockit_set_item: true).as_json
+      end
+
+      def order_with_orders_count
+        Order.users_order_count(@order.created_by_id).each do |key, value|
+          @order.send("#{key}_count=", value)
+        end
+        @order
       end
 
       def order_record

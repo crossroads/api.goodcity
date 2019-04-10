@@ -32,40 +32,24 @@ module Api::V1
       "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread' and s.user_id = orders.created_by_id)"
     end
 
-    def user_submitted_order_count
-      Order.users_order_count(object.created_by_id, 'submitted')
+    def submitted_count
+      object.submitted_count
     end
 
-    def user_submitted_order_count__sql
-      "(select count(*) from orders where orders.state = 'submitted'
-        and orders.created_by_id = orders.created_by_id)"
+    def cancelled_count
+      object.cancelled_count
     end
 
-    def user_awaiting_dispatch_order_count
-      Order.users_order_count(object.created_by_id, 'awaiting_dispatch')
+    def closed_count
+      object.closed_count
     end
 
-    def user_awaiting_dispatch_order_count__sql
-      "(select count(*) from orders where orders.state = 'awaiting_dispatch'
-        and orders.created_by_id = orders.created_by_id)"
+    def draft_count
+      object.draft_count
     end
 
-    def user_cancelled_order_count
-      Order.users_order_count(object.created_by_id, 'cancelled')
-    end
-
-    def user_cancelled_order_count__sql
-      "(select count(*) from orders where orders.state = 'cancelled'
-        and orders.created_by_id = created_by_id)"
-    end
-
-    def user_closed_order_count
-      Order.users_order_count(object.created_by_id, 'closed')
-    end
-
-    def user_closed_order_count__sql
-      "(select count(*) from orders where orders.state = 'closed'
-        and orders.created_by_id = created_by_id)"
+    def dispatching_count
+      object.dispatching_count
     end
 
     def item_ids
