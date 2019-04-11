@@ -276,6 +276,9 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         context 'by due dates' do
+          before { Time.local(2008, 9, 1, 12, 0, 0) }
+          after { Time.return }
+
           let(:moment) { Time.now.change(sec: 0) }
 
           def epoch_ms(time)
@@ -293,6 +296,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           it 'can return orders scheduled after a certain time' do
             after = epoch_ms(moment + 2.day)
             get :index, after: after
+            pp response.body.to_s
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
