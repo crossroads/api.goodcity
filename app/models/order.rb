@@ -1,6 +1,4 @@
 class Order < ActiveRecord::Base
-  attr_accessor :submitted_count, :draft_count, :closed_count, :cancelled_count, :dispatching_count
-
   has_paper_trail class_name: 'Version'
   include PushUpdates
   include OrderFiltering
@@ -88,7 +86,7 @@ class Order < ActiveRecord::Base
     ORDER_UNPROCESSED_STATES.include?(state)
   end
 
-  def self.users_order_count(created_by_id)
+  def self.counts_for(created_by_id)
     group(:state).where(created_by_id: created_by_id).count
   end
 

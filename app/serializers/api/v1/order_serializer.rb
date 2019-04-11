@@ -24,34 +24,6 @@ module Api::V1
     has_one  :address, serializer: AddressSerializer
     has_one  :district, serializer: DistrictSerializer
 
-    def unread_messages_count
-      object.subscriptions.where(state: 'unread', user_id: object.created_by_id).count
-    end
-
-    def unread_messages_count__sql
-      "(select count(*) from subscriptions s where s.order_id = orders.id and s.state = 'unread' and s.user_id = orders.created_by_id)"
-    end
-
-    def submitted_count
-      object.submitted_count
-    end
-
-    def cancelled_count
-      object.cancelled_count
-    end
-
-    def closed_count
-      object.closed_count
-    end
-
-    def draft_count
-      object.draft_count
-    end
-
-    def dispatching_count
-      object.dispatching_count
-    end
-
     def item_ids
     end
 

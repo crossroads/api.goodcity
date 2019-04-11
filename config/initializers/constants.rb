@@ -8,7 +8,6 @@ ADMIN_APP = "admin".freeze
 STOCK_APP = "stock".freeze
 BROWSE_APP = "browse".freeze
 STOCKIT_APP = "stockit".freeze
-TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"].freeze
 SKIP_AUTH_APP_NAMES = [DONOR_APP, BROWSE_APP].freeze
 APP_NAMES = [DONOR_APP, ADMIN_APP, STOCK_APP, BROWSE_APP, STOCKIT_APP].freeze
 STAFF_APPS = [ADMIN_APP, STOCK_APP, STOCKIT_APP].freeze
