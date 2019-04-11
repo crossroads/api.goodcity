@@ -5,11 +5,13 @@ class SendgridService
     @user = user
     @mail ||= SendGrid::Mail.new
     @substitution_hash = {}
+    @add_bcc = false
   end
 
   def set_personalizaton_variables
     @personalization = SendGrid::Personalization.new
     @personalization.to = sendgrid_email_formation(user.email)
+    @personalization.bcc = sendgrid_email_formation(ENV["BCC_EMAIL"], I18n.t("email_from_name")) if @add_bcc
     @mail.personalizations = @personalization
     @mail.personalizations[0]["dynamic_template_data"] = substitution_hash
   end
@@ -26,13 +28,16 @@ class SendgridService
     pin = user.most_recent_token.otp_code
     substitution_hash["pin"] = pin
     @mail.template_id = ENV[pin_template_id]
+    @mail.from = sendgrid_email_formation(ENV["FROM_EMAIL"], I18n.t("email_from_name"))
     send_email
   end
 
   def send_appointment_confirmation_email(order)
     return unless user.email.present?
+    @add_bcc = true
     substitution_hash.merge!(user.email_properties)
     substitution_hash.merge!(order.email_properties)
+    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
     @mail.template_id = ENV[appointment_template_id]
     send_email
   end
@@ -46,7 +51,6 @@ class SendgridService
   end
 
   def mail
-    @mail.from = sendgrid_email_formation(ENV["FROM_EMAIL"], I18n.t("email_from_name"))
     set_personalizaton_variables
     @mail
   end
@@ -63,7 +67,7 @@ class SendgridService
 
   def message_body
     pin = user.most_recent_token.otp_code
-    I18n.t('twilio.browse_sms_verification_pin', pin: pin)
+    I18n.t("twilio.browse_sms_verification_pin", pin: pin)
   end
 
   def send_to_sendgrid?
