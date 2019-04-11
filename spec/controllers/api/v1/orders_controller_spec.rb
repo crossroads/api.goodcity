@@ -278,6 +278,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         context 'by due dates' do
           let(:moment) { Time.now.change(sec: 0) }
 
+          def epoch_ms(time)
+            time.to_i * 1000
+          end
+
           before do
             Order.delete_all
             (0..4).each do |i|
@@ -287,37 +291,37 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
 
           it 'can return orders scheduled after a certain time' do
-            after = (moment + 2.day).iso8601
+            after = epoch_ms(moment + 2.day)
             get :index, after: after
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
-              .map { |o| o.order_transport.scheduled_at }
+              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
               .each do |t|
                 expect(t).to be >= after
               end
           end
 
           it 'can return orders scheduled before a certain time' do
-            before = (moment + 2.day).iso8601
+            before = epoch_ms(moment + 2.day)
             get :index, before: before
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
-              .map { |o| o.order_transport.scheduled_at }
+              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
               .each do |t|
                 expect(t).to be <= before
               end
           end
 
           it 'can return orders scheduled between two dates' do
-            before = (moment + 3.day).iso8601
-            after = (moment + 1.day).iso8601
+            before = epoch_ms(moment + 3.day)
+            after = epoch_ms(moment + 1.day)
             get :index, before: before, after: after
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
-              .map { |o| o.order_transport.scheduled_at }
+              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
               .each do |t|
                 expect(t).to be <= before
                 expect(t).to be >= after
@@ -325,14 +329,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
 
           it 'can combine other filters with the due date' do
-            before = (moment + 3.day).iso8601
-            after = (moment + 1.day).iso8601
+            before = epoch_ms(moment + 3.day)
+            after = epoch_ms(moment + 1.day)
             get :index, before: before, after: after, state: 'submitted'
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(1)
             returned_orders
               .each do |o|
-                t = o.order_transport.scheduled_at
+                t = epoch_ms(o.order_transport.scheduled_at)
                 expect(t).to be <= before
                 expect(t).to be >= after
                 expect(o.state).to eq('submitted')

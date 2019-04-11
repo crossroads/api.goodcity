@@ -158,8 +158,8 @@ module Api
           states: array_param(:state),
           types: array_param(:type),
           priority: bool_param(:priority, false),
-          before: time_param(:before),
-          after: time_param(:after)
+          before: time_epoch_param(:before),
+          after: time_epoch_param(:after)
         )
       end
 
@@ -167,9 +167,9 @@ module Api
         params.fetch(key, "").strip.split(',')
       end
 
-      def time_param(key)
-        t = params.fetch(key, nil)
-        return t ? Time.parse(t).in_time_zone : nil
+      def time_epoch_param(key)
+        timestamp = params.fetch(key, nil)
+        return timestamp ? Time.at(Integer(timestamp) / 1000).in_time_zone : nil
       end
 
       def bool_param(key, default)
