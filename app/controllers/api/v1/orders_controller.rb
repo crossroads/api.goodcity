@@ -154,14 +154,22 @@ module Api
       end
 
       def apply_filters(records)
-        states = array_param(:state)
-        types = array_param(:type)
-        priority = bool_param(:priority, false)
-        records.filter(states: states, types: types, priority: priority)
+        records.filter(
+          states: array_param(:state),
+          types: array_param(:type),
+          priority: bool_param(:priority, false),
+          before: time_param(:before),
+          after: time_param(:after)
+        )
       end
 
       def array_param(key)
         params.fetch(key, "").strip.split(',')
+      end
+
+      def time_param(key)
+        t = params.fetch(key, nil)
+        return t ? Time.parse(t).in_time_zone : nil
       end
 
       def bool_param(key, default)
