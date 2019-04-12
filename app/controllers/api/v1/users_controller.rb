@@ -13,7 +13,7 @@ module Api
       end
 
       api :GET, '/v1/users', "List all users"
-      param :ids, Array, of: Integer, desc: "Filter by user ids e.g. ids = [1,2,3,4]"
+      param :ids, Array, desc: "Filter by user ids e.g. ids = [1,2,3,4]"
       description <<-EOS
         Note: in accordance with permissions, users will only be able to list users they are allowed to see.
         For a donor, this will be just themselves. For administrators, this will be all users.
@@ -21,7 +21,7 @@ module Api
       def index
         return search_user_and_render_json if params[:searchText].present?
         @users = @users.except_stockit_user
-        @users = @users.find(params[:ids].split(",")) if params[:ids].present?
+        @users = @users.find(ids_param) if ids_param.present?
         render json: @users, each_serializer: serializer
       end
 
@@ -67,6 +67,13 @@ module Api
         attributes = [:last_connected, :last_disconnected]
         attributes.concat([:user_role_ids]) if User.current_user.supervisor?
         params.require(:user).permit(attributes)
+      end
+
+      def ids_param
+        ids = params[:ids]
+        return nil if ids.nil?
+        return ids.split(',') if ids.is_a?(String)
+        ids.map(&:to_i)
       end
     end
   end
