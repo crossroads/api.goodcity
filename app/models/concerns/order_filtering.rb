@@ -7,15 +7,6 @@ module OrderFiltering
   end
 
   module ClassMethods
-    def priority
-      join_order_transports.where <<-SQL
-        (state = 'submitted' AND submitted_at::timestamptz <= timestamptz '#{one_day_ago}') OR
-        (state = 'processing' AND processed_at::timestamptz < timestamptz '#{last_6pm}') OR
-        (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.zone.now}') OR
-        (state = 'dispatching' AND dispatch_started_at::timestamptz < timestamptz '#{last_6pm}')
-      SQL
-    end
-
     #
     # Returns orders filtered using the following options :
     #   - states[] A list of string matching the 'state' column of the order
@@ -35,13 +26,36 @@ module OrderFiltering
     #     "detail_type = 'shipment'"
     #   end
     #
-    def filter(states: [], types: [], priority: false)
+    def filter(states: [], types: [], priority: false, enable_sorting: false)
       res = where(nil)
+      res = res.join_order_transports
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
+      if enable_sorting && (states & Order::ACTIVE_STATES).present?
+        res = res.order_by_urgency
+      end
       res.distinct
     end
+
+    def priority
+      join_order_transports.where <<-SQL
+        (state = 'submitted' AND submitted_at::timestamptz <= timestamptz '#{one_day_ago}') OR
+        (state = 'processing' AND processed_at::timestamptz < timestamptz '#{last_6pm}') OR
+        (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.zone.now}') OR
+        (state = 'dispatching' AND dispatch_started_at::timestamptz < timestamptz '#{last_6pm}')
+      SQL
+    end
+
+    def join_order_transports
+      joins("LEFT OUTER JOIN order_transports ON order_transports.order_id = orders.id")
+    end
+
+    def order_by_urgency
+      order('orders.id, order_transports.scheduled_at ASC')
+    end
+
+    # TYPES
 
     def where_types(types)
       types = types.select { |t| respond_to?("#{t}_sql") }
@@ -53,12 +67,6 @@ module OrderFiltering
       end
       join_order_transports.where(queries.compact.join(" OR "))
     end
-
-    def join_order_transports
-      joins("LEFT OUTER JOIN order_transports ON order_transports.order_id = orders.id")
-    end
-
-    # TYPES
 
     def appointment_sql
       "orders.booking_type_id = #{BookingType.appointment.id}"
