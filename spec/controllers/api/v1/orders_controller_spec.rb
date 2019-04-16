@@ -453,6 +453,33 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
   end
 
+  describe "GET orders/1" do
+    context "Stock App" do
+      ["submitted", "awaiting_dispatch", "closed", "cancelled"].each do |state|
+        let!(:"#{state}_state_order") { create :order, :with_orders_packages, :"with_state_#{state}", created_by: user, status: nil }
+      end
+
+      before {
+        generate_and_set_token(user)
+        request.headers["X-GOODCITY-APP-NAME"] = "stock.goodcity"
+      }
+
+      it "returns 200" do
+        get :show, id: submitted_state_order.id
+        expect(response.status).to eq(200)
+      end
+
+      it "will return orders count of each state" do
+        get :show, id: submitted_state_order.id
+        expect(response.status).to eq(200)
+        expect(parsed_body['meta']['counts']["submitted"]).to eq(2)
+        expect(parsed_body['meta']['counts']["awaiting_dispatch"]).to eq(1)
+        expect(parsed_body['meta']['counts']["closed"]).to eq(1)
+        expect(parsed_body['meta']['counts']["cancelled"]).to eq(1)
+      end
+    end
+  end
+
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
 
