@@ -26,12 +26,20 @@ module OrderFiltering
     #     "detail_type = 'shipment'"
     #   end
     #
-    def filter(states: [], types: [], priority: false, enable_sorting: false)
+    def filter(
+      states: [],
+      types: [],
+      priority: false,
+      after: nil,
+      before: nil,
+      enable_sorting: false)
       res = where(nil)
       res = res.join_order_transports
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
+      res = res.due_after(after) if after.present?
+      res = res.due_before(before) if before.present?
       if enable_sorting && (states & Order::ACTIVE_STATES).present?
         res = res.order_by_urgency
       end
@@ -45,6 +53,14 @@ module OrderFiltering
         (state = 'awaiting_dispatch' AND order_transports.scheduled_at::timestamptz < timestamptz '#{Time.zone.now}') OR
         (state = 'dispatching' AND dispatch_started_at::timestamptz < timestamptz '#{last_6pm}')
       SQL
+    end
+
+    def due_after(time)
+      where('order_transports.scheduled_at >= ?', time)
+    end
+
+    def due_before(time)
+      where('order_transports.scheduled_at <= ?', time)
     end
 
     def join_order_transports
