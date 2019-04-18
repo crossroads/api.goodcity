@@ -62,6 +62,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :index
       expect( subject["packages"].size ).to eq(3)
     end
+
+    context "as an anonymous user" do
+      before { request.headers['Authorization'] = nil }
+
+      it "should allow fetching a published package" do
+        published_package = create :package, :published
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should prevent fetching an unpublished package" do
+        published_package = create :package, :unpublished
+        get :show, id: published_package.id
+        expect(response.status).to eq(401)
+      end
+    end
   end
 
  describe "PUT move_full_quantity" do
