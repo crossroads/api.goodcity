@@ -4,6 +4,7 @@ module Api
       include GoodcitySync
 
       load_and_authorize_resource :package, parent: false
+      skip_before_action :validate_token, only: [:show]
 
       resource_description do
         short "Create, update and delete a package."
