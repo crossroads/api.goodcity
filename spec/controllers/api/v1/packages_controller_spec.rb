@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
+  let(:supervisor) { create(:user, :supervisor, :with_can_manage_packages_permission )}
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Reviewer' => ['can_manage_packages', 'can_manage_orders']} )}
   let!(:stockit_user) { create(:user, :stockit_user, :api_user)}
@@ -79,6 +80,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         published_package = create :package, :unpublished
         get :show, id: published_package.id
         expect(response.status).to eq(403)
+      end
+    end
+
+    context "as a supervisor" do
+      before { generate_and_set_token(supervisor) }
+
+      it "should allow fetching a published package" do
+        published_package = create :package, :published
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should allow fetching an unpublished package" do
+        published_package = create :package, :unpublished
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
       end
     end
   end
