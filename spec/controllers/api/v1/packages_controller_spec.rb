@@ -52,15 +52,18 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   end
 
   describe "GET packages for Item" do
-   before { generate_and_set_token(user) }
-    it "returns 200" do
-      get :index
-      expect(response.status).to eq(200)
-    end
-    it "return serialized packages", :show_in_doc do
-      3.times{ create :package }
-      get :index
-      expect( subject["packages"].size ).to eq(3)
+
+    context 'as a user' do
+      before { generate_and_set_token(user) }
+      it "returns 200" do
+        get :index
+        expect(response.status).to eq(200)
+      end
+      it "return serialized packages", :show_in_doc do
+        3.times{ create :package }
+        get :index
+        expect( subject["packages"].size ).to eq(3)
+      end
     end
 
     context "as an anonymous user" do
@@ -75,7 +78,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "should prevent fetching an unpublished package" do
         published_package = create :package, :unpublished
         get :show, id: published_package.id
-        expect(response.status).to eq(401)
+        expect(response.status).to eq(403)
       end
     end
   end
