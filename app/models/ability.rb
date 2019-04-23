@@ -244,7 +244,6 @@ class Ability
         record.item ? record.item.offer.created_by_id == @user_id : false
       end
     end
-    can :show, Package, { allow_web_publish: true }
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
     can :destroy, Package, item: { state: 'draft' } if can_destroy_package_with_specific_states?
@@ -263,6 +262,7 @@ class Ability
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
     can [:fetch_packages], Package # for BrowseController
+    can :show, Package, { allow_web_publish: true }
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], IdentityType
