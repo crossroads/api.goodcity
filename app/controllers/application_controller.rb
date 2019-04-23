@@ -42,6 +42,7 @@ class ApplicationController < ActionController::API
         user_id = token.data[0]["user_id"]
         user = User.find_by_id(user_id) if user_id.present?
         if user
+          return nil if user.disabled
           user.instance_variable_set(:@treat_user_as_donor, true) unless STAFF_APPS.include?(app_name)
           User.current_user = user
         end

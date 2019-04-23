@@ -83,6 +83,26 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
     end
 
+    context "as a disabled user" do
+      before do
+        supervisor.disabled = true
+        supervisor.save
+        generate_and_set_token(supervisor)
+      end
+
+      it "should allow fetching a published package" do
+        published_package = create :package, :published
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should prevent fetching an unpublished package" do
+        published_package = create :package, :unpublished
+        get :show, id: published_package.id
+        expect(response.status).to eq(403)
+      end
+    end
+
     context "as a supervisor" do
       before { generate_and_set_token(supervisor) }
 
