@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::PackagesController, type: :controller do
+  let(:supervisor) { create(:user, :supervisor, :with_can_manage_packages_permission )}
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Reviewer' => ['can_manage_packages', 'can_manage_orders']} )}
   let!(:stockit_user) { create(:user, :stockit_user, :api_user)}
@@ -52,15 +53,70 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   end
 
   describe "GET packages for Item" do
-   before { generate_and_set_token(user) }
-    it "returns 200" do
-      get :index
-      expect(response.status).to eq(200)
+
+    context 'as a user' do
+      before { generate_and_set_token(user) }
+      it "returns 200" do
+        get :index
+        expect(response.status).to eq(200)
+      end
+      it "return serialized packages", :show_in_doc do
+        3.times{ create :package }
+        get :index
+        expect( subject["packages"].size ).to eq(3)
+      end
     end
-    it "return serialized packages", :show_in_doc do
-      3.times{ create :package }
-      get :index
-      expect( subject["packages"].size ).to eq(3)
+
+    context "as an anonymous user" do
+      before { request.headers['Authorization'] = nil }
+
+      it "should allow fetching a published package" do
+        published_package = create :package, :published
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should prevent fetching an unpublished package" do
+        published_package = create :package, :unpublished
+        get :show, id: published_package.id
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "as a disabled user" do
+      before do
+        supervisor.disabled = true
+        supervisor.save
+        generate_and_set_token(supervisor)
+      end
+
+      it "should allow fetching a published package" do
+        published_package = create :package, :published
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should prevent fetching an unpublished package" do
+        published_package = create :package, :unpublished
+        get :show, id: published_package.id
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "as a supervisor" do
+      before { generate_and_set_token(supervisor) }
+
+      it "should allow fetching a published package" do
+        published_package = create :package, :published
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
+      end
+
+      it "should allow fetching an unpublished package" do
+        published_package = create :package, :unpublished
+        get :show, id: published_package.id
+        expect(response.status).to eq(200)
+      end
     end
   end
 

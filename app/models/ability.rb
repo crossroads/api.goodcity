@@ -262,6 +262,7 @@ class Ability
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
     can [:fetch_packages], Package # for BrowseController
+    can :show, Package, { allow_web_publish: true }
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], IdentityType
