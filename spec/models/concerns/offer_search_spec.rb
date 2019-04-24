@@ -45,13 +45,30 @@ context OfferSearch do
       let!(:offer1) { create :offer, :submitted, items: [item] }
       it { expect(Offer.search(search_text: 'Test message body').to_a).to match_array([offer1]) }
     end
-
-    context "offer item package_type name" do
+  
+    context "offer -> item -> package_type" do
       let(:package_type) { create(:package_type, code: 'BBC') }
       let(:package) { create(:package, package_type: package_type ) }
       let(:item) { create :item, packages: [package] }
       let!(:offer1) { create :offer, :submitted, items: [item] }
       it { expect(Offer.search(search_text: package_type.name_en).to_a).to match_array([offer1]) }
+      it { expect(Offer.search(search_text: package_type.name_zh_tw).to_a).to match_array([offer1]) }
+    end
+
+    context "gogovan_order" do
+      let(:gogovan_order) { create(:gogovan_order) }
+      let(:delivery) { create(:delivery, gogovan_order: gogovan_order ) }
+      let!(:offer1) { create :offer, :submitted, delivery: delivery }
+      it { expect(Offer.search(search_text: gogovan_order.driver_name).to_a).to match_array([offer1]) }
+      it { expect(Offer.search(search_text: gogovan_order.driver_mobile).to_a).to match_array([offer1]) }
+      it { expect(Offer.search(search_text: gogovan_order.driver_license).to_a).to match_array([offer1]) }
+    end
+
+    context "returns distinct results" do
+      let(:message1) { create(:message, body: 'Test message body 1') }
+      let(:message2) { create(:message, body: 'Test message body 2') }
+      let!(:offer) { create :offer, :submitted, messages: [message1, message2] }
+      it { expect(Offer.search(search_text: 'Test message').to_a).to match_array([offer]) }
     end
 
   end
