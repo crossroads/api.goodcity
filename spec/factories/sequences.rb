@@ -78,4 +78,7 @@ FactoryBot.define do
     "+852" << (%w(5 6 9).sample) << (1..7).map{rand(9)}.join
   end
 
+  sequence :phone_number do |n|
+    (1..8).map { rand(9) }.join
+  end
 end

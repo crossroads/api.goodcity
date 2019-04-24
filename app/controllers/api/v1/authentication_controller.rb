@@ -145,6 +145,7 @@ module Api
       def verify
         @user = warden.authenticate(:pin)
         if authenticated_user
+          @user.set_verified_flag(params[:pin_for])
           render json: {jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user)}
         else
           render_error({pin: I18n.t("auth.invalid_pin")})

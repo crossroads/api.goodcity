@@ -29,10 +29,12 @@ class User < ActiveRecord::Base
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
 
-  validates :mobile, presence: true, uniqueness: true, unless: :request_from_stock_without_mobile?
+  validates :mobile, presence: true, unless: :request_from_stock_without_mobile?
+  validates :mobile, uniqueness: true, if: lambda { mobile.present? }
 
-  validates :email, uniqueness: true, allow_blank: true,
+  validates :email, allow_blank: true,
                     format: {with: /\A[^@\s]+@[^@\s]+\Z/}
+  validates :email, uniqueness: true, if: lambda { email.present? }
 
   validates :email, fake_email: true, :if => lambda { Rails.env.staging? || Rails.env.production? }
 
@@ -92,6 +94,11 @@ class User < ActiveRecord::Base
     SlackPinService.new(self).send_otp(app_name)
     return send_sms(app_name) if mobile
     send_pin_email if email
+  end
+
+  def set_verified_flag(pin_for)
+    flag = pin_for.eql?('email') ? :is_email_verified : :is_mobile_verified
+    update_column(flag, true) unless send(flag)
   end
 
   def self.recent_orders_created_for(user_id)
