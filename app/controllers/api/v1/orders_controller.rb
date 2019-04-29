@@ -47,7 +47,7 @@ module Api
         return recent_designations if params['recently_used'].present?
         records = apply_filters(@orders).with_eager_load
           .search(params['searchText'], params['toDesignateItem'].presence).descending
-          .page(params["page"]).per(150)
+          .page(params["page"]).per(params["per_page"] || 150)
         orders = order_response sort_by_urgency(records)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
       end
