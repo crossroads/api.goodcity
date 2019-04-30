@@ -65,10 +65,10 @@ describe Channel do
     it { expect(Channel.const_get("REVIEWER_CHANNEL")).to eql('reviewer') }
     it { expect(Channel.const_get("SUPERVISOR_CHANNEL")).to eql('supervisor') }
     it { expect(Channel.const_get("BROWSE_CHANNEL")).to eql('browse') }
-    it { expect(Channel.const_get("STOCK_CHANNEL")).to eql('stock') }
+    it { expect(Channel.const_get("INVENTORY_CHANNEL")).to eql('inventory') }
     it { expect(Channel.const_get("ORDER_FULFILMENT_CHANNEL")).to eql('order_fulfilment') }
     it { expect(Channel.const_get("STAFF_CHANNEL")).to eql(['reviewer', 'supervisor']) }
-    it { expect(Channel.const_get("ORDER_CHANNEL")).to eql(['reviewer', 'supervisor']) }
+    it { expect(Channel.const_get("STOCK_CHANNEL")).to eql(['inventory', 'order_fulfilment']) }
   end
 
   context "private_channels_for" do
