@@ -236,7 +236,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         set_stock_app_header
         get :current_user_rooms
       end
-      let(:expected_channels) { ["user_#{order_fulfilment.id}_stock", 'order_fulfilment', 'stock'] }
+      let(:expected_channels) { ["user_#{order_fulfilment.id}_stock", 'order_fulfilment', 'inventory'] }
       it { expect(parsed_body).to eql(expected_channels) }
     end
 

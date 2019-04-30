@@ -23,7 +23,7 @@ describe Channel do
     context 'order_fulfilment on stock app' do
       let(:app_name) { STOCK_APP }
       let(:user) { create :user, :order_fulfilment }
-      let(:expected_channels) { ["user_#{user.id}_stock", 'order_fulfilment', 'stock'] }
+      let(:expected_channels) { ["user_#{user.id}_stock", 'order_fulfilment', 'inventory'] }
       it { expect(subject).to eql(expected_channels) }
     end
 
