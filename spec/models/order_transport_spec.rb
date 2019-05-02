@@ -89,10 +89,10 @@ RSpec.describe OrderTransport, type: :model do
       order_transport.save
     end
 
-    it "should send changes to the stock app via the ORDER_CHANNEL" do
+    it "should send changes to the stock app via the ORDER_FULFILMENT_CHANNEL" do
       expect(push_service).to receive(:send_update_store) do |channels, data|
         expect(channels.length).to eq(2)
-        expect(channels).to include(Channel::ORDER_CHANNEL)
+        expect(channels).to include(Channel::ORDER_FULFILMENT_CHANNEL)
       end
       order_transport.scheduled_at = Time.now + 10.days
       order_transport.save
