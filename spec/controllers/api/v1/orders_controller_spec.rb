@@ -97,7 +97,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['designations'].count).to eq(Order.where.not(state: 'draft').count)
         expect(parsed_body['designations'].map { |it| it['state'] }).to_not include('draft')
       end
-
+      
       # Test turned off as currently hardcoded to 150
       # it 'returns the number of items specified for the page' do
       #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
@@ -224,7 +224,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
         end
 
-        it 'can return records with multiple specified types' do
+        it 'returns records with multiple specified types' do
           FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: order_transport, booking_type: BookingType.appointment
           FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_orders, booking_type: BookingType.online_order
 
@@ -347,8 +347,15 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         context 'Search results sorting' do
+          let(:timeslot) { '5:30PM' }
           let(:moment) { Time.parse('2019-04-03 17:00:00 +0800') }
           let(:orders_fetched) { parsed_body['designations'].map { |o| Order.find(o['id']) } }
+
+          def create_order_with_transport(state)
+            o = create(:order, state: state)
+            create :order_transport, order: o, scheduled_at: moment + rand(1..100).day, timeslot: timeslot
+            return o
+          end
 
           context 'When filtering on active states (Submitted, Processing, Scheduled, Dispatching)' do
             Order::ACTIVE_STATES.each do |state|
