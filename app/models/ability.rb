@@ -97,9 +97,12 @@ class Ability
 
   def goodcity_request_abilitites
     can :create, GoodcityRequest if can_create_goodcity_requests?
-    can [:index, :show, :update, :destroy], GoodcityRequest, created_by_id: @user_id
     if can_manage_goodcity_requests?
-      can [:create, :destroy, :update], GoodcityRequest
+      can [:index, :show, :create, :destroy, :update], GoodcityRequest
+    else
+      can [:index, :show, :update, :destroy], GoodcityRequest, GoodcityRequest.of_user(@user_id) do |r|
+        r.created_by_id == @user_id || r.order.created_by_id == @user_id
+      end
     end
   end
 
@@ -259,6 +262,7 @@ class Ability
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
     can [:fetch_packages], Package # for BrowseController
+    can :show, Package, { allow_web_publish: true }
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], IdentityType

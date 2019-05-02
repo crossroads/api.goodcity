@@ -4,10 +4,10 @@ class Channel
   REVIEWER_CHANNEL = 'reviewer'.freeze
   SUPERVISOR_CHANNEL = 'supervisor'.freeze
   BROWSE_CHANNEL = 'browse'.freeze
-  STOCK_CHANNEL = 'stock'.freeze
   ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'.freeze
+  INVENTORY_CHANNEL = 'inventory'.freeze
   STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL].freeze
-  ORDER_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL, BROWSE_CHANNEL].freeze
+  STOCK_CHANNEL = [INVENTORY_CHANNEL, ORDER_FULFILMENT_CHANNEL].freeze
 
   class << self
 
@@ -36,6 +36,7 @@ class Channel
         channels << REVIEWER_CHANNEL if user.reviewer? and app_name == ADMIN_APP
         channels << SUPERVISOR_CHANNEL if user.supervisor? and app_name == ADMIN_APP
         channels << ORDER_FULFILMENT_CHANNEL if user.order_fulfilment? and app_name == STOCK_APP
+        channels << STOCK_CHANNEL if app_name == STOCK_APP
       end
       channels << BROWSE_CHANNEL if app_name == BROWSE_APP
       channels.flatten.compact.uniq

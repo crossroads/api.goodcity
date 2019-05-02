@@ -63,4 +63,24 @@ describe PushUpdates do
     offer.update_client_store(:update)
     expect(json_checked).to eq(true)
   end
+
+  context 'order push_updates' do
+    let(:user) {create :user}
+    let(:order) { create :order }
+    let(:service) { PushService.new }
+    
+    before(:each) do
+      User.current_user = user
+      allow(order).to receive(:service).and_return(service)
+    end
+  
+    it 'should not send order updates to other browse users' do
+      expect(service).to receive(:send_update_store) do |channel, data|
+        expect(channel).to_not include(Channel::BROWSE_CHANNEL)
+      end
+      order.update_client_store(:update)
+    end
+
+  end
+
 end

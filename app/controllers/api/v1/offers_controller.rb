@@ -72,7 +72,7 @@ module Api
       def search
         @offers = @offers.search(search_text: params['searchText'])
         @offers = @offers.order('created_at desc').limit(25)
-        render json: @offers, each_serializer: summary_serializer, summarize: true
+        render json: @offers.with_summary_eager_load.to_a, each_serializer: summary_serializer, summarize: true
       end
 
       api :GET, '/v1/offers/1', "List an offer"

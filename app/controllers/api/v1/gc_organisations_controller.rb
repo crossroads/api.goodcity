@@ -39,7 +39,11 @@ module Api::V1
     end
 
     def find_record_and_render_json(serializer)
-      records = @organisations.search(params["searchText"]).limit(25)
+      if params['ids'].present?
+        records = @organisations.where(id: params['ids'])
+      else
+        records = @organisations.search(params["searchText"]).limit(25)
+      end
       data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
       render json: { "meta": { "search": params["searchText"] } }.merge(data)
     end

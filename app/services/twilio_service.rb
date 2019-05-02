@@ -12,7 +12,8 @@ class TwilioService
   end
 
   def send_welcome_msg
-    send_sms(body: welcome_sms_text)
+    user_name = User.current_user&.full_name.presence
+    send_sms(body: welcome_sms_text(user_name)) if user_name
   end
 
   def order_confirmed_sms_to_charity(order)
@@ -33,7 +34,7 @@ class TwilioService
     options = {to: @user.mobile}.merge(options)
     if send_to_twilio?
       TwilioJob.perform_later(options)
-    else
+    elsif options[:to]
       message = "SlackSMS (#{options[:to]}) #{options[:body]}"
       SlackMessageJob.perform_later(message, ENV['SLACK_PIN_CHANNEL'])
     end
@@ -56,9 +57,9 @@ class TwilioService
     Rails.env.production?
   end
 
-  def welcome_sms_text
+  def welcome_sms_text(user_name)
     I18n.t('twilio.charity_user_welcome_sms',
-      full_name: User.current_user.full_name)
+      full_name: user_name)
   end
 
   def new_order_placed_text_to_users(order)

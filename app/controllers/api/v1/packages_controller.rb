@@ -4,6 +4,7 @@ module Api
       include GoodcitySync
 
       load_and_authorize_resource :package, parent: false
+      skip_before_action :validate_token, only: [:show]
 
       resource_description do
         short "Create, update and delete a package."
@@ -126,7 +127,6 @@ module Api
       api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
       def search_stockit_items
         records = @packages # security
-        records = records.undispatched if params["orderId"].present?
         records = records.search(search_text: params['searchText'], item_id: params['itemId'],
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
@@ -161,21 +161,17 @@ module Api
       end
 
       def undesignate_partial_item
-        OrdersPackage.undesignate_partially_designated_item(params[:package])
-        @package.undesignate_from_stockit_order
+        Designator.new(@package, params[:package]).undesignate
         send_stock_item_response
       end
 
       def designate_partial_item
-        result = OrdersPackage.add_partially_designated_item(
-          order_id: params[:package][:order_id],
-          package_id: params[:package][:package_id],
-          quantity: params[:package][:quantity])
-        if result.errors.blank?
+        designator = Designator.new(@package, params[:package]).designate
+        if designator.errors.blank?
           designate_stockit_item(params[:package][:order_id])
           send_stock_item_response
         else
-          render json: { errors: result.errors.full_messages }, status: 422
+          render json: { errors: designator.errors.full_messages }, status: 422
         end
       end
 
@@ -204,6 +200,8 @@ module Api
 
       def dispatch_stockit_item
         @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
+        return render_order_status_error if @orders_package.order.can_dispatch_item?
+
         if @orders_package.dispatch_orders_package
           @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
           send_stock_item_response
@@ -243,6 +241,7 @@ module Api
       end
 
       def send_stock_item_response
+        @package.reload
         if @package.errors.blank? && @package.valid? && @package.save
           render json: @package,
             serializer: stock_serializer,
@@ -265,6 +264,10 @@ module Api
       end
 
       private
+
+      def render_order_status_error
+        render json: { errors: I18n.t('orders_package.order_status_error') }, status: 403
+      end
 
       def stock_serializer
         Api::V1::StockitItemSerializer

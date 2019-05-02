@@ -48,7 +48,7 @@ module Api
         if @appointment_slot_preset.update_attributes(appointment_slot_preset_params)
           render json: @appointment_slot_preset, serializer: serializer
         else
-          render json: @appointment_slot_preset.errors, status: 422
+          render json: { errors: @appointment_slot_preset.errors.full_messages }, status: 422
         end
       end
 
@@ -57,6 +57,8 @@ module Api
         @appointment_slot_preset.destroy
         render json: {}
       end
+
+      private
 
       def serializer
         Api::V1::AppointmentSlotPresetSerializer

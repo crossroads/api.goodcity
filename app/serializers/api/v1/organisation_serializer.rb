@@ -7,6 +7,5 @@ module Api::V1
       :updated_at
 
     has_many :organisations_users, serializer: OrganisationsUserSerializer
-    has_many :orders, serializer: OrderSerializer, root: :designations
   end
 end

@@ -1,7 +1,13 @@
 class AppointmentSlot < ActiveRecord::Base
+  include PushUpdatesMinimal
+
   validates :quota, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :no_duplicate, on: [:create, :update]
   before_save :clean_timestamp
+
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets [ Channel::STOCK_CHANNEL ]
 
   scope :upcoming, -> { where("timestamp >= ?", DateTime.now.beginning_of_day.utc.to_s(:db)) }
 
