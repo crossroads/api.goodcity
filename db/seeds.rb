@@ -154,6 +154,10 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85251111112", first_name: "Daniel", last_name: "Dell52" },
     { mobile: "+85251111113", first_name: "Dakota", last_name: "Deryn53" },
     { mobile: "+85251111114", first_name: "Delia", last_name: "Devon54" },
+    { mobile: "+85241111111", first_name: "Daemon", last_name: "Dara55" },
+    { mobile: "+85241111112", first_name: "Daniela", last_name: "Dell56" },
+    { mobile: "+85241111113", first_name: "Duke", last_name: "Deryn57" },
+    { mobile: "+85241111114", first_name: "Dave", last_name: "Devon58" },
   ]
   donor_attributes.each {|attr| FactoryBot.create(:user, attr) }
 
@@ -162,6 +166,10 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85261111112", first_name: "Robyn", last_name: "Raina62" },
     { mobile: "+85261111113", first_name: "Rafael", last_name: "Ras63" },
     { mobile: "+85261111114", first_name: "Raj", last_name: "Rakim64" },
+    { mobile: "+85271111111", first_name: "Robert", last_name: "Dara65" },
+    { mobile: "+85271111112", first_name: "Richard", last_name: "Dell66" },
+    { mobile: "+85271111113", first_name: "Robil", last_name: "Deryn67" },
+    { mobile: "+85271111114", first_name: "Richa", last_name: "Devon68" },
   ]
   reviewer_attributes.each {|attr| FactoryBot.create(:user, :reviewer, attr) }
 
@@ -170,6 +178,10 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85291111112", first_name: "Sally", last_name: "Salwa92" },
     { mobile: "+85291111113", first_name: "Saad", last_name: "Safa93" },
     { mobile: "+85291111114", first_name: "Scott", last_name: "Sandro94" },
+    { mobile: "+85281111111", first_name: "Steve", last_name: "Sahn95" },
+    { mobile: "+85281111112", first_name: "Smith", last_name: "Salwa96" },
+    { mobile: "+85281111113", first_name: "Scarlett", last_name: "Safa97" },
+    { mobile: "+85281111114", first_name: "Sky", last_name: "Sandro98" },
   ]
   supervisor_attributes.each {|attr| FactoryBot.create(:user, :supervisor, attr) }
 
@@ -178,6 +190,10 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85252222222", first_name: "Charlotte", last_name: "Cheung522" },
     { mobile: "+85252222223", first_name: "Charis", last_name: "Chen523" },
     { mobile: "+85252222224", first_name: "Carlos", last_name: "Chung524" },
+    { mobile: "+85242222221", first_name: "Christian", last_name: "Chan525" },
+    { mobile: "+85242222222", first_name: "Charlie", last_name: "Cheung526" },
+    { mobile: "+85242222223", first_name: "Cathie", last_name: "Chen527" },
+    { mobile: "+85242222224", first_name: "Cally", last_name: "Chung528" },
   ]
   charity_attributes.each {|attr| FactoryBot.create(:user, :charity, attr) }
 
@@ -186,6 +202,10 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85262222222", first_name: "Owen", last_name: "Ogilvy622" },
     { mobile: "+85262222223", first_name: "Oscar", last_name: "O'Riley623" },
     { mobile: "+85262222224", first_name: "Octavia", last_name: "O'Connor624" },
+    { mobile: "+85272222221", first_name: "Oswald", last_name: "Oakley625" },
+    { mobile: "+85272222222", first_name: "Ohio", last_name: "Ogilvy626" },
+    { mobile: "+85272222223", first_name: "Omen", last_name: "O'Riley627" },
+    { mobile: "+85272222224", first_name: "Owie", last_name: "O'Connor628" },
   ]
   order_fulfiler_attributes.each {|attr| FactoryBot.create(:user, :order_fulfilment, attr) }
 
@@ -194,6 +214,10 @@ unless ENV['LIVE'] == "true"
     { mobile: "+85263333332", first_name: "Freddy", last_name: "Mercury632" },
     { mobile: "+85263333333", first_name: "Frederic", last_name: "Mercury633" },
     { mobile: "+85263333334", first_name: "Fredd", last_name: "Mercury634" },
+    { mobile: "+85273333331", first_name: "Fredie", last_name: "Mercury635" },
+    { mobile: "+85273333332", first_name: "Franky", last_name: "Mercury636" },
+    { mobile: "+85273333333", first_name: "Frank", last_name: "Mercury637" },
+    { mobile: "+85273333334", first_name: "Felicia", last_name: "Mercury638" },
   ]
   order_administrator_attributes.each {|attr| FactoryBot.create(:user, :order_administrator, attr) }
 end

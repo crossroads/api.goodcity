@@ -24,10 +24,6 @@ describe TokenValidatableFakeController do
         User.current_user = user
         expect{ subject.send(:validate_token) }.to_not throw_symbol(:warden)
       end
-      it "should not be authorized with disabled user" do
-        User.current_user = disabled_user
-        expect{ subject.send(:validate_token) }.to throw_symbol(:warden)
-      end
     end
 
     describe "with invalid token" do

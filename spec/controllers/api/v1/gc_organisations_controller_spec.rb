@@ -48,6 +48,31 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       expect(parsed_body['gc_organisations'].first['name_en']).to eql(organisation.name_en)
       expect(parsed_body['gc_organisations'].first['name_zh_tw']).to eql(organisation.name_zh_tw)
     end
+
+    it "returns serialized organisations from an ID list" do
+      create_list(:organisation, 2)
+      more_organisations = create_list(:organisation, 3)
+      ids =  more_organisations.map(&:id)
+
+      get :index, ids: ids
+      expect(parsed_body['gc_organisations'].length ).to eq(ids.length)
+
+      received_ids = parsed_body['gc_organisations'].map { |o| o["id"] }
+      expect(received_ids).to eq(ids)
+    end
+
+    it "returns serialized organisations names an ID list" do
+      create_list(:organisation, 2)
+      more_organisations = create_list(:organisation, 3)
+      ids =  more_organisations.map(&:id)
+      names =  more_organisations.map(&:name_en)
+
+      get :index, ids: ids
+      expect(parsed_body['gc_organisations'].length ).to eq(ids.length)
+
+      received_names = parsed_body['gc_organisations'].map { |o| o["name_en"] }
+      expect(received_names).to eq(names)
+    end
   end
 
   describe "GET GC Organisation" do

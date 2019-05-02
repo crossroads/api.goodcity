@@ -36,7 +36,7 @@ class User < ActiveRecord::Base
                     format: {with: /\A[^@\s]+@[^@\s]+\Z/}
   validates :email, uniqueness: true, if: lambda { email.present? }
 
-  validates :email, fake_email: true, :if => lambda { Rails.env.staging? || Rails.env.production? }
+  validates :email, fake_email: true, :if => lambda { Rails.env.production? }
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
 
@@ -177,6 +177,14 @@ class User < ActiveRecord::Base
 
   def self.current_user=(user)
     RequestStore.store[:current_user] = user
+  end
+
+  def self.current_device_id
+    RequestStore.store[:current_device_id]
+  end
+
+  def self.current_device_id=(device_id)
+    RequestStore.store[:current_device_id] = device_id
   end
 
   def self.system_user

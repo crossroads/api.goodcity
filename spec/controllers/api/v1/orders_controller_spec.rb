@@ -14,12 +14,29 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
   let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id) }
+  let(:returned_orders) do
+    parsed_body['designations']
+      .map { |d| Order.find(d['id']) }
+  end
 
   before {
     FactoryBot.generate(:booking_types).values.each { |btype|
       FactoryBot.create :booking_type, identifier: btype[:identifier]
     }
   }
+
+  # Helper
+  def timeslot_of(t)
+    t.strftime("%I:%M %p").tr(' ', '').gsub(/^0*/, '')
+  end
+
+  def create_order_with_transport(state, opts = {})
+    scheduled_at = opts[:scheduled_at] || moment + rand(1..100).day
+    timeslot = opts[:scheduled_at] ? timeslot_of(scheduled_at) : '5:30PM'
+    o = create(:order, state: state)
+    create :order_transport, order: o, scheduled_at: scheduled_at, timeslot: timeslot
+    return o
+  end
 
   describe "GET orders" do
     context 'If logged in user is Supervisor in Browse app ' do
@@ -80,18 +97,20 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['designations'].count).to eq(Order.where.not(state: 'draft').count)
         expect(parsed_body['designations'].map { |it| it['state'] }).to_not include('draft')
       end
+      
+      # Test turned off as currently hardcoded to 150
+      # it 'returns the number of items specified for the page' do
+      #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
+      #   get :index, page: 1, per_page: 5
+      #   expect(parsed_body['designations'].count).to eq(5)
+      # end
 
-      it 'returns the number of items specified for the page' do
-        # 5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
-        # get :index, page: 1, per_page: 5
-        # expect(parsed_body['designations'].count).to eq(5)
-      end
-
-      it 'returns the remaining items in the last page' do
-        # 5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 non-draft orders in total
-        # get :index, page: 2, per_page: 5
-        # expect(parsed_body['designations'].count).to eq(5)
-      end
+      # Test turned off as currently hardcoded to 150
+      # it 'returns the remaining items in the last page' do
+      #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 non-draft orders in total
+      #   get :index, page: 2, per_page: 5
+      #   expect(parsed_body['designations'].count).to eq(2)
+      # end
 
       it 'returns searched non-draft order as designation if search text is present' do
         get :index, searchText: order.code
@@ -172,7 +191,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         let(:online_orders) { create :order_transport, transport_type: 'ggv'}
         let(:order_transport) { create :order_transport }
 
-        it 'returns only records with the specified states' do
+        it 'can return only records with the specified states' do
           2.times { FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s' }
           2.times { FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s' }
           FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s'
@@ -190,7 +209,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         ['appointment', 'online_orders', 'shipment', 'other'].each do |type|
-          it "should return a single order of type #{type}" do
+          it "can return a single order of type #{type}" do
             FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s',
             booking_type: BookingType.appointment, order_transport: order_transport
             FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_orders, booking_type: BookingType.online_order
@@ -220,14 +239,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['meta']['search']).to eql('iphone')
         end
 
-        it 'returns nothing if searching for an invalid type' do
+        it 'should return nothing if searching for an invalid type' do
           FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
           get :index, searchText: 'iphone', type: 'bad_type'
           expect(response.status).to eq(200)
           expect(parsed_body['designations'].count).to eq(0)
         end
 
-        it 'returns only priority records' do
+        it 'can return only priority records' do
           FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
           FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
           FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
@@ -244,7 +263,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['meta']['search']).to eql('iphone')
         end
 
-        it 'returns only priority records or a certain state' do
+        it 'can return only priority records of a certain state' do
           FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
           FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
           FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
@@ -256,6 +275,75 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body["designations"][0]['state']).to eq('processing')
           expect(parsed_body['meta']['total_pages']).to eql(1)
           expect(parsed_body['meta']['search']).to eql('iphone')
+        end
+
+        context 'by due dates' do
+          let(:moment) { Time.now.change(sec: 0).in_time_zone }
+
+          def epoch_ms(time)
+            time.to_i * 1000
+          end
+
+          before do
+            Order.delete_all
+            (0..4).each do |i|
+              state = i.even? ? :submitted : :processing
+              create_order_with_transport(state, :scheduled_at => moment + i.day)
+            end
+          end
+
+          it 'can return orders scheduled after a certain time' do
+            after = epoch_ms(moment + 2.day)
+            get :index, after: after
+            expect(response.status).to eq(200)
+            expect(returned_orders.count).to eq(3)
+            returned_orders
+              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
+              .each do |t|
+                expect(t).to be >= after
+              end
+          end
+
+          it 'can return orders scheduled before a certain time' do
+            before = epoch_ms(moment + 2.day)
+            get :index, before: before
+            expect(response.status).to eq(200)
+            expect(returned_orders.count).to eq(3)
+            returned_orders
+              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
+              .each do |t|
+                expect(t).to be <= before
+              end
+          end
+
+          it 'can return orders scheduled between two dates' do
+            before = epoch_ms(moment + 3.day)
+            after = epoch_ms(moment + 1.day)
+            get :index, before: before, after: after
+            expect(response.status).to eq(200)
+            expect(returned_orders.count).to eq(3)
+            returned_orders
+              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
+              .each do |t|
+                expect(t).to be <= before
+                expect(t).to be >= after
+              end
+          end
+
+          it 'can combine other filters with the due date' do
+            before = epoch_ms(moment + 3.day)
+            after = epoch_ms(moment + 1.day)
+            get :index, before: before, after: after, state: 'submitted'
+            expect(response.status).to eq(200)
+            expect(returned_orders.count).to eq(1)
+            returned_orders
+              .each do |o|
+                t = epoch_ms(o.order_transport.scheduled_at)
+                expect(t).to be <= before
+                expect(t).to be >= after
+                expect(o.state).to eq('submitted')
+              end
+          end
         end
 
         context 'Search results sorting' do

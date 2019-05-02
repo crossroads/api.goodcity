@@ -3,14 +3,15 @@ module Api::V1
     embed :ids, include: true
 
     has_one :package_type, serializer: PackageTypeSerializer
-    has_many :images, serializer: ImageSerializer, root: :package_images
+    has_many :images, serializer: ImageSerializer
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
 
     attributes :id, :quantity, :length, :width, :height, :notes,
       :item_id, :state, :received_at, :rejected_at, :inventory_number,
       :created_at, :updated_at, :package_type_id, :designation_id, :sent_on,
-      :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity
+      :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
+      :allow_web_publish
 
     def designation_id
       object.order_id
