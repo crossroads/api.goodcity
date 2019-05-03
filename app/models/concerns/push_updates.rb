@@ -31,7 +31,7 @@ module PushUpdates
     unless order.nil?
       json =  Api::V1::OrderSerializer.new(order).as_json
       order_data = { item: { designation: json[:order] }, operation: operation}
-      service.send_update_store(Channel::ORDER_CHANNEL, order_data)
+      service.send_update_store(Channel::ORDER_FULFILMENT_CHANNEL, order_data)
       return
     end
 
