@@ -12,7 +12,7 @@ class GoodcityRequest < ActiveRecord::Base
   push_targets do |record|
     [
       Channel.private_channels_for(record.created_by, BROWSE_APP),
-      Channel::ORDER_CHANNEL
+      Channel::ORDER_FULFILMENT_CHANNEL
     ]
   end
 

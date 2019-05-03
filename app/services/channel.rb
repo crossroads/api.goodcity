@@ -4,10 +4,10 @@ class Channel
   REVIEWER_CHANNEL = 'reviewer'.freeze
   SUPERVISOR_CHANNEL = 'supervisor'.freeze
   BROWSE_CHANNEL = 'browse'.freeze
-  STOCK_CHANNEL = 'stock'.freeze
   ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'.freeze
+  INVENTORY_CHANNEL = 'inventory'.freeze
   STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL].freeze
-  ORDER_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL].freeze
+  STOCK_CHANNEL = [INVENTORY_CHANNEL, ORDER_FULFILMENT_CHANNEL].freeze
 
   class << self
 
