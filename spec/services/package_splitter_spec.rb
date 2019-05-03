@@ -36,10 +36,11 @@ describe PackageSplitter do
     let(:qty_to_split) { 2 }
     context "create 2 copies from qty 5 split (3,1,1)" do
       let(:inventory_number) { "F00001Q" }
-      let(:package) { create(:package, quantity: 5, inventory_number: inventory_number) }
+      let(:package) { create(:package, quantity: 5, received_quantity: 5, inventory_number: inventory_number) }
       it do
         expect(Stockit::ItemSync).to receive(:create).exactly(2).times
         expect{ package_splitter.split! }.to change(package.reload, :quantity).from(5).to(3)
+        expect{ package_splitter.split! }.to change(package.reload, :received_quantity).from(5).to(3)
         packages = Package.where("inventory_number LIKE ?", "#{inventory_number}%").order(:created_at)
         expect(packages.count).to eql(3)
         packages.each do |pkg|
