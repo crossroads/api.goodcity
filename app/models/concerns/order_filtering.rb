@@ -33,7 +33,6 @@ module OrderFiltering
       after: nil,
       before: nil)
       res = where(nil)
-      res = res.join_order_transports
       res = res.where("state IN (?)", states) unless states.empty?
       res = res.where_types(types) unless types.empty?
       res = res.priority if priority.present?
@@ -57,11 +56,11 @@ module OrderFiltering
     end
 
     def due_after(time)
-      where('order_transports.scheduled_at >= ?', time)
+      where('order_transports.scheduled_at >= ?', time).join_order_transports
     end
 
     def due_before(time)
-      where('order_transports.scheduled_at <= ?', time)
+      where('order_transports.scheduled_at <= ?', time).join_order_transports
     end
 
     def join_order_transports
@@ -69,7 +68,7 @@ module OrderFiltering
     end
 
     def order_by_urgency
-      order('order_transports.scheduled_at ASC, orders.id').select('orders.*, order_transports.scheduled_at')
+      order('order_transports.scheduled_at ASC, orders.id').select('orders.*, order_transports.scheduled_at').join_order_transports
     end
 
     # TYPES
