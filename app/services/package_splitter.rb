@@ -27,7 +27,10 @@ class PackageSplitter
     1..@qty_to_split.times do
       create_and_save_copy
     end
-    @package.update(quantity: @package.quantity - @qty_to_split)
+    @package.update(
+      quantity: @package.quantity - @qty_to_split,
+      received_quantity: @package.received_quantity - @qty_to_split
+    )
   end
 
   def create_and_save_copy
