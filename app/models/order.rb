@@ -63,7 +63,7 @@ class Order < ActiveRecord::Base
     ])
   }
 
-  scope :descending, -> { order('id desc') }
+  scope :descending, -> { order('orders.id desc') }
 
   scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
 

@@ -45,11 +45,11 @@ module Api
       def index
         return my_orders if is_browse_app?
         return recent_designations if params['recently_used'].present?
-        records = apply_filters(@orders).with_eager_load
-          .search(params['searchText'], params['toDesignateItem'].presence).descending
-          .page(params["page"]).per(150) # params["per_page"] || 
+        records = apply_filters(@orders)
+          .search(params['searchText'], params['toDesignateItem'].presence)
+          .page(params["page"]).per(150)
         orders = order_response(records)
-        render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(JSON.parse(orders))
+        render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(orders)
       end
 
       api :GET, '/v1/designations/1', "Get a order"
@@ -118,7 +118,7 @@ module Api
           include_packages: true,
           include_order: false,
           include_images: true,
-          exclude_stockit_set_item: true).to_json
+          exclude_stockit_set_item: true).as_json
       end
 
       def order_record
