@@ -40,7 +40,7 @@ describe PackageSplitter do
       it do
         expect(Stockit::ItemSync).to receive(:create).exactly(2).times
         expect{ package_splitter.split! }.to change(package.reload, :quantity).from(5).to(3)
-        expect{ package_splitter.split! }.to change(package.reload, :received_quantity).from(5).to(3)
+          .and change {package.received_quantity}.from(5).to(3)
         packages = Package.where("inventory_number LIKE ?", "#{inventory_number}%").order(:created_at)
         expect(packages.count).to eql(3)
         packages.each do |pkg|
