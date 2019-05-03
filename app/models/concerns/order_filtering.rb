@@ -41,6 +41,8 @@ module OrderFiltering
       res = res.due_before(before) if before.present?
       if (states & Order::ACTIVE_STATES).present?
         res = res.order_by_urgency
+      else
+        res = res.descending
       end
       res.distinct
     end
