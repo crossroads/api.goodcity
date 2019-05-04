@@ -677,23 +677,23 @@ RSpec.describe Order, type: :model do
     it 'Should allow filtering a scoped relation' do
       expect(Order.count).to eq(6)
       expect(Order.where("description ILIKE '%table%'").count).to eq(3)
-      expect(Order.where("description ILIKE '%table%'").filter(states: ['submitted']).count).to eq(2)
+      expect(Order.where("description ILIKE '%table%'").filter(states: ['submitted']).count(:all)).to eq(2)
     end
 
     it 'Should allow filtering an unscoped relation' do
       expect(Order.count).to eq(6)
-      expect(Order.filter(states: ['submitted', 'closed']).count).to eq(4)
+      expect(Order.filter(states: ['submitted', 'closed']).count(:all)).to eq(4)
     end
 
     it 'Should allow chaining a scope' do
       expect(Order.count).to eq(6)
-      expect(Order.filter(states: ['submitted']).where("description ILIKE '%table%'").count).to eq(2)
+      expect(Order.filter(states: ['submitted']).where("description ILIKE '%table%'").count(:all)).to eq(2)
     end
 
     it 'Should not filter out anything if no explicit arguments are provided' do
       expect(Order.count).to eq(6)
       expect(Order.where("description ILIKE '%table%'").count).to eq(3)
-      expect(Order.where("description ILIKE '%table%'").filter().count).to eq(3)
+      expect(Order.where("description ILIKE '%table%'").filter.count(:all)).to eq(3)
     end
   end
 
