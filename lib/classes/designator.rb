@@ -25,6 +25,10 @@ class Designator
     @package.reload.undesignate_from_stockit_order
   end
 
+  def update_partial_quantity_of_same_designation
+    form_nested_params_for_undesignate if @package.quantity.zero?
+  end
+
   def form_nested_params_for_undesignate
     undesignate_package = {}
     undesignate_package["0"] = @params
