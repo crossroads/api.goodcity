@@ -47,7 +47,7 @@ module Api
         return recent_designations if params['recently_used'].present?
         records = apply_filters(@orders)
           .search(params['searchText'], params['toDesignateItem'].presence)
-          .page(params["page"]).per(150)
+          .page(params["page"]).per(params["per_page"] || 25)
         orders = order_response(records)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(orders)
       end
