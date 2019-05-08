@@ -27,6 +27,9 @@ class Designator
 
   def update_partial_quantity_of_same_designation
     form_nested_params_for_undesignate if @package.quantity.zero?
+    @params[:orders_package_id] = @params[:new_orders_package_id]
+    orders_package = OrdersPackage.find_by(id: @params[:orders_package_id])
+    orders_package.update_partially_designated_item(@params)
   end
 
   def form_nested_params_for_undesignate
