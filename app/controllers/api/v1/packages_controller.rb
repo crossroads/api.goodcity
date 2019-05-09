@@ -187,7 +187,7 @@ module Api
       end
 
       def update_partial_quantity_of_same_designation
-        Designator.new(@package, params[:package]).update_partial_quantity_of_same_designation
+        Designator.new(@package, params[:package]).undesignate_and_update_partial_quantity
         designate_stockit_item(params[:package][:order_id])
         send_stock_item_response
       end

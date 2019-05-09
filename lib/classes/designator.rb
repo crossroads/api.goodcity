@@ -12,7 +12,7 @@ class Designator
     if designating_to_existing_designation?
       add_error_and_return_existing_designation
     else
-      form_nested_params_for_undesignate if @package.quantity.zero?
+      form_nested_params_for_undesignate if is_package_quantity_zero?
       designate_item
     end
   end
@@ -24,9 +24,9 @@ class Designator
     @package.reload.undesignate_from_stockit_order
   end
 
-  def update_partial_quantity_of_same_designation
-    form_nested_params_for_undesignate if @package.quantity.zero?
-    orders_package = OrdersPackage.find_by(id: @params[:new_orders_package_id])
+  def undesignate_and_update_partial_quantity
+    form_nested_params_for_undesignate if is_package_quantity_zero?
+    orders_package = OrdersPackage.find_by(id: @params["cancelled_orders_package_id"])
     orders_package.update_partially_designated_item(@params)
   end
 
@@ -37,6 +37,10 @@ class Designator
   end
 
   private
+
+  def is_package_quantity_zero?
+    @package.quantity.zero?
+  end
 
   def add_error_and_return_existing_designation
     @existing_designation.errors.add("package_id", "Already designated to this Order")
