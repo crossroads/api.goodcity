@@ -29,7 +29,7 @@ class OrganisationsUserBuilder
     return fail_with_error(@user.errors) unless @user.valid?
     return fail_with_error(I18n.t("organisations_user_builder.organisation.not_found")) unless organisation
     if !user_belongs_to_organisation(@user)
-      @organisations_user = OrganisationsUser.create!(organisation_id: @organisation_id, user_id: @user.id, position: @position, preferred_contact_number: @preferred_contact_number)
+      @organisations_user = @user.organisations_users.new(organisation_id: @organisation_id, position: @position, preferred_contact_number: @preferred_contact_number)
       TwilioService.new(@user).send_welcome_msg
       return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
       return_success.merge!("organisations_user" => @organisations_user)
