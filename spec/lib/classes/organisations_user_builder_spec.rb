@@ -16,8 +16,12 @@ describe OrganisationsUserBuilder do
     FactoryBot.attributes_for(:user, :with_email, mobile:'+85252345678')
   end
 
-  let(:user_attributes_without_mobile) do 
+  let(:user_attributes_without_mobile) do
     FactoryBot.attributes_for(:user, :with_email)
+  end
+
+  let(:user_attributes_with_invalid_mobile) do
+    FactoryBot.attributes_for(:user, :with_email, mobile: "+44123456675")
   end
 
   let(:update_user_attributes) do
@@ -29,8 +33,12 @@ describe OrganisationsUserBuilder do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}" , user_attributes: user_attributes)
   end
 
-  let(:organisation_user_params_without_mobile) do 
+  let(:organisation_user_params_without_mobile) do
     FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}" , user_attributes: user_attributes_without_mobile)
+  end
+
+  let(:organisation_user_params_with_invalid_mobile) do
+    FactoryBot.attributes_for(:organisations_user, organisation_id: "#{organisation.id}", position: "#{position}", user_attributes: user_attributes_with_invalid_mobile)
   end
 
   let(:update_organisations_user_params) do
@@ -42,6 +50,7 @@ describe OrganisationsUserBuilder do
   let(:position) { 'Admin' }
 
   let(:organisations_user_builder) { OrganisationsUserBuilder.new(organisations_user_params.stringify_keys) }
+  let(:organisation_user_builder_with_invalid_mobile_number) { OrganisationsUserBuilder.new(organisation_user_params_with_invalid_mobile.stringify_keys) }
   let(:organisations_user_builder_without_mobile) { OrganisationsUserBuilder.new(organisation_user_params_without_mobile.stringify_keys) }
   let(:update_organisations_user_builder) { OrganisationsUserBuilder.new(update_organisations_user_params.stringify_keys) }
   let(:mobile) { '+85251111111' }
@@ -62,12 +71,18 @@ describe OrganisationsUserBuilder do
       User.current_user = user
     }
 
-    context 'for stock app' do 
+    context 'for stock app' do
       it "adds new user if mobile is blank and associates it with organisation" do
         expect{
           organisations_user_builder_without_mobile.build(true)
         }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
       end
+    end
+
+    it "do not creates organisations_users and user record if user is invalid. e.g mobile is invalid" do
+      expect{
+        organisation_user_builder_with_invalid_mobile_number.build(true)
+      }.to change{User.count}.by(0).and change{OrganisationsUser.count}.by(0)
     end
 
     it "adds new user if mobile does not exist and associates it with organisation" do
