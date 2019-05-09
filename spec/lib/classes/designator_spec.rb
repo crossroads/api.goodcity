@@ -9,7 +9,7 @@ require "rails_helper"
   let(:orders_package) do
     FactoryBot.build(:orders_package, :with_state_requested, id: nil, package_id: package.id, order_id: nil, quantity:nil)
   end
-  let(:designated_orders_package) { create :orders_package, :with_state_designated, quantity: 1, package_id: package1.id, order_id: order.id}
+
   let(:cancelled_orders_package) { create :orders_package, :with_state_cancelled, quantity: 0, package_id: package1.id, order_id: order1.id}
 
   let(:undesignate_and_update_params) {
@@ -45,7 +45,7 @@ require "rails_helper"
   }
 
   let(:designator) { Designator.new(package, designate_package_params) }
-  let(:designator_with_designated_package) { Designator.new(package1, redesignate_package_params.stringify_keys) }
+  let(:designator_with_designated_package) { Designator.new(package1, redesignate_package_params) }
   let(:designator_for_undesignating_package) { Designator.new(package1, {"0"=>redesignate_package_params.stringify_keys} )}
   let(:designator_for_undesignate_and_updating_orders_package) { Designator.new(package1, undesignate_and_update_params.stringify_keys)}
   let(:designator_for_updating_orders_package) { Designator.new(package1, undesignate_and_update_params.stringify_keys)}
@@ -59,7 +59,7 @@ require "rails_helper"
   context ".designate" do
     it "designates packages to order if not designated" do
       designator.designate
-      expect(order.orders_packages.reload.length).to eq(2)
+      expect(order.orders_packages.reload.length).to eq(1)
       expect(order.orders_packages.first.order_id).to eq(order.id)
     end
 
