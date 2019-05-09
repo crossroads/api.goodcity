@@ -5,7 +5,6 @@ class Designator
     @package = package
     @params = package_params
     @order_id = package_params[:order_id].to_i
-    @orders_package = @package.orders_packages.new
     @existing_designation = OrdersPackage.find_by_id(@params[:orders_package_id])
   end
 
@@ -27,8 +26,7 @@ class Designator
 
   def update_partial_quantity_of_same_designation
     form_nested_params_for_undesignate if @package.quantity.zero?
-    @params[:orders_package_id] = @params[:new_orders_package_id]
-    orders_package = OrdersPackage.find_by(id: @params[:orders_package_id])
+    orders_package = OrdersPackage.find_by(id: @params[:new_orders_package_id])
     orders_package.update_partially_designated_item(@params)
   end
 
@@ -50,11 +48,12 @@ class Designator
   end
 
   def designate_item
-    @orders_package.order_id = @order_id
-    @orders_package.quantity = @params[:quantity]
-    @orders_package.updated_by = User.current_user
-    @orders_package.state = 'designated'
-    @orders_package.save
-    @orders_package
+    orders_package = @package.orders_packages.new
+    orders_package.order_id = @order_id
+    orders_package.quantity = @params[:quantity]
+    orders_package.updated_by = User.current_user
+    orders_package.state = 'designated'
+    orders_package.save
+    orders_package
   end
 end
