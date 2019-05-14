@@ -125,6 +125,24 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  describe "#inventorize_and_not_multiquantity" do
+    let!(:single_with_inventory_package) { create :package, :with_item, quantity: 1, inventory_number: "000635" }
+    let!(:multiquantity_without_inventory_package) { create :package, :with_item, quantity: 5, inventory_number: "000636" }
+    let!(:singleuantity_without_inventory_package) { create :package, :with_item, quantity: 1 }
+
+    it "should return packages without multiquantity" do
+      expect(Package.inventorize_and_not_multiquantity.count).to eq(1)
+    end
+
+    it "should return packages with inventory_number" do
+      expect(Package.inventorize_and_not_multiquantity.count).to eq(1)
+    end
+
+    it "should return packages with quantity less than equal to 1" do
+      expect(Package.inventorize_and_not_multiquantity.count).to eq(1)
+    end
+  end
+
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
   end
