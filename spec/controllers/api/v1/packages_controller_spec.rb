@@ -624,7 +624,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     it 'should filter out item with published, has_images, and in_stock status' do
       create :package, inventory_number: "111000", state: 'received', quantity: 1
-      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 1
+      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 8
       create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
       params = {
         searchText: '111',
@@ -637,6 +637,33 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject['meta']['search']).to eql('111')
       expect(subject['items'].map{|i| i['inventory_number']}).to match_array(['111005'])
 
+    end
+
+    it "should filter out multiquantity items if params has restrictMultiQuantity field" do
+      create :package, inventory_number: "111000", state: 'received', quantity: 1
+      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 8
+      create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
+      params = {
+        searchText: '111',
+        stockRequest: true,
+        restrictMultiQuantity: 'true'
+      }
+      get :search_stockit_items, params
+      expect(response.status).to eq(200)
+      expect(subject["items"].count).to eq(2)
+    end
+
+    it "should find multiquantity items if params has restrictMultiQuantity field" do
+      create :package, inventory_number: "111000", state: 'received', quantity: 1
+      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 8
+      create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
+      params = {
+        searchText: '111',
+        stockRequest: true
+      }
+      get :search_stockit_items, params
+      expect(response.status).to eq(200)
+      expect(subject["items"].count).to eq(3)
     end
 
   end
