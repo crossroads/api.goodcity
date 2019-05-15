@@ -58,12 +58,12 @@ class Order < ActiveRecord::Base
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
-    includes([
+    includes([:subscriptions, :order_transport,
       { packages: [:locations, :package_type] }
     ])
   }
 
-  scope :descending, -> { order('id desc') }
+  scope :descending, -> { order('orders.id desc') }
 
   scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
 

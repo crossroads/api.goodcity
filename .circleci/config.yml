@@ -56,7 +56,9 @@ jobs:
     steps:
       - run:
           name: Install PostgreSQL Client (required to run migrations)
-          command: sudo apt-get install postgresql-client-9.6
+          command: |
+            sudo apt update
+            sudo apt-get install postgresql-client-9.6
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
