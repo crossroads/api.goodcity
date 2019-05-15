@@ -47,8 +47,8 @@ require "rails_helper"
   let(:designator) { Designator.new(package, designate_package_params) }
   let(:designator_with_designated_package) { Designator.new(package1, redesignate_package_params) }
   let(:designator_for_undesignating_package) { Designator.new(package1, {"0"=>redesignate_package_params.stringify_keys} )}
-  let(:designator_for_undesignate_and_updating_orders_package) { Designator.new(package1, undesignate_and_update_params.stringify_keys)}
-  let(:designator_for_updating_orders_package) { Designator.new(package1, undesignate_and_update_params.stringify_keys)}
+  let(:designator_for_undesignating_and_updating_cancelled_orders_package) { Designator.new(package1, undesignate_and_update_params.stringify_keys)}
+  let(:designator_for_updating_cancelled_orders_package) { Designator.new(package1, undesignate_and_update_params.stringify_keys)}
 
   context "initialization" do
     it { expect(designator.instance_variable_get("@package")).to eql(package) }
@@ -65,7 +65,7 @@ require "rails_helper"
 
     it "undesignate before designating to new order" do
       designator_with_designated_package.designate
-      expect(order1.orders_packages.first.order_id).to eq(redesignate_package_params[:order_id])
+      expect(order1.orders_packages.reload.first.order_id).to eq(redesignate_package_params[:order_id])
       expect(order.orders_packages.reload.length).to eq(0)
     end
 
@@ -95,15 +95,15 @@ require "rails_helper"
       WebMock.enable!
     end
 
-    it "undesignate before updating package to existing designation" do
-      designator_for_updating_orders_package.undesignate_and_update_partial_quantity
+    it "designates canceled orders_package instead of creating new orders_package in same designation" do
+      designator_for_undesignating_and_updating_cancelled_orders_package.undesignate_and_update_partial_quantity
+      expect(designated_orders_package.reload.state).to eq("cancelled")
       expect(cancelled_orders_package.reload.state).to eq("designated")
       expect(cancelled_orders_package.quantity).to eq(1)
     end
 
-    it "update existing orders_package instead of creating in same designation" do
-      designator_for_undesignate_and_updating_orders_package.undesignate_and_update_partial_quantity
-      expect(designated_orders_package.reload.state).to eq("cancelled")
+    it "undesignate package from other order before designating canceled orders_package" do
+      designator_for_updating_cancelled_orders_package.undesignate_and_update_partial_quantity
       expect(cancelled_orders_package.reload.state).to eq("designated")
       expect(cancelled_orders_package.quantity).to eq(1)
     end
