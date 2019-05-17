@@ -1,7 +1,17 @@
 class Order < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
-  include PushUpdates
+  include PushUpdatesMinimal
   include OrderFiltering
+
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |record|
+    [
+      Channel.private_channels_for(record.created_by, BROWSE_APP),
+      Channel::ORDER_FULFILMENT_CHANNEL
+    ]
+  end
 
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
