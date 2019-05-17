@@ -162,8 +162,8 @@ module Api
       end
 
       api :POST, "/v1/auth/register_device", "Register a mobile device to receive notifications"
-      param :handle, String, desc: "The registration id for the push messaging service for the platform i.e. fcm registration id for android"
-      param :platform, String, desc: "The azure notification platform name, this should be `fcm` for android"
+      param :handle, String, desc: "The registration id for the push messaging service for the platform i.e. fcm/gcm registration id for android"
+      param :platform, String, desc: "The azure notification platform name, this should be `fcm/gcm` for android"
 
       def register_device
         authorize!(:register, :device)
@@ -214,11 +214,11 @@ module Api
       end
 
       def valid_platform?
-        ["fcm", "aps", "wns"].include?(params[:platform])
+        ["fcm", "gcm", "aps", "wns"].include?(params[:platform])
       end
 
       def platform_error
-        "Unrecognised platform, expecting 'fcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)"
+        "Unrecognised platform, expecting 'fcm' or 'gcm' (Android), 'aps' (iOS) or 'wns' (WP8.1)"
       end
 
       def register_device_for_notifications
