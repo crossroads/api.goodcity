@@ -50,7 +50,8 @@ class OrganisationsUserBuilder
     @user.request_from_browse = (app_name == BROWSE_APP)
   end
 
-  def update
+  def update(app_name)
+    assign_user_app_acessor(app_name)
     return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
     @organisations_user.update(position: @position, preferred_contact_number: @preferred_contact_number)
     return_success.merge!("organisations_user" => @organisations_user.reload)
