@@ -555,6 +555,10 @@ RSpec.describe Order, type: :model do
     end
 
     describe '#cancel' do
+      before do
+        allow_any_instance_of(PushService).to receive(:send_update_store)
+      end
+
       it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in submitted state' do
         order = create :order, state: 'submitted'
         orders_package = create :orders_package, order: order, state: 'designated'
@@ -799,5 +803,61 @@ RSpec.describe Order, type: :model do
         online_order.close
       end
     end
+  end
+
+  describe "Live updates" do
+    let(:push_service) { PushService.new }
+    let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+      roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
+
+    before(:each) do
+      allow(PushService).to receive(:new).and_return(push_service)
+    end
+
+    def validate_channels
+      expect(push_service).to receive(:send_update_store) do |channels, data|
+        expect(channels.flatten).to eq([
+          Channel.private_channels_for(charity_user, BROWSE_APP),
+          Channel::ORDER_FULFILMENT_CHANNEL
+        ].flatten)
+        yield(channels, data) if block_given?
+      end
+    end
+
+    context "When creatin an order" do
+      let!(:existing_order) { create :order, created_by: charity_user }
+
+      it "Sends changes to the stock channel and the user's browse channel" do
+        validate_channels do |channels, data|
+          record = data.as_json['item'][:order]
+          expect(record[:created_by_id]).to eq(charity_user.id)
+        end
+        create(:order, created_by: charity_user)
+      end
+    end
+
+    context "When updating an order" do
+      let!(:existing_order) { create :order, created_by: charity_user }
+
+      it "Sends changes to the stock channel and the user's browse channel" do
+        validate_channels do |channels, data|
+          record = data.as_json['item'][:order]
+          expect(record[:id]).to eq(existing_order.id)
+          expect(record[:staff_note]).to eq("Steve is happy")
+        end
+        existing_order.staff_note = "Steve is happy"
+        existing_order.save
+      end
+    end
+
+    context "When deleting an order" do
+      let!(:existing_order) { create :order, created_by: charity_user }
+
+      it "Sends changes to the stock channel and the user's browse channel" do
+        validate_channels()
+        existing_order.destroy
+      end
+    end
+
   end
 end
