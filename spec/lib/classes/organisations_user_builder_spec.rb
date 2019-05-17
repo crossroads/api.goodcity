@@ -111,12 +111,12 @@ describe OrganisationsUserBuilder do
 
   context "update" do
     it "updates existing organisations user position" do
-      update_organisations_user_builder.update
+      update_organisations_user_builder.update('browse.goodcity')
       expect(OrganisationsUser.first.position).to eq(update_organisations_user_params[:position])
     end
 
     it "updates user details belonging to organisation" do
-      update_organisations_user_builder.update
+      update_organisations_user_builder.update('browse.goodcity')
       expect(OrganisationsUser.first.user.last_name).to eq(update_user_attributes[:last_name])
     end
   end
