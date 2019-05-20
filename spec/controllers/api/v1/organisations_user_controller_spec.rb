@@ -32,7 +32,9 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
   let(:subject) { JSON.parse(response.body) }
 
   describe "POST organisations_user/1" do
+
     it "creates new organisations user", :show_in_doc do
+      set_browse_app_header
       expect {
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(1)

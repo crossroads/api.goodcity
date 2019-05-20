@@ -39,7 +39,7 @@ class OrganisationsUserBuilder
     end
   end
 
-  def build_user(app_name)
+  def build_user
     @user = User.where("email = (?) OR mobile = (?)", @email, @mobile).first_or_initialize(@user_attributes)
     # assign_user_app_acessor
     # @user.save
@@ -52,7 +52,7 @@ class OrganisationsUserBuilder
   end
 
   def update
-    return fail_with_error(update_user["errors"]) if assign_charity_role_and_save_user && @user.errors?
+    return fail_with_error(update_user["errors"]) if assign_charity_role_and_save_user && @user.errors.present?
     @organisations_user.update(position: @position, preferred_contact_number: @preferred_contact_number)
     return_success.merge!("organisations_user" => @organisations_user.reload)
   end
