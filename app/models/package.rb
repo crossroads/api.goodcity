@@ -529,10 +529,6 @@ class Package < ActiveRecord::Base
     item.packages.inventorized.undispatched
   end
 
-  def self.inventorize_and_not_multiquantity
-    inventorized.not_multi_quantity
-  end
-
   def self.browse_inventorized
     inventorized.not_zero_quantity.published
   end

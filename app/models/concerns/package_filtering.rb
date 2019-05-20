@@ -3,7 +3,6 @@ module PackageFiltering
   extend ActiveSupport::Concern
 
   included do
-    
     # Free text search on packages
     scope :search, -> (options = {}) {
       search_text = options[:search_text] || ''
@@ -16,7 +15,8 @@ module PackageFiltering
           map { |f| "#{f} ILIKE :search_text" }.
           join(" OR ")
         query = where(search_query, search_text: "%#{search_text}%")
-        query = query.where("inventory_number IS NOT NULL") if options[:with_inventory_no].present?
+        query = query.inventorized if options[:with_inventory_no].present?
+        query = query.not_multi_quantity if options[:restrict_multi_quantity].present?
         query = query.where(state: state) if state.present?
         query
       end
@@ -82,7 +82,7 @@ module PackageFiltering
     def filter_by_location(location_name)
       # to use postgresql indexes search location first and join packages_locations after
       building_name, area_name = location_name.split('-', 2)
-      location = 
+      location =
         if area_name == '(All areas)'
           Location.where(building: building_name)
         else

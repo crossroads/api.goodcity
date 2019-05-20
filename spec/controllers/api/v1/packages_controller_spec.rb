@@ -624,7 +624,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     it 'should filter out item with published, has_images, and in_stock status' do
       create :package, inventory_number: "111000", state: 'received', quantity: 1
-      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 8
+      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 1
       create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
       params = {
         searchText: '111',
@@ -639,31 +639,49 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     end
 
-    it "should filter out multiquantity items if params has restrictMultiQuantity field" do
-      create :package, inventory_number: "111000", state: 'received', quantity: 1
-      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 8
-      create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
+    it "filter out multiquantity items if params has restrictMultiQuantity field" do
+      create :package, inventory_number: "111000", quantity: 1
+      create :package, inventory_number: "111001", quantity: 8
+      create :package, inventory_number: "111005", quantity: 1
       params = {
         searchText: '111',
         stockRequest: true,
-        restrictMultiQuantity: 'true'
+        restrictMultiQuantity: 'true',
+        withInventoryNumber: 'true'
       }
       get :search_stockit_items, params
       expect(response.status).to eq(200)
       expect(subject["items"].count).to eq(2)
     end
 
-    it "should find multiquantity items if params has restrictMultiQuantity field" do
-      create :package, inventory_number: "111000", state: 'received', quantity: 1
-      create :package, inventory_number: "111001", state: 'received', allow_web_publish: true, quantity: 8
-      create(:package, :with_images, inventory_number: "111005", allow_web_publish: true, state: 'received', quantity: 1)
+    it "find multiquantity items if params does not have restrictMultiQuantity field" do
+      create :package, inventory_number: "111000", quantity: 1
+      create :package, inventory_number: "111001", quantity: 8
+      create :package, inventory_number: "111005", quantity: 1
       params = {
         searchText: '111',
-        stockRequest: true
+        stockRequest: true,
+        withInventoryNumber: 'true'
+
       }
       get :search_stockit_items, params
       expect(response.status).to eq(200)
       expect(subject["items"].count).to eq(3)
+    end
+
+    it "search single quantity item created after Splitting of package" do
+      create(:package, inventory_number: "F00001Q1", quantity: 2)
+      create(:package, inventory_number: "F00001Q2", quantity: 2)
+      create(:package, inventory_number: "F00001Q3", quantity: 1)
+      params = {
+        searchText: 'F00001Q',
+        stockRequest: true,
+        restrictMultiQuantity: 'true',
+        withInventoryNumber: 'true'
+      }
+      get :search_stockit_items, params
+      expect(response.status).to eq(200)
+      expect(subject["items"].count).to eq(1)
     end
 
   end

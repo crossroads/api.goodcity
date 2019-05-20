@@ -125,21 +125,17 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe "#inventorize_and_not_multiquantity" do
-    let!(:single_with_inventory_package) { create :package, :with_item, quantity: 1, inventory_number: "000635" }
-    let!(:multiquantity_without_inventory_package) { create :package, :with_item, quantity: 5, inventory_number: "000636" }
-    let!(:singleuantity_without_inventory_package) { create :package, :with_item, quantity: 1 }
+  describe "#not_multi_quantity" do
+    let!(:single_with_inventory_package) { create :package, quantity: 1, inventory_number: "000635" }
+    let!(:multiquantity_without_inventory_package) { create :package, quantity: 5, inventory_number: "000636" }
+    let!(:singlequantity_without_inventory_package) { create :package, quantity: 0, inventory_number: "000637" }
 
-    it "should return packages without multiquantity" do
-      expect(Package.inventorize_and_not_multiquantity.count).to eq(1)
+    it "do not returns multi quantity packages" do
+      expect(Package.not_multi_quantity.count).to eq(2)
     end
 
-    it "should return packages with inventory_number" do
-      expect(Package.inventorize_and_not_multiquantity.count).to eq(1)
-    end
-
-    it "should return packages with quantity less than equal to 1" do
-      expect(Package.inventorize_and_not_multiquantity.count).to eq(1)
+    it "returns packages with quantity less or equal to 1 (Designated and Undesignated)" do
+      expect(Package.not_multi_quantity.count).to eq(2)
     end
   end
 
