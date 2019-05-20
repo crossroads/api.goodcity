@@ -64,12 +64,8 @@ class OrganisationsUserBuilder
   end
 
   def update_user
-    @user.user_roles.new(role: charity_role) unless @user.roles.include?(charity_role)
-    if @user.update(@user_attributes)
-      @user
-    else
-      fail_with_error(@user.errors.full_messages.join(" "))
-    end
+    @user.assign_attributes(@user_attributes)
+    assign_charity_role_and_save_user
   end
 
   def assign_charity_role_and_save_user
