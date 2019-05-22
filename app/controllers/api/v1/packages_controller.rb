@@ -128,6 +128,7 @@ module Api
       def search_stockit_items
         records = @packages # security
         records = records.search(search_text: params['searchText'], item_id: params['itemId'],
+          restrict_multi_quantity: params['restrictMultiQuantity'],
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
         records = records.filter(params_for_filter)
