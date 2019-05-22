@@ -40,7 +40,7 @@ module Api
       end
 
       def update
-        builder = OrganisationsUserBuilder.new(params["organisations_user"].to_hash).update
+        builder = OrganisationsUserBuilder.new(params["organisations_user"].to_hash).update(app_name)
         if builder["result"]
           save_and_render_object_with_errors(builder["organisations_user"])
         else
