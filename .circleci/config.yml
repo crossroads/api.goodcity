@@ -135,6 +135,7 @@ workflows:
       - deploy:
           requires:
             - test
+            - audit
           filters:
             branches:
-              only: /^(master|live|make-changes-to-use-fcm)$/
+              only: /^(master|live)$/
