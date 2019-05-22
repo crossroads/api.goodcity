@@ -10,6 +10,22 @@ require "rails_helper"
     FactoryBot.build(:orders_package, :with_state_requested, id: nil, package_id: package.id, order_id: nil, quantity:nil)
   end
 
+  let(:item_sync) do
+    double "item_sync", {
+      create: nil,
+      update: nil,
+      delete: nil,
+      move: nil,
+      dispatch: nil,
+      undispatch: nil
+    }
+  end
+
+  before do
+    allow_any_instance_of(PushService).to receive(:send_update_store)
+    allow(Stockit::ItemSync).to receive(:new).and_return(item_sync)
+  end
+
   let(:designate_package_params) {
     { quantity: "1",order_id: order.id,package_id: package.id,orders_package_id: '' }
   }
@@ -30,14 +46,6 @@ require "rails_helper"
   end
 
   context ".designate" do
-    before(:all) do
-      WebMock.disable!
-    end
-
-    after(:all) do
-      WebMock.enable!
-    end
-
     it "designates packages to order if not designated" do
       designator.designate
       expect(order.orders_packages.reload.length).to eq(1)
@@ -46,7 +54,7 @@ require "rails_helper"
 
     it "undesignate before designating to new order" do
       designator_with_designated_package.designate
-      expect(order1.orders_packages.first.order_id).to eq(redesignate_package_params[:order_id])
+      expect(order1.orders_packages.reload.first.order_id).to eq(redesignate_package_params[:order_id])
       expect(order.orders_packages.reload.length).to eq(0)
     end
 
@@ -57,18 +65,9 @@ require "rails_helper"
     it "return no error message if package is not designated to same order" do
       expect(designator.designate&.errors.full_messages).to eq([])
     end
-
   end
 
   context ".undesignate" do
-    before(:all) do
-      WebMock.disable!
-    end
-
-    after(:all) do
-      WebMock.enable!
-    end
-
     it "undesignate package from order" do
       expect{
         designator_for_undesignating_package.undesignate
