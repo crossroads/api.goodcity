@@ -166,7 +166,7 @@ module Api
       param :platform, String, desc: "The azure notification platform name, this should be `fcm/gcm` for android"
 
       def register_device
-        authorize!(:register, :device)
+        # authorize!(:register, :device)
         return render text: platform_error, status: 400 unless valid_platform?
         register_device_for_notifications
         render nothing: true, status: 204
@@ -214,7 +214,7 @@ module Api
       end
 
       def valid_platform?
-        ["fcm", "gcm", "aps", "wns"].include?(params[:platform])
+        ["fcm", "aps", "wns"].include?(params[:platform])
       end
 
       def platform_error
