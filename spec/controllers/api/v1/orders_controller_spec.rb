@@ -478,10 +478,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
 
     context "Updating properties" do
-      let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
-      let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
-      let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
-
       before { generate_and_set_token(user) }
 
       it "should update the staff note property" do
@@ -491,34 +487,64 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(order.reload.staff_note).to eq('hello')
       end
 
-      it 'should update the checklist through nested attributes' do
-        order.state = 'processing'
-        order.save
+      context 'Processing checklist' do
+        let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
+        let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
+        let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
 
-        expect(order.process_checklists.count).to eq(0)
+        let(:payload) do
+          payload = {}
+          payload['orders_process_checklists_attributes'] = [{ order_id: order.id, process_checklist_id: checklist_it1.id }]
+          payload
+        end
 
-        # Add one
-        payload = {}
-        payload['orders_process_checklists_attributes'] = [{ order_id: order.id, process_checklist_id: checklist_it1.id }]
-        put :update, id: order.id, order: payload
-        expect(order.reload.process_checklists.count).to eq(1)
-        expect(order.can_transition).to eq(false)
+        it 'should update the checklist through nested attributes' do
+          order.state = 'processing'
+          order.save
 
-        # Add some more
-        payload['orders_process_checklists_attributes'] = [
-          { order_id: order.id, process_checklist_id: checklist_it2.id },
-          { order_id: order.id, process_checklist_id: checklist_it3.id },
-        ]
-        put :update, id: order.id, order: payload
-        expect(order.reload.process_checklists.count).to eq(3)
-        expect(order.can_transition).to eq(true)
+          expect(order.process_checklists.count).to eq(0)
 
-        # Delete one
-        payload['orders_process_checklists_attributes'] = order.orders_process_checklists.as_json
-        payload['orders_process_checklists_attributes'][0]['_destroy'] = true
-        put :update, id: order.id, order: payload
-        expect(order.reload.process_checklists.count).to eq(2)
-        expect(order.can_transition).to eq(false)
+          # Add one
+          put :update, id: order.id, order: payload
+          expect(order.reload.process_checklists.count).to eq(1)
+          expect(order.can_transition).to eq(false)
+
+          # Add some more
+          payload['orders_process_checklists_attributes'] = [
+            { order_id: order.id, process_checklist_id: checklist_it2.id },
+            { order_id: order.id, process_checklist_id: checklist_it3.id },
+          ]
+          put :update, id: order.id, order: payload
+          expect(order.reload.process_checklists.count).to eq(3)
+          expect(order.can_transition).to eq(true)
+
+          # Delete one
+          payload['orders_process_checklists_attributes'] = order.orders_process_checklists.as_json
+          payload['orders_process_checklists_attributes'][0]['_destroy'] = true
+          put :update, id: order.id, order: payload
+          expect(order.reload.process_checklists.count).to eq(2)
+          expect(order.can_transition).to eq(false)
+        end
+
+        context 'Live updates' do
+          let(:push_service) { PushService.new }
+
+          before(:each) do
+            allow(PushService).to receive(:new).and_return(push_service)
+          end
+
+          it 'Pushes the correct data when checklist is updated via nested attributes' do
+            expect(push_service).to receive(:send_update_store) do |channels, data|
+              pushData = data[:item].as_json
+              orders_process_checklist_ids = pushData[:order][:orders_process_checklist_ids]
+              expect(orders_process_checklist_ids).to eq([ OrdersProcessChecklist.last.id ])
+            end
+
+            expect(order.process_checklists.count).to eq(0)
+            put :update, id: order.id, order: payload
+            expect(order.reload.process_checklists.count).to eq(1)
+          end
+        end
       end
     end
   end
@@ -561,5 +587,4 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
     end
   end
-
 end
