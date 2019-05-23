@@ -1,5 +1,3 @@
-require 'nestful'
-
 namespace :cloudinary do
   # tag value can be "development"/"staging"/"offer_#{id}"/
   # list of comma seperated tags: "offer_163, offer_164"
