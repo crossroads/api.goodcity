@@ -58,6 +58,9 @@ namespace :cloudinary do
       return res['resource_type'] == 'image' && res['placeholder'].present?
     rescue
       # Something happened, we don't know for sure that the image has been deleted
+      Rails.logger.info(
+        "Could not figure out the state of image #{im.cloudinary_id} (id: #{im.id})"
+      )
       return false
     end
   end
