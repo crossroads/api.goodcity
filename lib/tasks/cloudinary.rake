@@ -30,13 +30,13 @@ namespace :cloudinary do
   desc "Delete image records with broken images"
   task purge: :environment do
     Image
-      .all
-      .select { |im| image_has_been_deleted(im) }
-      .each do |im|
-        Rails.logger.info(
-          "Cloudinary image #{im.cloudinary_id} was deleted. Removing associated record (id: #{im.id})"
-        )
-        im.destroy
+      .find_each do |im|
+        if image_has_been_deleted(im)
+          Rails.logger.info(
+            "Cloudinary image #{im.cloudinary_id} was deleted. Removing associated record (id: #{im.id})"
+          )
+          im.destroy
+        end
       end
   end
 
