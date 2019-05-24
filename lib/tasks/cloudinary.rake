@@ -26,4 +26,46 @@ namespace :cloudinary do
     end
     puts tags.uniq.compact
   end
+
+  desc "Delete image records with broken images"
+  task purge: :environment do
+    Rails.logger.info("[cloudinary:purge] Searching for broken images...")
+    count = 0;
+    Image
+      .find_each do |im|
+        if image_has_been_deleted(im)
+          Rails.logger.info(
+            "[cloudinary:purge] Cloudinary image #{im.cloudinary_id} was deleted. Removing associated record (id: #{im.id})"
+          )
+          im.destroy
+        end
+        count = count + 1
+        Rails.logger.info("[cloudinary:purge] #{count } images processed...") if count % 100 == 0
+      end
+  end
+
+  #
+  # Cloudinary ref: https://support.cloudinary.com/hc/en-us/articles/115000756771-How-to-check-if-an-image-exists-on-my-account-
+  #
+  def image_has_been_deleted(im)
+    #
+    # Remove the prepended version and the image extension
+    # 1557819448/y1nxuenyyvix7gw3dyuy.jpg -> y1nxuenyyvix7gw3dyuy
+    #
+    trimmed_id = im.cloudinary_id
+      .sub(/^\d+\//, '')
+      .sub(/(\.jpg|\.jpeg\.png)$/, '')
+
+    begin
+      # Images that have been deleted are marked as 'placeholder'
+      res = Cloudinary::Uploader.explicit(trimmed_id, :type => "upload")
+      return res['resource_type'] == 'image' && res['placeholder'].present?
+    rescue
+      # Something happened, we don't know for sure that the image has been deleted
+      Rails.logger.info(
+        "Could not figure out the state of image #{im.cloudinary_id} (id: #{im.id})"
+      )
+      return false
+    end
+  end
 end
