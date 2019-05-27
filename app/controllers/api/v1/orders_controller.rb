@@ -59,7 +59,7 @@ module Api
           serializer: serializer,
           root: root,
           exclude_code_details: true,
-          include_packages: bool_param(:include_packages, true),
+          include_packages: bool_param(:include_packages, false),
           include_order: false,
           include_territory: true,
           include_images: true,

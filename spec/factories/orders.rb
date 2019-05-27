@@ -26,6 +26,10 @@ FactoryBot.define do
       goodcity_requests { create_list :goodcity_request, 1}
     end
 
+    trait :with_orders_purposes do
+      orders_purposes { create_list :orders_purpose, 2}
+    end
+
     trait :with_stockit_id do
       sequence(:stockit_id) { |n| n }
     end

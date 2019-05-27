@@ -97,7 +97,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['designations'].count).to eq(Order.where.not(state: 'draft').count)
         expect(parsed_body['designations'].map { |it| it['state'] }).to_not include('draft')
       end
-      
+
       # Test turned off as currently hardcoded to 150
       # it 'returns the number of items specified for the page' do
       #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
@@ -546,6 +546,45 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
         end
       end
+    end
+  end
+
+  describe "SHOW orders/1  or designations/1" do
+    before { generate_and_set_token(user) }
+    let(:show_order) { create :order, :with_orders_packages, :with_goodcity_requests, :with_orders_purposes }
+
+    it "returns 200" do
+      get :show, id: show_order.id
+      expect(response.status).to eq(200)
+    end
+
+    it "return order with root name 'designation' for Stock app" do
+      request.headers["X-GOODCITY-APP-NAME"] = "stock.goodcity"
+      get :show, id: show_order.id
+      expect(parsed_body.keys).to include('designation')
+      expect(parsed_body.keys).to_not include('order')
+    end
+
+    it "return order with root name 'order' for Browse app" do
+      request.headers["X-GOODCITY-APP-NAME"] = "browse.goodcity"
+      get :show, id: show_order.id
+      expect(parsed_body.keys).to include('order')
+      expect(parsed_body.keys).to_not include('designation')
+    end
+
+    it "returns assoicated orders_packages" do
+      get :show, id: show_order.id
+      expect(parsed_body["orders_packages"].count).to eq(show_order.orders_packages.count)
+    end
+
+    it "returns goodcity_requests" do
+      get :show, id: show_order.id
+      expect(parsed_body["goodcity_requests"].count).to eq(show_order.goodcity_requests.count)
+    end
+
+    it "returns orders_purposes" do
+      get :show, id: show_order.id
+      expect(parsed_body["orders_purposes"].count).to eq(show_order.orders_purposes.count)
     end
   end
 
