@@ -1,4 +1,3 @@
 class GoodcitySetting < ActiveRecord::Base
-  validates :key, presence: true
-  validates :key, uniqueness: true
+  validates :key, uniqueness: true, presence: true
 end

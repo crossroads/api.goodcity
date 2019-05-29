@@ -4,7 +4,7 @@ RSpec.describe GoodcitySetting, type: :model do
   describe 'Database columns' do
     it{ is_expected.to have_db_column(:key).of_type(:string)}
     it{ is_expected.to have_db_column(:value).of_type(:string)}
-    it{ is_expected.to have_db_column(:desc).of_type(:string)}
+    it{ is_expected.to have_db_column(:description).of_type(:string)}
   end
 
   describe 'Validations' do

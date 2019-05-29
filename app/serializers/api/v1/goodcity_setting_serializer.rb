@@ -1,5 +1,5 @@
 module Api::V1
   class GoodcitySettingSerializer < ApplicationSerializer
-    attributes :id, :key, :value, :desc
+    attributes :id, :key, :value, :description
   end
 end

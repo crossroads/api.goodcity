@@ -17,7 +17,7 @@ module Api
         param :goodcity_setting, Hash, required: true do
           param :key, String, desc: "the config key"
           param :value, String, desc: "the value"
-          param :desc, String, desc: "a description of the configuration", allow_nil: true
+          param :description, String, desc: "a description of the configuration", allow_nil: true
         end
       end
 
@@ -51,7 +51,7 @@ module Api
       end
 
       def goodcity_setting_params
-        params.require(:goodcity_setting).permit(:key, :value, :desc)
+        params.require(:goodcity_setting).permit(:key, :value, :description)
       end
     end
   end

@@ -10,6 +10,6 @@ describe Api::V1::GoodcitySettingSerializer do
     expect(json['goodcity_setting']['id']).to eql(goodcity_setting.id)
     expect(json['goodcity_setting']['key']).to eql(goodcity_setting.key)
     expect(json['goodcity_setting']['value']).to eql(goodcity_setting.value)
-    expect(json['goodcity_setting']['desc']).to eql(goodcity_setting.desc)
+    expect(json['goodcity_setting']['description']).to eql(goodcity_setting.description)
   end
 end
