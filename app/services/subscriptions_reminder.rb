@@ -28,7 +28,7 @@ class SubscriptionsReminder
         .where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601)
         .where('subscriptions.state': 'unread')
         .where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)")
-        .where("messages.offer_id IS NOT NULL OR messages.item_id IS NOT NULL and messages.order_id IS NULL")
+        .where("(messages.offer_id IS NOT NULL OR messages.item_id IS NOT NULL) and messages.order_id IS NULL")
         .where("offers.created_by_id = users.id")
         .where('messages.sender_id != users.id')
         .distinct
