@@ -3,6 +3,7 @@ module Api
     class OrdersController < Api::V1::ApiController
       load_and_authorize_resource :order, parent: false
       before_action :eager_load_designation, only: :show
+      before_action :check_for_gc_organisation, only: :update
 
       resource_description do
         short 'Retrieve a list of designations, information about stock items that have been designated to a group or person.'
@@ -225,6 +226,16 @@ module Api
 
       def eager_load_designation
         @order = Order.accessible_by(current_ability).with_eager_load.find(params[:id])
+      end
+
+      def check_for_gc_organisation
+        return unless params[:order]
+
+        organisation_params = {
+          stockit_organisation_id: params[:order][:organisation_id],
+          organisation_id: params[:order][:gc_organisation_id]
+        }
+        order_params.merge(organisation_params)
       end
     end
   end
