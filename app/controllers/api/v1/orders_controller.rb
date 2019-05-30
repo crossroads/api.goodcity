@@ -3,7 +3,6 @@ module Api
     class OrdersController < Api::V1::ApiController
       load_and_authorize_resource :order, parent: false
       before_action :eager_load_designation, only: :show
-      before_action :check_for_gc_organisation, only: :update
 
       resource_description do
         short 'Retrieve a list of designations, information about stock items that have been designated to a group or person.'
@@ -78,8 +77,9 @@ module Api
       end
 
       def update
+        merged_order_params = merge_organisation_params_to_order_params(order_params)
         root = is_browse_app? ? "order" : "designation"
-        @order.assign_attributes(order_params)
+        @order.assign_attributes(merged_order_params)
         # use valid? to ensure submit event errors get caught
         if @order.valid? and @order.save
           render json: @order, root: root, serializer: serializer
@@ -228,9 +228,7 @@ module Api
         @order = Order.accessible_by(current_ability).with_eager_load.find(params[:id])
       end
 
-      def check_for_gc_organisation
-        return unless params[:order]
-
+      def merge_organisation_params_to_order_params(order_params)
         organisation_params = {
           stockit_organisation_id: params[:order][:organisation_id],
           organisation_id: params[:order][:gc_organisation_id]
