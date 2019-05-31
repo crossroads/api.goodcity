@@ -77,9 +77,8 @@ module Api
       end
 
       def update
-        merged_order_params = merge_organisation_params_to_order_params(order_params)
         root = is_browse_app? ? "order" : "designation"
-        @order.assign_attributes(merged_order_params)
+        @order.assign_attributes(order_params.merge(organisation_params))
         # use valid? to ensure submit event errors get caught
         if @order.valid? and @order.save
           render json: @order, root: root, serializer: serializer
@@ -228,12 +227,11 @@ module Api
         @order = Order.accessible_by(current_ability).with_eager_load.find(params[:id])
       end
 
-      def merge_organisation_params_to_order_params(order_params)
-        organisation_params = {
+      def organisation_params
+        {
           stockit_organisation_id: params[:order][:organisation_id],
           organisation_id: params[:order][:gc_organisation_id]
         }
-        order_params.merge(organisation_params)
       end
     end
   end
