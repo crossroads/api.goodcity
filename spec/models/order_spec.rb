@@ -3,7 +3,7 @@ require "rspec/mocks/standalone"
 
 RSpec.describe Order, type: :model do
   ALL_ORDER_STATES = ["draft", "submitted", "processing", "awaiting_dispatch", "dispatching", "cancelled", "closed"]
-  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"].freeze
+  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled", "draft"].freeze
 
   let(:user) { create :user }
 
@@ -86,20 +86,25 @@ RSpec.describe Order, type: :model do
       let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id, status: nil }
     end
 
-    it "will return submitted order for the user" do
+    it "will return submitted orders count for the user" do
       expect(Order.counts_for(user.id)["submitted"]).to eq(1)
     end
 
-    it "will return awaiting_dispatch order for the user" do
+    it "will return awaiting_dispatch orders count for the user" do
       expect(Order.counts_for(user.id)["awaiting_dispatch"]).to eq(1)
     end
 
-    it "will return closed order for the user" do
+    it "will return closed orders count for the user" do
       expect(Order.counts_for(user.id)["closed"]).to eq(1)
     end
 
-    it "will return cancelled order for the user" do
+    it "will return cancelled orders count for the user" do
       expect(Order.counts_for(user.id)["cancelled"]).to eq(1)
+    end
+
+    it "will not return draft orders count for the user" do
+      expect(Order.counts_for(user.id).keys).to_not include('draft')
+      expect(Order.counts_for(user.id)["draft"]).to eq(nil)
     end
 
     it "will not return orders count of other user" do
