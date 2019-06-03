@@ -97,7 +97,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['designations'].count).to eq(Order.where.not(state: 'draft').count)
         expect(parsed_body['designations'].map { |it| it['state'] }).to_not include('draft')
       end
-      
+
       # Test turned off as currently hardcoded to 150
       # it 'returns the number of items specified for the page' do
       #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
@@ -479,6 +479,15 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
     context "Updating properties" do
       before { generate_and_set_token(user) }
+
+      it "should not remove organisation from order" do
+        order_with_org = create :order, :with_state_submitted
+        booking_type1 = create :booking_type
+        org_id = order_with_org.organisation_id
+        put :update, id: order_with_org.id, order: { booking_type: booking_type1, gc_organisation_id: org_id }
+        expect(response.status).to eq(200)
+        expect(order_with_org.organisation_id).to eq(org_id)
+      end
 
       it "should update the staff note property" do
         expect(order.staff_note).to eq("")
