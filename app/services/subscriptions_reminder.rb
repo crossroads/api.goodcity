@@ -37,17 +37,7 @@ class SubscriptionsReminder
   def send_sms_reminder(user)
     sms_url = "#{Rails.application.secrets.base_urls['app']}/offers"
     TwilioService.new(user).send_unread_message_reminder(sms_url)
-    send_slack_sms(sms_url) if Rails.env.staging?
     Rails.logger.info("SMS reminder sent to user #{user.id}")
-  end
-
-  def send_slack_sms(sms_url)
-    message = "SlackSMS ('id: #{user.id} full_name: #{user.full_name}') #{unread_message_reminder(sms_url)}"
-    SlackMessageJob.perform_later(message, ENV["SLACK_PIN_CHANNEL"])
-  end
-
-  def unread_message_reminder(url)
-    I18n.t('twilio.unread_message_sms', url: url)
   end
 
   # E.g. 4.hours.ago
