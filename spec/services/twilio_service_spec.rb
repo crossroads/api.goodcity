@@ -3,7 +3,7 @@ require 'rails_helper'
 describe TwilioService do
 
   let(:mobile) { generate(:mobile) }
-  let(:user)   { build :user, mobile: mobile }
+  let(:user)   { create :user, mobile: mobile }
   let(:twilio) { TwilioService.new(user) }
 
   context "initialize" do
@@ -105,7 +105,7 @@ describe TwilioService do
       expect(subject).to receive(:send_to_twilio?).and_return(false)
       expect(TwilioJob).to_not receive(:perform_later)
       channel = ENV['SLACK_PIN_CHANNEL']
-      message = "SlackSMS (#{user.mobile}) #{options[:body]}"
+      message = "SlackSMS (to: #{user.mobile}, id: #{user.id}, full_name: #{user.full_name}) #{options[:body]}"
       expect(SlackMessageJob).to receive(:perform_later).with(message, channel)
       subject.send(:send_sms, options)
     end
