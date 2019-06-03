@@ -39,6 +39,7 @@ class AzureNotificationsService
 
   def encoded_url(platform, handle)
     case platform
+    when "gcm" then URI::encode("GcmRegistrationId eq '#{handle}'")
     when "fcm" then URI::encode("GcmRegistrationId eq '#{handle}'")
     when "aps" then URI::encode("DeviceToken eq '#{handle.upcase}'")
     when "wns" then URI::encode("ChannelUri eq '#{handle}'")
@@ -49,7 +50,8 @@ class AzureNotificationsService
     # platform
     # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
     case platform
-    when "fcm" then fcm_platform_xml(handle, tags)
+    when "fcm" then gcm_platform_xml(handle, tags)
+    when "gcm" then gcm_platform_xml(handle, tags)
     when "aps" then aps_platform_xml(handle, tags)
     when "wns" then wns_platform_xml(handle, tags)
     else ""
@@ -70,7 +72,7 @@ class AzureNotificationsService
     data
   end
 
-  def fcm_platform_xml(handle, tags)
+  def gcm_platform_xml(handle, tags)
     template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\": \"$(notId)\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } }"
 
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
