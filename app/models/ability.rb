@@ -331,8 +331,8 @@ class Ability
 
   def user_abilities
     can [:current_user_profile], User
-    can [:show, :update], User, id: @user_id
-    can [:index, :show, :update, :recent_users, :orders_count], User if can_read_or_modify_user?
+    can [:show, :update, :orders_count], User, id: @user_id
+    can [:index, :show, :update, :recent_users], User if can_read_or_modify_user?
   end
 
   def version_abilities
