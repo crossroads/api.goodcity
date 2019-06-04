@@ -97,8 +97,7 @@ class Order < ActiveRecord::Base
   end
 
   def self.counts_for(created_by_id)
-    order_state_counts = group(:state).where(created_by_id: created_by_id).count
-    order_state_counts.except("draft")
+    where.not(state: 'draft').group(:state).where(created_by_id: created_by_id).count
   end
 
   def delete_orders_packages
