@@ -40,6 +40,7 @@ class AzureNotificationsService
   def encoded_url(platform, handle)
     case platform
     when "gcm" then URI::encode("GcmRegistrationId eq '#{handle}'")
+    when "fcm" then URI::encode("GcmRegistrationId eq '#{handle}'")
     when "aps" then URI::encode("DeviceToken eq '#{handle.upcase}'")
     when "wns" then URI::encode("ChannelUri eq '#{handle}'")
     end
@@ -49,6 +50,7 @@ class AzureNotificationsService
     # platform
     # https://msdn.microsoft.com/en-us/library/azure/dn223265.aspx
     case platform
+    when "fcm" then gcm_platform_xml(handle, tags)
     when "gcm" then gcm_platform_xml(handle, tags)
     when "aps" then aps_platform_xml(handle, tags)
     when "wns" then wns_platform_xml(handle, tags)
@@ -74,7 +76,7 @@ class AzureNotificationsService
     template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\": \"$(notId)\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } }"
 
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-    <entry xmlns=\"http://www.w3.org/2005/Atom\">
+    <entry xmlns=\"http://www.w3.org/2005/Atom\"> 
       <content type=\"application/xml\">
         <GcmTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
           <Tags>#{tags.join(',')}</Tags>
