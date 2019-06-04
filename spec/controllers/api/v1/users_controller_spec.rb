@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
-
+  TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
   let(:user) { create(:user_with_token, :with_can_read_or_modify_user_permission, role_name: 'Reviewer') }
   let(:serialized_user) { Api::V1::UserSerializer.new(user) }
   let(:serialized_user_json) { JSON.parse( serialized_user.to_json ) }
@@ -108,6 +108,27 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         put :update, id: reviewer.id, user: { user_role_ids: [role.id] }
         expect(reviewer.reload.roles).to include(role)
         expect(reviewer.reload.roles).not_to include(existing_user_roles)
+      end
+    end
+
+    describe 'Users Order Count ' do
+      before { generate_and_set_token(user) }
+      TOTAL_REQUESTS_STATES.each do |state|
+        let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id }
+      end
+
+      it "returns 200", :show_in_doc do
+        get :orders_count, id: user.id
+        expect(response.status).to eq(200)
+      end
+
+      it 'returns each orders count for user' do
+        get :orders_count, id: user.id
+        expect(response.status).to eq(200)
+        expect(parsed_body['submitted']).to eq(1)
+        expect(parsed_body['awaiting_dispatch']).to eq(1)
+        expect(parsed_body['closed']).to eq(1)
+        expect(parsed_body['cancelled']).to eq(1)
       end
     end
   end

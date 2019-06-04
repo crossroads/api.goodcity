@@ -96,6 +96,10 @@ class Order < ActiveRecord::Base
     ORDER_UNPROCESSED_STATES.include?(state)
   end
 
+  def self.counts_for(created_by_id)
+    where.not(state: 'draft').group(:state).where(created_by_id: created_by_id).count
+  end
+
   def delete_orders_packages
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
