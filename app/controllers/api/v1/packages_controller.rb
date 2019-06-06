@@ -53,8 +53,7 @@ module Api
           include_order: true,
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
-          include_images: @package.set_item_id.blank?,
-          include_stock_condition: is_stock_app?
+          include_images: @package.set_item_id.blank?
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -140,8 +139,7 @@ module Api
           include_packages: false,
           include_orders_packages: true,
           exclude_stockit_set_item: true,
-          include_images: true,
-          include_stock_condition: is_stock_app?).as_json
+          include_images: true).as_json
         render json: {meta: { search: params['searchText'] } }.merge(packages)
       end
 
