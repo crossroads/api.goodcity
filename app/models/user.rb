@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
+  has_many :orders, foreign_key: :created_by_id, inverse_of: :created_by
   has_many :reviewed_offers, foreign_key: :reviewed_by_id, inverse_of: :reviewed_by, class_name: "Offer"
   has_many :messages, class_name: "Message", foreign_key: :sender_id, inverse_of: :sender
 

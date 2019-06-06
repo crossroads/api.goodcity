@@ -46,7 +46,7 @@ describe SubscriptionsReminder do
       end
 
       it "2 new unread messages created after we last reminded the user - only sends one reminder" do
-        msg2 = create(:message, offer: offer, sender: reviewer)
+        create(:message, offer: offer, sender: reviewer)
         donor.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(donor.subscriptions.unread.size).to eql(2)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([donor])
@@ -65,13 +65,13 @@ describe SubscriptionsReminder do
       end
 
       it "reviewers own active offer" do
-        msg3 = create(:message, offer: reviewer_offer, sender: supervisor)
+        create(:message, offer: reviewer_offer, sender: supervisor)
         reviewer.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([reviewer])
       end
 
       it "charity user who is also donor has unread message on offer and order both" do
-        msg4 = create(:message, offer: charity_offer, sender: reviewer)
+        create(:message, offer: charity_offer, sender: reviewer)
         charity.update_column(:sms_reminder_sent_at, before_delta.ago) 
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([charity])
       end
@@ -127,13 +127,13 @@ describe SubscriptionsReminder do
       end
 
       it "donor's offer reviewed by reviewer" do
-        msg3 = create(:message, offer: offer, sender: reviewer)
+        create(:message, offer: offer, sender: reviewer)
         reviewer.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
 
       it "reviewers own active offer reviewed by him" do
-        msg3 = create(:message, offer: reviewer_offer, sender: reviewer)
+        create(:message, offer: reviewer_offer, sender: reviewer)
         reviewer.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
@@ -144,9 +144,9 @@ describe SubscriptionsReminder do
       end
 
       it 'charity user who is also donor has no unread messages on the offer but on order' do
-        msg4 = create(:message, offer: charity_offer, sender: reviewer)
+        create(:message, offer: charity_offer, sender: reviewer)
         charity.update_column(:sms_reminder_sent_at, before_delta.ago) 
-        charity.offers.first.subscriptions.unread.first.update_column(:state, 'read')
+        charity.offers.map{|o| o.subscriptions.unread}.flatten.map{|s| s.update_column(:state, 'read')}
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
     end
