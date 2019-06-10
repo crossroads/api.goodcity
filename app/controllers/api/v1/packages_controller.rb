@@ -36,8 +36,12 @@ module Api
 
       api :GET, "/v1/packages", "get all packages for the item"
       def index
+        @packages = Package.all
+        @packages = @packages.search({search_text: params["searchText"]}) if params["searchText"]
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
-        render json: @packages, each_serializer: serializer, include_orders_packages: true
+        @packages = @packages.filter("state" => params["state"]) if params["state"].present?
+        @packages = @packages.page(params["page"]).per(params["per_page"])
+        render json: @packages, each_serializer: serializer, include_orders_packages: true, meta: { total_pages: @packages.total_pages, search: params["searchText"] }
       end
 
       api :GET, '/v1/packages/1', "Details of a package"
@@ -273,8 +277,19 @@ module Api
         Api::V1::StockitItemSerializer
       end
 
+      def browse_serializer
+        Api::V1::BrowsePackageSerializer
+      end
+
       def remove_stockit_prefix(stockit_inventory_number)
         stockit_inventory_number.gsub(/^x/i, '') unless stockit_inventory_number.blank?
+      end
+
+      def package_response(records)
+        data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, include_orders_packages: is_stock_app?).as_json
+        { json: { "meta": { total_pages: records.total_pages, "search": params["searchText"] }
+          }.merge(data)
+        }
       end
 
       def package_params
@@ -315,7 +330,7 @@ module Api
       end
 
       def serializer
-        Api::V1::PackageSerializer
+        is_browse_app? ? browse_serializer : Api::V1::PackageSerializer
       end
 
       def offer_id

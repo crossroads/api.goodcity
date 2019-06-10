@@ -68,6 +68,7 @@ class Package < ActiveRecord::Base
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :undesignated, -> { where(order_id: nil) }
   scope :not_multi_quantity, -> { where("quantity <= 1") }
+  scope :singleton, -> { where("quantity = 1") }
   scope :exclude_designated, ->(designation_id) {
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
