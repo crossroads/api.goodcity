@@ -214,7 +214,7 @@ module Api
       end
 
       def valid_platform?
-        ["fcm", "gcm" "aps", "wns"].include?(params[:platform])
+        ["fcm", "gcm", "aps", "wns"].include?(params[:platform])
       end
 
       def platform_error
