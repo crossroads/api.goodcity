@@ -5,7 +5,6 @@ class Designator
     @package = package
     @params = package_params
     @order_id = package_params[:order_id].to_i
-    @orders_package = @package.orders_packages.new
     @existing_designation = OrdersPackage.find_by_id(@params[:orders_package_id])
   end
 
@@ -13,7 +12,7 @@ class Designator
     if designating_to_existing_designation?
       add_error_and_return_existing_designation
     else
-      form_nested_params_for_undesignate if @package.quantity.zero?
+      form_nested_params_for_undesignate if package_quantity_zero?
       designate_item
     end
   end
@@ -25,6 +24,12 @@ class Designator
     @package.reload.undesignate_from_stockit_order
   end
 
+  def undesignate_and_update_partial_quantity
+    form_nested_params_for_undesignate if package_quantity_zero?
+    orders_package = OrdersPackage.find_by(id: @params["cancelled_orders_package_id"])
+    orders_package.update_partially_designated_item(@params)
+  end
+
   def form_nested_params_for_undesignate
     undesignate_package = {}
     undesignate_package["0"] = @params
@@ -32,6 +37,10 @@ class Designator
   end
 
   private
+
+  def package_quantity_zero?
+    @package.quantity.zero?
+  end
 
   def add_error_and_return_existing_designation
     @existing_designation.errors.add("package_id", "Already designated to this Order")
@@ -43,11 +52,12 @@ class Designator
   end
 
   def designate_item
-    @orders_package.order_id = @order_id
-    @orders_package.quantity = @params[:quantity]
-    @orders_package.updated_by = User.current_user
-    @orders_package.state = 'designated'
-    @orders_package.save
-    @orders_package
+    orders_package = @package.orders_packages.new
+    orders_package.order_id = @order_id
+    orders_package.quantity = @params[:quantity]
+    orders_package.updated_by = User.current_user
+    orders_package.state = 'designated'
+    orders_package.save
+    orders_package
   end
 end

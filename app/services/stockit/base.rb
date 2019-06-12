@@ -14,6 +14,7 @@ module Stockit::Base
   end
 
   def nestful_connection(request_type, url, params , options)
+    return if disabled?
     options = default_options.merge(options)
     begin
       Nestful.send(request_type, url, params, options).as_json
@@ -52,4 +53,10 @@ module Stockit::Base
   end
 
   class ValueError < StandardError; end
+
+  private
+
+  def disabled?
+    ENV['DISABLE_STOCKIT_SYNC'] == 'true'
+  end
 end

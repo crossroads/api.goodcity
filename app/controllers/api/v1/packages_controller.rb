@@ -53,8 +53,7 @@ module Api
           include_order: true,
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
-          include_images: @package.set_item_id.blank?,
-          include_stock_condition: is_stock_app?
+          include_images: @package.set_item_id.blank?
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -128,6 +127,7 @@ module Api
       def search_stockit_items
         records = @packages # security
         records = records.search(search_text: params['searchText'], item_id: params['itemId'],
+          restrict_multi_quantity: params['restrictMultiQuantity'],
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
         records = records.filter(params_for_filter)
@@ -139,8 +139,7 @@ module Api
           include_packages: false,
           include_orders_packages: true,
           exclude_stockit_set_item: true,
-          include_images: true,
-          include_stock_condition: is_stock_app?).as_json
+          include_images: true).as_json
         render json: {meta: { search: params['searchText'] } }.merge(packages)
       end
 
@@ -187,8 +186,7 @@ module Api
       end
 
       def update_partial_quantity_of_same_designation
-        @orders_package = OrdersPackage.find_by(id: params[:package][:orders_package_id])
-        @orders_package.update_partially_designated_item(params[:package])
+        Designator.new(@package, params[:package]).undesignate_and_update_partial_quantity
         designate_stockit_item(params[:package][:order_id])
         send_stock_item_response
       end

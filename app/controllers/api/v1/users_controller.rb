@@ -2,6 +2,7 @@ module Api
   module V1
     class UsersController < Api::V1::ApiController
       load_and_authorize_resource :user, parent: false
+      skip_load_resource :user, :only => [:orders_count]
 
       resource_description do
         short 'List Users'
@@ -47,6 +48,10 @@ module Api
       def recent_users
         @users = User.recent_orders_created_for(User.current_user.id)
         render json: @users, each_serializer: serializer
+      end
+
+      def orders_count
+        render json: Order.counts_for(params[:id])
       end
 
       private

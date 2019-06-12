@@ -1,5 +1,5 @@
 TITLE_OPTIONS = %w(Mr Mrs Miss Ms)
-SUBSCRIPTION_REMINDER_TIME_DELTA = 4.hours
+SUBSCRIPTION_REMINDER_TIME_DELTA = 9.minutes
 NEXT_AVAILABLE_DAYS_COUNT = 40
 START_DAYS_COUNT = 0
 CROSSROADS_TRUCK_COST = 600
@@ -9,8 +9,9 @@ ADMIN_APP = "admin".freeze
 STOCK_APP = "stock".freeze
 BROWSE_APP = "browse".freeze
 STOCKIT_APP = "stockit".freeze
+SETTINGS_EDITOR_APP = "settings_editor".freeze
 SKIP_AUTH_APP_NAMES = [DONOR_APP, BROWSE_APP].freeze
-APP_NAMES = [DONOR_APP, ADMIN_APP, STOCK_APP, BROWSE_APP, STOCKIT_APP].freeze
+APP_NAMES = [DONOR_APP, ADMIN_APP, STOCK_APP, BROWSE_APP, STOCKIT_APP, SETTINGS_EDITOR_APP].freeze
 STAFF_APPS = [ADMIN_APP, STOCK_APP, STOCKIT_APP].freeze
 STAFF_APPS_FOR_LOGIN = [ADMIN_APP, STOCKIT_APP].freeze
 ACTIVE_ORDERS = ["submitted", "processing", "awaiting_dispatch", "dispatching"].freeze
@@ -23,5 +24,6 @@ STOCKIT_PREFIX = "X"
 APP_NAME_AND_LOGIN_PERMISSION_MAPPING = {
   ADMIN_APP => 'can_login_to_admin',
   STOCK_APP => 'can_login_to_stock',
-  BROWSE_APP => 'can_login_to_browse'
+  BROWSE_APP => 'can_login_to_browse',
+  SETTINGS_EDITOR_APP => 'can_manage_settings'
 }

@@ -62,8 +62,13 @@ Rails.application.routes.draw do
       resources :cancellation_reasons, only: [:index, :show]
       resources :territories, only: [:index, :show]
       resources :goodcity_requests, only: [:index, :create, :update, :destroy]
+      resources :goodcity_settings, only: [:index, :create, :update, :destroy]
       resources :donor_conditions, only: [:index, :show]
-      resources :users, only: [:index, :show, :update]
+      resources :users, only: [:index, :show, :update] do
+        member do
+          get :orders_count
+        end
+      end
       resources :addresses, only: [:create, :show]
       resources :contacts, only: [:create]
       resources :versions, only: [:index, :show]

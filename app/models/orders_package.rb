@@ -88,7 +88,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def update_partially_designated_item(package)
-    total_quantity = quantity + package[:quantity].to_i
+    total_quantity = quantity + package["quantity"].to_i
     if state == "cancelled"
       update(quantity: total_quantity, state: 'designated')
     elsif (state == "dispatched")

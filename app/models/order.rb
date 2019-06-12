@@ -1,7 +1,17 @@
 class Order < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
-  include PushUpdates
+  include PushUpdatesMinimal
   include OrderFiltering
+
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |record|
+    [
+      Channel.private_channels_for(record.created_by, BROWSE_APP),
+      Channel::ORDER_FULFILMENT_CHANNEL
+    ]
+  end
 
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
@@ -84,6 +94,10 @@ class Order < ActiveRecord::Base
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
+  end
+
+  def self.counts_for(created_by_id)
+    where.not(state: 'draft').group(:state).where(created_by_id: created_by_id).count
   end
 
   def delete_orders_packages

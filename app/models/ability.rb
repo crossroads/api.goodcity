@@ -49,6 +49,7 @@ class Ability
     deliveries_abilities
     gogovan_order_abilities
     goodcity_request_abilitites
+    goodcity_setting_abilitites
     holiday_abilities
     image_abilities
     item_abilities
@@ -104,6 +105,11 @@ class Ability
         r.created_by_id == @user_id || r.order.created_by_id == @user_id
       end
     end
+  end
+
+  def goodcity_setting_abilitites
+    can :index, GoodcitySetting
+    can [:create, :update, :destroy], GoodcitySetting if can_manage_settings?
   end
 
   def contact_abilities
@@ -272,6 +278,7 @@ class Ability
     can :index, CrossroadsTransport
     can :index, BookingType
     can :index, Purpose
+    can :index, GoodcitySetting
     can :calendar, AppointmentSlot
   end
 
@@ -331,7 +338,7 @@ class Ability
 
   def user_abilities
     can [:current_user_profile], User
-    can [:show, :update], User, id: @user_id
+    can [:show, :update, :orders_count], User, id: @user_id
     can [:index, :show, :update, :recent_users], User if can_read_or_modify_user?
   end
 
