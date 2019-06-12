@@ -8,6 +8,8 @@ class OrderTransport < ActiveRecord::Base
   belongs_to :gogovan_order
   belongs_to :gogovan_transport
 
+  validates :order_id, presence: true
+
   accepts_nested_attributes_for :contact
 
   scope :for_orders, ->(order_ids) { joins(:order).where(orders: { id: order_ids }) }

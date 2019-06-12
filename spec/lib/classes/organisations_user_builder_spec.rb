@@ -49,10 +49,10 @@ describe OrganisationsUserBuilder do
   let(:user1) { create :user, mobile: user_attributes[:mobile] }
   let(:position) { 'Admin' }
 
-  let(:organisations_user_builder) { OrganisationsUserBuilder.new(organisations_user_params.stringify_keys) }
-  let(:organisation_user_builder_with_invalid_mobile_number) { OrganisationsUserBuilder.new(organisation_user_params_with_invalid_mobile.stringify_keys) }
-  let(:organisations_user_builder_without_mobile) { OrganisationsUserBuilder.new(organisation_user_params_without_mobile.stringify_keys) }
-  let(:update_organisations_user_builder) { OrganisationsUserBuilder.new(update_organisations_user_params.stringify_keys) }
+  let(:organisations_user_builder) { OrganisationsUserBuilder.new(organisations_user_params.stringify_keys, BROWSE_APP) }
+  let(:organisation_user_builder_with_invalid_mobile_number) { OrganisationsUserBuilder.new(organisation_user_params_with_invalid_mobile.stringify_keys, BROWSE_APP) }
+  let(:organisations_user_builder_without_mobile) { OrganisationsUserBuilder.new(organisation_user_params_without_mobile.stringify_keys, BROWSE_APP) }
+  let(:update_organisations_user_builder) { OrganisationsUserBuilder.new(update_organisations_user_params.stringify_keys, BROWSE_APP) }
   let(:mobile) { '+85251111111' }
   let!(:role) { create :charity_role }
   let(:subject) { JSON.parse(response.body) }
@@ -63,6 +63,7 @@ describe OrganisationsUserBuilder do
     it { expect(organisations_user_builder.instance_variable_get("@mobile")).to eql(user_attributes['mobile']) }
     it { expect(organisations_user_builder.instance_variable_get("@position")).to eql(position) }
     it { expect(update_organisations_user_builder.instance_variable_get("@organisations_user")).to eql(organisations_user) }
+    it { expect(organisations_user_builder.instance_variable_get("@app_name")).to eql(BROWSE_APP) }
   end
 
   context "build" do
@@ -74,32 +75,32 @@ describe OrganisationsUserBuilder do
     context 'for stock app' do
       it "adds new user if mobile is blank and associates it with organisation" do
         expect{
-          organisations_user_builder_without_mobile.build(true)
+          organisations_user_builder_without_mobile.build
         }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
       end
     end
 
     it "do not creates organisations_users and user record if user is invalid. e.g mobile is invalid" do
       expect{
-        organisation_user_builder_with_invalid_mobile_number.build(true)
+        organisation_user_builder_with_invalid_mobile_number.build
       }.to change{User.count}.by(0).and change{OrganisationsUser.count}.by(0)
     end
 
     it "adds new user if mobile does not exist and associates it with organisation" do
       expect{
-        organisations_user_builder.build(false)
+        organisations_user_builder.build
       }.to change{User.count}.by(1).and change{OrganisationsUser.count}.by(1)
     end
 
     it "do not add user to organisation if mobile number already in organisation" do
       organisations_user1 = create :organisations_user, user: user1, organisation: organisation
-      expect(organisations_user_builder.build(false)).to eq({ 'result' => false, 'errors' => "Mobile has already been taken" })
+      expect(organisations_user_builder.build).to eq({ 'result' => false, 'errors' => "Mobile has already been taken" })
       expect(OrganisationsUser.count).to eq(1)
     end
 
     it "associates charity_role to user if user added in organisation" do
       expect{
-        organisations_user_builder.build(false)
+        organisations_user_builder.build
       }.to change{OrganisationsUser.count}.by(1)
       expect(OrganisationsUser.last.user.roles).to include(role)
     end
@@ -111,12 +112,12 @@ describe OrganisationsUserBuilder do
 
   context "update" do
     it "updates existing organisations user position" do
-      update_organisations_user_builder.update('browse.goodcity')
+      update_organisations_user_builder.update
       expect(OrganisationsUser.first.position).to eq(update_organisations_user_params[:position])
     end
 
     it "updates user details belonging to organisation" do
-      update_organisations_user_builder.update('browse.goodcity')
+      update_organisations_user_builder.update
       expect(OrganisationsUser.first.user.last_name).to eq(update_user_attributes[:last_name])
     end
   end

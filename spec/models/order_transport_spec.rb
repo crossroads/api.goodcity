@@ -10,6 +10,10 @@ RSpec.describe OrderTransport, type: :model do
     it { is_expected.to belong_to :gogovan_transport }
   end
 
+  describe 'Validations' do
+    it { is_expected.to validate_presence_of(:order_id) }
+  end
+
   describe 'Database columns' do
     #it{ is_expected.to have_db_column(:scheduled_at).of_type(:datetime)}
     it{ is_expected.to have_db_column(:timeslot).of_type(:string)}
