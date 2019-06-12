@@ -277,10 +277,6 @@ module Api
         Api::V1::StockitItemSerializer
       end
 
-      def browse_serializer
-        Api::V1::BrowsePackageSerializer
-      end
-
       def remove_stockit_prefix(stockit_inventory_number)
         stockit_inventory_number.gsub(/^x/i, '') unless stockit_inventory_number.blank?
       end
@@ -323,7 +319,7 @@ module Api
       end
 
       def serializer
-        is_browse_app? ? browse_serializer : Api::V1::PackageSerializer
+        Api::V1::PackageSerializer
       end
 
       def offer_id
