@@ -15,8 +15,10 @@ module Api
 
       api :GET, '/v1/browse/fetch_packages', "List all packages"
       def fetch_packages
-        packages = @packages.browse_inventorized.union(@packages.browse_non_inventorized)
-        render json: packages, each_serializer: serializer, root: "package"
+        @packages = @packages.browse_inventorized.union(@packages.browse_non_inventorized)
+        @packages = @packages.search({search_text: params['searchText']})
+          .page(page).per(per_page) if params['searchText']
+        render json: @packages, each_serializer: serializer, root: "package"
       end
 
       private

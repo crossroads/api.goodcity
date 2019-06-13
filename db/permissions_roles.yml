@@ -5,7 +5,6 @@ Reviewer:
 - can_manage_offers
 - can_manage_deliveries
 - can_manage_orders
-- can_search_packages
 - can_manage_orders_packages
 - can_manage_order_transport
 - can_check_organisations
@@ -32,7 +31,6 @@ Supervisor:
 - can_manage_goodcity_requests
 - can_manage_deliveries
 - can_manage_orders
-- can_search_packages
 - can_manage_orders_packages
 - can_manage_order_transport
 - can_check_organisations
@@ -63,14 +61,12 @@ api-write: []
 Charity:
 - can_login_to_browse
 - can_manage_orders
-- can_search_packages
 - can_manage_orders_packages
 - can_create_goodcity_requests
 - can_create_and_read_messages
 Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
-- can_search_packages
 - can_manage_offers
 - can_manage_deliveries
 - can_manage_orders

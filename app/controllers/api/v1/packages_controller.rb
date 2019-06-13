@@ -36,12 +36,8 @@ module Api
 
       api :GET, "/v1/packages", "get all packages for the item"
       def index
-        records = @packages #security
-        records = records.filter("state" => params["state"]) if params["state"].present?
-        records = records.search({search_text: params["searchText"]}) if params["searchText"]
-        records = records.find(params[:ids].split(",")) if params[:ids].present?
-        records = records.page(params["page"]).per(params["per_page"])
-        render json: records, each_serializer: serializer, include_orders_packages: true, meta: { total_pages: records.total_pages, search: params["searchText"] }
+        @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
+        render json: @packages, each_serializer: serializer, include_orders_packages: true
       end
 
       api :GET, '/v1/packages/1', "Details of a package"
@@ -147,18 +143,6 @@ module Api
           include_images: true,
           include_stock_condition: is_stock_app?).as_json
         render json: {meta: { search: params['searchText'] } }.merge(packages)
-      end
-
-      # nil.to_i = 0
-      def page
-        @page = params['page'].to_i
-        (@page == 0) ? 1 : @page
-      end
-
-      # max limit is 25
-      def per_page
-        @per_page = params['per_page'].to_i
-        (@per_page == 0 or @per_page > 25) ? 25 : @per_page
       end
 
       def designate_stockit_item(order_id)
