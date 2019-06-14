@@ -26,7 +26,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
     it "return serialized organisations", :show_in_doc do
       get :index
-      expect( parsed_body['gc_organisations'].length ).to eq(Organisation.count)
+      expect(parsed_body['gc_organisations'].length).to eq(Organisation.count)
     end
 
     it "returns serialized organisations with matching search text" do
@@ -55,10 +55,10 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       ids =  more_organisations.map(&:id)
 
       get :index, ids: ids
-      expect(parsed_body['gc_organisations'].length ).to eq(ids.length)
+      expect(parsed_body['gc_organisations'].length).to eq(ids.length)
 
       received_ids = parsed_body['gc_organisations'].map { |o| o["id"] }
-      expect(received_ids).to eq(ids)
+      expect(received_ids).to match_array(ids)
     end
 
     it "returns serialized organisations names an ID list" do
@@ -68,10 +68,10 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       names =  more_organisations.map(&:name_en)
 
       get :index, ids: ids
-      expect(parsed_body['gc_organisations'].length ).to eq(ids.length)
+      expect(parsed_body['gc_organisations'].length).to eq(ids.length)
 
       received_names = parsed_body['gc_organisations'].map { |o| o["name_en"] }
-      expect(received_names).to eq(names)
+      expect(received_names).to match_array(names)
     end
   end
 
