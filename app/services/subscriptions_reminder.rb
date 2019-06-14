@@ -12,16 +12,15 @@ class SubscriptionsReminder
   # Users who
   #   haven't been reminded in last X hours
   #   have unread messages
+  #   have a message sent over 1 hour ago (head start)
   #   are donors with active offers
-  #   aren't the author of the message
+  #   aren't the sender of the message
   #   its not a private messages
   #   its not order related messages
-  #   are donors with other roles such as reviewer will receive sms on offers where they are acting as \
-  #   donor
+  #   are reviewers will receive SMS only on offers they have created (exclude offers they are subscribed too)
   # If sms_reminder_sent_at is NULL then use created_at so we don't SMS user immediately
   def user_candidates_for_reminder
-    states = ['submitted', 'under_review', 'reviewed', 'scheduled', 'received',
-      'receiving', 'inactive'] # NOT draft, closed or cancelled
+    states = ['submitted', 'under_review', 'reviewed', 'scheduled', 'received', 'receiving', 'inactive'] # NOT draft, closed or cancelled
     user_ids = Offer.where(state: states).distinct.pluck(:created_by_id)
     User.joins(subscriptions: [:message, :offer])
         .where('users.id IN (?)', user_ids)
@@ -29,8 +28,9 @@ class SubscriptionsReminder
         .where('subscriptions.state': 'unread')
         .where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)")
         .where("(messages.offer_id IS NOT NULL OR messages.item_id IS NOT NULL) and messages.order_id IS NULL")
-        .where("offers.created_by_id = users.id")
-        .where('messages.sender_id != users.id')
+        .where("offers.created_by_id = subscriptions.user_id")
+        .where('messages.sender_id != offers.created_by_id')
+        .where("messages.created_at < (?)", head_start.iso8601)
         .distinct
   end
 
@@ -40,6 +40,12 @@ class SubscriptionsReminder
     Rails.logger.info("SMS reminder sent to user #{user.id}")
   end
 
+  # Give the user at least 1 hour to read messages before sending SMS
+  def head_start
+    SUBSCRIPTION_REMINDER_HEAD_START.ago
+  end
+
+  # Don't send SMS to a user more often than this time period
   # E.g. 4.hours.ago
   def delta
     SUBSCRIPTION_REMINDER_TIME_DELTA.ago
