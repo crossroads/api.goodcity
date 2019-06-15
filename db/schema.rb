@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190524024950) do
+ActiveRecord::Schema.define(version: 20190614084900) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -331,6 +331,7 @@ ActiveRecord::Schema.define(version: 20190524024950) do
   add_index "offers", ["notes"], name: "offers_notes_search_idx", using: :gin
   add_index "offers", ["received_by_id"], name: "index_offers_on_received_by_id", using: :btree
   add_index "offers", ["reviewed_by_id"], name: "index_offers_on_reviewed_by_id", using: :btree
+  add_index "offers", ["state"], name: "index_offers_on_state", using: :btree
 
   create_table "order_transports", force: :cascade do |t|
     t.datetime "scheduled_at"
@@ -353,6 +354,7 @@ ActiveRecord::Schema.define(version: 20190524024950) do
   add_index "order_transports", ["gogovan_order_id"], name: "index_order_transports_on_gogovan_order_id", using: :btree
   add_index "order_transports", ["gogovan_transport_id"], name: "index_order_transports_on_gogovan_transport_id", using: :btree
   add_index "order_transports", ["order_id"], name: "index_order_transports_on_order_id", using: :btree
+  add_index "order_transports", ["scheduled_at"], name: "index_order_transports_on_scheduled_at", using: :btree
 
   create_table "orders", force: :cascade do |t|
     t.string   "status"
@@ -405,6 +407,7 @@ ActiveRecord::Schema.define(version: 20190524024950) do
   add_index "orders", ["organisation_id"], name: "index_orders_on_organisation_id", using: :btree
   add_index "orders", ["process_completed_by_id"], name: "index_orders_on_process_completed_by_id", using: :btree
   add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
+  add_index "orders", ["state"], name: "index_orders_on_state", using: :btree
   add_index "orders", ["stockit_activity_id"], name: "index_orders_on_stockit_activity_id", using: :btree
   add_index "orders", ["stockit_contact_id"], name: "index_orders_on_stockit_contact_id", using: :btree
   add_index "orders", ["stockit_organisation_id"], name: "index_orders_on_stockit_organisation_id", using: :btree
@@ -423,6 +426,7 @@ ActiveRecord::Schema.define(version: 20190524024950) do
 
   add_index "orders_packages", ["order_id", "package_id"], name: "index_orders_packages_on_order_id_and_package_id", using: :btree
   add_index "orders_packages", ["order_id"], name: "index_orders_packages_on_order_id", using: :btree
+  add_index "orders_packages", ["package_id", "order_id"], name: "index_orders_packages_on_package_id_and_order_id", using: :btree
   add_index "orders_packages", ["package_id"], name: "index_orders_packages_on_package_id", using: :btree
   add_index "orders_packages", ["updated_by_id"], name: "index_orders_packages_on_updated_by_id", using: :btree
 
@@ -774,6 +778,7 @@ ActiveRecord::Schema.define(version: 20190524024950) do
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
   add_index "users", ["mobile"], name: "index_users_on_mobile", using: :btree
+  add_index "users", ["sms_reminder_sent_at"], name: "index_users_on_sms_reminder_sent_at", using: :btree
 
   create_table "versions", force: :cascade do |t|
     t.string   "item_type",      null: false

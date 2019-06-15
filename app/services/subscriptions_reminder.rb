@@ -20,15 +20,14 @@ class SubscriptionsReminder
   #   are reviewers will receive SMS only on offers they have created (exclude offers they are subscribed too)
   # If sms_reminder_sent_at is NULL then use created_at so we don't SMS user immediately
   def user_candidates_for_reminder
-    states = ['submitted', 'under_review', 'reviewed', 'scheduled', 'received', 'receiving', 'inactive'] # NOT draft, closed or cancelled
-    user_ids = Offer.where(state: states).distinct.pluck(:created_by_id)
+    offer_states = ['submitted', 'under_review', 'reviewed', 'scheduled', 'received', 'receiving', 'inactive'] # NOT draft, closed or cancelled
     User.joins(subscriptions: [:message, :offer])
-        .where('users.id IN (?)', user_ids)
         .where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601)
         .where('subscriptions.state': 'unread')
         .where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)")
         .where("(messages.offer_id IS NOT NULL OR messages.item_id IS NOT NULL) and messages.order_id IS NULL")
         .where("offers.created_by_id = subscriptions.user_id")
+        .where("offers.state IN (?)", offer_states)
         .where('messages.sender_id != offers.created_by_id')
         .where("messages.created_at < (?)", head_start.iso8601)
         .distinct
