@@ -2,6 +2,14 @@ require "rails_helper"
 
 describe CartItem, :type => :model do
 
+  let(:designation_sync) { double "designation_sync", { create: nil, update: nil } }
+  let(:orders_packages_sync) { double "orders_packages_sync", { create: nil, update: nil } }
+
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:new).and_return(orders_packages_sync)
+    allow(Stockit::DesignationSync).to receive(:new).and_return(designation_sync)
+  end
+
   describe "Database columns" do
     it { is_expected.to have_db_column(:user_id).of_type(:integer) }
     it { is_expected.to have_db_column(:package_id).of_type(:integer) }

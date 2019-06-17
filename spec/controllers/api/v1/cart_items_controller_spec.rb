@@ -6,19 +6,9 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
     parsed_body['cart_items'].map { |ci| CartItem.find(ci['id']) }
   end
 
-  let(:designation_sync) do
-    double "designation_sync", {
-      create: nil,
-      update: nil,
-      delete: nil,
-      move: nil,
-      dispatch: nil,
-      undispatch: nil
-    }
-  end
+  let(:designation_sync) { double "designation_sync", { create: nil, update: nil } }
 
   before do
-    # allow_any_instance_of(PushService).to receive(:send_update_store)
     allow(Stockit::DesignationSync).to receive(:new).and_return(designation_sync)
   end
 
