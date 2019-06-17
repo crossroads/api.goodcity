@@ -66,6 +66,12 @@ FactoryBot.define do
       images { create_list(:image, 2) }
     end
 
+    trait :in_user_cart do
+      after(:create) do |package, evaluator|
+        package.cart_items << (create :cart_item, package_id: package.id)
+      end
+    end
+
     trait :with_lightly_used_donor_condition do
       donor_condition { create(:donor_condition, name_en: "Lightly Used") }
     end

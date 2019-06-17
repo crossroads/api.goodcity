@@ -56,6 +56,9 @@ Rails.application.routes.draw do
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
       end
+      resources :cart_items, only: [:index, :create, :destroy] do
+        post :checkout, on: :collection
+      end
       resources :rejection_reasons, only: [:index, :show]
       resources :cancellation_reasons, only: [:index, :show]
       resources :territories, only: [:index, :show]

@@ -32,12 +32,20 @@ zh-tw:
     thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
     unread_message_sms: |
       You've got notifications in GoodCity, please check the latest updates. %{url}.
+  cart:
+    items_unavailable: "您的購物車内有已不存在的物資"
+    bad_order: "Bad or missing order id"
+    already_submitted: "The order has already been submitted"
   activerecord:
     attributes:
       user:
         mobile: "手提電話"
     errors:
       models:
+        cart_item:
+          attributes:
+            package_id:
+              taken: "已加入購物車"
         user:
           attributes:
             mobile:

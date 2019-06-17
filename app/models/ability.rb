@@ -60,6 +60,7 @@ class Ability
     order_transport_abilities
     organisations_abilities
     organisations_users_abilities
+    cart_items_abilities
     package_abilities
     package_type_abilities
     packages_locations_abilities
@@ -235,6 +236,10 @@ class Ability
       can [:create, :show, :index, :update], OrganisationsUser
     end
     can [:update], OrganisationsUser, user_id: @user_id
+  end
+
+  def cart_items_abilities
+    can [:create, :destroy, :index, :checkout], CartItem, user_id: @user_id
   end
 
   def package_abilities

@@ -200,6 +200,12 @@ FactoryBot.define do
     trait :with_email do
       email { FFaker::Internet.email }
     end
+
+    trait :with_cart_items do
+      after(:create) do |user, evaluator|
+        user.cart_items << (create :cart_item, user_id: user.id)
+      end
+    end
   end
 
   factory :user_with_token, parent: :user do
