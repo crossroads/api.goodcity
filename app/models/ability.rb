@@ -7,7 +7,7 @@ class Ability
   attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids, :user_permissions
 
   PERMISSION_NAMES = ['can_manage_items', 'can_manage_goodcity_requests', 'can_manage_packages',
-    'can_manage_offers', 'can_manage_organisations_users',
+    'can_manage_offers', 'can_manage_organisations_users', 'can_search_browse_packages',
     'can_manage_deliveries', 'can_manage_delivery_address', 'can_manage_delivery_address',
     'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
     'can_manage_orders_packages', 'can_manage_images', 'can_manage_messages',
@@ -245,6 +245,8 @@ class Ability
         :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
         :undispatch_stockit_item, :stockit_item_details, :split_package], Package
+    elsif can_search_browse_packages?
+      can [:index, :show], Package
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
@@ -267,8 +269,10 @@ class Ability
     # Anonymous and all users
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
-    can [:fetch_packages], Package # for BrowseController
-    can :show, Package, { allow_web_publish: true }
+    can [:index, :show], Package
+    # , Package.browse_inventorized do |record|
+    #   record.allow_web_publish? ? record : false
+    # end
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], IdentityType

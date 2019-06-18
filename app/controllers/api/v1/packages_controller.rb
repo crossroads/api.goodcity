@@ -4,7 +4,7 @@ module Api
       include GoodcitySync
 
       load_and_authorize_resource :package, parent: false
-      skip_before_action :validate_token, only: [:show]
+      skip_before_action :validate_token, only: [:index, :show]
 
       resource_description do
         short "Create, update and delete a package."
@@ -36,8 +36,11 @@ module Api
 
       api :GET, "/v1/packages", "get all packages for the item"
       def index
+        @packages = @packages.browse_inventorized.union(@packages.browse_non_inventorized) if is_browse_app?
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
-        render json: @packages, each_serializer: serializer, include_orders_packages: true
+        @packages = @packages.search({search_text: params['searchText']})
+          .page(page).per(per_page) if params['searchText']
+        render json: @packages, each_serializer: serializer, include_orders_packages: is_stock_app?, include_item: is_browse_app?
       end
 
       api :GET, '/v1/packages/1', "Details of a package"
@@ -303,7 +306,7 @@ module Api
       end
 
       def serializer
-        Api::V1::PackageSerializer
+        is_browse_app? ? Api::V1::BrowsePackageSerializer : Api::V1::PackageSerializer
       end
 
       def offer_id
