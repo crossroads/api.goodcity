@@ -270,9 +270,6 @@ class Ability
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
     can [:index, :show], Package
-    # , Package.browse_inventorized do |record|
-    #   record.allow_web_publish? ? record : false
-    # end
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], IdentityType

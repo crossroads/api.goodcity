@@ -40,7 +40,7 @@ module Api
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
         @packages = @packages.search({search_text: params['searchText']})
           .page(page).per(per_page) if params['searchText']
-        render json: @packages, each_serializer: serializer, include_orders_packages: is_stock_app?, include_item: is_browse_app?
+        render json: @packages, each_serializer: serializer, include_orders_packages: is_stock_app?, include_item: is_browse_app?, app_name: app_name
       end
 
       api :GET, '/v1/packages/1', "Details of a package"
@@ -306,7 +306,7 @@ module Api
       end
 
       def serializer
-        is_browse_app? ? Api::V1::BrowsePackageSerializer : Api::V1::PackageSerializer
+        Api::V1::PackageSerializer
       end
 
       def offer_id
