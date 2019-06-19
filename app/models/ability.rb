@@ -246,7 +246,7 @@ class Ability
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
         :undispatch_stockit_item, :stockit_item_details, :split_package], Package
     elsif can_search_browse_packages?
-      can [:index, :show], Package
+      can [:index, :show], Package, { allow_web_publish:true }
     else
       can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
         record.item ? record.item.offer.created_by_id == @user_id : false
@@ -269,7 +269,7 @@ class Ability
     # Anonymous and all users
     can [:index, :show], PackageCategory
     can [:index, :show], PackageType
-    can [:index, :show], Package
+    can [:index, :show], Package, { allow_web_publish: true}
     can :index, DonorCondition
     can [:index, :show], District
     can [:index, :show], IdentityType
