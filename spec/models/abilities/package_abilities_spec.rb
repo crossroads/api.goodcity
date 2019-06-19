@@ -10,6 +10,7 @@ describe "Package abilities" do
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
   let(:package)     { create :package, item: item }
+  let(:published_package)  { create :package, item: item, allow_web_publish: true }
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
@@ -95,6 +96,8 @@ describe "Package abilities" do
     let(:can) { [:index, :show] }
 
     it{ unpermitted_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
+
+    it { limited_actions.each {|do_action| is_expected.to be_able_to(do_action, published_package)}}
   end
 
   context "when api_user" do

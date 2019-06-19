@@ -65,6 +65,27 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         get :index
         expect( subject["packages"].size ).to eq(3)
       end
+
+      it "returns searched packages" do
+        set_browse_app_header
+        3.times{ create :package, notes: "Baby towels", allow_web_publish:false }
+        3.times{ create :browseable_package, notes: "Baby car seats" }
+        expect(Package.count).to eq(6)
+        get :index, "searchText": "car"
+        expect(response.status).to eq(200)
+        expect( subject["packages"].size ).to eq(3)
+      end
+
+      it "returns searched browseable_packages only" do
+        set_browse_app_header
+        3.times{ create :package, notes: "Baby towels", allow_web_publish:false }
+        3.times{ create :browseable_package, notes: "Baby car seats" }
+        pkg = create :browseable_package, notes: "towels"
+        expect(Package.count).to eq(7)
+        get :index, "searchText": "towel"
+        expect(response.status).to eq(200)
+        expect( subject["packages"].size ).to eq(1)
+      end
     end
 
     context "as an anonymous user" do
@@ -80,6 +101,27 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         published_package = create :package, :unpublished
         get :show, id: published_package.id
         expect(response.status).to eq(403)
+      end
+
+      it "returns searched packages" do
+        set_browse_app_header
+        3.times{ create :package, notes: "Baby towels", allow_web_publish:false }
+        3.times{ create :browseable_package, notes: "Baby Toilets" }
+        expect(Package.count).to eq(6)
+        get :index, "searchText": "Baby"
+        expect(response.status).to eq(200)
+        expect( subject["packages"].size ).to eq(3)
+      end
+
+      it "returns searched browseable_packages only" do
+        set_browse_app_header
+        3.times{ create :package, notes: "Baby towels", allow_web_publish:false }
+        3.times{ create :browseable_package, notes: "Baby car seats" }
+        pkg = create :browseable_package, notes: "towels"
+        expect(Package.count).to eq(7)
+        get :index, "searchText": "towel"
+        expect(response.status).to eq(200)
+        expect( subject["packages"].size ).to eq(1)
       end
     end
 
@@ -718,38 +760,4 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it { expect(subject).to eql(1) }
     end
   end
-
-  context "per_page" do
-    subject { controller.per_page }
-
-    before(:each) do
-      controller.params[:per_page] = per_page
-    end
-
-    context "20 per page" do
-      let(:per_page) { '20' }
-      it { expect(subject).to eql(20) }
-    end
-
-    context "30 per_page (limit is 25)" do
-      let(:per_page) { '30' }
-      it { expect(subject).to eql(25) }
-    end
-
-    context "nil per_page" do
-      let(:per_page) { nil }
-      it { expect(subject).to eql(25) }
-    end
-
-    context "blank per_page" do
-      let(:per_page) { '' }
-      it { expect(subject).to eql(25) }
-    end
-
-    context "blah per_page" do
-      let(:per_page) { 'blah' }
-      it { expect(subject).to eql(25) }
-    end
-  end
-
 end
