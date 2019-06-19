@@ -18,12 +18,12 @@ module Api::V1
       object.order_id
     end
 
-    def browse_user?
-      @options[:app_name] == "browse"
+    def is_browse_app?
+      @options[:is_browse_app] || @options[:browse_order]
     end
 
-    def not_browse_user?
-      !browse_user?
+    def not_browse_app?
+      !is_browse_app?
     end
 
     def designation_id__sql
@@ -48,14 +48,14 @@ module Api::V1
 
     %w[include_item? include_stockit_sent_on?
       include_order_id?].each do |method|
-      alias_method method.to_sym, :browse_user?
+      alias_method method.to_sym, :is_browse_app?
     end
 
     %w[include_state? include_received_at? include_rejected_at?
       include_designation_id? include_sent_on?
       include_offer_id? include_designation_name?
       include_received_quantity?].each do |method|
-      alias_method method.to_sym, :not_browse_user?
+      alias_method method.to_sym, :not_browse_app?
     end
   end
 end
