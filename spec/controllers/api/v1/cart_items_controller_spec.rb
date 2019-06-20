@@ -137,6 +137,13 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
   end
 
   describe "Checkout cart" do
+
+    before {
+      FactoryBot.generate(:booking_types).values.each { |btype|
+        FactoryBot.create :booking_type, identifier: btype[:identifier]
+      }
+    }
+
     context "as a guest" do
       it "returns 401" do
         post :checkout
@@ -149,6 +156,7 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
         let(:user) { create(:user, user_type) }
         let(:other_order) { create(:order, :with_state_draft) }
         let(:draft_order) { create(:order, :with_state_draft, submitted_by: user, created_by: user) }
+        let(:draft_appointment) { create(:order, :with_state_draft, booking_type: BookingType.appointment, submitted_by: user, created_by: user) }
         let(:submitted_order) { create(:order, :with_state_submitted, submitted_by: user) }
         let!(:cart_items) { 3.times.map { create(:cart_item, :with_available_package, user: user) } }
 
@@ -200,6 +208,11 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
           cart_items.each do |it|
             expect(CartItem.find_by(id: it.id)).to be_nil
           end
+        end
+
+        it "fails to checkout to an appointment" do
+          post :checkout, order_id: draft_appointment.id
+          expect(response.status).to eq(422)
         end
 
         it "fails if no order is specified" do

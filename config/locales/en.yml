@@ -36,6 +36,7 @@ en:
     items_unavailable: "One or many items in your cart are no longer available"
     bad_order: "Bad or missing order id"
     already_submitted: "The order has already been submitted"
+    no_checkout_to_appointment: "Cannot checkout an appointment"
   activerecord:
     attributes:
       user:
