@@ -56,7 +56,7 @@ class CartCheckout
     return errors.add(:base, I18n.t('cart.bad_order')) if order.blank?
     return errors.add(:base, I18n.t('cart.already_submitted')) unless order.draft?
     return errors.add(:base, I18n.t('cart.no_checkout_to_appointment')) if order.booking_type.appointment?
-    return errors.add(:base, I18n.t('warden.unauthorized')) if order.submitted_by_id != User.current_user.id
+    return errors.add(:base, I18n.t('warden.unauthorized')) if order.created_by_id != User.current_user.id
     errors.add(:base, I18n.t('cart.items_unavailable')) unless @ignore_unavailable || @cart_items.all?(&:is_available)
   end
 

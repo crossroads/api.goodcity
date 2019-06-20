@@ -154,9 +154,10 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
     user_types.each do |user_type|
       context "as a #{user_type}" do
         let(:user) { create(:user, user_type) }
-        let(:other_order) { create(:order, :with_state_draft) }
-        let(:draft_order) { create(:order, :with_state_draft, submitted_by: user, created_by: user) }
-        let(:draft_appointment) { create(:order, :with_state_draft, booking_type: BookingType.appointment, submitted_by: user, created_by: user) }
+        let(:other_user) { create(:user, user_type) }
+        let(:other_order) { create(:order, :with_state_draft, created_by: other_user) }
+        let(:draft_order) { create(:order, :with_state_draft, created_by: user) }
+        let(:draft_appointment) { create(:order, :with_state_draft, booking_type: BookingType.appointment, created_by: user) }
         let(:submitted_order) { create(:order, :with_state_submitted, submitted_by: user) }
         let!(:cart_items) { 3.times.map { create(:cart_item, :with_available_package, user: user) } }
 
