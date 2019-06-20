@@ -586,6 +586,12 @@ class Package < ActiveRecord::Base
     donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
   end
 
+  def update_carts
+    self.cart_items.each do |cart_item|
+      cart_item.update_availability!
+    end
+  end
+
   private
 
   def set_default_values
@@ -618,11 +624,5 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
-  end
-
-  def update_carts
-    self.cart_items.each do |cart_item|
-      cart_item.update_availability!
-    end
   end
 end
