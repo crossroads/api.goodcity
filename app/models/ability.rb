@@ -255,6 +255,7 @@ class Ability
     else
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
       can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
+      can [:show], Package,  cart_items: { user_id: @user_id }
     end
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
