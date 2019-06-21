@@ -36,7 +36,7 @@ class SubscriptionsReminder
   def send_sms_reminder(user)
     sms_url = "#{Rails.application.secrets.base_urls['app']}/offers"
     TwilioService.new(user).send_unread_message_reminder(sms_url)
-    Rails.logger.info("SMS reminder sent to user #{user.id}")
+    Rails.logger.info(class: self.class.name, msg: "SMS reminder sent", user_id: user.id)
   end
 
   # Give the user at least 1 hour to read messages before sending SMS
