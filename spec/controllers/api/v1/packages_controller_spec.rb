@@ -68,7 +68,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched packages" do
         set_browse_app_header
-        3.times{ create :package, notes: "Baby towels", allow_web_publish:false }
+        3.times{ create :package, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, notes: "Baby car seats" }
         expect(Package.count).to eq(6)
         get :index, "searchText": "car"
