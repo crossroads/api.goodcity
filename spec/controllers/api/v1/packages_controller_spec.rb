@@ -115,7 +115,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "returns searched browseable_packages only" do
         set_browse_app_header
-        3.times{ create :package, notes: "Baby towels", allow_web_publish:false }
+        3.times{ create :package, notes: "Baby towels", allow_web_publish: false }
         3.times{ create :browseable_package, notes: "Baby car seats" }
         pkg = create :browseable_package, notes: "towels"
         expect(Package.count).to eq(7)
