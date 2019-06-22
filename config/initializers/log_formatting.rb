@@ -19,12 +19,19 @@ if %w(development staging production).include?(Rails.env)
     Rails.logger.formatter = LogFormatter.new
 
     # Turn down ActiveJob's verbose logging
-    config.active_job.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::Logger.new("#{Rails.root}/log/#{Rails.env}.log"))
-    config.active_job.logger.level = :warn
+    ActiveSupport.on_load :active_job do
+      class ActiveJob::Logging::LogSubscriber
+        private def args_info(job)
+          # override this method to filter arguments shown in app log
+          ''
+        end
+      end
+      ActiveJob::Base.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::Logger.new("#{Rails.root}/log/active-job-#{Rails.env}.log", level: :warn))
+    end
 
     # Turn down Sidekiq's verbose logging
     # https://github.com/mperham/sidekiq/wiki/Logging#default-logger-and-verboseness
-    # Sidekiq::Logging.logger.level = :warn
+    Sidekiq::Logging.logger.level = :warn
 
   end
 end
