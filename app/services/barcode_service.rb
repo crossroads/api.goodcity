@@ -65,9 +65,10 @@ class BarcodeService
         printer_user: "\"#{options['USER']}\"",
         # print_job_id: "\"#{print_id}\"",
         print_job_errors: "\"#{errors}\"",
-        print_job_status: "\"#{status}\""
+        print_job_status: "\"#{status}\"",
+        class: self.class.name
     }
-    Rails.logger.info(log_hash.collect{|k,v| "#{k}=#{v}"}.join(" "))
+    Rails.logger.info(log_hash)
 
     f.delete
 
