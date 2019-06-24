@@ -7,7 +7,7 @@ class Ability
   attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids, :user_permissions
 
   PERMISSION_NAMES = ['can_manage_items', 'can_manage_goodcity_requests', 'can_manage_packages',
-    'can_manage_offers', 'can_manage_organisations_users',
+    'can_manage_offers', 'can_manage_organisations_users', 'can_search_browse_packages',
     'can_manage_deliveries', 'can_manage_delivery_address', 'can_manage_delivery_address',
     'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
     'can_manage_orders_packages', 'can_manage_images', 'can_manage_messages',
@@ -245,8 +245,13 @@ class Ability
         :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
         :undispatch_stockit_item, :stockit_item_details, :split_package], Package
+    elsif can_search_browse_packages?
+      can [:index, :show], Package, { allow_web_publish: true}
+    else
+      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
+        record.item ? record.item.offer.created_by_id == @user_id : false
+      end
     end
-    can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
     can :destroy, Package, item: { state: 'draft' } if can_destroy_package_with_specific_states?
