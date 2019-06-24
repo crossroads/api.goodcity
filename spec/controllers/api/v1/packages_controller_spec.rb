@@ -725,39 +725,5 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
       expect(subject["items"].count).to eq(1)
     end
-
-  end
-
-  context "page" do
-    subject { controller.page }
-
-    before(:each) do
-      controller.params[:page] = page
-    end
-
-    context "1st page" do
-      let(:page) { '1' }
-      it { expect(subject).to eql(1) }
-    end
-
-    context "2nd page" do
-      let(:page) { '2' }
-      it { expect(subject).to eql(2) }
-    end
-
-    context "nil page" do
-      let(:page) { nil }
-      it { expect(subject).to eql(1) }
-    end
-
-    context "blank page" do
-      let(:page) { '' }
-      it { expect(subject).to eql(1) }
-    end
-
-    context "blah page" do
-      let(:page) { 'blah' }
-      it { expect(subject).to eql(1) }
-    end
   end
 end
