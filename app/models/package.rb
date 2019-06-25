@@ -356,7 +356,7 @@ class Package < ActiveRecord::Base
 
   def designate_to_stockit_order!(order_id)
     designate_to_stockit_order(order_id)
-    self.save
+    save
   end
 
   def designate_to_stockit_order(order_id)
@@ -587,7 +587,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_carts
-    self.cart_items.each do |cart_item|
+    cart_items.each do |cart_item|
       cart_item.update_availability!
     end
   end

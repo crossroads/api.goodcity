@@ -25,14 +25,14 @@ class CartItem < ActiveRecord::Base
   before_save :update_availability
 
   def update_availability
-    self.is_available = self.package.published? &&
-      self.package.orders_packages.none? { |pkg| pkg.designated? || pkg.dispatched? } &&
-      self.package.quantity > 0
+    self.is_available = package.published? &&
+      package.orders_packages.none? { |pkg| pkg.designated? || pkg.dispatched? } &&
+      package.quantity > 0
     true
   end
 
   def update_availability!
-    self.update_availability
-    self.save
+    update_availability
+    save
   end
 end
