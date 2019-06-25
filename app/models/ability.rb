@@ -246,7 +246,9 @@ class Ability
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
         :undispatch_stockit_item, :stockit_item_details, :split_package], Package
     else
-      can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
+      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
+        record.item ? record.item.offer.created_by_id == @user_id : false
+      end
     end
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }

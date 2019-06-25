@@ -4,6 +4,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:supervisor) { create(:user, :supervisor, :with_can_manage_packages_permission )}
   let(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Reviewer' => ['can_manage_packages', 'can_manage_orders']} )}
+  let(:charity_user) { create :user, :charity}
   let!(:stockit_user) { create(:user, :stockit_user, :api_user)}
   let(:donor) { create(:user_with_token) }
   let(:offer) { create :offer, created_by: donor }
@@ -65,27 +66,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         get :index
         expect( subject["packages"].size ).to eq(3)
       end
-
-      it "returns searched packages" do
-        set_browse_app_header
-        3.times{ create :package, notes: "Baby towels", allow_web_publish: false }
-        3.times{ create :browseable_package, notes: "Baby car seats" }
-        expect(Package.count).to eq(6)
-        get :index, "searchText": "car"
-        expect(response.status).to eq(200)
-        expect( subject["packages"].size ).to eq(3)
-      end
-
-      it "returns searched browseable_packages only" do
-        set_browse_app_header
-        3.times{ create :package, notes: "Baby towels", allow_web_publish: false }
-        3.times{ create :browseable_package, notes: "Baby car seats" }
-        pkg = create :browseable_package, notes: "towels"
-        expect(Package.count).to eq(7)
-        get :index, "searchText": "towel"
-        expect(response.status).to eq(200)
-        expect( subject["packages"].size ).to eq(1)
-      end
     end
 
     context "as an anonymous user" do
@@ -101,6 +81,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         published_package = create :package, :unpublished
         get :show, id: published_package.id
         expect(response.status).to eq(403)
+      end
+    end
+
+    context "search_browse_packages as a charity_user" do
+      before { generate_and_set_token(charity_user) }
+
+      it "returns 200" do
+        get :index
+        expect(response.status).to eq(200)
       end
 
       it "returns searched packages" do
