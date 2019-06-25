@@ -248,9 +248,7 @@ class Ability
     elsif can_search_browse_packages?
       can [:index, :show], Package, { allow_web_publish: true}
     else
-      can [:index, :show, :create, :update], Package, Package.donor_packages(@user_id) do |record|
-        record.item ? record.item.offer.created_by_id == @user_id : false
-      end
+      can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
     end
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
