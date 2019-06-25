@@ -2,7 +2,7 @@
 # Helper class for the checkout process
 #
 # Process:
-#   1. designage each package to the order
+#   1. designate each package to the order
 #   2. clear the cart
 #   3. submit the order
 #

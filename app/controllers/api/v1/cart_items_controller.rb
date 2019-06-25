@@ -39,7 +39,7 @@ module Api
       param_group :checkout
       def checkout
         errors = CartCheckout
-          .designate_cart_items(@cart_items, ignore_unavailable: params["ignore_unavailable"].present?)
+          .designate_cart_items(@cart_items, ignore_unavailable: bool_param("ignore_unavailable"))
           .to_order(checkout_order)
 
         if errors.any?
@@ -70,7 +70,12 @@ module Api
       end
 
       def checkout_order
-        Order.find_by(id: params[:order_id]) if params[:order_id].present?
+        Order.find(params[:order_id])
+      end
+
+      def bool_param(key)
+        return false if params[key].nil?
+        params[key].to_s == "true"
       end
     end
   end
