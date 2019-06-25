@@ -88,21 +88,20 @@ describe "Package abilities" do
 
   context "when not Owner" do
     let(:user)    { create :user }
-    it{ unpermitted_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
+    it { limited_actions.each { |do_action| is_expected.to be_able_to(do_action, published_package) } }
+    it { unpermitted_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
   end
 
   context "when Anonymous" do
     let(:user)    { nil }
     let(:can) { [:index, :show] }
-
-    it{ unpermitted_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
-
-    it { limited_actions.each {|do_action| is_expected.to be_able_to(do_action, published_package)}}
+    it { limited_actions.each { |do_action| is_expected.to be_able_to(do_action, published_package) } }
+    it { unpermitted_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
   end
 
   context "when api_user" do
     let(:user) { create :user, :api_user }
-    it{  is_expected.to be_able_to(:create, package)  }
+    it{ is_expected.to be_able_to(:create, package) }
   end
 
 end
