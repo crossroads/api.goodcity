@@ -55,16 +55,38 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "GET packages for Item" do
 
-    context 'as a user' do
+    context 'as a reviewer user' do
       before { generate_and_set_token(user) }
       it "returns 200" do
         get :index
         expect(response.status).to eq(200)
       end
+
       it "return serialized packages", :show_in_doc do
         3.times{ create :package }
         get :index
         expect( subject["packages"].size ).to eq(3)
+      end
+
+      it "returns searched packages" do
+        set_browse_app_header
+        3.times{ create :package, notes: "Baby towels", allow_web_publish: false }
+        3.times{ create :browseable_package, notes: "Baby Toilets" }
+        expect(Package.count).to eq(6)
+        get :index, "searchText": "Baby"
+        expect(response.status).to eq(200)
+        expect( subject["packages"].size ).to eq(3)
+      end
+
+      it "returns searched browseable_packages only" do
+        set_browse_app_header
+        3.times{ create :package, notes: "Baby towels", allow_web_publish: false }
+        3.times{ create :browseable_package, notes: "Baby car seats" }
+        pkg = create :browseable_package, notes: "towels"
+        expect(Package.count).to eq(7)
+        get :index, "searchText": "towel"
+        expect(response.status).to eq(200)
+        expect( subject["packages"].size ).to eq(1)
       end
     end
 
@@ -84,7 +106,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
     end
 
-    context "search_browse_packages as a charity_user" do
+    context "search browse packages as a charity user" do
       before { generate_and_set_token(charity_user) }
 
       it "returns 200" do
