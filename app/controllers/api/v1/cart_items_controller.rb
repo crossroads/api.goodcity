@@ -70,7 +70,7 @@ module Api
       end
 
       def checkout_order
-        Order.find_by(params[:order_id]) if params[:order_id].present?
+        Order.find_by(id: params[:order_id]) if params[:order_id].present?
       end
 
       def bool_param(key)
