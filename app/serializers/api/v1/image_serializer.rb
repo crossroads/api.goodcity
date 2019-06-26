@@ -19,5 +19,9 @@ module Api::V1
     def package_id__sql
       "case when imageable_type = 'Package' then imageable_id end"
     end
+
+    def include_package_id?
+      !@options[:is_browse_app]
+    end
   end
 end
