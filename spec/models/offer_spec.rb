@@ -40,10 +40,18 @@ RSpec.describe Offer, type: :model do
     end
   end
 
-  it "should set submitted_at when submitted" do
-    expect( offer.submitted_at ).to be_nil
-    offer.update_attributes(state_event: "submit")
-    expect( offer.submitted_at ).to_not be_nil
+  context "submitting an offer" do
+    it "should set submitted_at" do
+      expect( offer.submitted_at ).to be_nil
+      offer.submit!
+      expect( offer.submitted_at ).to_not be_nil
+    end
+    it "should set sms_reminder_sent_at" do
+      expect( offer.created_by.sms_reminder_sent_at ).to be_nil
+      time = Time.now
+      offer.submit!
+      expect( offer.created_by.sms_reminder_sent_at ).to be > time
+    end
   end
 
   describe "Class Methods" do

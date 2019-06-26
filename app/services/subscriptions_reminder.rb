@@ -19,6 +19,8 @@ class SubscriptionsReminder
   #   its not order related messages
   #   are reviewers will receive SMS only on offers they have created (exclude offers they are subscribed too)
   # If sms_reminder_sent_at is NULL then use created_at so we don't SMS user immediately
+  # IMPORANT NOTE: When a user submits an offer, we set the sms_reminder_sent_at time to now + 1.minute
+  #   to avoid alerting on the system 'thank you for submitting your offer' message
   def user_candidates_for_reminder
     offer_states = ['submitted', 'under_review', 'reviewed', 'scheduled', 'received', 'receiving', 'inactive'] # NOT draft, closed or cancelled
     User.joins(subscriptions: [:message, :offer])

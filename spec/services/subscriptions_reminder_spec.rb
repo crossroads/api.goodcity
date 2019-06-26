@@ -17,6 +17,7 @@ describe SubscriptionsReminder do
 
   subject { SubscriptionsReminder.new }
 
+  # All specs begin life with an offer+message and an order+message
   let!(:message) { create(:message, offer: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
   let!(:message1) { create(:message, :with_order, order: order, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
 
@@ -156,6 +157,16 @@ describe SubscriptionsReminder do
         within_head_start_time = SUBSCRIPTION_REMINDER_HEAD_START.ago + 2.minutes
         donor.subscriptions.map(&:message).flatten.uniq.map{|m| m.update_column(:created_at, within_head_start_time)}
         donor.update_column(:sms_reminder_sent_at, before_delta.ago)
+        expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
+      end
+
+      # whilst this spec is also covered in offer_spec.rb we include it here for clarity as it is part of the SMS criteria
+      it "message was created before offer.submitted_at + 1 minute. (to avoid including system generated message)" do
+        Offer.update_all(state: 'draft') # exclude existing offers from this spec
+        offer1 = create(:offer, state: 'draft')
+        offer1.submit!
+        expect(offer1.messages.count).to eq(1) # system 'Thank you for submitting your offer'
+        expect(offer1.messages.first.created_at).to be < offer1.created_by.sms_reminder_sent_at
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
 

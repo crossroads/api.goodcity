@@ -130,6 +130,7 @@ class Offer < ActiveRecord::Base
 
     before_transition on: :submit do |offer, _transition|
       offer.submitted_at = Time.now
+      offer.created_by.update_attribute(:sms_reminder_sent_at, Time.now + 1.minute) # start the SMS reminder clock from here
     end
 
     before_transition on: :start_review do |offer, _transition|
