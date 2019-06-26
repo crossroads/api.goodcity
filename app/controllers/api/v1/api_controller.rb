@@ -46,13 +46,13 @@ module Api
     # nil.to_i = 0
     def page
       @page = params['page'].to_i
-      (@page == 0) ? 1 : @page
+      @page.zero? ? 1 : @page
     end
 
     # max limit is 25
     def per_page
       @per_page = params['per_page'].to_i
-      (@per_page == 0 or @per_page > DEFAULT_SEARCH_COUNT) ? DEFAULT_SEARCH_COUNT : @per_page
+      (@per_page.zero? || @per_page > DEFAULT_SEARCH_COUNT) ? DEFAULT_SEARCH_COUNT : @per_page
     end
 
     private
