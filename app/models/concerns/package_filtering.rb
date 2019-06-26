@@ -12,7 +12,7 @@ module PackageFiltering
         where("item_id = ?", item_id)
       else
         search_query = ['inventory_number', 'designation_name', 'notes', 'case_number'].
-          map { |f| "#{f} ILIKE :search_text" }.
+          map { |f| "packages.#{f} ILIKE :search_text" }.
           join(" OR ")
         query = where(search_query, search_text: "%#{search_text}%")
         query = query.inventorized if options[:with_inventory_no].present?
