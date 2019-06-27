@@ -74,7 +74,6 @@ module Api
       end
 
       def bool_param(key)
-        return false if params[key].nil?
         params[key].to_s == "true"
       end
     end

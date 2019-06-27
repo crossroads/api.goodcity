@@ -27,7 +27,7 @@ class CartItem < ActiveRecord::Base
   def update_availability
     self.is_available = package.published? &&
       package.orders_packages.none? { |pkg| pkg.designated? || pkg.dispatched? } &&
-      package.quantity > 0
+      package.quantity.positive?
     true
   end
 
