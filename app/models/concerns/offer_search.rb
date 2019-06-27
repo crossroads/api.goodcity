@@ -16,7 +16,7 @@ module OfferSearch
       if search_text.present?
         search_query = ['offers.notes', 'users.first_name', 'users.last_name',
            'users.email', 'users.mobile', 'items.donor_description',
-           'messages.body', 
+           'messages.body',
            'package_types.name_en', 'package_types.name_zh_tw',
            'gogovan_orders.driver_name', 'gogovan_orders.driver_mobile', 'gogovan_orders.driver_license'
           ].
@@ -30,6 +30,7 @@ module OfferSearch
           .joins("LEFT OUTER JOIN packages ON packages.item_id = items.id")
           .joins("LEFT OUTER JOIN package_types ON package_types.id = packages.package_type_id")
           .joins("LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id")
+          .joins("LEFT OUTER JOIN schedules ON deliveries.schedule_id = schedules.id")
           .joins("LEFT OUTER JOIN gogovan_orders ON gogovan_orders.id = deliveries.gogovan_order_id")
           .distinct
       else
@@ -39,4 +40,4 @@ module OfferSearch
 
   end
 end
-          
+
