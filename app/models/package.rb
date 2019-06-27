@@ -311,7 +311,7 @@ class Package < ActiveRecord::Base
   end
 
   def published?
-    return allow_web_publish.present?
+    allow_web_publish.present?
   end
 
   def add_to_stockit
@@ -587,9 +587,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_carts
-    cart_items.each do |cart_item|
-      cart_item.update_availability!
-    end
+    cart_items.each(&:update_availability!)
   end
 
   private
