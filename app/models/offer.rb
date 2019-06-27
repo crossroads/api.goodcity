@@ -5,6 +5,7 @@ class Offer < ActiveRecord::Base
   include PushUpdates
   include RollbarSpecification
   include OfferSearch
+  include OfferFiltering
 
   NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
 

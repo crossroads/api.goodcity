@@ -388,6 +388,42 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "filtering search results" do
+
+    context "state filter" do
+      it "return only offers with the specified states in params" do
+      end
+
+      it "return offer with multiple states specified in params" do
+      end
+
+      it "returns offers in priority" do
+      end
+
+      it "returns all offers if no states speicified in params" do
+      end
+    end
+
+    context "time filter"  do
+      it 'can return offers scheduled after a certain time' do
+      end
+
+      it 'can return offers scheduled before a certain time' do
+      end
+
+      it 'can return offers scheduled between two dates' do
+      end
+    end
+
+    context "Reviwer Filter" do
+      it "returns offers created by logged in user if selfReviewer is present in params" do
+      end
+
+      it "returns offers by all users" do
+      end
+    end
+  end
+
   context "GET offers/search" do
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
