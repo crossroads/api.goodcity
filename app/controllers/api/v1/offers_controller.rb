@@ -70,7 +70,7 @@ module Api
 
       api :GET, '/v1/offers/search?searchText=xyz', "Search for offers"
       def search
-        records = @offers.search(search_text: params['searchText'])
+        records = @offers.search({search_text: params['searchText'], states: array_param(:state)})
         records = apply_filters(records)
         records = records.page(params["page"]).per(params["per_page"])
         offers = offer_response(records.with_summary_eager_load)
