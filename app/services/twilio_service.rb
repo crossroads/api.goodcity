@@ -31,11 +31,10 @@ class TwilioService
   # options[:to] = "+85261111111"
   # options[:body] = "SMS body"
   def send_sms(options)
-    to = @user.mobile.presence || @user.email.presence
-    options = {to: to}.merge(options)
+    options = {to: @user.mobile}.merge(options)
     if send_to_twilio?
       TwilioJob.perform_later(options)
-    elsif options[:to]
+    elsif options[:to].presence
       message = "SlackSMS (to: #{options[:to]}, id: #{user.id}, full_name: #{user.full_name}) #{options[:body]}"
       SlackMessageJob.perform_later(message, ENV['SLACK_PIN_CHANNEL'])
     end
