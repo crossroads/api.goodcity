@@ -68,7 +68,7 @@ FactoryBot.define do
 
     trait :in_user_cart do
       after(:create) do |package, evaluator|
-        package.cart_items << (create :cart_item, package_id: package.id)
+        package.requested_packages << (create :requested_package, package_id: package.id)
       end
     end
 

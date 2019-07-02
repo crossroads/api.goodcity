@@ -25,7 +25,7 @@ class Package < ActiveRecord::Base
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
-  has_many   :cart_items, dependent: :destroy
+  has_many   :requested_packages, dependent: :destroy
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
@@ -587,7 +587,7 @@ class Package < ActiveRecord::Base
   end
 
   def update_carts
-    cart_items.each(&:update_availability!)
+    requested_packages.each(&:update_availability!)
   end
 
   private

@@ -1,4 +1,4 @@
-class CartItem < ActiveRecord::Base
+class RequestedPackage < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
 
   # --- Live Updates
@@ -13,8 +13,8 @@ class CartItem < ActiveRecord::Base
 
   # --- Associations
 
-  belongs_to :package, inverse_of: :cart_items
-  belongs_to :user, inverse_of: :cart_items
+  belongs_to :package, inverse_of: :requested_packages
+  belongs_to :user, inverse_of: :requested_packages
 
   # --- Validations
 

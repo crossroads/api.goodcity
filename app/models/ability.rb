@@ -60,7 +60,7 @@ class Ability
     order_transport_abilities
     organisations_abilities
     organisations_users_abilities
-    cart_items_abilities
+    requested_packages_abilities
     package_abilities
     package_type_abilities
     packages_locations_abilities
@@ -238,8 +238,8 @@ class Ability
     can [:update], OrganisationsUser, user_id: @user_id
   end
 
-  def cart_items_abilities
-    can [:create, :destroy, :index, :checkout], CartItem, user_id: @user_id
+  def requested_packages_abilities
+    can [:create, :destroy, :index, :checkout], RequestedPackage, user_id: @user_id
   end
 
   def package_abilities
@@ -255,7 +255,7 @@ class Ability
     else
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
       can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
-      can [:show], Package,  cart_items: { user_id: @user_id }
+      can [:show], Package,  requested_packages: { user_id: @user_id }
     end
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }

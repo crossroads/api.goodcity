@@ -1,5 +1,5 @@
 module Api::V1
-  class CartItemSerializer < ApplicationSerializer
+  class RequestedPackageSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :package_id, :user_id, :is_available
 

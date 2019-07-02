@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::CartItemsController, type: :controller do
+RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
   let(:fetched_items) do
-    parsed_body['cart_items'].map { |ci| CartItem.find(ci['id']) }
+    parsed_body['requested_packages'].map { |ci| RequestedPackage.find(ci['id']) }
   end
 
   let(:designation_sync) { double "designation_sync", { create: nil, update: nil } }
@@ -18,10 +18,10 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
   ]
 
   before do
-    10.times { create(:cart_item) }
+    10.times { create(:requested_package) }
   end
 
-  describe "GET cart" do
+  describe "GET requested_pacakges" do
     context "as a guest" do
       it "returns 401" do
         get :index
@@ -34,7 +34,7 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
         let(:user) { create(:user, user_type) }
 
         before do
-          3.times { create(:cart_item, user: user) }
+          3.times { create(:requested_package, user: user) }
           generate_and_set_token(user)
         end
 
@@ -43,18 +43,18 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
           expect(response.status).to eq(200)
         end
 
-        it "only returns the user's cart items" do
+        it "only returns the user's requested packages" do
           get :index
           expect(fetched_items.length).to eq(3)
-          fetched_items.each do |cart_item|
-            expect(cart_item.user).to eq(user)
+          fetched_items.each do |requested_package|
+            expect(requested_package.user).to eq(user)
           end
         end
       end
     end
   end
 
-  describe "POST cart" do
+  describe "POST /requested_packages" do
     context "as a guest" do
       it "returns 401" do
         post :create
@@ -68,7 +68,7 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
         let(:user2) { create(:user) }
         let(:package) { create(:package) }
         let(:payload) do
-          return { cart_item: { user_id: user.id, package_id: package.id } }
+          return { requested_package: { user_id: user.id, package_id: package.id } }
         end
 
         before { generate_and_set_token(user) }
@@ -78,33 +78,33 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
           expect(response.status).to eq(201)
         end
 
-        it "allows creating a cart item for him/herself" do
+        it "allows creating a requested_package for him/herself" do
           expect {
             post :create, payload
-          }.to change(CartItem, :count).by(1)
-          expect(user.reload.cart_items.length).to eq(1)
+          }.to change(RequestedPackage, :count).by(1)
+          expect(user.reload.requested_packages.length).to eq(1)
         end
 
-        it "prevents adding a package a second time to the cart" do
-          create(:cart_item, user_id: user.id, package_id: package.id)
+        it "prevents requesting the same package a second time" do
+          create(:requested_package, user_id: user.id, package_id: package.id)
           post :create, payload
           expect(response.status).to eq(422)
-          expect(user.reload.cart_items.length).to eq(1)
+          expect(user.reload.requested_packages.length).to eq(1)
         end
 
-        it "prevents adding an item to someone else's cart" do
-          post :create, { cart_item: { user_id: user2.id, package_id: package.id } }
+        it "prevents requesting a package for someone" do
+          post :create, { requested_package: { user_id: user2.id, package_id: package.id } }
           expect(response.status).to eq(403)
-          expect(user2.reload.cart_items.length).to eq(0)
+          expect(user2.reload.requested_packages.length).to eq(0)
         end
       end
     end
   end
 
-  describe "DELETE cart" do
+  describe "DELETE /requested_package/:id" do
     context "as a guest" do
       it "returns 401" do
-        delete :destroy, id: create(:cart_item).id
+        delete :destroy, id: create(:requested_package).id
         expect(response.status).to eq(401)
       end
     end
@@ -112,31 +112,31 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
     user_types.each do |user_type|
       context "as a #{user_type}" do
         let(:user) { create(:user, user_type) }
-        let!(:cart_item) { create(:cart_item, user: user) }
-        let!(:other_cart_item) { create(:cart_item, user: create(:user)) }
+        let!(:requested_package) { create(:requested_package, user: user) }
+        let!(:other_requested_package) { create(:requested_package, user: create(:user)) }
 
         before { generate_and_set_token(user) }
 
         it "returns 200" do
-          delete :destroy, id: cart_item.id
+          delete :destroy, id: requested_package.id
           expect(response.status).to eq(200)
         end
 
-        it "allows deleting him/her own cart item" do
+        it "allows deleting him/her own requested_package" do
           expect {
-            delete :destroy, id: cart_item.id
-          }.to change(CartItem, :count).by(-1)
+            delete :destroy, id: requested_package.id
+          }.to change(RequestedPackage, :count).by(-1)
         end
 
-        it "prevents deleting someone else's cart item" do
-          delete :destroy, id: other_cart_item.id
+        it "prevents deleting someone else's requested_package" do
+          delete :destroy, id: other_requested_package.id
           expect(response.status).to eq(403)
         end
       end
     end
   end
 
-  describe "Checkout cart" do
+  describe "Checkout process" do
 
     before {
       FactoryBot.generate(:booking_types).values.each { |btype|
@@ -159,10 +159,10 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
         let(:draft_order) { create(:order, :with_state_draft, created_by: user) }
         let(:draft_appointment) { create(:order, :with_state_draft, booking_type: BookingType.appointment, created_by: user) }
         let(:submitted_order) { create(:order, :with_state_submitted, submitted_by: user) }
-        let!(:cart_items) { 3.times.map { create(:cart_item, :with_available_package, user: user) } }
+        let!(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
 
         before do
-          3.times.map { create(:cart_item) } # cart items for other users
+          3.times.map { create(:requested_package) } # requested_packages for other users
           generate_and_set_token(user)
         end
 
@@ -175,18 +175,18 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
 
           order = Order.find(draft_order.id)
           expect(order.state).to eq('submitted')
-          expect(order.packages.map(&:id)).to match_array(cart_items.map(&:package_id))
-          expect(order.orders_packages.length).to eq(cart_items.length)
+          expect(order.packages.map(&:id)).to match_array(requested_packages.map(&:package_id))
+          expect(order.orders_packages.length).to eq(requested_packages.length)
           order.orders_packages.each do |op|
             expect(op.state).to eq('designated')
           end
         end
 
         it "ignores unavailable packages if the 'ignore_unavailable' flag is set" do
-          cart_items[0].package.update!(allow_web_publish: false)
+          requested_packages[0].package.update!(allow_web_publish: false)
           expect {
             post :checkout, order_id: draft_order.id, ignore_unavailable: true
-          }.to change(CartItem, :count).by(-3)
+          }.to change(RequestedPackage, :count).by(-3)
 
           expect(response.status).to eq(200)
           expect(parsed_body['order']).not_to be_nil
@@ -202,12 +202,12 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
           end
         end
 
-        it "clears the cart" do
+        it "clears the requested packages" do
           expect {
             post :checkout, order_id: draft_order.id
-          }.to change(CartItem, :count).by(- cart_items.length)
-          cart_items.each do |it|
-            expect(CartItem.find_by(id: it.id)).to be_nil
+          }.to change(RequestedPackage, :count).by(- requested_packages.length)
+          requested_packages.each do |it|
+            expect(RequestedPackage.find_by(id: it.id)).to be_nil
           end
         end
 
@@ -241,10 +241,10 @@ RSpec.describe Api::V1::CartItemsController, type: :controller do
         end
 
         it "fails if one of the packages is no longer available" do
-          cart_items[0].package.update!(allow_web_publish: false)
+          requested_packages[0].package.update!(allow_web_publish: false)
           post :checkout, order_id: draft_order.id
           expect(response.status).to eq(422)
-          expect(parsed_body['errors'][0]).to eq('One or many items in your cart are no longer available')
+          expect(parsed_body['errors'][0]).to eq('One or many requested items are no longer available')
         end
       end
     end

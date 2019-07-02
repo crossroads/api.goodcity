@@ -37,7 +37,7 @@ describe User, :type => :model do
     it { is_expected.to have_many :offers }
     it { is_expected.to have_many :messages }
     it { is_expected.to have_many :user_roles }
-    it { is_expected.to have_many :cart_items }
+    it { is_expected.to have_many :requested_packages }
     it { is_expected.to have_many(:roles).through(:user_roles) }
     it { is_expected.to have_one :address }
   end

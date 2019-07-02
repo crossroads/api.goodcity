@@ -1,10 +1,10 @@
 module Api
   module V1
-    class CartItemsController < Api::V1::ApiController
-      load_and_authorize_resource :cart_item, parent: false
+    class RequestedPackagesController < Api::V1::ApiController
+      load_and_authorize_resource :requested_package, parent: false
 
       resource_description do
-        short 'Get cart items.'
+        short 'Get requested packages.'
         formats ['json']
         error 401, "Unauthorized"
         error 404, "Not Found"
@@ -12,8 +12,8 @@ module Api
         error 500, "Internal Server Error"
       end
 
-      def_param_group :cart_item do
-        param :cart_item, Hash, required: true do
+      def_param_group :requested_package do
+        param :requested_package, Hash, required: true do
           param :user_id, String
           param :package_id, String
           param :is_available, Boolean
@@ -25,21 +25,21 @@ module Api
         param :ignore_unavailable, :boolean
       end
 
-      api :GET, '/v1/cart_items', "List the user's cart items"
+      api :GET, '/v1/requested_packages', "List the user's requested packages"
       def index
-        render json: @cart_items, each_serializer: serializer
+        render json: @requested_packages, each_serializer: serializer
       end
 
-      api :POST, '/v1/cart_items', "Create a cart item"
+      api :POST, '/v1/requested_packages', "Create a cart item"
       def create
-        save_and_render_object_with_errors(@cart_item)
+        save_and_render_object_with_errors(@requested_package)
       end
 
-      api :POST, '/v1/cart_items/checkout', "Checkout and add all the packages to an order"
+      api :POST, '/v1/requested_packages/checkout', "Checkout and add all the packages to an order"
       param_group :checkout
       def checkout
         errors = CartCheckout
-          .designate_cart_items(@cart_items, ignore_unavailable: bool_param("ignore_unavailable"))
+          .designate_requested_packages(@requested_packages, ignore_unavailable: bool_param("ignore_unavailable"))
           .to_order(checkout_order)
 
         if errors.any?
@@ -49,20 +49,20 @@ module Api
         end
       end
 
-      api :DELETE, '/v1/cart_items/1', "Delete a cart item"
+      api :DELETE, '/v1/requested_packages/1', "Delete a cart item"
       def destroy
-        @cart_item.destroy
+        @requested_package.destroy
         render json: {}
       end
 
       private
 
       def serializer
-        Api::V1::CartItemSerializer
+        Api::V1::RequestedPackageSerializer
       end
 
-      def cart_item_params
-        params.require(:cart_item).permit(
+      def requested_package_params
+        params.require(:requested_package).permit(
           :is_available,
           :user_id,
           :package_id

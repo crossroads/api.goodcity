@@ -201,9 +201,9 @@ FactoryBot.define do
       email { FFaker::Internet.email }
     end
 
-    trait :with_cart_items do
+    trait :with_requested_packages do
       after(:create) do |user, evaluator|
-        user.cart_items << (create :cart_item, user_id: user.id)
+        user.requested_packages << (create :requested_package, user_id: user.id)
       end
     end
   end

@@ -43,7 +43,7 @@ zh-tw:
         mobile: "手提電話"
     errors:
       models:
-        cart_item:
+        requested_package:
           attributes:
             package_id:
               taken: "已加入購物車"
