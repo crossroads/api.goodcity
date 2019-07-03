@@ -164,7 +164,7 @@ describe SubscriptionsReminder do
       it "message was created before offer.submitted_at + 1 minute. (to avoid including system generated message)" do
         Offer.update_all(state: 'draft') # exclude existing offers from this spec
         offer1 = create(:offer, state: 'draft')
-        offer1.submit!
+        offer1.submit
         expect(offer1.messages.count).to eq(1) # system 'Thank you for submitting your offer'
         expect(offer1.messages.first.created_at).to be < offer1.created_by.sms_reminder_sent_at
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])

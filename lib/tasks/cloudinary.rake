@@ -29,16 +29,18 @@ namespace :cloudinary do
 
   desc "Delete image records with broken images"
   task purge: :environment do
-    Rails.logger.info(class: self.class.name, msg: "Searching for broken images...")
+    Rails.logger.info("[cloudinary:purge] Searching for broken images...")
     count = 0;
     Image
       .find_each do |im|
         if image_has_been_deleted(im)
-          Rails.logger.info(class: self.class.name, msg: "Cloudinary image was deleted", cloudinary_id: im.cloudinary_id, image_id: im.id)
+          Rails.logger.info(
+            "[cloudinary:purge] Cloudinary image #{im.cloudinary_id} was deleted. Removing associated record (id: #{im.id})"
+          )
           im.destroy
         end
         count = count + 1
-        Rails.logger.info(class: self.class.name, msg: "#{count} images processed...") if count % 100 == 0
+        Rails.logger.info("[cloudinary:purge] #{count } images processed...") if count % 100 == 0
       end
   end
 
@@ -60,7 +62,9 @@ namespace :cloudinary do
       return res['resource_type'] == 'image' && res['placeholder'].present?
     rescue
       # Something happened, we don't know for sure that the image has been deleted
-      Rails.logger.info(class: self.class.name, msg: "Could not figure out the state of the image", cloudinary_id: im.cloudinary_id, image_id: im.id)
+      Rails.logger.info(
+        "Could not figure out the state of image #{im.cloudinary_id} (id: #{im.id})"
+      )
       return false
     end
   end
