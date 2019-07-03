@@ -6,13 +6,9 @@ module Goodcity
         if merge_offers.any?
           merge_offers.each do |merge_offer|
             self.merge_offer!(offer_id: offer_id, other_offer_id: merge_offer.id)
-            Rails.logger.info "Merged offer #{merge_offer.id} into offer #{offer.id}"
+            Rails.logger.info(class: self.class.name, msg: "Merged offer", from_offer_id: merge_offer.id, into_offer_id: offer.id)
           end
-        else
-          Rails.logger.info("No offers to merge were found.")
         end
-      else
-        Rails.logger.warn("Could not find offer id #{offer_id}")
       end
     end
 
@@ -51,7 +47,7 @@ module Goodcity
         other_offer.reload.really_destroy! if really_destroy
         true
       else
-        Rails.logger.info("Unable to merge offer #{other_offer_id} into offer #{offer.id}.")
+        Rails.logger.info(class: self.class.name, msg: "Unable to merge offer", from_offer_id: other_offer_id, into_offer_id: offer.id)
         false
       end
     end
