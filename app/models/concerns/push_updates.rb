@@ -54,7 +54,7 @@ module PushUpdates
   private
 
   def browse_updates(operation)
-    json = Api::V1::PackageSerializer.new(self, {is_browse_app: true}).as_json
+    json = Api::V1::BrowsePackageSerializer.new(self).as_json
     data = { item: { package: json[:browse_package], items: json[:items], images: json[:images] }, operation: operation }
     service.send_update_store(Channel::BROWSE_CHANNEL, data)
   end
