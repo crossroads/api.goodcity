@@ -39,7 +39,7 @@ module Api
       api :POST, '/v1/offers', "Create an offer"
       param_group :offer
       def create
-        @offer.created_by = current_user unless offer_params.has_key?(:created_by_id)
+        @offer.created_by_id = current_user.id unless offer_params.has_key?(:created_by_id)
         save_and_render_object(@offer)
       end
 
