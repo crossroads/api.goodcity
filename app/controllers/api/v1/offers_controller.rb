@@ -39,7 +39,7 @@ module Api
       api :POST, '/v1/offers', "Create an offer"
       param_group :offer
       def create
-        @offer.created_by = current_user
+        @offer.created_by = current_user unless offer_params.has_key?(:created_by_id)
         save_and_render_object(@offer)
       end
 
@@ -160,6 +160,7 @@ module Api
         attributes = [:language, :origin, :stairs, :parking, :estimated_size,
           :notes, :delivered_by, :state_event, :cancel_reason,
           :cancellation_reason_id, :saleable]
+        attributes << :created_by_id if User.current_user.staff?
         params.require(:offer).permit(attributes)
       end
 
