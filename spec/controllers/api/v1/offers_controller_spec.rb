@@ -165,6 +165,8 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
   describe "POST /offers" do
     let(:created_offer) { Offer.find_by(id: parsed_body['offer']['id']) }
+    let(:now) { Time.now.change(usec: 0) }
+    let(:yesterday) { 1.day.ago.change(usec: 0) }
 
     before { generate_and_set_token(user) }
     it "returns 201", :show_in_doc do
@@ -184,6 +186,25 @@ RSpec.describe Api::V1::OffersController, type: :controller do
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(user)
         end
+
+        it "ignore posted properties that require elevated rights" do
+          post :create, offer: {
+            reviewed_by_id: reviewer.id,
+            reviewed_at: yesterday.to_s,
+            state: "under_review",
+            submitted_at: nil,
+            created_by_id: nil,
+            language: 'zh-tw'
+          }
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(user)
+          expect(created_offer.reviewed_by_id).to eq(nil)
+          expect(created_offer.reviewed_at).to eq(nil)
+          expect(created_offer.state).to eq("draft")
+          expect(created_offer.submitted_at).to eq(nil)
+          expect(created_offer.created_by_id).to eq(user.id)
+          expect(created_offer.language).to eq('zh-tw')
+        end
       end
 
       context "as a supervisor" do
@@ -193,6 +214,25 @@ RSpec.describe Api::V1::OffersController, type: :controller do
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
         end
+
+        it "sets all the properties correctly" do
+          post :create, offer: {
+            reviewed_by_id: reviewer.id,
+            reviewed_at: yesterday.to_s,
+            state: "under_review",
+            submitted_at: nil,
+            created_by_id: nil,
+            language: 'zh-tw'
+          }
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(nil)
+          expect(created_offer.reviewed_by_id).to eq(reviewer.id)
+          expect(created_offer.reviewed_at).to eq(yesterday)
+          expect(created_offer.state).to eq("under_review")
+          expect(created_offer.submitted_at).to eq(nil)
+          expect(created_offer.created_by_id).to eq(nil)
+          expect(created_offer.language).to eq('zh-tw')
+        end
       end
 
       context "as a reviewer" do
@@ -201,6 +241,25 @@ RSpec.describe Api::V1::OffersController, type: :controller do
           post :create, offer: offer_params
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
+        end
+
+        it "sets all the properties correctly" do
+          post :create, offer: {
+            reviewed_by_id: supervisor.id,
+            reviewed_at: yesterday.to_s,
+            state: "under_review",
+            submitted_at: nil,
+            created_by_id: nil,
+            language: 'zh-tw'
+          }
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(nil)
+          expect(created_offer.reviewed_by_id).to eq(supervisor.id)
+          expect(created_offer.reviewed_at).to eq(yesterday)
+          expect(created_offer.state).to eq("under_review")
+          expect(created_offer.submitted_at).to eq(nil)
+          expect(created_offer.created_by_id).to eq(nil)
+          expect(created_offer.language).to eq('zh-tw')
         end
       end
     end

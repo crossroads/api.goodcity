@@ -160,7 +160,10 @@ module Api
         attributes = [:language, :origin, :stairs, :parking, :estimated_size,
           :notes, :delivered_by, :state_event, :cancel_reason,
           :cancellation_reason_id, :saleable]
-        attributes << :created_by_id if User.current_user.staff?
+        attributes.concat [
+          :created_at, :created_by_id, :submitted_at, :state,
+          :reviewed_at, :reviewed_by_id
+        ] if User.current_user.staff?
         params.require(:offer).permit(attributes)
       end
 
