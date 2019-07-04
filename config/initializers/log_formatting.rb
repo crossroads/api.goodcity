@@ -1,5 +1,5 @@
 
-if %w(development staging production).include?(Rails.env)
+if %w(staging production).include?(Rails.env)
 
   require_relative '../../lib/logging/log_formatter'
   
