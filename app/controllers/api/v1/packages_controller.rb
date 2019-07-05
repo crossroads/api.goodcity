@@ -4,7 +4,7 @@ module Api
       include GoodcitySync
 
       load_and_authorize_resource :package, parent: false
-      skip_before_action :validate_token, only: [:index, :show]
+      skip_before_action :validate_token, only: [:show]
 
       resource_description do
         short "Create, update and delete a package."
@@ -36,12 +36,9 @@ module Api
 
       api :GET, "/v1/packages", "get all packages for the item"
       def index
-        @packages = @packages.browse_inventorized.union(@packages.browse_non_inventorized) if is_browse_app?
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
-        @packages = @packages.search({search_text: params['searchText']})
-          .page(page).per(per_page) if params['searchText']
-        render json: @packages, each_serializer: serializer, include_orders_packages: is_stock_app?, is_browse_app: is_browse_app?
-       end
+        render json: @packages, each_serializer: serializer, include_orders_packages: true
+      end
 
       api :GET, '/v1/packages/1', "Details of a package"
       def show
@@ -144,6 +141,18 @@ module Api
           exclude_stockit_set_item: true,
           include_images: true).as_json
         render json: {meta: { search: params['searchText'] } }.merge(packages)
+      end
+
+      # nil.to_i = 0
+      def page
+        @page = params['page'].to_i
+        (@page == 0) ? 1 : @page
+      end
+
+      # max limit is 25
+      def per_page
+        @per_page = params['per_page'].to_i
+        (@per_page == 0 or @per_page > 25) ? 25 : @per_page
       end
 
       def designate_stockit_item(order_id)

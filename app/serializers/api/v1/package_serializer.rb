@@ -4,7 +4,6 @@ module Api::V1
 
     has_one :package_type, serializer: PackageTypeSerializer
     has_many :images, serializer: ImageSerializer
-    has_one :item, serializer: BrowseItemSerializer
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
 
@@ -18,12 +17,8 @@ module Api::V1
       object.order_id
     end
 
-    def is_browse_app?
-      @options[:is_browse_app] || @options[:browse_order]
-    end
-
-    def not_browse_app?
-      !is_browse_app?
+    def include_orders_packages?
+      @options[:include_orders_packages]
     end
 
     def designation_id__sql
@@ -36,24 +31,6 @@ module Api::V1
 
     def sent_on__sql
       "stockit_sent_on"
-    end
-
-    def include_orders_packages?
-      @options[:include_orders_packages]
-    end
-
-    alias_method :include_packages_locations?, :include_orders_packages?
-
-    %w[include_item? include_stockit_sent_on?
-      include_order_id?].each do |method|
-      alias_method method.to_sym, :is_browse_app?
-    end
-
-    %w[include_state? include_received_at? include_rejected_at?
-      include_designation_id? include_sent_on?
-      include_offer_id? include_designation_name?
-      include_received_quantity?].each do |method|
-      alias_method method.to_sym, :not_browse_app?
     end
   end
 end

@@ -6,7 +6,7 @@ class CloudinaryCleanTransformedImagesJob < ActiveJob::Base
       response = Cloudinary::Api.resource(cloudinary_image_id)
     rescue Cloudinary::Api::NotFound
       # don't proceed
-      Rails.logger.info(class: self.class.name, msg: "Image not found", cloudinary_image_id: cloudinary_image_id)
+      Rails.logger.info("Cloudinary image #{cloudinary_image_id} not found")
       return
     end
     derived_ids = []
@@ -18,6 +18,7 @@ class CloudinaryCleanTransformedImagesJob < ActiveJob::Base
           derived_ids << k["id"]
         end
       end
+
       Cloudinary::Api.delete_derived_resources(derived_ids) unless derived_ids.blank?
     end
   end
