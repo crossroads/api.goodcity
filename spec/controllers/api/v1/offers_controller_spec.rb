@@ -451,12 +451,12 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
     end
 
-    context "Reviwer Filter" do
+    context "Reviewer Filter" do
       before(:each) {
         User.current_user = reviewer
       }
 
-      it "returns offers created by logged in user if selfReviewer is present in params" do
+      it "returns offers created by logged in user if selfReview is present in params" do
         get :search, searchText: 'Test', selfReview: true
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)

@@ -2,9 +2,16 @@ module OfferFiltering
   extend ActiveSupport::Concern
 
   included do
+    # filter method expects any of the following options in params:
+    #   -[:state_names] = ['submitted', 'reviewed'...]
+    #   -[:priority] = boolean true or false
+    #   -[:self_reviewer] = boolean  true or false
+    #   -[:before] = timestamp
+    #   -[:after] = timestamp
+
     scope :filter, -> (options = {}) do
       res = where(nil)
-      res = where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
+      res = res.where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
       res = res.self_reviewer if options[:self_reviewer].present?
       res = res.due_after(options[:after]) if options[:after].present?
