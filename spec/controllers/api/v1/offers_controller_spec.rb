@@ -13,6 +13,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   let(:serialized_offer_json) { JSON.parse( serialized_offer.to_json ) }
   let(:allowed_params) { [:language, :origin, :stairs, :parking, :estimated_size, :notes] }
   let(:offer_params) { FactoryBot.attributes_for(:offer).tap{|attrs| (attrs.keys - allowed_params).each{|a| attrs.delete(a)} } }
+  let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET offers" do
     before { generate_and_set_token(reviewer) }
@@ -162,11 +163,105 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
-  describe "POST offers/1" do
+  describe "POST /offers" do
+    let(:created_offer) { Offer.find_by(id: parsed_body['offer']['id']) }
+    let(:now) { Time.now.change(usec: 0) }
+    let(:yesterday) { 1.day.ago.change(usec: 0) }
+
     before { generate_and_set_token(user) }
     it "returns 201", :show_in_doc do
       post :create, offer: offer_params
       expect(response.status).to eq(201)
+    end
+
+    context "Creating an anonymous offer (created_by_id: nil)" do
+      before do
+        offer_params[:created_by_id] = nil
+      end
+
+      context "as a user" do
+        before { generate_and_set_token(user) }
+        it "ignores the created_by_id param" do
+          post :create, offer: offer_params
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(user)
+        end
+
+        it "ignore posted properties that require elevated rights" do
+          post :create, offer: {
+            reviewed_by_id: reviewer.id,
+            reviewed_at: yesterday.to_s,
+            state: "under_review",
+            submitted_at: nil,
+            created_by_id: nil,
+            language: 'zh-tw'
+          }
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(user)
+          expect(created_offer.reviewed_by_id).to eq(nil)
+          expect(created_offer.reviewed_at).to eq(nil)
+          expect(created_offer.state).to eq("draft")
+          expect(created_offer.submitted_at).to eq(nil)
+          expect(created_offer.created_by_id).to eq(user.id)
+          expect(created_offer.language).to eq('zh-tw')
+        end
+      end
+
+      context "as a supervisor" do
+        before { generate_and_set_token(supervisor) }
+        it "ignores sets the created_by_id property to the defined value" do
+          post :create, offer: offer_params
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(nil)
+        end
+
+        it "sets all the properties correctly" do
+          post :create, offer: {
+            reviewed_by_id: reviewer.id,
+            reviewed_at: yesterday.to_s,
+            state: "under_review",
+            submitted_at: nil,
+            created_by_id: nil,
+            language: 'zh-tw'
+          }
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(nil)
+          expect(created_offer.reviewed_by_id).to eq(reviewer.id)
+          expect(created_offer.reviewed_at).to eq(yesterday)
+          expect(created_offer.state).to eq("under_review")
+          expect(created_offer.submitted_at).to eq(nil)
+          expect(created_offer.created_by_id).to eq(nil)
+          expect(created_offer.language).to eq('zh-tw')
+        end
+      end
+
+      context "as a reviewer" do
+        before { generate_and_set_token(reviewer) }
+        it "ignores sets the created_by_id property to the defined value" do
+          post :create, offer: offer_params
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(nil)
+        end
+
+        it "sets all the properties correctly" do
+          post :create, offer: {
+            reviewed_by_id: supervisor.id,
+            reviewed_at: yesterday.to_s,
+            state: "under_review",
+            submitted_at: nil,
+            created_by_id: nil,
+            language: 'zh-tw'
+          }
+          expect(response.status).to eq(201)
+          expect(created_offer.created_by).to eq(nil)
+          expect(created_offer.reviewed_by_id).to eq(supervisor.id)
+          expect(created_offer.reviewed_at).to eq(yesterday)
+          expect(created_offer.state).to eq("under_review")
+          expect(created_offer.submitted_at).to eq(nil)
+          expect(created_offer.created_by_id).to eq(nil)
+          expect(created_offer.language).to eq('zh-tw')
+        end
+      end
     end
   end
 
