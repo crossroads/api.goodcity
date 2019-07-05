@@ -55,6 +55,20 @@ module Api
       (@per_page.zero? || @per_page > DEFAULT_SEARCH_COUNT) ? DEFAULT_SEARCH_COUNT : @per_page
     end
 
+    def array_param(key)
+      params.fetch(key, "").strip.split(',')
+    end
+
+    def bool_param(key, default)
+      return default if params[key].nil?
+      params[key].to_s == "true"
+    end
+
+    def time_epoch_param(key)
+      timestamp = params.fetch(key, nil)
+      return timestamp ? Time.at(Integer(timestamp) / 1000).in_time_zone : nil
+    end
+
     private
 
     def access_denied

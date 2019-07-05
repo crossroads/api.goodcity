@@ -153,20 +153,6 @@ module Api
         )
       end
 
-      def array_param(key)
-        params.fetch(key, "").strip.split(',')
-      end
-
-      def time_epoch_param(key)
-        timestamp = params.fetch(key, nil)
-        return timestamp ? Time.at(Integer(timestamp) / 1000).in_time_zone : nil
-      end
-
-      def bool_param(key, default)
-        return default if params[key].nil?
-        params[key].to_s == "true"
-      end
-
       def order_params
         params.require(:order).permit(:district_id,
           :created_by_id, :stockit_id, :code, :status,
