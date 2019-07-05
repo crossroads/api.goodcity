@@ -4,7 +4,6 @@ RSpec.describe Api::V1::TerritoriesController, type: :controller do
 
   let(:territory) { create(:territory_districts) }
   let(:serialized_territory) { Api::V1::TerritorySerializer.new(territory) }
-  let(:serialized_territory_json) { JSON.parse( serialized_territory.as_json.to_json ) }
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET territory" do
@@ -13,7 +12,9 @@ RSpec.describe Api::V1::TerritoriesController, type: :controller do
       expect(response.status).to eq(200)
     end
     it "return serialized territory", :show_in_doc do  
-      expect( parsed_body ).to eq(serialized_territory_json)
+      expect(parsed_body['territory']['id']).to eq(serialized_territory.id)
+      expect(parsed_body['territory']['name']).to eq(serialized_territory.name)
+      expect(parsed_body['territory']['district_ids']).to match_array(serialized_territory.districts.map(&:id))
     end
   end
 
