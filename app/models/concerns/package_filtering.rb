@@ -1,7 +1,6 @@
 # Search and filter logic for items is extracted here to avoid cluttering the model class
 module PackageFiltering
   extend ActiveSupport::Concern
-
   included do
     # Free text search on packages
     scope :search, -> (options = {}) {
@@ -18,7 +17,7 @@ module PackageFiltering
         query = query.inventorized if options[:with_inventory_no].present?
         query = query.not_multi_quantity if options[:restrict_multi_quantity].present?
         query = query.where(state: state) if state.present?
-        query
+        query.order(updated_at: :desc)
       end
     }
 
