@@ -5,7 +5,7 @@ RSpec.describe Api::V1::ApiController, type: :controller do
   before { generate_and_set_token }
 
   subject { JSON.parse(response.body) }
-  
+
   context "handling ActiveRecord::RecordNotFound exceptions" do
 
     controller do
@@ -54,4 +54,36 @@ RSpec.describe Api::V1::ApiController, type: :controller do
     end
   end
 
+  context "per_page" do
+    subject { controller.per_page }
+
+    before(:each) do
+      controller.params[:per_page] = per_page
+    end
+
+    context "20 per page" do
+      let(:per_page) { '20' }
+      it { expect(subject).to eql(20) }
+    end
+
+    context "30 per_page (limit is 25)" do
+      let(:per_page) { '30' }
+      it { expect(subject).to eql(25) }
+    end
+
+    context "nil per_page" do
+      let(:per_page) { nil }
+      it { expect(subject).to eql(25) }
+    end
+
+    context "blank per_page" do
+      let(:per_page) { '' }
+      it { expect(subject).to eql(25) }
+    end
+
+    context "blah per_page" do
+      let(:per_page) { 'blah' }
+      it { expect(subject).to eql(25) }
+    end
+  end
 end

@@ -5,9 +5,12 @@ describe "Package abilities" do
 
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :update, :destroy, :manage] }
+  let(:unpermitted_actions) {[:update, :destroy, :manage]}
+  let(:limited_actions) {[:index, :show]}
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
   let(:package)     { create :package, item: item }
+  let(:published_package)  { create :package, item: item, allow_web_publish: true }
 
   context "when Administrator" do
     let(:user)    { create(:user, :administrator) }
@@ -85,12 +88,16 @@ describe "Package abilities" do
 
   context "when not Owner" do
     let(:user)    { create :user }
-    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
+    it{ unpermitted_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
   end
 
   context "when Anonymous" do
     let(:user)    { nil }
-    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
+    let(:can) { [:index, :show] }
+
+    it{ unpermitted_actions.each { |do_action| is_expected.to_not be_able_to(do_action, package) } }
+
+    it { limited_actions.each {|do_action| is_expected.to be_able_to(do_action, published_package)}}
   end
 
   context "when api_user" do

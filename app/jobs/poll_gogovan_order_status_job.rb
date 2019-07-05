@@ -4,7 +4,7 @@ class PollGogovanOrderStatusJob < ActiveJob::Base
   def perform(order_id)
     order = GogovanOrder.find_by(id: order_id)
     if order.try(:delivery)
-      Rails.logger.info "Updating GGV Order #{order_id}"
+      Rails.logger.info(class: self.class.name, msg: "Updating GoGoVan order", order_id: order_id)
 
       # GGV Order is not placed successfully i.r. booking_id is nil
       return remove_delivery(order_id) unless order.booking_id
