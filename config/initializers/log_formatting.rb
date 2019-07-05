@@ -2,9 +2,9 @@
 if %w(staging production).include?(Rails.env)
 
   require_relative '../../lib/logging/log_formatter'
-  
+
   Rails.application.configure do
-    
+
     # Lograge settings
     config.lograge.enabled = true
     # config.lograge.base_controller_class = 'ActionController::API' # Required when on Rails 5

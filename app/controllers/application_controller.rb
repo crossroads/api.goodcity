@@ -50,14 +50,4 @@ class ApplicationController < ActionController::API
       user
     end
   end
-
-  # For Lograge
-  def append_info_to_payload(payload)
-    super
-    payload[:user_id] = current_user.id if current_user
-    payload[:request_ip] = request.remote_ip
-    payload[:app_name] = app_name # calling app: donor, admin, stock, browse
-    payload[:app_version] = app_version # calling app version
-  end
- 
 end

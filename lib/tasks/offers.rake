@@ -7,7 +7,7 @@ namespace :goodcity do
   OFFER_ID: offer into which other offers will be merged
   MERGE_OFFER_IDS: comma separated list of offer ids to be merged into OFFER_ID"
   DESC
-  task merge_offers: :environment do
+  task merge_offers: [:environment, :setup_logger] do
     offer_id = (ENV['OFFER_ID'] || "").strip
     merge_offer_ids = (ENV['MERGE_OFFER_IDS'] || "").strip.split(",").compact.map(&:strip).uniq
     if offer_id.blank?
@@ -17,5 +17,12 @@ namespace :goodcity do
     else
       Goodcity::OfferUtils.merge_offers!(offer_id, merge_offer_ids)
     end
+  end
+
+  task setup_logger: :environment do
+    # Rails.logger.* redirected to STDOUT
+    logger           = Logger.new(STDOUT)
+    logger.level     = Logger::INFO
+    Rails.logger     = logger
   end
 end
