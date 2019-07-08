@@ -60,6 +60,7 @@ class Ability
     order_transport_abilities
     organisations_abilities
     organisations_users_abilities
+    requested_packages_abilities
     package_abilities
     package_type_abilities
     packages_locations_abilities
@@ -237,6 +238,10 @@ class Ability
     can [:update], OrganisationsUser, user_id: @user_id
   end
 
+  def requested_packages_abilities
+    can [:create, :destroy, :index, :checkout], RequestedPackage, user_id: @user_id
+  end
+
   def package_abilities
     if can_manage_packages?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
@@ -249,6 +254,8 @@ class Ability
       can [:index, :show], Package, { allow_web_publish: true}
     else
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
+      can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
+      can [:show], Package,  requested_packages: { user_id: @user_id }
     end
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }

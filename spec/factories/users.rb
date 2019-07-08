@@ -200,6 +200,12 @@ FactoryBot.define do
     trait :with_email do
       email { FFaker::Internet.email }
     end
+
+    trait :with_requested_packages do
+      after(:create) do |user, evaluator|
+        user.requested_packages << (create :requested_package, user_id: user.id)
+      end
+    end
   end
 
   factory :user_with_token, parent: :user do

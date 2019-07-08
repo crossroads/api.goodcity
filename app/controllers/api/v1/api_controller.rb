@@ -28,8 +28,8 @@ module Api
       end
     end
 
-    def render_error(error_message)
-      render json: { errors: error_message }, status: 422
+    def render_error(error_message, code: 422)
+      render json: { errors: error_message }, status: code
     end
 
     def render_objects_with_cache(object, pid)

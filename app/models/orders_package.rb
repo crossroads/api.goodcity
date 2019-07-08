@@ -10,6 +10,7 @@ class OrdersPackage < ActiveRecord::Base
   after_update -> { recalculate_quantity("update") }
   before_destroy -> { destroy_stockit_record("destroy") }
   #after_destroy -> { order.delete_if_no_orders_packages }
+  after_commit -> { package.update_carts }
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
@@ -71,7 +72,7 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def update_state_to_designated
-    package.update_allow_web_publish_to_false
+    package.unpublish
     update(state: 'designated')
   end
 
