@@ -32,12 +32,21 @@ en:
     thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
     unread_message_sms: |
       You've got notifications in GoodCity, please check the latest updates. %{url}.
+  cart:
+    items_unavailable: "One or many requested items are no longer available"
+    bad_order: "Bad or missing order id"
+    already_submitted: "The order has already been submitted"
+    no_checkout_to_appointment: "Cannot checkout an appointment"
   activerecord:
     attributes:
       user:
         mobile: "Mobile"
     errors:
       models:
+        requested_package:
+          attributes:
+            package_id:
+              taken: "already in the cart"
         user:
           attributes:
             mobile:

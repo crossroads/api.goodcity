@@ -68,10 +68,10 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe "update_allow_web_publish_to_false" do
+  describe "unpublish" do
     it "should set allow_web_publish=false" do
       @package = create :package, allow_web_publish: true
-      @package.update_allow_web_publish_to_false
+      @package.unpublish
       expect(@package.allow_web_publish).to eq(false)
     end
   end

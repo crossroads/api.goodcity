@@ -2,6 +2,10 @@
 class BookingType < ActiveRecord::Base
   has_many :orders
 
+  def appointment?
+    identifier == "appointment"
+  end
+
   def self.appointment
     BookingType.find_by(identifier: "appointment")
   end
