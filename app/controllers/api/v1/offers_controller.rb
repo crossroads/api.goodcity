@@ -70,9 +70,11 @@ module Api
 
       api :GET, '/v1/offers/search?searchText=xyz', "Search for offers"
       def search
-        @offers = @offers.search(search_text: params['searchText'])
-        @offers = @offers.order('created_at desc').limit(25)
-        render json: @offers.with_summary_eager_load.to_a, each_serializer: summary_serializer, summarize: true
+        records = @offers.search({ search_text: params['searchText'], states: array_param(:state) })
+        records = apply_filters(records)
+        records = records.page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+        offers = offer_response(records.with_summary_eager_load)
+        render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(offers)
       end
 
       api :GET, '/v1/offers/1', "List an offer"
@@ -150,6 +152,23 @@ module Api
         else
           offers
         end
+      end
+
+      def offer_response(records)
+        ActiveModel::ArraySerializer.new(
+          records,each_serializer: summary_serializer,
+          root: "offers"
+        ).as_json
+      end
+
+      def apply_filters(offers)
+        offers.filter({
+          state_names: array_param(:state),
+          priority: bool_param(:priority, false),
+          self_reviewer: bool_param(:selfReview, false),
+          before: time_epoch_param(:before),
+          after: time_epoch_param(:after)
+        })
       end
 
       def eager_load_offer
