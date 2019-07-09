@@ -389,21 +389,30 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   end
 
   describe "filtering search results" do
-    let!(:submitted_offer) { create :offer, :submitted, notes: 'Test' }
-    let!(:reviewing_offer) { create :offer, :under_review, notes: 'Tester' }
-    let!(:receiving_offer) { create :offer, :receiving, notes: 'Tester', reviewed_by_id: reviewer.id }
-    let!(:scheduled_offer) { create :offer, :scheduled, notes: 'Test' }
-    let!(:scheduled_offer1) { create :offer, :scheduled, notes: 'Test for before' }
-    let!(:priority_reviewed_offer) { create :offer, :reviewed, notes: 'Tester', review_completed_at: Time.now - 3.days }
-    let!(:priority_reviewing_offer) { create :offer, :under_review, notes: 'Tester', reviewed_at: Time.now - 2.days }
-    let!(:schedule) { create :schedule, scheduled_at: Time.now - 2.days }
-    let!(:schedule1) { create :schedule, scheduled_at: Time.now - 1.days }
+    let(:submitted_offer) { create :offer, :submitted, notes: 'Test' }
+    let(:reviewing_offer) { create :offer, :under_review, notes: 'Tester' }
+    let(:receiving_offer) { create :offer, :receiving, notes: 'Tester', reviewed_by_id: reviewer.id }
+    let(:scheduled_offer) { create :offer, :scheduled, notes: 'Test' }
+    let(:scheduled_offer1) { create :offer, :scheduled, notes: 'Test for before' }
+    let(:priority_reviewed_offer) { create :offer, :reviewed, notes: 'Tester', review_completed_at: Time.now - 3.days }
+    let(:priority_reviewing_offer) { create :offer, :under_review, notes: 'Tester', reviewed_at: Time.now - 2.days }
+    let(:schedule) { create :schedule, scheduled_at: Time.now - 3.days }
+    let(:schedule1) { create :schedule, scheduled_at: Time.now + 1.days }
     let(:delivery) { create :delivery, offer_id: scheduled_offer.id, schedule_id: schedule.id }
     let(:delivery1) { create :delivery, offer_id: scheduled_offer1.id, schedule_id: schedule1.id }
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
 
     context "state filter" do
+      before(:each) {
+        submitted_offer
+        reviewing_offer
+        receiving_offer
+        scheduled_offer
+        priority_reviewed_offer
+        priority_reviewing_offer
+      }
+
       it "return only offers with the specified states in params" do
         get :search, searchText: 'Test', state: "submitted"
         expect(response.status).to eq(200)
@@ -430,7 +439,14 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
 
     context "time filter"  do
-      let(:moment) { Time.zone.now.change(sec: 0).in_time_zone }
+      before(:each) {
+        schedule
+        schedule1
+        delivery
+        delivery1
+        scheduled_offer
+        scheduled_offer1
+      }
 
       def epoch_ms(time)
         time.to_i * 1000
@@ -440,7 +456,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         after = epoch_ms(Time.zone.now - 3.day)
         get :search, searchText: 'Test', after: after
         expect(response.status).to eq(200)
-        expect(subject['offers'].size).to eq(3)
+        expect(subject['offers'].size).to eq(2)
       end
 
       it 'can return offers scheduled before a certain time' do
@@ -453,6 +469,10 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
     context "Reviewer Filter" do
       before(:each) {
+        receiving_offer
+        reviewing_offer
+        receiving_offer
+        scheduled_offer
         User.current_user = reviewer
       }
 
@@ -465,7 +485,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "returns offers by all users" do
         get :search, searchText: 'Test'
         expect(response.status).to eq(200)
-        expect(subject['offers'].size).to eq(7)
+        expect(subject['offers'].size).to eq(3)
       end
     end
   end
