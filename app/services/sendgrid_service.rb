@@ -17,7 +17,7 @@ class SendgridService
   end
 
   def send_email
-    if send_to_sendgrid?
+    if send_to_sendgrid? || true
       sendgrid_instance.client.mail._("send").post(request_body: mail.to_json)
     end
 
@@ -42,6 +42,34 @@ class SendgridService
     @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
     @mail.template_id = ENV[appointment_template_id]
     send_email
+  end
+
+  def send_order_delivery_email(order)
+    return unless user.email.present?
+    @add_bcc = true
+    substitution_hash.merge!(user.email_properties)
+    substitution_hash.merge!(order.email_properties)
+    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
+    @mail.template_id = ENV[delivery_template_id]
+    send_email
+  end
+
+  def send_order_pickup_email(order)
+    return unless user.email.present?
+    @add_bcc = true
+    substitution_hash.merge!(user.email_properties)
+    substitution_hash.merge!(order.email_properties)
+    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
+    @mail.template_id = ENV[pickup_template_id]
+    send_email
+  end
+
+  def delivery_template_id
+    I18n.locale == :en ? "SENDGRID_DELIVERY_TEMPLATE_ID_EN" : "SENDGRID_DELIVERY_TEMPLATE_ID_ZH_TW"
+  end
+
+  def pickup_template_id
+    I18n.locale == :en ? "SENDGRID_PICKUP_TEMPLATE_ID_EN" : "SENDGRID_PICKUP_TEMPLATE_ID_ZH_TW"
   end
 
   def pin_template_id
