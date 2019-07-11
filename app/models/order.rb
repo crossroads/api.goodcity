@@ -251,6 +251,7 @@ class Order < ActiveRecord::Base
         order.designate_orders_packages
         order.send_new_order_notification
         order.send_new_order_confirmed_sms_to_charity
+        order.send_submission_email
       end
     end
 
@@ -265,6 +266,20 @@ class Order < ActiveRecord::Base
     return true unless processing?
     required_process_checks = ProcessChecklist.for_booking_type(booking_type)
     return (required_process_checks - process_checklists).empty?
+  end
+
+  def send_submission_email
+    return if created_by.nil?
+    sendgrid_instance = SendgridService.new(created_by)
+    begin
+      if booking_type == BookingType.appointment
+        sendgrid_instance.send_order_pickup_email self
+      elsif booking_type == BookingType.online
+        sendgrid_instance.send_order_delivery_email self
+      end
+    rescue => e
+      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid submission email")
+    end
   end
 
   def send_confirmation_email
@@ -398,6 +413,9 @@ class Order < ActiveRecord::Base
     props = {}
     props["order_code"] = code
     props["order_id"] = id
+    props["booking_type"] = booking_type.name_en
+    props["booking_type_chinese"] = booking_type.name_zh_tw
+    props["domain"] = Rails.env.staging? ? "browse-staging" : "browse"
     if order_transport
       props["scheduled_at"] = order_transport.scheduled_at.in_time_zone.strftime("%e %b %Y %H:%M%p")
     end
