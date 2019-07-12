@@ -251,7 +251,7 @@ class Order < ActiveRecord::Base
         order.designate_orders_packages
         order.send_new_order_notification
         order.send_new_order_confirmed_sms_to_charity
-        order.send_submission_email
+        order.send_order_submission_email
       end
     end
 
@@ -276,7 +276,7 @@ class Order < ActiveRecord::Base
     booking_type == BookingType.online_order
   end
 
-  def send_submission_email
+  def send_order_submission_email
     return if created_by.nil?
     sendgrid_instance = SendgridService.new(created_by)
     begin
