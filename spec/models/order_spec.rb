@@ -840,8 +840,6 @@ RSpec.describe Order, type: :model do
     end
   end
 
-
-
   describe 'Submission Emails' do
     let(:sendgrid) { SendgridService.new(user) }
     let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment )}
@@ -860,7 +858,7 @@ RSpec.describe Order, type: :model do
       ].each do |f|
         # mock calls that require external services
         allow(appointment).to receive(f).and_return(true)
-        allow(online_order).to receive(f).and_return(true)
+        allow(online_order1).to receive(f).and_return(true)
       end
     end
 
