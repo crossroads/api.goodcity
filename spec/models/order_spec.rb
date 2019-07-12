@@ -840,6 +840,65 @@ RSpec.describe Order, type: :model do
     end
   end
 
+
+
+  describe 'Submission Emails' do
+    let(:sendgrid) { SendgridService.new(user) }
+    let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment )}
+    let(:online_order1) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.online_order )}
+    let(:online_order2) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.online_order )}
+    let(:order_transport_self) {create(:order_transport, order: online_order1, transport_type: 'self')}
+    let(:order_transport_ggv) {create(:order_transport, order: online_order2, transport_type: 'ggv')}
+
+    before(:each) do
+      User.current_user = user
+      allow(SendgridService).to receive(:new).and_return(sendgrid)
+      [
+        :send_new_order_notification,
+        :add_to_stockit,
+        :send_new_order_confirmed_sms_to_charity
+      ].each do |f|
+        # mock calls that require external services
+        allow(appointment).to receive(f).and_return(true)
+        allow(online_order).to receive(f).and_return(true)
+      end
+    end
+
+    context 'Appointment submissions emails' do
+      it 'should send a confirmation email if an appointment finishes processing' do
+        appointment.submit
+        expect(sendgrid).to receive(:send_order_submission_email) do |o|
+          expect(o).to eq(appointment)
+        end
+      end
+    end
+
+    context 'Order submissions emails' do
+      it 'should send a confirmation email if an appointment finishes processing' do
+        online_order1.submit
+        expect(sendgrid).to receive(:send_order_submission_email) do |o|
+          expect(o).to eq(online_order1)
+        end
+      end
+    end
+
+    context '#send_submission_pickup_email?' do
+      it "should return true for appointment and self_pickup online order" do
+        expect(appointment.send_submission_pickup_email?).to be_truthy
+        expect(online_order1.send_submission_pickup_email?).to be_truthy
+        expect(online_order2.send_submission_pickup_email?).to be_falsey
+      end
+    end
+
+    context '#send_submission_delivery_email?' do
+      it "should return true for online order with order_transport" do
+        expect(appointment.send_submission_delivery_email?).to be_falsey
+        expect(online_order1.send_submission_delivery_email?).to be_falsey
+        expect(online_order2.send_submission_delivery_email?).to be_truthy
+      end
+    end
+  end
+
   describe "Live updates" do
     let(:push_service) { PushService.new }
     let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
