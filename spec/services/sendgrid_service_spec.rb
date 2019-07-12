@@ -120,7 +120,7 @@ describe SendgridService do
         expect(sendgrid).to receive(:send_email) do
           data_sent = sendgrid.substitution_hash
           expect(data_sent['order_code']).to eq(order.code)
-          expect(data_sent['domail']).to eq("browse")
+          expect(data_sent['domain']).to eq("browse")
           expect(data_sent['booking_type']).to eq(order.booking_type.name_en)
           expect(data_sent['booking_type_zh']).to eq(order.booking_type.name_zh_tw)
 
@@ -165,7 +165,7 @@ describe SendgridService do
         expect(sendgrid).to receive(:send_email) do
           data_sent = sendgrid.substitution_hash
           expect(data_sent['order_code']).to eq(order.code)
-          expect(data_sent['domail']).to eq("browse")
+          expect(data_sent['domain']).to eq("browse")
           expect(data_sent['booking_type']).to eq(order.booking_type.name_en)
           expect(data_sent['booking_type_zh']).to eq(order.booking_type.name_zh_tw)
 
