@@ -1,6 +1,8 @@
 class SendgridService
   attr_accessor :user, :template_name, :substitution_hash
 
+  MAIL_METHODS = %w[send_appointment_confirmation_email send_order_delivery_email send_order_pickup_email]
+
   def initialize(user)
     @user = user
     @mail ||= SendGrid::Mail.new
@@ -17,7 +19,7 @@ class SendgridService
   end
 
   def send_email
-    if send_to_sendgrid? || true
+    if send_to_sendgrid?
       sendgrid_instance.client.mail._("send").post(request_body: mail.to_json)
     end
 
@@ -34,34 +36,27 @@ class SendgridService
     send_email
   end
 
-  def send_appointment_confirmation_email(order)
-    return unless user.email.present?
-    @add_bcc = true
-    substitution_hash.merge!(user.email_properties)
-    substitution_hash.merge!(order.email_properties)
-    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
-    @mail.template_id = ENV[appointment_template_id]
-    send_email
+  MAIL_METHODS.each do |method|
+    define_method method.to_sym do |order|
+      return unless user.email.present?
+      @add_bcc = true
+      substitution_hash.merge!(user.email_properties)
+      substitution_hash.merge!(order.email_properties)
+      @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
+      @mail.template_id = template_id(method)
+      send_email
+    end
   end
 
-  def send_order_delivery_email(order)
-    return unless user.email.present?
-    @add_bcc = true
-    substitution_hash.merge!(user.email_properties)
-    substitution_hash.merge!(order.email_properties)
-    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
-    @mail.template_id = ENV[delivery_template_id]
-    send_email
-  end
-
-  def send_order_pickup_email(order)
-    return unless user.email.present?
-    @add_bcc = true
-    substitution_hash.merge!(user.email_properties)
-    substitution_hash.merge!(order.email_properties)
-    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
-    @mail.template_id = ENV[pickup_template_id]
-    send_email
+  def template_id(method)
+    case method
+    when "send_appointment_confirmation_email"
+      ENV[appointment_template_id]
+    when "send_order_delivery_email"
+      ENV[delivery_template_id]
+    when "send_order_pickup_email"
+      ENV[pickup_template_id]
+    end
   end
 
   def delivery_template_id
