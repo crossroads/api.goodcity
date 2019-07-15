@@ -269,7 +269,7 @@ class Order < ActiveRecord::Base
   end
 
   def send_submission_pickup_email?
-    booking_type.eql?(BookingType.appointment) || order_transport.transport_type.eql?("self")
+    booking_type.eql?(BookingType.appointment) || order_transport&.pickup?
   end
 
   def send_submission_delivery_email?
@@ -277,7 +277,7 @@ class Order < ActiveRecord::Base
   end
 
   def send_order_submission_email
-    return if created_by.nil?
+    return if created_by.nil? || !state.eql?("submitted")
     sendgrid_instance = SendgridService.new(created_by)
     begin
       if send_submission_pickup_email?

@@ -843,10 +843,10 @@ RSpec.describe Order, type: :model do
   describe 'Submission Emails' do
     let(:sendgrid) { SendgridService.new(user) }
     let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment )}
-    let(:online_order1) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.online_order )}
-    let(:online_order2) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.online_order )}
-    let(:order_transport_self) {create(:order_transport, order: online_order1, transport_type: 'self')}
-    let(:order_transport_ggv) {create(:order_transport, order: online_order2, transport_type: 'ggv')}
+    let(:online_order1) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
+    let(:online_order2) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
+    let(:order_transport1) { create(:order_transport, order: online_order1) }
+    let(:order_transport2) { create(:order_transport, order: online_order2, transport_type: 'ggv') }
 
     before(:each) do
       User.current_user = user
@@ -859,40 +859,27 @@ RSpec.describe Order, type: :model do
         # mock calls that require external services
         allow(appointment).to receive(f).and_return(true)
         allow(online_order1).to receive(f).and_return(true)
-      end
-    end
-
-    context 'Appointment submissions emails' do
-      it 'should send a confirmation email if an appointment finishes processing' do
-        appointment.submit
-        expect(sendgrid).to receive(:send_order_submission_email) do |o|
-          expect(o).to eq(appointment)
-        end
-      end
-    end
-
-    context 'Order submissions emails' do
-      it 'should send a confirmation email if an appointment finishes processing' do
-        online_order1.submit
-        expect(sendgrid).to receive(:send_order_submission_email) do |o|
-          expect(o).to eq(online_order1)
-        end
+        allow(online_order2).to receive(f).and_return(true)
       end
     end
 
     context '#send_submission_pickup_email?' do
       it "should return true for appointment and self_pickup online order" do
+        online_order1.submit!
+        expect(order_transport1.order.send_submission_pickup_email?).to be_truthy
+        appointment.submit!
         expect(appointment.send_submission_pickup_email?).to be_truthy
-        expect(online_order1.send_submission_pickup_email?).to be_truthy
-        expect(online_order2.send_submission_pickup_email?).to be_falsey
+        online_order2.submit!
+        expect(order_transport2.order.send_submission_pickup_email?).to be_falsey
       end
     end
 
     context '#send_submission_delivery_email?' do
       it "should return true for online order with order_transport" do
+        appointment.submit!
         expect(appointment.send_submission_delivery_email?).to be_falsey
-        expect(online_order1.send_submission_delivery_email?).to be_falsey
-        expect(online_order2.send_submission_delivery_email?).to be_truthy
+        online_order2.submit!
+        expect(order_transport2.order.send_submission_delivery_email?).to be_truthy
       end
     end
   end
