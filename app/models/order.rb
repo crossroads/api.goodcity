@@ -272,19 +272,11 @@ class Order < ActiveRecord::Base
     booking_type.appointment? || order_transport&.pickup?
   end
 
-  def send_submission_delivery_email?
-    booking_type.online_order?
-  end
-
   def send_order_submission_email
     return if created_by.nil? || !state.eql?("submitted")
-    sendgrid_instance = SendgridService.new(created_by)
+    type = send_submission_pickup_email? ? "submission_pickup" : "submission_delivery"
     begin
-      if send_submission_pickup_email?
-        sendgrid_instance.send_order_pickup_email self
-      elsif send_submission_delivery_email?
-        sendgrid_instance.send_order_delivery_email self
-      end
+      SendgridService.new(created_by).send_order_submission_email(self, type)
     rescue => e
       Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid submission email")
     end
@@ -293,7 +285,7 @@ class Order < ActiveRecord::Base
   def send_confirmation_email
     return if booking_type != BookingType.appointment || created_by.nil?
     begin
-      SendgridService.new(created_by).send_appointment_confirmation_email self
+      SendgridService.new(created_by).send_appointment_confirmation_email(self, "appointment_confirmation")
     rescue => e
       Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
     end

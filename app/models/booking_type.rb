@@ -6,10 +6,6 @@ class BookingType < ActiveRecord::Base
     identifier == "appointment"
   end
 
-  def online_order?
-    identifier == "online-order"
-  end
-
   def self.appointment
     BookingType.find_by(identifier: "appointment")
   end
