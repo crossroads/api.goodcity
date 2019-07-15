@@ -269,11 +269,11 @@ class Order < ActiveRecord::Base
   end
 
   def send_submission_pickup_email?
-    booking_type.eql?(BookingType.appointment) || order_transport&.pickup?
+    booking_type.appointment? || order_transport&.pickup?
   end
 
   def send_submission_delivery_email?
-    booking_type == BookingType.online_order
+    booking_type.online_order?
   end
 
   def send_order_submission_email
