@@ -840,6 +840,41 @@ RSpec.describe Order, type: :model do
     end
   end
 
+  describe 'Submission Emails' do
+    let(:sendgrid) { SendgridService.new(user) }
+    let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment )}
+    let(:online_order1) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
+    let(:online_order2) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
+    let(:order_transport1) { create(:order_transport, order: online_order1) }
+    let(:order_transport2) { create(:order_transport, order: online_order2, transport_type: 'ggv') }
+
+    before(:each) do
+      User.current_user = user
+      allow(SendgridService).to receive(:new).and_return(sendgrid)
+      [
+        :send_new_order_notification,
+        :add_to_stockit,
+        :send_new_order_confirmed_sms_to_charity
+      ].each do |f|
+        # mock calls that require external services
+        allow(appointment).to receive(f).and_return(true)
+        allow(online_order1).to receive(f).and_return(true)
+        allow(online_order2).to receive(f).and_return(true)
+      end
+    end
+
+    context '#send_submission_pickup_email?' do
+      it "should return true for appointment and self_pickup online order" do
+        online_order1.submit!
+        expect(order_transport1.order.send_submission_pickup_email?).to be_truthy
+        appointment.submit!
+        expect(appointment.send_submission_pickup_email?).to be_truthy
+        online_order2.submit!
+        expect(order_transport2.order.send_submission_pickup_email?).to be_falsey
+      end
+    end
+  end
+
   describe "Live updates" do
     let(:push_service) { PushService.new }
     let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
