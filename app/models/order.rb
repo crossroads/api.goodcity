@@ -126,7 +126,8 @@ class Order < ActiveRecord::Base
     state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch, :restart_process, :dispatching, :start_dispatching
 
     event :submit do
-      transition draft: :submitted
+      transition [:draft, :submitted] => :submitted
+      transition processing: :processing
     end
 
     event :start_processing do
