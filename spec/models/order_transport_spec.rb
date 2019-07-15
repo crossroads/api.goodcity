@@ -102,4 +102,18 @@ RSpec.describe OrderTransport, type: :model do
       order_transport.save
     end
   end
+
+  describe "#pickup?" do
+    let (:order) { create(:order, :with_state_submitted) }
+    let (:order_transport) { create(:order_transport, transport_type: "self", order_id: order.id) }
+    let (:order2) { create(:order, :with_state_submitted) }
+    let (:order_transport2) { create(:order_transport, transport_type: "ggv", order_id: order2.id) }
+
+    it "returns true if transport type is self" do
+      expect(order_transport.pickup?).to be_truthy
+    end
+    it "returns true if transport type is not self" do
+      expect(order_transport2.pickup?).to be_falsey
+    end
+  end
 end
