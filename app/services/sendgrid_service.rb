@@ -1,7 +1,7 @@
 class SendgridService
   attr_accessor :user, :template_name, :substitution_hash
 
-  MAIL_METHODS = %w[send_appointment_confirmation_email send_order_delivery_email send_order_pickup_email]
+  MAIL_METHODS = %w[send_appointment_confirmation_email send_order_submission_email]
 
   def initialize(user)
     @user = user
@@ -37,24 +37,28 @@ class SendgridService
   end
 
   MAIL_METHODS.each do |method|
-    define_method method.to_sym do |order|
-      return unless user.email.present?
-      @add_bcc = true
-      substitution_hash.merge!(user.email_properties)
-      substitution_hash.merge!(order.email_properties)
-      @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
-      @mail.template_id = template_id(method)
-      send_email
+    define_method method.to_sym do |order, template_name|
+      send_email_for_order(order, template_name)
     end
   end
 
-  def template_id(method)
-    case method
-    when "send_appointment_confirmation_email"
+  def send_email_for_order(order, template_name)
+    return unless user.email.present?
+    @add_bcc = true
+    substitution_hash.merge!(user.email_properties)
+    substitution_hash.merge!(order.email_properties)
+    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
+    @mail.template_id = template_id(template_name)
+    send_email
+  end
+
+  def template_id(template_name)
+    case template_name
+    when "appointment_confirmation"
       ENV[appointment_template_id]
-    when "send_order_delivery_email"
+    when "submission_delivery"
       ENV[delivery_template_id]
-    when "send_order_pickup_email"
+    when "submission_pickup"
       ENV[pickup_template_id]
     end
   end

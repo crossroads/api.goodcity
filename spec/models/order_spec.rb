@@ -873,15 +873,6 @@ RSpec.describe Order, type: :model do
         expect(order_transport2.order.send_submission_pickup_email?).to be_falsey
       end
     end
-
-    context '#send_submission_delivery_email?' do
-      it "should return true for online order with order_transport" do
-        appointment.submit!
-        expect(appointment.send_submission_delivery_email?).to be_falsey
-        online_order2.submit!
-        expect(order_transport2.order.send_submission_delivery_email?).to be_truthy
-      end
-    end
   end
 
   describe "Live updates" do
