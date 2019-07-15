@@ -254,9 +254,9 @@ class Ability
       can [:index, :show], Package, { allow_web_publish: true}
     else
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
-      can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
-      can [:show], Package,  requested_packages: { user_id: @user_id }
     end
+    can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
+    can [:show], Package,  requested_packages: { user_id: @user_id }
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
     can :destroy, Package, item: { state: 'draft' } if can_destroy_package_with_specific_states?
