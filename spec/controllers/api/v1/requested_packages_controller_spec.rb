@@ -234,12 +234,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
           expect(parsed_body['errors'][0]).to eq('You are not authorized to take this action.')
         end
 
-        it "fails if the order is already submitted" do
-          post :checkout, order_id: submitted_order.id
-          expect(response.status).to eq(422)
-          expect(parsed_body['errors'][0]).to eq('The order has already been submitted')
-        end
-
         it "fails if one of the packages is no longer available" do
           requested_packages[0].package.update!(allow_web_publish: false)
           post :checkout, order_id: draft_order.id
