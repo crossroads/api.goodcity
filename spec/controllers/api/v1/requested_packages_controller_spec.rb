@@ -158,7 +158,9 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         let(:other_order) { create(:order, :with_state_draft, created_by: other_user) }
         let(:draft_order) { create(:order, :with_state_draft, created_by: user) }
         let(:draft_appointment) { create(:order, :with_state_draft, booking_type: BookingType.appointment, created_by: user) }
-        let(:submitted_order) { create(:order, :with_state_submitted, submitted_by: user) }
+        let(:submitted_order) { create(:order, :with_state_submitted, submitted_by: user, created_by: user) }
+        let(:processing_order) { create(:order, :with_state_processing, submitted_by: user, created_by: user) }
+        let(:awaiting_dispatch_order) { create(:order, :with_state_awaiting_dispatch, submitted_by: user, created_by: user) }
         let!(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
 
         before do
@@ -180,6 +182,24 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
           order.orders_packages.each do |op|
             expect(op.state).to eq('designated')
           end
+        end
+
+        it "returns submitted order if the order is already submitted" do
+          post :checkout, order_id: submitted_order.id
+          expect(response.status).to eq(200)
+
+          order = Order.find(submitted_order.id)
+          expect(order.state).to eq('submitted')
+          expect(order.orders_packages.length).to eq(requested_packages.length)
+        end
+
+        it "returns processing order if the order is already processed" do
+          post :checkout, order_id: processing_order.id
+          expect(response.status).to eq(200)
+
+          order = Order.find(processing_order.id)
+          expect(order.state).to eq('processing')
+          expect(order.orders_packages.length).to eq(requested_packages.length)
         end
 
         it "ignores unavailable packages if the 'ignore_unavailable' flag is set" do
@@ -232,6 +252,12 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
           post :checkout, order_id: other_order.id
           expect(response.status).to eq(422)
           expect(parsed_body['errors'][0]).to eq('You are not authorized to take this action.')
+        end
+
+        it "fails if the order is scheduled" do
+          post :checkout, order_id: awaiting_dispatch_order.id
+          expect(response.status).to eq(422)
+          expect(parsed_body['errors'][0]).to eq('The order has already been processed')
         end
 
         it "fails if one of the packages is no longer available" do
