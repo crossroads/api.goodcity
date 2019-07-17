@@ -63,6 +63,8 @@ class Order < ActiveRecord::Base
 
   MY_ORDERS_AUTHORISED_STATES = ['submitted', 'closed', 'cancelled', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
 
+  NON_PROCESSED_STATES = ["processing", "submitted", "draft"].freeze
+
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
 
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
@@ -126,7 +128,8 @@ class Order < ActiveRecord::Base
     state :submitted, :processing, :closed, :cancelled, :awaiting_dispatch, :restart_process, :dispatching, :start_dispatching
 
     event :submit do
-      transition draft: :submitted
+      transition [:draft, :submitted] => :submitted
+      transition processing: :processing
     end
 
     event :start_processing do
