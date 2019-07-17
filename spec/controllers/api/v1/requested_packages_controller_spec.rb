@@ -184,7 +184,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
           end
         end
 
-        it "returns submitted order if the order is already submitted" do
+        it "doesn't modify the state of a submitted order" do
           post :checkout, order_id: submitted_order.id
           expect(response.status).to eq(200)
 
@@ -193,7 +193,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
           expect(order.orders_packages.length).to eq(requested_packages.length)
         end
 
-        it "returns processing order if the order is already processed" do
+        it "doesn't modify the state of a processing order" do
           post :checkout, order_id: processing_order.id
           expect(response.status).to eq(200)
 

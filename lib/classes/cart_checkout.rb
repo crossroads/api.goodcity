@@ -54,7 +54,7 @@ class CartCheckout
 
   def validate(order)
     return errors.add(:base, I18n.t('cart.bad_order')) if order.blank?
-    return errors.add(:base, I18n.t('cart.already_processed')) unless active_orders.include?(order.state)
+    return errors.add(:base, I18n.t('cart.already_processed')) unless Order::NON_PROCESSED_STATES.include?(order.state)
     return errors.add(:base, I18n.t('cart.no_checkout_to_appointment')) if order.booking_type.appointment?
     return errors.add(:base, I18n.t('warden.unauthorized')) if order.created_by_id != User.current_user.id
     errors.add(:base, I18n.t('cart.items_unavailable')) unless @ignore_unavailable || @requested_packages.all?(&:is_available)
@@ -90,9 +90,5 @@ class CartCheckout
 
   def add_errors(errs)
     errs.full_messages.each { |m| errors.add(:base, m) }
-  end
-
-  def active_orders
-    ["processing", "submitted", "draft"]
   end
 end
