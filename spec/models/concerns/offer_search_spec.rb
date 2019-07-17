@@ -27,10 +27,10 @@ context OfferSearch do
       it { expect(Offer.search({search_text: '+85261111111', states:[]}).to_a).to match_array([offer1]) }
     end
 
-    context "excludes draft offers" do
+    context "searches all offers if no states provided in options" do
       let!(:offer1) { create :offer, :submitted, notes: 'test notes' }
       let!(:offer2) { create :offer, state: 'draft', notes: 'test notes' }
-      it { expect(Offer.search({search_text: 'test notes', states:[]}).to_a).to match_array([offer1]) }
+      it { expect(Offer.search({search_text: 'test notes', states:[]}).to_a).to match_array([offer1, offer2]) }
     end
 
     context "offer messages content" do
@@ -42,7 +42,7 @@ context OfferSearch do
     context "offer item messages content" do
       let(:message) { create(:message, body: 'Test message body') }
       let(:item) { create :item, messages: [message] }
-      let!(:offer1) { create :offer, :submitted, items: [item] }
+      let!(:offer1) { create :offer, :submitted, messages: [message] }
       it { expect(Offer.search({search_text: 'Test message body', states:[]}).to_a).to match_array([offer1]) }
     end
 
