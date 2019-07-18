@@ -7,7 +7,9 @@ namespace :goodcity do
     location = Location.find_by(area: args.location_area)
     if location&.packages&.any?
       location.packages.update_all(allow_web_publish: true?(args.status))
-      puts "#{location.packages.count} packages updated to allow_web_publish: #{args.status}"
+      message = "#{location.packages.count} packages updated to allow_web_publish: #{args.status}"
+      puts message
+      Rails.logger.info(task: "set_publish_status_for_package", msg: message)
     end
   end
 end
