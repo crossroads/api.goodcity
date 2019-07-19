@@ -3,7 +3,7 @@ require "goodcity/offer_utils"
 module Api
   module V1
     class OffersController < Api::V1::ApiController
-      before_action :eager_load_offer, except: [:index, :create, :search]
+      before_action :eager_load_offer, except: [:index, :create, :search, :summary]
       load_and_authorize_resource :offer, parent: false
 
       resource_description do
@@ -137,6 +137,13 @@ module Api
         @offer.update_attributes({ state_event: 'mark_inactive' })
         @offer.send_message(params["offer"]["inactive_message"], User.current_user)
         render json: @offer, serializer: offer_serializer
+      end
+
+      def summary
+        priority_and_non_priority_active_offers_count = Offer.non_priority_active_offers_count.merge(
+          Offer.priority_active_offers_count
+        )
+        render json: priority_and_non_priority_active_offers_count
       end
 
       def merge_offer
