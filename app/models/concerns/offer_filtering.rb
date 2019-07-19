@@ -11,6 +11,7 @@ module OfferFiltering
 
     scope :filter, -> (options = {}) do
       res = where(nil)
+      res = res.assoicate_delivery_and_schedule if options[:is_summary_request]
       res = res.where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
       res = res.self_reviewer if options[:self_reviewer].present?
@@ -46,6 +47,12 @@ module OfferFiltering
       t = now.change(hour: 18, min: 0, sec: 0)
       t -= 24.hours if now < t
       t
+    end
+
+    def self.assoicate_delivery_and_schedule
+      res = joins("LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id")
+      res = res.joins("LEFT OUTER JOIN schedules ON deliveries.schedule_id = schedules.id")
+      res
     end
   end
 end

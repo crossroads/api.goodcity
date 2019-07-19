@@ -8,6 +8,7 @@ class Offer < ActiveRecord::Base
   include OfferFiltering
 
   NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
+  ACTIVE_OFFERS = ["under_review", "reviewed", "scheduled", "receiving"]
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
@@ -206,6 +207,27 @@ class Offer < ActiveRecord::Base
 
     def donor_states
       valid_states - ["draft"]
+    end
+
+    def non_priority_active_offers_count
+      active_offers_count_as_per_priority_and_state
+    end
+
+    def priority_active_offers_count
+      active_offers_count_as_per_priority_and_state(is_priority: true, is_summary_request: true)
+    end
+
+    def active_offers_count_as_per_priority_and_state(is_priority: false, is_summary_request: false)
+      offers = filter(state_names: ACTIVE_OFFERS, priority: is_priority, is_summary_request: is_summary_request).group_by(&:state)
+      if is_priority
+        offers_count_per_state(offers).transform_keys { |key| "priority_".concat(key) }
+      else
+        offers_count_per_state(offers)
+      end
+    end
+
+    def offers_count_per_state(offers)
+      offers.each { |key, value|  offers[key] = value.count }
     end
   end
 
