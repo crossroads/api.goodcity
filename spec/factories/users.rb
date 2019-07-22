@@ -27,6 +27,10 @@ FactoryBot.define do
       end
     end
 
+    trait :user_with_no_mobile do
+      mobile { nil }
+    end
+
     trait :with_multiple_roles_and_permissions do
       after(:create) do |user, evaluator|
         evaluator.roles_and_permissions.each_pair do |role_name, permissions|
