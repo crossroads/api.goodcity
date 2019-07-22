@@ -140,8 +140,9 @@ module Api
       end
 
       def summary
-        priority_and_non_priority_active_offers_count = Offer.non_priority_active_offers_count.merge(
-          Offer.priority_active_offers_count
+        self_reviewer = bool_param(:selfReview, false)
+        priority_and_non_priority_active_offers_count = Offer.non_priority_active_offers_count(self_reviewer=self_reviewer).merge(
+          Offer.priority_active_offers_count(self_reviewer=self_reviewer)
         )
         render json: priority_and_non_priority_active_offers_count
       end
@@ -173,6 +174,7 @@ module Api
           state_names: array_param(:state),
           priority: bool_param(:priority, false),
           self_reviewer: bool_param(:selfReview, false),
+          recent_offers: bool_param(:recent_offers, false),
           before: time_epoch_param(:before),
           after: time_epoch_param(:after)
         })

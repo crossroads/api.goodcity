@@ -8,7 +8,7 @@ class Offer < ActiveRecord::Base
   include OfferFiltering
 
   NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
-  ACTIVE_OFFERS = ["under_review", "reviewed", "scheduled", "receiving"]
+  ACTIVE_OFFERS = ["under_review", "reviewed", "scheduled", "receiving", "submitted"]
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
@@ -69,6 +69,7 @@ class Offer < ActiveRecord::Base
     states.push(*Offer.donor_states) if states.delete('donor_non_draft')
     where(state: states.uniq)
   }
+  scope :descending, -> { offer('offers.id desc') }
 
   before_create :set_language
   after_initialize :set_initial_state
@@ -209,16 +210,16 @@ class Offer < ActiveRecord::Base
       valid_states - ["draft"]
     end
 
-    def non_priority_active_offers_count
-      active_offers_count_as_per_priority_and_state
+    def non_priority_active_offers_count(self_reviewer)
+      active_offers_count_as_per_priority_and_state(self_reviewer)
     end
 
-    def priority_active_offers_count
-      active_offers_count_as_per_priority_and_state(is_priority: true, is_summary_request: true)
+    def priority_active_offers_count(self_reviewer)
+      active_offers_count_as_per_priority_and_state(self_reviewer, is_priority: true)
     end
 
-    def active_offers_count_as_per_priority_and_state(is_priority: false, is_summary_request: false)
-      offers = filter(state_names: ACTIVE_OFFERS, priority: is_priority, is_summary_request: is_summary_request).group_by(&:state)
+    def active_offers_count_as_per_priority_and_state(self_reviewer, is_priority: false)
+      offers = filter(state_names: ACTIVE_OFFERS, priority: is_priority, self_reviewer: self_reviewer).group_by(&:state)
       if is_priority
         offers_count_per_state(offers).transform_keys { |key| "priority_".concat(key) }
       else
