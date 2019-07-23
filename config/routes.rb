@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       end
 
       resources :offers, only: [:create, :update, :index, :show, :destroy] do
+        get 'summary', on: :collection
         collection do
           get :search
         end
