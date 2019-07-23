@@ -17,7 +17,7 @@ module OfferFiltering
       res = res.self_reviewer if options[:self_reviewer].present?
       res = res.due_after(options[:after]) if options[:after].present?
       res = res.due_before(options[:before]) if options[:before].present?
-      res = res.order("id DESC").limit(5) if options[:recent_offers].present?
+      res = res.order("id DESC").limit(5) if options[:recent_offers]
       res.distinct
     end
 

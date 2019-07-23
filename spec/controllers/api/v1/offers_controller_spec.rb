@@ -490,6 +490,41 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "GET /offers/summary" do
+    let!(:submitted_offer) { create :offer, :submitted, notes: 'Test' }
+    let!(:reviewing_offer) { create :offer, :under_review, notes: 'Tester' }
+    let!(:receiving_offer) { create :offer, :receiving, notes: 'Tester', reviewed_by_id: reviewer.id }
+    let!(:scheduled_offer) { create :offer, :scheduled, notes: 'Test', reviewed_by_id: reviewer.id  }
+    let!(:scheduled_offer1) { create :offer, :scheduled, notes: 'Test for before' }
+    let!(:priority_reviewed_offer) { create :offer, :reviewed, notes: 'Tester', review_completed_at: Time.now - 3.days, reviewed_by_id: reviewer.id }
+    let!(:priority_reviewing_offer) { create :offer, :under_review, notes: 'Tester', reviewed_at: Time.now - 2.days, reviewed_by_id: reviewer.id }
+
+    before(:each) { generate_and_set_token(reviewer) }
+    it "returns 200", :show_in_doc do
+      get :summary
+      expect(response.status).to eq(200)
+    end
+
+    it 'returns count for active offers' do
+      get :summary
+      expect(parsed_body['receiving']).to eq(1)
+      expect(parsed_body['under_review']).to eq(2)
+      expect(parsed_body['reviewed']).to eq(1)
+      expect(parsed_body['scheduled']).to eq(2)
+      expect(parsed_body['priority_reviewed']).to eq(1)
+      expect(parsed_body['priority_under_review']).to eq(1)
+    end
+
+    it "returns count for active offers reviewed if logged user provided in params" do
+      get :summary, selfReview: true
+      expect(parsed_body['receiving']).to eq(1)
+      expect(parsed_body['reviewed']).to eq(1)
+      expect(parsed_body['scheduled']).to eq(1)
+      expect(parsed_body['priority_reviewed']).to eq(1)
+      expect(parsed_body['priority_under_review']).to eq(1)
+    end
+  end
+
   context "GET offers/search" do
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
