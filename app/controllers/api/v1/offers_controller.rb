@@ -72,7 +72,7 @@ module Api
       def search
         records = @offers.search({ search_text: params['searchText'], states: array_param(:state) })
         records = apply_filters(records)
-        records = records.page(params["page"]).per(params["per_page"] || params["recent_offer_per"]|| DEFAULT_SEARCH_COUNT)
+        records = records.page(params["page"]).per(params["per_page"] || params["recent_offer_count"] || DEFAULT_SEARCH_COUNT)
         offers = offer_response(records.with_summary_eager_load)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(offers)
       end

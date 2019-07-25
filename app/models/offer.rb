@@ -7,8 +7,8 @@ class Offer < ActiveRecord::Base
   include OfferSearch
   include OfferFiltering
 
-  NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
-  ACTIVE_OFFERS = ["under_review", "reviewed", "scheduled", "receiving"]
+  NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"].freeze
+  ACTIVE_OFFERS = ["under_review", "reviewed", "scheduled", "receiving"].freeze
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
@@ -69,7 +69,6 @@ class Offer < ActiveRecord::Base
     states.push(*Offer.donor_states) if states.delete('donor_non_draft')
     where(state: states.uniq)
   }
-  scope :descending, -> { offer('offers.id desc') }
 
   before_create :set_language
   after_initialize :set_initial_state
