@@ -72,7 +72,7 @@ module Api
       def search
         records = @offers.search({ search_text: params['searchText'], states: array_param(:state) })
         records = apply_filters(records)
-        records = records.page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+        records = records.page(params["page"]).per(params["per_page"] || params["recent_offer_per"]|| DEFAULT_SEARCH_COUNT)
         offers = offer_response(records.with_summary_eager_load)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(offers)
       end
@@ -140,9 +140,8 @@ module Api
       end
 
       def summary
-        self_reviewer = bool_param(:selfReview, false)
-        priority_and_non_priority_active_offers_count = Offer.non_priority_active_offers_count(self_reviewer=self_reviewer).merge(
-          Offer.priority_active_offers_count(self_reviewer=self_reviewer)
+        priority_and_non_priority_active_offers_count = Offer.priority_and_non_priority_offers_count_for(self_reviewer: false).merge(
+          Offer.priority_and_non_priority_offers_count_for(self_reviewer: true)
         )
         render json: priority_and_non_priority_active_offers_count
       end
