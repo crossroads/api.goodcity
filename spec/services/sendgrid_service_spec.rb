@@ -68,7 +68,7 @@ describe SendgridService do
           expect(data_sent['contact_organisation_name_zh_tw']).to eq(user.organisations.first.name_zh_tw)
         end
 
-        sendgrid.send_appointment_confirmation_email(order, "appointment_confirmation")
+        sendgrid.send_appointment_confirmation_email(order)
       end
 
 
@@ -83,7 +83,7 @@ describe SendgridService do
           expect(data_sent['client'][:id_type]).to eq(order.beneficiary.identity_type.name_en)
           expect(data_sent['client'][:id_no]).to eq(order.beneficiary.identity_number)
         end
-        sendgrid.send_appointment_confirmation_email(order, "appointment_confirmation")
+        sendgrid.send_appointment_confirmation_email(order)
       end
     end
 
@@ -112,7 +112,7 @@ describe SendgridService do
           expect(data_sent['contact_organisation_name_zh_tw']).to eq(user.organisations.first.name_zh_tw)
         end
 
-        sendgrid.send_order_submission_email(order, "submission_pickup")
+        sendgrid.send_order_submission_pickup_email(order)
       end
 
 
@@ -131,7 +131,7 @@ describe SendgridService do
           expect(data_sent['client'][:id_type]).to eq(order.beneficiary.identity_type.name_en)
           expect(data_sent['client'][:id_no]).to eq(order.beneficiary.identity_number)
         end
-        sendgrid.send_order_submission_email(order, "submission_pickup")
+        sendgrid.send_order_submission_pickup_email(order)
       end
     end
   end
@@ -157,7 +157,7 @@ describe SendgridService do
           expect(data_sent['contact_organisation_name_en']).to eq(user.organisations.first.name_en)
           expect(data_sent['contact_organisation_name_zh_tw']).to eq(user.organisations.first.name_zh_tw)
         end
-        sendgrid.send_order_submission_email(order, "submission_delivery")
+        sendgrid.send_order_submission_delivery_email(order)
       end
 
 
@@ -176,7 +176,7 @@ describe SendgridService do
           expect(data_sent['client'][:id_type]).to eq(order.beneficiary.identity_type.name_en)
           expect(data_sent['client'][:id_no]).to eq(order.beneficiary.identity_number)
         end
-        sendgrid.send_order_submission_email(order, "submission_delivery")
+        sendgrid.send_order_submission_delivery_email(order)
       end
     end
   end

@@ -765,77 +765,92 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe 'Confirmation emails' do
-    let(:sendgrid) { SendgridService.new(user) }
-    let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment )}
-    let(:online_order) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.online_order )}
+  [
+    #
+    # Confirmation emails
+    # Different scenarios to test
+    #
+    {
+      booking_type: 'appointment',
+      transport_type: nil,
+      email_service_method: :send_appointment_confirmation_email
+    },
+    {
+      booking_type: 'online_order',
+      transport_type: 'self',
+      email_service_method: :send_order_confirmation_pickup_email
+    },
+    {
+      booking_type: 'online_order',
+      transport_type: 'ggv',
+      email_service_method: :send_order_confirmation_delivery_email
+    }
+  ].each do |test_scenario|
+    type, transport_type, email_service_method  = test_scenario.values_at(
+      :booking_type, :transport_type, :email_service_method
+    )
 
-    before(:each) do
-      User.current_user = user
-      allow(SendgridService).to receive(:new).and_return(sendgrid)
-      [
-        :send_new_order_notification,
-        :add_to_stockit,
-        :send_new_order_confirmed_sms_to_charity
-      ].each do |f|
-        # mock calls that require external services
-        allow(appointment).to receive(f).and_return(true)
-        allow(online_order).to receive(f).and_return(true)
+    describe "#{type} confirmation emails" do
+      let(:sendgrid) { SendgridService.new(user) }
+      let(:order) do
+        order_transport = transport_type ? create(:order_transport, transport_type: transport_type) : nil
+        create(:order, :with_state_draft, :with_created_by, order_transport: order_transport, booking_type: BookingType.send(type))
       end
-    end
 
-    context 'Appointment confirmations' do
-
-      it 'should send a confirmation email if an appointment finishes processing' do
-        appointment.submit
-        appointment.start_processing
-        expect(sendgrid).to receive(:send_appointment_confirmation_email) do |o|
-          expect(o).to eq(appointment)
+      before(:each) do
+        User.current_user = user
+        allow(SendgridService).to receive(:new).and_return(sendgrid)
+        [
+          :send_new_order_notification,
+          :add_to_stockit,
+          :send_new_order_confirmed_sms_to_charity
+        ].each do |f|
+          # mock calls that require external services
+          allow(order).to receive(f).and_return(true)
         end
-        appointment.finish_processing
       end
 
-      it 'should send a confirmation email if an appointment finishes processing a second time' do
-        appointment.submit # start
-        appointment.start_processing
-        appointment.finish_processing # finish, triggers an email
-        appointment.restart_process # restart
-        appointment.start_processing
-
-        expect(sendgrid).to receive(:send_appointment_confirmation_email) do |o|
-          expect(o).to eq(appointment)
+      it "should send a confirmation email if an #{type} finishes processing" do
+        order.submit
+        order.start_processing
+        expect(sendgrid).to receive(email_service_method) do |o|
+          expect(o).to eq(order)
         end
-        appointment.finish_processing # finish again, should re-trigger an email
+        order.finish_processing
       end
 
-      it 'should NOT send a confirmation email before an appointment is finished processing' do
-        expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
-        online_order.submit
-        online_order.start_processing
+      it "should send a confirmation email if an #{type} finishes processing a second time" do
+        order.submit # start
+        order.start_processing
+        order.finish_processing # finish, triggers an email
+        order.restart_process # restart
+        order.start_processing
+
+        expect(sendgrid).to receive(email_service_method) do |o|
+          expect(o).to eq(order)
+        end
+        order.finish_processing # finish again, should re-trigger an email
       end
 
-      it 'should NOT send a confirmation email after an appointment is finished processing' do
-        appointment.submit
-        appointment.start_processing
-        appointment.finish_processing
-        expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
-        online_order.start_dispatching
-        online_order.close
+      it "should NOT send a confirmation email before an #{type} is finished processing" do
+        expect(sendgrid).not_to receive(email_service_method)
+        order.submit
+        order.start_processing
       end
 
-      it 'should NOT send a confirmation email when an appointment is cancelled' do
-        expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
-        appointment.submit
-        appointment.cancel
+      it "should NOT send a confirmation email after an #{type} is finished processing" do
+        order.submit
+        order.start_processing
+        order.finish_processing
+        expect(sendgrid).not_to receive(email_service_method)
+        order.start_dispatching
+        order.close
       end
 
-      it 'should NEVER send a confirmation email for an online order' do
-        expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
-        online_order.submit
-        online_order.start_processing
-        online_order.finish_processing
-        online_order.start_dispatching
-        online_order.close
+      it "should NOT send a confirmation email when an #{type} is cancelled" do
+        expect(sendgrid).not_to receive(email_service_method)
+        order.submit
+        order.cancel
       end
     end
   end

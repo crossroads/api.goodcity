@@ -278,19 +278,26 @@ class Order < ActiveRecord::Base
   def send_order_submission_email
     return if created_by.nil? || !state.eql?("submitted")
     type = send_submission_pickup_email? ? "submission_pickup" : "submission_delivery"
-    begin
-      SendgridService.new(created_by).send_order_submission_email(self, type)
-    rescue => e
-      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid submission email")
-    end
+    SendgridService.new(created_by).send_email_for_order(self, type)
   end
 
   def send_confirmation_email
-    return if booking_type != BookingType.appointment || created_by.nil?
-    begin
-      SendgridService.new(created_by).send_appointment_confirmation_email(self, "appointment_confirmation")
-    rescue => e
-      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
+    send_appointment_confirmation_email if booking_type.appointment?
+    send_online_order_confirmation_email if booking_type.online_order?
+  end
+
+  def send_appointment_confirmation_email
+    return unless booking_type.appointment? && created_by.present?
+    SendgridService.new(created_by).send_appointment_confirmation_email(self)
+  end
+
+  def send_online_order_confirmation_email
+    return unless booking_type.online_order? && created_by.present?
+    email_service = SendgridService.new(created_by)
+    if order_transport.pickup?
+      email_service.send_order_confirmation_pickup_email(self)
+    else
+      email_service.send_order_confirmation_delivery_email(self)
     end
   end
 
@@ -436,6 +443,13 @@ class Order < ActiveRecord::Base
         type_en: gc.package_type.name_en,
         type_zh_tw: gc.package_type.name_zh_tw,
         description: gc.description
+      }
+    end
+    props['goods'] = orders_packages.select(&:designated?).map do |op|
+      {
+        quantity: op.quantity,
+        type_en: op.package.package_type.name_en,
+        type_zh_tw: op.package.package_type.name_zh_tw
       }
     end
     props
