@@ -26,6 +26,10 @@ class OrderTransport < ActiveRecord::Base
     ]
   end
 
+  def pickup?
+    transport_type == "self"
+  end
+
   def invalid_timeslot
     self.timeslot.blank? || (/^\d{1,2}(:\d{2})?(AM|PM)/ =~ self.timeslot) != 0
   end

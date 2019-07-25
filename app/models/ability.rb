@@ -60,6 +60,7 @@ class Ability
     order_transport_abilities
     organisations_abilities
     organisations_users_abilities
+    requested_packages_abilities
     package_abilities
     package_type_abilities
     packages_locations_abilities
@@ -200,7 +201,7 @@ class Ability
 
   def order_abilities
     can :create, Order
-    can [:index, :show, :update, :destroy], Order, created_by_id: @user_id
+    can %i[index show update destroy transition], Order, created_by_id: @user_id
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :transition, :destroy, :summary], Order
       can :index, ProcessChecklist
@@ -237,6 +238,10 @@ class Ability
     can [:update], OrganisationsUser, user_id: @user_id
   end
 
+  def requested_packages_abilities
+    can [:create, :destroy, :index, :checkout], RequestedPackage, user_id: @user_id
+  end
+
   def package_abilities
     if can_manage_packages?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
@@ -250,6 +255,8 @@ class Ability
     else
       can [:index, :show, :create, :update], Package, item: { offer: { created_by_id: @user_id } }
     end
+    can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
+    can [:show], Package,  requested_packages: { user_id: @user_id }
     can :create, Package if @api_user
     can :destroy, Package, item: { offer: { created_by_id: @user_id }, state: 'draft' }
     can :destroy, Package, item: { state: 'draft' } if can_destroy_package_with_specific_states?

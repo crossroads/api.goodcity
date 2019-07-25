@@ -25,6 +25,7 @@ class Package < ActiveRecord::Base
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
+  has_many   :requested_packages, dependent: :destroy
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
@@ -38,6 +39,7 @@ class Package < ActiveRecord::Base
   after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   after_save :dispatch_orders_package, if: :dispatch_from_stockit?
+  after_save :update_carts
 
   # Live update rules
   after_save :push_changes
@@ -300,8 +302,16 @@ class Package < ActiveRecord::Base
     packages_locations.destroy_all
   end
 
-  def update_allow_web_publish_to_false
+  def unpublish
     update(allow_web_publish: false)
+  end
+
+  def publish
+    update(allow_web_publish: true)
+  end
+
+  def published?
+    allow_web_publish.present?
   end
 
   def add_to_stockit
@@ -342,6 +352,11 @@ class Package < ActiveRecord::Base
   def updated_received_package?
     !self.previous_changes.key?("state") && received? &&
     !GoodcitySync.request_from_stockit
+  end
+
+  def designate_to_stockit_order!(order_id)
+    designate_to_stockit_order(order_id)
+    save
   end
 
   def designate_to_stockit_order(order_id)
@@ -569,6 +584,10 @@ class Package < ActiveRecord::Base
 
   def donor_condition_name
     donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
+  end
+
+  def update_carts
+    requested_packages.each(&:update_availability!)
   end
 
   private
