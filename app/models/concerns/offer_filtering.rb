@@ -10,14 +10,14 @@ module OfferFiltering
     #   -[:after] = timestamp
 
     scope :filter, -> (options = {}) do
-      res = where(nil)
+      res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
       res = res.where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
       res = res.self_reviewer if options[:self_reviewer].present?
       res = res.due_after(options[:after]) if options[:after].present?
       res = res.due_before(options[:before]) if options[:before].present?
-      res = res.order("id DESC").limit(5) if options[:recent_offers]
+      res = res.order("id DESC") if options[:recent_offers]
       res.distinct
     end
 

@@ -8,7 +8,7 @@ class Offer < ActiveRecord::Base
   include OfferFiltering
 
   NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
-  ACTIVE_OFFERS = ["under_review", "reviewed", "scheduled", "receiving", "submitted"]
+  ACTIVE_OFFERS = ["under_review", "reviewed", "scheduled", "receiving"]
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
@@ -210,12 +210,28 @@ class Offer < ActiveRecord::Base
       valid_states - ["draft"]
     end
 
+    def priority_and_non_priority_offers_count_for(self_reviewer: false)
+      non_priority_active_offers_count(self_reviewer).merge(
+        priority_active_offers_count(self_reviewer)
+      )
+    end
+
     def non_priority_active_offers_count(self_reviewer)
-      active_offers_count_as_per_priority_and_state(self_reviewer)
+      all_offers_count = active_offers_count_as_per_priority_and_state(self_reviewer)
+      total = all_offers_count.values.reduce(:+)
+      all_offers_count["active_offers_total_count"] = total
+      all_offers_count = prepend_keys_with_reviewer(all_offers_count) if self_reviewer
+      all_offers_count
     end
 
     def priority_active_offers_count(self_reviewer)
-      active_offers_count_as_per_priority_and_state(self_reviewer, is_priority: true)
+      all_offers_count = active_offers_count_as_per_priority_and_state(self_reviewer, is_priority: true)
+      all_offers_count = prepend_keys_with_reviewer(all_offers_count) if self_reviewer
+      all_offers_count
+    end
+
+    def prepend_keys_with_reviewer(offers_count_hash)
+      offers_count_hash.transform_keys { |key| "reviewer_".concat(key) }
     end
 
     def active_offers_count_as_per_priority_and_state(self_reviewer, is_priority: false)

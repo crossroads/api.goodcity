@@ -390,6 +390,8 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
   describe "filtering search results" do
     let(:submitted_offer) { create :offer, :submitted, notes: 'Test' }
+    let(:submitted_offer1) { create :offer, :submitted, notes: 'Test' }
+    let(:submitted_offer2) { create :offer, :submitted, notes: 'Test' }
     let(:reviewing_offer) { create :offer, :under_review, notes: 'Tester' }
     let(:receiving_offer) { create :offer, :receiving, notes: 'Tester', reviewed_by_id: reviewer.id }
     let(:scheduled_offer) { create :offer, :scheduled, notes: 'Test' }
@@ -467,6 +469,36 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
     end
 
+    context "recent_offers" do
+      before(:each) {
+        schedule
+        schedule1
+        submitted_offer
+        submitted_offer1
+        submitted_offer2
+      }
+
+      it "returns recent_offers if 'recent_offers' is present in params" do
+        get :search, recent_offers:true, state: 'submitted'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(3)
+      end
+
+      it "returns recent_offers according to 'recent_offer_per' param" do
+        get :search, recent_offer_per:2, recent_offers:true, state: 'submitted'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(2)
+      end
+
+      it "returns recent_offers sorted in most recent order" do
+        get :search, recent_offer_per:2, recent_offers:true, state: 'submitted'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(2)
+        expect(subject['offers'].first["id"]).to eq(submitted_offer2.id)
+      end
+
+    end
+
     context "Reviewer Filter" do
       before(:each) {
         receiving_offer
@@ -515,13 +547,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       expect(parsed_body['priority_under_review']).to eq(1)
     end
 
-    it "returns count for active offers reviewed if logged user provided in params" do
-      get :summary, selfReview: true
-      expect(parsed_body['receiving']).to eq(1)
-      expect(parsed_body['reviewed']).to eq(1)
-      expect(parsed_body['scheduled']).to eq(1)
-      expect(parsed_body['priority_reviewed']).to eq(1)
-      expect(parsed_body['priority_under_review']).to eq(1)
+    it "returns count for active offers reviewed for logged in User" do
+      get :summary
+      expect(parsed_body['reviewer_receiving']).to eq(1)
+      expect(parsed_body['reviewer_reviewed']).to eq(1)
+      expect(parsed_body['reviewer_scheduled']).to eq(1)
+      expect(parsed_body['reviewer_under_review']).to eq(1)
+      expect(parsed_body['reviewer_priority_reviewed']).to eq(1)
+      expect(parsed_body['reviewer_priority_under_review']).to eq(1)
+    end
+
+    it "returns all total count active offers and for logged in Reviewer" do
+      get :summary
+      expect(parsed_body['active_offers_total_count']).to eq(6)
+      expect(parsed_body['reviewer_active_offers_total_count']).to eq(4)
     end
   end
 
