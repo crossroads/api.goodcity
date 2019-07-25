@@ -388,6 +388,108 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
   end
 
+  describe "filtering search results" do
+    let(:submitted_offer) { create :offer, :submitted, notes: 'Test' }
+    let(:reviewing_offer) { create :offer, :under_review, notes: 'Tester' }
+    let(:receiving_offer) { create :offer, :receiving, notes: 'Tester', reviewed_by_id: reviewer.id }
+    let(:scheduled_offer) { create :offer, :scheduled, notes: 'Test' }
+    let(:scheduled_offer1) { create :offer, :scheduled, notes: 'Test for before' }
+    let(:priority_reviewed_offer) { create :offer, :reviewed, notes: 'Tester', review_completed_at: Time.now - 3.days }
+    let(:priority_reviewing_offer) { create :offer, :under_review, notes: 'Tester', reviewed_at: Time.now - 2.days }
+    let(:schedule) { create :schedule, scheduled_at: Time.now - 3.days }
+    let(:schedule1) { create :schedule, scheduled_at: Time.now + 1.days }
+    let(:delivery) { create :delivery, offer_id: scheduled_offer.id, schedule_id: schedule.id }
+    let(:delivery1) { create :delivery, offer_id: scheduled_offer1.id, schedule_id: schedule1.id }
+    before(:each) { generate_and_set_token(reviewer) }
+    subject { JSON.parse(response.body) }
+
+    context "state filter" do
+      before(:each) {
+        submitted_offer
+        reviewing_offer
+        receiving_offer
+        scheduled_offer
+        priority_reviewed_offer
+        priority_reviewing_offer
+      }
+
+      it "return only offers with the specified states in params" do
+        get :search, searchText: 'Test', state: "submitted"
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(1)
+      end
+
+      it "return offer with multiple states specified in params" do
+        get :search, searchText: 'Test', state: 'submitted,under_review'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(3)
+      end
+
+      it "returns offers in priority" do
+        get :search, searchText: 'Test', state: 'reviewed,under_review,submitted', priority: true
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(2)
+      end
+
+      it "returns all offers if no states speicified in params" do
+        get :search, searchText: 'Test', state: 'submitted,under_review'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(3)
+      end
+    end
+
+    context "time filter"  do
+      before(:each) {
+        schedule
+        schedule1
+        delivery
+        delivery1
+        scheduled_offer
+        scheduled_offer1
+      }
+
+      def epoch_ms(time)
+        time.to_i * 1000
+      end
+
+      it 'can return offers scheduled after a certain time' do
+        after = epoch_ms(Time.zone.now - 3.day)
+        get :search, searchText: 'Test', after: after
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(2)
+      end
+
+      it 'can return offers scheduled before a certain time' do
+        before = epoch_ms(Time.zone.now)
+        get :search, searchText: 'Test', before: before
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(1)
+      end
+    end
+
+    context "Reviewer Filter" do
+      before(:each) {
+        receiving_offer
+        reviewing_offer
+        receiving_offer
+        scheduled_offer
+        User.current_user = reviewer
+      }
+
+      it "returns offers created by logged in user if selfReview is present in params" do
+        get :search, searchText: 'Test', selfReview: true
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(1)
+      end
+
+      it "returns offers by all users" do
+        get :search, searchText: 'Test'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(3)
+      end
+    end
+  end
+
   context "GET offers/search" do
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }

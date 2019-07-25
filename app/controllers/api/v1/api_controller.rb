@@ -28,8 +28,8 @@ module Api
       end
     end
 
-    def render_error(error_message)
-      render json: { errors: error_message }, status: 422
+    def render_error(error_message, code: 422)
+      render json: { errors: error_message }, status: code
     end
 
     def render_objects_with_cache(object, pid)
@@ -53,6 +53,20 @@ module Api
     def per_page
       @per_page = params['per_page'].to_i
       (@per_page.zero? || @per_page > DEFAULT_SEARCH_COUNT) ? DEFAULT_SEARCH_COUNT : @per_page
+    end
+
+    def array_param(key)
+      params.fetch(key, "").strip.split(',')
+    end
+
+    def bool_param(key, default)
+      return default if params[key].nil?
+      params[key].to_s == "true"
+    end
+
+    def time_epoch_param(key)
+      timestamp = params.fetch(key, nil)
+      return timestamp ? Time.at(Integer(timestamp) / 1000).in_time_zone : nil
     end
 
     private

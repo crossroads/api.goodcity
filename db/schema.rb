@@ -639,6 +639,17 @@ ActiveRecord::Schema.define(version: 20190614084900) do
     t.string   "name_zh_tw"
   end
 
+  create_table "requested_packages", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "package_id"
+    t.boolean "is_available"
+  end
+
+  add_index "requested_packages", ["package_id", "user_id"], name: "index_requested_packages_on_package_id_and_user_id", unique: true, using: :btree
+  add_index "requested_packages", ["package_id"], name: "index_requested_packages_on_package_id", using: :btree
+  add_index "requested_packages", ["user_id", "package_id"], name: "index_requested_packages_on_user_id_and_package_id", unique: true, using: :btree
+  add_index "requested_packages", ["user_id"], name: "index_requested_packages_on_user_id", using: :btree
+
   create_table "role_permissions", force: :cascade do |t|
     t.integer  "role_id"
     t.integer  "permission_id"
