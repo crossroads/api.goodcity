@@ -65,7 +65,7 @@ module Api
         @options = { each_serializer: select_serializer, include_orders_packages: false,
           exclude_messages: params["exclude_messages"] == "true", root: 'offers' }
         @options.merge!(summarize: true) if params[:summarize] == 'true'
-        render json: @offers, **@options
+        render json: ActiveModel::ArraySerializer.new(@offers.with_summary_eager_load, **@options).as_json
       end
 
       api :GET, '/v1/offers/search?searchText=xyz', "Search for offers"
