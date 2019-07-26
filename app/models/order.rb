@@ -293,12 +293,10 @@ class Order < ActiveRecord::Base
 
   def send_online_order_confirmation_email
     return unless booking_type.online_order? && created_by.present?
-    email_service = SendgridService.new(created_by)
-    if order_transport.pickup?
-      email_service.send_order_confirmation_pickup_email(self)
-    else
-      email_service.send_order_confirmation_delivery_email(self)
-    end
+    sendgrid = SendgridService.new(created_by)
+    order_transport.pickup? ?
+      sendgrid.send_order_confirmation_pickup_email(self) :
+      sendgrid.send_order_confirmation_delivery_email(self)
   end
 
   def send_new_order_notification
