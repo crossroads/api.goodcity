@@ -220,8 +220,8 @@ class Offer < ActiveRecord::Base
 
     def offers_count_for(self_reviewer: false)
       res = {}
-      res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: false, self_reviewer: self_reviewer})
-      res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: true, self_reviewer: self_reviewer})
+      res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: false, self_reviewer: self_reviewer })
+      res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: true, self_reviewer: self_reviewer })
       res
     end
 
@@ -234,7 +234,7 @@ class Offer < ActiveRecord::Base
     end
 
     def offers_count_per_state(offer)
-      offer.each { |key, value|  offer[key] = value.count }
+      offer.each { |key, value| offer[key] = value.count }
     end
   end
 

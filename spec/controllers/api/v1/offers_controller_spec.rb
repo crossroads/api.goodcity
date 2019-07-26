@@ -484,14 +484,14 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(subject['offers'].size).to eq(3)
       end
 
-      it "returns recent_offers according to 'recent_offer_per' param" do
-        get :search, recent_offer_per:2, recent_offers:true, state: 'submitted'
+      it "returns recent_offers according to 'recent_offer_count' param" do
+        get :search, recent_offer_count:2, recent_offers:true, state: 'submitted'
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
       end
 
       it "returns recent_offers sorted in most recent order" do
-        get :search, recent_offer_per:2, recent_offers:true, state: 'submitted'
+        get :search, recent_offer_count:2, recent_offers:true, state: 'submitted'
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
         expect(subject['offers'].first["id"]).to eq(submitted_offer2.id)
@@ -559,8 +559,8 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
     it "returns all total count active offers and for logged in Reviewer" do
       get :summary
-      expect(parsed_body['active_offers_total_count']).to eq(6)
-      expect(parsed_body['reviewer_active_offers_total_count']).to eq(4)
+      expect(parsed_body['offers_total_count']).to eq(6)
+      expect(parsed_body['reviewer_offers_total_count']).to eq(4)
     end
   end
 
