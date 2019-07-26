@@ -140,10 +140,10 @@ module Api
       end
 
       def summary
-        priority_and_non_priority_active_offers_count = Offer.priority_and_non_priority_offers_count_for(self_reviewer: false).merge(
-          Offer.priority_and_non_priority_offers_count_for(self_reviewer: true)
+        all_offers_count = Offer.offers_count_for(self_reviewer: false).merge(
+          Offer.offers_count_for(self_reviewer: true)
         )
-        render json: priority_and_non_priority_active_offers_count
+        render json: all_offers_count
       end
 
       def merge_offer
