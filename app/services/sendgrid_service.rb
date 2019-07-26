@@ -1,7 +1,13 @@
 class SendgridService
   attr_accessor :user, :template_name, :substitution_hash
 
-  MAIL_METHODS = %w[send_appointment_confirmation_email send_order_submission_email]
+  MAIL_METHODS = [
+    { name: :send_appointment_confirmation_email, template: 'appointment_confirmation' },
+    { name: :send_order_submission_pickup_email, template: 'submission_pickup' },
+    { name: :send_order_submission_delivery_email, template: 'submission_delivery' },
+    { name: :send_order_confirmation_pickup_email, template: 'confirmation_pickup' },
+    { name: :send_order_confirmation_delivery_email, template: 'confirmation_delivery' }
+  ]
 
   def initialize(user)
     @user = user
@@ -37,19 +43,10 @@ class SendgridService
   end
 
   MAIL_METHODS.each do |method|
-    define_method method.to_sym do |order, template_name|
-      send_email_for_order(order, template_name)
+    template, name = method.values_at(:template, :name)
+    define_method name.to_sym do |order|
+      send_email_for_order(order, template)
     end
-  end
-
-  def send_email_for_order(order, template_name)
-    return unless user.email.present?
-    @add_bcc = true
-    substitution_hash.merge!(user.email_properties)
-    substitution_hash.merge!(order.email_properties)
-    @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
-    @mail.template_id = template_id(template_name)
-    send_email
   end
 
   def template_id(template_name)
@@ -57,22 +54,34 @@ class SendgridService
     when "appointment_confirmation"
       ENV[appointment_template_id]
     when "submission_delivery"
-      ENV[delivery_template_id]
+      ENV[submission_delivery_template_id]
     when "submission_pickup"
-      ENV[pickup_template_id]
+      ENV[submission_pickup_template_id]
+    when "confirmation_pickup"
+      ENV[confirmation_pickup_template_id]
+    when "confirmation_delivery"
+      ENV[confirmation_delivery_template_id]
     end
   end
 
-  def delivery_template_id
+  def submission_delivery_template_id
     I18n.locale == :en ? "SENDGRID_DELIVERY_TEMPLATE_ID_EN" : "SENDGRID_DELIVERY_TEMPLATE_ID_ZH_TW"
   end
 
-  def pickup_template_id
+  def submission_pickup_template_id
     I18n.locale == :en ? "SENDGRID_PICKUP_TEMPLATE_ID_EN" : "SENDGRID_PICKUP_TEMPLATE_ID_ZH_TW"
   end
 
   def pin_template_id
     I18n.locale == :en ? "SENDGRID_PIN_TEMPLATE_ID_EN" : "SENDGRID_PIN_TEMPLATE_ID_ZH_TW"
+  end
+
+  def confirmation_pickup_template_id
+    "SENDGRID_CONFIRM_PICKUP_TEMPLATE_ID_EN"
+  end
+
+  def confirmation_delivery_template_id
+    "SENDGRID_CONFIRM_DELIVERY_TEMPLATE_ID_EN"
   end
 
   def appointment_template_id
@@ -93,6 +102,20 @@ class SendgridService
   end
 
   private
+
+  def send_email_for_order(order, template_name)
+    return unless user.email.present?
+    begin
+      @add_bcc = true
+      substitution_hash.merge!(user.email_properties)
+      substitution_hash.merge!(order.email_properties)
+      @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
+      @mail.template_id = template_id(template_name)
+      send_email
+    rescue => e
+      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
+    end
+  end
 
   def message_body
     pin = user.most_recent_token.otp_code
