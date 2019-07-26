@@ -277,8 +277,12 @@ class Order < ActiveRecord::Base
 
   def send_order_submission_email
     return if created_by.nil? || !state.eql?("submitted")
-    type = send_submission_pickup_email? ? "submission_pickup" : "submission_delivery"
-    SendgridService.new(created_by).send_email_for_order(self, type)
+    sendgrid = SendgridService.new(created_by)
+    if send_submission_pickup_email?
+      sendgrid.send_order_submission_pickup_email self
+    else
+      sendgrid.send_order_submission_delivery_email self
+    end
   end
 
   def send_confirmation_email
