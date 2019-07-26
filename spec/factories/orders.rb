@@ -19,7 +19,15 @@ FactoryBot.define do
     association     :booking_type
 
     trait :with_orders_packages do
-      orders_packages { create_list :orders_package, 3, :with_state_requested}
+      before(:save) do |order|
+        order.orders_packages << create_list(:orders_package, 3, :with_state_requested)
+      end
+    end
+
+    trait :with_designated_orders_packages do
+      before(:save) do |order|
+        order.orders_packages << create_list(:orders_package, 3, :with_state_designated)
+      end
     end
 
     trait :with_goodcity_requests do
