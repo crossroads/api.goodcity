@@ -49,20 +49,6 @@ class SendgridService
     end
   end
 
-  def send_email_for_order(order, template_name)
-    return unless user.email.present?
-    begin
-      @add_bcc = true
-      substitution_hash.merge!(user.email_properties)
-      substitution_hash.merge!(order.email_properties)
-      @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
-      @mail.template_id = template_id(template_name)
-      send_email
-    rescue => e
-      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
-    end
-  end
-
   def template_id(template_name)
     case template_name
     when "appointment_confirmation"
@@ -116,6 +102,20 @@ class SendgridService
   end
 
   private
+
+  def send_email_for_order(order, template_name)
+    return unless user.email.present?
+    begin
+      @add_bcc = true
+      substitution_hash.merge!(user.email_properties)
+      substitution_hash.merge!(order.email_properties)
+      @mail.from = sendgrid_email_formation(ENV["APPOINTMENT_FROM_EMAIL"], I18n.t("email_from_name"))
+      @mail.template_id = template_id(template_name)
+      send_email
+    rescue => e
+      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
+    end
+  end
 
   def message_body
     pin = user.most_recent_token.otp_code
