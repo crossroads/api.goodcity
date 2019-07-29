@@ -3,7 +3,7 @@ require "goodcity/offer_utils"
 module Api
   module V1
     class OffersController < Api::V1::ApiController
-      before_action :eager_load_offer, except: [:index, :create, :search]
+      before_action :eager_load_offer, except: [:index, :create, :search, :summary]
       load_and_authorize_resource :offer, parent: false
 
       resource_description do
@@ -72,7 +72,7 @@ module Api
       def search
         records = @offers.search({ search_text: params['searchText'], states: array_param(:state) })
         records = apply_filters(records)
-        records = records.page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+        records = records.page(params["page"]).per(params["per_page"] || params["recent_offer_count"] || DEFAULT_SEARCH_COUNT)
         offers = offer_response(records.with_summary_eager_load)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(offers)
       end
@@ -139,6 +139,13 @@ module Api
         render json: @offer, serializer: offer_serializer
       end
 
+      def summary
+        all_offers_count = Offer.offers_count_for(self_reviewer: false).merge(
+          Offer.offers_count_for(self_reviewer: true)
+        )
+        render json: all_offers_count
+      end
+
       def merge_offer
         status = Goodcity::OfferUtils.merge_offer!(offer_id: params["base_offer_id"], other_offer_id: @offer.id)
         render json: { status: status }
@@ -166,6 +173,7 @@ module Api
           state_names: array_param(:state),
           priority: bool_param(:priority, false),
           self_reviewer: bool_param(:selfReview, false),
+          recent_offers: bool_param(:recent_offers, false),
           before: time_epoch_param(:before),
           after: time_epoch_param(:after)
         })

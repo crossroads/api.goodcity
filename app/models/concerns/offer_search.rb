@@ -28,7 +28,6 @@ module OfferSearch
         .joins("LEFT OUTER JOIN packages ON packages.item_id = items.id")
         .joins("LEFT OUTER JOIN package_types ON package_types.id = packages.package_type_id")
         .joins("LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id")
-        .joins("LEFT OUTER JOIN schedules ON deliveries.schedule_id = schedules.id")
         .joins("LEFT OUTER JOIN gogovan_orders ON gogovan_orders.id = deliveries.gogovan_order_id")
         .distinct
     }
