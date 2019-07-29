@@ -179,6 +179,39 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['meta']['search']).to eql('john smith')
       end
 
+      it "can search orders from a beneficiary's first name" do
+        beneficiary = FactoryBot.create :beneficiary, first_name: 'Frank', last_name: 'Sinatra'
+        FactoryBot.create :order, :with_state_submitted, beneficiary: beneficiary
+        get :index, searchText: 'Fra'
+        expect(response.status).to eq(200)
+        expect(parsed_body['designations'].count).to eq(1)
+        expect(parsed_body["designations"][0]['beneficiary_id']).to eq(beneficiary.id)
+        expect(parsed_body['meta']['total_pages']).to eql(1)
+        expect(parsed_body['meta']['search']).to eql('Fra')
+      end
+
+      it "can search orders from a beneficiary's last name" do
+        beneficiary = FactoryBot.create :beneficiary, first_name: 'Dave', last_name: 'Grohl'
+        FactoryBot.create :order, :with_state_submitted, beneficiary: beneficiary
+        get :index, searchText: 'Groh'
+        expect(response.status).to eq(200)
+        expect(parsed_body['designations'].count).to eq(1)
+        expect(parsed_body["designations"][0]['beneficiary_id']).to eq(beneficiary.id)
+        expect(parsed_body['meta']['total_pages']).to eql(1)
+        expect(parsed_body['meta']['search']).to eql('Groh')
+      end
+
+      it "can search orders from a beneficiary's full name" do
+        beneficiary = FactoryBot.create :beneficiary, first_name: 'Damon', last_name: 'Albarn'
+        FactoryBot.create :order, :with_state_submitted, beneficiary: beneficiary
+        get :index, searchText: 'Damon Alba'
+        expect(response.status).to eq(200)
+        expect(parsed_body['designations'].count).to eq(1)
+        expect(parsed_body["designations"][0]['beneficiary_id']).to eq(beneficiary.id)
+        expect(parsed_body['meta']['total_pages']).to eql(1)
+        expect(parsed_body['meta']['search']).to eql('Damon Alba')
+      end
+
       it "should be able to fetch designations without their associations" do
         get :index, shallow: 'true'
         expect(response.status).to eq(200)
