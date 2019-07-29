@@ -342,6 +342,8 @@ class Order < ActiveRecord::Base
       stockit_contacts.first_name ILIKE (:query) OR stockit_contacts.last_name ILIKE (:query) OR
       stockit_contacts.mobile_phone_number LIKE (:query) OR
       stockit_contacts.phone_number LIKE (:query) OR
+      beneficiaries.first_name ILIKE (:query) OR beneficiaries.last_name ILIKE (:query) OR
+      CONCAT(beneficiaries.first_name, ' ', beneficiaries.last_name) ILIKE (:query) OR
       CONCAT(users.first_name, ' ', users.last_name) ILIKE (:query)
     SQL
     results = fetch_orders(to_designate_item)
@@ -364,6 +366,7 @@ class Order < ActiveRecord::Base
       LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
       LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
       LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id
+      LEFT OUTER JOIN beneficiaries ON orders.beneficiary_id = beneficiaries.id
     SQL
   end
 
