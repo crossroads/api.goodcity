@@ -7,7 +7,8 @@ class Offer < ActiveRecord::Base
   include OfferSearch
   include OfferFiltering
 
-  NOT_ACTIVE_STATES = ["received", "closed", "cancelled", "inactive"]
+  NOT_ACTIVE_STATES = %w[received closed cancelled inactive].freeze
+  ACTIVE_OFFERS = %w[under_review reviewed scheduled receiving].freeze
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers
@@ -206,6 +207,34 @@ class Offer < ActiveRecord::Base
 
     def donor_states
       valid_states - ["draft"]
+    end
+
+    def offer_active_states_counter(offer_filter_param)
+      grouped_offers = filter(offer_filter_param).group_by(&:state)
+      offers_count = offers_count_per_state(grouped_offers)
+      offers_count["offers_total_count"] = offers_count_sum(offers_count) unless offer_filter_param[:priority]
+      offers_count = prepend_offer_key_with("priority", offers_count) if offer_filter_param[:priority]
+      offers_count = prepend_offer_key_with("reviewer", offers_count) if offer_filter_param[:self_reviewer]
+      offers_count
+    end
+
+    def offers_count_for(self_reviewer: false)
+      res = {}
+      res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: false, self_reviewer: self_reviewer })
+      res.merge! offer_active_states_counter({ state_names: ACTIVE_OFFERS, priority: true, self_reviewer: self_reviewer })
+      res
+    end
+
+    def prepend_offer_key_with(prefix, offer)
+      offer.transform_keys { |key| "#{prefix}_#{key}" }
+    end
+
+    def offers_count_sum(offer)
+      offer.values.reduce(:+)
+    end
+
+    def offers_count_per_state(offer)
+      offer.each { |key, value| offer[key] = value.count }
     end
   end
 
