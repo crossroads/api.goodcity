@@ -36,12 +36,12 @@ module Api
 
       api :GET, "/v1/packages", "get all packages for the item"
       def index
-        @packages = @packages.browse_inventorized.union(@packages.browse_non_inventorized) if is_browse_app?
+        @packages = @packages.browse_public_packages if is_browse_app?
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
         @packages = @packages.search({search_text: params['searchText']})
           .page(page).per(per_page) if params['searchText']
         render json: @packages, each_serializer: serializer, include_orders_packages: is_stock_app?, is_browse_app: is_browse_app?
-       end
+      end
 
       api :GET, '/v1/packages/1', "Details of a package"
       def show
