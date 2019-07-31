@@ -25,6 +25,7 @@ Reviewer:
 - can_read_versions
 - can_access_packages_locations
 - can_login_to_admin
+- can_manage_companies
 Supervisor:
 - can_manage_packages
 - can_manage_offers
@@ -57,6 +58,7 @@ Supervisor:
 - can_login_to_stock
 - can_login_to_admin
 - can_manage_settings
+- can_manage_companies
 api-write: []
 Charity:
 - can_login_to_browse
