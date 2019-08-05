@@ -32,6 +32,15 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       expect(subject['messages'].length).to eq(2)
     end
 
+    it "supports pagination", :show_in_doc do
+      8.times { create :message, item: item }
+      get :index, page: 1, per_page: 6
+      expect(response.status).to eq(200)
+      expect(subject['meta']['total_pages']).to eq(2)
+      expect(subject['meta']['total_count']).to eq(8)
+      expect(subject['messages'].length).to eq(6)
+    end
+
     describe 'filtering messages' do
       before { 2.times { create :message } }
 
@@ -81,6 +90,18 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         get :index, offer_id: "#{offer.id},#{offer2.id}", state: 'unread'
         expect(subject['messages'].length).to eq(6)
       end
+
+      it "for a certain type of associated record" do
+        1.times { create :message, offer: offer }
+        1.times { create :message, order: order }
+        4.times { create :message, item: item }
+
+        get :index, scope: 'item'
+        expect(subject['messages'].length).to eq(4)
+        subject['messages'].each do |m|
+          expect(m['item_id']).not_to be_nil
+        end
+      end
     end
   end
 
@@ -102,6 +123,27 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       current_user = user
       post :create, message: message_params
       expect(response.status).to eq(201)
+    end
+  end
+
+  describe "PUT messages/mark_all_read" do
+    before { generate_and_set_token(user) }
+
+    let!(:subscriptions) { create_list(:subscription, 2, state: 'unread', user_id: user.id) }
+    let!(:order_subscriptions) { create_list(:order_subscription, 3, state: 'unread', user_id: user.id) }
+    let(:subscription_states) { subscriptions.map { |s| s.reload.state } }
+    let(:order_subscription_states) { order_subscriptions.map { |s| s.reload.state } }
+
+    it "mark all messages as read" do
+      put :mark_all_read
+      expect(subscription_states).to all(eq('read'))
+      expect(order_subscription_states).to all(eq('read'))
+    end
+
+    it "mark all messages of a certain scope as read" do
+      put :mark_all_read, scope: 'order'
+      expect(subscription_states).to all(eq('unread'))
+      expect(order_subscription_states).to all(eq('read'))
     end
   end
 

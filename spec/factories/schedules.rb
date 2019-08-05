@@ -8,8 +8,6 @@ FactoryBot.define do
     slot_name { generate(:schedules)[zone][:slot_name] }
     scheduled_at { (Time.now + 1.weeks).to_s }
 
-    initialize_with { Schedule.find_or_initialize_by(zone: zone) }
-
     factory :gogovan_schedule, parent: :schedule do
       resource nil
       slot nil

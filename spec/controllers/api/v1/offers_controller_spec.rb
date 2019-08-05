@@ -394,8 +394,8 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     let(:submitted_offer2) { create :offer, :submitted, notes: 'Test' }
     let(:reviewing_offer) { create :offer, :under_review, notes: 'Tester' }
     let(:receiving_offer) { create :offer, :receiving, notes: 'Tester', reviewed_by_id: reviewer.id }
-    let(:scheduled_offer) { create :offer, :scheduled, notes: 'Test' }
-    let(:scheduled_offer1) { create :offer, :scheduled, notes: 'Test for before' }
+    let(:scheduled_offer) { create :offer, state: 'scheduled', notes: 'Test for before' }
+    let(:scheduled_offer1) { create :offer, state: 'scheduled', notes: 'Test for after' }
     let(:priority_reviewed_offer) { create :offer, :reviewed, notes: 'Tester', review_completed_at: Time.now - 3.days }
     let(:priority_reviewing_offer) { create :offer, :under_review, notes: 'Tester', reviewed_at: Time.now - 2.days }
     let(:schedule) { create :schedule, scheduled_at: Time.now - 3.days }
@@ -404,6 +404,12 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     let(:delivery1) { create :delivery, offer_id: scheduled_offer1.id, schedule_id: schedule1.id }
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
+
+    before do
+      # Create notifications for offers
+      3.times { create(:subscription, offer_id: receiving_offer.id, user_id: reviewer.id, state: 'unread') }
+      3.times { create(:subscription, offer_id: reviewing_offer.id, user_id: reviewer.id, state: 'read') }
+    end
 
     context "state filter" do
       before(:each) {
@@ -518,6 +524,26 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         get :search, searchText: 'Test'
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(3)
+      end
+
+      it "returns offers with notifications" do
+        get :search, with_notifications: 'all'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(2)
+      end
+
+      it "returns offers with unread notifications" do
+        get :search, with_notifications: 'unread'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(1)
+        expect(subject['offers'][0]['id']).to eq(receiving_offer.id)
+      end
+
+      it "returns offers with read notifications" do
+        get :search, with_notifications: 'read'
+        expect(response.status).to eq(200)
+        expect(subject['offers'].size).to eq(1)
+        expect(subject['offers'][0]['id']).to eq(reviewing_offer.id)
       end
     end
   end

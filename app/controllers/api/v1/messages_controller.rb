@@ -3,6 +3,8 @@ module Api
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
 
+      ALLOWED_SCOPES = %w(offer item order)
+
       resource_description do
         short "List, show, create and mark_read a message."
         formats ["json"]
@@ -30,13 +32,15 @@ module Api
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       param :state, String, desc: "Message state (unread|read) to filter on"
+      param :scope, String, desc: "The type of record associated to the messages (order/offer/item)"
       def index
+        @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
         @messages = @messages.where(offer_id: params[:offer_id].split(",")) if params[:offer_id].present?
         @messages = @messages.where(order_id: params[:order_id].split(",")) if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
         @messages = @messages.with_state_for_user(User.current_user, params[:state]) if params[:state].present?
-        render json: @messages, each_serializer: serializer
+        paginate_and_render(@messages)
       end
 
       api :GET, "/v1/messages/1", "Get a message"
@@ -58,7 +62,37 @@ module Api
         render json: @message, serializer: serializer
       end
 
+      api :PUT, "/v1/messages/mark_all_read", "Mark all messages as read"
+      def mark_all_read
+        @subscriptions = Subscription.unread.of_active_user
+        if params[:scope].present?
+          @subscriptions = apply_scope(@subscriptions.joins(:message), params[:scope])
+        end
+        @subscriptions.update_all state: 'read'
+        render json: {}
+      end
+
       private
+
+      def apply_scope(records, scope)
+        return records unless ALLOWED_SCOPES.include? scope
+        records.where("messages.#{scope}_id IS NOT NULL")
+      end
+
+      def paginate_and_render(records)
+        meta = {}
+        if params[:page].present?
+          records = records
+            .page(params["page"])
+            .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+          meta = {
+            total_pages: records.total_pages,
+            total_count: records.total_count
+          }
+        end
+        output = message_response(records)
+        render json: { meta: meta }.merge(output)
+      end
 
       def order_id
         params[:message][:designation_id].presence || params[:message][:order_id].presence
@@ -66,6 +100,13 @@ module Api
 
       def serializer
         Api::V1::MessageSerializer
+      end
+
+      def message_response(records)
+        ActiveModel::ArraySerializer.new(records,
+          each_serializer: serializer,
+          root: "messages"
+        ).as_json
       end
 
       def message_params
