@@ -7,6 +7,7 @@ class Image < ActiveRecord::Base
   has_one :user, inverse_of: :image
   belongs_to :imageable, polymorphic: true, touch: true
 
+  before_save :handle_heic_image
   before_destroy :delete_image_from_cloudinary, unless: "has_multiple_items"
   after_update :clear_unused_transformed_images
 
@@ -43,5 +44,9 @@ class Image < ActiveRecord::Base
 
   def has_multiple_items
     Image.where(cloudinary_id: cloudinary_id).count > 1
+  end
+
+  def handle_heic_image
+    self.cloudinary_id = self.cloudinary_id.gsub(/heic/i, "jpg")
   end
 end
