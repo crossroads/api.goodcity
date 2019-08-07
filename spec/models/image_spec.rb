@@ -23,4 +23,14 @@ RSpec.describe Image, type: :model do
       expect(image.send(:has_multiple_items)).to be_truthy
     end
   end
+
+
+  describe "handle heic images" do
+    it "converts heic image to jpg before save" do
+      package = create :package
+      cloudinary_id = "1416897663/szfmfbmjeq6aphyfflmg.heic"
+      image = Image.create(imageable: package, cloudinary_id: cloudinary_id)
+      expect(image.cloudinary_id).to eq("1416897663/szfmfbmjeq6aphyfflmg.jpg")
+    end
+  end
 end
