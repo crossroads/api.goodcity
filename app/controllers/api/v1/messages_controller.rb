@@ -82,9 +82,7 @@ module Api
       def paginate_and_render(records)
         meta = {}
         if params[:page].present?
-          records = records
-            .page(params["page"])
-            .per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+          records = records.page(page).per(per_page)
           meta = {
             total_pages: records.total_pages,
             total_count: records.total_count

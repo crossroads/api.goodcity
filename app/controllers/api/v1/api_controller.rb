@@ -52,7 +52,7 @@ module Api
     # max limit is 25
     def per_page
       @per_page = params['per_page'].to_i
-      (@per_page.zero? || @per_page > DEFAULT_SEARCH_COUNT) ? DEFAULT_SEARCH_COUNT : @per_page
+      (@per_page.zero? || @per_page > MAX_SEARCH_COUNT) ? MAX_SEARCH_COUNT : @per_page
     end
 
     def array_param(key)
