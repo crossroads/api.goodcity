@@ -64,7 +64,7 @@ module Api
 
       api :PUT, "/v1/messages/mark_all_read", "Mark all messages as read"
       def mark_all_read
-        @subscriptions = Subscription.unread.of_active_user
+        @subscriptions = Subscription.unread.for_user(User.current_user.id)
         if params[:scope].present?
           @subscriptions = apply_scope(@subscriptions.joins(:message), params[:scope])
         end
