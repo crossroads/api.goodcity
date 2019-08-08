@@ -66,24 +66,24 @@ RSpec.describe Api::V1::ApiController, type: :controller do
       it { expect(subject).to eql(20) }
     end
 
-    context "30 per_page (limit is 25)" do
-      let(:per_page) { '30' }
-      it { expect(subject).to eql(25) }
+    context "30 per_page (limit is 50)" do
+      let(:per_page) { '60' }
+      it { expect(subject).to eql(50) }
     end
 
     context "nil per_page" do
       let(:per_page) { nil }
-      it { expect(subject).to eql(25) }
+      it { expect(subject).to eql(50) }
     end
 
     context "blank per_page" do
       let(:per_page) { '' }
-      it { expect(subject).to eql(25) }
+      it { expect(subject).to eql(50) }
     end
 
     context "blah per_page" do
       let(:per_page) { 'blah' }
-      it { expect(subject).to eql(25) }
+      it { expect(subject).to eql(50) }
     end
   end
 end
