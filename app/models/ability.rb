@@ -183,7 +183,7 @@ class Ability
       end
     end
     can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
-    can [:mark_all_read]
+    can [:mark_all_read], Message
   end
 
   def offer_abilities
