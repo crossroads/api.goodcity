@@ -544,14 +544,25 @@ class Package < ActiveRecord::Base
     item.packages.inventorized.undispatched
   end
 
-  def self.browse_inventorized
-    inventorized.not_zero_quantity.published
-  end
+  def self.browse_public_packages
+    join = <<-SQL
+      LEFT OUTER JOIN items as pkg_items ON pkg_items.id = packages.item_id AND pkg_items.deleted_at IS NULL
+      LEFT OUTER JOIN offers as pkg_offers ON pkg_offers.id = pkg_items.offer_id AND pkg_offers.deleted_at IS NULL
+    SQL
 
-  def self.browse_non_inventorized
-    joins(item: [:offer]).not_zero_quantity.published.expecting.
-      where(items: { state: BROWSE_ITEM_STATES }).
-      where.not(offers: { state: BROWSE_OFFER_EXCLUDE_STATE })
+    query = <<-SQL
+      packages.inventory_number IS NOT NULL
+      OR (
+        packages.state = 'expecting'
+        AND pkg_items.state IN (:allowed_items)
+        AND pkg_offers.state NOT IN (:excluded_offers)
+      )
+    SQL
+
+    joins(join).not_zero_quantity.published.where(query,
+      allowed_items: BROWSE_ITEM_STATES,
+      excluded_offers: BROWSE_OFFER_EXCLUDE_STATE
+    )
   end
 
   def update_favourite_image(image_id)

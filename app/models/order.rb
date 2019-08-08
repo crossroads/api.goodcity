@@ -277,21 +277,30 @@ class Order < ActiveRecord::Base
 
   def send_order_submission_email
     return if created_by.nil? || !state.eql?("submitted")
-    type = send_submission_pickup_email? ? "submission_pickup" : "submission_delivery"
-    begin
-      SendgridService.new(created_by).send_order_submission_email(self, type)
-    rescue => e
-      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid submission email")
+    sendgrid = SendgridService.new(created_by)
+    if send_submission_pickup_email?
+      sendgrid.send_order_submission_pickup_email self
+    else
+      sendgrid.send_order_submission_delivery_email self
     end
   end
 
   def send_confirmation_email
-    return if booking_type != BookingType.appointment || created_by.nil?
-    begin
-      SendgridService.new(created_by).send_appointment_confirmation_email(self, "appointment_confirmation")
-    rescue => e
-      Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
-    end
+    send_appointment_confirmation_email if booking_type.appointment?
+    send_online_order_confirmation_email if booking_type.online_order?
+  end
+
+  def send_appointment_confirmation_email
+    return unless booking_type.appointment? && created_by.present?
+    SendgridService.new(created_by).send_appointment_confirmation_email(self)
+  end
+
+  def send_online_order_confirmation_email
+    return unless booking_type.online_order? && created_by.present?
+    sendgrid = SendgridService.new(created_by)
+    order_transport.pickup? ?
+      sendgrid.send_order_confirmation_pickup_email(self) :
+      sendgrid.send_order_confirmation_delivery_email(self)
   end
 
   def send_new_order_notification
@@ -333,6 +342,8 @@ class Order < ActiveRecord::Base
       stockit_contacts.first_name ILIKE (:query) OR stockit_contacts.last_name ILIKE (:query) OR
       stockit_contacts.mobile_phone_number LIKE (:query) OR
       stockit_contacts.phone_number LIKE (:query) OR
+      beneficiaries.first_name ILIKE (:query) OR beneficiaries.last_name ILIKE (:query) OR
+      CONCAT(beneficiaries.first_name, ' ', beneficiaries.last_name) ILIKE (:query) OR
       CONCAT(users.first_name, ' ', users.last_name) ILIKE (:query)
     SQL
     results = fetch_orders(to_designate_item)
@@ -355,6 +366,7 @@ class Order < ActiveRecord::Base
       LEFT OUTER JOIN stockit_contacts ON orders.stockit_contact_id = stockit_contacts.id
       LEFT OUTER JOIN stockit_organisations ON orders.stockit_organisation_id = stockit_organisations.id
       LEFT OUTER JOIN organisations ON orders.organisation_id = organisations.id
+      LEFT OUTER JOIN beneficiaries ON orders.beneficiary_id = beneficiaries.id
     SQL
   end
 
@@ -436,6 +448,13 @@ class Order < ActiveRecord::Base
         type_en: gc.package_type.name_en,
         type_zh_tw: gc.package_type.name_zh_tw,
         description: gc.description
+      }
+    end
+    props['goods'] = orders_packages.select(&:designated?).map do |op|
+      {
+        quantity: op.quantity,
+        type_en: op.package.package_type.name_en,
+        type_zh_tw: op.package.package_type.name_zh_tw
       }
     end
     props
