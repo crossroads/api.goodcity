@@ -72,7 +72,7 @@ module Api
       def search
         records = @offers.search({ search_text: params['searchText'], states: array_param(:state) })
         records = apply_filters(records)
-        records = records.page(params["page"]).per(params["per_page"] || params["recent_offer_count"] || DEFAULT_SEARCH_COUNT)
+        records = records.page(params["page"]).per(per_page_or_recent_offers_count)
         offers = offer_response(records.with_summary_eager_load)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(offers)
       end
@@ -152,6 +152,12 @@ module Api
       end
 
       private
+
+      def per_page_or_recent_offers_count
+        count_param = (params['per_page'] || params['recent_offer_count']).to_i
+        default_count = params['per_page'] ? DEFAULT_SEARCH_COUNT : DEFAULT_RECENT_OFFERS_COUNT
+        (count_param.zero? || count_param > default_count) ? default_count : count_param
+      end
 
       def filter_created_by(offers)
         if (user_id = params["created_by_id"] || User.current_user.treat_user_as_donor && User.current_user.id)
