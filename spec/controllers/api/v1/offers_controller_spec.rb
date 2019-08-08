@@ -400,16 +400,10 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     let(:priority_reviewing_offer) { create :offer, :under_review, notes: 'Tester', reviewed_at: Time.now - 2.days }
     let(:schedule) { create :schedule, scheduled_at: Time.now - 3.days }
     let(:schedule1) { create :schedule, scheduled_at: Time.now + 1.days }
-    let(:delivery) { create :delivery, offer_id: scheduled_offer.id, schedule_id: schedule.id }
-    let(:delivery1) { create :delivery, offer_id: scheduled_offer1.id, schedule_id: schedule1.id }
+    let(:delivery) { create :delivery, offer: scheduled_offer, schedule: schedule }
+    let(:delivery1) { create :delivery, offer: scheduled_offer1, schedule: schedule1 }
     before(:each) { generate_and_set_token(reviewer) }
     subject { JSON.parse(response.body) }
-
-    before do
-      # Create notifications for offers
-      3.times { create(:subscription, offer_id: receiving_offer.id, user_id: reviewer.id, state: 'unread') }
-      3.times { create(:subscription, offer_id: reviewing_offer.id, user_id: reviewer.id, state: 'read') }
-    end
 
     context "state filter" do
       before(:each) {
@@ -461,7 +455,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       it 'can return offers scheduled after a certain time' do
-        after = epoch_ms(Time.zone.now - 3.day)
+        after = epoch_ms(Time.zone.now - 4.day)
         get :search, searchText: 'Test', after: after
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
@@ -512,6 +506,10 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         receiving_offer
         scheduled_offer
         User.current_user = reviewer
+
+        # Create notifications for offers
+        3.times { create(:subscription, offer_id: receiving_offer.id, user_id: reviewer.id, state: 'unread') }
+        3.times { create(:subscription, offer_id: reviewing_offer.id, user_id: reviewer.id, state: 'read') }
       }
 
       it "returns offers created by logged in user if selfReview is present in params" do
