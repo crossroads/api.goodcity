@@ -49,10 +49,10 @@ module Api
       @page.zero? ? 1 : @page
     end
 
-    # max limit is 25
+    # max limit is 50, default is 25
     def per_page
       @per_page = params['per_page'].to_i
-      return DEFAULT_SEARCH_COUNT if @per_page.zero?
+      return DEFAULT_SEARCH_COUNT if @per_page.zero? || @per_page.negative?
       return MAX_SEARCH_COUNT if @per_page > MAX_SEARCH_COUNT
       @per_page
     end
