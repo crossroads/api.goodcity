@@ -46,7 +46,7 @@ module OfferFiltering
     def self.with_notifications(state)
       res = joins("LEFT OUTER JOIN subscriptions ON offers.id = subscriptions.offer_id")
       res = res.where("subscriptions.user_id = (?)", User.current_user.id)
-      res = res.where("subscriptions.state = (?)", state) if %w[unread, read].include?(state)
+      res = res.where("subscriptions.state = (?)", state) if %w[unread read].include?(state)
       res
     end
 
