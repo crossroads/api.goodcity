@@ -3,7 +3,7 @@ module Api
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
 
-      ALLOWED_SCOPES = %w(offer item order)
+      ALLOWED_SCOPES = %w[offer item order].freeze
 
       resource_description do
         short "List, show, create and mark_read a message."
