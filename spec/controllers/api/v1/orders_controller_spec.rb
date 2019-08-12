@@ -97,7 +97,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(parsed_body['designations'].count).to eq(Order.where.not(state: 'draft').count)
         expect(parsed_body['designations'].map { |it| it['state'] }).to_not include('draft')
       end
-      
+
       # Test turned off as currently hardcoded to 150
       # it 'returns the number of items specified for the page' do
       #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total

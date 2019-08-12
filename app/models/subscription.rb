@@ -8,4 +8,5 @@ class Subscription < ActiveRecord::Base
   after_create :send_new_message_notification # PushUpdatesForSubscription
 
   scope :unread, -> { where(state: 'unread') }
+  scope :for_user, ->(user_id) { where(user_id: user_id) }
 end

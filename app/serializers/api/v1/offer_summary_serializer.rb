@@ -14,6 +14,12 @@ module Api::V1
     has_one  :reviewed_by, serializer: UserSummarySerializer, root: :user
     has_one  :received_by, serializer: UserSummarySerializer, root: :user
     has_one  :delivery, serializer: DeliverySerializer, root: :delivery
+    has_many :messages, serializer: MessageSerializer
+
+    def include_messages?
+      return false unless goodcity_user?
+      @options[:include_messages] == true
+    end
 
     def display_image_cloudinary_id
       object.images.first.try(:cloudinary_id)
@@ -70,6 +76,10 @@ module Api::V1
 
     def received_packages_count__sql
       "(SELECT COUNT(*) FROM packages LEFT JOIN items ON items.id = packages.item_id LEFT JOIN offers o ON o.id = items.offer_id WHERE offers.id = o.id AND packages.state = 'received')"
+    end
+
+    def goodcity_user?
+      User.current_user.present?
     end
 
   end
