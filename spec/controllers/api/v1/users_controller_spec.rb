@@ -60,6 +60,18 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       get :index, searchText: charity_users.first.first_name, role_name: "Charity"
       expect(User.find(parsed_body["users"].first["id"]).roles.pluck(:name)).to include("Charity")
     end
+
+    it "does not return searched user if the specified role is different" do
+      get :index, searchText: charity_users.first.first_name, role_name: "Supervisor"
+      expect(response.status).to eq(200)
+      expect(parsed_body['users'].count).to eq(0)
+    end
+
+    it "returns searched user if role isn't specified" do
+      get :index, searchText: charity_users.first.first_name
+      expect(response.status).to eq(200)
+      expect(parsed_body['users'].count).to eq(1)
+    end
   end
 
   describe "PUT user/1" do
