@@ -16,7 +16,8 @@ module MessageSubscription
     #   - Admin users processing the offer/order
     user_ids << obj.try(:created_by_id)
     user_ids << self.sender_id
-    user_ids += subscribers_to(klass, obj.id)
+    user_ids += public_subscribers_to(klass, obj.id)
+    user_ids += private_subscribers_to(klass, obj.id)
     admin_user_fields.each{|field| user_ids << obj.try(field)}
 
     # Remove the following users
@@ -41,12 +42,6 @@ module MessageSubscription
   end
 
   private
-
-  def subscribers_to(klass, id)
-    is_private ?
-      private_subscribers_to(klass, id) :
-      public_subscribers_to(klass, id)
-  end
 
   # A public subscriber is defined as :
   #   > Anyone who has a subscription to that record
