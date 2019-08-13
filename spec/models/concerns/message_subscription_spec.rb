@@ -29,7 +29,8 @@ context MessageSubscription do
     context "should subscribe users who have sent previous messages" do
       let(:user_id) { reviewer.id }
       before(:each) do
-        expect(Subscription).to receive_message_chain('where.pluck').and_return([user_id])
+        create :subscription, user_id: user_id, message: message, offer: message.offer
+        # expect(Subscription).to receive_message_chain('where.pluck').and_return([user_id])
       end
       it do
         expect(message).to receive(:add_subscription).with('unread', user_id)
@@ -76,22 +77,45 @@ context MessageSubscription do
     end
 
     context "private messages" do
-      let(:message) { create :message, is_private: true, sender: reviewer }
-      
+      let(:offer) { create :offer }
+      let(:message) { build :message, is_private: true, sender: reviewer, offer: offer }
+      let(:message2) { build :message, is_private: true, sender: reviewer, offer: offer }
+
       context "should not subscribe donor" do
         let(:user_id) { message.offer.created_by_id }
         it do
           expect(message).to_not receive(:add_subscription).with(anything, user_id)
-          message.subscribe_users_to_message
+          message.save
         end
       end
 
-      context "should subscribe all supervisors" do
+      context "should subscribe all supervisors if it's the first private message of the thread" do
         let!(:supervisor) { create :user, :supervisor }
+
+        before { User.current_user = supervisor }
+
         it do
           expect(message).to receive(:add_subscription).with('read', reviewer.id) # sender
           expect(message).to receive(:add_subscription).with('unread', supervisor.id) # unsubscribed supervisor
-          message.subscribe_users_to_message
+          message.save
+        end
+      end
+
+      context "should not subscribe other supervisors for subsequent messages" do
+        let!(:supervisor) { create :user, :supervisor }
+
+        before { User.current_user = supervisor }
+
+        it do
+          # The unrelated supervisor receives the first message of the thread
+          expect(message).to receive(:add_subscription).with('read', reviewer.id)
+          expect(message).to receive(:add_subscription).with('unread', supervisor.id)
+          message.save
+
+          # The unrelated supervisor doesn't receive subsequent message of the thread
+          expect(message2).to receive(:add_subscription).with('read', reviewer.id) # sender
+          expect(message2).not_to receive(:add_subscription).with('unread', supervisor.id)
+          message2.save
         end
       end
 
