@@ -56,14 +56,14 @@ module MessageSubscription
   #   > A supervisor who has answered the private thread
   def private_subscribers_to(klass, id)
     User.supervisors
-      .joins(subscriptions: [:message])
-      .where(subscriptions: { "#{klass}_id": id })
-      .where(messages: { is_private: true })
-      .pluck(:id)
+        .joins(subscriptions: [:message])
+        .where(subscriptions: { "#{klass}_id": id })
+        .where(messages: { is_private: true })
+        .pluck(:id)
   end
 
   def is_first_message_for(klass, id)
-    Message.where(is_private: self.is_private, "#{klass}_id": id).count.eql? 1
+    Message.where(is_private: is_private, "#{klass}_id": id).count.eql? 1
   end
 
   def admin_user_fields

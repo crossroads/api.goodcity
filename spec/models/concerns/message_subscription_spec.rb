@@ -30,7 +30,6 @@ context MessageSubscription do
       let(:user_id) { reviewer.id }
       before(:each) do
         create :subscription, user_id: user_id, message: message, offer: message.offer
-        # expect(Subscription).to receive_message_chain('where.pluck').and_return([user_id])
       end
       it do
         expect(message).to receive(:add_subscription).with('unread', user_id)
@@ -52,7 +51,7 @@ context MessageSubscription do
       let(:message) { create :message, sender: offer.created_by, offer: offer }
       it do
         expect(message.offer.reviewed_by_id).to eql(nil)
-        # expect(message).to receive(:add_subscription).with('read', message.offer.created_by_id)
+        expect(message).to receive(:add_subscription).with('read', message.offer.created_by_id)
         expect(message).to receive(:add_subscription).with('unread', reviewer.id)
         message.subscribe_users_to_message
       end
