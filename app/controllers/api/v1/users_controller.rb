@@ -26,6 +26,13 @@ module Api
         render json: @users, each_serializer: serializer
       end
 
+      api :POST, '/v1/users', "Create user"
+      def create
+        @user.mobile = "+852#{@user.mobile}"
+        @user.other_phone = "+852#{@user.other_phone}" if @user.other_phone
+        save_and_render_object(@user)
+      end
+
       api :GET, '/v1/users/1', "List a user"
       description "Returns information about a user. Note image may be empty if user is not a reviewer."
       def show
@@ -37,6 +44,7 @@ module Api
         param :last_connected, String, desc: "Time when user last connected to server.", allow_nil: true
         param :last_disconnected, String, desc: "Time when user disconnected from server.", allow_nil: true
       end
+
       def update
         @user.update_attributes(user_params)
         if params["user"]["user_role_ids"]

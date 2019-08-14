@@ -69,7 +69,7 @@ Rails.application.routes.draw do
       resources :goodcity_settings, only: [:index, :create, :update, :destroy]
       resources :donor_conditions, only: [:index, :show]
       resources :companies, only: [:create, :update, :show, :index]
-      resources :users, only: [:index, :show, :update] do
+      resources :users, only: [:index, :show, :update, :create] do
         member do
           get :orders_count
         end
