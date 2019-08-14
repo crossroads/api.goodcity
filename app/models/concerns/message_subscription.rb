@@ -27,13 +27,15 @@ module MessageSubscription
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
     user_ids -= [obj.try(:created_by_id)] if self.is_private or obj.try('cancelled?')
 
-    # For private messages, subscribe all supervisors ONLY for the first message
-    if self.is_private && is_first_message_for(klass, obj.id)
-      user_ids += User.supervisors.pluck(:id)
-    end
 
-    # If donor sends a message but no one else is listening, subscribe all reviewers.
-    user_ids += User.reviewers.pluck(:id) if [self.sender_id] == user_ids
+    # Cases where we subscribe every stafff member
+    #  - For private messages, subscribe all supervisors ONLY for the first message
+    #  - If donor sends a message but no one else is listening, subscribe all reviewers.
+    subscribe_all_staff = is_private ?
+      is_first_message_for(klass, obj.id) :
+      [self.sender_id] == user_ids
+
+    user_ids += User.staff.pluck(:id) if subscribe_all_staff
 
     user_ids.flatten.compact.uniq.each do |user_id|
       state = (user_id == self.sender_id) ? "read" : "unread" # mark as read for sender
@@ -56,9 +58,9 @@ module MessageSubscription
   #   > A supervisor who has answered the private thread
   def private_subscribers_to(klass, id)
     User.supervisors
-        .joins(subscriptions: [:message])
-        .where(subscriptions: { "#{klass}_id": id })
+        .joins(messages: [:subscriptions])
         .where(messages: { is_private: true })
+        .where(subscriptions: { "#{klass}_id": id })
         .pluck(:id)
   end
 
