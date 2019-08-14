@@ -102,6 +102,7 @@ context MessageSubscription do
 
       context "should not subscribe other supervisors for subsequent messages" do
         let!(:supervisor) { create :user, :supervisor }
+        let!(:other_reviewer) { create :user, :reviewer }
 
         before { User.current_user = supervisor }
 
@@ -109,10 +110,12 @@ context MessageSubscription do
           # The unrelated supervisor receives the first message of the thread
           expect(message).to receive(:add_subscription).with('read', reviewer.id)
           expect(message).to receive(:add_subscription).with('unread', supervisor.id)
+          expect(message).to receive(:add_subscription).with('unread', other_reviewer.id)
           message.save
 
           # The unrelated supervisor doesn't receive subsequent message of the thread
           expect(message2).to receive(:add_subscription).with('read', reviewer.id) # sender
+          expect(message2).not_to receive(:add_subscription).with('unread', other_reviewer.id)
           expect(message2).not_to receive(:add_subscription).with('unread', supervisor.id)
           message2.save
         end
