@@ -23,10 +23,10 @@ Reviewer:
 - can_manage_locations
 - can_read_schedule
 - can_read_versions
-- can_read_or_modify_user
 - can_access_packages_locations
 - can_login_to_admin
 - can_manage_companies
+- can_create_donor
 Supervisor:
 - can_manage_packages
 - can_manage_offers
@@ -60,6 +60,7 @@ Supervisor:
 - can_login_to_admin
 - can_manage_settings
 - can_manage_companies
+- can_create_donor
 api-write: []
 Charity:
 - can_login_to_browse
