@@ -16,7 +16,7 @@ class Ability
     'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
     'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
     'can_destroy_package_with_specific_states', 'can_manage_locations',
-    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings', 'can_manage_companies'].freeze
+    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings', 'can_manage_companies', 'can_create_donor'].freeze
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
@@ -349,7 +349,8 @@ class Ability
   def user_abilities
     can [:current_user_profile], User
     can [:show, :update, :orders_count], User, id: @user_id
-    can [:index, :create, :show, :update, :recent_users], User if can_read_or_modify_user?
+    can [:index, :show, :update, :recent_users, :create], User if can_read_or_modify_user?
+    can [:create, :show], User if can_create_donor?
   end
 
   def version_abilities

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190731105343) do
+ActiveRecord::Schema.define(version: 20190813092953) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -798,6 +798,8 @@ ActiveRecord::Schema.define(version: 20190731105343) do
     t.datetime "sms_reminder_sent_at"
     t.boolean  "is_mobile_verified",               default: false
     t.boolean  "is_email_verified",                default: false
+    t.boolean  "receive_email",                    default: false
+    t.string   "other_phone"
   end
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree

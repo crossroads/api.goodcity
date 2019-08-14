@@ -28,8 +28,6 @@ module Api
 
       api :POST, '/v1/users', "Create user"
       def create
-        @user.mobile = "+852#{@user.mobile}"
-        @user.other_phone = "+852#{@user.other_phone}" if @user.other_phone
         save_and_render_object(@user)
       end
 
@@ -77,7 +75,8 @@ module Api
       end
 
       def user_params
-        attributes = [:last_connected, :last_disconnected]
+        attributes = %i[last_connected last_disconnected
+        first_name last_name email receive_email other_phone title mobile]
         attributes.concat([:user_role_ids]) if User.current_user.supervisor?
         params.require(:user).permit(attributes)
       end
