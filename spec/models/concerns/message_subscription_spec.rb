@@ -142,6 +142,27 @@ context MessageSubscription do
         end
       end
 
+      context "should subscribe a reviewer for subsequent messages if he/she posted something in the private thread" do
+        let!(:other_reviewer) { create :user, :reviewer }
+
+        before { User.current_user = other_reviewer }
+
+        it do
+          # The unrelated supervisor receives the first message of the thread
+          expect(message).to receive(:add_subscription).with('read', reviewer.id)
+          expect(message).to receive(:add_subscription).with('unread', other_reviewer.id)
+          message.save
+
+          # The supervisor answers on the the private thread
+          create :message, sender: other_reviewer, offer: message.offer, is_private: true
+
+          # The supervisor receives subsequent message of the thread
+          expect(message2).to receive(:add_subscription).with('read', reviewer.id) # sender
+          expect(message2).to receive(:add_subscription).with('unread', other_reviewer.id)
+          message2.save
+        end
+      end
+
       context "should subscribe a supervisor for subsequent messages if he/she posted something in the public thread" do
         let!(:supervisor) { create :user, :supervisor }
 

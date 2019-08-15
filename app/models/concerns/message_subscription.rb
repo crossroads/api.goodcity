@@ -55,9 +55,9 @@ module MessageSubscription
   end
 
   # A private subscriber is defined as :
-  #   > A supervisor who has answered the private thread
+  #   > A supervisor or reviewer who has answered the private thread
   def private_subscribers_to(klass, id)
-    User.supervisors
+    User.staff
         .joins(messages: [:subscriptions])
         .where(messages: { is_private: true })
         .where(subscriptions: { "#{klass}_id": id })
