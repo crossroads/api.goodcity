@@ -70,10 +70,11 @@ module Api
 
       api :GET, '/v1/offers/search?searchText=xyz', "Search for offers"
       def search
-        records = @offers.search({ search_text: params['searchText'], states: array_param(:state) })
+        records = @offers
+        records = records.search({ search_text: params['searchText'], states: array_param(:state) }) if params['searchText'].present?
         records = apply_filters(records)
         records = records.page(params["page"]).per(params["per_page"] || params["recent_offer_count"] || DEFAULT_SEARCH_COUNT)
-        offers = offer_response(records.with_summary_eager_load)
+        offers = offer_summary_response(records.with_summary_eager_load)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(offers)
       end
 
@@ -161,10 +162,11 @@ module Api
         end
       end
 
-      def offer_response(records)
-        ActiveModel::ArraySerializer.new(
-          records,each_serializer: summary_serializer,
-          root: "offers"
+      def offer_summary_response(records)
+        ActiveModel::ArraySerializer.new(records,
+          each_serializer: summary_serializer,
+          root: "offers",
+          include_messages: params[:include_messages] == "true"
         ).as_json
       end
 
@@ -175,7 +177,8 @@ module Api
           self_reviewer: bool_param(:selfReview, false),
           recent_offers: bool_param(:recent_offers, false),
           before: time_epoch_param(:before),
-          after: time_epoch_param(:after)
+          after: time_epoch_param(:after),
+          with_notifications: params[:with_notifications]
         })
       end
 

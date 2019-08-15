@@ -18,10 +18,10 @@ module UserSearch
     }
 
     def self.search_user(role_name, search_query, search_text)
-      joins(:roles)
-      .where('roles.name = ?', role_name)
-      .where(search_query, search_text: "%#{search_text}%")
-      .distinct
+      res = joins(:roles)
+      res = res.where('roles.name = ?', role_name) if role_name.present?
+      res = res.where(search_query, search_text: "%#{search_text}%") if search_text.present?
+      res.distinct
     end
   end
 end

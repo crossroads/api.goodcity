@@ -44,7 +44,7 @@ FactoryBot.define do
       association :received_by, :reviewer, factory: :user
       state "receiving"
     end
-    
+
     trait :received do
       receiving
       received_at { Time.now }

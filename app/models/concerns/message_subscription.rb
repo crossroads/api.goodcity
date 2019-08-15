@@ -16,7 +16,8 @@ module MessageSubscription
     #   - Admin users processing the offer/order
     user_ids << obj.try(:created_by_id)
     user_ids << self.sender_id
-    user_ids += Subscription.where("#{klass}_id": obj.id).pluck(:user_id)
+    user_ids += public_subscribers_to(klass, obj.id)
+    user_ids += private_subscribers_to(klass, obj.id)
     admin_user_fields.each{|field| user_ids << obj.try(field)}
 
     # Remove the following users
@@ -26,11 +27,15 @@ module MessageSubscription
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
     user_ids -= [obj.try(:created_by_id)] if self.is_private or obj.try('cancelled?')
 
-    # For private messages, subscribe all supervisors
-    user_ids += User.supervisors.pluck(:id) if self.is_private
 
-    # If donor sends a message but no one else is listening, subscribe all reviewers.
-    user_ids += User.reviewers.pluck(:id) if [self.sender_id] == user_ids
+    # Cases where we subscribe every stafff member
+    #  - For private messages, subscribe all supervisors ONLY for the first message
+    #  - If donor sends a message but no one else is listening, subscribe all reviewers.
+    subscribe_all_staff = is_private ?
+      is_first_message_for(klass, obj.id) :
+      [self.sender_id] == user_ids
+
+    user_ids += User.staff.pluck(:id) if subscribe_all_staff
 
     user_ids.flatten.compact.uniq.each do |user_id|
       state = (user_id == self.sender_id) ? "read" : "unread" # mark as read for sender
@@ -39,6 +44,29 @@ module MessageSubscription
   end
 
   private
+
+  # A public subscriber is defined as :
+  #   > Anyone who has a subscription to that record
+  def public_subscribers_to(klass, id)
+    Subscription
+      .joins(:message)
+      .where("#{klass}_id": id, messages: { is_private: false })
+      .pluck(:user_id)
+  end
+
+  # A private subscriber is defined as :
+  #   > A supervisor or reviewer who has answered the private thread
+  def private_subscribers_to(klass, id)
+    User.staff
+        .joins(messages: [:subscriptions])
+        .where(messages: { is_private: true })
+        .where(subscriptions: { "#{klass}_id": id })
+        .pluck(:id)
+  end
+
+  def is_first_message_for(klass, id)
+    Message.where(is_private: is_private, "#{klass}_id": id).count.eql? 1
+  end
 
   def admin_user_fields
     [:reviewed_by_id, :processed_by_id, :process_completed_by_id,  :cancelled_by_id, :process_completed_by,

@@ -18,6 +18,7 @@ module OfferFiltering
       res = res.due_after(options[:after]) if options[:after].present?
       res = res.due_before(options[:before]) if options[:before].present?
       res = res.order("id DESC") if options[:recent_offers]
+      res = res.with_notifications(options[:with_notifications]) if options[:with_notifications].present?
       res.distinct
     end
 
@@ -40,6 +41,13 @@ module OfferFiltering
 
     def self.due_before(time)
       where('schedules.scheduled_at <= (?)', time)
+    end
+
+    def self.with_notifications(state)
+      res = joins("LEFT OUTER JOIN subscriptions ON offers.id = subscriptions.offer_id")
+      res = res.where("subscriptions.user_id = (?)", User.current_user.id)
+      res = res.where("subscriptions.state = (?)", state) if %w[unread read].include?(state)
+      res
     end
 
     # Helpers
