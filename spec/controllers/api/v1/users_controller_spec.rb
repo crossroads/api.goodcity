@@ -74,6 +74,27 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 
+  describe "POST users" do
+    let(:reviewer) { create(:user_with_token, :reviewer) }
+    let(:role) { create(:role, name: "Supervisor") }
+    before do
+      @user_params = {"first_name": "Test", "last_name": "Name", "mobile": "78945778"}
+    end
+
+    context "Reviewer" do
+      before { generate_and_set_token(user) }
+      it "creates user and returns 201", :show_in_doc do
+        expect {
+          post :create, user: @user_params
+          }.to change(User, :count).by(1)
+        expect(response.status).to eq(201)
+        expect(parsed_body['user']['first_name']).to eql(@user_params[:first_name])
+        expect(parsed_body['user']['last_name']).to eql(@user_params[:last_name])
+        expect(parsed_body['user']['mobile']).to eql(@user_params[:mobile])
+      end
+    end
+  end
+
   describe "PUT user/1" do
     let(:reviewer) { create(:user_with_token, :reviewer) }
     let(:role) { create(:role, name: "Supervisor") }
