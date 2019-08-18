@@ -32,6 +32,8 @@ en:
     thank_you_calling_message: "Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff."
     unread_message_sms: |
       You've got notifications in GoodCity, please check the latest updates. %{url}.
+    offer_rejections_message: |
+      Hi %{full_name}, unfortunately we have rejected your offer because it's unwanted to us. Thanks # change this message based on input from Matt
   cart:
     items_unavailable: "One or many requested items are no longer available"
     bad_order: "Bad or missing order id"
@@ -62,6 +64,7 @@ en:
       limited and needs in the community change daily. Once the review is
       complete you will be able to arrange transport for any accepted items.
       If you have questions feel free to reply to this message.
+    rejection_message: Rejected the offer # change this message based on input from Matt
     ggv_cancel_message: A van booking for %{time} was cancelled via GoGoVan. Please choose new transport arrangements.
     item_add_message: "%{donor_name} added a new item to their offer. Please review it."
     ready_for_schedule_message: "Your offer has been reviewed. Please <a href='/offers/%{offer_id}/plan_delivery'>click here</a> to arrange transportation."

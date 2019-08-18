@@ -32,6 +32,8 @@ zh-tw:
     thank_you_calling_message: "感謝致電十字路會主辦物資捐獻系統，好人好市。請稍候片刻，職員將儘快接聽你的電話。"
     unread_message_sms: |
       You've got notifications in GoodCity, please check the latest updates. %{url}.
+    offer_rejections_message: |
+      Hi %{full_name}, unfortunately we have rejected your offer because it's unwanted to us. Thanks # change this message based on input from Matt
   cart:
     items_unavailable: "您的購物車内有已不存在的物資"
     bad_order: "Bad or missing order id"
@@ -57,6 +59,7 @@ zh-tw:
     new_order: "New order from %{organisation_name_zh_tw}: %{contact_name}"
   offer:
     thank_message: 感謝您的捐獻，我們的團隊很快就會開始審查。假如審查員有任何關於捐獻物資的疑問，他們會以訊息向您查詢。由於儲存空間有限，社區的需要亦經常改變，我們可能無法接收部分物資。為此，我們深感遺憾，並先就此道歉。當審查完成時，您就能立刻安排已接受的物資的運輸。假如您有任何疑問，請隨時回覆此信息。
+    rejection_message: Rejected the offer # change this message based on input from Matt
     ggv_cancel_message: GoGoVan已取消預約於 %{time} 的貨車，請重新安排運輸。
     item_add_message: "%{donor_name} 捐獻了一件新物品。請審查。"
     ready_for_schedule_message: "閣下捐獻的物資已經審查完畢，請 <a href='/offers/%{offer_id}/plan_delivery'>按此</a> 安排運送細節。"

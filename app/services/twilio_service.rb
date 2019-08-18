@@ -28,6 +28,10 @@ class TwilioService
     send_sms(body: unread_message_reminder(url))
   end
 
+  def send_offer_rejection_message(offer)
+    send_sms(body: offer_rejection_message(offer))
+  end
+
   # options[:to] = "+85261111111"
   # options[:body] = "SMS body"
   def send_sms(options)
@@ -75,6 +79,10 @@ class TwilioService
   def new_order_confirmed_text_to_charity(order)
     I18n.t('twilio.new_order_submitted_sms_to_charity',
       code: order.code)
+  end
+
+  def offer_rejection_message(offer)
+    I18n.t('twilio.offer_rejection_message', offer: offer, full_name: offer.created_by.full_name)
   end
 
   def unread_message_reminder(url)

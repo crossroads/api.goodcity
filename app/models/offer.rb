@@ -150,6 +150,7 @@ class Offer < ActiveRecord::Base
     before_transition on: :mark_unwanted do |offer, _transition|
       offer.cancelled_at = Time.now
       offer.cancellation_reason = CancellationReason.unwanted
+      offer.send_rejection_message_and_sms
     end
 
     before_transition on: :receive do |offer, _transition|
@@ -252,6 +253,11 @@ class Offer < ActiveRecord::Base
 
   def send_thank_you_message
     send_message(I18n.t("offer.thank_message"), User.system_user)
+  end
+
+  def send_rejection_message_and_sms
+    send_message(I18n.t("offer.rejection_message"), User.system_user)
+    TwilioService.new(created_by).send_offer_rejection_message(self)
   end
 
   def send_item_add_message
