@@ -20,16 +20,34 @@ module Api
         end
       end
 
+      def create
+        save_and_render_object(@company)
+      end
+
       def index
         @companies = @companies.search({search_text: params["searchText"]})
           .page(page).per(per_page) if params["searchText"]
         render json: @companies, each_serializer: serializer
       end
 
+      api :PUT, "/v1/companies/1", "Update a company"
+      param_group :company
+      def update
+        if @company.update_attributes(company_params)
+          render json: @company, serializer: serializer
+        else
+          render_errors
+        end
+      end
+
       private
 
+      def company_params
+        params.require(:company).permit(:name, :crm_id)
+      end
+
       def serializer
-        Api::V1::CompaniesSerializer
+        Api::V1::CompanySerializer
       end
     end
   end

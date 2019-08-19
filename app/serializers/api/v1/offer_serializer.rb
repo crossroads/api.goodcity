@@ -18,7 +18,7 @@ module Api::V1
     has_one  :gogovan_transport, serializer: GogovanTransportSerializer
     has_one  :crossroads_transport, serializer: CrossroadsTransportSerializer
     has_one  :cancellation_reason, serializer: CancellationReasonSerializer
-    has_one  :company, serializer: CompaniesSerializer
+    has_one  :company, serializer: CompanySerializer
 
     def include_messages?
       return false unless goodcity_user?
