@@ -5,7 +5,8 @@ describe SubscriptionsReminder do
   let(:charity)       { create(:user, :charity) }
   let(:reviewer)     { create(:user, :reviewer) }
   let(:supervisor)   { create(:user, :supervisor) }
-  let(:offer)        { create(:offer, :submitted, created_by: donor) }
+  let(:offer)        { create(:offer, :submitted, created_by: donor, reviewed_by: reviewer) }
+  let(:item)         { create(:item, offer_id: offer.id) }
   let(:reviewer_offer) { create(:offer, :submitted, created_by: reviewer) }
   let(:reviewed_offer) { create(:offer, :reviewed, reviewed_by: reviewer, created_by: donor) }
   let(:order)         { create(:order, :with_state_submitted, created_by: charity) }
@@ -74,8 +75,18 @@ describe SubscriptionsReminder do
 
       it "charity user who is also donor has unread message on offer and order both" do
         create(:message, offer: charity_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
-        charity.update_column(:sms_reminder_sent_at, before_delta.ago) 
+        charity.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([charity])
+      end
+
+      it "user will recieve sms_fallback if the item is rejected and sms_reminder_sent is greater than 4 hours" do
+        expect(donor.subscriptions.unread.first.message.created_at).to be > delta.ago
+        donor.update_column(:sms_reminder_sent_at, before_delta.ago)
+        item.update(rejection_comments: "Rejected")
+        item.reject!
+        rejection_message = donor.offers.last.messages.last
+        rejection_message.update(created_at: delta.ago)
+        expect(subject.send(:user_candidates_for_reminder).to_a).to eql([donor])
       end
     end
 
@@ -141,14 +152,14 @@ describe SubscriptionsReminder do
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
 
-      it 'donor has order unread messages' do 
+      it 'donor has order unread messages' do
         charity.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
 
       it 'charity user who is also donor has no unread messages on the offer but on order' do
         create(:message, offer: charity_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
-        charity.update_column(:sms_reminder_sent_at, before_delta.ago) 
+        charity.update_column(:sms_reminder_sent_at, before_delta.ago)
         charity.offers.map{|o| o.subscriptions.unread}.flatten.uniq.map{|s| s.update_column(:state, 'read')}
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end

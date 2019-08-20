@@ -23,14 +23,14 @@ class SubscriptionsReminder
   #   to avoid alerting on the system 'thank you for submitting your offer' message
   def user_candidates_for_reminder
     offer_states = ['submitted', 'under_review', 'reviewed', 'scheduled', 'received', 'receiving', 'inactive'] # NOT draft, closed or cancelled
-    User.joins(subscriptions: [:message, offer: :items])
+    User.joins(subscriptions: [:message, :offer])
+        .joins("LEFT JOIN items on items.offer_id = offers.id")
         .where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601)
         .where('subscriptions.state': 'unread')
         .where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)")
         .where("(messages.offer_id IS NOT NULL OR messages.item_id IS NOT NULL) and messages.order_id IS NULL")
         .where("offers.created_by_id = subscriptions.user_id")
-        .where("offers.state IN (?)", offer_states)
-        .where("items.state = 'rejected'")
+        .where("items.state IN (?) OR offers.state IN (?)", ['rejected'], offer_states)
         .where('messages.sender_id != offers.created_by_id')
         .where("messages.created_at < (?)", head_start.iso8601)
         .distinct
