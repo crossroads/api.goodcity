@@ -80,11 +80,11 @@ describe SubscriptionsReminder do
       end
 
       it "user will recieve sms_fallback if the item is rejected and sms_reminder_sent is greater than 4 hours" do
-        expect(donor.subscriptions.unread.first.message.created_at).to be > delta.ago
-        donor.update_column(:sms_reminder_sent_at, before_delta.ago)
         item.update(rejection_comments: "Rejected")
         item.reject!
-        rejection_message = donor.offers.last.messages.last
+        rejection_message = donor.subscriptions.unread.last.message
+        expect(rejection_message.created_at).to be > delta.ago
+        donor.update_column(:sms_reminder_sent_at, before_delta.ago)
         rejection_message.update(created_at: delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([donor])
       end
