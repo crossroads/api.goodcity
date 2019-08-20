@@ -40,10 +40,16 @@ module Api
         end
       end
 
+      api :GET, "/v1/companies/1", "List a companies"
+      def show
+        render json: @company, serializer: serializer
+      end
+
+
       private
 
       def company_params
-        params.require(:company).permit(:name, :crm_id)
+        params.require(:company).permit(:name, :crm_id, :created_by_id, :updated_by_id)
       end
 
       def serializer
