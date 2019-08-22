@@ -244,7 +244,8 @@ module Api
       end
 
       def print_inventory_label
-        _print_id, errors, status = params[:labels].to_i.times { barcode_service.print @package.inventory_number }
+        print_count = params[:labels] ? params[:labels].to_i : 1
+        _print_id, errors, status = barcode_service.print(@package.inventory_number, print_count)
         render json: {
           status: status,
           errors: errors,

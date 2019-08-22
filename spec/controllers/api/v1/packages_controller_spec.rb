@@ -589,7 +589,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "should print barcode service call with inventory number" do
       package.inventory_number = inventory_number
       package.save
-      expect(barcode_service).to receive(:print).with(inventory_number).and_return(["pid 111 exit 0", "", ""])
+      expect(barcode_service).to receive(:print).with(inventory_number, labels=1).and_return(["pid 111 exit 0", "", ""])
       post :print_barcode, package_id: package.id
     end
 

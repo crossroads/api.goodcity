@@ -2,7 +2,7 @@ require 'easyzpl'
 require 'open3'
 
 class BarcodeService
-  def print(inventory_number)
+  def print(inventory_number, print_count)
     # There are 72 dots in an inch (usually)
     # In the case of our printer, there are 203
     dots = 300
@@ -43,6 +43,8 @@ class BarcodeService
                       :width       => 0.3,
                       :height      => 0.4 )
 
+    label.change_quantity(print_count) if print_count > 1
+
     # generate label and save to temp file
     f = Tempfile.new("cupsjob")
     f.write label.to_s
@@ -59,7 +61,7 @@ class BarcodeService
     }
 
     print_id, errors, status = Open3.capture3(options, Rails.root.join('app', 'services', 'barcode_service.exp').to_s)
-    
+
     log_hash = { printer_name: "\"#{options['NAME']}\"",
         printer_host: "\"#{options['HOST']}\"",
         printer_user: "\"#{options['USER']}\"",
