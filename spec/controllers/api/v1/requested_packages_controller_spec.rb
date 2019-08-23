@@ -239,32 +239,32 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         it "fails if no order is specified" do
           post :checkout
           expect(response.status).to eq(422)
-          expect(parsed_body['errors'][0]).to eq('Bad or missing order id')
+          expect(parsed_body['errors'][0]).to eq({"message"=>["Bad or missing order id"], "status"=>422})
         end
 
         it "fails if a bad order id is specified" do
           post :checkout, order_id: '99999'
           expect(response.status).to eq(422)
-          expect(parsed_body['errors'][0]).to eq('Bad or missing order id')
+          expect(parsed_body['errors'][0]).to eq({"message"=>["Bad or missing order id"], "status"=>422})
         end
 
         it "fails if someone else's order is specified" do
           post :checkout, order_id: other_order.id
           expect(response.status).to eq(422)
-          expect(parsed_body['errors'][0]).to eq('You are not authorized to take this action.')
+          expect(parsed_body['errors'][0]).to eq({"message"=>["You are not authorized to take this action."], "status"=>422})
         end
 
         it "fails if the order is scheduled" do
           post :checkout, order_id: awaiting_dispatch_order.id
           expect(response.status).to eq(422)
-          expect(parsed_body['errors'][0]).to eq('The order has already been processed')
+          expect(parsed_body['errors'][0]).to eq({"message"=>["The order has already been processed"], "status"=>422})
         end
 
         it "fails if one of the packages is no longer available" do
           requested_packages[0].package.update!(allow_web_publish: false)
           post :checkout, order_id: draft_order.id
           expect(response.status).to eq(422)
-          expect(parsed_body['errors'][0]).to eq('One or many requested items are no longer available')
+          expect(parsed_body['errors'][0]).to eq({"message"=>["One or many requested items are no longer available"], "status"=>422})
         end
       end
     end
