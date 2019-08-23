@@ -114,6 +114,7 @@ module Api
 
       api :POST, "/v1/packages/print_barcode", "Print barcode"
       def print_barcode
+        return render json: { errors:"Print value should be between 0-300." }, status: 400 unless params[:labels].to_i.between?(1,300)
         begin
           @package = Package.find params[:package_id]
         rescue ActiveRecord::RecordNotFound
@@ -244,7 +245,7 @@ module Api
       end
 
       def print_inventory_label
-        print_count = params[:labels] ? params[:labels].to_i : 1
+        print_count = params[:labels].to_i
         _print_id, errors, status = barcode_service.print(@package.inventory_number, print_count)
         render json: {
           status: status,
