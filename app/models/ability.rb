@@ -16,7 +16,7 @@ class Ability
     'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
     'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
     'can_destroy_package_with_specific_states', 'can_manage_locations',
-    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings'].freeze
+    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings', 'can_manage_companies', 'can_create_donor'].freeze
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
@@ -72,6 +72,7 @@ class Ability
     taxonomies
     user_abilities
     version_abilities
+    company_abilities
   end
 
   def address_abilities
@@ -232,6 +233,12 @@ class Ability
     end
   end
 
+  def company_abilities
+    if can_manage_companies? || @api_user
+      can [:create, :index, :show, :update], Company
+    end
+  end
+
   def organisations_users_abilities
     if can_manage_organisations_users? || @api_user
       can [:create, :show, :index, :update], OrganisationsUser
@@ -342,7 +349,8 @@ class Ability
   def user_abilities
     can [:current_user_profile], User
     can [:show, :update, :orders_count], User, id: @user_id
-    can [:index, :show, :update, :recent_users], User if can_read_or_modify_user?
+    can [:index, :show, :update, :recent_users, :create], User if can_read_or_modify_user?
+    can [:create, :show], User if can_create_donor?
   end
 
   def version_abilities
