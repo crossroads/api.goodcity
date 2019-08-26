@@ -77,11 +77,13 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe "POST users" do
     let(:reviewer) { create(:user_with_token, :reviewer) }
     let(:role) { create(:role, name: "Supervisor") }
+    let(:existing_user) { create(:user) }
     before do
-      @user_params = {"first_name": "Test", "last_name": "Name", "mobile": "78945778"}
+      @user_params = {"first_name": "Test", "last_name": "Name", "mobile": "+85278945778"}
+      @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
     end
 
-    context "Reviewer" do
+    context "Reviewer user creation" do
       before { generate_and_set_token(user) }
       it "creates user and returns 201", :show_in_doc do
         expect {
@@ -91,6 +93,17 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(parsed_body['user']['first_name']).to eql(@user_params[:first_name])
         expect(parsed_body['user']['last_name']).to eql(@user_params[:last_name])
         expect(parsed_body['user']['mobile']).to eql(@user_params[:mobile])
+      end
+    end
+
+    context "user creation error" do
+      before { generate_and_set_token(user) }
+      it "returns 422 and doesn't create a user if error" do
+        expect {
+          post :create, user: @user_params2
+          }.to_not change(User, :count)
+        expect(response.status).to eq(422)
+        expect(parsed_body['errors']).to eql([{"message"=>"Mobile has already been taken"}])
       end
     end
   end
