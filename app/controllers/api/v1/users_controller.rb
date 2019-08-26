@@ -28,8 +28,6 @@ module Api
 
       api :POST, '/v1/users', "Create user"
       def create
-        @user.mobile = "+852#{@user.mobile}" if @user.mobile
-        @user.other_phone = "+852#{@user.other_phone}" if @user.other_phone
         if @user.save
           render json: @user, serializer: serializer, status: 201
         else
