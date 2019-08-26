@@ -8,7 +8,7 @@ module UserSearch
     # user: first_name, last_name, email, mobile
     scope :search, ->(options = {}) {
       search_text = options[:search_text] || ''
-      role_name = options[:role_name] || ''
+      role_name = options[:role_name].presence
       if search_text.present?
         search_query = SEARCH_ATTRIBUTES.map { |f| "#{f} ILIKE :search_text" }.join(" OR ")
         search_user(role_name, search_query, search_text)
@@ -18,10 +18,14 @@ module UserSearch
     }
 
     def self.search_user(role_name, search_query, search_text)
-      res = joins(:roles)
-      res = res.where('roles.name = ?', role_name) if role_name.present?
-      res = res.where(search_query, search_text: "%#{search_text}%") if search_text.present?
-      res.distinct
+      if role_name
+        joins(:roles)
+        .where("roles.name = ?", role_name)
+        .where(search_query, search_text: "%#{search_text}%")
+        .distinct
+      else
+        where(search_query, search_text: "%#{search_text}%").distinct
+      end
     end
   end
 end
