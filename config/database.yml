@@ -7,7 +7,7 @@ default: &default
 
 development:
   <<: *default
-  database: anonymize-db
+  database: goodcity_server_development
 
 test:
   <<: *default
