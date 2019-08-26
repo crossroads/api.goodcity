@@ -601,7 +601,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "returns 400 if labels quantity is more than 300" do
       post :print_barcode, package_id: package.id, labels:301
       expect(response.status).to eq(400)
-      expect(subject["errors"]).to eq("Print value should be between 0-300.")
+      expect(subject["errors"]).to eq("Print value should be between 0 and #{MAX_BARCODE_PRINT}.")
     end
   end
 
