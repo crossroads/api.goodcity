@@ -102,7 +102,7 @@ module Api
       end
 
       def item_params
-        params.require(:item).permit(:donor_description, :donor_condition_id,
+        params.require(:item).permit(:donor_description, :donor_condition_id, :state,
           :state_event, :offer_id, :package_type_id, :rejection_reason_id,
           :reject_reason, :rejection_comments)
       end
