@@ -24,7 +24,7 @@ module Api
         if @company.save
           render json: @company, serializer: serializer, status: 201
         else
-          render json: { errors: @company.errors.full_messages.map{|message| { message: message } } }, status: 422
+          render json: { errors: @company.errors.full_messages.map { |message| { message: message } } }, status: 422
         end
       end
 
