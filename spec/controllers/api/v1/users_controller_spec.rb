@@ -81,6 +81,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     before do
       @user_params = {"first_name": "Test", "last_name": "Name", "mobile": "+85278945778"}
       @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
+      @user_params3 = {"first_name": "Test", "last_name": "Name", "mobile": "3812912"}
     end
 
     context "Reviewer user creation" do
@@ -104,6 +105,14 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           }.to_not change(User, :count)
         expect(response.status).to eq(422)
         expect(parsed_body['errors']).to eql([{"message"=>"Mobile has already been taken"}])
+      end
+
+      it "returns 422 and doesn't create a user if error" do
+        expect {
+          post :create, user: @user_params3
+          }.to_not change(User, :count)
+        expect(response.status).to eq(422)
+        expect(parsed_body['errors']).to eql([{"message"=>"Mobile is invalid"}])
       end
     end
   end
