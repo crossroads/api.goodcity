@@ -71,6 +71,12 @@ context OfferSearch do
       it { expect(Offer.search({search_text: 'Test message', states:[]}).to_a).to match_array([offer]) }
     end
 
+    context "company" do
+      let(:company) { create(:company) }
+      let!(:offer1) { create :offer, :submitted, company: company }
+      let!(:offer2) { create :offer, :submitted }
+      it { expect(Offer.search({search_text: company.name, states:[]}).to_a).to match_array([offer1]) }
+    end
   end
 
 end
