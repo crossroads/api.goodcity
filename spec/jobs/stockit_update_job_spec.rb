@@ -4,11 +4,12 @@ describe StockitUpdateJob, :type => :job do
 
   let(:package) { create(:package, :stockit_package) }
   let(:err) { {"errors" => {:connection_error => "Error"}} }
-  
+
   subject { StockitUpdateJob.new }
 
   it "should update the item in Stockit" do
-    expect(Stockit::ItemSync).to receive(:update).with(package)
+    payload = { id: package.id }
+    expect(Stockit::ItemSync).to receive(:update).with(package).and_return(payload)
     subject.perform(package.id)
   end
 
@@ -17,8 +18,8 @@ describe StockitUpdateJob, :type => :job do
     let(:new_item_payload) { { "id" => new_item_id } }
     it "should update stockit_id" do
       expect(Stockit::ItemSync).to receive(:update).with(package).and_return(new_item_payload)
-      expect(package).to receive(:update_attribute).with(stockit_id: new_item_id)
       subject.perform(package.id)
+      expect(package.reload.stockit_id).to eq(new_item_id)
     end
     it "should not update stockit_id if it is blank" do
       expect(Stockit::ItemSync).to receive(:update).with(package).and_return( { id: nil } )
