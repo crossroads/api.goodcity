@@ -29,7 +29,7 @@ module Api
     end
 
     def render_error(error_message, code: 422)
-      errors = { :message => error_message, :status => code }
+      errors = { message: error_message, status: code }
       render json: { errors: [errors] }, status: code
     end
 
