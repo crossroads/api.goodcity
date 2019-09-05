@@ -45,7 +45,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(subject["errors"]).to eq("Mobile is invalid")
+      expect(subject["errors"]).to eq([{"message" => "Mobile is invalid", "status" => 422}])
     end
 
     it "sends error if new organisations_user is with invalid email id", :show_in_doc do
@@ -54,7 +54,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(subject["errors"]).to eq("Email is invalid")
+      expect(subject["errors"]).to eq([{"message" => "Email is invalid", "status" => 422}])
     end
 
     it "creates new organisations_user record  if user with mobile number exists in db and its not assigned to same organisation" do
@@ -74,7 +74,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: new_organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(subject["errors"]).to eq("User already exists in this organisation")
+      expect(subject["errors"]).to eq([{"message" => "User already exists in this organisation", "status" => 422}])
     end
   end
 
