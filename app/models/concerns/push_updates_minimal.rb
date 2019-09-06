@@ -16,7 +16,7 @@ module PushUpdatesMinimal
   end
 
   def push_changes
-    puts "current_user_id: #{User.current_user.try(:id)}"
+    # puts "current_user_id: #{User.current_user.try(:id)}"
     if User.current_user
       PushService.new.send_update_store target_channels, {
         item: push_update_serialize(self),
