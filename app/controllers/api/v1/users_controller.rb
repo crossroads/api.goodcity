@@ -28,11 +28,7 @@ module Api
 
       api :POST, '/v1/users', "Create user"
       def create
-        if @user.save
-          render json: @user, serializer: serializer, status: 201
-        else
-          render json: { errors: @user.errors.full_messages.map{|message| { message: message } } }, status: 422
-        end
+        save_and_render_object_with_errors(@user)
       end
 
       api :GET, '/v1/users/1', "List a user"

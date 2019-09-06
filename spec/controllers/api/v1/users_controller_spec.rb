@@ -104,7 +104,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           post :create, user: @user_params2
           }.to_not change(User, :count)
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql([{"message"=>"Mobile has already been taken"}])
+        expect(parsed_body['errors']).to eql([{"message" => "Mobile has already been taken", "status" => 422}])
       end
 
       it "returns 422 and doesn't create a user if error" do
@@ -112,7 +112,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           post :create, user: @user_params3
           }.to_not change(User, :count)
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql([{"message"=>"Mobile is invalid"}])
+        expect(parsed_body['errors']).to eql([{"message" => "Mobile is invalid", "status" => 422}])
       end
     end
   end
