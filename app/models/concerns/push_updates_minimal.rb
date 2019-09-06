@@ -16,14 +16,11 @@ module PushUpdatesMinimal
   end
 
   def push_changes
-    puts "current_user_id: #{User.current_user.try(:id)}"
-    if User.current_user
-      PushService.new.send_update_store target_channels, {
-        item: push_update_serialize(self),
-        sender: push_update_sender,
-        operation: read_operation(self)
-      }
-    end
+    PushService.new.send_update_store target_channels, {
+      item: push_update_serialize(self),
+      sender: push_update_sender,
+      operation: read_operation(self)
+    }
   end
 
   def target_channels
@@ -41,7 +38,6 @@ module PushUpdatesMinimal
   end
 
   def push_update_sender
-
     Api::V1::UserSerializer.new(User.current_user, { user_summary: true })
   end
 
