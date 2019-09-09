@@ -138,4 +138,4 @@ workflows:
             - audit
           filters:
             branches:
-              only: /^(master|live)$/
+              only: /^(GCW-2691-coprporate-donor-feature|live)$/
