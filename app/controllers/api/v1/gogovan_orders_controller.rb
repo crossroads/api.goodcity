@@ -23,7 +23,11 @@ module Api
       param :offerId, String, desc: "Id of the offer"
       def calculate_price
         order_price = GogovanOrder.place_order(current_user, order_params)
-        render json: order_price.to_json
+        if order_price[:error]
+          render_error(order_price[:error])
+        else
+          render json: order_price.to_json
+        end
       end
 
       def driver_details
