@@ -21,11 +21,7 @@ module Api
       end
 
       def create
-        if @company.save
-          render json: @company, serializer: serializer, status: 201
-        else
-          render json: { errors: @company.errors.full_messages.map { |message| { message: message } } }, status: 422
-        end
+        save_and_render_object_with_errors(@company)
       end
 
       def index
