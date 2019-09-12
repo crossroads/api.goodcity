@@ -73,6 +73,7 @@ en:
     gogovan_message: "%{name} booked a GoGoVan for %{time}, %{date}"
     drop_off_message: "%{name} will deliver the items between %{time}, %{date}"
   package:
+    max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."

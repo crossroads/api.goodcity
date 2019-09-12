@@ -192,7 +192,7 @@ module Api
           :cancellation_reason_id, :saleable]
         attributes.concat [
           :created_at, :created_by_id, :submitted_at, :state,
-          :reviewed_at, :reviewed_by_id
+          :reviewed_at, :reviewed_by_id, :company_id
         ] if User.current_user.staff?
         params.require(:offer).permit(attributes)
       end

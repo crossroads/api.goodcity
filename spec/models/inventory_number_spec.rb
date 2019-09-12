@@ -16,11 +16,11 @@ RSpec.describe InventoryNumber, type: :model do
     end
 
     it "assigns count of inventory code during create" do
-      InventoryNumber.create(code: 1)
-      InventoryNumber.create(code: 2)
-      InventoryNumber.create(code: 3)
+      InventoryNumber.create(code: "000001")
+      InventoryNumber.create(code: "000002")
+      InventoryNumber.create(code: "000003")
       InventoryNumber.create_with_next_code!
-      expect(InventoryNumber.last.code).to eql(InventoryNumber.count.to_s.rjust(6, "0"))
+      expect(InventoryNumber.last.code).to eql("000004")
     end
   end
 
@@ -37,13 +37,23 @@ RSpec.describe InventoryNumber, type: :model do
 
   context "missing_code" do
     it "locates missing entry" do
-      InventoryNumber.create(code: 1)
-      InventoryNumber.create(code: 3)
+      InventoryNumber.create(code: "000001")
+      InventoryNumber.create(code: "000003")
       expect(InventoryNumber.missing_code).to eql(2)
     end
     it "returns 0 if empty table" do
-      expect(InventoryNumber.missing_code).to eql(0)
+      expect(InventoryNumber.missing_code).to eql(0) # no missing code
+      expect(InventoryNumber.next_code).to eql("000001")
     end
+
+    it "missing in inventory numbers table but exists in the packages table" do
+      InventoryNumber.create(code: "000001")
+      create(:package, inventory_number: "000001")
+      create(:package, inventory_number: "000002")
+      expect(InventoryNumber.missing_code).to eql(0) # no missing code
+      expect(InventoryNumber.next_code).to eql("000003")
+    end
+
   end
 
 end

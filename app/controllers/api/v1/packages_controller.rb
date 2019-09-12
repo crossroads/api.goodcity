@@ -114,6 +114,7 @@ module Api
 
       api :POST, "/v1/packages/print_barcode", "Print barcode"
       def print_barcode
+        return render json: { errors: I18n.t('package.max_print_error', max_barcode_qty: MAX_BARCODE_PRINT) }, status: 400 unless print_count.between?(1, MAX_BARCODE_PRINT)
         begin
           @package = Package.find params[:package_id]
         rescue ActiveRecord::RecordNotFound
@@ -244,7 +245,7 @@ module Api
       end
 
       def print_inventory_label
-        _print_id, errors, status = barcode_service.print @package.inventory_number
+        _print_id, errors, status = barcode_service.print(@package.inventory_number, print_count)
         render json: {
           status: status,
           errors: errors,
@@ -347,6 +348,10 @@ module Api
         if is_admin_app? && params[:package][:location_id].present?
           @package.build_or_create_packages_location(params[:package][:location_id], 'create')
         end
+      end
+
+      def print_count
+        params[:labels].to_i
       end
 
       def received_quantity

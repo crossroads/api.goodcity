@@ -7,7 +7,7 @@ module Api::V1
       :received_at, :cancelled_at, :start_receiving_at,
       :submitted_items_count, :accepted_items_count, :rejected_items_count,
       :expecting_packages_count, :missing_packages_count, :received_packages_count,
-      :display_image_cloudinary_id
+      :display_image_cloudinary_id, :notes
 
     has_one  :closed_by, serializer: UserSummarySerializer, root: :user
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
@@ -15,6 +15,7 @@ module Api::V1
     has_one  :received_by, serializer: UserSummarySerializer, root: :user
     has_one  :delivery, serializer: DeliverySerializer, root: :delivery
     has_many :messages, serializer: MessageSerializer
+    has_one  :company, serializer: CompanySerializer
 
     def include_messages?
       return false unless goodcity_user?
@@ -44,7 +45,7 @@ module Api::V1
     def accepted_items_count__sql
       "(SELECT COUNT(*) FROM items i WHERE i.offer_id = offers.id AND i.state = 'accepted')"
     end
-    
+
     def rejected_items_count
       object.rejected_items.size
     end

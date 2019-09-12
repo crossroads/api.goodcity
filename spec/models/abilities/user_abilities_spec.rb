@@ -15,8 +15,8 @@ describe "User abilities" do
   context "when Supervisor" do
     let(:user)   { create(:user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor') }
     let(:person) { create :user }
-    let(:can)    { [:index, :show, :update, :current_user_profile] }
-    let(:cannot) { [:create, :destroy, :manage] }
+    let(:can)    { [:create, :index, :show, :update, :current_user_profile] }
+    let(:cannot) { [:destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)
     end}
@@ -28,8 +28,8 @@ describe "User abilities" do
   context "when Reviewer" do
     let(:user)   { create(:user, :with_can_read_or_modify_user_permission, role_name: 'Reviewer') }
     let(:person) { create :user }
-    let(:can)    { [:index, :show, :update, :current_user_profile] }
-    let(:cannot) { [:create, :destroy, :manage] }
+    let(:can)    { [:create, :index, :show, :update, :current_user_profile] }
+    let(:cannot) { [:destroy, :manage] }
     it{ can.each do |do_action|
       is_expected.to be_able_to(do_action, person)
     end}

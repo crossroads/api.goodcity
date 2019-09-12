@@ -574,14 +574,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     }
 
     it "returns 400 if package does not exist" do
-      post :print_barcode, package_id: 1
+      post :print_barcode, package_id: 1, labels:1
       expect(response.status).to eq(400)
       expect(subject["errors"]).to eq("Package not found with supplied package_id")
     end
 
     it "should generate inventory number if empty on package" do
       expect(package.inventory_number).to be_blank
-      post :print_barcode, package_id: package.id
+      post :print_barcode, package_id: package.id, labels:1
       package.reload
       expect(package.inventory_number).not_to be_blank
     end
@@ -589,13 +589,19 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "should print barcode service call with inventory number" do
       package.inventory_number = inventory_number
       package.save
-      expect(barcode_service).to receive(:print).with(inventory_number).and_return(["pid 111 exit 0", "", ""])
-      post :print_barcode, package_id: package.id
+      expect(barcode_service).to receive(:print).with(inventory_number, labels=1).and_return(["pid 111 exit 0", "", ""])
+      post :print_barcode, package_id: package.id, labels: 1
     end
 
     it "return 200 status" do
-      post :print_barcode, package_id: package.id
+      post :print_barcode, package_id: package.id, labels:1
       expect(response.status).to eq(200)
+    end
+
+    it "returns 400 if labels quantity is more than 300" do
+      post :print_barcode, package_id: package.id, labels:301
+      expect(response.status).to eq(400)
+      expect(subject["errors"]).to eq("Print value should be between 0 and #{MAX_BARCODE_PRINT}.")
     end
   end
 

@@ -26,6 +26,11 @@ module Api
         render json: @users, each_serializer: serializer
       end
 
+      api :POST, '/v1/users', "Create user"
+      def create
+        save_and_render_object_with_errors(@user)
+      end
+
       api :GET, '/v1/users/1', "List a user"
       description "Returns information about a user. Note image may be empty if user is not a reviewer."
       def show
@@ -37,6 +42,7 @@ module Api
         param :last_connected, String, desc: "Time when user last connected to server.", allow_nil: true
         param :last_disconnected, String, desc: "Time when user disconnected from server.", allow_nil: true
       end
+
       def update
         @user.update_attributes(user_params)
         if params["user"]["user_role_ids"]
@@ -69,7 +75,8 @@ module Api
       end
 
       def user_params
-        attributes = [:last_connected, :last_disconnected]
+        attributes = %i[last_connected last_disconnected
+        first_name last_name email receive_email other_phone title mobile]
         attributes.concat([:user_role_ids]) if User.current_user.supervisor?
         params.require(:user).permit(attributes)
       end
