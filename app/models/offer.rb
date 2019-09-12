@@ -17,6 +17,7 @@ class Offer < ActiveRecord::Base
   belongs_to :gogovan_transport
   belongs_to :crossroads_transport
   belongs_to :cancellation_reason
+  belongs_to :company
 
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :submitted_items, -> { where(state: 'submitted') }, class_name: 'Item'
