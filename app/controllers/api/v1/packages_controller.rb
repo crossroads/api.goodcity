@@ -270,7 +270,7 @@ module Api
       def package_params
         get_package_type_id_value
         set_favourite_image if @package && !@package.new_record?
-        attributes = [:quantity, :length, :width, :height, :notes, :item_id,
+        attributes = [:quantity, :length, :width, :height, :weight, :pieces, :notes, :item_id,
           :received_at, :rejected_at, :package_type_id, :state_event,
           :inventory_number, :designation_name, :donor_condition_id, :grade,
           :location_id, :box_id, :pallet_id, :stockit_id,
