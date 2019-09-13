@@ -20,6 +20,8 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:width).of_type(:integer)}
     it{ is_expected.to have_db_column(:height).of_type(:integer)}
     it{ is_expected.to have_db_column(:quantity).of_type(:integer)}
+    it{ is_expected.to have_db_column(:weight).of_type(:integer)}
+    it{ is_expected.to have_db_column(:pieces).of_type(:integer)}
     it{ is_expected.to have_db_column(:notes).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:received_at).of_type(:datetime)}
@@ -35,9 +37,13 @@ RSpec.describe Package, type: :model do
     it { is_expected.to validate_presence_of(:package_type_id) }
     it { is_expected.to_not allow_value(-1).for(:quantity) }
     it { is_expected.to_not allow_value(-1).for(:received_quantity) }
+    it { is_expected.to_not allow_value(-1).for(:weight) }
+    it { is_expected.to_not allow_value(-1).for(:pieces) }
     it { is_expected.to_not allow_value(0).for(:received_quantity) }
+    it { is_expected.to_not allow_value(0).for(:weight) }
+    it { is_expected.to_not allow_value(0).for(:pieces) }
     it do
-      [:width, :height, :length].each do |attribute|
+      [:width, :height, :length, :weight, :pieces].each do |attribute|
         is_expected.to_not allow_value(-1).for(attribute)
         is_expected.to allow_value(nil).for(attribute)
       end
