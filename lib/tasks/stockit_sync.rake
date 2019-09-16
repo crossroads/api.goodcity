@@ -31,5 +31,7 @@ namespace :stockit do
     Rake::Task["stockit:add_stockit_items"].execute
     puts "Generate OrdersPackages and sync them to Stockit"
     Rake::Task["goodcity:update_orders_packages_data"].execute
+    puts "Updating the weight and pieces for packages"
+    Rake::Task["stockit:add_stockit_packages_pieces_weight"].execute
   end
 end
