@@ -7,11 +7,11 @@ namespace :stockit do
       offset += per_page
       stockit_items = JSON.parse(items_json["items"])
       bar = RakeProgressbar.new(stockit_items.size)
-      next unless stockit_items.present?
+      next if stockit_items.blank?
 
       stockit_items.each do |value|
         bar.inc
-        next unless value["id"].present?
+        next if value["id"].blank?
 
         package = Package.find_by(stockit_id: value["id"])
         package&.update_attributes(pieces: value["pieces"], weight: value["weight"])
