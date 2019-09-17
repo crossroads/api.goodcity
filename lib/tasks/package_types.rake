@@ -32,4 +32,26 @@ namespace :goodcity do
     PackageCategoryImporter.import_package_relation
   end
 
+  #rake goodcity:update_allow_stock_to_stockit_codes_status
+  desc 'Update PackageType `allow_stock` according to `Codes.status` from Stockit'
+  task update_allow_stock_to_stockit_codes_status: :environment do
+    STATUS_AND_ALLOW_STOCK_MAPPING = {
+      "Active" => true,
+      "Inactive" => false
+    }
+    codes_json = Stockit::CodeSync.index
+    stockit_codes = JSON.parse(codes_json["codes"]) || {}
+    stockit_codes.each do |code|
+      if active?(code["status"])
+        package_type = PackageType.find_by(stockit_id: code["id"])
+        if package_type
+          package_type.update_column(:allow_stock, true)
+        end
+      end
+    end
+  end
+
+  def active?(status)
+    STATUS_AND_ALLOW_STOCK_MAPPING[status]
+  end
 end
