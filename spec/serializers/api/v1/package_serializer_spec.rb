@@ -10,6 +10,8 @@ describe Api::V1::PackageSerializer do
     expect(json['package']['length']).to eql(package.length)
     expect(json['package']['height']).to eql(package.height)
     expect(json['package']['width']).to eql(package.width)
+    expect(json['package']['weight']).to eql(package.weight)
+    expect(json['package']['pieces']).to eql(package.pieces)
     expect(json['package']['quantity']).to eql(package.quantity)
     expect(json['package']['notes']).to eql(package.notes)
     expect(json['package']['rejected_at']).to eql(package.rejected_at)
