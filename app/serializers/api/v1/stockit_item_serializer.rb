@@ -10,7 +10,7 @@ module Api::V1
     has_many :images, serializer: StockitImageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
 
-    attributes :id, :quantity, :length, :width, :height, :notes,
+    attributes :id, :quantity, :length, :width, :height, :weight, :pieces, :notes,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
