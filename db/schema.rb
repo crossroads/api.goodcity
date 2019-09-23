@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190913102426) do
+ActiveRecord::Schema.define(version: 20190917110924) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -529,8 +529,8 @@ ActiveRecord::Schema.define(version: 20190913102426) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
-    t.boolean  "allow_pieces",       default: false
     t.boolean  "allow_stock",        default: false
+    t.boolean  "allow_pieces",       default: false
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
@@ -820,7 +820,7 @@ ActiveRecord::Schema.define(version: 20190913102426) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
