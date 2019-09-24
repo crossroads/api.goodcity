@@ -19,7 +19,7 @@ module Api
 
       api :PUT, "/v1/inventory_numbers", "Delete inventory_number"
       def remove_number
-        InventoryNumber.find_by(code: params[:code]).destroy
+        InventoryNumber.find_by(code: params[:code]).try(:destroy)
         render json: {}
       end
     end
