@@ -98,6 +98,10 @@ module Api
         param :mobile, String
       end
       def confirm_delivery
+        if Holiday.is_holiday(scheduled_date)
+          return render_error(I18n.t('schedule.holiday_conflict', date: scheduled_date));
+        end
+
         @delivery = Delivery.find_by(id: params["delivery"]["id"])
         @delivery.delete_old_associations
         @delivery.gogovan_order = GogovanOrder.book_order(current_user,
@@ -145,6 +149,13 @@ module Api
           schedule_attributes: schedule_attributes,
           contact_attributes: [:name, :mobile,
             address_attributes: address_attributes])
+      end
+
+      def scheduled_date
+        scheduled_at = get_delivery_details.dig(:schedule_attributes, :scheduled_at)
+        scheduled_at.present? ?
+          Date.parse(scheduled_at) :
+          nil
       end
 
       def address_attributes
