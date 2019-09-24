@@ -168,12 +168,15 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
         end
 
         it "should fail to modify the delivery" do
-          expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id).and_return(200)
-          expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
+          expect(Gogovan).not_to receive(:cancel_order)
+          expect(GogovanOrder).not_to receive(:book_order)
           post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
 
           expect(response.status).to eq(422)
-          pp subject
+          expect(subject['errors'].length).to eq(1)
+          expect(subject['errors'][0]['message']).to eq(
+            'Crossroads will be closed on the 2015-04-17 due to a public holiday. Please select a different date.'
+          )
         end
       end
 
