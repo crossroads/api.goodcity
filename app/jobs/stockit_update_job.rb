@@ -9,13 +9,15 @@ class StockitUpdateJob < ActiveJob::Base
 
       # if Stockit can't find the item, it will create a new one and return the stockit_id
       # We need to update the stockit_id of the GoodCity package in this case.
-      stockit_id = response['id']
-      package.update_column(:stockit_id, stockit_id) unless stockit_id.blank?
+      if response
+        stockit_id = response['id']
+        package.update_column(:stockit_id, stockit_id) unless stockit_id.blank?
 
-      if response && (errors = response["errors"] || response[:errors])
-        log_text = "Inventory: #{package.inventory_number} Package: #{package_id}"
-        errors.each { |attribute, error| log_text += " #{attribute}: #{error}" }
-        logger.error log_text
+        if (errors = response["errors"] || response[:errors])
+          log_text = "Inventory: #{package.inventory_number} Package: #{package_id}"
+          errors.each { |attribute, error| log_text += " #{attribute}: #{error}" }
+          logger.error log_text
+        end
       end
     end
   end
