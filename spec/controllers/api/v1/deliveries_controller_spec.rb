@@ -161,6 +161,22 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
           "contactAttributes" => ggv_contact }
       }
 
+      context "to a public holiday" do
+        before do
+          date = Date.parse(schedule["scheduledAt"]);
+          create :holiday, holiday: date, year: date.year
+        end
+
+        it "should fail to modify the delivery" do
+          expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id).and_return(200)
+          expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
+          post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+
+          expect(response.status).to eq(422)
+          pp subject
+        end
+      end
+
       it "should confirm delivery by removing old associated records" do
         ActiveRecord::Base.connection.reset_pk_sequence!("schedules")
         expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id).and_return(200)
