@@ -180,6 +180,36 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
         end
       end
 
+      context "with bad data" do
+        it "should fail to modify the delivery if scheduled_at is nil" do
+          new_delivery['scheduleAttributes']['scheduled_at'] = nil
+
+          expect(Gogovan).not_to receive(:cancel_order)
+          expect(GogovanOrder).not_to receive(:book_order)
+          post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+
+          expect(response.status).to eq(422)
+          expect(subject['errors'].length).to eq(1)
+          expect(subject['errors'][0]['message']).to eq(
+            'The selected date is either missing or invalid, please try again.'
+          )
+        end
+
+        it "should fail to modify the delivery if scheduled_at is invalid" do
+          new_delivery['scheduleAttributes']['scheduled_at'] = 'not a date'
+
+          expect(Gogovan).not_to receive(:cancel_order)
+          expect(GogovanOrder).not_to receive(:book_order)
+          post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+
+          expect(response.status).to eq(422)
+          expect(subject['errors'].length).to eq(1)
+          expect(subject['errors'][0]['message']).to eq(
+            'The selected date is either missing or invalid, please try again.'
+          )
+        end
+      end
+
       it "should confirm delivery by removing old associated records" do
         ActiveRecord::Base.connection.reset_pk_sequence!("schedules")
         expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id).and_return(200)
