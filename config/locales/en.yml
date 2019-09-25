@@ -55,6 +55,9 @@ en:
   notification:
     new_offer: New offer submitted by %{name}
     new_order: "New order from %{organisation_name_en}: %{contact_name}"
+  schedule:
+    bad_date: The selected date is either missing or invalid, please try again.
+    holiday_conflict: Crossroads will be closed on the %{date} due to a public holiday. Please select a different date.
   offer:
     thank_message: Thank you for your offer, our team will start reviewing it
       soon. The reviewer will message you if they have questions about any of

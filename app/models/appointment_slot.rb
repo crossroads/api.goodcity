@@ -47,7 +47,7 @@ class AppointmentSlot < ActiveRecord::Base
       sl.quota.positive?
     } unless slots.empty?
 
-    return [] if Holiday.is_holiday(date)
+    return [] if Holiday.is_holiday?(date)
 
     # Generate slots based on preset if no special slot have been specified for that date
     AppointmentSlotPreset
