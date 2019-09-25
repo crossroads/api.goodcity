@@ -160,7 +160,7 @@ module Api
       end
 
       def validate_schedule
-        if scheduled_date.nil?
+        if scheduled_date.blank?
           render_error(I18n.t('schedule.bad_date'))
           return false
         end
