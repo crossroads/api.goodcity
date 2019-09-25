@@ -136,7 +136,7 @@ module Api
         offer_id = params[:delivery][:offer_id]
         Delivery.where(offer_id: offer_id).each do |delivery|
           authorize!(:destroy, delivery)
-          delivery.destroy
+        delivery.destroy
         end
       end
 
@@ -161,11 +161,11 @@ module Api
 
       def validate_schedule
         if scheduled_date.nil?
-          render_error(I18n.t('schedule.bad_date'));
+          render_error(I18n.t('schedule.bad_date'))
           return false
         end
 
-        if Holiday.is_holiday(scheduled_date)
+        if Holiday.is_holiday?(scheduled_date)
           render_error(I18n.t('schedule.holiday_conflict', date: scheduled_date));
           return false
         end
