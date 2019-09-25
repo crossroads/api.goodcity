@@ -15,7 +15,7 @@ module Api
       def_param_group :company do
         param :company, Hash, required: true do
           param :name, String, desc: "name of the company"
-          param :crm_id, Integer, desc: "CRM Id"
+          param :crm_id, Integer, desc: "CRM Id", allow_nil: true
           param :created_by_id, Integer, desc: "Id of user who created company record"
         end
       end
@@ -40,7 +40,7 @@ module Api
         if @company.update_attributes(company_params)
           render json: @company, serializer: serializer
         else
-          render_errors
+          render_error(@company.errors.full_messages.join('. '))
         end
       end
 
