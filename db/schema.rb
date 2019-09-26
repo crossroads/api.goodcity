@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190917110924) do
+ActiveRecord::Schema.define(version: 20190925110227) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -110,6 +110,46 @@ ActiveRecord::Schema.define(version: 20190917110924) do
     t.integer  "updated_by_id"
   end
 
+  create_table "computer_accessories", force: :cascade do |t|
+    t.string   "brand"
+    t.string   "model"
+    t.string   "serial_number"
+    t.integer  "country_id"
+    t.string   "size"
+    t.string   "interface"
+    t.string   "comp_voltage"
+    t.string   "comp_test_status"
+    t.integer  "updated_by_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  create_table "computers", force: :cascade do |t|
+    t.string   "brand"
+    t.string   "model"
+    t.string   "serial_number"
+    t.integer  "country_id"
+    t.string   "size"
+    t.string   "cpu"
+    t.string   "ram"
+    t.string   "hdd"
+    t.string   "optical"
+    t.string   "video"
+    t.string   "sound"
+    t.string   "lan"
+    t.string   "wireless"
+    t.string   "usb"
+    t.string   "comp_voltage"
+    t.string   "os"
+    t.string   "os_serial_number"
+    t.string   "ms_office_serial_number"
+    t.string   "mar_os_serial_number"
+    t.string   "mar_ms_office_serial_numer"
+    t.integer  "updated_by_id"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
   create_table "contacts", force: :cascade do |t|
     t.string   "name"
     t.string   "mobile"
@@ -171,6 +211,23 @@ ActiveRecord::Schema.define(version: 20190917110924) do
     t.string   "name_zh_tw"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "electricals", force: :cascade do |t|
+    t.string   "brand"
+    t.string   "model"
+    t.string   "serial_number"
+    t.integer  "country_id"
+    t.string   "standard"
+    t.integer  "voltage"
+    t.integer  "frequency"
+    t.string   "power"
+    t.string   "system_or_region"
+    t.string   "test_status"
+    t.date     "tested_on"
+    t.integer  "updated_by_id"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
   end
 
   create_table "gogovan_orders", force: :cascade do |t|
@@ -531,6 +588,7 @@ ActiveRecord::Schema.define(version: 20190917110924) do
     t.boolean  "allow_requests",     default: true
     t.boolean  "allow_stock",        default: false
     t.boolean  "allow_pieces",       default: false
+    t.string   "subform"
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
@@ -578,12 +636,15 @@ ActiveRecord::Schema.define(version: 20190917110924) do
     t.integer  "received_quantity"
     t.integer  "weight"
     t.integer  "pieces"
+    t.integer  "detail_id"
+    t.string   "detail_type"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
   add_index "packages", ["case_number"], name: "index_packages_on_case_number", using: :gin
   add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
+  add_index "packages", ["detail_type", "detail_id"], name: "index_packages_on_detail_type_and_detail_id", using: :btree
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
   add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
