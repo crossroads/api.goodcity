@@ -17,7 +17,6 @@ ActiveRecord::Schema.define(version: 20190917110924) do
   enable_extension "plpgsql"
   enable_extension "btree_gin"
   enable_extension "pg_trgm"
-  enable_extension "pgcrypto"
 
   create_table "addresses", force: :cascade do |t|
     t.string   "flat"
@@ -576,7 +575,6 @@ ActiveRecord::Schema.define(version: 20190917110924) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
     t.integer  "weight"
     t.integer  "pieces"
   end
