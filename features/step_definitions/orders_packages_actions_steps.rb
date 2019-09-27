@@ -16,8 +16,6 @@ end
 
 # We provide a list of states for the orders_packages
 And(/^Their OrdersPackages are of state "([^"]*)"$/) do |orders_package_states|
-  @orders = @order_states.map { |state| create(:order, state: state) }
-
   op_states = orders_package_states.split('|')
   @orders_packages_per_state = @order_states.reduce({}) do |dict, state|
     dict[state] = op_states.map do |op_state|
@@ -36,18 +34,20 @@ And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
   properties = qty_table.hashes
   @orders_packages_per_state = @order_states.reduce({}) do |dict, state|
     dict[state] = properties.map do |row|
-      pkg = create(
-        :package,
-        quantity: row['Remaining Quantity'].to_i,
-        received_quantity: row['Remaining Quantity'].to_i + row['Requested Quantity'].to_i
-      )
-      order = create(:order, state: state)
+      remaining_qty = row['Remaining Quantity'].to_i
+      requested_qty = row['Requested Quantity'].to_i
+      received_qty  = remaining_qty + requested_qty
+      # Build orders_package with quantities
       create(
         :orders_package,
         state: row['State'],
-        order: order,
-        package: pkg,
-        quantity: row['Requested Quantity'].to_i,
+        quantity: requested_qty,
+        order: create(:order, state: state),
+        package: create(
+          :package,
+          quantity: remaining_qty,
+          received_quantity: received_qty
+        )
       )
     end
     dict

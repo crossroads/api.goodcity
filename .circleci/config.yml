@@ -71,6 +71,9 @@ jobs:
           command: dockerize -wait tcp://localhost:5432 -wait tcp://localhost:6379 -timeout 1m
       - run: bundle exec rake db:create:all db:migrate
       - run:
+          name: Cucumber tests
+          command: bundle exec cucumber
+      - run:
           name: Rspec tests
           command: |
             bundle exec rspec --format progress \
