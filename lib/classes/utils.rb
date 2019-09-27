@@ -19,7 +19,7 @@ module Utils
     end
 
     def serialize(enabled = true)
-      { name: @name, enabled: enabled }
+      { name: @name, enabled: enabled.present? }
     end
 
     alias_method :if, :serialize
