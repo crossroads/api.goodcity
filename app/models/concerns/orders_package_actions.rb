@@ -57,7 +57,7 @@ module OrdersPackageActions
 
     private
 
-    ORDER_FINISHED = -> (model) { Order::INACTIVE_STATES.include? model.order.state }
+    ORDER_FINISHED = -> (model) { Order::INACTIVE_STATES.include?(model.order.state) }
     PACKAGE_CANCELLED = -> (model) { model.cancelled? }
     PACKAGE_DESIGNATED = -> (model) { model.designated? }
     PACKAGE_DISPATCHED = -> (model) { model.dispatched? }
@@ -67,7 +67,7 @@ module OrdersPackageActions
     end
 
     def can_increae_qty?
-      @model.package.quantity > 0
+      @model.package.quantity.positive?
     end
 
     def editable_qty?
