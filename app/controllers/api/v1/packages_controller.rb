@@ -392,8 +392,7 @@ module Api
       end
 
       def package_detail
-        debugger
-        if params["package"]["detail_id"]
+        if params["package"]["detail_id"] && params["package"]["detail_type"]
           klass = params["package"]["detail_type"].classify.safe_constantize
           klass.accessible_by(current_ability).find(id: params["package"]["detail_id"]) if klass
         end
