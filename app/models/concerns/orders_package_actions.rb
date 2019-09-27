@@ -5,31 +5,13 @@ module OrdersPackageActions
   # Enum of all available actions
   #
   module Actions
-    class ActionWrapper
-      def initialize(name)
-        @name = name
-      end
+    Toggleable = Utils::Toggleable
 
-      def on
-        serialize(true)
-      end
-
-      def off
-        serialize(false)
-      end
-
-      def serialize(enabled = true)
-        { name: @name, enabled: enabled }
-      end
-
-      alias_method :if, :serialize
-    end
-
-    REDESIGNATE     = ActionWrapper.new('redesignate')
-    EDIT_QUANTITY   = ActionWrapper.new('edit_quantity')
-    CANCEL          = ActionWrapper.new('cancel')
-    DISPATCH        = ActionWrapper.new('dispatch')
-    UNDISPATCH      = ActionWrapper.new('undispatch')
+    REDESIGNATE     = Toggleable.new('redesignate')
+    EDIT_QUANTITY   = Toggleable.new('edit_quantity')
+    CANCEL          = Toggleable.new('cancel')
+    DISPATCH        = Toggleable.new('dispatch')
+    UNDISPATCH      = Toggleable.new('undispatch')
   end
 
   #
@@ -64,7 +46,7 @@ module OrdersPackageActions
         when ORDER_FINISHED then []
         when PACKAGE_CANCELLED then [ Actions::REDESIGNATE.on ]
         when PACKAGE_DESIGNATED then [
-          Actions::EDIT_QUANTITY.if(can_edit_qty?),
+          Actions::EDIT_QUANTITY.if(editable_qty?),
           Actions::CANCEL.on,
           Actions::DISPATCH.on
         ]
@@ -88,7 +70,7 @@ module OrdersPackageActions
       @model.package.quantity > 0
     end
 
-    def can_edit_qty?
+    def editable_qty?
       can_decrease_qty? || can_increae_qty?
     end
   end
