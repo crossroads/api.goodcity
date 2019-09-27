@@ -73,6 +73,9 @@ class Ability
     user_abilities
     version_abilities
     company_abilities
+    computer_abilities
+    computer_accessory_abilities
+    electrical_abilities
   end
 
   def address_abilities
@@ -96,6 +99,18 @@ class Ability
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :destroy], Beneficiary
     end
+  end
+
+  def computer_abilities
+    can :create, Computer
+  end
+
+  def computer_accessory_abilities
+    can :create, ComputerAccessory
+  end
+
+  def electrical_abilities
+    can :create, Electrical
   end
 
   def goodcity_request_abilitites
