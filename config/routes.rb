@@ -52,6 +52,10 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :computers
+      resources :computer_accessories
+      resources :electricals
+
       resources :items, except: [:index] do
         get :messages, on: :member
       end
