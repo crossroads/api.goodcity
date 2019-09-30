@@ -102,15 +102,15 @@ class Ability
   end
 
   def computer_abilities
-    can :create, Computer
+    can [:create, :index, :show, :update], Computer
   end
 
   def computer_accessory_abilities
-    can :create, ComputerAccessory
+    can [:create, :index, :show, :update], ComputerAccessory
   end
 
   def electrical_abilities
-    can :create, Electrical
+    can [:create, :index, :show, :update], Electrical
   end
 
   def goodcity_request_abilitites

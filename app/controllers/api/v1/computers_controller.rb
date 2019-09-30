@@ -38,13 +38,26 @@ module Api
         end
       end
 
-      api :POST, "/v1/computers", "Create or Update a computer"
+      def index
+        render json: @computers, each_serializer: serializer
+      end
+
+      api :PUT, "/v1/computers", "Create or Update a computer"
       param_group :computer
-      def create
-        save_and_render_object_with_errors(@computer)
+      def update
+        @computer.assign_attributes(computer_params)
+        if @computer.valid? and @computer.save
+          render json: @computer, serializer: serializer
+        else
+          render_error(@computer.errors.full_messages.join(', '))
+        end
       end
 
       private
+
+      def serializer
+        Api::V1::ComputerSerializer
+      end
 
       def computer_params
         attributes = [:brand, :model, :serial_num, :country_id, :size,

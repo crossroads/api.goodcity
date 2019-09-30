@@ -29,13 +29,26 @@ module Api
         end
       end
 
-      api :POST, "/v1/electricals", "Create or Update a stockit_local_order"
+      def index
+        render json: @electricals, each_serializer: serializer
+      end
+
+      api :PUT, "/v1/electricals", "Create or Update an electrical"
       param_group :electrical
-      def create
-        save_and_render_object_with_errors(@electrical)
+      def update
+        @electrical.assign_attributes(electrical_params)
+        if @electrical.valid? and @electrical.save
+          render json: @electrical, serializer: serializer
+        else
+          render_error(@electrical.errors.full_messages.join(', '))
+        end
       end
 
       private
+
+      def serializer
+        Api::V1::ElectricalSerializer
+      end
 
       def electrical_params
         attributes = [:brand, :model, :serial_number, :country_id, :standard,
