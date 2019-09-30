@@ -12,7 +12,7 @@ module Api::V1
       :item_id, :state, :received_at, :rejected_at, :inventory_number,
       :created_at, :updated_at, :package_type_id, :designation_id, :sent_on,
       :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
-      :allow_web_publish
+      :allow_web_publish, :detail_type, :detail_id
 
     def designation_id
       object.order_id

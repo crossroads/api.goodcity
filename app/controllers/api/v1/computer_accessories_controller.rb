@@ -26,13 +26,27 @@ module Api
         end
       end
 
-      api :POST, "/v1/computer_accessorys", "Create or Update a stockit_local_order"
+      def index
+        render json: @computer_accessories, each_serializer: serializer
+      end
+
+      api :PUT, "/v1/computers", "Create or Update a computer"
       param_group :computer_accessory
-      def create
-        save_and_render_object_with_errors(@computer_accessory)
+      def update
+        @computer_accessory.assign_attributes(computer_accessory_params)
+        if @computer_accessory.valid? and @computer_accessory.save
+          render json: @computer_accessory, serializer: serializer
+        else
+          render_error(@computer_accessory.errors.full_messages.join(', '))
+        end
       end
 
       private
+
+      def serializer
+        Api::V1::ComputerAccessorySerializer
+      end
+
 
       def computer_accessory_params
         attributes = [:brand, :model, :serial_number, :country_id, :size,

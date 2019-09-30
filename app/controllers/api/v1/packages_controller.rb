@@ -315,9 +315,9 @@ module Api
       end
 
       def package_record
-        if is_stock_app?
+        if is_stock_app? || true
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
-          @package.detail = package_detail
+          @package.detail = create_package_detail
           @package.inventory_number = inventory_number
           @package
         elsif inventory_number
@@ -391,11 +391,10 @@ module Api
         end
       end
 
-      def package_detail
-        if params["package"]["detail_id"] && params["package"]["detail_type"]
-          klass = params["package"]["detail_type"].classify.safe_constantize
-          klass.accessible_by(current_ability).find(id: params["package"]["detail_id"]) if klass
-        end
+      def create_package_detail
+        detail_type = params["package"]["detail_type"]
+        return unless detail_type
+        detail_type.classify.safe_constantize.create_detail(params[detail_type])
       end
 
       def inventory_number
