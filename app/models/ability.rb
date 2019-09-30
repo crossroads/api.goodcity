@@ -299,6 +299,7 @@ class Ability
     can [:index, :show], IdentityType
     can [:index, :show], Territory
     can :index, Timeslot
+    can :index, Country
     can :index, GogovanTransport
     can :index, CrossroadsTransport
     can :index, BookingType
