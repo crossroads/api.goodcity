@@ -3,6 +3,10 @@ module Api
     class CountriesController < Api::V1::ApiController
       load_and_authorize_resource :country, parent: false
 
+      def index
+        render json: @countries, each_serializer: Api::V1::CountrySerializer
+      end
+
       def create
         if country_record.save
           render json: {}, status: 201

@@ -146,7 +146,7 @@ Rails.application.routes.draw do
       resources :beneficiaries, only: [:create, :show, :index, :update, :destroy]
       resources :order_transports, only: [:create, :show, :index, :update]
       resources :stockit_activities, only: [:create]
-      resources :countries, only: [:create]
+      resources :countries, only: [:create, :index]
       resources :inventory_numbers, only: [:create] do
         put :remove_number, on: :collection
       end
