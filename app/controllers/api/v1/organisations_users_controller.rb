@@ -56,7 +56,7 @@ module Api
 
       def organisations_user_params
         params.require(:organisations_user).permit(:organisation_id, :position, :preferred_contact_number, user_attributes: [:first_name,
-                                                                                                                             :last_name, :mobile, :email, :title])
+          :last_name, :mobile, :email, :title])
       end
 
       def serializer

@@ -282,6 +282,14 @@ module Api
         params.require(:package).permit(attributes)
       end
 
+      def computer_params
+        attributes = [:brand, :model, :serial_num, :country_id, :size,
+                      :cpu, :ram, :hdd, :optical, :video, :sound, :lan, :wireless,
+                      :usb, :comp_voltage, :os, :os_serial_num, :ms_office_serial_num,
+                      :mar_os_serial_num, :mar_ms_office_serial_num, :updated_by_id]
+        params.require(:computer).permit(attributes)
+      end
+
       def set_favourite_image
         if(image_id = params["package"]["favourite_image_id"]).present?
           if @package.images.pluck(:id).include?(image_id)
@@ -317,7 +325,7 @@ module Api
       def package_record
         if is_stock_app? || true
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
-          @package.detail = create_package_detail
+          @package.detail = create_package_detail if params["package"]["detail_type"]
           @package.inventory_number = inventory_number
           @package
         elsif inventory_number
@@ -393,8 +401,7 @@ module Api
 
       def create_package_detail
         detail_type = params["package"]["detail_type"]
-        return unless detail_type
-        detail_type.classify.safe_constantize.create_detail(params[detail_type])
+        PackageDetailBuilder.new(params[detail_type], detail_type).create_detail
       end
 
       def inventory_number
