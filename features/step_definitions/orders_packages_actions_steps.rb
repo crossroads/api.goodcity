@@ -36,19 +36,22 @@ And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
     dict[state] = properties.map do |row|
       remaining_qty = row['Remaining Quantity'].to_i
       requested_qty = row['Requested Quantity'].to_i
-      received_qty  = remaining_qty + requested_qty
-      # Build orders_package with quantities
-      create(
+      received_qty  = row['Received Quantity'].to_i
+      # Build the package
+      pkg = create(:package, received_quantity: received_qty)
+      # Dispatch some quantity in order to reach the desired "Remaining Quantity"
+      dispatched_qty = received_qty - remaining_qty - (row['State'] == 'designated' ? requested_qty : 0)
+      create(:orders_package, state: 'dispatched', package: pkg, quantity: dispatched_qty)
+      # Create the actual orders_package to test on
+      orders_package = create(
         :orders_package,
         state: row['State'],
         quantity: requested_qty,
         order: create(:order, state: state),
-        package: create(
-          :package,
-          quantity: remaining_qty,
-          received_quantity: received_qty
-        )
+        package: pkg.reload
       )
+      expect(pkg.reload.in_hand_quantity).to eq(remaining_qty)
+      orders_package
     end
     dict
   end

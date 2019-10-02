@@ -79,7 +79,9 @@ module OrdersPackageActions
     def resolve
       case @model
         when ORDER_FINISHED then []
-        when PACKAGE_CANCELLED then [ Actions::REDESIGNATE.on ]
+        when PACKAGE_CANCELLED then [
+          Actions::REDESIGNATE.if(package_has_quantity?)
+        ]
         when PACKAGE_DESIGNATED then [
           Actions::EDIT_QUANTITY.if(editable_qty?),
           Actions::CANCEL.on,
@@ -97,12 +99,16 @@ module OrdersPackageActions
     PACKAGE_DESIGNATED = -> (model) { model.designated? }
     PACKAGE_DISPATCHED = -> (model) { model.dispatched? }
 
+    def package_has_quantity?
+      @model.package.in_hand_quantity.positive?
+    end
+
     def can_decrease_qty?
       @model.quantity > 1
     end
 
     def can_increae_qty?
-      @model.package.quantity.positive?
+      package_has_quantity?
     end
 
     def editable_qty?
