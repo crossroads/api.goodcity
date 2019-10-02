@@ -281,4 +281,70 @@ RSpec.describe OrdersPackage, type: :model do
       end
     end
   end
+
+  describe 'Running actions' do
+    context 'on a finished order' do
+      let(:order) { create :order, :with_dispatched_orders_packages, :with_state_closed }
+      let(:orders_package) { order.orders_packages.first }
+
+      ['edit_quantity', 'undispatch', 'redesignate', 'cancel', 'dispatch'].each do |action|
+        it "raises an error when the '#{action}' action is trigerred'" do
+          expect { orders_package.exec_action action }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
+    context 'on a designated package' do
+      let(:order) { create :order, :with_designated_orders_packages, :with_state_processing }
+      let(:orders_package) { order.orders_packages.first }
+
+      it "calls :dispatch_orders_package when the 'dispatch' action is trigerred" do
+        expect(orders_package).to receive(:dispatch_orders_package)
+        orders_package.exec_action 'dispatch'
+      end
+
+      it "calls :cancel when the 'cancel' action is trigerred" do
+        expect(orders_package).to receive(:cancel)
+        orders_package.exec_action 'cancel'
+      end
+
+      ['edit_quantity', 'undispatch', 'redesignate'].each do |action|
+        it "raises an error when the '#{action}' action is trigerred'" do
+          expect { orders_package.exec_action action }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
+    context 'on a dispatched package' do
+      let(:order) { create :order, :with_dispatched_orders_packages, :with_state_dispatching }
+      let(:orders_package) { order.orders_packages.first }
+
+      it "calls :undispatch_orders_package when the 'undispatch' action is trigerred" do
+        expect(orders_package).to receive(:undispatch_orders_package)
+        orders_package.exec_action 'undispatch'
+      end
+
+      ['edit_quantity', 'redesignate', 'cancel', 'dispatch'].each do |action|
+        it "raises an error when the '#{action}' action is trigerred'" do
+          expect { orders_package.exec_action action }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
+    context 'on a cancelled package' do
+      let(:order) { create :order, :with_cancelled_orders_packages, :with_state_dispatching }
+      let(:orders_package) { order.orders_packages.first }
+
+      it "calls :update_designation when the 'redesignate' action is trigerred" do
+        expect(orders_package).to receive(:update_designation)
+        orders_package.exec_action 'redesignate'
+      end
+
+      ['edit_quantity', 'undispatch', 'cancel', 'dispatch'].each do |action|
+        it "raises an error when the '#{action}' action is trigerred'" do
+          expect { orders_package.exec_action action }.to raise_error(ArgumentError)
+        end
+      end
+    end
+  end
 end

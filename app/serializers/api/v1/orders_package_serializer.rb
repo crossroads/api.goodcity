@@ -22,5 +22,9 @@ module Api::V1
     def allowed_actions
       object.allowed_actions
     end
+
+    def include_allowed_actions?
+      @options[:include_allowed_actions]
+    end
   end
 end

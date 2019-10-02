@@ -18,7 +18,7 @@ module Utils
       serialize(false)
     end
 
-    def serialize(enabled = true)
+    def serialize(enabled = false)
       { name: @name, enabled: enabled.present? }
     end
 
