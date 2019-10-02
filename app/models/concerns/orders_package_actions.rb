@@ -1,17 +1,30 @@
 module OrdersPackageActions
   extend ActiveSupport::Concern
 
+  ALLOW_EDIT_QUANTITY = false
+
   #
   # Enum of all available actions
   #
   module Actions
-    Toggleable = Utils::Toggleable
+    class Action < Utils::Toggleable
+      def initialize(name, &block)
+        super(name)
+        @block = block
+      end
 
-    REDESIGNATE     = Toggleable.new('redesignate')
-    EDIT_QUANTITY   = Toggleable.new('edit_quantity')
-    CANCEL          = Toggleable.new('cancel')
-    DISPATCH        = Toggleable.new('dispatch')
-    UNDISPATCH      = Toggleable.new('undispatch')
+      def run(orders_package, opts = {})
+        @block.call(orders_package, opts)
+      end
+    end
+
+    CANCEL          = Action.new('cancel') { |op| op.cancel }
+    DISPATCH        = Action.new('dispatch') { |op| op.dispatch_orders_package }
+    UNDISPATCH      = Action.new('undispatch') { |op| op.undispatch_orders_package }
+    REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
+    EDIT_QUANTITY   = Action.new('edit_quantity') { raise NotImplementedError.new('edit_quantity not yet suppoerted') }
+
+    ALL_ACTIONS = [CANCEL, DISPATCH, UNDISPATCH, REDESIGNATE, EDIT_QUANTITY]
   end
 
   #
@@ -21,8 +34,31 @@ module OrdersPackageActions
     ActionResolver.resolve(self)
   end
 
+  #
+  # Returns true if it is possible to run the action
+  #
+  def can_exec_action(name)
+    allowed_actions
+      .select { |act| act[:enabled] }
+      .map { |act| act[:name] }
+      .include? name.to_s
+  end
+
+  #
+  # Tries to run the action
+  #
+  def exec_action(name, opts = {})
+    unless can_exec_action(name)
+      raise ArgumentError.new(I18n.t('orders_package.action_disabled', name: name))
+    end
+
+    action = Actions::ALL_ACTIONS.find { |act| act.name.to_s == name.to_s }
+    action.run(self, opts)
+  end
+
   private
 
+  #
   # Small helper class that resolves the available actions
   # of an orders_package
   #
@@ -71,6 +107,7 @@ module OrdersPackageActions
     end
 
     def editable_qty?
+      return false unless ALLOW_EDIT_QUANTITY
       can_decrease_qty? || can_increae_qty?
     end
   end

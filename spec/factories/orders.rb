@@ -32,6 +32,20 @@ FactoryBot.define do
       end
     end
 
+    trait :with_cancelled_orders_packages do
+      after(:create) do |order|
+        order.orders_packages << create_list(:orders_package, 3, :with_state_cancelled)
+        order.save
+      end
+    end
+
+    trait :with_dispatched_orders_packages do
+      after(:create) do |order|
+        order.orders_packages << create_list(:orders_package, 3, :with_state_dispatched)
+        order.save
+      end
+    end
+
     trait :with_goodcity_requests do
       goodcity_requests { create_list :goodcity_request, 1}
     end

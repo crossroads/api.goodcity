@@ -86,6 +86,11 @@ class OrdersPackage < ActiveRecord::Base
     update(order_id: order_id_to_update, updated_by: User.current_user)
   end
 
+  def redesignate(new_order_id)
+    update_designation new_order_id
+    update_state_to_designated
+  end
+
   def delete_unwanted_cancelled_packages(order_to_delete)
     OrdersPackage.where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
   end

@@ -50,13 +50,15 @@ module Api
 
       api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
       def stockit_item_details
-        render json: @package,
+        render json: stock_serializer.new(@package,
           serializer: stock_serializer,
           root: "item",
           include_order: true,
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
-          include_images: @package.set_item_id.blank?
+          include_images: @package.set_item_id.blank?,
+          include_allowed_actions: true
+        ).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"

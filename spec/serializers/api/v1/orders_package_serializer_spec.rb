@@ -3,7 +3,8 @@ require 'rails_helper'
 describe Api::V1::OrdersPackageSerializer do
 
   let(:orders_package)  { create(:orders_package) }
-  let(:serializer) { Api::V1::OrdersPackageSerializer.new(orders_package).as_json }
+  let(:opts) { {include_allowed_actions: true} }
+  let(:serializer) { Api::V1::OrdersPackageSerializer.new(orders_package, opts).as_json }
   let(:json) { JSON.parse( serializer.to_json ) }
 
   def utc(val)

@@ -79,6 +79,7 @@ zh-tw:
   orders_package:
     already_dispatched: "This has been already dispatched."
     order_status_error: "You need to complete processing Order first before dispatching."
+    action_disabled: "Action %{name} is not possible at the moment"
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"
