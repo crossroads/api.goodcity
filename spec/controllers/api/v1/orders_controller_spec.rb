@@ -180,14 +180,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a beneficiary's first name" do
-        beneficiary = FactoryBot.create :beneficiary, first_name: 'Frank', last_name: 'Sinatra'
+        beneficiary = FactoryBot.create :beneficiary, first_name: 'Steeeve', last_name: 'Sinatra'
         FactoryBot.create :order, :with_state_submitted, beneficiary: beneficiary
-        get :index, searchText: 'Fra'
+        get :index, searchText: 'eeev'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
         expect(parsed_body["designations"][0]['beneficiary_id']).to eq(beneficiary.id)
         expect(parsed_body['meta']['total_pages']).to eql(1)
-        expect(parsed_body['meta']['search']).to eql('Fra')
+        expect(parsed_body['meta']['search']).to eql('eeev')
       end
 
       it "can search orders from a beneficiary's last name" do
