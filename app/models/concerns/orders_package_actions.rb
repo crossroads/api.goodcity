@@ -1,7 +1,6 @@
 module OrdersPackageActions
   extend ActiveSupport::Concern
 
-  ALLOW_EDIT_QUANTITY = false
 
   #
   # Enum of all available actions
@@ -22,7 +21,7 @@ module OrdersPackageActions
     DISPATCH        = Action.new('dispatch') { |op| op.dispatch_orders_package }
     UNDISPATCH      = Action.new('undispatch') { |op| op.undispatch_orders_package }
     REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
-    EDIT_QUANTITY   = Action.new('edit_quantity') { raise NotImplementedError.new('edit_quantity not yet suppoerted') }
+    EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| op.edit_quantity(opts[:quantity].to_i) }
 
     ALL_ACTIONS = [CANCEL, DISPATCH, UNDISPATCH, REDESIGNATE, EDIT_QUANTITY]
   end
@@ -107,7 +106,6 @@ module OrdersPackageActions
     end
 
     def editable_qty?
-      return false unless ALLOW_EDIT_QUANTITY
       can_decrease_qty? || can_increae_qty?
     end
   end

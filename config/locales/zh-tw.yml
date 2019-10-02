@@ -80,6 +80,8 @@ zh-tw:
     already_dispatched: "This has been already dispatched."
     order_status_error: "You need to complete processing Order first before dispatching."
     action_disabled: "Action %{name} is not possible at the moment"
+    qty_not_available: "We do not currently have the requested quantity in stock"
+    qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"

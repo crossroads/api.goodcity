@@ -43,8 +43,8 @@ module Api
         begin
           @orders_package.exec_action(params[:action_name], params)
           render_with_actions
-        rescue ArgumentError => e
-          render_error e.to_s
+        rescue ArgumentError, StandardError => e
+          render_error(e.to_s)
         end
       end
 
