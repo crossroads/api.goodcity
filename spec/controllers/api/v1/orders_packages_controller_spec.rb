@@ -5,6 +5,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   let(:order) { create :order, :with_state_draft }
   let(:user) { create(:user_with_token, :with_can_manage_orders_packages_permission, role_name: 'Reviewer') }
   let(:charity_user) { create(:user_with_token, :with_can_manage_orders_packages_permission, role_name: 'Charity') }
+  let(:status) { response.status }
   subject { JSON.parse(response.body) }
 
   describe "GET packages for Item" do
@@ -31,13 +32,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   end
 
   describe "DELETE orders_package/1 " do
-    before(:all) do
-      WebMock.disable!
-    end
-
-    after(:all) do
-      WebMock.enable!
-    end
+    before(:all) { WebMock.disable! }
+    after(:all) { WebMock.enable! }
 
     before { generate_and_set_token(charity_user) }
     let(:orders_package) {create :orders_package, :with_state_requested, order_id: order.id}
@@ -65,91 +61,108 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     end
   end
 
-  describe 'Executing an action' do
+  describe 'Executing actions' do
+    #
+    # Testing that each action does what it is intended to do
+    #
     let!(:dispatch_location) { create(:location, :dispatched) }
     let(:json_record) { subject['orders_package'] }
+    let(:error_text) { subject['errors'][0]['message'] }
+    let(:new_state) { json_record['state'] }
+    let(:current_state) { orders_package.state }
 
     context 'as a staff member' do
       before { generate_and_set_token(user) }
 
-      describe 'when sending bad data' do
+      describe 'with bad data' do
         let(:orders_package) {create :orders_package}
 
         it 'fails to execute an action that doesnt exist' do
-          delete :exec_action, id: orders_package.id, action_name: 'world_peace'
-          expect(subject['errors'][0]['message']).to eq(
-            'Action world_peace is not possible at the moment'
-          )
+          put :exec_action, id: orders_package.id, action_name: 'world_peace'
+          expect(error_text).to eq('Action world_peace is not possible at the moment')
         end
       end
 
-      describe 'CANCEL' do
+      describe 'Cancelling' do
         let(:order) { create :order, :with_state_submitted }
         let(:orders_package) {create :orders_package, :with_state_designated, order_id: order.id}
 
         it 'cancels the designation successfully' do
-          expect(orders_package.state).to eq('designated')
-          delete :exec_action, id: orders_package.id, action_name: 'cancel'
-          expect(response.status).to eq(200)
+          expect(current_state).to eq('designated')
+
+          put :exec_action, id: orders_package.id, action_name: 'cancel'
+          expect(status).to eq(200)
           expect(orders_package.reload.state).to eq('cancelled')
-          expect(json_record['state']).to eq('cancelled')
-          expect(json_record['allowed_actions']).to eq([
-            { "name" => "redesignate", "enabled" => true }
-          ])
+          expect(new_state).to eq('cancelled')
         end
       end
 
-      describe 'REDESIGNATE' do
+      describe 'Redesignating' do
         let(:order) { create :order, :with_state_submitted }
         let(:order2) { create :order, :with_state_submitted }
         let(:orders_package) {create :orders_package, :with_state_cancelled, order_id: order.id}
 
         it 'redesignates the designation successfully' do
-          expect(orders_package.state).to eq('cancelled')
-          delete :exec_action, id: orders_package.id, action_name: 'redesignate', order_id: order2.id
-          expect(response.status).to eq(200)
-          expect(orders_package.reload.state).to eq('designated')
+          expect(current_state).to eq('cancelled')
+
+          put :exec_action, id: orders_package.id, action_name: 'redesignate', order_id: order2.id
+          expect(status).to eq(200)
           expect(orders_package.reload.order_id).to eq(order2.id)
-          expect(json_record['state']).to eq('designated')
-          expect(json_record['allowed_actions']).to eq([
-            {"name"=>"edit_quantity", "enabled"=>false},
-            {"name"=>"cancel", "enabled"=>true},
-            {"name"=>"dispatch", "enabled"=>true}
-          ])
+          expect(new_state).to eq('designated')
+          expect(orders_package.reload.state).to eq('designated')
         end
       end
 
-      describe 'DISPATCH' do
+      describe 'Editing Quantity' do
+        context 'of a designated orders_package' do
+          let(:pkg) { create :package, received_quantity: 10  }
+          let(:order) { create :order, :with_state_dispatching }
+          let!(:orders_package) {
+            create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
+          }
+
+          it 'updates correctly' do
+            expect(pkg.reload.in_hand_quantity).to eq(8)
+            put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 9
+            expect(status).to eq(200)
+            expect(pkg.reload.in_hand_quantity).to eq(1)
+            expect(orders_package.reload.quantity).to eq(9)
+          end
+
+          it 'fails if requesting too much' do
+            expect(pkg.reload.in_hand_quantity).to eq(8)
+            put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 11
+            expect(status).to eq(422)
+            expect(error_text).to eq('We do not currently have the requested quantity in stock')
+          end
+        end
+      end
+
+      describe 'Dispatching' do
         let(:order) { create :order, :with_state_dispatching }
         let(:orders_package) {create :orders_package, :with_state_designated, order_id: order.id}
 
         it 'dispatches the packages successfully' do
-          expect(orders_package.state).to eq('designated')
-          delete :exec_action, id: orders_package.id, action_name: 'dispatch'
-          expect(response.status).to eq(200)
+          expect(current_state).to eq('designated')
+
+          put :exec_action, id: orders_package.id, action_name: 'dispatch'
+          expect(status).to eq(200)
+          expect(new_state).to eq('dispatched')
           expect(orders_package.reload.state).to eq('dispatched')
-          expect(json_record['state']).to eq('dispatched')
-          expect(json_record['allowed_actions']).to eq([
-            { "name" => "undispatch", "enabled" => true }
-          ])
         end
       end
 
-      describe 'UNDISPATCH' do
+      describe 'Undispatching' do
         let(:order) { create :order, :with_state_dispatching }
         let(:orders_package) {create :orders_package, :with_state_dispatched, order_id: order.id}
 
         it 'dispatches the packages successfully' do
-          expect(orders_package.state).to eq('dispatched')
-          delete :exec_action, id: orders_package.id, action_name: 'undispatch'
-          expect(response.status).to eq(200)
+          expect(current_state).to eq('dispatched')
+
+          put :exec_action, id: orders_package.id, action_name: 'undispatch'
+          expect(status).to eq(200)
+          expect(new_state).to eq('designated')
           expect(orders_package.reload.state).to eq('designated')
-          expect(json_record['state']).to eq('designated')
-          expect(json_record['allowed_actions']).to eq([
-            {"name"=>"edit_quantity", "enabled"=>false},
-            {"name"=>"cancel", "enabled"=>true},
-            {"name"=>"dispatch", "enabled"=>true}
-          ])
         end
       end
     end

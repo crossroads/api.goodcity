@@ -282,6 +282,60 @@ RSpec.describe OrdersPackage, type: :model do
     end
   end
 
+  describe 'Editing the quantity' do
+    context 'of a dispatched orders_package' do
+      let(:pkg) { create :package, received_quantity: 10  }
+      let(:order) { create :order, :with_state_dispatching }
+      let!(:orders_package) {
+        create(:orders_package, :with_state_dispatched, order_id: order.id, package_id: pkg.id, quantity: 2)
+      }
+
+      it 'should fail to update the quantity' do
+        expect(pkg.reload.in_hand_quantity).to eq(8)
+        expect {
+          orders_package.edit_quantity(1)
+        }.to raise_error(StandardError).with_message('Quantity of already dispatched/cancelled items cannot be modified')
+      end
+    end
+
+    context 'of a cancelled orders_package' do
+      let(:pkg) { create :package, received_quantity: 10  }
+      let(:order) { create :order, :with_state_dispatching }
+      let!(:orders_package) {
+        create(:orders_package, :with_state_cancelled, order_id: order.id, package_id: pkg.id, quantity: 2)
+      }
+
+      it 'should fail to update the quantity' do
+        expect(pkg.reload.in_hand_quantity).to eq(10)
+        expect {
+          orders_package.edit_quantity(1)
+        }.to raise_error(StandardError).with_message('Quantity of already dispatched/cancelled items cannot be modified')
+      end
+    end
+
+    context 'of a designated orders_package' do
+      let(:pkg) { create :package, received_quantity: 10  }
+      let(:order) { create :order, :with_state_dispatching }
+      let!(:orders_package) {
+        create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
+      }
+
+      it 'updates it properly' do
+        expect(pkg.reload.in_hand_quantity).to eq(8)
+        orders_package.edit_quantity(6)
+        expect(orders_package.reload.quantity).to eq(6)
+        expect(pkg.reload.in_hand_quantity).to eq(4)
+      end
+
+      it 'fails if it is requesting too much' do
+        expect(pkg.reload.in_hand_quantity).to eq(8)
+        expect {
+          orders_package.edit_quantity(11)
+        }.to raise_error(ArgumentError).with_message('We do not currently have the requested quantity in stock')
+      end
+    end
+  end
+
   describe 'Running actions' do
     context 'on a finished order' do
       let(:order) { create :order, :with_dispatched_orders_packages, :with_state_closed }
@@ -298,8 +352,13 @@ RSpec.describe OrdersPackage, type: :model do
       let(:order) { create :order, :with_designated_orders_packages, :with_state_processing }
       let(:orders_package) { order.orders_packages.first }
 
-      it "calls :dispatch_orders_package when the 'dispatch' action is trigerred" do
-        expect(orders_package).to receive(:dispatch_orders_package)
+      it "calls :edit_quantity when the 'edit_quantity' action is trigerred" do
+        expect(orders_package).to receive(:edit_quantity)
+        orders_package.exec_action 'edit_quantity'
+      end
+
+      it "calls :dispatch when the 'dispatch' action is trigerred" do
+        expect(orders_package).to receive(:dispatch)
         orders_package.exec_action 'dispatch'
       end
 
@@ -308,7 +367,7 @@ RSpec.describe OrdersPackage, type: :model do
         orders_package.exec_action 'cancel'
       end
 
-      ['edit_quantity', 'undispatch', 'redesignate'].each do |action|
+      ['undispatch', 'redesignate'].each do |action|
         it "raises an error when the '#{action}' action is trigerred'" do
           expect { orders_package.exec_action action }.to raise_error(ArgumentError)
         end
