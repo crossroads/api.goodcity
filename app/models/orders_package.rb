@@ -157,17 +157,19 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def edit_quantity(desired_quantity)
-    # Check for invalid states
+    raise ArgumentError.new(I18n.t('orders_package.invalid_qty')) if desired_quantity.nil?
     raise StandardError.new(I18n.t('orders_package.qty_edit_denied_for_inactive')) if dispatched? || cancelled?
 
+    target_quantity = desired_quantity.to_i
+
     # Check if there is enough in stock to increase the qty
-    if desired_quantity > quantity
-      has_enough = (desired_quantity - quantity) <= package.in_hand_quantity
+    if target_quantity > quantity
+      has_enough = (target_quantity - quantity) <= package.in_hand_quantity
       raise ArgumentError.new(I18n.t('orders_package.qty_not_available')) unless has_enough
     end
 
     # Update the quantity
-    update(quantity: desired_quantity)
+    update(quantity: target_quantity)
   end
 
   private

@@ -135,6 +135,12 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
             expect(status).to eq(422)
             expect(error_text).to eq('We do not currently have the requested quantity in stock')
           end
+
+          it 'fails if we dont pass a desired quantity' do
+            put :exec_action, id: orders_package.id, action_name: 'edit_quantity'
+            expect(status).to eq(422)
+            expect(error_text).to eq('Invalid quantity')
+          end
         end
       end
 

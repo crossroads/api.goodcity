@@ -21,7 +21,7 @@ module OrdersPackageActions
     DISPATCH        = Action.new('dispatch') { |op| op.dispatch_orders_package }
     UNDISPATCH      = Action.new('undispatch') { |op| op.undispatch_orders_package }
     REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
-    EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| op.edit_quantity(opts[:quantity].to_i) }
+    EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| op.edit_quantity(opts[:quantity]) }
 
     ALL_ACTIONS = [CANCEL, DISPATCH, UNDISPATCH, REDESIGNATE, EDIT_QUANTITY]
   end
