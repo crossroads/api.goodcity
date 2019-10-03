@@ -135,7 +135,7 @@ module Api
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
         records = records.filter(params_for_filter)
-        records = records.order('id desc').offset(page - 1).limit(per_page)
+        records = records.order('packages.id desc').offset(page - 1).limit(per_page)
         packages = ActiveModel::ArraySerializer.new(records,
           each_serializer: stock_serializer,
           root: "items",
@@ -270,7 +270,7 @@ module Api
       def package_params
         get_package_type_id_value
         set_favourite_image if @package && !@package.new_record?
-        attributes = [:quantity, :length, :width, :height, :notes, :item_id,
+        attributes = [:quantity, :length, :width, :height, :weight, :pieces, :notes, :item_id,
           :received_at, :rejected_at, :package_type_id, :state_event,
           :inventory_number, :designation_name, :donor_condition_id, :grade,
           :location_id, :box_id, :pallet_id, :stockit_id,

@@ -119,6 +119,7 @@ module Stockit
         description: package.notes,
         location_id: package.stockit_location_id,
         id: package.stockit_id,
+        pieces: package.pieces,
         # designation_id: package.singleton_package? ? package.stockit_order_id : nil,
         # designated_on: package.singleton_package? ? package.stockit_designated_on : nil
         designation_id: package.stockit_order_id,
@@ -131,6 +132,7 @@ module Stockit
         length: package.length,
         width: package.width,
         height: package.height,
+        weight: package.weight,
         description: package.notes
       }
     end

@@ -98,6 +98,8 @@ module Api
         param :mobile, String
       end
       def confirm_delivery
+        return unless validate_schedule
+
         @delivery = Delivery.find_by(id: params["delivery"]["id"])
         @delivery.delete_old_associations
         @delivery.gogovan_order = GogovanOrder.book_order(current_user,
@@ -134,7 +136,7 @@ module Api
         offer_id = params[:delivery][:offer_id]
         Delivery.where(offer_id: offer_id).each do |delivery|
           authorize!(:destroy, delivery)
-          delivery.destroy
+        delivery.destroy
         end
       end
 
@@ -145,6 +147,30 @@ module Api
           schedule_attributes: schedule_attributes,
           contact_attributes: [:name, :mobile,
             address_attributes: address_attributes])
+      end
+
+      def scheduled_date
+        scheduled_at = get_delivery_details.dig(:schedule_attributes, :scheduled_at)
+        return nil unless scheduled_at.present?
+        begin
+          Date.parse(scheduled_at)
+        rescue ArgumentError
+          nil
+        end
+      end
+
+      def validate_schedule
+        if scheduled_date.blank?
+          render_error(I18n.t('schedule.bad_date'))
+          return false
+        end
+
+        if Holiday.is_holiday?(scheduled_date)
+          render_error(I18n.t('schedule.holiday_conflict', date: scheduled_date));
+          return false
+        end
+
+        true
       end
 
       def address_attributes
