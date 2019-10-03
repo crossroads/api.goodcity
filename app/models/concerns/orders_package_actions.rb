@@ -107,12 +107,10 @@ module OrdersPackageActions
       @model.quantity > 1
     end
 
-    def can_increae_qty?
-      package_has_quantity?
-    end
-
     def editable_qty?
       can_decrease_qty? || can_increae_qty?
     end
+
+    alias_method :can_increae_qty?, :package_has_quantity?
   end
 end
