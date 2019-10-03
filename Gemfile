@@ -24,11 +24,11 @@ gem 'factory_bot_rails' # used in rake db:seed in production
 gem 'ffaker'
 gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
-gem 'jwt', '~> 1.2.0'
+gem 'jwt', '~> 1.5.0'
 gem 'rack-cors'
 gem 'rack-protection'
 gem 'state_machine'
-gem 'twilio-ruby'
+gem 'twilio-ruby', '~> 5.11.0'
 gem 'warden'
 gem 'puma'
 gem 'rack-timeout'
