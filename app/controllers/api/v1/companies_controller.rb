@@ -15,17 +15,13 @@ module Api
       def_param_group :company do
         param :company, Hash, required: true do
           param :name, String, desc: "name of the company"
-          param :crm_id, Integer, desc: "CRM Id"
+          param :crm_id, Integer, desc: "CRM Id", allow_nil: true
           param :created_by_id, Integer, desc: "Id of user who created company record"
         end
       end
 
       def create
-        if @company.save
-          render json: @company, serializer: serializer, status: 201
-        else
-          render json: { errors: @company.errors.full_messages.map { |message| { message: message } } }, status: 422
-        end
+        save_and_render_object_with_errors(@company)
       end
 
       def index
@@ -40,7 +36,7 @@ module Api
         if @company.update_attributes(company_params)
           render json: @company, serializer: serializer
         else
-          render_errors
+          render_error(@company.errors.full_messages.join('. '))
         end
       end
 
