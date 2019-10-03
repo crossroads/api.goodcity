@@ -10,7 +10,7 @@ module Api
       skip_before_action :validate_token, except: :generate_call_token
       skip_before_action :verify_authenticity_token, except: :generate_call_token
 
-      before_action :validate_twilio_request, except: :generate_call_token
+      # before_action :validate_twilio_request, except: :generate_call_token
       after_filter :set_header, except: :generate_call_token
 
       resource_description do
@@ -44,16 +44,24 @@ module Api
       param :CallStatus, String, desc: "Status of Call ex: 'ringing'"
       param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<offer_id>#<caller_id>'"
       def connect_call
-        offer_id, caller_id = params["phone_number"].split("#")
-        mobile = Offer.find_by(id: offer_id).created_by.mobile
-        TwilioOutboundCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
+        # offer_id, caller_id = params["phone_number"].split("#")
+        # mobile = Offer.find_by(id: offer_id).created_by.mobile
+        # TwilioOutboundCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
 
-        response = Twilio::TwiML::Response.new do |r|
-          r.Dial callerId: voice_number, action: api_v1_twilio_outbound_completed_call_path do |d|
-            d.Number mobile
-          end
-        end
-        render_twiml response
+        # response = Twilio::TwiML::Response.new do |r|
+        #   r.Dial callerId: voice_number, action: api_v1_twilio_outbound_completed_call_path do |d|
+        #     d.Number mobile
+        #   end
+        # end
+        # render_twiml response
+        twilio_creds = Rails.application.secrets.twilio
+
+        @client = Twilio::REST::Client.new(twilio_creds["account_sid"], twilio_creds["auth_token"])
+        @client.calls.create(
+          to: "+917738279262",
+          from: "+85258084822",
+          url: "http://demo.twilio.com/docs/voice.xml"
+        )
       end
 
       api :POST, '/v1/twilio_outbound/completed_call', "Outbound call from Admin to donor: Response sent to twilio when call fails, timeout or no response from Donor."
@@ -89,7 +97,7 @@ module Api
 
       api :GET, '/v1/twilio_outbound/generate_call_token', "Generate Twilio Outgoing Call Capability Token. This allows clients to authenticate with Twilio and place calls etc."
       def generate_call_token
-        render json: { token: twilio_outgoing_call_capability.generate }
+        render json: { token: twilio_outgoing_call_capability }
       end
     end
   end

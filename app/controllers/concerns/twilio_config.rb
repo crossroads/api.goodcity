@@ -46,10 +46,11 @@ module TwilioConfig
   end
 
   def twilio_outgoing_call_capability
-    @capability ||= Twilio::Util::Capability.new(twilio_creds["account_sid"],
+    @capability ||= Twilio::JWT::ClientCapability.new(twilio_creds["account_sid"],
       twilio_creds["auth_token"])
-    @capability.allow_client_outgoing(twilio_creds["call_app_sid"])
-    @capability
+    outgoing_scope = Twilio::JWT::ClientCapability::OutgoingClientScope.new(twilio_creds["call_app_sid"])
+    @capability.add_scope(outgoing_scope)
+    @capability.to_s
   end
 
   def twilio_creds
