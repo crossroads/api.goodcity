@@ -144,7 +144,7 @@ module Api
           include_orders_packages: true,
           exclude_stockit_set_item: true,
           include_images: true).as_json
-        render json: {meta: { total_pages: records.total_pages, search: params['searchText'] } }.merge(packages)
+        render json: { meta: { total_pages: records.total_pages, search: params['searchText'] } }.merge(packages)
       end
 
       def designate_stockit_item(order_id)
