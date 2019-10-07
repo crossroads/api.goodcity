@@ -13,7 +13,7 @@ class Package < ActiveRecord::Base
   belongs_to :set_item, class_name: 'Item'
   has_many :locations, through: :packages_locations
 
-  belongs_to :detail, polymorphic: true, dependent: :destroy
+  belongs_to :detail, polymorphic: true, dependent: :destroy, required:false
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
   belongs_to :pallet
@@ -76,9 +76,9 @@ class Package < ActiveRecord::Base
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
 
-  accepts_nested_attributes_for :packages_locations, allow_destroy: true, limit: 1
+  accepts_nested_attributes_for :packages_locations, :detail, allow_destroy: true, limit: 1
 
-  attr_accessor :skip_set_relation_update, :request_from_admin
+  attr_accessor :skip_set_relation_update, :request_from_admin, :detail_type, :detail_attributes
 
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
