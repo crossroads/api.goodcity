@@ -5,6 +5,7 @@ module Api
 
       load_and_authorize_resource :package, parent: false
       skip_before_action :validate_token, only: [:index, :show]
+      after_action :assign_detail, only: [:create], if: -> { @package.valid? }
 
       resource_description do
         short "Create, update and delete a package."
@@ -272,22 +273,34 @@ module Api
       def package_params
         get_package_type_id_value
         set_favourite_image if @package && !@package.new_record?
-        attributes = [:quantity, :length, :width, :height, :weight, :pieces, :notes, :item_id,
-          :received_at, :rejected_at, :package_type_id, :state_event,
-          :inventory_number, :designation_name, :donor_condition_id, :grade,
-          :location_id, :box_id, :pallet_id, :stockit_id,
-          :order_id, :stockit_designated_on, :stockit_sent_on,
-          :case_number, :allow_web_publish, :received_quantity, :state,
-          packages_locations_attributes: [:id, :location_id, :quantity]]
+        attributes = [:quantity, :length, :width, :height, :weight, :pieces,
+          :notes, :item_id, :received_at, :rejected_at, :package_type_id,
+          :state_event, :inventory_number, :designation_name, :donor_condition_id,
+          :grade, :location_id, :box_id, :pallet_id, :stockit_id, :order_id,
+          :stockit_designated_on, :stockit_sent_on, :case_number, :allow_web_publish,
+          :received_quantity, :state, :detail_type, :detail_id,
+          packages_locations_attributes: [:id, :location_id, :quantity],
+          detail_attributes: [computer_attributes, electrical_attributes,
+          computer_accessory_attributes].flatten]
         params.require(:package).permit(attributes)
       end
 
-      def computer_params
-        attributes = [:brand, :model, :serial_num, :country_id, :size,
-                      :cpu, :ram, :hdd, :optical, :video, :sound, :lan, :wireless,
-                      :usb, :comp_voltage, :os, :os_serial_num, :ms_office_serial_num,
-                      :mar_os_serial_num, :mar_ms_office_serial_num, :updated_by_id]
-        params.require(:computer).permit(attributes)
+      def computer_attributes
+        [:brand, :model, :serial_num, :country_id, :size,
+          :cpu, :ram, :hdd, :optical, :video, :sound, :lan, :wireless,
+          :usb, :comp_voltage, :os, :os_serial_num, :ms_office_serial_num,
+          :mar_os_serial_num, :mar_ms_office_serial_num, :updated_by_id]
+      end
+
+      def electrical_attributes
+        [:brand, :model, :serial_number, :country_id, :standard,
+          :voltage, :frequency, :power, :system_or_region, :test_status,
+          :tested_on, :updated_by_id]
+      end
+
+      def computer_accessory_attributes
+        [:brand, :model, :serial_number, :country_id, :size,
+          :interface, :comp_voltage, :comp_test_status, :updated_by_id]
       end
 
       def set_favourite_image
@@ -323,9 +336,8 @@ module Api
       end
 
       def package_record
-        if is_stock_app? || true
+        if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
-          @package.detail = create_package_detail if params["package"]["detail_type"]
           @package.inventory_number = inventory_number
           @package
         elsif inventory_number
@@ -399,9 +411,13 @@ module Api
         end
       end
 
-      def create_package_detail
-        detail_type = params["package"]["detail_type"]
-        PackageDetailBuilder.new(params[detail_type], detail_type).create_detail
+      def assign_detail
+        detail_type = package_params["detail_type"]
+        return unless detail_type
+
+        pkg_builder = PackageBuilder.new(package_params, detail_type)
+        @package.detail = pkg_builder.create_package_detail
+        @package.save
       end
 
       def inventory_number
