@@ -4,6 +4,8 @@ module Api
       load_and_authorize_resource :country, parent: false
 
       def index
+        @countries = @countries.search({search_text: params['searchText']})
+          .page(page).per(per_page) if params['searchText']
         render json: @countries, each_serializer: Api::V1::CountrySerializer
       end
 
