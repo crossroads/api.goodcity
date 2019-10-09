@@ -6,7 +6,13 @@ class Computer < ActiveRecord::Base
   after_save :sync_to_stockit
 
   private
+
   def sync_to_stockit
-    # do sync related stuff here
+    response = Stockit::ComputerSync.create(self)
+    if response && (errors = response["errors"]).present?
+      errors.each { |key, value| self.errors.add(key, value) }
+    elsif response && (computer_id = response["computer_id"]).present?
+      self.update_column(:stockit_id, computer_id)
+    end
   end
 end

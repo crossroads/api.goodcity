@@ -5,7 +5,6 @@ module Api
 
       load_and_authorize_resource :package, parent: false
       skip_before_action :validate_token, only: [:index, :show]
-      after_action :assign_detail, only: [:create], if: -> { @package.valid? }
 
       resource_description do
         short "Create, update and delete a package."
@@ -281,7 +280,7 @@ module Api
           :received_quantity, :state, :detail_type, :detail_id,
           packages_locations_attributes: [:id, :location_id, :quantity],
           detail_attributes: [computer_attributes, electrical_attributes,
-          computer_accessory_attributes].flatten]
+          computer_accessory_attributes].flatten.uniq]
         params.require(:package).permit(attributes)
       end
 
@@ -339,6 +338,7 @@ module Api
         if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
+          @package.detail = assign_detail if params["package"]["detail_type"]
           @package
         elsif inventory_number
           assign_values_to_existing_or_new_package
@@ -412,12 +412,10 @@ module Api
       end
 
       def assign_detail
-        detail_type = package_params["detail_type"]
-        return unless detail_type
-
-        pkg_builder = PackageBuilder.new(package_params, detail_type)
-        @package.detail = pkg_builder.create_package_detail
-        @package.save
+        detail_type = params["package"]["detail_type"]
+        return unless ["computer", "electrical", "computer_accessory"].include?(detail_type)
+        klass = detail_type.classify.safe_constantize
+        klass.new(package_params["detail_attributes"]) if klass
       end
 
       def inventory_number

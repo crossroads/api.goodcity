@@ -78,7 +78,7 @@ class Package < ActiveRecord::Base
 
   accepts_nested_attributes_for :packages_locations, :detail, allow_destroy: true, limit: 1
 
-  attr_accessor :skip_set_relation_update, :request_from_admin, :detail_type, :detail_attributes
+  attr_accessor :skip_set_relation_update, :request_from_admin, :detail_attributes
 
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
