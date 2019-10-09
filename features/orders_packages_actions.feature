@@ -45,9 +45,11 @@ Feature: Listing OrdersPackage available actions
       | cancelled 	 | 1                    | 0                   | 1                 |
       | cancelled 	 | 2                    | 1                   | 1                 |
       | cancelled 	 | 2                    | 0                   | 1                 |
+      | cancelled 	 | 0                    | 1                   | 1                 |
     Then They should respectively have the following action status
       | Action          | Enabled   |
       | redesignate 	  | true      |
       | redesignate 	  | false     |
       | redesignate 	  | true      |
+      | redesignate 	  | false     |
       | redesignate 	  | false     |
