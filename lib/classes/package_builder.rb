@@ -8,7 +8,20 @@ class PackageBuilder
   end
 
   def create_package_detail
-    @detail = detail_type.classify.safe_constantize.create(detail_params)
-    @detail
+    @detail = detail_type.classify.safe_constantize.new(detail_params)
+    return return_success.merge!("detail" => @detail) if @detail.save
+
+    fail_with_error(@detail.errors)
+  end
+
+  private
+
+  def fail_with_error(errors)
+    errors = errors.full_messages.join(". ") if errors.respond_to?(:full_messages)
+    {"result" => false, "errors" => errors}
+  end
+
+  def return_success
+    {"result" => true}
   end
 end
