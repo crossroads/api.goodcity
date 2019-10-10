@@ -338,13 +338,13 @@ module Api
         if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
-          @package.detail = assign_detail if params["package"]["detail_type"]
           @package
         elsif inventory_number
           assign_values_to_existing_or_new_package
         else
           @package.assign_attributes(package_params)
         end
+        @package.detail = assign_detail if detail_type.present?
         @package.received_quantity ||= received_quantity
         add_favourite_image if params["package"]["favourite_image_id"]
         @package
@@ -412,7 +412,6 @@ module Api
       end
 
       def assign_detail
-        detail_type = params["package"]["detail_type"]
         return unless ["computer", "electrical", "computer_accessory"].include?(detail_type)
         klass = detail_type.classify.safe_constantize
         klass.new(package_params["detail_attributes"]) if klass
@@ -420,6 +419,10 @@ module Api
 
       def inventory_number
         remove_stockit_prefix(@package.inventory_number)
+      end
+
+      def detail_type
+        params["package"]["detail_type"]
       end
 
       def delete_params_quantity_if_all_quantity_designated(new_package_params)
