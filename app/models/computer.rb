@@ -4,6 +4,7 @@ class Computer < ActiveRecord::Base
   belongs_to :country
   has_one :package, as: :detail, dependent: :destroy
   after_save :sync_to_stockit
+  before_save :downcase_brand
 
   private
 
@@ -14,5 +15,9 @@ class Computer < ActiveRecord::Base
     elsif response && (computer_id = response["computer_id"]).present?
       self.update_column(:stockit_id, computer_id)
     end
+  end
+
+  def downcase_brand
+    self.brand&.downcase!
   end
 end
