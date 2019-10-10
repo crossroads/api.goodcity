@@ -287,7 +287,7 @@ module Api
       def computer_attributes
         [:brand, :model, :serial_num, :country_id, :size,
           :cpu, :ram, :hdd, :optical, :video, :sound, :lan, :wireless,
-          :usb, :comp_voltage, :os, :os_serial_num, :ms_office_serial_num,
+          :usb, :comp_voltage, :os, :os_serial_num, :comp_test_status, :ms_office_serial_num,
           :mar_os_serial_num, :mar_ms_office_serial_num, :updated_by_id]
       end
 
@@ -344,7 +344,7 @@ module Api
         else
           @package.assign_attributes(package_params)
         end
-        @package.detail = assign_detail if detail_type.present?
+        @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity ||= received_quantity
         add_favourite_image if params["package"]["favourite_image_id"]
         @package
@@ -412,17 +412,11 @@ module Api
       end
 
       def assign_detail
-        return unless ["computer", "electrical", "computer_accessory"].include?(detail_type)
-        klass = detail_type.classify.safe_constantize
-        klass.new(package_params["detail_attributes"]) if klass
+        PackageBuilder.new(package_params).build_detail
       end
 
       def inventory_number
         remove_stockit_prefix(@package.inventory_number)
-      end
-
-      def detail_type
-        params["package"]["detail_type"]
       end
 
       def delete_params_quantity_if_all_quantity_designated(new_package_params)

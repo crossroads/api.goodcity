@@ -1,27 +1,14 @@
 class PackageBuilder
-  attr_reader :params, :detail_type, :detail_params
+  attr_reader :detail_type, :detail_params
 
   def initialize(params, detail_type)
-    @params = params
-    @detail_type = detail_type
     @detail_params = params["detail_attributes"]
+    @detail_type = params["detail_type"]
   end
 
-  def create_package_detail
-    @detail = detail_type.classify.safe_constantize.new(detail_params)
-    return return_success.merge!("detail" => @detail) if @detail.save
-
-    fail_with_error(@detail.errors)
-  end
-
-  private
-
-  def fail_with_error(errors)
-    errors = errors.full_messages.join(". ") if errors.respond_to?(:full_messages)
-    {"result" => false, "errors" => errors}
-  end
-
-  def return_success
-    {"result" => true}
+  def build_detail
+    return unless ["computer", "electrical", "computer_accessory"].include?(detail_type)
+    klass = detail_type.classify.safe_constantize
+    klass.new(detail_params) if klass
   end
 end
