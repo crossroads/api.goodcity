@@ -13,6 +13,7 @@ class CreateElectricals < ActiveRecord::Migration
       t.string :test_status
       t.date :tested_on
       t.integer :updated_by_id
+      t.integer :stockit_id
 
 
       t.timestamps null: false
