@@ -87,8 +87,10 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   def redesignate(new_order_id)
-    update_designation new_order_id
-    update_state_to_designated
+    ActiveRecord::Base.transaction do
+      update_designation new_order_id
+      update_state_to_designated
+    end
   end
 
   def delete_unwanted_cancelled_packages(order_to_delete)
