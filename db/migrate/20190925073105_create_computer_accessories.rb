@@ -10,6 +10,7 @@ class CreateComputerAccessories < ActiveRecord::Migration
       t.string :comp_voltage
       t.string :comp_test_status
       t.integer :updated_by_id
+      t.integer :stockit_id
 
       t.timestamps null: false
     end

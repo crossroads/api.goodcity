@@ -3,14 +3,14 @@ class Electrical < ActiveRecord::Base
 
   belongs_to :country
   has_one :package, as: :detail, dependent: :destroy
-  after_save :sync_to_stockit
+  # after_save :sync_to_stockit
 
-  def sync_to_stockit
-    response = Stockit::ElectricalSync.create(self)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (electrical_id = response["electrical_id"]).present?
-      self.update_column(:stockit_id, electrical_id)
-    end
-  end
+  # def sync_to_stockit
+  #   response = Stockit::ElectricalSync.create(self)
+  #   if response && (errors = response["errors"]).present?
+  #     errors.each { |key, value| self.errors.add(key, value) }
+  #   elsif response && (electrical_id = response["electrical_id"]).present?
+  #     self.update_column(:stockit_id, electrical_id)
+  #   end
+  # end
 end
