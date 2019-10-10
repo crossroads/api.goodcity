@@ -3,7 +3,7 @@ class CreateComputerAccessories < ActiveRecord::Migration
     create_table :computer_accessories do |t|
       t.string :brand
       t.string :model
-      t.string :serial_number
+      t.string :serial_num
       t.integer :country_id
       t.string :size
       t.string :interface
