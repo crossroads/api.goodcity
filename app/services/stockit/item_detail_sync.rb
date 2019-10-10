@@ -21,8 +21,6 @@ module Stockit
       end
     end
 
-
-
     def create
       url = url_for("/api/v1/#{detail_type.pluralize}")
       post(url, detail_params)
@@ -36,7 +34,7 @@ module Stockit
     protected
 
     def detail_type
-      detail.class.name.downcase
+      detail.class.name.underscore
     end
 
     def detail_params
