@@ -115,7 +115,7 @@ ActiveRecord::Schema.define(version: 20190925110227) do
   create_table "computer_accessories", force: :cascade do |t|
     t.string   "brand"
     t.string   "model"
-    t.string   "serial_number"
+    t.string   "serial_num"
     t.integer  "country_id"
     t.string   "size"
     t.string   "interface"
