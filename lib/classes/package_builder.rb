@@ -1,7 +1,7 @@
 class PackageBuilder
   attr_reader :detail_type, :detail_params
 
-  def initialize(params, detail_type)
+  def initialize(params)
     @detail_params = params["detail_attributes"]
     @detail_type = params["detail_type"]
   end

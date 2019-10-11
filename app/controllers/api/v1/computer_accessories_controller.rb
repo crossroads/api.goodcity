@@ -27,6 +27,7 @@ module Api
       end
 
       def index
+        @computer_accessories = @computer_accessories.select('distinct on (computer_accessories.brand) computer_accessories.*')
         render json: @computer_accessories, each_serializer: serializer
       end
 

@@ -30,6 +30,7 @@ module Api
       end
 
       def index
+        @electricals = @electricals.select('distinct on (electricals.brand) electricals.*')
         render json: @electricals, each_serializer: serializer
       end
 
