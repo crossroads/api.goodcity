@@ -4,7 +4,7 @@ class Computer < ActiveRecord::Base
   belongs_to :country
   has_one :package, as: :detail, dependent: :destroy
   after_save :sync_to_stockit
-  before_save :downcase_brand
+  before_save :downcase_brand, if: :brand_changed?
 
   private
 
@@ -18,6 +18,6 @@ class Computer < ActiveRecord::Base
   end
 
   def downcase_brand
-    self.brand&.downcase!
+    self.brand.downcase!
   end
 end
