@@ -4,6 +4,13 @@ class ComputerAccessory < ActiveRecord::Base
   belongs_to :country
   has_one :package, as: :detail, dependent: :destroy
   after_save :sync_to_stockit
+  before_save :downcase_brand, if: :brand_changed?
+
+  private
+
+  def downcase_brand
+    self.brand.downcase!
+  end
 
   def sync_to_stockit
     response = Stockit::ItemDetailSync.create(self)

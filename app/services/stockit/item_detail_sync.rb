@@ -5,10 +5,11 @@ module Stockit
 
     include Stockit::Base
 
-    attr_accessor :detail
+    attr_accessor :detail, :detail_type
 
     def initialize(detail)
       @detail = detail
+      @detail_type = detail.class.name.underscore
     end
 
     class << self
@@ -32,10 +33,6 @@ module Stockit
     end
 
     protected
-
-    def detail_type
-      detail.class.name.underscore
-    end
 
     def detail_params
       detail.attributes.except("id", "stockit_id", "created_at", "updated_at", "updated_by_id")
