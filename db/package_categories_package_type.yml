@@ -1019,3 +1019,1543 @@
   :code: FWT
   :lv1: Furniture
   :lv2: Sets
+256:
+  :code: AZ
+  :lv1: Small goods & bulk items
+  :lv2: Food
+257:
+  :code: B
+  :lv1: Furniture
+  :lv2: Beds
+258:
+  :code: BB
+  :lv1: Furniture
+  :lv2: Beds
+259:
+  :code: BB
+  :lv1: Furniture
+  :lv2: Baby / child
+260:
+  :code: BBX
+  :lv1: Furniture
+  :lv2: Beds
+261:
+  :code: BBX
+  :lv1: Furniture
+  :lv2: Baby / child
+262:
+  :code: BC
+  :lv1: Furniture
+  :lv2: Beds
+263:
+  :code: BC
+  :lv1: Furniture
+  :lv2: Baby / child
+264:
+  :code: BD
+  :lv1: Furniture
+  :lv2: Beds
+265:
+  :code: BK
+  :lv1: Furniture
+  :lv2: Beds
+266:
+  :code: BL
+  :lv1: Furniture
+  :lv2: Beds
+267:
+  :code: BS
+  :lv1: Furniture
+  :lv2: Beds
+268:
+  :code: BT
+  :lv1: Furniture
+  :lv2: Beds
+269:
+  :code: CB
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+270:
+  :code: CB
+  :lv1: Household
+  :lv2: Textiles / clothes
+271:
+  :code: CB
+  :lv1: Small goods & bulk items
+  :lv2: Household textiles
+272:
+  :code: CBB
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+273:
+  :code: CBB
+  :lv1: Household
+  :lv2: Textiles / clothes
+274:
+  :code: CBB
+  :lv1: Small goods & bulk items
+  :lv2: Household textiles
+275:
+  :code: CBC
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+276:
+  :code: CBC
+  :lv1: Household
+  :lv2: Textiles / clothes
+277:
+  :code: CBC
+  :lv1: Small goods & bulk items
+  :lv2: Household textiles
+278:
+  :code: CBP
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+279:
+  :code: CBP
+  :lv1: Household
+  :lv2: Textiles / clothes
+280:
+  :code: CBP
+  :lv1: Small goods & bulk items
+  :lv2: Household textiles
+281:
+  :code: CBS
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+282:
+  :code: CBS
+  :lv1: Household
+  :lv2: Textiles / clothes
+283:
+  :code: CBS
+  :lv1: Small goods & bulk items
+  :lv2: Household textiles
+284:
+  :code: CBX
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+285:
+  :code: CBX
+  :lv1: Household
+  :lv2: Textiles / clothes
+286:
+  :code: CCB
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+287:
+  :code: CCB
+  :lv1: Household
+  :lv2: Textiles / clothes
+288:
+  :code: CH
+  :lv1: Recreation
+  :lv2: Other
+289:
+  :code: CH
+  :lv1: Household
+  :lv2: Textiles / clothes
+290:
+  :code: CHC
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+291:
+  :code: CHC
+  :lv1: Household
+  :lv2: Textiles / clothes
+292:
+  :code: CHF
+  :lv1: Household
+  :lv2: Textiles / clothes
+293:
+  :code: CHP
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+294:
+  :code: CHP
+  :lv1: Household
+  :lv2: Textiles / clothes
+295:
+  :code: CHS
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+296:
+  :code: CHS
+  :lv1: Household
+  :lv2: Textiles / clothes
+297:
+  :code: CHT
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+298:
+  :code: CHT
+  :lv1: Household
+  :lv2: Textiles / clothes
+299:
+  :code: CHX
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+300:
+  :code: CHX
+  :lv1: Household
+  :lv2: Textiles / clothes
+301:
+  :code: CLA
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+302:
+  :code: CLA
+  :lv1: Household
+  :lv2: Textiles / clothes
+303:
+  :code: CLB
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+304:
+  :code: CLB
+  :lv1: Household
+  :lv2: Textiles / clothes
+305:
+  :code: CLC
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+306:
+  :code: CLC
+  :lv1: Household
+  :lv2: Textiles / clothes
+307:
+  :code: CLD
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+308:
+  :code: CLD
+  :lv1: Household
+  :lv2: Textiles / clothes
+309:
+  :code: CLE
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+310:
+  :code: CLE
+  :lv1: Household
+  :lv2: Textiles / clothes
+311:
+  :code: CLF
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+312:
+  :code: CLF
+  :lv1: Household
+  :lv2: Textiles / clothes
+313:
+  :code: CLR
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+314:
+  :code: CLR
+  :lv1: Household
+  :lv2: Textiles / clothes
+315:
+  :code: CLS
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+316:
+  :code: CLS
+  :lv1: Household
+  :lv2: Textiles / clothes
+317:
+  :code: CLT
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+318:
+  :code: CLT
+  :lv1: Household
+  :lv2: Textiles / clothes
+319:
+  :code: CLX
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+320:
+  :code: CLX
+  :lv1: Household
+  :lv2: Textiles / clothes
+321:
+  :code: CLZA
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+322:
+  :code: CLZA
+  :lv1: Household
+  :lv2: Textiles / clothes
+323:
+  :code: CLZB
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+324:
+  :code: CLZB
+  :lv1: Household
+  :lv2: Textiles / clothes
+325:
+  :code: CLZC
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+326:
+  :code: CLZC
+  :lv1: Household
+  :lv2: Textiles / clothes
+327:
+  :code: CLZM
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+328:
+  :code: CLZM
+  :lv1: Household
+  :lv2: Textiles / clothes
+329:
+  :code: CLZN
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+330:
+  :code: CLZN
+  :lv1: Household
+  :lv2: Textiles / clothes
+331:
+  :code: CLZU
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+332:
+  :code: CLZU
+  :lv1: Household
+  :lv2: Textiles / clothes
+333:
+  :code: CLZV
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+334:
+  :code: CLZV
+  :lv1: Household
+  :lv2: Textiles / clothes
+335:
+  :code: CLZW
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+336:
+  :code: CLZW
+  :lv1: Household
+  :lv2: Textiles / clothes
+337:
+  :code: CLZX
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+338:
+  :code: CLZX
+  :lv1: Household
+  :lv2: Textiles / clothes
+339:
+  :code: CTL
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+340:
+  :code: CTL
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+341:
+  :code: CX
+  :lv1: Household
+  :lv2: Textiles / clothes
+342:
+  :code: CX
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+343:
+  :code: D
+  :lv1: Small goods & bulk items
+  :lv2: Tools
+344:
+  :code: DB
+  :lv1: Small goods & bulk items
+  :lv2: Tools
+345:
+  :code: DE
+  :lv1: Small goods & bulk items
+  :lv2: Tools
+346:
+  :code: EH
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+347:
+  :code: EH
+  :lv1: Electrical
+  :lv2: Household
+348:
+  :code: EK
+  :lv1: Electrical
+  :lv2: Kitchen
+349:
+  :code: EK
+  :lv1: Household
+  :lv2: Appliances
+350:
+  :code: EK
+  :lv1: Electrical
+  :lv2: Household
+351:
+  :code: EKC
+  :lv1: Electrical
+  :lv2: Household
+352:
+  :code: EKD
+  :lv1: Electrical
+  :lv2: Household
+353:
+  :code: EKF
+  :lv1: Electrical
+  :lv2: Household
+354:
+  :code: EKH
+  :lv1: Electrical
+  :lv2: Household
+355:
+  :code: EKI
+  :lv1: Electrical
+  :lv2: Household
+356:
+  :code: EKJ
+  :lv1: Electrical
+  :lv2: Household
+357:
+  :code: EKK
+  :lv1: Electrical
+  :lv2: Household
+358:
+  :code: EKL
+  :lv1: Electrical
+  :lv2: Household
+359:
+  :code: EKM
+  :lv1: Electrical
+  :lv2: Household
+360:
+  :code: EKP
+  :lv1: Electrical
+  :lv2: Household
+361:
+  :code: EKR
+  :lv1: Electrical
+  :lv2: Household
+362:
+  :code: EKS
+  :lv1: Electrical
+  :lv2: Household
+363:
+  :code: EKT
+  :lv1: Electrical
+  :lv2: Household
+364:
+  :code: EKX
+  :lv1: Electrical
+  :lv2: Household
+365:
+  :code: EO
+  :lv1: Electrical
+  :lv2: Office appliances
+366:
+  :code: EOM
+  :lv1: Electrical
+  :lv2: Office appliances
+367:
+  :code: EOM
+  :lv1: Electrical
+  :lv2: Computer
+368:
+  :code: EOP
+  :lv1: Electrical
+  :lv2: Computer
+369:
+  :code: EU
+  :lv1: Electrical
+  :lv2: Audio visual
+370:
+  :code: EUC
+  :lv1: Electrical
+  :lv2: Audio visual
+371:
+  :code: EUN
+  :lv1: Electrical
+  :lv2: Audio visual
+372:
+  :code: EUP
+  :lv1: Electrical
+  :lv2: Audio visual
+373:
+  :code: EUU
+  :lv1: Electrical
+  :lv2: Audio visual
+374:
+  :code: EV
+  :lv1: Electrical
+  :lv2: Audio visual
+375:
+  :code: EVC
+  :lv1: Electrical
+  :lv2: Audio visual
+376:
+  :code: EVP
+  :lv1: Furniture
+  :lv2: Office furniture
+377:
+  :code: EVQ
+  :lv1: Furniture
+  :lv2: Office furniture
+378:
+  :code: EVS
+  :lv1: Furniture
+  :lv2: Office furniture
+379:
+  :code: EXB
+  :lv1: Household
+  :lv2: Hygiene items
+380:
+  :code: EXB
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+381:
+  :code: EXS
+  :lv1: Electrical
+  :lv2: Household
+382:
+  :code: EZB
+  :lv1: Household
+  :lv2: Appliances
+383:
+  :code: EZC
+  :lv1: Household
+  :lv2: Appliances
+384:
+  :code: EZH
+  :lv1: Household
+  :lv2: Appliances
+385:
+  :code: EZO
+  :lv1: Household
+  :lv2: Appliances
+386:
+  :code: EZT
+  :lv1: Household
+  :lv2: Appliances
+387:
+  :code: EZV
+  :lv1: Household
+  :lv2: Appliances
+388:
+  :code: FB
+  :lv1: Furniture
+  :lv2: Storage
+389:
+  :code: FBO
+  :lv1: Furniture
+  :lv2: Other furniture
+390:
+  :code: FBP
+  :lv1: Furniture
+  :lv2: Other furniture
+391:
+  :code: FBR
+  :lv1: Furniture
+  :lv2: Other furniture
+392:
+  :code: FC
+  :lv1: Furniture
+  :lv2: Seating
+393:
+  :code: FCO
+  :lv1: Furniture
+  :lv2: Other furniture
+394:
+  :code: FD
+  :lv1: Furniture
+  :lv2: Desk
+395:
+  :code: FD
+  :lv1: Furniture
+  :lv2: Other furniture
+396:
+  :code: FDO
+  :lv1: Furniture
+  :lv2: Other furniture
+397:
+  :code: FDP
+  :lv1: Furniture
+  :lv2: Other furniture
+398:
+  :code: FDT
+  :lv1: Furniture
+  :lv2: Desk
+399:
+  :code: FDT
+  :lv1: Furniture
+  :lv2: Other furniture
+400:
+  :code: FS
+  :lv1: Furniture
+  :lv2: Shelves
+401:
+  :code: FS
+  :lv1: Furniture
+  :lv2: Storage
+402:
+  :code: FSB
+  :lv1: Furniture
+  :lv2: Storage
+403:
+  :code: FSC
+  :lv1: Furniture
+  :lv2: Storage
+404:
+  :code: FSD
+  :lv1: Furniture
+  :lv2: Storage
+405:
+  :code: FSD
+  :lv1: Furniture
+  :lv2: Other furniture
+406:
+  :code: FSO
+  :lv1: Furniture
+  :lv2: Storage
+407:
+  :code: FSR
+  :lv1: Furniture
+  :lv2: Shelves
+408:
+  :code: FSS
+  :lv1: Furniture
+  :lv2: Shelves
+409:
+  :code: FSX
+  :lv1: Furniture
+  :lv2: Storage
+410:
+  :code: FT
+  :lv1: Furniture
+  :lv2: Table
+411:
+  :code: FTO
+  :lv1: Furniture
+  :lv2: Other furniture
+412:
+  :code: FW
+  :lv1: Furniture
+  :lv2: Sets
+413:
+  :code: FXB
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+414:
+  :code: FXH
+  :lv1: Furniture
+  :lv2: Storage
+415:
+  :code: FXM
+  :lv1: Household
+  :lv2: Other household
+416:
+  :code: FXU
+  :lv1: Furniture
+  :lv2: Sets
+417:
+  :code: GCB
+  :lv1: Household
+  :lv2: Baby
+418:
+  :code: GCB
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+419:
+  :code: GCB
+  :lv1: Furniture
+  :lv2: Seating
+420:
+  :code: HA
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+421:
+  :code: HA
+  :lv1: Household
+  :lv2: Hygiene items
+422:
+  :code: HB
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+423:
+  :code: HD
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+424:
+  :code: HK
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+425:
+  :code: HN
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+426:
+  :code: HP
+  :lv1: Household
+  :lv2: Baby
+427:
+  :code: HPB
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+428:
+  :code: HPB
+  :lv1: Household
+  :lv2: Hygiene items
+429:
+  :code: HPC
+  :lv1: Furniture
+  :lv2: Seating
+430:
+  :code: HPH
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+431:
+  :code: HPH
+  :lv1: Furniture
+  :lv2: Seating
+432:
+  :code: HPW
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+433:
+  :code: HPX
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+434:
+  :code: HPX
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+435:
+  :code: HX
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+436:
+  :code: HX
+  :lv1: Household
+  :lv2: Hygiene items
+437:
+  :code: HXB
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+438:
+  :code: HXT
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+439:
+  :code: HY
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+440:
+  :code: HY
+  :lv1: Household
+  :lv2: Hygiene items
+441:
+  :code: HZK
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+442:
+  :code: HZO
+  :lv1: Household
+  :lv2: Kitchen, bedroom, bathroom, dining
+443:
+  :code: HZT
+  :lv1: Small goods & bulk items
+  :lv2: Clothing & accessories
+444:
+  :code: MD
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+445:
+  :code: MDA
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+446:
+  :code: MDB
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+447:
+  :code: MDC
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+448:
+  :code: MDD
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+449:
+  :code: MDE
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+450:
+  :code: MDG
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+451:
+  :code: MDH
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+452:
+  :code: MDL
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+453:
+  :code: MDM
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+454:
+  :code: MDN
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+455:
+  :code: MDP
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+456:
+  :code: MDQ
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+457:
+  :code: MDR
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+458:
+  :code: MDS
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+459:
+  :code: MDU
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+460:
+  :code: MDV
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+461:
+  :code: MDW
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+462:
+  :code: MDY
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+463:
+  :code: ME
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+464:
+  :code: MEB
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+465:
+  :code: MEF
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+466:
+  :code: MEG
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+467:
+  :code: MEH
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+468:
+  :code: MEL
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+469:
+  :code: MEL0
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+470:
+  :code: MEL1
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+471:
+  :code: MEL2
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+472:
+  :code: MEL3
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+473:
+  :code: MEN
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+474:
+  :code: MES
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+475:
+  :code: MES0
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+476:
+  :code: MES1
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+477:
+  :code: MES2
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+478:
+  :code: MES3
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+479:
+  :code: MES4
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+480:
+  :code: MES5
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+481:
+  :code: MES6
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+482:
+  :code: MES7
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+483:
+  :code: MES8
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+484:
+  :code: MES9
+  :lv1: Small goods & bulk items
+  :lv2: Glasses
+485:
+  :code: MF
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+486:
+  :code: MFA
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+487:
+  :code: MFB
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+488:
+  :code: MFC
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+489:
+  :code: MFD
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+490:
+  :code: MFE
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+491:
+  :code: MFE
+  :lv1: Furniture
+  :lv2: Storage
+492:
+  :code: MFF
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+493:
+  :code: MFF
+  :lv1: Furniture
+  :lv2: Storage
+494:
+  :code: MFG
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+495:
+  :code: MFG
+  :lv1: Furniture
+  :lv2: Seating
+496:
+  :code: MFH
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+497:
+  :code: MFI
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+498:
+  :code: MFP
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+499:
+  :code: MFS
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+500:
+  :code: MFT
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+501:
+  :code: MFT
+  :lv1: Furniture
+  :lv2: Storage
+502:
+  :code: MFV
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+503:
+  :code: MFW
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+504:
+  :code: MFX
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+505:
+  :code: MG
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+506:
+  :code: MGA
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+507:
+  :code: MGB
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+508:
+  :code: MGE
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+509:
+  :code: MGF
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+510:
+  :code: MGG
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+511:
+  :code: MGM
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+512:
+  :code: MGN
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+513:
+  :code: MGO
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+514:
+  :code: MGP
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+515:
+  :code: MGS
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+516:
+  :code: MGT
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+517:
+  :code: MGU
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+518:
+  :code: MGV
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+519:
+  :code: MGW
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+520:
+  :code: MI
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+521:
+  :code: ML
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+522:
+  :code: MP
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+523:
+  :code: MS
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+524:
+  :code: MSA
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+525:
+  :code: MSC
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+526:
+  :code: MSD
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+527:
+  :code: MSE
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+528:
+  :code: MSN
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+529:
+  :code: MSO
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+530:
+  :code: MST
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+531:
+  :code: MSU
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+532:
+  :code: MSX
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+533:
+  :code: MT
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+534:
+  :code: MV
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+535:
+  :code: MVB
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+536:
+  :code: MVC
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+537:
+  :code: MVE
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+538:
+  :code: MVG
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+539:
+  :code: MVM
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+540:
+  :code: MVO
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+541:
+  :code: MVP
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+542:
+  :code: MVS
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+543:
+  :code: MVT
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+544:
+  :code: MVW
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+545:
+  :code: MVW
+  :lv1: Small goods & bulk items
+  :lv2: Books
+546:
+  :code: MVX
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+547:
+  :code: MW
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+548:
+  :code: MZ
+  :lv1: Small goods & bulk items
+  :lv2: Medical
+549:
+  :code: 'NO'
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+550:
+  :code: NOA
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+551:
+  :code: NOP
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+552:
+  :code: NOX
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+553:
+  :code: NQ
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+554:
+  :code: NQA
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+555:
+  :code: NQP
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+556:
+  :code: NQX
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+557:
+  :code: NX
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+558:
+  :code: NZ
+  :lv1: Small goods & bulk items
+  :lv2: Stationery
+559:
+  :code: PC
+  :lv1: Small goods & bulk items
+  :lv2: Books
+560:
+  :code: PCP
+  :lv1: Small goods & bulk items
+  :lv2: Books
+561:
+  :code: PCS
+  :lv1: Small goods & bulk items
+  :lv2: Books
+562:
+  :code: PCX
+  :lv1: Small goods & bulk items
+  :lv2: Books
+563:
+  :code: PD
+  :lv1: Small goods & bulk items
+  :lv2: Books
+564:
+  :code: PDA
+  :lv1: Small goods & bulk items
+  :lv2: Books
+565:
+  :code: PDB
+  :lv1: Small goods & bulk items
+  :lv2: Books
+566:
+  :code: PDC
+  :lv1: Small goods & bulk items
+  :lv2: Books
+567:
+  :code: PDD
+  :lv1: Small goods & bulk items
+  :lv2: Books
+568:
+  :code: PE
+  :lv1: Small goods & bulk items
+  :lv2: Books
+569:
+  :code: PEP
+  :lv1: Small goods & bulk items
+  :lv2: Books
+570:
+  :code: PES
+  :lv1: Small goods & bulk items
+  :lv2: Books
+571:
+  :code: PET
+  :lv1: Small goods & bulk items
+  :lv2: Books
+572:
+  :code: PF
+  :lv1: Small goods & bulk items
+  :lv2: Books
+573:
+  :code: PFA
+  :lv1: Small goods & bulk items
+  :lv2: Books
+574:
+  :code: PFC
+  :lv1: Small goods & bulk items
+  :lv2: Books
+575:
+  :code: PFE
+  :lv1: Small goods & bulk items
+  :lv2: Books
+576:
+  :code: PG
+  :lv1: Small goods & bulk items
+  :lv2: Books
+577:
+  :code: PGC
+  :lv1: Small goods & bulk items
+  :lv2: Books
+578:
+  :code: PGD
+  :lv1: Small goods & bulk items
+  :lv2: Books
+579:
+  :code: PGF
+  :lv1: Small goods & bulk items
+  :lv2: Books
+580:
+  :code: PGG
+  :lv1: Small goods & bulk items
+  :lv2: Books
+581:
+  :code: PGR
+  :lv1: Small goods & bulk items
+  :lv2: Books
+582:
+  :code: PL
+  :lv1: Small goods & bulk items
+  :lv2: Books
+583:
+  :code: PM
+  :lv1: Small goods & bulk items
+  :lv2: Books
+584:
+  :code: PMC
+  :lv1: Small goods & bulk items
+  :lv2: Books
+585:
+  :code: PME
+  :lv1: Small goods & bulk items
+  :lv2: Books
+586:
+  :code: PMX
+  :lv1: Small goods & bulk items
+  :lv2: Books
+587:
+  :code: PV
+  :lv1: Recreation
+  :lv2: Other
+588:
+  :code: PVC
+  :lv1: Recreation
+  :lv2: Other
+589:
+  :code: PVE
+  :lv1: Recreation
+  :lv2: Other
+590:
+  :code: PVX
+  :lv1: Recreation
+  :lv2: Other
+591:
+  :code: PW
+  :lv1: Recreation
+  :lv2: Other
+592:
+  :code: PWC
+  :lv1: Recreation
+  :lv2: Other
+593:
+  :code: PWE
+  :lv1: Recreation
+  :lv2: Other
+594:
+  :code: PWX
+  :lv1: Recreation
+  :lv2: Other
+595:
+  :code: PX
+  :lv1: Recreation
+  :lv2: Other
+596:
+  :code: RC
+  :lv1: Recreation
+  :lv2: Other
+597:
+  :code: RCM
+  :lv1: Recreation
+  :lv2: Other
+598:
+  :code: RCT
+  :lv1: Recreation
+  :lv2: Other
+599:
+  :code: REW
+  :lv1: Recreation
+  :lv2: Sport
+600:
+  :code: REX
+  :lv1: Recreation
+  :lv2: Sport
+601:
+  :code: RM
+  :lv1: Recreation
+  :lv2: Music
+602:
+  :code: RP
+  :lv1: Recreation
+  :lv2: Playground
+603:
+  :code: RP
+  :lv1: Recreation
+  :lv2: Sport
+604:
+  :code: RPA
+  :lv1: Recreation
+  :lv2: Sport
+605:
+  :code: RPB
+  :lv1: Recreation
+  :lv2: Sport
+606:
+  :code: RPR
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+607:
+  :code: RPX
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+608:
+  :code: TB
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+609:
+  :code: TB
+  :lv1: Household
+  :lv2: Baby
+610:
+  :code: TE
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+611:
+  :code: TG
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+612:
+  :code: TL
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+613:
+  :code: TM
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+614:
+  :code: TM
+  :lv1: Recreation
+  :lv2: Music
+615:
+  :code: TP
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+616:
+  :code: TPX
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+617:
+  :code: TR
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+618:
+  :code: TRF
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+619:
+  :code: TRG
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+620:
+  :code: TRG
+  :lv1: Recreation
+  :lv2: Sport
+621:
+  :code: TS
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+622:
+  :code: TT
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+623:
+  :code: TV
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+624:
+  :code: TW
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+625:
+  :code: TX
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+626:
+  :code: TZ
+  :lv1: Small goods & bulk items
+  :lv2: Toys
+627:
+  :code: TZR
+  :lv1: Recreation
+  :lv2: Sport
+628:
+  :code: V
+  :lv1: Electrical
+  :lv2: Computer
+629:
+  :code: VMC
+  :lv1: Electrical
+  :lv2: Computer
+630:
+  :code: VNS
+  :lv1: Electrical
+  :lv2: Computer
+631:
+  :code: VPM
+  :lv1: Electrical
+  :lv2: Computer
+632:
+  :code: VS
+  :lv1: Electrical
+  :lv2: Computer
+633:
+  :code: VSH
+  :lv1: Electrical
+  :lv2: Computer
+634:
+  :code: VSN
+  :lv1: Electrical
+  :lv2: Computer
+635:
+  :code: VXC
+  :lv1: Electrical
+  :lv2: Computer
+636:
+  :code: VXH
+  :lv1: Electrical
+  :lv2: Computer
+637:
+  :code: VZC
+  :lv1: Electrical
+  :lv2: Computer
+638:
+  :code: VZM
+  :lv1: Electrical
+  :lv2: Computer
+639:
+  :code: VZP
+  :lv1: Electrical
+  :lv2: Computer
+640:
+  :code: VZX
+  :lv1: Electrical
+  :lv2: Computer
