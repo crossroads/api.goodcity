@@ -27,4 +27,9 @@ namespace :goodcity do
     end
   end
 
+  desc 'Update PackageType/PackageCategory mapping'
+  task update_package_types_package_categories: :environment do
+    PackageCategoryImporter.import_package_relation
+  end
+
 end
