@@ -5,6 +5,7 @@ class Computer < ActiveRecord::Base
   has_one :package, as: :detail, dependent: :destroy
   after_save :sync_to_stockit
   before_save :downcase_brand, if: :brand_changed?
+  before_save :set_updated_by
 
   private
 
@@ -19,5 +20,11 @@ class Computer < ActiveRecord::Base
 
   def downcase_brand
     self.brand.downcase!
+  end
+
+  def set_updated_by
+    if self.changes.any?
+      self.updated_by_id = User.current_user&.id
+    end
   end
 end
