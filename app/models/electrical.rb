@@ -5,6 +5,7 @@ class Electrical < ActiveRecord::Base
   has_one :package, as: :detail, dependent: :destroy
   before_save :set_tested_on, if: :test_status_changed?
   before_save :downcase_brand, if: :brand_changed?
+  before_save :set_updated_by
   after_save :sync_to_stockit
 
   private
@@ -23,6 +24,12 @@ class Electrical < ActiveRecord::Base
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (electrical_id = response["electrical_id"]).present?
       self.update_column(:stockit_id, electrical_id)
+    end
+  end
+
+  def set_updated_by
+    if self.changes.any?
+      self.updated_by_id = User.current_user&.id
     end
   end
 end
