@@ -34,6 +34,10 @@ module Api
         render json: @electricals, each_serializer: serializer
       end
 
+      def show
+        render json: @electrical, serializer: serializer
+      end
+
       api :PUT, "/v1/electricals", "Create or Update an electrical"
       param_group :electrical
       def update

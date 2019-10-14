@@ -43,6 +43,10 @@ module Api
         render json: @computers, each_serializer: serializer
       end
 
+      def show
+        render json: @computer, serializer: serializer
+      end
+
       api :PUT, "/v1/computers", "Create or Update a computer"
       param_group :computer
       def update
