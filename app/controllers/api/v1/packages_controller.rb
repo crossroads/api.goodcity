@@ -298,7 +298,7 @@ module Api
       end
 
       def computer_accessory_attributes
-        [:brand, :model, :serial_number, :country_id, :size,
+        [:brand, :model, :serial_num, :country_id, :size,
           :interface, :comp_voltage, :comp_test_status, :updated_by_id]
       end
 
