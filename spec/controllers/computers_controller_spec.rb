@@ -1,5 +1,5 @@
-require 'rails_helper'
+# require 'rails_helper'
 
-RSpec.describe ComputersController, type: :controller do
+# RSpec.describe ComputersController, type: :controller do
 
-end
+# end
