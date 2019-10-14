@@ -16,7 +16,7 @@ module Api
         param :computer_accessory, Hash do
           param :brand, String, desc: "name of the brand"
           param :model, String, desc: "model of the record"
-          param :serial_number, String, desc: "serial number of the record"
+          param :serial_num, String, desc: "serial number of the record"
           param :country_id, Integer, desc: "id of the country record belongs to"
           param :size, String, desc: "size of the record"
           param :interface, String, desc: "interface of the record"
@@ -29,6 +29,10 @@ module Api
       def index
         @computer_accessories = @computer_accessories.select('distinct on (computer_accessories.brand) computer_accessories.*')
         render json: @computer_accessories, each_serializer: serializer
+      end
+
+      def show
+        render json: @computer_accessory, serializer: serializer
       end
 
       api :PUT, "/v1/computers", "Create or Update a computer"
