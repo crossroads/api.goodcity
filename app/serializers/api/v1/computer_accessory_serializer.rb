@@ -3,7 +3,5 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :brand, :model, :serial_number, :country_id, :size,
           :interface, :comp_voltage, :comp_test_status, :updated_by_id
-
-    # has_one :package, serializer: StockitItemSerializer, root: :items
   end
 end
