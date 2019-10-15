@@ -14,6 +14,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:orders_package) { create :orders_package, package: package }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
+  let(:parsed_body) { JSON.parse(response.body) }
 
   let(:package_params) do
     FactoryBot.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
@@ -202,6 +203,65 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         post :create, format: :json, package: package_params
         expect(response.status).to eq(201)
         expect(GoodcitySync.request_from_stockit).to eq(false)
+      end
+    end
+
+    context "create package from gc with sub detail" do
+      let!(:location) { create :location }
+      let!(:code) { create :package_type, :with_stockit_id }
+      let(:computer_params) { FactoryBot.attributes_for(:computer) }
+      let(:stockit_item_params) {
+        {
+          quantity: 1,
+          inventory_number: '123456',
+          location_id: location.stockit_id,
+          grade: "C",
+          stockit_id: 1,
+          code_id: code.stockit_id
+        }
+      }
+      let(:package_params_with_details){
+        stockit_item_params.merge({
+          quantity: 1,
+          received_quantity: package.received_quantity,
+          package_type_id:package.package_type_id,
+          state: package.state,
+          stockit_id: package.stockit_id,
+          donor_condition_id: package.donor_condition_id,
+          detail_attributes: computer_params,
+          detail_type: "computer"
+        })
+      }
+
+      let(:package_params_with_details_incorrect_params){
+        stockit_item_params.merge({
+          quantity: 0,
+          received_quantity: 0,
+          package_type_id:package.package_type_id,
+          state: package.state,
+          stockit_id: package.stockit_id,
+          donor_condition_id: package.donor_condition_id,
+          detail_attributes: computer_params,
+          detail_type: "computer"
+        })
+      }
+
+      describe "creating package with detail" do
+        it "creates package with detail" do
+          allow(Stockit::ItemDetailSync).to receive(:create).and_return({"status"=>201, "computer_id"=> 12})
+          post :create, format: :json, package: package_params_with_details
+          expect(response.status).to eq(201)
+          package = Package.last
+          expect(parsed_body["package"]["id"]).to eq(package.id)
+          expect(parsed_body["package"]["detail_type"]).to eq(package.detail_type)
+          expect(parsed_body["package"]["detail_id"]).to eq(package.detail_id)
+        end
+
+        it "does not create package with detail if anything fails in package" do
+          allow(Stockit::ItemDetailSync).to receive(:create).and_return({"status"=>201, "computer_id"=> 12})
+          post :create, format: :json, package: package_params_with_details_incorrect_params
+          expect(parsed_body["errors"]).to_not be_nil
+        end
       end
     end
 
