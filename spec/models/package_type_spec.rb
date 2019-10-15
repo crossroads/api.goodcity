@@ -9,7 +9,6 @@ RSpec.describe PackageType, type: :model do
     it { is_expected.to have_db_column(:other_terms_en).of_type(:string) }
     it { is_expected.to have_db_column(:other_terms_zh_tw).of_type(:string) }
     it { is_expected.to have_db_column(:allow_pieces).of_type(:boolean) }
-    it { is_expected.to have_db_column(:allow_stock).of_type(:boolean) }
   end
 
   describe 'Associations' do
