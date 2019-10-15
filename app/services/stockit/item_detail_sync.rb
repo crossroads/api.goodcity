@@ -35,7 +35,7 @@ module Stockit
     protected
 
     def detail_params
-      detail.attributes.except("id", "stockit_id", "created_at", "updated_at", "updated_by_id")
+      { "#{detail_type}": detail.attributes.except("id", "stockit_id" "created_at", "updated_at", "updated_by_id") }
     end
   end
 end
