@@ -27,7 +27,7 @@ class PackageType < ActiveRecord::Base
 
   translates :name, :other_terms
 
-  scope :visible, -> { where(visible_in_selects: true) }
+  scope :visible, -> { where(allow_stock: true) }
 
   private
 

@@ -9,6 +9,7 @@ RSpec.describe PackageType, type: :model do
     it { is_expected.to have_db_column(:other_terms_en).of_type(:string) }
     it { is_expected.to have_db_column(:other_terms_zh_tw).of_type(:string) }
     it { is_expected.to have_db_column(:allow_pieces).of_type(:boolean) }
+    it { is_expected.to have_db_column(:allow_stock).of_type(:boolean) }
   end
 
   describe 'Associations' do
@@ -19,8 +20,8 @@ RSpec.describe PackageType, type: :model do
 
   describe 'scope' do
     describe "visible" do
-      it "returns records with visible_in_selects true value" do
-        expect(PackageType.visible.to_sql).to include("WHERE \"package_types\".\"visible_in_selects\" = 't'")
+      it "returns records with allow_stock true value" do
+        expect(PackageType.visible.to_sql).to include("WHERE \"package_types\".\"allow_stock\" = 't'")
       end
     end
   end
