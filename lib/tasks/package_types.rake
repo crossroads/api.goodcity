@@ -48,7 +48,7 @@ namespace :goodcity do
     stockit_codes = JSON.parse(codes_json["codes"]) || {}
 
     stockit_codes.each do |code|
-      if STATUS_AND_ALLOW_STOCK_MAPPING[status] and (package_type = get_package_type(code["id"]))
+      if STATUS_AND_ALLOW_STOCK_MAPPING[code["status"]] and (package_type = get_package_type(code["id"]))
         if package_type.update_column(:allow_stock, true)
           updated_record_count += 1
         else
