@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :computer do
     brand  "Macbook"
-    country_id "210"
+    country_id 210
     size "13\""
     cpu "1.2Ghz"
     ram "4GB DDR3"
