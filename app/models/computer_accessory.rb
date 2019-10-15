@@ -1,7 +1,7 @@
 class ComputerAccessory < ActiveRecord::Base
   has_paper_trail class_name: "Version"
 
-  belongs_to :country
+  belongs_to :country, required:false
   has_one :package, as: :detail, dependent: :destroy
   after_create :create_on_stockit
   after_update :update_on_stockit

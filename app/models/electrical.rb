@@ -1,7 +1,7 @@
 class Electrical < ActiveRecord::Base
   has_paper_trail class_name: 'Version'
 
-  belongs_to :country
+  belongs_to :country, required:false
   has_one :package, as: :detail, dependent: :destroy
   before_save :set_tested_on, if: :test_status_changed?
   before_save :downcase_brand, if: :brand_changed?
