@@ -27,10 +27,10 @@ class PackageCategoryImporter
       package_category = PackageCategory.find_by(name_en: value[:lv2])
 
       if package && package_category
-        PackageCategoriesPackageType.first_or_create(
+        PackageCategoriesPackageType.where(
           package_type_id:     package.id,
           package_category_id: package_category.id
-        )
+        ).first_or_create
       end
     end
   end
