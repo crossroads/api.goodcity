@@ -32,21 +32,23 @@ namespace :goodcity do
     PackageCategoryImporter.import_package_relation
   end
 
-  #rake goodcity:update_allow_stock_to_stockit_codes_status
+  # rake goodcity:update_allow_stock_to_stockit_codes_status
   desc 'Update PackageType `allow_stock` according to `Codes.status` from Stockit'
   task update_allow_stock_to_stockit_codes_status: :environment do
     STATUS_AND_ALLOW_STOCK_MAPPING = {
       "Active" => true,
       "Inactive" => false
     }.freeze
+
     log = Goodcity::RakeLogger.new("update_allow_stock_to_stockit_codes_status")
     updated_record_count = 0
     failed_record_count = 0
     failed_package_type_ids = []
     codes_json = Stockit::CodeSync.index
     stockit_codes = JSON.parse(codes_json["codes"]) || {}
+
     stockit_codes.each do |code|
-      if active?(code["status"]) and package_type = get_package_type(code["id"])
+      if STATUS_AND_ALLOW_STOCK_MAPPING[status] and (package_type = get_package_type(code["id"]))
         if package_type.update_column(:allow_stock, true)
           updated_record_count += 1
         else
@@ -55,6 +57,7 @@ namespace :goodcity do
         end
       end
     end
+
     log.info("TOTAL Record = #{stockit_codes.count}")
     log.info("TOTAL UPDATED RECORD = #{updated_record_count}")
     log.info("TOTAL FAILED UPDATES = #{failed_record_count}")
@@ -63,9 +66,5 @@ namespace :goodcity do
 
   def get_package_type(id)
     PackageType.find_by(stockit_id: id)
-  end
-
-  def active?(status)
-    STATUS_AND_ALLOW_STOCK_MAPPING[status]
   end
 end
