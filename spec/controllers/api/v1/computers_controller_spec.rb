@@ -33,9 +33,9 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "return serialized address", :show_in_doc do
+    it "returns correct record", :show_in_doc do
       get :show, id: @computer.id
-      expect(@parsed_body).to eq(JSON.parse(response.body))
+      expect(@parsed_body["computer"]["id"]).to eq(@computer.id)
     end
   end
 
