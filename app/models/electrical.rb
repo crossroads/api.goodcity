@@ -6,7 +6,8 @@ class Electrical < ActiveRecord::Base
   before_save :set_tested_on, if: :test_status_changed?
   before_save :downcase_brand, if: :brand_changed?
   before_save :set_updated_by
-  after_save :sync_to_stockit
+  after_create :create_on_stockit
+  after_update :update_on_stockit
 
   private
 
@@ -18,12 +19,19 @@ class Electrical < ActiveRecord::Base
     self.brand.downcase!
   end
 
-  def sync_to_stockit
+  def create_on_stockit
     response = Stockit::ItemDetailSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (electrical_id = response["electrical_id"]).present?
       self.update_column(:stockit_id, electrical_id)
+    end
+  end
+
+  def update_on_stockit
+    response = Stockit::ItemDetailSync.update(self)
+    if response && (errors = response["errors"]).present?
+      errors.each { |key, value| self.errors.add(key, value) }
     end
   end
 
