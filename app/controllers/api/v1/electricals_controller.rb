@@ -31,11 +31,11 @@ module Api
 
       def index
         @electricals = @electricals.select('distinct on (electricals.brand) electricals.*')
-        render json: @electricals, each_serializer: serializer
+        render json: @electricals, each_serializer: serializer, include_country: false
       end
 
       def show
-        render json: @electrical, serializer: serializer
+        render json: @electrical, serializer: serializer, include_country: true
       end
 
       api :PUT, "/v1/electricals", "Create or Update an electrical"

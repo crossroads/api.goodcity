@@ -40,11 +40,11 @@ module Api
 
       def index
         @computers = @computers.select('distinct on (computers.brand) computers.*')
-        render json: @computers, each_serializer: serializer
+        render json: @computers, each_serializer: serializer, include_country: false
       end
 
       def show
-        render json: @computer, serializer: serializer
+        render json: @computer, serializer: serializer, include_country: true
       end
 
       api :PUT, "/v1/computers", "Create or Update a computer"
