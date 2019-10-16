@@ -33,9 +33,9 @@ RSpec.describe Api::V1::ElectricalsController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "return serialized address", :show_in_doc do
+    it "return serialized electrical", :show_in_doc do
       get :show, id: @electrical.id
-      expect(@parsed_body).to eq(JSON.parse(response.body))
+      expect(@parsed_body["electrical"]).to eq(JSON.parse(response.body)["electrical"])
     end
   end
 
