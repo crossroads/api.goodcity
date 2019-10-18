@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :electrical do
     brand  "YAMAHA"
-    country_id "205"
+    country
     voltage "100/240V"
     frequency "50"
     power "2150"
