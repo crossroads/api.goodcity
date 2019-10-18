@@ -1,5 +1,5 @@
 class Electrical < ActiveRecord::Base
-  include PackageDetailChores
+  include SubformCallbacks
   has_paper_trail class_name: 'Version'
 
   belongs_to :country, required:false
