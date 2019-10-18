@@ -1,4 +1,4 @@
-module PackageDetailChores
+module SubformCallbacks
   extend ActiveSupport::Concern
 
    def create_on_stockit
