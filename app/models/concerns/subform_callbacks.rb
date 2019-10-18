@@ -1,12 +1,12 @@
 module SubformCallbacks
   extend ActiveSupport::Concern
 
-   def create_on_stockit
+  def create_on_stockit
     response = Stockit::ItemDetailSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (stockit_id = response["#{self.class.name.underscore}_id"]).present?
-      self.update_column(:stockit_id, stockit_id)
+      update_column(:stockit_id, stockit_id)
     end
   end
 
@@ -15,17 +15,15 @@ module SubformCallbacks
   end
 
   def downcase_brand
-    self.brand = self.brand&.downcase
+    self.brand = brand&.downcase
   end
 
   def set_tested_on
-    self.tested_on = Date.today()
+    self.tested_on = Date.today
   end
 
   def set_updated_by
-    if self.changes.any?
-      self.updated_by_id = User.current_user&.id
-    end
+    self.updated_by_id = User.current_user&.id if self.changes.any?
   end
 
   def save_correct_country
