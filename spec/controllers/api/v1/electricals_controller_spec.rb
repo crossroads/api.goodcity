@@ -10,8 +10,12 @@ RSpec.describe Api::V1::ElectricalsController, type: :controller do
     @electrical = build(:electrical)
     allow(Stockit::ItemDetailSync).to receive(:create).with(@electrical).and_return({"status"=>201, "electrical_id"=> 12})
     @electrical.save
-    serialized_electrical = Api::V1::ElectricalSerializer.new(@electrical).as_json
-    @parsed_body = JSON.parse( serialized_electrical.to_json )
+    serialized_electrical_with_country = Api::V1::ElectricalSerializer.new(@electrical, include_country: true).as_json
+    @parsed_body_with_country = JSON.parse( serialized_electrical_with_country.to_json )
+
+    serialized_electrical_without_country = Api::V1::ElectricalSerializer.new(@electrical, include_country: true).as_json
+    @parsed_body_without_country = JSON.parse( serialized_electrical_without_country.to_json )
+
   end
 
   describe "GET electricals" do
@@ -35,7 +39,7 @@ RSpec.describe Api::V1::ElectricalsController, type: :controller do
 
     it "return serialized electrical", :show_in_doc do
       get :show, id: @electrical.id
-      expect(@parsed_body["electrical"]).to eq(JSON.parse(response.body)["electrical"])
+      expect(@parsed_body_with_country).to eq(JSON.parse(response.body))
     end
   end
 
