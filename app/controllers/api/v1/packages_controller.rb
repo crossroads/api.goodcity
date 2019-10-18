@@ -412,7 +412,7 @@ module Api
       end
 
       def assign_detail
-        PackageBuilder.new(package_params).build_detail
+        PackageDetailBuilder.new(package_params).build_detail
       end
 
       def inventory_number

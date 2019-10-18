@@ -1,4 +1,4 @@
-class PackageBuilder
+class PackageDetailBuilder
   attr_reader :detail_type, :detail_params
 
   def initialize(params)
