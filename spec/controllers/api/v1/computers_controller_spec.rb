@@ -10,8 +10,11 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
     @computer = build(:computer)
     allow(Stockit::ItemDetailSync).to receive(:create).with(@computer).and_return({"status"=>201, "computer_id"=> 12})
     @computer.save
-    serialized_computer = Api::V1::ComputerSerializer.new(@computer).as_json
-    @parsed_body = JSON.parse( serialized_computer.to_json )
+    serialized_computer_with_country = Api::V1::ComputerSerializer.new(@computer, include_country: true).as_json
+    @parsed_body_with_country = JSON.parse( serialized_computer_with_country.to_json )
+
+    serialized_computer_without_country = Api::V1::ComputerSerializer.new(@computer, include_country: true).as_json
+    @parsed_body_without_country = JSON.parse( serialized_computer_without_country.to_json )
   end
 
   describe "GET computers" do
@@ -35,7 +38,7 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
 
     it "returns correct record", :show_in_doc do
       get :show, id: @computer.id
-      expect(@parsed_body["computer"]["id"]).to eq(@computer.id)
+      expect(@parsed_body_with_country).to eq(JSON.parse(response.body))
     end
   end
 
