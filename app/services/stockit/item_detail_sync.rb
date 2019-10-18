@@ -32,10 +32,12 @@ module Stockit
       put(url, detail_params)
     end
 
-    protected
+    private
 
     def detail_params
-      { "#{detail_type}": detail.attributes.except("id", "stockit_id" "created_at", "updated_at", "updated_by_id") }
+      params = detail.attributes.except("id", "created_at", "updated_at", "updated_by_id")
+      params["country_id"] = Country.find(params["country_id"])&.stockit_id
+      { "#{detail_type}": params }
     end
   end
 end
