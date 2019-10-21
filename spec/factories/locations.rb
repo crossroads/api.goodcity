@@ -3,14 +3,16 @@ FactoryBot.define do
     building   { 10+rand(36) }
     area       { FFaker::Lorem.characters(1).upcase }
     stockit_id { rand(1000) }
-    # initialize_with do
-    #   # pick random stockit location if exists, if not, create one (patch to work for demo data or spec run)
-    #   Location.where("stockit_id IS NOT NULL").limit(1).order("RANDOM()").first ||
-    #     Location.find_or_initialize_by(building: building, area: area)
-    # end
+    initialize_with {
+      Location.find_or_initialize_by(
+        area: area,
+        building: building
+      )
+    }
 
     trait :dispatched do
       building 'Dispatched'
+      area ''
     end
 
     trait :multiple do

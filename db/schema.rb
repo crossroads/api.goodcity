@@ -682,6 +682,29 @@ ActiveRecord::Schema.define(version: 20191105094920) do
   add_index "packages", ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id", using: :btree
   add_index "packages", ["stockit_sent_by_id"], name: "index_packages_on_stockit_sent_by_id", using: :btree
 
+  create_table "packages_inventories", force: :cascade do |t|
+    t.integer  "package_id",  null: false
+    t.integer  "location_id", null: false
+    t.integer  "user_id",     null: false
+    t.string   "action",      null: false
+    t.string   "source_type"
+    t.integer  "source_id"
+    t.integer  "quantity",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "packages_inventories", ["action"], name: "index_packages_inventories_on_action", using: :btree
+  add_index "packages_inventories", ["location_id"], name: "index_packages_inventories_on_location_id", using: :btree
+  add_index "packages_inventories", ["package_id", "source_type"], name: "index_packages_inventories_on_package_id_and_source_type", using: :btree
+  add_index "packages_inventories", ["package_id"], name: "index_packages_inventories_on_package_id", using: :btree
+  add_index "packages_inventories", ["source_id", "source_type"], name: "index_packages_inventories_on_source_id_and_source_type", using: :btree
+  add_index "packages_inventories", ["source_id"], name: "index_packages_inventories_on_source_id", using: :btree
+  add_index "packages_inventories", ["source_type", "package_id"], name: "index_packages_inventories_on_source_type_and_package_id", using: :btree
+  add_index "packages_inventories", ["source_type", "source_id"], name: "index_packages_inventories_on_source_type_and_source_id", using: :btree
+  add_index "packages_inventories", ["source_type"], name: "index_packages_inventories_on_source_type", using: :btree
+  add_index "packages_inventories", ["user_id"], name: "index_packages_inventories_on_user_id", using: :btree
+
   create_table "packages_locations", force: :cascade do |t|
     t.integer  "package_id"
     t.integer  "location_id"
@@ -921,6 +944,9 @@ ActiveRecord::Schema.define(version: 20191105094920) do
   add_foreign_key "organisations", "organisation_types"
   add_foreign_key "organisations_users", "organisations"
   add_foreign_key "organisations_users", "users"
+  add_foreign_key "packages_inventories", "locations"
+  add_foreign_key "packages_inventories", "packages"
+  add_foreign_key "packages_inventories", "users"
   add_foreign_key "process_checklists", "booking_types"
   add_foreign_key "subscriptions", "orders"
 end
