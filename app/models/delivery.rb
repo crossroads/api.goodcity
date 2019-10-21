@@ -13,7 +13,7 @@ class Delivery < ActiveRecord::Base
   before_save :update_offer_state
   before_destroy :push_back_offer_state
   after_save :send_updates, if: :successfully_scheduled? # PushUpdatesForDelivery
-  after_save :notify_reviewers, if: :successfully_scheduled? # PushUpdatesForDelivery
+  after_save :notify_reviewers, if: :successfully_scheduled_and_has_donor? # PushUpdatesForDelivery
   after_destroy { send_updates(:delete) unless Rails.env.test? } # PushUpdatesForDelivery
 
   def update_offer_state
@@ -34,6 +34,10 @@ class Delivery < ActiveRecord::Base
 
   def successfully_scheduled?
     offer.scheduled? && process_completed?
+  end
+
+  def successfully_scheduled_and_has_donor?
+    successfully_scheduled? && offer.created_by
   end
 
   def push_back_offer_state
