@@ -103,3 +103,5 @@ zh-tw:
     move:
       not_enough_at_source: Not enough packages available to move from that location
       bad_quantity_param: Invalid move quantity (%{quantity})
+  package_inventory:
+    bad_action: "Inventory action %{action} is not permitted"

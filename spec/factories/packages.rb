@@ -35,6 +35,29 @@ FactoryBot.define do
       end
     end
 
+    trait :dispatched do
+      before(:create) do |package|
+        dispatched_location = create(:location, :dispatched)
+        package.quantity = 0;
+        package.packages_locations = [
+          create(
+            :packages_location,
+            location: dispatched_location,
+            package: package,
+            quantity: package.received_quantity
+          )
+        ]
+        package.orders_packages = [
+          create(
+            :orders_package,
+            :with_state_dispatched,
+            package_id: package.id,
+            quantity: package.received_quantity
+          )
+        ]
+      end
+    end
+
     trait :stockit_package do
       with_inventory_number
       stockit_id { rand(1000) + 1 }
