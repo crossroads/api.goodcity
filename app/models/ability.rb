@@ -16,7 +16,7 @@ class Ability
     'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
     'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
     'can_destroy_package_with_specific_states', 'can_manage_locations',
-    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings', 'can_manage_companies', 'can_create_donor'].freeze
+    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings', 'can_manage_companies', 'can_create_donor', 'can_manage_package_detail'].freeze
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
@@ -102,15 +102,15 @@ class Ability
   end
 
   def computer_abilities
-    can [:create, :index, :show, :update, :destroy], Computer
+    can [:create, :index, :show, :update, :destroy], Computer if can_manage_package_detail?
   end
 
   def computer_accessory_abilities
-    can [:create, :index, :show, :update, :destroy], ComputerAccessory
+    can [:create, :index, :show, :update, :destroy], ComputerAccessory if can_manage_package_detail?
   end
 
   def electrical_abilities
-    can [:create, :index, :show, :update, :destroy], Electrical
+    can [:create, :index, :show, :update, :destroy], Electrical if can_manage_package_detail?
   end
 
   def goodcity_request_abilitites
