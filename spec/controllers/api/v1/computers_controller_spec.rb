@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ComputersController, type: :controller do
 
-  let(:user) { create(:user_with_token, :with_can_read_or_modify_user_permission, role_name: 'Reviewer') }
+  let(:user) { create(:user_with_token, :with_can_manage_package_detail_permission, role_name: 'Order Fulfilment') }
   let(:computer_params) { FactoryBot.attributes_for(:computer) }
 
   before do
