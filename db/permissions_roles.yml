@@ -29,6 +29,7 @@ Reviewer:
 - can_create_donor
 Supervisor:
 - can_manage_packages
+- can_manage_package_detail
 - can_manage_offers
 - can_manage_goodcity_requests
 - can_manage_deliveries
@@ -71,6 +72,7 @@ Charity:
 Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
+- can_manage_package_detail
 - can_manage_offers
 - can_manage_deliveries
 - can_manage_orders
