@@ -36,7 +36,7 @@ module Stockit
 
     def detail_params
       params = detail.attributes.except("id", "created_at", "updated_at", "updated_by_id")
-      params["country_id"] = Country.find(params["country_id"])&.stockit_id
+      params["country_id"] = Country.find_by(params["country_id"])&.stockit_id
       { "#{detail_type}": params }
     end
   end
