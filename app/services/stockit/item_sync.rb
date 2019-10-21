@@ -23,6 +23,10 @@ module Stockit
         new(package).update
       end
 
+      def show(package)
+        new(package).show
+      end
+
       def move(package)
         new(package).move
       end
@@ -47,6 +51,11 @@ module Stockit
     def index
       url = url_for("/api/v1/items")
       get(url, { offset: offset, per_page: per_page })
+    end
+
+    def show
+      url = url_for('api/v1/items')
+      get(url, item_get_req_params)
     end
 
     def create
@@ -98,6 +107,12 @@ module Stockit
     def add_stockit_prefix(inventory_number)
       return "X#{inventory_number}" if !!((inventory_number || "")[0..0] =~ /[0-9]/)
       inventory_number
+    end
+
+    def item_get_req_params
+      {
+        id: package.stockit_id
+      }
     end
 
     def stockit_params
