@@ -40,7 +40,7 @@ module Api
 
       def index
         @computers = @computers.select('distinct on (computers.brand) computers.*')
-        render json: @computers, each_serializer: serializer, include_country: false
+        render json: @computers, each_serializer: serializer
       end
 
       def show
