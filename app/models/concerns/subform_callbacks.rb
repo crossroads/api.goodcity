@@ -3,15 +3,20 @@ module SubformCallbacks
 
   def create_on_stockit
     response = Stockit::ItemDetailSync.create(self)
+    add_stockit_id(response)
+  end
+
+  def update_on_stockit
+    Stockit::ItemDetailSync.update(self)
+    add_stockit_id(response)
+  end
+
+  def add_stockit_id(response)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (stockit_id = response["#{self.class.name.underscore}_id"]).present?
       update_column(:stockit_id, stockit_id)
     end
-  end
-
-  def update_on_stockit
-    Stockit::ItemDetailSync.update(self)
   end
 
   def downcase_brand
