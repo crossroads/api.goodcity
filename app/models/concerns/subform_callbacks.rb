@@ -7,7 +7,7 @@ module SubformCallbacks
   end
 
   def update_on_stockit
-    Stockit::ItemDetailSync.update(self)
+    response = Stockit::ItemDetailSync.update(self)
     add_stockit_id(response)
   end
 
