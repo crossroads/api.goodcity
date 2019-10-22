@@ -34,36 +34,36 @@ RSpec.describe Computer, type: :model do
     it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
   end
 
-  describe "before_save" do
-    it "should convert brand to lowercase" do
-      computer = build :computer, brand: "AppLE"
-      expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
-      expect {
-        computer.save
-      }.to change(Computer, :count).by(1)
-      expect(computer.brand).to eq("apple")
-    end
+  # describe "before_save" do
+  #   it "should convert brand to lowercase" do
+  #     computer = build :computer, brand: "AppLE"
+  #     expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
+  #     expect {
+  #       computer.save
+  #     }.to change(Computer, :count).by(1)
+  #     expect(computer.brand).to eq("apple")
+  #   end
 
-    it "should set updated_by if changes done" do
-      user = create(:user, :reviewer)
-      User.current_user = user
-      computer = build :computer, brand: "DeLL"
-      expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
-      expect {
-        computer.save
-      }.to change(Computer, :count).by(1)
-      expect(computer.updated_by_id).to eq(user.id)
-    end
-  end
+  #   it "should set updated_by if changes done" do
+  #     user = create(:user, :reviewer)
+  #     User.current_user = user
+  #     computer = build :computer, brand: "DeLL"
+  #     expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
+  #     expect {
+  #       computer.save
+  #     }.to change(Computer, :count).by(1)
+  #     expect(computer.updated_by_id).to eq(user.id)
+  #   end
+  # end
 
-  describe "after_save" do
-    it "should sync to stockit after save" do
-      computer = build :computer
-      expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
-      expect {
-        computer.save
-      }.to change(Computer, :count).by(1)
-      expect(computer.stockit_id).to eq(12)
-    end
-  end
+  # describe "after_save" do
+  #   it "should sync to stockit after save" do
+  #     computer = build :computer
+  #     expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
+  #     expect {
+  #       computer.save
+  #     }.to change(Computer, :count).by(1)
+  #     expect(computer.stockit_id).to eq(12)
+  #   end
+  # end
 end
