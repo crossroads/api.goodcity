@@ -6,8 +6,8 @@ class CreateElectricals < ActiveRecord::Migration
       t.string :serial_number
       t.integer :country_id
       t.string :standard
-      t.integer :voltage
-      t.integer :frequency
+      t.string :voltage
+      t.string :frequency
       t.string :power
       t.string :system_or_region
       t.string :test_status
