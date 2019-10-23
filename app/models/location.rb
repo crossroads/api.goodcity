@@ -58,8 +58,4 @@ class Location < ActiveRecord::Base
     # and ensure possible nils are removed
     location_ids.map{|id| locations[id]}.compact
   end
-
-  def display_name
-    "(#{id}) #{building}:#{area}"
-  end
 end
