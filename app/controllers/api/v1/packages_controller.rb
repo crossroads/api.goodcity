@@ -272,34 +272,32 @@ module Api
       def package_params
         get_package_type_id_value
         set_favourite_image if @package && !@package.new_record?
-        attributes = [:quantity, :length, :width, :height, :weight, :pieces,
-          :notes, :item_id, :received_at, :rejected_at, :package_type_id,
-          :state_event, :inventory_number, :designation_name, :donor_condition_id,
-          :grade, :location_id, :box_id, :pallet_id, :stockit_id, :order_id,
-          :stockit_designated_on, :stockit_sent_on, :case_number, :allow_web_publish,
-          :received_quantity, :state, :detail_type, :detail_id,
-          packages_locations_attributes: [:id, :location_id, :quantity],
+        attributes = [:allow_web_publish, :box_id, :case_number, :designation_name,
+          :detail_id, :detail_type, :donor_condition_id, :grade, :height, :inventory_number,
+          :item_id, :length, :location_id, :notes, :order_id, :package_type_id, :pallet_id,
+          :pieces, :quantity, :received_at, :received_quantity, :rejected_at, :state,
+          :state_event, :stockit_designated_on, :stockit_id, :stockit_sent_on, :weight,
+          :width, packages_locations_attributes: [:id, :location_id, :quantity],
           detail_attributes: [computer_attributes, electrical_attributes,
           computer_accessory_attributes].flatten.uniq]
         params.require(:package).permit(attributes)
       end
 
       def computer_attributes
-        [:brand, :model, :serial_num, :country_id, :size,
-          :cpu, :ram, :hdd, :optical, :video, :sound, :lan, :wireless,
-          :usb, :comp_voltage, :os, :os_serial_num, :comp_test_status, :ms_office_serial_num,
-          :mar_os_serial_num, :mar_ms_office_serial_num, :updated_by_id]
+        [:brand, :comp_test_status, :comp_voltage, :country_id, :cpu, :hdd, :lan,
+          :mar_ms_office_serial_num, :mar_os_serial_num, :model, :ms_office_serial_num,
+          :optical, :os, :os_serial_num, :ram, :serial_num, :size, :sound, :updated_by_id,
+          :usb, :video, :wireless]
       end
 
       def electrical_attributes
-        [:brand, :model, :serial_number, :country_id, :standard,
-          :voltage, :frequency, :power, :system_or_region, :test_status,
-          :tested_on, :updated_by_id]
+        [:brand, :country_id, :frequency, :model, :power, :serial_number, :standard,
+          :system_or_region, :test_status, :tested_on, :updated_by_id, :voltage]
       end
 
       def computer_accessory_attributes
-        [:brand, :model, :serial_num, :country_id, :size,
-          :interface, :comp_voltage, :comp_test_status, :updated_by_id]
+        [:brand, :comp_test_status, :comp_voltage, :country_id, :interface, :model,
+          :serial_num, :size, :updated_by_id]
       end
 
       def set_favourite_image
