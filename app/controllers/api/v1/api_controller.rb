@@ -28,6 +28,14 @@ module Api
       end
     end
 
+    def update_and_render_object_with_errors(object)
+      if object.valid? and object.save
+        render json: object, serializer: serializer_for(object)
+      else
+        render_error(object.errors.full_messages.join('. '))
+      end
+    end
+
     def render_error(error_message, code: 422)
       errors = { message: error_message, status: code }
       render json: { errors: [errors] }, status: code
