@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-context SubformCallbacks do
+context SubformUtilities do
   before do
     @user = create(:user, :reviewer)
     User.current_user = @user

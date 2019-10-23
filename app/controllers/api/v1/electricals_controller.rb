@@ -30,7 +30,7 @@ module Api
       end
 
       def index
-        @electricals = @electricals.select('distinct on (electricals.brand) electricals.*')
+        @electricals = @electricals.distinct_by_column(params["distinct"]) if params["distinct"]
         render json: @electricals, each_serializer: serializer
       end
 
