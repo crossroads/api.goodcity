@@ -145,30 +145,77 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       end
 
       describe 'Dispatching' do
-        let(:order) { create :order, :with_state_dispatching }
-        let(:orders_package) {create :orders_package, :with_state_designated, order_id: order.id}
+        context 'items of a processed order' do
+          let(:order) { create :order, :with_state_dispatching }
+          let(:package) { create(:package, quantity: 10) }
+          let(:orders_package) { create :orders_package, :with_state_designated, order_id: order.id, package: package, quantity: package.quantity }
 
-        it 'dispatches the packages successfully' do
-          expect(current_state).to eq('designated')
+          before do
+            create(:packages_location, package: package, quantity: package.quantity)
+          end
 
-          put :exec_action, id: orders_package.id, action_name: 'dispatch'
-          expect(status).to eq(200)
-          expect(new_state).to eq('dispatched')
-          expect(orders_package.reload.state).to eq('dispatched')
+          it 'dispatches the packages successfully' do
+            expect(current_state).to eq('designated')
+
+            put :exec_action, id: orders_package.id, action_name: 'dispatch'
+
+            expect(status).to eq(200)
+            expect(new_state).to eq('dispatched')
+            expect(orders_package.reload.state).to eq('dispatched')
+            expect(package.reload.locations.length).to eq(1)
+            expect(package.reload.locations.first.is_dispatch?).to eq(true)
+          end
+        end
+
+        context 'items of an unprocessed order' do
+          let(:order) { create :order, :with_state_processing }
+          let(:package) { create(:package, quantity: 10) }
+          let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: package.quantity }
+
+          before do
+            create(:packages_location, package: package, quantity: package.quantity)
+          end
+
+          it 'fails to dispatch the packages' do
+            expect(current_state).to eq('designated')
+
+            put :exec_action, id: orders_package.id, action_name: 'dispatch'
+
+            expect(status).to eq(422)
+            expect(error_text).to eq("Cannot dispatch packages of an un-processed order")
+          end
         end
       end
 
       describe 'Undispatching' do
+        let!(:dispatch_location) { create(:location, :dispatched) }
+        let(:location) { create(:location) }
         let(:order) { create :order, :with_state_dispatching }
-        let(:orders_package) {create :orders_package, :with_state_dispatched, order_id: order.id}
+        let(:package) { create(:package, quantity: 10) }
+        let(:orders_package) { create :orders_package, :with_state_dispatched, order: order, package: package, quantity: package.quantity }
 
-        it 'dispatches the packages successfully' do
+        before do
+          create(:packages_location, package: package,location: dispatch_location, quantity: package.quantity)
+        end
+
+        it 'fails to undispatch the packages if no valid location is provided' do
           expect(current_state).to eq('dispatched')
 
           put :exec_action, id: orders_package.id, action_name: 'undispatch'
+          expect(status).to eq(422)
+          expect(error_text).to match(/^Couldn't find Location with 'id'=/)
+          expect(orders_package.reload.state).to eq('dispatched')
+        end
+
+        it 'undispatches the packages successfully' do
+          expect(current_state).to eq('dispatched')
+
+          put :exec_action, id: orders_package.id, action_name: 'undispatch', location_id: location.id
           expect(status).to eq(200)
           expect(new_state).to eq('designated')
           expect(orders_package.reload.state).to eq('designated')
+          expect(package.reload.locations.length).to eq(1)
+          expect(package.reload.locations.first).to eq(location)
         end
       end
     end
