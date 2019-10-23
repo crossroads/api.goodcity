@@ -1,5 +1,15 @@
-module SubformCallbacks
+module SubformUtilities
   extend ActiveSupport::Concern
+
+  included do
+    extend(ClassMethods)
+  end
+
+  module ClassMethods
+    def distinct_by_column(name)
+      select("distinct on (#{self.name.underscore.pluralize}.#{name}) #{self.name.underscore.pluralize}.*")
+    end
+  end
 
   def create_on_stockit
     response = Stockit::ItemDetailSync.create(self)
