@@ -2,11 +2,11 @@
 # Concern that centralizes order fulfilment mechanisms
 #
 # @example
-#   class OrdersPackage < ActiveRecord::Base
+#   class MyClass
 #     include OrderFulfilmentOperations
 #   end
 #
-#   OrdersPackage::Operations.dispatch(orders_package)
+#   MyClass::Operations.dispatch(orders_package)
 #
 #
 module OrderFulfilmentOperations
