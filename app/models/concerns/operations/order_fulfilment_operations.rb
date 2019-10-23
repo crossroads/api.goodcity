@@ -1,5 +1,3 @@
-require('location_operations')
-
 # Concern that centralizes order fulfilment mechanisms
 #
 # @example
