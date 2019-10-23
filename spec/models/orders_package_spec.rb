@@ -358,7 +358,7 @@ RSpec.describe OrdersPackage, type: :model do
       end
 
       it "calls :dispatch when the 'dispatch' action is trigerred" do
-        expect(orders_package).to receive(:dispatch)
+        expect(OrdersPackage::Operations).to receive(:dispatch)
         orders_package.exec_action 'dispatch'
       end
 
@@ -379,7 +379,7 @@ RSpec.describe OrdersPackage, type: :model do
       let(:orders_package) { order.orders_packages.first }
 
       it "calls :undispatch_orders_package when the 'undispatch' action is trigerred" do
-        expect(orders_package).to receive(:undispatch_orders_package)
+        expect(OrdersPackage::Operations).to receive(:undispatch)
         orders_package.exec_action 'undispatch'
       end
 

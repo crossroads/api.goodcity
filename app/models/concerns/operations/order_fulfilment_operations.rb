@@ -1,3 +1,4 @@
+
 # Concern that centralizes order fulfilment mechanisms
 #
 # @example
