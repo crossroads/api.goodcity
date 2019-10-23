@@ -39,11 +39,7 @@ module Api
       param_group :computer_accessory
       def update
         @computer_accessory.assign_attributes(computer_accessory_params)
-        if @computer_accessory.valid? and @computer_accessory.save
-          render json: @computer_accessory, serializer: serializer
-        else
-          render_error(@computer_accessory.errors.full_messages.join(', '))
-        end
+        update_and_render_object_with_errors(@computer_accessory)
       end
 
       private
@@ -54,9 +50,8 @@ module Api
 
 
       def computer_accessory_params
-        attributes = [:brand, :model, :serial_num, :country_id, :size,
-          :interface, :comp_voltage, :comp_test_status, :updated_by_id
-        ]
+        attributes = [:brand, :comp_test_status, :comp_voltage, :country_id, :interface,
+          :model, :serial_num, :size, :updated_by_id]
         params.require(:computer_accessory).permit(attributes)
       end
     end
