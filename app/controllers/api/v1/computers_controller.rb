@@ -39,7 +39,7 @@ module Api
       end
 
       def index
-        @computers = @computers.select('distinct on (computers.brand) computers.*')
+        @computers = @computers.distinct_by_column(params["distinct"]) if params["distinct"]
         render json: @computers, each_serializer: serializer
       end
 
