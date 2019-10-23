@@ -42,11 +42,7 @@ module Api
       param_group :electrical
       def update
         @electrical.assign_attributes(electrical_params)
-        if @electrical.valid? and @electrical.save
-          render json: @electrical, serializer: serializer
-        else
-          render_error(@electrical.errors.full_messages.join(', '))
-        end
+        update_and_render_object_with_errors(@electrical)
       end
 
       private
@@ -56,9 +52,9 @@ module Api
       end
 
       def electrical_params
-        attributes = [:brand, :model, :serial_number, :country_id, :standard,
-          :voltage, :frequency, :power, :system_or_region, :test_status,
-          :tested_on, :updated_by_id
+        attributes = [:brand, :country_id, :frequency, :model, :power, :serial_number,
+          :standard, :system_or_region, :test_status, :tested_on, :updated_by_id,
+          :voltage
         ]
         params.require(:electrical).permit(attributes)
       end

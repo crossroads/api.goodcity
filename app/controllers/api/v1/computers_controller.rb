@@ -51,11 +51,7 @@ module Api
       param_group :computer
       def update
         @computer.assign_attributes(computer_params)
-        if @computer.valid? and @computer.save
-          render json: @computer, serializer: serializer
-        else
-          render_error(@computer.errors.full_messages.join(', '))
-        end
+        update_and_render_object_with_errors(@computer)
       end
 
       private
@@ -65,10 +61,10 @@ module Api
       end
 
       def computer_params
-        attributes = [:brand, :model, :serial_num, :country_id, :size,
-          :cpu, :ram, :hdd, :optical, :video, :sound, :lan, :wireless,
-          :usb, :comp_voltage, :os, :os_serial_num, :ms_office_serial_num,
-          :mar_os_serial_num, :mar_ms_office_serial_num, :updated_by_id
+        attributes = [:brand, :comp_test_status, :comp_voltage, :country_id, :cpu, :hdd,
+          :lan, :mar_ms_office_serial_num, :mar_os_serial_num, :model, :ms_office_serial_num,
+          :optical, :os, :os_serial_num, :ram, :serial_num, :size, :sound, :updated_by_id,
+          :usb, :video, :wireless
         ]
         params.require(:computer).permit(attributes)
       end
