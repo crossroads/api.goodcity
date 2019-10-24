@@ -17,7 +17,6 @@ module Api
           param :brand, String, desc: "name of the brand"
           param :model, String, desc: "model of the record"
           param :serial_num, String, desc: "serial number of the record"
-          param :country_id, Integer, desc: "id of the country record belongs to"
           param :size, String, desc: "size of the record"
           param :interface, String, desc: "interface of the record"
           param :comp_voltage, Integer, desc: "comp_voltage of the record"

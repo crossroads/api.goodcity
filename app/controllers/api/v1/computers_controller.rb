@@ -17,7 +17,6 @@ module Api
           param :brand, String, desc: "name of the brand"
           param :model, String, desc: "model of the computer"
           param :serial_num, String, desc: "serial number of the computer"
-          param :country_id, Integer, desc: "id of the country computer belongs to"
           param :size, String, desc: "size of the computer"
           param :cpu, String, desc: "cpu of the computer"
           param :ram, String, desc: "ram of the computer"
