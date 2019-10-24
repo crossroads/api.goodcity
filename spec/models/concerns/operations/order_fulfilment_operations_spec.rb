@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-class Subject < ActiveRecord::Base
-  include OrderFulfilmentOperations
-end
-
 context OrderFulfilmentOperations do
+
+  class Subject < ActiveRecord::Base
+    include OrderFulfilmentOperations
+  end
 
   describe 'Undispatching an orders_package' do
     let(:dispatch_location) { create(:location, :dispatched) }

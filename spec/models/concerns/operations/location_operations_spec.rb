@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-class Subject < ActiveRecord::Base
-  include LocationOperations
-end
-
 context LocationOperations do
+
+  class Subject < ActiveRecord::Base
+    include LocationOperations
+  end
 
   describe 'Moving packages' do
     let(:src_location) { create(:location) }
