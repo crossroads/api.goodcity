@@ -30,19 +30,14 @@ module OrderFulfilmentOperations
     # @raise [StandardError]
     # @raise [ActiveRecord::RecordNotFound]
     #
-    def undispatch(orders_package, to_location:)
-      return unless orders_package.dispatched?
+    def undispatch(ord_pkg, to_location:)
+      return unless ord_pkg.dispatched?
       ActiveRecord::Base.transaction do
-        # --- Move
-        move(orders_package.quantity, orders_package.package,
-          from: Location.dispatch_location,
-          to: to_location)
-        # --- Apply state
-        orders_package.update(state: "designated", sent_on: nil)
-        # --- Stockit sync
-        pkg = Package.find(orders_package.package_id)
-        pkg.undispatch_stockit_item
-        pkg.save
+        # Move, change state and sync with Stockit
+        move(ord_pkg.quantity, ord_pkg.package, from: Location.dispatch_location, to: to_location)
+        ord_pkg.update(state: "designated", sent_on: nil)
+        ord_pkg.package.undispatch_stockit_item
+        ord_pkg.package.save
       end
     end
 
@@ -62,11 +57,12 @@ module OrderFulfilmentOperations
     #
     def dispatch(ord_pkg)
       assert_can_dispatch(ord_pkg)
+
+      loc = ord_pkg.package.locations.first
+
       ActiveRecord::Base.transaction do
         # Move, change state and sync with Stockit
-        move(ord_pkg.quantity, ord_pkg.package,
-          from: ord_pkg.package.locations.first,
-          to: Location.dispatch_location)
+        move(ord_pkg.quantity, ord_pkg.package, from: loc, to: Location.dispatch_location)
         ord_pkg.dispatch
         ord_pkg.package.dispatch_stockit_item(ord_pkg)
         ord_pkg.package.save
