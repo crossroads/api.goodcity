@@ -163,7 +163,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
             expect(new_state).to eq('dispatched')
             expect(orders_package.reload.state).to eq('dispatched')
             expect(package.reload.locations.length).to eq(1)
-            expect(package.reload.locations.first.is_dispatch?).to eq(true)
+            expect(package.reload.locations.first.dispatch?).to eq(true)
           end
         end
 

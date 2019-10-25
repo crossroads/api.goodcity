@@ -25,7 +25,7 @@ class PackagesLocation < ActiveRecord::Base
   after_save :push_changes
   after_destroy :push_changes
   push_targets do |record|
-    chans = [ Channel::STOCK_CHANNEL ]
+    chans = [Channel::STOCK_CHANNEL]
     chans << Channel::STAFF_CHANNEL if record.package.item_id # The item_id indicates it was donated via the admin app
     chans
   end

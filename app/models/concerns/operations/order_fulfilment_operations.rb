@@ -61,24 +61,20 @@ module OrderFulfilmentOperations
     # @raise [ActiveRecord::RecordNotFound]
     #
     def dispatch(orders_package)
-      raise StandardError.new(I18n.t('orders_package.already_dispatched')) if orders_package.dispatched?
+      raise Exceptions::ALREADY_DISPATCHED if orders_package.dispatched?
 
       order = orders_package.order
-      location = orders_package.package.locations.first
+      package = orders_package.package
+      location = package.locations.first
 
       raise Exceptions::UNPROCESSED if order_unprocessed?(order)
 
       ActiveRecord::Base.transaction do
-        # --- Move
-        move(orders_package.quantity, orders_package.package)
-          .from(location)
-          .to(Location.dispatch_location)
-        # --- Apply state
+        # Move, change state and sync with Stockit
+        move(orders_package.quantity, package).from(location).to(Location.dispatch_location)
         orders_package.dispatch
-        # --- Stockit sync
-        pkg = Package.find(orders_package.package_id)
-        pkg.dispatch_stockit_item(orders_package)
-        pkg.save
+        package.dispatch_stockit_item(orders_package)
+        package.save
       end
     end
 
@@ -88,6 +84,7 @@ module OrderFulfilmentOperations
 
     module Exceptions
       UNPROCESSED = StandardError.new(I18n.t('operations.dispatch.unprocessed_order'))
+      ALREADY_DISPATCHED = StandardError.new(I18n.t('orders_package.already_dispatched'))
     end
   end
 end

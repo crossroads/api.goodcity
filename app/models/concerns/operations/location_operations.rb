@@ -10,22 +10,20 @@ module LocationOperations
   extend ActiveSupport::Concern
 
   module Operations
-
     # --- Moving a package from one location to another
     class Move
-
       def initialize(quantity, package)
         @quantity = quantity
         @package = package
       end
 
       def from(location)
-        @from = Utils::to_model(location, Location)
+        @from = Utils.to_model(location, Location)
         self
       end
 
       def to(location)
-        @to = Utils::to_model(location, Location)
+        @to = Utils.to_model(location, Location)
         apply_change
       end
 
@@ -38,9 +36,7 @@ module LocationOperations
       end
 
       def dest_packages_location
-        @dest ||= PackagesLocation
-          .where(package: @package, location: @to)
-          .first_or_create(quantity: 0)
+        @dest ||= PackagesLocation.where(package: @package, location: @to).first_or_create(quantity: 0)
       end
 
       # --- Transaction

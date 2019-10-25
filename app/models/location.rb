@@ -2,8 +2,8 @@ class Location < ActiveRecord::Base
   include CacheableJson
   include PushUpdates
 
-  DISPATCH_BLD = 'Dispatched'
-  MULTIPLE_BLD = 'Multiple'
+  DISPATCH_BLD = 'Dispatched'.freeze
+  MULTIPLE_BLD = 'Multiple'.freeze
 
   has_many :packages_locations
   has_many :packages, through: :packages_locations
@@ -18,7 +18,7 @@ class Location < ActiveRecord::Base
     packages_locations.count.zero? && package_types.count.zero?
   end
 
-  def is_dispatch?
+  def dispatch?
     building.eql?(DISPATCH_BLD)
   end
 

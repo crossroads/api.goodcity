@@ -76,7 +76,8 @@ module Api
         if @orders_package.errors.count.positive?
           render json: @orders_package.errors, status: 422
         else
-          render json: serializer.new(@orders_package,
+          render json: serializer.new(
+            @orders_package,
             include_package: true,
             include_allowed_actions: true,
             include_orders_packages: true

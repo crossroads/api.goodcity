@@ -20,8 +20,8 @@ module OrdersPackageActions
     end
 
     CANCEL          = Action.new('cancel') { |op| op.cancel }
-    DISPATCH        = Action.new('dispatch') { |op| Operations::dispatch(op) }
-    UNDISPATCH      = Action.new('undispatch') { |op, opts| Operations::undispatch(op, to_location: opts[:location_id]) }
+    DISPATCH        = Action.new('dispatch') { |op| Operations.dispatch(op) }
+    UNDISPATCH      = Action.new('undispatch') { |op, opts| Operations.undispatch(op, to_location: opts[:location_id]) }
     REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
     EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| op.edit_quantity(opts[:quantity]) }
 
