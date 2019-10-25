@@ -61,8 +61,7 @@ module OrderFulfilmentOperations
     # @raise [ActiveRecord::RecordNotFound]
     #
     def dispatch(ord_pkg)
-      raise Exceptions::ALREADY_DISPATCHED if orders_package.dispatched?
-      raise Exceptions::UNPROCESSED if order_unprocessed?(ord_pkg.order)
+      assert_can_dispatch(ord_pkg)
 
       location = ord_pkg.package.locations.first
 
@@ -77,6 +76,11 @@ module OrderFulfilmentOperations
 
     def order_unprocessed?(order)
       Order::ORDER_UNPROCESSED_STATES.include?(order.state)
+    end
+
+    def assert_can_dispatch(ord_pkg)
+      raise Exceptions::ALREADY_DISPATCHED if orders_package.dispatched?
+      raise Exceptions::UNPROCESSED if order_unprocessed?(ord_pkg.order)
     end
 
     module Exceptions
