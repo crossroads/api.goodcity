@@ -36,5 +36,4 @@ module Utils
     return  model_or_id.id if model_or_id.is_a?(ActiveRecord::Model)
     model_or_id
   end
-
 end
