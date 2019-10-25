@@ -2,18 +2,17 @@ require 'rails_helper'
 
 context OrderFulfilmentOperations do
 
-  class Subject < ActiveRecord::Base
-    include OrderFulfilmentOperations
-  end
-
   describe 'Undispatching an orders_package' do
     let(:dispatch_location) { create(:location, :dispatched) }
     let(:pkg) { create(:package, received_quantity: 30) }
     let(:location) { create(:location) }
     let!(:dispatch_pkg_loc) { create(:packages_location, package: pkg, location: dispatch_location, quantity: 30) }
     let!(:orders_package) { create(:orders_package, :with_state_dispatched, package: pkg, quantity: 30) }
+    let(:subject) {
+      Class.new { include OrderFulfilmentOperations }
+    }
 
-    before { Subject::Operations::undispatch(orders_package, to_location: location) }
+    before { subject::Operations::undispatch(orders_package, to_location: location) }
 
     it 'removes the dispatched packages_location record' do
       expect(PackagesLocation.find_by(id: dispatch_pkg_loc.id)).to be_nil
@@ -49,7 +48,7 @@ context OrderFulfilmentOperations do
 
         it 'fails due to the order being unprocessed' do
           expect {
-            Subject::Operations::dispatch(orders_package)
+            subject::Operations::dispatch(orders_package)
           }.to raise_error(StandardError).with_message('Cannot dispatch packages of an un-processed order')
         end
       end
@@ -64,7 +63,7 @@ context OrderFulfilmentOperations do
 
       context "of an #{state} order" do
 
-        before { Subject::Operations::dispatch(orders_package) }
+        before { subject::Operations::dispatch(orders_package) }
 
         it 'moves the packages to the dispatch location' do
           dispatch_pkg_location = PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)

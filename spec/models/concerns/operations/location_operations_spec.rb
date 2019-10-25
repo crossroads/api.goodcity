@@ -2,18 +2,17 @@ require 'rails_helper'
 
 context LocationOperations do
 
-  class Subject < ActiveRecord::Base
-    include LocationOperations
-  end
-
   describe 'Moving packages' do
     let(:src_location) { create(:location) }
     let(:dest_location) { create(:location) }
     let(:pkg_loc) { create(:packages_location, location: src_location, quantity: 30) }
     let(:pkg) { pkg_loc.package }
+    let(:subject) {
+      Class.new { include LocationOperations }
+    }
 
     def move(qty)
-      Subject::Operations::move(qty, pkg,
+      subject::Operations::move(qty, pkg,
         from: src_location,
         to: dest_location)
     end
