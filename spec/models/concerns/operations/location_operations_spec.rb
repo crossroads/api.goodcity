@@ -13,9 +13,9 @@ context LocationOperations do
     let(:pkg) { pkg_loc.package }
 
     def move(qty)
-      Subject::Operations::move(qty, pkg)
-        .from(src_location)
-        .to(dest_location)
+      Subject::Operations::move(qty, pkg,
+        from: src_location,
+        to: dest_location)
     end
 
     context 'the destination location already has some packages' do

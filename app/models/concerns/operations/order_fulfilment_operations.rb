@@ -34,9 +34,9 @@ module OrderFulfilmentOperations
       return unless orders_package.dispatched?
       ActiveRecord::Base.transaction do
         # --- Move
-        move(orders_package.quantity, orders_package.package)
-          .from(Location.dispatch_location)
-          .to(to_location)
+        move(orders_package.quantity, orders_package.package,
+          from: Location.dispatch_location,
+          to: to_location)
         # --- Apply state
         orders_package.update(state: "designated", sent_on: nil)
         # --- Stockit sync
@@ -62,12 +62,11 @@ module OrderFulfilmentOperations
     #
     def dispatch(ord_pkg)
       assert_can_dispatch(ord_pkg)
-
-      location = ord_pkg.package.locations.first
-
       ActiveRecord::Base.transaction do
         # Move, change state and sync with Stockit
-        move(ord_pkg.quantity, ord_pkg.package).from(location).to(Location.dispatch_location)
+        move(ord_pkg.quantity, ord_pkg.package,
+          from: ord_pkg.package.locations.first,
+          to: Location.dispatch_location)
         ord_pkg.dispatch
         ord_pkg.package.dispatch_stockit_item(ord_pkg)
         ord_pkg.package.save
@@ -79,7 +78,7 @@ module OrderFulfilmentOperations
     end
 
     def assert_can_dispatch(ord_pkg)
-      raise Exceptions::ALREADY_DISPATCHED if orders_package.dispatched?
+      raise Exceptions::ALREADY_DISPATCHED if ord_pkg.dispatched?
       raise Exceptions::UNPROCESSED if order_unprocessed?(ord_pkg.order)
     end
 

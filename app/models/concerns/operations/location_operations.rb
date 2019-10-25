@@ -2,9 +2,7 @@
 # away from packages_locations to packages_inventory
 #
 # @example
-#   Operations::move(2, package_a)
-#     .from(location_a)
-#     .to(location_b)
+#   Operations::move(2, package_a, from: A, to: B)
 #
 module LocationOperations
   extend ActiveSupport::Concern
@@ -12,24 +10,22 @@ module LocationOperations
   module Operations
     # --- Moving a package from one location to another
     class Move
-      def initialize(quantity, package)
+      def initialize(quantity, package, from:, to:)
         @quantity = quantity
         @package = package
+        @from = Utils.to_model(from, Location)
+        @to = Utils.to_model(to, Location)
       end
 
-      def from(location)
-        @from = Utils.to_model(location, Location)
-        self
-      end
-
-      def to(location)
-        @to = Utils.to_model(location, Location)
-        apply_change
+      def perform
+        secure do
+          source_packages_location.decrement!(:quantity, @quantity)
+          dest_packages_location.increment!(:quantity, @quantity)
+          source_packages_location.destroy if source_packages_location.quantity.zero?
+        end
       end
 
       private
-
-      # --- Helpers
 
       def source_packages_location
         @source ||= PackagesLocation.find_by(package: @package, location: @from)
@@ -39,27 +35,17 @@ module LocationOperations
         @dest ||= PackagesLocation.where(package: @package, location: @to).first_or_create(quantity: 0)
       end
 
-      # --- Transaction
-
       def secure
         source = source_packages_location
         raise MISSING_QTY if source.nil? || source.quantity < @quantity
         ActiveRecord::Base.transaction { yield }
       end
 
-      def apply_change
-        secure do
-          source_packages_location.decrement!(:quantity, @quantity)
-          dest_packages_location.increment!(:quantity, @quantity)
-          source_packages_location.destroy if source_packages_location.quantity.zero?
-        end
-      end
-
       MISSING_QTY = StandardError.new(I18n.t('operations.move.not_enough_at_source'))
     end
 
-    def move(quantity, package)
-      Move.new(quantity, package)
+    def move(quantity, package, from:, to:)
+      Move.new(quantity, package, from: from, to: to).perform
     end
 
     module_function :move
