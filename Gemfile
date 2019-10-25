@@ -18,7 +18,7 @@ gem 'paranoia', '~> 2.1.0'
 gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
 
 gem 'cancancan'
-gem 'loofah'
+gem 'loofah', '>= 2.3.1'
 gem 'cloudinary'
 gem 'factory_bot_rails' # used in rake db:seed in production
 gem 'ffaker'
