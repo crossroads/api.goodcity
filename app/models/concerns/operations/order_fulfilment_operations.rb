@@ -61,18 +61,17 @@ module OrderFulfilmentOperations
     # @raise [ActiveRecord::RecordNotFound]
     #
     def dispatch(ord_pkg)
-      package = ord_pkg.package
-      location = package.locations.first
-
       raise Exceptions::ALREADY_DISPATCHED if orders_package.dispatched?
       raise Exceptions::UNPROCESSED if order_unprocessed?(ord_pkg.order)
 
+      location = ord_pkg.package.locations.first
+
       ActiveRecord::Base.transaction do
         # Move, change state and sync with Stockit
-        move(ord_pkg.quantity, package).from(location).to(Location.dispatch_location)
+        move(ord_pkg.quantity, ord_pkg.package).from(location).to(Location.dispatch_location)
         ord_pkg.dispatch
-        package.dispatch_stockit_item(ord_pkg)
-        package.save
+        ord_pkg.package.dispatch_stockit_item(ord_pkg)
+        ord_pkg.package.save
       end
     end
 
