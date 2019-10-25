@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 20190925110227) do
   enable_extension "plpgsql"
   enable_extension "btree_gin"
   enable_extension "pg_trgm"
+  enable_extension "pgcrypto"
 
   create_table "addresses", force: :cascade do |t|
     t.string   "flat",             limit: 255
@@ -130,7 +131,7 @@ ActiveRecord::Schema.define(version: 20190925110227) do
   create_table "computers", force: :cascade do |t|
     t.string   "brand"
     t.string   "model"
-    t.string   "serial_num"
+    t.string   "serial_number"
     t.integer  "country_id"
     t.string   "size"
     t.string   "cpu"
@@ -145,14 +146,14 @@ ActiveRecord::Schema.define(version: 20190925110227) do
     t.string   "comp_voltage"
     t.string   "comp_test_status"
     t.string   "os"
-    t.string   "os_serial_num"
-    t.string   "ms_office_serial_num"
-    t.string   "mar_os_serial_num"
-    t.string   "mar_ms_office_serial_num"
+    t.string   "os_serial_number"
+    t.string   "ms_office_serial_number"
+    t.string   "mar_os_serial_number"
+    t.string   "mar_ms_office_serial_numer"
     t.integer  "updated_by_id"
     t.integer  "stockit_id"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -592,8 +593,8 @@ ActiveRecord::Schema.define(version: 20190925110227) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
-    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_pieces",       default: false
+    t.boolean  "allow_stock",        default: false
     t.string   "subform"
   end
 
