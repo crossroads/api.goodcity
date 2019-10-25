@@ -14,6 +14,8 @@ class PackagesInventory < ActiveRecord::Base
   ].freeze
 
   include AppendOnly
+  include HookControls
+  include InventoryLegacySupport
   include InventoryComputer
 
   belongs_to :package
@@ -22,7 +24,7 @@ class PackagesInventory < ActiveRecord::Base
   belongs_to :source, polymorphic: true, touch: true
 
   # --- Validations
-  validate :valid_action, on: [:create, :update]
+  validate :valid_action, on: [:create]
 
   def valid_action
     return if ALLOWED_ACTIONS.include?(action)
