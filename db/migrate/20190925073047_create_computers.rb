@@ -3,7 +3,7 @@ class CreateComputers < ActiveRecord::Migration
     create_table :computers do |t|
       t.string :brand
       t.string :model
-      t.string :serial_number
+      t.string :serial_num
       t.integer :country_id
       t.string :size
       t.string :cpu
@@ -18,10 +18,10 @@ class CreateComputers < ActiveRecord::Migration
       t.string :comp_voltage
       t.string :comp_test_status
       t.string :os
-      t.string :os_serial_number
-      t.string :ms_office_serial_number
-      t.string :mar_os_serial_number
-      t.string :mar_ms_office_serial_numer
+      t.string :os_serial_num
+      t.string :ms_office_serial_num
+      t.string :mar_os_serial_num
+      t.string :mar_ms_office_serial_num
       t.integer :updated_by_id
       t.integer :stockit_id
 
