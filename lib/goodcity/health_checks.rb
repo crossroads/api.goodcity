@@ -5,6 +5,7 @@ require 'goodcity/health_checks/package_stockit_id_nil_check'
 require 'goodcity/health_checks/order_stockit_id_nil_check'
 require 'goodcity/health_checks/orders_packages_order_id_check'
 require 'goodcity/health_checks/package_type_stockit_id_nil_check'
+require 'goodcity/health_checks/item_packages_check'
 
 module Goodcity
   class HealthChecks
@@ -17,6 +18,7 @@ module Goodcity
       register_check(OrderStockitIdNilCheck)
       register_check(OrdersPackagesOrderIdCheck)
       register_check(PackageTypeStockitIdNilCheck)
+      register_check(ItemPackagesCheck)
     end
 
     def run
