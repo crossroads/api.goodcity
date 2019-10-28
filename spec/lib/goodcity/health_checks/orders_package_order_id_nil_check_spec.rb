@@ -5,7 +5,9 @@ context Goodcity::HealthChecks::OrdersPackageOrderIdCheck do
 
   subject { described_class.new }
 
-  it { expect(subject.class.desc).to eql("OrdersPackages should contain an order_id reference.") }
+  before { User.current_user = create(:user) }
+
+  it { expect(subject.desc).to eql("OrdersPackages should contain an order_id reference.") }
 
   it "passes" do
     WebMock.disable!
