@@ -23,9 +23,14 @@ module InventoryLegacySupport
       # --- Adds a hook to the PackagesInventory model
 
       def update_packages_locations
-        pkg_loc = PackagesLocation.find_by(package: package, location: location)
-        pkg_loc = PackagesLocation.new(quantity: 0, package: package, location: location) if pkg_loc.nil?
-        pkg_loc.sneaky(:increment!, :quantity, quantity)
+        PackagesLocation
+          .where(package: package, location: location)
+          .first_or_initialize(quantity: 0)
+          .sneaky do |record|
+            record.quantity += quantity
+            record.destroy if record.quantity <= 0 && record.persisted?
+            record.save if record.quantity.positive?
+          end
       end
 
       managed_hook :create, :after, :update_packages_locations

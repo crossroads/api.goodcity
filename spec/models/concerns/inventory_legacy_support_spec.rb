@@ -31,7 +31,7 @@ describe InventoryLegacySupport do
     #
     # PackagesLocation ---> PackagesInventory
     #
-    context "Changing packages_locationns" do
+    describe "Changing packages_locationns" do
 
       context "by creating a new PackagesLocation" do
 
@@ -324,6 +324,73 @@ describe InventoryLegacySupport do
 
           it "doesn't record anything in the inventory" do
             expect { packages_location.destroy }.not_to change(PackagesInventory, :count)
+          end
+        end
+      end
+    end
+
+    # [Other direction]
+    #
+    # PackagesLocation <--- PackagesInventory
+    #
+    describe "Changing packages_inventories" do
+      context 'by registering a gain' do
+        let(:added_quantity) { 3 }
+
+        context 'of an existing package' do
+          let(:quantity) { 10 }
+
+          before { touch(packages_location) }
+
+          it 'increases the packages_location\'s quantity' do
+            expect {
+              create :packages_inventory, quantity: added_quantity, action: 'gain', package: package, location: location
+            }.to change {
+              packages_location.reload.quantity
+            }.by(added_quantity)
+
+            expect(packages_location.reload.quantity).to eq(quantity + added_quantity)
+          end
+        end
+
+        context 'of a new package' do
+          it 'creates the PackagesLocation with the correct quantity' do
+            expect {
+              create :packages_inventory, quantity: added_quantity, action: 'gain', package: package, location: location
+            }.to change(PackagesLocation, :count).by(1)
+
+            expect(PackagesLocation.count).to eq(1)
+            expect(PackagesLocation.first.quantity).to eq(added_quantity)
+          end
+        end
+      end
+
+      context 'by registering a loss' do
+        let(:quantity) { 10 }
+
+        before { touch(packages_location) }
+
+        context 'of part of the quantity' do
+          let(:removed_quantity) { 3 }
+
+          it 'decreases the packages_location\'s quantity' do
+            expect {
+              create :packages_inventory, quantity: - removed_quantity, action: 'loss', package: package, location: location
+            }.to change {
+              packages_location.reload.quantity
+            }.by(- removed_quantity)
+
+            expect(packages_location.reload.quantity).to eq(quantity - removed_quantity)
+          end
+        end
+
+        context 'of the entire quantity' do
+          let(:removed_quantity) { quantity }
+
+          it 'destroys the packages_location record' do
+            expect {
+              create :packages_inventory, quantity: - removed_quantity, action: 'loss', package: package, location: location
+            }.to change(PackagesLocation, :count).by(-1)
           end
         end
       end
