@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Item, type: :model do
+  before { User.current_user = create(:user) }
 
   it_behaves_like 'paranoid'
 
