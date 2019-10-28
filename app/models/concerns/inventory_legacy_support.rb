@@ -35,15 +35,23 @@ module InventoryLegacySupport
       # --- Adds hooks to the PackagesLocation model
 
       def inventorize_creation
-        update_inventory!(quantity)
+        record_inventory_change(quantity, package_id, location_id)
       end
 
       def inventorize_update
-        update_inventory!(quantity - quantity_was)
+        if package_id_changed? || location_id_changed?
+          # 1. We negate the entire previous quantity
+          record_inventory_change(- quantity_was, package_id_was, location_id_was)
+          # 2. We record from scratch with the new infos
+          record_inventory_change(quantity, package_id, location_id)
+        else
+          # We just record the change in quantity
+          record_inventory_change(quantity - quantity_was, package_id, location_id)
+        end
       end
 
       def inventorize_deletion
-        update_inventory!(-1 * quantity)
+        record_inventory_change(-1 * quantity, package_id, location_id)
       end
 
       managed_hook :create,  :after,  :inventorize_creation
@@ -52,19 +60,19 @@ module InventoryLegacySupport
 
       # --- Sync helpers
 
-      def update_inventory!(quantity_change)
-        return if quantity_change.zero?
+      def record_inventory_change(quantity_diff, pkg_id, loc_id)
+        return if quantity_diff.zero?
 
-        action = quantity_change.negative? ?
+        action = quantity_diff.negative? ?
           PackagesInventory::Actions::LOSS :
           PackagesInventory::Actions::GAIN
 
         PackagesInventory.new(
-          action:   action,
-          user:     User.current_user,
-          package:  package,
-          location: location,
-          quantity: quantity_change
+          action:       action,
+          user:         User.current_user,
+          package_id:   pkg_id,
+          location_id:  loc_id,
+          quantity:     quantity_diff
         ).sneaky(:save)
       end
     end
