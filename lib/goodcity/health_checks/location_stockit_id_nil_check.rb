@@ -2,7 +2,7 @@ require 'goodcity/health_checks/base'
 
 module Goodcity
   class HealthChecks
-    class LocationStockitIdNilCheck < Base
+    class LocationStockitIdNilCheck < Goodcity::HealthChecks::Base
       desc "Locations should contain a stockit_id reference."
       def run
         ids = Location.where(stockit_id: nil).pluck(:id)

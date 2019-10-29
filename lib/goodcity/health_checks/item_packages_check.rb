@@ -2,7 +2,8 @@ require 'goodcity/health_checks/base'
 
 module Goodcity
   class HealthChecks
-    class ItemPackagesCheck < Base
+    class ItemPackagesCheck < Goodcity::HealthChecks::Base
+
       desc "Accepted (not deleted) items should have at least 1 related package."
       def run
         ids = Item.where(state: 'accepted').
@@ -15,6 +16,7 @@ module Goodcity
           fail_with_message!("GoodCity accepted (not deleted) items with no related packages: #{ids.join(', ')}")
         end
       end
+
     end
   end
 end

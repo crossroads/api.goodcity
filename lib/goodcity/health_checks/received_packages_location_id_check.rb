@@ -5,7 +5,7 @@ module Goodcity
     class ReceivedPackagesLocationIdCheck < Base
       desc "Received Packages should contain location_id reference."
       def run
-        ids = Package.where('inventory_number is not null and location_id is null').pluck(:id)
+        ids = Package.where('inventory_number IS NOT NULL AND location_id IS NULL').pluck(:id)
         if ids.count.zero?
           pass!
         else

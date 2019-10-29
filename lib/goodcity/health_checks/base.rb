@@ -1,10 +1,27 @@
+#
+#  class TestSomethingCheck
+#    include Goodcity::HealthChecks::Base
+#  end
+#
+
+require 'active_support'
+require 'goodcity/health_checks'
+
 module Goodcity
   class HealthChecks
     class Base
+    
       PASSED = "PASSED"
       FAILED = "FAILED"
       PENDING = "PENDING"
       attr :status, :message
+
+      # This method registers the check subclass whereever the Base module is subclassed
+      def self.inherited(subclass)
+        ActiveSupport.on_load(:health_checks) do
+          Goodcity::HealthChecks.register_check(subclass)
+        end
+      end
 
       class << self
         attr_accessor :desc
@@ -23,12 +40,8 @@ module Goodcity
         self.class.name.demodulize
       end
 
-      def self.desc(msg)
-        @desc = msg
-      end
-
-      def desc
-        self.class.instance_variable_get("@desc")
+      def self.desc(msg=nil)
+        @desc ||= msg
       end
 
       def pass!
@@ -50,6 +63,10 @@ module Goodcity
 
       def failed?
         @status == FAILED
+      end
+
+      def report
+        "#{status} #{name}" << (!message.blank? ? " - #{message}" : "")
       end
     end
   end
