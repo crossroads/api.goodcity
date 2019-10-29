@@ -6,6 +6,7 @@ describe RequestedPackage, :type => :model do
   let(:orders_packages_sync) { double "orders_packages_sync", { create: nil, update: nil } }
 
   before do
+    User.current_user = create(:user)
     allow(Stockit::OrdersPackageSync).to receive(:new).and_return(orders_packages_sync)
     allow(Stockit::DesignationSync).to receive(:new).and_return(designation_sync)
   end
