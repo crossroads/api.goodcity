@@ -83,14 +83,14 @@ module OrderFulfilmentOperations
     class OperationsError < StandardError; end
 
     class UnprocessedError < OperationsError
-      def message
-        I18n.t('operations.dispatch.unprocessed_order')
+      def initialize
+        super(I18n.t('operations.dispatch.unprocessed_order'))
       end
     end
 
     class AlredyDispatchedError < OperationsError
-      def message
-        I18n.t('orders_package.already_dispatched')
+      def initialize
+        super(I18n.t('orders_package.already_dispatched'))
       end
     end
   end

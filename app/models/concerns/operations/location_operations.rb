@@ -10,7 +10,6 @@ module LocationOperations
   module Operations
     MISSING_QTY = StandardError.new(I18n.t('operations.move.not_enough_at_source'))
 
-
     # --- Moving a package from one location to another
     class Move
       def initialize(quantity, package, from:, to:)
