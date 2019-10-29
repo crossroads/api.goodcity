@@ -5,6 +5,7 @@ module InventoryComputer
   #
   # @example
   #
+  # PackagesInventory::Computer.quantity_where({ package_id: 1 }).as_of_now
   # PackagesInventory::Computer.package_quantity(package2).now
   # PackagesInventory::Computer.package_quantity(package1).now
   # PackagesInventory::Computer.package_quantity(package1).as_of(3.years.ago)
@@ -29,35 +30,42 @@ module InventoryComputer
           PackagesInventory::ALLOWED_ACTIONS.map { |act| [act, act] }
         ]
       }
-    }
+    }.freeze
 
     # Main entry point. Sums up the quantity field
     #
     # @param [String|Hash] query the properties to filter on
     #
-    # @return [Sum] a quantity resolver
+    # @return [SumAsOf] a quantity resolver
     #
     def self.quantity_where(*query)
-      Sum.new(query)
+      SumAsOf.new(query)
     end
 
+
+    # Main entry point. Sums up the quantity field
+    # Shorthand for quantity_where({})
+    #
+    # @return [SumAsOf] a quantity resolver
+    #
     def self.total_quantity
       quantity_where
     end
 
-    # [HELPER] --- Creates an alias method with default arguments
+    # --- HELPERS
+
+    # Creates an alias method with default arguments
     def self.bind_method(method_name, root_method, *default_args)
       define_singleton_method(method_name) { |*args| send(root_method, *(default_args + args)) }
     end
 
-    # [HELPER] --- Creates a method that chains a query to it another method
+    # Creates a method that chains a query to it another method
     def self.build_query_method(method_name, root_method, column)
       define_singleton_method(method_name) { |arg| send(root_method).where("#{column} = (?)", arg) }
     end
 
-    # [HELPER] --- Iterates through the fields, and creates shorthand methods for each
-    def self.build_shorthand_methods(root_method, fields, &block)
-      namer = block
+    # Iterates through the fields, and creates shorthand methods for each
+    def self.build_shorthand_methods(root_method, fields, &namer)
       fields.each do |name, field|
         presets       = field[:presets] || {}
         other_fields  = fields.except(name)
@@ -81,9 +89,7 @@ module InventoryComputer
     end
 
     # --- Run the helper method generation
-    build_shorthand_methods(:quantity_where, QUERYABLE_FIELDS) do |name|
-      "#{name}_quantity".to_sym
-    end
+    build_shorthand_methods(:quantity_where, QUERYABLE_FIELDS) { |name| "#{name}_quantity".to_sym }
 
     # Time-aware quantity resolver
     #
@@ -96,7 +102,7 @@ module InventoryComputer
     #   Sum.new({ package_id: pkg.id }).as_of(1.month.ago)
     #   Sum.new({ package_id: pkg.id }).where(...).as_of(1.month.ago)
     #
-    class Sum
+    class SumAsOf
       def initialize(*query)
         where(*query)
       end
