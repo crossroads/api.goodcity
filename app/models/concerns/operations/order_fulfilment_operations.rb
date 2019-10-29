@@ -74,13 +74,24 @@ module OrderFulfilmentOperations
     end
 
     def assert_can_dispatch(ord_pkg)
-      raise Exceptions::ALREADY_DISPATCHED if ord_pkg.dispatched?
-      raise Exceptions::UNPROCESSED if order_unprocessed?(ord_pkg.order)
+      raise AlredyDispatchedError.new if ord_pkg.dispatched?
+      raise UnprocessedError.new if order_unprocessed?(ord_pkg.order)
     end
 
-    module Exceptions
-      UNPROCESSED = StandardError.new(I18n.t('operations.dispatch.unprocessed_order'))
-      ALREADY_DISPATCHED = StandardError.new(I18n.t('orders_package.already_dispatched'))
+    # ---
+
+    class OperationsError < StandardError; end
+
+    class UnprocessedError < OperationsError
+      def message
+        I18n.t('operations.dispatch.unprocessed_order')
+      end
+    end
+
+    class AlredyDispatchedError < OperationsError
+      def message
+        I18n.t('orders_package.already_dispatched')
+      end
     end
   end
 end
