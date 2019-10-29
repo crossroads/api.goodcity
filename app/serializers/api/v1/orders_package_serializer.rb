@@ -3,6 +3,8 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :package_id, :order_id, :state, :quantity, :sent_on, :designation_id, :item_id, :created_at, :allowed_actions
 
+    has_one :package, serializer: PackageSerializer
+
     def designation_id
       object.order_id
     end
@@ -25,6 +27,10 @@ module Api::V1
 
     def include_allowed_actions?
       @options[:include_allowed_actions]
+    end
+
+    def include_package?
+      @options[:include_package]
     end
   end
 end
