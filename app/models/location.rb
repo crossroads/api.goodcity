@@ -2,6 +2,9 @@ class Location < ActiveRecord::Base
   include CacheableJson
   include PushUpdates
 
+  DISPATCH_BLD = 'Dispatched'.freeze
+  MULTIPLE_BLD = 'Multiple'.freeze
+
   has_many :packages_locations
   has_many :packages, through: :packages_locations
   has_many :package_types, inverse_of: :location
@@ -15,12 +18,16 @@ class Location < ActiveRecord::Base
     packages_locations.count.zero? && package_types.count.zero?
   end
 
+  def dispatch?
+    building.eql?(DISPATCH_BLD)
+  end
+
   def self.multiple_location
-    find_by(building: 'Multiple')
+    find_by(building: MULTIPLE_BLD)
   end
 
   def self.dispatch_location
-    find_by(building: 'Dispatched')
+    find_by(building: DISPATCH_BLD)
   end
 
   def self.search(key)

@@ -1,11 +1,13 @@
 module OrdersPackageActions
-  extend ActiveSupport::Concern
+  include OrderFulfilmentOperations
 
 
   #
   # Enum of all available actions
   #
   module Actions
+    Operations = OrdersPackageActions::Operations
+
     class Action < Utils::Toggleable
       def initialize(name, &block)
         super(name)
@@ -18,8 +20,8 @@ module OrdersPackageActions
     end
 
     CANCEL          = Action.new('cancel') { |op| op.cancel }
-    DISPATCH        = Action.new('dispatch') { |op| op.dispatch_orders_package }
-    UNDISPATCH      = Action.new('undispatch') { |op| op.undispatch_orders_package }
+    DISPATCH        = Action.new('dispatch') { |op| Operations.dispatch(op) }
+    UNDISPATCH      = Action.new('undispatch') { |op, opts| Operations.undispatch(op, to_location: opts[:location_id]) }
     REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
     EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| op.edit_quantity(opts[:quantity]) }
 
