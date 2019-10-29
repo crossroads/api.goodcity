@@ -49,7 +49,7 @@ context OrderFulfilmentOperations do
         it 'fails due to the order being unprocessed' do
           expect {
             subject::Operations::dispatch(orders_package)
-          }.to raise_error(StandardError).with_message('Cannot dispatch packages of an un-processed order')
+          }.to raise_error(StandardError).with_message('Cannot dispatch packages from an unprocessed order')
         end
       end
     end

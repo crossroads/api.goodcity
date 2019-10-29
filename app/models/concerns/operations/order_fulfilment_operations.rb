@@ -19,13 +19,13 @@ module OrderFulfilmentOperations
 
     ##
     # Undispatch an orders_package
-    # Partial unndispatch is not currently supported
+    # Partial undispatch is not currently supported
     #
     # @example
     #   Operations::undispatch(orders_package, to_location: a_location)
     #
     # @param [OrdersPackage] orders_package the orders package to undispatch
-    # @param [Locationn|ID] to_location: the location to undispatch to
+    # @param [Location|ID] to_location: the location to undispatch to
     #
     # @raise [StandardError]
     # @raise [ActiveRecord::RecordNotFound]

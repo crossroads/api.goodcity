@@ -182,7 +182,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
             put :exec_action, id: orders_package.id, action_name: 'dispatch'
 
             expect(status).to eq(422)
-            expect(error_text).to eq("Cannot dispatch packages of an un-processed order")
+            expect(error_text).to eq("Cannot dispatch packages from an unprocessed order")
           end
         end
       end

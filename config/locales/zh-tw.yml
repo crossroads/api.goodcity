@@ -96,6 +96,6 @@ zh-tw:
     already_exists: "An appointment slot already exists for this time"
   operations:
     dispatch:
-      unprocessed_order: Cannot dispatch packages of an un-processed order
+      unprocessed_order: Cannot dispatch packages from an unprocessed order
     move:
-      not_enough_at_source: Source location does not have enough items to move
+      not_enough_at_source: Not enough packages available to move from that location
