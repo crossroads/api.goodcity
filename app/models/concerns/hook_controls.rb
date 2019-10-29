@@ -28,7 +28,6 @@ module HookControls
   extend ActiveSupport::Concern
 
   included do
-
     def disabled_callbacks?
       @no_callbacks
     end
@@ -41,14 +40,12 @@ module HookControls
       @no_callbacks = false
     end
 
-    def sneaky(*args, &block)
-      begin
-        disable_callbacks
-        send(*args) if args.length.positive?
-        yield(self) if block_given?
-      ensure
-        enable_callbacks
-      end
+    def sneaky(*args)
+      disable_callbacks
+      send(*args) if args.length.positive?
+      yield(self) if block_given?
+    ensure
+      enable_callbacks
     end
   end
 

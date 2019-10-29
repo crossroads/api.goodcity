@@ -2,7 +2,7 @@ module AppendOnly
   extend ActiveSupport::Concern
 
   included do
-    before_destroy { |record| raise ActiveRecord::ReadOnlyRecord }
+    before_destroy { raise ActiveRecord::ReadOnlyRecord }
   end
 
   def readonly?

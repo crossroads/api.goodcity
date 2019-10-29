@@ -50,14 +50,26 @@ class PackagesInventoriesImporter
   # --- Loops over each package in the database
   def each_package
     count = Package.count
-    bar = RakeProgressbar.new(count) unless Rails.env.test?
+    bar = Progressbar.new(count)
     begin
       Package.find_each do |package|
         yield(package)
-        bar.inc  unless Rails.env.test?
+        bar.inc
       end
     ensure
-      bar.finished  unless Rails.env.test?
+      bar.finished
+    end
+  end
+
+  def rehearse
+    @errors = []
+
+    output('---> REHEARSING')
+
+    each_package { |package| verify_package(package) }
+    if failed?
+      output(@errors)
+      raise REHEARSAL_FAILURE
     end
   end
 
@@ -72,26 +84,14 @@ class PackagesInventoriesImporter
     # -- Pre-import checks
     prepare(force: force)
 
-    output('---> REHEARSING') if rehearsal
+    # -- Rehearse
+    rehearse if rehearsal
+
+    # -- Import
     output('---> IMPORTING')  if importing
+    each_package { |package| import_package(package) }
 
-    # -- Import loop
-    each_package do |package|
-      verify_package(package) if rehearsal
-      import_package(package) if importing
-    end
-
-    if rehearsal
-      if failed?
-        output(@errors)
-        raise REHEARSAL_FAILURE
-      end
-
-      # -- Run import after rehearsal
-      import(rehearsal: false)
-    else
-      output(COMPLETED)
-    end
+    output(COMPLETED)
   end
 
   # --- Returns the 'most appropriate' location for a package
@@ -174,6 +174,21 @@ class PackagesInventoriesImporter
         (#{columns.join(', ')})
       VALUES (#{values.join(", ")})
     SQL
+  end
+
+  # --- Small wrapper around the progress bar in order to disable it in tests
+  class Progressbar
+    def initialize(count)
+      @bar = RakeProgressbar.new(count) unless Rails.env.test?
+    end
+
+    def inc
+      @bar.inc unless Rails.env.test?
+    end
+
+    def finished
+      @bar.finished unless Rails.env.test?
+    end
   end
 
   # --- ERROR MESSAGES

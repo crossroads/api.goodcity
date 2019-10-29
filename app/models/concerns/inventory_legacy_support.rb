@@ -18,25 +18,30 @@ module InventoryLegacySupport
   include HookControls
 
   included do
-
-    if self.eql?(PackagesInventory)
+    if eql?(PackagesInventory)
       # --- Adds a hook to the PackagesInventory model
 
-      def update_packages_locations
+      def related_packages_location
         PackagesLocation
           .where(package: package, location: location)
           .first_or_initialize(quantity: 0)
-          .sneaky do |record|
-            record.quantity += quantity
-            record.destroy if record.quantity <= 0 && record.persisted?
-            record.save if record.quantity.positive?
+      end
+
+      def update_packages_locations
+        related_packages_location.sneaky do |record|
+          record.quantity += quantity
+          if record.quantity.positive?
+            record.save
+          elsif record.persisted?
+            record.destroy
           end
+        end
       end
 
       managed_hook :create, :after, :update_packages_locations
     end
 
-    if self.eql?(PackagesLocation)
+    if eql?(PackagesLocation)
       # --- Adds hooks to the PackagesLocation model
 
       def inventorize_creation
@@ -65,18 +70,21 @@ module InventoryLegacySupport
 
       # --- Sync helpers
 
+      def record_inventory_author
+        User.current_user || User.system_user
+      end
+
+      def record_inventory_action(quantity_diff)
+        return PackagesInventory::Actions::LOSS if quantity_diff.negative?
+        PackagesInventory::Actions::GAIN
+      end
+
       def record_inventory_change(quantity_diff, pkg_id, loc_id)
         return if quantity_diff.zero?
 
-        action = quantity_diff.negative? ?
-          PackagesInventory::Actions::LOSS :
-          PackagesInventory::Actions::GAIN
-
-        user = User.current_user || User.system_user
-
         PackagesInventory.new(
-          action:       action,
-          user:         user,
+          action:       record_inventory_action(quantity_diff),
+          user:         record_inventory_author,
           package_id:   pkg_id,
           location_id:  loc_id,
           quantity:     quantity_diff
