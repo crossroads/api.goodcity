@@ -72,9 +72,11 @@ module InventoryLegacySupport
           PackagesInventory::Actions::LOSS :
           PackagesInventory::Actions::GAIN
 
+        user = User.current_user || User.system_user
+
         PackagesInventory.new(
           action:       action,
-          user:         User.current_user,
+          user:         user,
           package_id:   pkg_id,
           location_id:  loc_id,
           quantity:     quantity_diff

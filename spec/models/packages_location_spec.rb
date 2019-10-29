@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PackagesLocation, type: :model do
+  before { User.current_user = create(:user) }
+
   describe "Associations" do
     it { is_expected.to belong_to :location }
     it { is_expected.to belong_to :package }

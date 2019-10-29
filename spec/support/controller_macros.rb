@@ -9,6 +9,7 @@ module ControllerMacros
   # Creates a token and sets the request header effectively logging the user in
   def generate_and_set_token(user=nil)
     user ||= create(:user_with_token)
+    User.current_user = user
     current_time = Time.now
     jwt_config = Rails.application.secrets.jwt
     token = JWT.encode({"iat" => current_time.to_i,

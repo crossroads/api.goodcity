@@ -3,6 +3,8 @@ require "rspec/mocks/standalone"
 
 RSpec.describe Package, type: :model do
 
+  before { User.current_user = create(:user) }
+
   before(:all) do
     allow_any_instance_of(Package).to receive(:update_client_store)
   end

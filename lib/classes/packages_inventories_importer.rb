@@ -38,7 +38,7 @@ class PackagesInventoriesImporter
   # --- Returns a system user to use as author of each row
   def import_author
     # We use the oldest available system user
-    @user ||= Role.find_by(name: 'System').users.order('created_at ASC').first
+    @user ||= User.system_user
     @user
   end
 
