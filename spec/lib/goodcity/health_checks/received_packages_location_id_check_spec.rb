@@ -1,5 +1,5 @@
 require 'rails_helper' # needed to configure transaction rollback
-require 'goodcity/health_checks/received_packages_location_id_check'
+require 'goodcity/health_checks'
 
 context Goodcity::HealthChecks::ReceivedPackagesLocationIdCheck do
 
@@ -7,7 +7,7 @@ context Goodcity::HealthChecks::ReceivedPackagesLocationIdCheck do
 
   let(:location) { create :location }
 
-  it { expect(subject.desc).to eql("Received Packages should contain location_id reference.") }
+  it { expect(subject.class.desc).to eql("Received Packages should contain location_id reference.") }
 
   it "passes" do
     create :package, location_id: location.id, inventory_number: "000001"

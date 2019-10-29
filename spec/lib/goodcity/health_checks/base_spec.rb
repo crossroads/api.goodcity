@@ -1,9 +1,9 @@
 require 'rails_helper'
-require 'goodcity/health_checks/base'
+require 'goodcity/health_checks'
 
-context Goodcity::HealthChecks::Base do
+context "Goodcity::HealthChecks::Base" do
 
-  subject { described_class.new }
+  subject { Goodcity::HealthChecks::Base.new }
 
   context "initialization" do
     it { expect(subject.status).to eql("PENDING") }
@@ -50,8 +50,8 @@ context Goodcity::HealthChecks::Base do
     end
 
     context "desc be set per class instance" do
-      it { expect(CheckOne.new.desc).to eql("Check One") }
-      it { expect(CheckTwo.new.desc).to eql("Check Two") }
+      it { expect(CheckOne.desc).to eql("Check One") }
+      it { expect(CheckTwo.desc).to eql("Check Two") }
       it { expect{CheckTwo.new.run}.to_not raise_error }
     end
   end

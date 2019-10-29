@@ -2,10 +2,10 @@ require 'goodcity/health_checks/base'
 
 module Goodcity
   class HealthChecks
-    class DispatchedPackagesOrderIdCheck < Base
+    class DispatchedPackagesOrderIdCheck < Goodcity::HealthChecks::Base
       desc "Dispatched packages should contain an order_id reference."
       def run
-        ids = Package.where('stockit_sent_on is not null and order_id is null').pluck(:id)
+        ids = Package.where('stockit_sent_on IS NOT NULL AND order_id IS NULL').pluck(:id)
         if ids.count.zero?
           pass!
         else

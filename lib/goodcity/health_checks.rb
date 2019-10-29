@@ -9,39 +9,41 @@ require 'goodcity/health_checks/item_packages_check'
 
 module Goodcity
   class HealthChecks
-    def initialize
-      @checks = []
-      register_check(LocationStockitIdNilCheck)
-      register_check(DispatchedPackagesOrderIdCheck)
-      register_check(ReceivedPackagesLocationIdCheck)
-      register_check(PackageStockitIdNilCheck)
-      register_check(OrderStockitIdNilCheck)
-      register_check(OrdersPackagesOrderIdCheck)
-      register_check(PackageTypeStockitIdNilCheck)
-      register_check(ItemPackagesCheck)
-    end
 
-    def run
-      @checks.map do |check|
-        check.run
-        report(check)
+    cattr_accessor :checks
+    @@checks = []
+    
+    class << self
+
+      # # Array of check classes (not instances)
+      # def checks
+      #   @@checks ||= []
+      # end
+
+      # Usage
+      #   register_check(CheckClass)
+      def register_check(check)
+        checks << check
       end
-    end
 
-    def list_checks
-      @checks.map { |check| "#{check.name} - #{check.desc}" }.join("\n")
-    end
+      def run_all
+        checks.map do |check_klass|
+          check = check_klass.new
+          check.run
+          check.report
+        end
+      end
 
-    def report(check)
-      output = "#{check.status} #{check.name}"
-      output << " - #{check.message}" unless check.message.blank?
-      output
-    end
+      def list_checks
+        checks.map do |check|
+          "#{check.name} - #{check.desc}"
+        end.join("\n")
+      end
 
-    private
+      # run hook to register health_checks
+      ActiveSupport.run_load_hooks(:health_checks, Goodcity::HealthChecks)
 
-    def register_check(klass)
-      @checks << klass.new
-    end
+    end # class
+    
   end
 end

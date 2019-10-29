@@ -1,11 +1,11 @@
 require 'rails_helper' # needed to configure transaction rollback
-require 'goodcity/health_checks/package_type_stockit_id_nil_check'
+require 'goodcity/health_checks'
 
 context Goodcity::HealthChecks::PackageTypeStockitIdNilCheck do
 
   subject { described_class.new }
 
-  it { expect(subject.desc).to eql("PackageTypes should contain a stockit_id reference.") }
+  it { expect(subject.class.desc).to eql("PackageTypes should contain a stockit_id reference.") }
 
   context "passes" do
     before do

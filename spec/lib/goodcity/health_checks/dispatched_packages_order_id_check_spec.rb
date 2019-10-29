@@ -1,5 +1,5 @@
 require 'rails_helper' # needed to configure transaction rollback
-require 'goodcity/health_checks/dispatched_packages_order_id_check'
+require 'goodcity/health_checks'
 
 context Goodcity::HealthChecks::DispatchedPackagesOrderIdCheck do
 
@@ -7,7 +7,7 @@ context Goodcity::HealthChecks::DispatchedPackagesOrderIdCheck do
 
   let(:order) { create :order }
 
-  it { expect(subject.desc).to eql("Dispatched packages should contain an order_id reference.") }
+  it { expect(subject.class.desc).to eql("Dispatched packages should contain an order_id reference.") }
 
   context "passes" do
     it "with stockit_sent_on" do
