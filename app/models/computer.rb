@@ -14,6 +14,6 @@ class Computer < ActiveRecord::Base
   private
 
   def map_drop_down_attributes
-    Lookup.find_by(name: "comp_test_status", value: comp_test_status).label_en if comp_test_status_changed?
+    self.comp_test_status = Lookup.find_by(name: "comp_test_status", value: comp_test_status)&.label_en if comp_test_status_changed?
   end
 end
