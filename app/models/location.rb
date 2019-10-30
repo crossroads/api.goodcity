@@ -6,6 +6,10 @@ class Location < ActiveRecord::Base
   has_many :packages, through: :packages_locations
   has_many :package_types, inverse_of: :location
 
+  def label
+    "#{building}#{area}"
+  end
+
   # to satisfy PushUpdate module
   def offer
     nil
