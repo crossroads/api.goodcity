@@ -22,45 +22,34 @@ RSpec.describe Electrical, type: :model do
     it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
   end
 
-  # describe "before_save" do
-  #   it "should convert brand to lowercase" do
-  #     electrical = build :electrical, brand: "PhiLips"
-  #     expect(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
-  #     expect {
-  #       electrical.save
-  #     }.to change(Electrical, :count).by(1)
-  #     expect(electrical.brand).to eq("philips")
-  #   end
+  describe "before_save" do
+    it "should convert brand to lowercase" do
+      electrical = build :electrical, brand: "PhiLips"
+      allow(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
+      expect {
+        electrical.save
+      }.to change(Electrical, :count).by(1)
+      expect(electrical.brand).to eq("philips")
+    end
 
-  #   it "should set tested on date on test status change" do
-  #     electrical = build :electrical
-  #     expect(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
-  #     expect {
-  #       electrical.save
-  #     }.to change(Electrical, :count).by(1)
-  #     expect(electrical.tested_on).to_not be(nil)
-  #   end
+    it "should set tested on date on test status change" do
+      electrical = build :electrical
+      allow(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
+      expect {
+        electrical.save
+      }.to change(Electrical, :count).by(1)
+      expect(electrical.tested_on).to_not be(nil)
+    end
 
-  #   it "should set updated_by if changes done" do
-  #     user = create(:user, :reviewer)
-  #     User.current_user = user
-  #     electrical = build :electrical, brand: "DeLL"
-  #     expect(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
-  #     expect {
-  #       electrical.save
-  #     }.to change(Electrical, :count).by(1)
-  #     expect(electrical.updated_by_id).to eq(user.id)
-  #   end
-  # end
-
-  # describe "after_save" do
-  #   it "should sync to stockit after save" do
-  #     electrical = build :electrical
-  #     expect(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
-  #     expect {
-  #       electrical.save
-  #     }.to change(Electrical, :count).by(1)
-  #     expect(electrical.stockit_id).to eq(12)
-  #   end
-  # end
+    it "should set updated_by if changes done" do
+      user = create(:user, :reviewer)
+      User.current_user = user
+      electrical = build :electrical, brand: "DeLL"
+      allow(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
+      expect {
+        electrical.save
+      }.to change(Electrical, :count).by(1)
+      expect(electrical.updated_by_id).to eq(user.id)
+    end
+  end
 end

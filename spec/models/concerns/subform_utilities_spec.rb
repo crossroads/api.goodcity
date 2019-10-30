@@ -21,18 +21,18 @@ context SubformUtilities do
     expect(electrical.tested_on).to eq(Date.today())
   end
 
-  # it "calls create callback" do
-  #   computer  = build(:computer)
-  #   expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
-  #   computer.save
-  # end
+  it "calls create callback" do
+    computer  = build(:computer)
+    allow(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
+    computer.save
+  end
 
-  # it "calls create callback" do
-  #   computer  = build(:computer)
-  #   expect(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
-  #   computer.save
-  #   expect(Stockit::ItemDetailSync).to receive(:update).with(computer).and_return({"status"=>201, "computer_id"=> 12})
-  #   computer.update(brand: "lenovo")
-  #   expect(computer.brand).to eq("lenovo")
-  # end
+  it "calls create callback" do
+    computer  = build(:computer)
+    allow(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
+    computer.save
+    allow(Stockit::ItemDetailSync).to receive(:update).with(computer).and_return({"status"=>201, "computer_id"=> 12})
+    computer.update(brand: "lenovo")
+    expect(computer.brand).to eq("lenovo")
+  end
 end
