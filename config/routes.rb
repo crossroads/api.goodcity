@@ -55,6 +55,7 @@ Rails.application.routes.draw do
       resources :computers
       resources :computer_accessories
       resources :electricals
+      resources :lookups, only: :index
 
       resources :items, except: [:index] do
         get :messages, on: :member
