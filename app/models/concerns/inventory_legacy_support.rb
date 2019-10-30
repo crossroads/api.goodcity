@@ -2,9 +2,9 @@
 # Syncing of two tables: PackagesInventory <--> PackagesLocation
 #
 # Adds hooks to the PackagesLocation model
-#   - after_create: Add a record to inventory_packages which adds that quantity to the package
-#   - after_destroy: Add a record to the inventory_packages that negates the quantity that used to exist in packages_locations
-#   - after_update: Add a record to the inventory_packages which adds the \
+#   - after_create: Add a record to packages_inventories which adds that quantity to the package
+#   - after_destroy: Add a record to the packages_inventories that negates the quantity that used to exist in packages_locations
+#   - after_update: Add a record to the packages_inventories which adds the \
 #       difference of quantity that was applied to the record (quantity - quantity_was)
 #
 # Adds a hook to the PackagesInventory model
