@@ -40,10 +40,13 @@ module Goodcity
 
       def run
         reset
-        fail! unless (check_file_exists?(GC_FILE_NAME) and check_file_exists?(STOCKIT_FILE_NAME))
-        process
-        report
-        pass!
+        if (check_file_exists?(GC_FILE_NAME) and check_file_exists?(STOCKIT_FILE_NAME))
+          fail_with_message!("Missing files for comparison")
+        else
+          process
+          report
+          pass!
+        end
       end
 
       private
