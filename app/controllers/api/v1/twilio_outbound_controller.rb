@@ -44,6 +44,7 @@ module Api
       param :CallStatus, String, desc: "Status of Call ex: 'ringing'"
       param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<offer_id>#<caller_id>'"
       def connect_call
+        debugger
         # offer_id, caller_id = params["phone_number"].split("#")
         # mobile = Offer.find_by(id: offer_id).created_by.mobile
         # TwilioOutboundCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
