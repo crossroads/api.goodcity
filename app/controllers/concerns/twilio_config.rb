@@ -46,11 +46,39 @@ module TwilioConfig
   end
 
   def twilio_outgoing_call_capability
-    @capability ||= Twilio::JWT::ClientCapability.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"])
-    outgoing_scope = Twilio::JWT::ClientCapability::OutgoingClientScope.new(twilio_creds["call_app_sid"])
-    @capability.add_scope(outgoing_scope)
-    @capability.to_s
+    # @capability ||= Twilio::JWT::ClientCapability.new(twilio_creds["account_sid"],
+    #   twilio_creds["auth_token"])
+    # outgoing_scope = Twilio::JWT::ClientCapability::OutgoingClientScope.new(twilio_creds["call_app_sid"])
+    # @capability.add_scope(outgoing_scope)
+    # @capability.to_s
+
+    account_sid = twilio_creds["account_sid"]
+    api_key = twilio_creds["api_key"]
+    api_secret = twilio_creds["twilio_secret"]
+
+    # Required for Voice
+    outgoing_application_sid = twilio_creds["call_app_sid"]
+    identity = "+85258084822"
+
+    # Create Voice grant for our token
+    grant = Twilio::JWT::AccessToken::VoiceGrant.new
+    grant.outgoing_application_sid = outgoing_application_sid
+
+    # Optional: add to allow incoming calls
+    grant.incoming_allow = true
+
+    # Create an Access Token
+    token = Twilio::JWT::AccessToken.new(
+      account_sid,
+      api_key,
+      api_secret,
+      [grant],
+      identity: identity
+    )
+
+    # Generate the token
+    token.to_jwt
+
   end
 
   def twilio_creds
