@@ -11,7 +11,7 @@ describe InventoryLegacySupport do
 
   before { User.current_user = user }
 
-  after do
+  after(:each) do
     # After each test, we assert that the two tables are in sync
 
     # 1. The total number of packages is the same on the two tables
