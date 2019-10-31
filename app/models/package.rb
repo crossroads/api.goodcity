@@ -13,7 +13,7 @@ class Package < ActiveRecord::Base
   belongs_to :set_item, class_name: 'Item'
   has_many :locations, through: :packages_locations
 
-  belongs_to :detail, polymorphic: true, dependent: :destroy, required:false
+  belongs_to :detail, polymorphic: true, dependent: :destroy, required: false
   belongs_to :package_type, inverse_of: :packages
   belongs_to :donor_condition
   belongs_to :pallet
