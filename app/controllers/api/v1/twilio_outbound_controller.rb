@@ -10,7 +10,7 @@ module Api
       skip_before_action :validate_token, except: :generate_call_token
       skip_before_action :verify_authenticity_token, except: :generate_call_token
 
-      # before_action :validate_twilio_request, except: :generate_call_token
+      before_action :validate_twilio_request, except: :generate_call_token
       after_filter :set_header, except: :generate_call_token
 
       resource_description do
@@ -44,25 +44,14 @@ module Api
       param :CallStatus, String, desc: "Status of Call ex: 'ringing'"
       param :phone_number, String, desc: "Number to which call should be made. Here we are passing Combination of '<offer_id>#<caller_id>'"
       def connect_call
-        debugger
-        # offer_id, caller_id = params["phone_number"].split("#")
-        # mobile = Offer.find_by(id: offer_id).created_by.mobile
-        # TwilioOutboundCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
-
-        # response = Twilio::TwiML::Response.new do |r|
-        #   r.Dial callerId: voice_number, action: api_v1_twilio_outbound_completed_call_path do |d|
-        #     d.Number mobile
-        #   end
-        # end
-        # render_twiml response
-        twilio_creds = Rails.application.secrets.twilio
-
-        @client = Twilio::REST::Client.new(twilio_creds["account_sid"], twilio_creds["auth_token"])
-        @client.calls.create(
-          to: "+917738279262",
-          from: "+85258084822",
-          url: "http://demo.twilio.com/docs/voice.xml"
-        )
+        offer_id, caller_id = params["To"].split("#")
+        mobile = Offer.find_by(id: offer_id).created_by.mobile
+        TwilioOutboundCallManager.new(to: mobile, offer_id: offer_id, user_id: caller_id).store
+        response = Twilio::TwiML::VoiceResponse.new do |r|
+          r.say(message: "Connecting call to #{user(mobile).full_name}", voice: 'alice')
+          r.dial(number: mobile, caller_id: voice_number, action: api_v1_twilio_outbound_completed_call_path)
+        end
+        render_twiml response
       end
 
       api :POST, '/v1/twilio_outbound/completed_call', "Outbound call from Admin to donor: Response sent to twilio when call fails, timeout or no response from Donor."
@@ -72,11 +61,11 @@ module Api
       param :DialCallStatus, String, desc: "Status of Call between admin-donor (child call)ex: 'completed'"
       param :DialCallDuration, String, desc: "Admin-donor call duration in seconds (child-call)"
       def completed_call
-        response = Twilio::TwiML::Response.new do |r|
+        response = Twilio::TwiML::VoiceResponse.new do |r|
           unless params["DialCallStatus"] == "completed"
-            r.Say "Couldn't reach #{user(child_call.to).full_name} try again soon. Goodbye."
+            r.say(message: "Couldn't reach User try again soon. Goodbye.", voice: 'alice')
           end
-          r.Hangup
+          r.hangup
         end
         render_twiml response
       end
