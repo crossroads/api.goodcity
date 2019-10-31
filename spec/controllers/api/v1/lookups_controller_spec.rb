@@ -8,10 +8,8 @@ RSpec.describe Api::V1::LookupsController, type: :controller do
     10.times.each do |n|
       create(:lookup, name: "lookup_#{n}")
     end
-    5.times.each do |n|
-      create(:lookup, name: "lookup_11")
-    end
   end
+
   describe "GET lookups" do
     it "returns 200", :show_in_doc do
       get :index
@@ -22,12 +20,6 @@ RSpec.describe Api::V1::LookupsController, type: :controller do
       get :index
       body = JSON.parse(response.body)
       expect(body["lookups"].length).to eq(Lookup.count)
-    end
-
-    it "returns filtered serialized lookups" do
-      get :index, name:"lookup_11"
-      body = JSON.parse(response.body)
-      expect(body["lookups"].length).to eq(5)
     end
   end
 end
