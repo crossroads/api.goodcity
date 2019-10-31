@@ -36,6 +36,7 @@ module Api
 
       api :PUT, "/v1/computers", "Create or Update a computer"
       param_group :computer_accessory
+
       def update
         @computer_accessory.assign_attributes(computer_accessory_params)
         update_and_render_object_with_errors(@computer_accessory)
@@ -47,10 +48,9 @@ module Api
         Api::V1::ComputerAccessorySerializer
       end
 
-
       def computer_accessory_params
-        attributes = [:brand, :comp_test_status, :comp_voltage, :country_id, :interface,
-          :model, :serial_num, :size, :updated_by_id]
+        attributes = %i[brand comp_test_status comp_voltage country_id interface
+                        model serial_num size updated_by_id]
         params.require(:computer_accessory).permit(attributes)
       end
     end
