@@ -6,7 +6,7 @@ module TwilioConfig
   end
 
   def render_twiml(response)
-    render text: response.text
+    render text: response.to_s
   end
 
   def set_json_header
@@ -46,19 +46,13 @@ module TwilioConfig
   end
 
   def twilio_outgoing_call_capability
-    # @capability ||= Twilio::JWT::ClientCapability.new(twilio_creds["account_sid"],
-    #   twilio_creds["auth_token"])
-    # outgoing_scope = Twilio::JWT::ClientCapability::OutgoingClientScope.new(twilio_creds["call_app_sid"])
-    # @capability.add_scope(outgoing_scope)
-    # @capability.to_s
-
     account_sid = twilio_creds["account_sid"]
     api_key = twilio_creds["api_key"]
     api_secret = twilio_creds["twilio_secret"]
 
     # Required for Voice
     outgoing_application_sid = twilio_creds["call_app_sid"]
-    identity = "+85258084822"
+    identity = 'user'
 
     # Create Voice grant for our token
     grant = Twilio::JWT::AccessToken::VoiceGrant.new
