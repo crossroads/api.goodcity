@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190925110227) do
+ActiveRecord::Schema.define(version: 20191030081621) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -347,6 +347,19 @@ ActiveRecord::Schema.define(version: 20190925110227) do
   add_index "locations", ["area"], name: "index_locations_on_area", using: :gin
   add_index "locations", ["building"], name: "index_locations_on_building", using: :gin
   add_index "locations", ["stockit_id"], name: "index_locations_on_stockit_id", using: :btree
+
+  create_table "lookups", force: :cascade do |t|
+    t.string   "name"
+    t.string   "value"
+    t.string   "label_en"
+    t.string   "label_zh_tw"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "lookups", ["name", "label_en"], name: "index_lookups_on_name_and_label_en", using: :btree
+  add_index "lookups", ["name", "label_zh_tw"], name: "index_lookups_on_name_and_label_zh_tw", using: :btree
+  add_index "lookups", ["name"], name: "index_lookups_on_name", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "body"
