@@ -7,8 +7,8 @@ class PackageDetailBuilder
   end
 
   def build_detail
-    return unless ["computer", "electrical", "computer_accessory"].include?(detail_type)
+    return unless %w[computer electrical computer_accessory].include?(detail_type)
     klass = detail_type.classify.safe_constantize
-    klass.new(detail_params) if klass
+    klass&.new(detail_params)
   end
 end

@@ -1,8 +1,7 @@
-require 'stockit/base'
+require "stockit/base"
 
 module Stockit
   class ItemDetailSync
-
     include Stockit::Base
 
     attr_accessor :detail, :detail_type
@@ -36,7 +35,7 @@ module Stockit
 
     def detail_params
       params = detail.attributes.except("id", "created_at", "updated_at", "stockit_id", "updated_by_id")
-      params["item_id"] =  detail&.package&.stockit_id
+      params["item_id"] = detail&.package&.stockit_id
       params["id"] = detail.stockit_id
       params["country_id"] = Country.find_by(id: params["country_id"])&.stockit_id
       { "#{detail_type}": params }
