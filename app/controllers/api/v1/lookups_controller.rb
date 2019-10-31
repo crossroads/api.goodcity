@@ -4,7 +4,9 @@ module Api
       skip_authorization_check only: :index
 
       def index
-        render json: Lookup.all, each_serializer: Api::V1::LookupSerializer
+        @lookups = Lookup.all
+        @lookups = @lookups.where(name: params["name"]) if params["name"]
+        render json: @lookups, each_serializer: Api::V1::LookupSerializer
       end
     end
   end
