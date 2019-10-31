@@ -38,7 +38,7 @@ module SubformUtilities
   end
 
   def set_updated_by
-    self.updated_by_id = User.current_user&.id if self.changes.any?
+    self.updated_by_id = User.current_user&.id if changes.any?
   end
 
   def save_correct_country
