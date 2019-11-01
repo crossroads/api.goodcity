@@ -110,9 +110,9 @@ module Api
       def call_fallback
         Rollbar.error(Exception, parameters: params,
           error_class: "TwilioError", error_message: "Twilio Voice Call Error")
-        response = Twilio::TwiML::Response.new do |r|
-          r.Say "Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you."
-          r.Hangup
+        response = Twilio::TwiML::VoiceResponse.new do |r|
+          r.say(message:"Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you.")
+          r.hangup
         end
         render_twiml response
       end
@@ -126,9 +126,11 @@ module Api
           response = admin_call_response
         else
           active_caller = call_manager.caller_has_active_offer?
-          response = Twilio::TwiML::Response.new do |r|
+          response = Twilio::TwiML::VoiceResponse.new do |r|
             unless active_caller
-              r.Dial { |d| d.Number GOODCITY_NUMBER }
+              r.dial do |d|
+                d.number(GOODCITY_NUMBER)
+              end
             else
               enqueue_donor_call(r)
               ask_callback(r)
@@ -151,13 +153,13 @@ module Api
         TwilioInboundCallManager.new(user_id: user.id).notify_incoming_call if offline_worker
 
         if(params['QueueTime'].to_i < TWILIO_QUEUE_WAIT_TIME)
-          response = Twilio::TwiML::Response.new do |r|
-            r.Say "Hello #{user.full_name}," if user
-            r.Say I18n.t('twilio.thank_you_calling_message')
-            r.Play api_v1_twilio_inbound_hold_music_url
+          response = Twilio::TwiML::VoiceResponse.new do |r|
+            r.say(message: "Hello #{user.full_name},") if user
+            r.say(message: I18n.t('twilio.thank_you_calling_message'))
+            r.play(url: api_v1_twilio_inbound_hold_music_url)
           end
         else
-          response = Twilio::TwiML::Response.new { |r| r.Leave }
+          response = Twilio::TwiML::VoiceResponse.new { |r| r.leave }
         end
         render_twiml response
       end
@@ -170,9 +172,9 @@ module Api
       def accept_callback
         if params["Digits"] == "1"
           TwilioInboundCallManager.new(user_id: user.try(:id)).send_donor_call_response
-          response = Twilio::TwiML::Response.new do |r|
-            r.Say "Thank you, our staff will call you as soon as possible. Goodbye."
-            r.Hangup
+          response = Twilio::TwiML::VoiceResponse.new do |r|
+            r.say(message:"Thank you, our staff will call you as soon as possible. Goodbye.")
+            r.hangup
           end
         end
         render_twiml response
@@ -187,9 +189,9 @@ module Api
       param :RecordingSid, String, desc: "SID of recording"
       def send_voicemail
         TwilioInboundCallManager.new(user_id: user.try(:id), record_link: params["RecordingUrl"]).send_donor_call_response
-        response = Twilio::TwiML::Response.new do |r|
-          r.Say "Goodbye."
-          r.Hangup
+        response = Twilio::TwiML::VoiceResponse.new do |r|
+          r.say(message:"Goodbye.")
+          r.hangup
         end
         render_twiml response
       end
@@ -223,15 +225,15 @@ module Api
       param :CallStatus, String, desc: "Status of call ex: in-progress"
       param :Digits, String, desc: "Digits entered by Caller"
       def accept_offer_id
-        response = Twilio::TwiML::Response.new do |r|
+        response = Twilio::TwiML::VoiceResponse.new do |r|
           if params["Digits"]
             twilio_manager = TwilioInboundCallManager.new(offer_id: params["Digits"], mobile: params["From"])
             donor = twilio_manager.offer_donor
 
             if donor
-              r.Say "Connecting to #{donor.full_name}.."
-              r.Dial callerId: voice_number do |d|
-                d.Number donor.mobile
+              r.say(message:"Connecting to #{donor.full_name}..")
+              r.dial(callerId: voice_number) do |d|
+                d.number donor.mobile
               end
               twilio_manager.log_outgoing_call
             else
@@ -248,8 +250,8 @@ module Api
       private
 
       def admin_call_response
-        Twilio::TwiML::Response.new do |r|
-          r.Say "Hello #{user.full_name}," if user
+        Twilio::TwiML::VoiceResponse.new do |r|
+          r.say(message:"Hello #{user.full_name},") if user
           ask_offer_id(r, true)
           hangup_call(r)
         end
@@ -257,17 +259,17 @@ module Api
 
       def ask_offer_id(r, play_welcome=false)
         # ask Donor to leave message on voicemail
-        r.Gather numDigits: "5",  action: api_v1_twilio_inbound_accept_offer_id_path do |g|
-          g.Say I18n.t('twilio.input_offer_id_message') if play_welcome
+        r.gather numDigits: "5",  action: api_v1_twilio_inbound_accept_offer_id_path do |g|
+          g.say(message: I18n.t('twilio.input_offer_id_message')) if play_welcome
         end
       end
 
       def ask_callback(r)
         # ask Donor to leave message on voicemail
-        r.Gather numDigits: "1", timeout: 3,  action: api_v1_twilio_inbound_accept_callback_path do |g|
-          g.Say "Unfortunately none of our staff are able to take your call at the moment."
-          g.Say "You can request a call-back without leaving a message by pressing 1."
-          g.Say "Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you."
+        r.gather numDigits: "1", timeout: 3,  action: api_v1_twilio_inbound_accept_callback_path do |g|
+          g.say "Unfortunately none of our staff are able to take your call at the moment."
+          g.say "You can request a call-back without leaving a message by pressing 1."
+          g.say "Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you."
         end
       end
 
@@ -277,14 +279,14 @@ module Api
 
       def enqueue_donor_call(r)
         task = { "selected_language" => "en", "user_id" => user.id }.to_json
-        r.Enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: api_v1_twilio_inbound_hold_donor_path, waitUrlMethod: "post" do |t|
-          t.TaskAttributes task
+        r.enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: api_v1_twilio_inbound_hold_donor_path, waitUrlMethod: "post" do |t|
+          t.taskAttributes task
         end
       end
 
       def hangup_call(r)
-        r.Say "Goodbye"
-        r.Hangup
+        r.say(message:"Goodbye")
+        r.hangup
       end
     end
   end
