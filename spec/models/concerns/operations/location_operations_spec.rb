@@ -3,6 +3,7 @@ require 'rails_helper'
 context LocationOperations do
 
   describe 'Moving packages' do
+    let(:dispatch_location) { create(:location, :dispatched) }
     let(:src_location) { create(:location) }
     let(:dest_location) { create(:location) }
     let(:pkg_loc) { create(:packages_location, location: src_location, quantity: 30) }
@@ -17,7 +18,7 @@ context LocationOperations do
         to: to)
     end
 
-    context 'the destination location already has some packages' do
+    context 'to a destination which already has some packages' do
       let!(:dest_pkg_loc) {
         create :packages_location, package: pkg_loc.package, location: dest_location, quantity: 2
       }
@@ -36,17 +37,58 @@ context LocationOperations do
         expect(dest_pkg_loc.reload.quantity).to eq(17)
       end
 
-      it 'destroys the source packages_location if it is empty' do
-        expect { move(30) }.to change {
-          dest_pkg_loc.reload.quantity
-        }.by(30)
+      it 'adds a loss row for the source location' do
+        expect(PackagesInventory.count).to eq(2)
+        expect { move(15) }.to change(PackagesInventory, :count).by(2)
 
-        expect(dest_pkg_loc.reload.quantity).to eq(32)
-        expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
+        record = PackagesInventory.last(2).first
+        expect(record.location_id).to eq(src_location.id)
+        expect(record.action).to eq('loss')
+        expect(record.quantity).to eq(-15)
+      end
+
+
+      it 'adds a gain row for the dest location' do
+        expect(PackagesInventory.count).to eq(2)
+        expect { move(15) }.to change(PackagesInventory, :count).by(2)
+
+        record = PackagesInventory.last
+        expect(record.location_id).to eq(dest_location.id)
+        expect(record.action).to eq('gain')
+        expect(record.quantity).to eq(15)
+      end
+
+      it 'negates the quantity in the packages_inventory for the source' do
+        expect { move(15) }.to change {
+          PackagesInventory::Computer.location_quantity(src_location).now
+        }.by(-15)
+      end
+
+      it 'increments the quantity in the packages_inventory for the destination' do
+        expect { move(15) }.to change {
+          PackagesInventory::Computer.location_quantity(dest_location).now
+        }.by(15)
+      end
+
+      context 'emptying the source location' do
+        it 'destroys the source packages_location if it is empty' do
+          expect { move(30) }.to change {
+            dest_pkg_loc.reload.quantity
+          }.by(30)
+
+          expect(dest_pkg_loc.reload.quantity).to eq(32)
+          expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
+        end
+
+        it 'negates the quantity in the packages_inventory for the source' do
+          expect { move(30) }.to change {
+            PackagesInventory::Computer.location_quantity(src_location).now
+          }.by(-30)
+        end
       end
     end
 
-    context 'the destination location is empty' do
+    context 'to an empty destination' do
       def dest_pkg_loc
         PackagesLocation.find_by(location: dest_location, package: pkg)
       end
@@ -63,12 +105,38 @@ context LocationOperations do
         expect(dest_pkg_loc.quantity).to eq(15)
       end
 
-      it 'destroys the source packages_location if it is emptied' do
-        expect(dest_pkg_loc).to be_nil
-        move(30)
+      it 'negates the quantity in the packages_inventory for the source' do
+        expect { move(15) }.to change {
+          PackagesInventory::Computer.location_quantity(src_location).now
+        }.by(-15)
+      end
 
-        expect(dest_pkg_loc.quantity).to eq(30)
-        expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
+      it 'increments the quantity in the packages_inventory for the destination' do
+        expect { move(15) }.to change {
+          PackagesInventory::Computer.location_quantity(dest_location).now
+        }.by(15)
+      end
+
+      context 'emptying the source location' do
+        it 'destroys the source packages_location' do
+          expect(dest_pkg_loc).to be_nil
+          move(30)
+
+          expect(dest_pkg_loc.quantity).to eq(30)
+          expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
+        end
+
+        it 'negates the quantity in the packages_inventory for the source' do
+          expect { move(15) }.to change {
+            PackagesInventory::Computer.location_quantity(src_location).now
+          }.by(-15)
+        end
+
+        it 'increments the quantity in the packages_inventory for the destination' do
+          expect { move(15) }.to change {
+            PackagesInventory::Computer.location_quantity(dest_location).now
+          }.by(15)
+        end
       end
     end
 

@@ -21,15 +21,21 @@ module InventoryLegacySupport
     if eql?(PackagesInventory)
       # --- Adds a hook to the PackagesInventory model
 
-      def related_packages_location
+      def packages_location
         PackagesLocation
           .where(package: package, location: location)
           .first_or_initialize(quantity: 0)
       end
 
-      def update_packages_locations
-        related_packages_location.sneaky do |record|
-          record.quantity += quantity
+      def dispatch_packages_location
+        PackagesLocation
+          .where(package: package, location: Location.dispatch_location)
+          .first_or_initialize(quantity: 0)
+      end
+
+      def edit_packages_location(pkg_loc, qty)
+        pkg_loc.sneaky do |record|
+          record.quantity += qty
           if record.quantity.positive?
             record.save
           elsif record.persisted?
@@ -38,7 +44,16 @@ module InventoryLegacySupport
         end
       end
 
-      managed_hook :create, :after, :update_packages_locations
+      def sync_packages_locations
+        edit_packages_location(packages_location, quantity)
+        if dispatch?
+          edit_packages_location(dispatch_packages_location, quantity.abs)
+        elsif undispatch?
+          edit_packages_location(dispatch_packages_location, -1 * quantity)
+        end
+      end
+
+      managed_hook :create, :before, :sync_packages_locations
     end
 
     if eql?(PackagesLocation)
@@ -64,9 +79,9 @@ module InventoryLegacySupport
         record_inventory_change(-1 * quantity, package_id, location_id)
       end
 
-      managed_hook :create,  :after,  :inventorize_creation
-      managed_hook :update,  :after,  :inventorize_update
-      managed_hook :destroy, :after,  :inventorize_deletion
+      managed_hook :create,  :before,  :inventorize_creation
+      managed_hook :update,  :before,  :inventorize_update
+      managed_hook :destroy, :before,  :inventorize_deletion
 
       # --- Sync helpers
 
@@ -74,16 +89,12 @@ module InventoryLegacySupport
         User.current_user || User.system_user
       end
 
-      def record_inventory_action(quantity_diff)
-        return PackagesInventory::Actions::LOSS if quantity_diff.negative?
-        PackagesInventory::Actions::GAIN
-      end
-
       def record_inventory_change(quantity_diff, pkg_id, loc_id)
         return if quantity_diff.zero?
+        return if loc_id.eql?(Location.dispatch_location.id)
 
         PackagesInventory.new(
-          action:       record_inventory_action(quantity_diff),
+          action:       PackagesInventory::Actions::MOVE,
           user:         record_inventory_author,
           package_id:   pkg_id,
           location_id:  loc_id,
