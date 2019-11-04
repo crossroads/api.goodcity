@@ -103,11 +103,19 @@ en:
   appointment_slots:
     already_exists: "An appointment slot already exists for this time"
   operations:
+    undispatch:
+      missing_dispatched_quantity: Cannot undispatch more packages than were originally dispatched
     dispatch:
+      missing_quantity_for_dispatch: Cannot dispatch more packages than there are available
       unprocessed_order: Cannot dispatch packages from an unprocessed order
     move:
       not_enough_at_source: Not enough packages available to move from that location
       bad_quantity_param: Invalid move quantity (%{quantity})
   package_inventory:
     bad_action: "Inventory action %{action} is not permitted"
+    invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
+    quantities:
+      zero_invalid: Zero is not a valid change record
+      enforced_positive: Negative values are not allowed for %{action} actions
+      enforced_negative: Positive values are not allowed for %{action} actions
 

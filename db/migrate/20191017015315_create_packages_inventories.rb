@@ -16,6 +16,7 @@ class CreatePackagesInventories < ActiveRecord::Migration
     add_index :packages_inventories, [:source_id, :source_type]
     add_index :packages_inventories, [:package_id, :source_type]
     add_index :packages_inventories, [:source_type, :package_id]
+    add_index :packages_inventories, :created_at
 
     add_foreign_key :packages_inventories, :packages
     add_foreign_key :packages_inventories, :locations

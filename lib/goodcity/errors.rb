@@ -26,4 +26,10 @@ module Goodcity
       super(I18n.t('operations.move.bad_quantity_param', quantity: quantity))
     end
   end
+
+  class MissingQuantityforDispatchError < OperationsError
+    def initialize
+      super(I18n.t('operations.dispatch.missing_quantity_for_dispatch'))
+    end
+  end
 end

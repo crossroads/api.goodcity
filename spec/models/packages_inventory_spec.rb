@@ -21,8 +21,32 @@ RSpec.describe PackagesInventory, type: :model do
         create(:packages_inventory, action: 'love')
       }.to raise_error(ActiveRecord::RecordInvalid)
 
-      ['dispatch', 'inventory', 'loss', 'gain'].each do |act|
-        expect { create(:packages_inventory, action: act)}.not_to raise_error
+      ['dispatch', 'inventory', 'loss', 'gain', 'move'].each do |act|
+        expect {
+          build(:packages_inventory, action: act).sneaky(:save)
+        }.not_to raise_error
+      end
+    end
+
+    it 'prevents zero quantities' do
+      expect {
+        create(:packages_inventory, action: 'gain', quantity: 0)
+      } .to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Errors Zero is not a valid change record')
+    end
+
+    it 'prevents negative quantities for incremental actions' do
+      PackagesInventory::INCREMENTAL_ACTIONS.each do |act|
+        expect {
+          create(:packages_inventory, action: act, quantity: -1)
+        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Errors Negative values are not allowed for #{act} actions")
+      end
+    end
+
+    it 'prevents positive quantities for decremental actions' do
+      PackagesInventory::DECREMENTAL_ACTIONS.each do |act|
+        expect {
+          create(:packages_inventory, action: act, quantity: 1)
+        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Errors Positive values are not allowed for #{act} actions")
       end
     end
   end
@@ -55,13 +79,18 @@ RSpec.describe PackagesInventory, type: :model do
 
     before do
       Timestamps.without_timestamping_of PackagesInventory do
-        create(:packages_inventory, action: 'inventory', quantity: 100, created_at: 6.months.ago, package: package2, location: location1)
-        create(:packages_inventory, action: 'inventory', quantity: 5, created_at: 5.months.ago, package: package1, location: location1)
-        create(:packages_inventory, action: 'gain', quantity: 3, created_at: 4.months.ago, package: package1, location: location2)
-        create(:packages_inventory, action: 'gain', quantity: 2, created_at: 3.months.ago, package: package1, location: location2)
-        create(:packages_inventory, action: 'dispatch', quantity: -1, created_at: 1.months.ago, package: package1, location: location1)
-        create(:packages_inventory, action: 'loss', quantity: -1, created_at: 1.months.ago, package: package1, location: location1)
-        create(:packages_inventory, action: 'gain', quantity: 2, created_at: 1.week.ago, package: package1, location: location1)
+        [
+          { action: 'inventory', quantity: 100, created_at: 6.months.ago, package: package2, location: location1 },
+          { action: 'inventory', quantity: 5, created_at: 5.months.ago, package: package1, location: location1 },
+          { action: 'gain', quantity: 3, created_at: 4.months.ago, package: package1, location: location2 },
+          { action: 'gain', quantity: 2, created_at: 3.months.ago, package: package1, location: location2 },
+          { action: 'gain', quantity: 2, created_at: 3.months.ago, package: package1, location: location2 },
+          { action: 'dispatch', quantity: -1, created_at: 1.months.ago, package: package1, location: location1 },
+          { action: 'loss', quantity: -1, created_at: 1.months.ago, package: package1, location: location1 },
+          { action: 'gain', quantity: 2, created_at: 1.week.ago, package: package1, location: location1 }
+        ].each do |params|
+          build(:packages_inventory, params).sneaky(:save)
+        end
       end
     end
 
@@ -71,7 +100,7 @@ RSpec.describe PackagesInventory, type: :model do
     it { expect(cpu.package_quantity(package1).as_of(5.months.ago)).to eq(5) }
     it { expect(cpu.total_quantity.now).to eq(110) }
     it { expect(cpu.total_quantity.now).to eq(110) }
-    it { expect(cpu.dispatch_quantity.now.abs).to eq(1) }
+    it { expect(cpu.dispatch_quantity.now).to eq(1) }
     it { expect(cpu.inventory_quantity.now).to eq(105) }
     it { expect(cpu.inventory_quantity.as_of(6.months.ago)).to eq(100) }
     it { expect(cpu.total_quantity.as_of(6.months.ago)).to eq(100) }

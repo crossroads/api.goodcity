@@ -1,3 +1,5 @@
+require 'csv'
+
 # PackagesInventoriesImporter
 #
 # @description Initializes the packages inventory from the existing packages
@@ -68,6 +70,7 @@ class PackagesInventoriesImporter
 
     each_package { |package| verify_package(package) }
     if failed?
+      write_csv("packages_inventory_import_errors", error_headers, @errors)
       output(@errors)
       raise REHEARSAL_FAILURE
     end
@@ -109,12 +112,12 @@ class PackagesInventoriesImporter
   # --- Returns the time at which the package was dispatched
   def dispatch_time(package)
     pkg_loc = package.packages_locations.first
-    return pkg_loc.updated_at if pkg_loc.location.dispatch? # --- Dispatch pkg_location creation
+    return pkg_loc.updated_at if pkg_loc&.location&.dispatch? # --- Dispatch pkg_location creation
     package.stockit_sent_on # --- Fallback
   end
 
   def is_dispatched?(package)
-    package.quantity.zero?
+    dispatch_time(package).present?
   end
 
   # --- Adds the necessary rows to the inventory for a package
@@ -135,12 +138,26 @@ class PackagesInventoriesImporter
 
   # --- Sanity checks
   def verify_package(package)
-    @errors.push(MULTIPLE_LOCATIONS_ERR % [package.id]) if package.locations.length > 1
-    @errors.push(NO_LOCATION_ERR % [package.id]) if package.locations.length.zero?
-    @errors.push(INVALID_QUANTITY % [package.id, package.quantity]) if package.quantity.negative?
+    on_error(package, MULTIPLE_LOCATIONS_ERR % [package.id]) if package.locations.length > 1
+    on_error(package, NO_LOCATION_ERR % [package.id]) if package.locations.length.zero?
+    on_error(package, INVALID_QUANTITY % [package.id, package.quantity]) if package.quantity.negative?
     if is_dispatched?(package)
-      @errors.push(MISSING_ORDERS_PACKAGE % [package.id]) if package.orders_packages.count.zero?
+      on_error(package, MISSING_ORDERS_PACKAGE % [package.id]) if package.orders_packages.count.zero?
     end
+  end
+
+  def error_headers
+    ['package_id', 'quantity', 'locations', 'error']
+  end
+
+  def on_error(package, msg)
+    @errors.push([
+      package.id.to_s,
+      package.quantity.to_s,
+      package.packages_locations
+        .map { |pl| "#{pl&.location&.display_name}(#{pl.quantity})" }.join(" "),
+      msg
+    ])
   end
 
   # --- SQL friendly string
@@ -189,6 +206,21 @@ class PackagesInventoriesImporter
     def finished
       @bar.finished unless Rails.env.test?
     end
+  end
+
+  # file_name: name of file to place in Rails_root/tmp/ folder
+  # header: array of header columns [ col1, col2 ]
+  # contents: 2D array of data [ [row1col1, row1col2], [row2col1, row2col2] ]
+  def write_csv(file_name, headers, contents)
+    return if Rails.env.test?
+    file_path = File.join(Rails.application.root, "tmp", "#{Rails.env}.#{file_name}.csv")
+    CSV.open(file_path, "wb") do |csv|
+      csv << headers
+      contents.each do |row|
+        csv << row
+      end
+    end
+    output("CSV OUTPUT >>> #{file_path}")
   end
 
   # --- ERROR MESSAGES

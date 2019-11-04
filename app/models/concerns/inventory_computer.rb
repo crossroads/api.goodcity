@@ -19,6 +19,7 @@ module InventoryComputer
   # PackagesInventory::Computer.location_quantity(location2).as_of(4.months.ago)
   # PackagesInventory::Computer.location_quantity(location2).now
   # PackagesInventory::Computer.inventory_quantity_of_package(package2).as_of(6.months.ago)
+  # PackagesInventory::Computer.dispatch_quantity_of_package(package2).as_of(6.months.ago)
   #
   class Computer
     QUERYABLE_FIELDS = {
@@ -115,7 +116,7 @@ module InventoryComputer
 
       def as_of(time)
         where('created_at <= (?)', time)
-        @res.sum(:quantity)
+        @res.sum(:quantity).abs
       end
 
       def current

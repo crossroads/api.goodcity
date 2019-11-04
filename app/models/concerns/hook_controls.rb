@@ -42,8 +42,8 @@ module HookControls
 
     def sneaky(*args)
       disable_callbacks
-      send(*args) if args.length.positive?
-      yield(self) if block_given?
+      return send(*args) if args.length.positive?
+      return yield(self) if block_given?
     ensure
       enable_callbacks
     end
