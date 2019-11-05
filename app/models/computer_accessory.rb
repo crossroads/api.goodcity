@@ -3,6 +3,7 @@ class ComputerAccessory < ActiveRecord::Base
   has_paper_trail class_name: "Version"
 
   belongs_to :country, required: false
+  belongs_to :comp_test_status, class_name: "Lookup", required: false
   has_one :package, as: :detail, dependent: :destroy
   before_save :downcase_brand, if: :brand_changed?
   before_save :save_correct_country, if: :request_from_stockit?
@@ -14,6 +15,6 @@ class ComputerAccessory < ActiveRecord::Base
   private
 
   def map_drop_down_attributes
-    self.comp_test_status = Lookup.find_by(name: "comp_test_status", value: comp_test_status).label_en if comp_test_status_changed?
+    # self.comp_test_status_id = Lookup.find_by(name: "comp_test_status", value: comp_test_status)&.id if comp_test_status_id_changed?
   end
 end
