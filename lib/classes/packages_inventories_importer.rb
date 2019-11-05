@@ -71,7 +71,6 @@ class PackagesInventoriesImporter
     each_package { |package| verify_package(package) }
     if failed?
       write_csv("packages_inventory_import_errors", error_headers, @errors)
-      output(@errors)
       raise REHEARSAL_FAILURE
     end
   end
