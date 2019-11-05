@@ -61,7 +61,7 @@ module Api
       end
 
       def computer_params
-        attributes = %i[brand comp_test_status comp_voltage country_id cpu hdd
+        attributes = %i[brand comp_test_status_id comp_voltage country_id cpu hdd
                         lan mar_ms_office_serial_num mar_os_serial_num model ms_office_serial_num
                         optical os os_serial_num ram serial_num size sound updated_by_id
                         usb video wireless]

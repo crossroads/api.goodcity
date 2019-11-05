@@ -49,7 +49,7 @@ module Api
       end
 
       def computer_accessory_params
-        attributes = %i[brand comp_test_status comp_voltage country_id interface
+        attributes = %i[brand comp_test_status_id comp_voltage country_id interface
                         model serial_num size updated_by_id]
         params.require(:computer_accessory).permit(attributes)
       end

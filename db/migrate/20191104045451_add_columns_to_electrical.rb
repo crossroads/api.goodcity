@@ -3,5 +3,9 @@ class AddColumnsToElectrical < ActiveRecord::Migration
     add_column :electricals, :test_status_id, :integer
     add_column :electricals, :voltage_id, :integer
     add_column :electricals, :frequency_id, :integer
+
+    remove_column :electricals, :voltage
+    remove_column :electricals, :frequency
+    remove_column :electricals, :test_status
   end
 end

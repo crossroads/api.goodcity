@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191104045938) do
+ActiveRecord::Schema.define(version: 20191105094920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -121,7 +121,6 @@ ActiveRecord::Schema.define(version: 20191104045938) do
     t.string   "size"
     t.string   "interface"
     t.string   "comp_voltage"
-    t.string   "comp_test_status"
     t.integer  "updated_by_id"
     t.integer  "stockit_id"
     t.datetime "created_at",          null: false
@@ -145,7 +144,6 @@ ActiveRecord::Schema.define(version: 20191104045938) do
     t.string   "wireless"
     t.string   "usb"
     t.string   "comp_voltage"
-    t.string   "comp_test_status"
     t.string   "os"
     t.string   "os_serial_num"
     t.string   "ms_office_serial_num"
@@ -352,7 +350,7 @@ ActiveRecord::Schema.define(version: 20191104045938) do
 
   create_table "lookups", force: :cascade do |t|
     t.string   "name"
-    t.string   "value"
+    t.string   "key"
     t.string   "label_en"
     t.string   "label_zh_tw"
     t.datetime "created_at",  null: false

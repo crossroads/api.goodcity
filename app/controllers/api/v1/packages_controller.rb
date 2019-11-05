@@ -291,19 +291,19 @@ module Api
       end
 
       def computer_attributes
-        [:brand, :comp_test_status, :comp_voltage, :country_id, :cpu, :hdd, :lan,
+        [:brand, :comp_test_status_id, :comp_voltage, :country_id, :cpu, :hdd, :lan,
          :mar_ms_office_serial_num, :mar_os_serial_num, :model, :ms_office_serial_num,
          :optical, :os, :os_serial_num, :ram, :serial_num, :size, :sound, :updated_by_id,
          :usb, :video, :wireless]
       end
 
       def electrical_attributes
-        [:brand, :country_id, :frequency, :model, :power, :serial_number, :standard,
-         :system_or_region, :test_status, :tested_on, :updated_by_id, :voltage]
+        [:brand, :country_id, :frequency_id, :model, :power, :serial_number, :standard,
+         :system_or_region, :test_status_id, :tested_on, :updated_by_id, :voltage_id]
       end
 
       def computer_accessory_attributes
-        [:brand, :comp_test_status, :comp_voltage, :country_id, :interface, :model,
+        [:brand, :comp_test_status_id, :comp_voltage, :country_id, :interface, :model,
          :serial_num, :size, :updated_by_id]
       end
 
