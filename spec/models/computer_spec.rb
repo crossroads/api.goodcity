@@ -4,6 +4,7 @@ RSpec.describe Computer, type: :model do
 
   describe "Associations" do
     it { is_expected.to belong_to :country }
+    it { is_expected.to belong_to(:comp_test_status).class_name("Lookup") }
   end
 
   describe 'Database columns' do
@@ -22,7 +23,7 @@ RSpec.describe Computer, type: :model do
     it{ is_expected.to have_db_column(:wireless).of_type(:string)}
     it{ is_expected.to have_db_column(:usb).of_type(:string)}
     it{ is_expected.to have_db_column(:comp_voltage).of_type(:string)}
-    it{ is_expected.to have_db_column(:comp_test_status).of_type(:string)}
+    it{ is_expected.to have_db_column(:comp_test_status_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:os).of_type(:string)}
     it{ is_expected.to have_db_column(:os_serial_num).of_type(:string)}
     it{ is_expected.to have_db_column(:ms_office_serial_num).of_type(:string)}

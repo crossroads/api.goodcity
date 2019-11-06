@@ -4,6 +4,7 @@ RSpec.describe ComputerAccessory, type: :model do
 
   describe "Associations" do
     it { is_expected.to belong_to :country }
+    it { is_expected.to belong_to(:comp_test_status).class_name("Lookup") }
   end
 
   describe 'Database columns' do
@@ -14,7 +15,7 @@ RSpec.describe ComputerAccessory, type: :model do
     it{ is_expected.to have_db_column(:size).of_type(:string)}
     it{ is_expected.to have_db_column(:interface).of_type(:string)}
     it{ is_expected.to have_db_column(:comp_voltage).of_type(:string)}
-    it{ is_expected.to have_db_column(:comp_test_status).of_type(:string)}
+    it{ is_expected.to have_db_column(:comp_test_status_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:updated_by_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
   end
