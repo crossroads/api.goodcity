@@ -1,4 +1,5 @@
 class PackageDetailBuilder
+  FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
   attr_reader :detail_type, :detail_params
 
   def initialize(params, request_from_stockit)
@@ -28,7 +29,7 @@ class PackageDetailBuilder
   end
 
   def map_lookup_id
-    ["comp_test_status", "test_status", "frequency", "voltage"].each_with_object({}) do |item, hash|
+    FIXED_DETAIL_ATTRIBUTES.each_with_object({}) do |item, hash|
       if (key = detail_params[item].presence)
         name = "electrical_#{item}" unless (item == "comp_test_status")
         hash["#{item}_id"] = Lookup.find_by(name: name, key: key)&.id
