@@ -141,4 +141,4 @@ workflows:
             - audit
           filters:
             branches:
-              only: /^(master|live)$/
+              only: /^(master|live|package-serializer-testing)$/
