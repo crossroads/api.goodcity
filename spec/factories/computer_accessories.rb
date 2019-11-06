@@ -5,6 +5,6 @@ FactoryBot.define do
     size "22\""
     interface "DisplayPort/DVI/VGA/USB"
     comp_voltage "110-220V"
-    comp_test_status "ACTIVE"
+    association :comp_test_status, factory: :lookup, strategy: :build
   end
 end

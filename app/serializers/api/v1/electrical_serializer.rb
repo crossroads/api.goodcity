@@ -4,8 +4,8 @@ module Api
       embed :ids, include: true
 
       attributes :id, :brand, :model, :serial_number, :country_id, :standard,
-        :voltage, :frequency, :power, :system_or_region, :test_status,
-        :tested_on, :updated_by_id
+        :voltage_id, :frequency_id, :power, :system_or_region,
+        :updated_by_id, :test_status_id
 
       has_one :country, serializer: CountrySerializer
 

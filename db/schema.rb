@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191030081621) do
+ActiveRecord::Schema.define(version: 20191105094920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -121,11 +121,11 @@ ActiveRecord::Schema.define(version: 20191030081621) do
     t.string   "size"
     t.string   "interface"
     t.string   "comp_voltage"
-    t.string   "comp_test_status"
     t.integer  "updated_by_id"
     t.integer  "stockit_id"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.integer  "comp_test_status_id"
   end
 
   create_table "computers", force: :cascade do |t|
@@ -144,7 +144,6 @@ ActiveRecord::Schema.define(version: 20191030081621) do
     t.string   "wireless"
     t.string   "usb"
     t.string   "comp_voltage"
-    t.string   "comp_test_status"
     t.string   "os"
     t.string   "os_serial_num"
     t.string   "ms_office_serial_num"
@@ -154,6 +153,7 @@ ActiveRecord::Schema.define(version: 20191030081621) do
     t.integer  "stockit_id"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+    t.integer  "comp_test_status_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -225,16 +225,16 @@ ActiveRecord::Schema.define(version: 20191030081621) do
     t.string   "serial_number"
     t.integer  "country_id"
     t.string   "standard"
-    t.string   "voltage"
-    t.string   "frequency"
     t.string   "power"
     t.string   "system_or_region"
-    t.string   "test_status"
     t.date     "tested_on"
     t.integer  "updated_by_id"
     t.integer  "stockit_id"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
+    t.integer  "test_status_id"
+    t.integer  "voltage_id"
+    t.integer  "frequency_id"
   end
 
   create_table "gogovan_orders", force: :cascade do |t|
@@ -350,7 +350,7 @@ ActiveRecord::Schema.define(version: 20191030081621) do
 
   create_table "lookups", force: :cascade do |t|
     t.string   "name"
-    t.string   "value"
+    t.string   "key"
     t.string   "label_en"
     t.string   "label_zh_tw"
     t.datetime "created_at",  null: false

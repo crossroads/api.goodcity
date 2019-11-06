@@ -3,7 +3,7 @@ module Api
     class ComputerAccessorySerializer < ApplicationSerializer
       embed :ids, include: true
       attributes :id, :brand, :model, :serial_num, :country_id, :size,
-        :interface, :comp_voltage, :comp_test_status, :updated_by_id
+        :interface, :comp_voltage, :comp_test_status_id, :updated_by_id
 
       has_one :country, serializer: CountrySerializer
 
