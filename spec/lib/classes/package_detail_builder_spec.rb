@@ -11,7 +11,7 @@ require "rails_helper"
     let(:detail_attributes) { FactoryBot.attributes_for(:computer).as_json }
     let(:params) { FactoryBot.attributes_for(:package, detail_type: "computer", detail_attributes: detail_attributes).as_json }
     let(:detail_type) { params["detail_type"] }
-    let(:pkg_builder) { PackageDetailBuilder.new(params) }
+    let(:pkg_builder) { PackageDetailBuilder.new(params, false) }
 
     describe "initialize" do
       it "sets instance variables" do
