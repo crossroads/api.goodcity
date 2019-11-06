@@ -15,10 +15,6 @@ module Api
 
       api :GET, '/v1/package_categories', "List all Package Categories"
       def index
-        # if params[:ids].blank?
-        #   render json: PackageCategory.cached_json
-        #   return
-        # end
         render json: @package_categories, each_serializer: serializer
       end
 
