@@ -14,7 +14,7 @@ context SubformUtilities do
   end
 
   it "calls tested on callback" do
-    electrical  = build(:electrical, brand: "PhiliPs", test_status: "")
+    electrical  = build(:electrical, brand: "PhiliPs", test_status_id: 1)
     electrical.run_callbacks :save
     expect(electrical.brand).to eq("philips")
     expect(electrical.updated_by_id).to eq(@user.id)

@@ -20,16 +20,15 @@ class PackageDetailBuilder
     # require these params for mapping of parameters for stockit to GC sync,
     # as stockit sends "test_status" and not test_status_id we have to fetch lookup_id for
     # same and assign it to params hash for mapping stockit values to lookup ids on GC
-
-    detail_params&.except("id", "comp_test_status", "test_status", "frequency", "voltage")
-
+    detail_params["stockit_id"] = detail_params["id"] if detail_params && detail_params["id"]
+    params = detail_params&.except("id", "comp_test_status", "test_status", "frequency", "voltage") || {}
     # map stockit values to lookup ids if request from stockit
     lookup_hash = map_lookup_id if @request_from_stockit
-    lookup_hash ? detail_params.merge(lookup_hash) : detail_params
+    lookup_hash ? params.merge(lookup_hash) : params
   end
 
   def map_lookup_id
-    ["comp_test_status, ""test_status", "frequency", "voltage"].each_with_object({}) do |item, hash|
+    ["comp_test_status", "test_status", "frequency", "voltage"].each_with_object({}) do |item, hash|
       if (key = detail_params[item].presence)
         name = "electrical_#{item}" unless (item === "comp_test_status")
         hash["#{item}_id"] = Lookup.find_by(name: name, key: key)&.id
