@@ -420,7 +420,8 @@ module Api
       end
 
       def assign_detail
-        PackageDetailBuilder.new(package_params).build_detail
+        request_from_stockit = GoodcitySync.request_from_stockit
+        PackageDetailBuilder.new(package_params, request_from_stockit).build_detail
       end
 
       def inventory_number
