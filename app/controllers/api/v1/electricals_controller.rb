@@ -51,9 +51,9 @@ module Api
       end
 
       def electrical_params
-        attributes = [:brand, :country_id, :frequency, :model, :power, :serial_number,
-          :standard, :system_or_region, :test_status, :tested_on, :updated_by_id,
-          :voltage
+        attributes = [:brand, :country_id, :frequency_id, :model, :power, :serial_number,
+          :standard, :system_or_region, :test_status_id, :tested_on, :updated_by_id,
+          :voltage_id
         ]
         params.require(:electrical).permit(attributes)
       end

@@ -14,6 +14,6 @@ FactoryBot.define do
     usb "2.0, 3.0"
     comp_voltage "100/240V"
     os "Mac OS High Sierra"
-    comp_test_status "ACTIVE"
+    association :comp_test_status, factory: :lookup, strategy: :build
   end
 end
