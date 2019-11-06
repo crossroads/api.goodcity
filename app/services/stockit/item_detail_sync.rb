@@ -34,7 +34,17 @@ module Stockit
     private
 
     def detail_params
-      params = detail.attributes.except("id", "created_at", "updated_at", "stockit_id", "updated_by_id")
+      params = detail.attributes
+      if (detail_type == "computer") || (detail_type == "computer_accessories")
+        params["comp_test_status"] = Lookup.find_by(id: params["comp_test_status_id"])&.key
+      else
+        ["voltage", "frequency", "test_status"].each do |attr|
+          params[attr] = Lookup.find_by(id: params["#{attr}_id"])&.key
+        end
+      end
+
+      # rejecting these params because not required on stockit
+      params = params.except("id", "created_at", "updated_at", "stockit_id", "updated_by_id", "voltage_id", "frequency_id", "comp_test_status_id", "test_status_id")
       params["item_id"] = detail&.package&.stockit_id
       params["id"] = detail.stockit_id
       params["country_id"] = Country.find_by(id: params["country_id"])&.stockit_id
