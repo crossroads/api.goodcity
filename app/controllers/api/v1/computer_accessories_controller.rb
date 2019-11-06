@@ -19,7 +19,7 @@ module Api
           param :serial_num, String, desc: "serial number of the record"
           param :size, String, desc: "size of the record"
           param :interface, String, desc: "interface of the record"
-          param :comp_voltage, Integer, desc: "comp_voltage of the record"
+          param :comp_voltage, String, desc: "comp_voltage of the record"
           param :comp_test_status, String, desc: "comp_test_status of the record"
           param :updated_by_id, Integer, desc: "updated_by_id of the record"
         end

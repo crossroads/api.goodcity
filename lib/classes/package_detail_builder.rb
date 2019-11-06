@@ -30,7 +30,7 @@ class PackageDetailBuilder
   def map_lookup_id
     ["comp_test_status", "test_status", "frequency", "voltage"].each_with_object({}) do |item, hash|
       if (key = detail_params[item].presence)
-        name = "electrical_#{item}" unless (item === "comp_test_status")
+        name = "electrical_#{item}" unless (item == "comp_test_status")
         hash["#{item}_id"] = Lookup.find_by(name: name, key: key)&.id
       end
     end
