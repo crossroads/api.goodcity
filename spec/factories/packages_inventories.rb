@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :packages_inventory do
-    action        { PackagesInventory::ALLOWED_ACTIONS.sample }
-    quantity      { decremental? ? -10 : 10 }
+    action        'inventory'
+    quantity      1
     created_at    { Time.now }
     association   :package
     association   :location
