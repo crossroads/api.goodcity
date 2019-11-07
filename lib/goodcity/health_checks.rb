@@ -7,6 +7,7 @@ require 'goodcity/health_checks/orders_packages_order_id_check'
 require 'goodcity/health_checks/package_type_stockit_id_nil_check'
 # require 'goodcity/health_checks/missing_ids_and_inventory_numbers_check' # Best run standalone from rails console
 require 'goodcity/health_checks/item_packages_check'
+require 'goodcity/health_checks/orders_packages_duplicates_check'
 
 module Goodcity
   class HealthChecks
@@ -16,13 +17,6 @@ module Goodcity
     
     class << self
 
-      # # Array of check classes (not instances)
-      # def checks
-      #   @@checks ||= []
-      # end
-
-      # Usage
-      #   register_check(CheckClass)
       def register_check(check)
         checks << check
       end
