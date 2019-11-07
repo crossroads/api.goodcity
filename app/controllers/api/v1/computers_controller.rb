@@ -27,7 +27,7 @@ module Api
           param :lan, String, desc: "lan of the computer"
           param :wireless, String, desc: "wireless of the computer"
           param :usb, String, desc: "usb of the computer"
-          param :comp_voltage, Integer, desc: "volage of the computer"
+          param :comp_voltage, String, desc: "volage of the computer"
           param :os, String, desc: "operating system of the computer"
           param :os_serial_num, String, desc: "serial number of the OS of the computer"
           param :ms_office_serial_num, String, desc: "ms office serial num of the computer"
