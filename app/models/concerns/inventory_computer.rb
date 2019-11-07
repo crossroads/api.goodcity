@@ -1,130 +1,87 @@
 module InventoryComputer
   extend ActiveSupport::Concern
 
-  # Adds a sub module containing all the needed SQL computations
-  #
-  # @example
-  #
-  # PackagesInventory::Computer.quantity_where({ package_id: 1 }).as_of_now
-  # PackagesInventory::Computer.package_quantity(package2).now
-  # PackagesInventory::Computer.package_quantity(package1).now
-  # PackagesInventory::Computer.package_quantity(package1).as_of(3.years.ago)
-  # PackagesInventory::Computer.package_quantity(package1).as_of(5.months.ago)
-  # PackagesInventory::Computer.total_quantity.now
-  # PackagesInventory::Computer.total_quantity.now
-  # PackagesInventory::Computer.dispatch_quantity.now.abs
-  # PackagesInventory::Computer.inventory_quantity.now
-  # PackagesInventory::Computer.inventory_quantity.as_of(6.months.ago)
-  # PackagesInventory::Computer.total_quantity.as_of(6.months.ago)
-  # PackagesInventory::Computer.location_quantity(location2).as_of(4.months.ago)
-  # PackagesInventory::Computer.location_quantity(location2).now
-  # PackagesInventory::Computer.inventory_quantity_of_package(package2).as_of(6.months.ago)
-  # PackagesInventory::Computer.dispatch_quantity_of_package(package2).as_of(6.months.ago)
-  #
+=begin
+  Adds a sub module containing all the needed SQL computations
+
+  @example
+
+  PackagesInventory::Computer.compute_quantity.of(package).as_of_now
+  PackagesInventory::Computer.compute_quantity.where({ package_id: 1 }).as_of_now
+  PackagesInventory::Computer.package_quantity(package2).now
+  PackagesInventory::Computer.package_quantity(package1).now
+  PackagesInventory::Computer.package_quantity(package1).as_of(3.years.ago)
+  PackagesInventory::Computer.package_quantity(package1).as_of(5.months.ago)
+  PackagesInventory::Computer.quantity.now
+  PackagesInventory::Computer.dispatch_quantity.now.abs
+  PackagesInventory::Computer.inventory_quantity.now
+  PackagesInventory::Computer.inventory_quantity.as_of(6.months.ago)
+  PackagesInventory::Computer.location_quantity(location2).as_of(4.months.ago)
+  PackagesInventory::Computer.location_quantity(location2).now
+  PackagesInventory::Computer.inventory_quantity.of(package2).as_of(6.months.ago)
+  PackagesInventory::Computer.dispatch_quantity.of(package2).as_of(6.months.ago)
+=end
   class Computer
-    QUERYABLE_FIELDS = {
-      location: { column: 'location_id' },
-      package:  { column: 'package_id' },
-      action:   {
-        column: 'action',
-        presets: Hash[
-          PackagesInventory::ALLOWED_ACTIONS.map { |act| [act, act] }
-        ]
-      }
-    }.freeze
 
-    # Main entry point. Sums up the quantity field
-    #
-    # @param [String|Hash] query the properties to filter on
-    #
-    # @return [SumAsOf] a quantity resolver
-    #
-    def self.quantity_where(*query)
-      SumAsOf.new(query)
-    end
+    class << self
+      #
+      # Main entry point. Sums up the quantity field of the inventory table
+      #
+      # @param [String|Hash] query the properties to filter on
+      # @return [SumAsOf] a quantity resolver
+      #
+      def compute_quantity
+        SumAsOf.new(PackagesInventory)
+      end
 
+      def quantity_of(record)
+        compute_quantity.of(record)
+      end
 
-    # Main entry point. Sums up the quantity field
-    # Shorthand for quantity_where({})
-    #
-    # @return [SumAsOf] a quantity resolver
-    #
-    def self.total_quantity
-      quantity_where
-    end
+      alias_method :package_quantity, :quantity_of
+      alias_method :location_quantity, :quantity_of
 
-    # --- HELPERS
+      def designated_quantity(package)
+        OrdersPackage.designated.where(package: package).sum(:quantity)
+      end
 
-    # Creates an alias method with default arguments
-    def self.bind_method(method_name, root_method, *default_args)
-      define_singleton_method(method_name) { |*args| send(root_method, *(default_args + args)) }
-    end
+      def available_quantity(package)
+        package_quantity(package) - designated_quantity(package)
+      end
 
-    # Creates a method that chains a query to it another method
-    def self.build_query_method(method_name, root_method, column)
-      define_singleton_method(method_name) { |arg| send(root_method).where("#{column} = (?)", arg) }
-    end
-
-    # Iterates through the fields, and creates shorthand methods for each
-    def self.build_shorthand_methods(root_method, fields, &namer)
-      fields.each do |name, field|
-        presets       = field[:presets] || {}
-        other_fields  = fields.except(name)
-        method_name   = namer.call(name)
-
-        # Shorthand method
-        build_query_method(method_name, root_method, field[:column])
-
-        presets.each do |preset_name, preset_value|
-          preset_func_name = namer.call(preset_name)
-
-          # Same shorthand method with argument pre-filled
-          bind_method(preset_func_name, method_name, preset_value)
-
-          # Sub-shorthands pointing to other fields
-          build_shorthand_methods(preset_func_name, other_fields) do |subname|
-            "#{preset_func_name}_of_#{subname}".to_sym
-          end
+      # Creates gain_quantity, loss_quantity, dispatch_quantity, ...
+      PackagesInventory::ALLOWED_ACTIONS.each do |action|
+        define_method("#{action}_quantity") do
+          compute_quantity.where("action = (?)", action)
         end
       end
     end
 
-    # --- Run the helper method generation
-    build_shorthand_methods(:quantity_where, QUERYABLE_FIELDS) { |name| "#{name}_quantity".to_sym }
+    #
+    # Time-aware, where-able numeric value
+    #
+    class SumAsOf < ComputableNumeric
+      include Whereable
 
-    # Time-aware quantity resolver
-    #
-    # Is initialized with a filter, either SQL or a Hash, and returns the
-    # quantity that matches that filter at a specific moment in time
-    #
-    # @example
-    #
-    #   Sum.new({ package_id: pkg.id }).current()
-    #   Sum.new({ package_id: pkg.id }).as_of(1.month.ago)
-    #   Sum.new({ package_id: pkg.id }).where(...).as_of(1.month.ago)
-    #
-    class SumAsOf
-      def initialize(*query)
-        where(*query)
+      def initialize(model)
+        use_model(model)
       end
 
-      def where(*query)
-        @res ||= PackagesInventory.where(nil)
-        @res = @res.where(*query) if query.length.positive?
-        self
-      end
-
-      def as_of(time)
-        where('created_at <= (?)', time)
-        @res.sum(:quantity).abs
-      end
-
-      def current
+      def compute
         as_of(Time.now)
       end
 
-      alias_method :now, :current
-      alias_method :as_of_now, :current
+      def as_of(time)
+        relation.where("#{@model.table_name}.created_at <= (?)", time).sum(:quantity).abs
+      end
+
+      def of(model)
+        where("#{model.class.name.underscore}_id = (?)", Utils.to_id(model))
+      end
+
+      alias_method :current, :to_i
+      alias_method :now, :to_i
+      alias_method :as_of_now, :to_i
     end
   end
 end

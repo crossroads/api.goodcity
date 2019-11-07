@@ -200,5 +200,37 @@ context OrderFulfilmentOperations do
         }.from('dispatched').to('designated')
       end
     end
+
+    context 'partial quantity' do
+      def undispatch_partial
+        subject::Operations::undispatch(orders_package, to_location: src_location, quantity: 5)
+      end
+
+      it 'decreases the dispatched packages_location record' do
+        expect { undispatch_partial }.to change {
+          PackagesLocation.find_by(package: pkg, location: dispatch_location).quantity
+        }.from(30).to(25)
+      end
+
+      it 'records an UNDISPATCH action in the inventory' do
+        expect { undispatch_partial }.to change(PackagesInventory, :count).by(1)
+        row = PackagesInventory.last
+        expect(row.action).to eq('undispatch')
+        expect(row.location).to eq(location)
+        expect(row.quantity).to eq(5)
+      end
+
+      it 'adds the quantity from the dest location' do
+        expect { undispatch_partial }.to change {
+          PackagesLocation.find_by(location: location, package: pkg).try(:quantity) || 0
+        }.from(0).to(5)
+      end
+
+      it 'sets the state to designated' do
+        expect { undispatch_partial }.to change {
+          orders_package.reload.state
+        }.from('dispatched').to('designated')
+      end
+    end
   end
 end
