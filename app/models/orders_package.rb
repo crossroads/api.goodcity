@@ -59,14 +59,14 @@ class OrdersPackage < ActiveRecord::Base
       orders_package.updated_by =  User.current_user
     end
 
-    after_transition on: :dispatch, do: :assign_dispatched_location
+    after_transition on: :dispatch, do: :delete_packages_locations
   end
 
-  def assign_dispatched_location
+  # Once a package is dispatched, remove the location entry
+  def delete_packages_locations
     if package.singleton_package?
-      package.destroy_stale_packages_locations(quantity)
+      package.packages_locations.destroy_all
     end
-    package.assign_or_update_dispatched_location(id, quantity)
   end
 
   def undispatch_orders_package
