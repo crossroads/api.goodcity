@@ -21,3 +21,5 @@ coverage/
 coverage
 
 .vscode
+
+**/*.sql
