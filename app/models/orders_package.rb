@@ -116,7 +116,7 @@ class OrdersPackage < ActiveRecord::Base
   def update_quantity_based_on_dispatch_state(total_quantity)
     location_id = Location.dispatch_location.id
     package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
-    package.update_location_quantity(total_quantity, location_id)
+    package.packages_locations.where(location_id: location_id).destroy_all # No longer record Dispatched location
   end
 
   def dispatch_orders_package
