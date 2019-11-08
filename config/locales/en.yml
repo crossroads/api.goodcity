@@ -111,6 +111,8 @@ en:
     move:
       not_enough_at_source: Not enough packages available to move from that location
       bad_quantity_param: Invalid move quantity (%{quantity})
+    mark_lost:
+      required_for_orders: Will break the quantity required for orders (%{orders}), please undesignate first
   package_inventory:
     bad_action: "Inventory action %{action} is not permitted"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"

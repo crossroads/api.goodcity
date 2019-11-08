@@ -61,9 +61,8 @@ context OrderFulfilmentOperations do
             subject::Operations::dispatch(orders_package, from_location: pkg.locations.first, quantity: orders_package.quantity)
           end
 
-          it 'moves the packages to the dispatch location' do
-            dispatch_pkg_location = PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)
-            expect(dispatch_pkg_location.quantity).to eq(30)
+          it 'does not move the packages to the dispatch location' do
+            expect(PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)).to be_nil
           end
 
           it "removes the package's original location" do
@@ -105,9 +104,8 @@ context OrderFulfilmentOperations do
             subject::Operations::dispatch(orders_package, from_location: src_location, quantity: dispatched_qty)
           end
 
-          it 'moves some of the packages to the dispatch location' do
-            dispatch_pkg_location = PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)
-            expect(dispatch_pkg_location.quantity).to eq(dispatched_qty)
+          it 'does not move anything to the dispatch location' do
+            expect(PackagesLocation.find_by(location: Location.dispatch_location, package: pkg)).to be_nil
           end
 
           it "reduces quantity of the package's original location" do
@@ -164,9 +162,7 @@ context OrderFulfilmentOperations do
       touch(src_location)
       touch(orders_package)
       subject::Operations::dispatch(orders_package, from_location: src_location, quantity: orders_package.quantity)
-      expect(pkg.locations.length).to eq(1)
-      expect(pkg.packages_locations.first.location_id).to eq(dispatch_location.id)
-      expect(pkg.packages_locations.first.quantity).to eq(30)
+      expect(pkg.locations.length).to eq(0)
     end
 
     context 'entire quantity' do
@@ -174,10 +170,11 @@ context OrderFulfilmentOperations do
         subject::Operations::undispatch(orders_package, to_location: src_location, quantity: orders_package.quantity)
       end
 
-      it 'removes the dispatched packages_location record' do
-        expect { undispatch_full }.to change {
+      it 'doesnt have any side effects on any dispatched packages_location' do
+        expect(PackagesLocation.find_by(package: pkg, location: dispatch_location)).to be_nil
+        expect { undispatch_full }.not_to change {
           PackagesLocation.find_by(package: pkg, location: dispatch_location)
-        }.from(PackagesLocation).to(nil)
+        }
       end
 
       it 'records an UNDISPATCH action in the inventory' do
@@ -206,10 +203,11 @@ context OrderFulfilmentOperations do
         subject::Operations::undispatch(orders_package, to_location: src_location, quantity: 5)
       end
 
-      it 'decreases the dispatched packages_location record' do
-        expect { undispatch_partial }.to change {
-          PackagesLocation.find_by(package: pkg, location: dispatch_location).quantity
-        }.from(30).to(25)
+      it 'doesnt have any side effects on any dispatched packages_location' do
+        expect(PackagesLocation.find_by(package: pkg, location: dispatch_location)).to be_nil
+        expect { undispatch_partial }.not_to change {
+          PackagesLocation.find_by(package: pkg, location: dispatch_location)
+        }
       end
 
       it 'records an UNDISPATCH action in the inventory' do

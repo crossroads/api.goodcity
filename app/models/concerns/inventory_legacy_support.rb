@@ -33,23 +33,14 @@ module InventoryLegacySupport
           .first_or_initialize(quantity: 0)
       end
 
-      def edit_packages_location(pkg_loc, qty)
-        pkg_loc.sneaky do |record|
-          record.quantity += qty
+      def sync_packages_locations
+        packages_location.sneaky do |record|
+          record.quantity += quantity
           if record.quantity.positive?
             record.save
           elsif record.persisted?
             record.destroy
           end
-        end
-      end
-
-      def sync_packages_locations
-        edit_packages_location(packages_location, quantity)
-        if dispatch?
-          edit_packages_location(dispatch_packages_location, quantity.abs)
-        elsif undispatch?
-          edit_packages_location(dispatch_packages_location, -1 * quantity)
         end
       end
 
@@ -91,7 +82,6 @@ module InventoryLegacySupport
 
       def record_inventory_change(quantity_diff, pkg_id, loc_id)
         return if quantity_diff.zero?
-        return if loc_id.eql?(Location.dispatch_location.id)
 
         PackagesInventory.new(
           action:       PackagesInventory::Actions::MOVE,

@@ -63,10 +63,7 @@ module LocationOperations
       end
 
       def available_qty
-        PackagesInventory::Computer
-          .package_quantity(@package)
-          .where({ location: @from })
-          .as_of_now
+        PackagesInventory::Computer.quantity_where(package: @package, location: @from)
       end
     end
 

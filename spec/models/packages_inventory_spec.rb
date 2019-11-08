@@ -97,74 +97,47 @@ RSpec.describe PackagesInventory, type: :model do
 
     context 'Current quantities' do
       context 'by package' do
-        it { expect(cpu.compute_quantity.where(package: package1)).to eq(10) }
-        it { expect(cpu.compute_quantity.where(package: package2)).to eq(143) }
-
-        context 'via shorthand methods' do
-          it { expect(cpu.compute_quantity.of(package1)).to eq(10) }
-          it { expect(cpu.compute_quantity.of(package2)).to eq(143) }
-          it { expect(cpu.package_quantity(package1)).to eq(10) }
-          it { expect(cpu.package_quantity(package2)).to eq(143) }
-          it { expect(cpu.package_quantity(package2).now).to eq(143) }
-          it { expect(cpu.package_quantity(package2).as_of_now).to eq(143) }
-          it { expect(cpu.package_quantity(package2).current).to eq(143) }
-        end
+        it { expect(cpu.package_quantity(package1)).to eq(10) }
+        it { expect(cpu.package_quantity(package2)).to eq(143) }
       end
 
       context 'by location' do
-        it { expect(cpu.compute_quantity.of(location1)).to eq(105) }
-        it { expect(cpu.compute_quantity.where(location: location1)).to eq(105) }
-        it { expect(cpu.compute_quantity.of(location2)).to eq(5) }
-        it { expect(cpu.compute_quantity.where(location: location2)).to eq(5) }
-
-        context 'via shorthand methods' do
-          it { expect(cpu.location_quantity(location1)).to eq(105) }
-          it { expect(cpu.location_quantity(location2)).to eq(5) }
-          it { expect(cpu.location_quantity(location2).now).to eq(5) }
-          it { expect(cpu.location_quantity(location2).as_of_now).to eq(5) }
-          it { expect(cpu.location_quantity(location2).current).to eq(5) }
-        end
+        it { expect(cpu.location_quantity(location1)).to eq(105) }
+        it { expect(cpu.location_quantity(location2)).to eq(5) }
       end
 
       context 'by action' do
-        it { expect(cpu.compute_quantity.where(action: 'dispatch')).to eq(1) }
-        it { expect(cpu.compute_quantity.where(action: 'inventory')).to eq(105) }
-        it { expect(cpu.compute_quantity.where(action: 'gain')).to eq(50) }
-        it { expect(cpu.compute_quantity.where(action: 'loss')).to eq(1) }
-
-        context 'via shorthand methods' do
-          it { expect(cpu.dispatch_quantity).to eq(1) }
-          it { expect(cpu.inventory_quantity).to eq(105) }
-          it { expect(cpu.gain_quantity).to eq(50) }
-          it { expect(cpu.loss_quantity).to eq(1) }
-        end
+        it { expect(cpu.dispatch_quantity).to eq(1) }
+        it { expect(cpu.inventory_quantity).to eq(105) }
+        it { expect(cpu.gain_quantity).to eq(50) }
+        it { expect(cpu.loss_quantity).to eq(1) }
       end
     end
 
     context 'Historical quantities' do
       context 'by package' do
-        it { expect(cpu.compute_quantity.where(package: package1).as_of(3.years.ago)).to eq(0) }
-        it { expect(cpu.compute_quantity.where(package: package1).as_of(5.months.ago)).to eq(5) }
-        it { expect(cpu.compute_quantity.where(package: package1).as_of(3.months.ago)).to eq(10) }
-        it { expect(cpu.compute_quantity.where(package: package1).as_of(Time.now)).to eq(10) }
-        it { expect(cpu.compute_quantity.where(package: package1).as_of_now).to eq(10) }
+        it { expect(cpu.historical_quantity.where(package: package1).as_of(3.years.ago)).to eq(0) }
+        it { expect(cpu.historical_quantity.where(package: package1).as_of(5.months.ago)).to eq(5) }
+        it { expect(cpu.historical_quantity.where(package: package1).as_of(3.months.ago)).to eq(10) }
+        it { expect(cpu.historical_quantity.where(package: package1).as_of(Time.now)).to eq(10) }
+        it { expect(cpu.historical_quantity.where(package: package1).as_of_now).to eq(10) }
 
-        it { expect(cpu.compute_quantity.where(package: package2).as_of(7.months.ago)).to eq(0) }
-        it { expect(cpu.compute_quantity.where(package: package2).as_of(6.months.ago)).to eq(100) }
-        it { expect(cpu.compute_quantity.where(package: package2).as_of(2.weeks.ago)).to eq(100) }
-        it { expect(cpu.compute_quantity.where(package: package2).as_of(1.week.ago)).to eq(143) }
-        it { expect(cpu.compute_quantity.where(package: package2).as_of(Time.now)).to eq(143) }
-        it { expect(cpu.compute_quantity.where(package: package2).as_of_now).to eq(143) }
+        it { expect(cpu.historical_quantity.where(package: package2).as_of(7.months.ago)).to eq(0) }
+        it { expect(cpu.historical_quantity.where(package: package2).as_of(6.months.ago)).to eq(100) }
+        it { expect(cpu.historical_quantity.where(package: package2).as_of(2.weeks.ago)).to eq(100) }
+        it { expect(cpu.historical_quantity.where(package: package2).as_of(1.week.ago)).to eq(143) }
+        it { expect(cpu.historical_quantity.where(package: package2).as_of(Time.now)).to eq(143) }
+        it { expect(cpu.historical_quantity.where(package: package2).as_of_now).to eq(143) }
       end
 
       context 'by location' do
-        it { expect(cpu.compute_quantity.where(location: location1).as_of(3.years.ago)).to eq(0) }
-        it { expect(cpu.compute_quantity.where(location: location1).as_of(6.months.ago)).to eq(100) }
-        it { expect(cpu.compute_quantity.where(location: location1).as_of(5.months.ago)).to eq(105) }
-        it { expect(cpu.compute_quantity.where(location: location1).as_of(1.month.ago)).to eq(103) }
-        it { expect(cpu.compute_quantity.where(location: location1).as_of(1.week.ago)).to eq(105) }
-        it { expect(cpu.compute_quantity.where(location: location1).as_of(Time.now)).to eq(105) }
-        it { expect(cpu.compute_quantity.where(location: location1).as_of_now).to eq(105) }
+        it { expect(cpu.historical_quantity.where(location: location1).as_of(3.years.ago)).to eq(0) }
+        it { expect(cpu.historical_quantity.where(location: location1).as_of(6.months.ago)).to eq(100) }
+        it { expect(cpu.historical_quantity.where(location: location1).as_of(5.months.ago)).to eq(105) }
+        it { expect(cpu.historical_quantity.where(location: location1).as_of(1.month.ago)).to eq(103) }
+        it { expect(cpu.historical_quantity.where(location: location1).as_of(1.week.ago)).to eq(105) }
+        it { expect(cpu.historical_quantity.where(location: location1).as_of(Time.now)).to eq(105) }
+        it { expect(cpu.historical_quantity.where(location: location1).as_of_now).to eq(105) }
       end
 
       context 'by action' do
@@ -187,7 +160,7 @@ RSpec.describe PackagesInventory, type: :model do
           values.each_with_index do |val, idx|
             time_ago = timestamps[idx]
             it "computes a quantity of #{val} for #{action}@#{time_ago}" do
-              expect(cpu.compute_quantity.where(action: action).as_of(eval(time_ago))).to eq(val)
+              expect(cpu.historical_quantity.where(action: action).as_of(eval(time_ago))).to eq(val)
             end
           end
         end
@@ -201,7 +174,7 @@ RSpec.describe PackagesInventory, type: :model do
         create(:orders_package, :with_state_designated, quantity: 1, package: package1)
       end
 
-      it { expect(cpu.designated_quantity(package1)).to eq(3) }
+      it { expect(cpu.designated_quantity_of(package1)).to eq(3) }
     end
 
     context 'Available quantity' do
@@ -212,9 +185,9 @@ RSpec.describe PackagesInventory, type: :model do
       end
 
       it { expect(cpu.package_quantity(package1)).to eq(10) }
-      it { expect(cpu.designated_quantity(package1)).to eq(3) }
-      it { expect(cpu.dispatch_quantity.of(package1)).to eq(1) }
-      it { expect(cpu.available_quantity(package1)).to eq(7) }
+      it { expect(cpu.designated_quantity_of(package1)).to eq(3) }
+      it { expect(cpu.dispatch_quantity_of(package1)).to eq(1) }
+      it { expect(cpu.available_quantity_of(package1)).to eq(7) }
     end
   end
 end
