@@ -51,7 +51,7 @@ describe PackagesInventoriesImporter do
 
       it "should compute the correct quantity in the inventory" do
         Package.all.each do |p|
-          expect(PackagesInventory::Computer.package_quantity(p).as_of_now).to eq(p.quantity)
+          expect(PackagesInventory::Computer.package_quantity(p)).to eq(p.quantity)
         end
       end
     end
@@ -106,9 +106,9 @@ describe PackagesInventoriesImporter do
 
       it "should compute the correct quantity in the inventory" do
         Package.all.each do |p|
-          expect(PackagesInventory::Computer.package_quantity(p).as_of_now).to eq(0)
+          expect(PackagesInventory::Computer.package_quantity(p)).to eq(0)
         end
-        expect(PackagesInventory::Computer.total_quantity.as_of_now).to eq(0)
+        expect(PackagesInventory::Computer.total_quantity).to eq(0)
       end
     end
   end
