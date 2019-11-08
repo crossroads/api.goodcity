@@ -2,10 +2,10 @@ require 'goodcity/health_checks/base'
 
 module Goodcity
   class HealthChecks
-    class ReceivedPackagesLocationIdCheck < Base
+    class PackageReceivedLocationIdCheck < Base
       desc "Received Packages should contain location_id reference."
       def run
-        ids = Package.where('inventory_number IS NOT NULL AND location_id IS NULL').pluck(:id)
+        ids = Package.where('inventory_number is not null and location_id is null').pluck(:id)
         if ids.count.zero?
           pass!
         else

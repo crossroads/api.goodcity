@@ -19,9 +19,9 @@ module Goodcity
       compare_locations
       compare_pallets
       compare_contacts
-      compare_local_orders
+      # compare_local_orders
       compare_organisations
-      compare_items
+      # compare_items
       compare_orders
     end
 
@@ -222,7 +222,8 @@ module Goodcity
     # For API endpoints that are paginated, iterate and yield the block each time
     def paginated_json(klass, root, offset, per_page, &block)
       loop do
-        json = klass.index(nil, offset, per_page)
+        params = {offset: offset, per_page: per_page}
+        json = klass.index(nil, params)
         json_objects = JSON.parse(json[root])
         if json_objects.present?
           yield json_objects.inject({}){|h,k| h[k['id']]=k; h}
