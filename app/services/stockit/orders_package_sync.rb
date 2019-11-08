@@ -71,7 +71,7 @@ module Stockit
         condition: PackageConditionMapper.to_stockit(@package.donor_condition_name),
         grade: package.grade,
         description: package.notes,
-        location_id: package.stockit_location_id,
+        location_id: stockit_location_id,
         id: package.stockit_id,
         designation_id: @orders_package.order.try(:stockit_id),
         designated_on: @orders_package.created_at,
@@ -89,5 +89,17 @@ module Stockit
         description: package.notes
       }
     end
+
+    # GoodCity doesn't keep location records for dispatched packages
+    def stockit_location_id
+      if package.sent_on.present?
+        Location.dispatch_location.stockit_id
+      elsif package.packages_locations.count > 1
+        Location.multiple_location.try(:stockit_id)
+      else
+        package.packages_locations.first.try(:location).try(:stockit_id) || Location.find_by(id: package.location_id).try(:stockit_id)
+      end
+    end
+
   end
 end
