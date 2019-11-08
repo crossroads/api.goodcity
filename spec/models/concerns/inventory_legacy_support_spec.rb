@@ -20,21 +20,18 @@ describe InventoryLegacySupport do
     # After each test, we assert that the two tables are in sync
 
     # 1. The total number of packages is the same on the two tables
-    expect(computer.total_quantity.now).to eq(
-      PackagesLocation.where('location_id != (?)', dispatch_location.id).sum(:quantity)
+    expect(computer.total_quantity).to eq(
+      PackagesLocation.all.sum(:quantity)
     )
 
     # 2. Each package has the same quantity on both tables
     Package.all.each do |pkg|
-      expect(computer.package_quantity(pkg).now).to eq(
+      expect(computer.package_quantity(pkg)).to eq(
         PackagesLocation
-          .where('location_id != (?) AND package_id = (?)', dispatch_location.id, pkg.id)
+          .where('package_id = (?)', pkg.id)
           .sum(:quantity)
       )
     end
-
-    # 3. We should never have the dispatched location referenced in the inventory
-    expect(PackagesInventory.pluck(:location_id).uniq).not_to include(dispatch_location.id)
   end
 
   describe "Syncing PackagesLocation <-> PackagesInventory" do
@@ -74,14 +71,6 @@ describe InventoryLegacySupport do
             expect { touch(packages_location) }.not_to change(PackagesInventory, :count)
           end
         end
-
-        context "to a dispatch location" do
-          let(:quantity) { 1 }
-
-          it "doesn't record anything in the inventory" do
-            expect { touch(packages_location_dispatch) }.not_to change(PackagesInventory, :count)
-          end
-        end
       end
 
       context "by updating a PackagesLocation" do
@@ -110,10 +99,10 @@ describe InventoryLegacySupport do
             expect {
               packages_location.increment!(:quantity, added_quantity)
             }.to change {
-              computer.package_quantity(package).now
+              computer.package_quantity(package)
             }.by(added_quantity)
 
-            expect(computer.package_quantity(package).now).to eq(quantity + added_quantity)
+            expect(computer.package_quantity(package)).to eq(quantity + added_quantity)
           end
         end
 
@@ -138,10 +127,10 @@ describe InventoryLegacySupport do
             expect {
               packages_location.decrement!(:quantity, removed_quantity)
             }.to change {
-              computer.package_quantity(package).now
+              computer.package_quantity(package)
             }.by(-1 * removed_quantity)
 
-            expect(computer.package_quantity(package).now).to eq(quantity - removed_quantity)
+            expect(computer.package_quantity(package)).to eq(quantity - removed_quantity)
           end
         end
 
@@ -166,10 +155,10 @@ describe InventoryLegacySupport do
             expect {
               packages_location.update(quantity: 0)
             }.to change {
-              computer.package_quantity(package).now
+              computer.package_quantity(package)
             }.by(-1 * available_qty)
 
-            expect(computer.package_quantity(package).now).to eq(0)
+            expect(computer.package_quantity(package)).to eq(0)
           end
         end
 
@@ -330,10 +319,10 @@ describe InventoryLegacySupport do
             expect {
               packages_location.destroy
             }.to change {
-              computer.package_quantity(package).now
+              computer.package_quantity(package)
             }.by(-1 * quantity)
 
-            expect(computer.package_quantity(package).now).to eq(0)
+            expect(computer.package_quantity(package)).to eq(0)
           end
         end
 
@@ -451,14 +440,13 @@ describe InventoryLegacySupport do
             expect(packages_location.reload.quantity).to eq(quantity - removed_quantity)
           end
 
-          it 'increases the "Dispatched" packages_location\'s quantity' do
+          it 'does not create any "Dispatched" packages_location\'s' do
+            expect(PackagesLocation.where(package: package, location: dispatch_location).count).to eq(0)
             expect {
               create :packages_inventory, quantity: - removed_quantity, action: 'dispatch', package: package, location: location
-            }.to change {
-              PackagesLocation.where(package: package, location: dispatch_location)
-                .first_or_initialize(quantity: 0)
-                .quantity
-            }.by(removed_quantity)
+            }.not_to change {
+              PackagesLocation.where(package: package, location: dispatch_location).count
+            }
           end
         end
 
@@ -473,12 +461,13 @@ describe InventoryLegacySupport do
             }.by(-1)
           end
 
-          it 'increases the "Dispatched" packages_location\'s quantity' do
+          it 'does not create any "Dispatched" packages_location\'s' do
+            expect(PackagesLocation.where(package: package, location: dispatch_location).count).to eq(0)
             expect {
               create :packages_inventory, quantity: - removed_quantity, action: 'dispatch', package: package, location: location
-            }.to change {
-              PackagesLocation.find_by(package: package, location: dispatch_location).try(:quantity) || 0
-            }.by(removed_quantity)
+            }.not_to change {
+              PackagesLocation.where(package: package, location: dispatch_location).count
+            }
           end
         end
       end
@@ -503,12 +492,12 @@ describe InventoryLegacySupport do
             }.from(0).to(restored_quantity)
           end
 
-          it 'decreases the "Dispatched" packages_location\'s quantity' do
+          it 'does nothing to any "Dispatched" packages_location\'s' do
             expect {
               create :packages_inventory, quantity: restored_quantity, action: 'undispatch', package: package, location: location
-            }.to change {
+            }.not_to change {
               PackagesLocation.find_by(package: package, location: dispatch_location).try(:quantity) || 0
-            }.from(quantity).to(quantity - restored_quantity)
+            }
           end
         end
 
@@ -523,10 +512,13 @@ describe InventoryLegacySupport do
             }.from(0).to(restored_quantity)
           end
 
-          it 'destroys the "Dispatched" packages_location\'s quantity' do
-            expect(PackagesLocation.find_by(package: package, location: dispatch_location).quantity).to eq(quantity)
-            create :packages_inventory, quantity: restored_quantity, action: 'undispatch', package: package, location: location
-            expect(PackagesLocation.find_by(package: package, location: dispatch_location)).to eq(nil)
+          it 'does nothing to any "Dispatched" packages_location\'s' do
+            expect(PackagesLocation.find_by(package: package, location: dispatch_location)).to be_nil
+            expect {
+              create :packages_inventory, quantity: restored_quantity, action: 'undispatch', package: package, location: location
+            }.not_to change {
+              PackagesLocation.find_by(package: package, location: dispatch_location).try(:quantity) || 0
+            }
           end
         end
       end

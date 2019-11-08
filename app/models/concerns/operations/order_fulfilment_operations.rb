@@ -120,11 +120,11 @@ module OrderFulfilmentOperations
     end
 
     def dispatched_count(ord_pkg)
-      PackagesInventory::Computer.dispatch_quantity.where(source: ord_pkg).as_of_now
+      PackagesInventory::Computer.dispatch_quantity_where(source: ord_pkg)
     end
 
     def on_hand(pkg, location)
-      PackagesInventory::Computer.package_quantity(pkg).where(location: location).as_of_now
+      PackagesInventory::Computer.quantity_where(package: pkg, location: location)
     end
   end
 end

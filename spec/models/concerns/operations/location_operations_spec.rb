@@ -60,13 +60,13 @@ context LocationOperations do
 
       it 'negates the quantity in the packages_inventory for the source' do
         expect { move(15) }.to change {
-          PackagesInventory::Computer.location_quantity(src_location).now
+          PackagesInventory::Computer.location_quantity(src_location)
         }.by(-15)
       end
 
       it 'increments the quantity in the packages_inventory for the destination' do
         expect { move(15) }.to change {
-          PackagesInventory::Computer.location_quantity(dest_location).now
+          PackagesInventory::Computer.location_quantity(dest_location)
         }.by(15)
       end
 
@@ -82,7 +82,7 @@ context LocationOperations do
 
         it 'negates the quantity in the packages_inventory for the source' do
           expect { move(30) }.to change {
-            PackagesInventory::Computer.location_quantity(src_location).now
+            PackagesInventory::Computer.location_quantity(src_location)
           }.by(-30)
         end
       end
@@ -107,13 +107,13 @@ context LocationOperations do
 
       it 'negates the quantity in the packages_inventory for the source' do
         expect { move(15) }.to change {
-          PackagesInventory::Computer.location_quantity(src_location).now
+          PackagesInventory::Computer.location_quantity(src_location)
         }.by(-15)
       end
 
       it 'increments the quantity in the packages_inventory for the destination' do
         expect { move(15) }.to change {
-          PackagesInventory::Computer.location_quantity(dest_location).now
+          PackagesInventory::Computer.location_quantity(dest_location)
         }.by(15)
       end
 
@@ -128,13 +128,13 @@ context LocationOperations do
 
         it 'negates the quantity in the packages_inventory for the source' do
           expect { move(15) }.to change {
-            PackagesInventory::Computer.location_quantity(src_location).now
+            PackagesInventory::Computer.location_quantity(src_location)
           }.by(-15)
         end
 
         it 'increments the quantity in the packages_inventory for the destination' do
           expect { move(15) }.to change {
-            PackagesInventory::Computer.location_quantity(dest_location).now
+            PackagesInventory::Computer.location_quantity(dest_location)
           }.by(15)
         end
       end

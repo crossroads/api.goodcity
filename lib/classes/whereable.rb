@@ -3,7 +3,7 @@ module Whereable
 
   def use_model(mod)
     @model = mod
-    @relation = mod.all
+    @relation = mod.where(nil)
   end
 
   def method_missing(method, *args)
