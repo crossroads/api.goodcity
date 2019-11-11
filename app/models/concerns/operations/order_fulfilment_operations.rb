@@ -41,7 +41,7 @@ module OrderFulfilmentOperations
           package: ord_pkg.package,
           quantity: quantity,
           source: ord_pkg,
-          location: to_location
+          location: Utils.to_model(to_location, Location)
         )
 
         if ord_pkg.dispatched?
@@ -83,7 +83,7 @@ module OrderFulfilmentOperations
           package: ord_pkg.package,
           quantity: -1 * quantity.abs,
           source: ord_pkg,
-          location: from_location
+          location: Utils.to_model(from_location, Location)
         )
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch

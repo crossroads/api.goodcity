@@ -59,10 +59,6 @@ class PackagesInventory < ActiveRecord::Base
     errors.add(:errors, I18n.t('package_inventory.bad_action', action: action) )
   end
 
-  def validate_location
-    errors.add(:errors, I18n.t('package_inventory.invalid_dispatch_location')) if location.dispatch?
-  end
-
   def validate_quantity
     return errors.add(:errors, I18n.t('package_inventory.quantities.zero_invalid')) if quantity.zero?
     if incremental?
@@ -74,7 +70,6 @@ class PackagesInventory < ActiveRecord::Base
 
   def validate_fields
     validate_action
-    validate_location
     validate_quantity
   end
 end

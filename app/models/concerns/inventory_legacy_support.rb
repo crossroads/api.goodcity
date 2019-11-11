@@ -27,12 +27,6 @@ module InventoryLegacySupport
           .first_or_initialize(quantity: 0)
       end
 
-      def dispatch_packages_location
-        PackagesLocation
-          .where(package: package, location: Location.dispatch_location)
-          .first_or_initialize(quantity: 0)
-      end
-
       def sync_packages_locations
         packages_location.sneaky do |record|
           record.quantity += quantity
