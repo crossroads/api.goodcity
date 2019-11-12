@@ -140,7 +140,7 @@ module Stockit
     # GoodCity doesn't keep location records for dispatched packages
     #   but Stockit likes to put them in the Dispatched location
     def stockit_location_id
-      if package.stockit_sent_on.present?
+      if package.stockit_sent_on.present? or package.orders_packages.where(state: 'dispatched').any?
         Location.dispatch_location.stockit_id
       elsif package.packages_locations.count > 1
         Location.multiple_location.try(:stockit_id)
