@@ -115,11 +115,11 @@ RSpec.describe OrdersPackage, type: :model do
     let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
-    # it "sets today's date for sent_on column" do
-    #   todays_date = Date.today
-    #   orders_package.dispatch_orders_package
-    #   expect(orders_package.reload.sent_on.to_date).to eq todays_date
-    # end
+    it "sets today's date for sent_on column" do
+      todays_date = Date.today
+      orders_package.dispatch_orders_package
+      expect(orders_package.reload.sent_on.to_date).to eq todays_date
+    end
 
     it 'updates state to dispatched' do
       expect{
@@ -127,10 +127,6 @@ RSpec.describe OrdersPackage, type: :model do
         }.to change(orders_package, :state).to eq 'dispatched'
     end
 
-    it 'adds dispatched location for associate package' do
-      orders_package.dispatch_orders_package
-      expect(orders_package.package.reload.locations).to include(dispatched_location)
-    end
   end
 
   describe '.update_orders_package_state' do

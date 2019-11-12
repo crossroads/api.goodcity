@@ -23,7 +23,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   def test_package_changes(package, response_status, designation_name, location)
     expect(package.reload.designation_name).to eq(designation_name)
-    expect(package.locations.first).to eq(location)
+    expect(package.locations.try(:first)).to eq(location)
     expect(package.donor_condition).to eq(donor_condition)
     expect(package.grade).to eq("C")
     expect(response_status).to eq(201)
@@ -448,47 +448,45 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             received_quantity: 1, quantity: 0
           orders_package = create :orders_package, package: package, order: order,
             state: 'designated', quantity: 1
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.stockit_id
            expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(0)
-          test_package_changes(package, response.status, order.code, dispatched_location)
+          test_package_changes(package, response.status, order.code, nil)
           expect(package.orders_packages.first.state).to eq 'dispatched'
-          test_packages_location_changes(package)
-          expect(package.reload.stockit_sent_by_id).to eq(stockit_user.id)
-          expect(package.packages_locations.first.reference_to_orders_package).to eq orders_package.id
+          expect(package.stockit_sent_by_id).to eq(stockit_user.id)
+          expect(package.packages_locations.size).to eq(0)
         end
 
-        it 'creates new desigantion and then dispatch if package is not designated before dispatch from stockit' do
+        it 'creates new designation and then dispatch if package is not designated before dispatch from stockit' do
           package = create :package, :stockit_package, designation_name: 'abc', quantity: 1, received_quantity: 1
           stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           stockit_params_with_sent_on_and_designation[:quantity] = 1
-
           expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(1)
-          test_package_changes(package, response.status, order.code, dispatched_location)
+          test_package_changes(package, response.status, order.code, nil)
           expect(package.orders_packages.first.state).to eq 'dispatched'
           expect(package.orders_packages.first.quantity).to eq 1
-          expect(package.reload.quantity).to eq 0
-          expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
-          expect(package.reload.stockit_sent_by_id).to eq(stockit_user.id)
-          expect(package.reload.orders_packages.count).to eq 1
-          test_packages_location_changes(package)
+          expect(package.quantity).to eq 0
+          expect(package.stockit_designated_by_id).to eq(stockit_user.id)
+          expect(package.stockit_sent_by_id).to eq(stockit_user.id)
+          expect(package.orders_packages.count).to eq 1
+          expect(package.packages_locations.size).to eq(0)
         end
 
         it 'updates existing designation with new order_id and dispatches it when dispatched from stockit with another order' do
           package = create :package, :stockit_package, designation_name: 'abc'
           orders_package = create :orders_package, package: package, order: order_1, state: 'designated'
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
+          stockit_params_with_sent_on_and_designation[:stockit_id] = package.stockit_id
           expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(0)
-          test_package_changes(package, response.status, order.code, dispatched_location)
-          expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
-          expect(package.reload.stockit_sent_by_id).to eq(stockit_user.id)
+          test_package_changes(package, response.status, order.code, nil)
+          expect(package.stockit_designated_by_id).to eq(stockit_user.id)
+          expect(package.stockit_sent_by_id).to eq(stockit_user.id)
           expect(orders_package.reload.state).to eq 'dispatched'
-          test_packages_location_changes(package)
+          expect(package.packages_locations.size).to eq(0)
         end
 
         it 'dispatches existing designation if available with same order_id' do
@@ -500,9 +498,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect{
             post :create, format: :json, package: stockit_params_with_sent_on_and_designation
           }.to change(OrdersPackage, :count).by(0)
-          test_package_changes(package, response.status, order.code, dispatched_location)
+          test_package_changes(package, response.status, order.code, nil)
           expect(orders_package.reload.state).to eq 'dispatched'
-          test_packages_location_changes(package)
         end
 
         it 'undispatches orders_package with matching order_id when Undispatch request from stockit.' do
