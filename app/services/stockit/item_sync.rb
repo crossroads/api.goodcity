@@ -156,7 +156,7 @@ module Stockit
       elsif package.packages_locations.count > 1
         Location.multiple_location.try(:stockit_id)
       else
-        package.packages_locations.first.try(:location).try(:stockit_id) || Location.find_by(id: package.location_id).try(:stockit_id)
+        package.locations.first.try(:stockit_id) || Location.find_by(id: package.location_id).try(:stockit_id)
       end
     end
 
