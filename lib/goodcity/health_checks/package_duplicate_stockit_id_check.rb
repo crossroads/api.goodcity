@@ -5,7 +5,6 @@ module Goodcity
     class PackageDuplicateStockitIdCheck < Base
       desc "Packages should not have duplicate stockit_ids."
       def run
-        ids = Package.where(stockit_id: nil).pluck(:id)
         ids = Package.select(:stockit_id).group(:stockit_id).having('COUNT(*) > 1').where('stockit_id IS NOT NULL').pluck(:stockit_id)
         if ids.count.zero?
           pass!
