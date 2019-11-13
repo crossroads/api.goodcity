@@ -50,13 +50,15 @@ module Api
 
       api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
       def stockit_item_details
-        render json: @package,
+        render json: stock_serializer.new(@package,
           serializer: stock_serializer,
           root: "item",
           include_order: true,
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
-          include_images: @package.set_item_id.blank?
+          include_images: @package.set_item_id.blank?,
+          include_allowed_actions: true
+        ).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -135,7 +137,7 @@ module Api
           with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
         params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
         records = records.filter(params_for_filter)
-        records = records.order('packages.id desc').offset(page - 1).limit(per_page)
+        records = records.order('packages.id desc').page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
           each_serializer: stock_serializer,
           root: "items",
@@ -144,7 +146,7 @@ module Api
           include_orders_packages: true,
           exclude_stockit_set_item: true,
           include_images: true).as_json
-        render json: {meta: { search: params['searchText'] } }.merge(packages)
+        render json: { meta: { total_pages: records.total_pages, search: params['searchText'] } }.merge(packages)
       end
 
       def designate_stockit_item(order_id)

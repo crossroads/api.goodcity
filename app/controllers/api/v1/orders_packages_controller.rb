@@ -38,6 +38,16 @@ module Api
         render json: {}
       end
 
+      api :PUT, '/v1/orders_packages/:id/actions/:action_name', 'Executes an action'
+      def exec_action
+        begin
+          @orders_package.exec_action(params[:action_name], params)
+          render_with_actions
+        rescue ArgumentError, StandardError => e
+          render_error(e.to_s)
+        end
+      end
+
       def all_orders_packages
         render json: @orders_packages, each_serializer: serializer
       end
@@ -61,6 +71,19 @@ module Api
       end
 
       private
+
+      def render_with_actions
+        if @orders_package.errors.count.positive?
+          render json: @orders_package.errors, status: 422
+        else
+          render json: serializer.new(
+            @orders_package,
+            include_package: true,
+            include_allowed_actions: true,
+            include_orders_packages: true
+          )
+        end
+      end
 
       def orders_packages_params
         params.require(:orders_packages).permit(:package_id, :order_id, :state, :quantity, :sent_on)
