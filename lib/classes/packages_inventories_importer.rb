@@ -110,9 +110,9 @@ class PackagesInventoriesImporter
 
   # --- Returns the time at which the package was dispatched
   def dispatch_time(package)
-    pkg_loc = package.packages_locations.first
-    return pkg_loc.updated_at if pkg_loc&.location&.dispatch? # --- Dispatch pkg_location creation
-    package.stockit_sent_on # --- Fallback
+    return package.stockit_sent_on if package.stockit_sent_on.present?
+    dispatched_op = package.orders_packages.dispatched.first
+    dispatched_op&.sent_on || dispatched_op&.updated_at
   end
 
   def is_dispatched?(package)
@@ -138,10 +138,11 @@ class PackagesInventoriesImporter
   # --- Sanity checks
   def verify_package(package)
     on_error(package, MULTIPLE_LOCATIONS_ERR % [package.id]) if package.locations.length > 1
-    on_error(package, NO_LOCATION_ERR % [package.id]) if package.locations.length.zero?
     on_error(package, INVALID_QUANTITY % [package.id, package.quantity]) if package.quantity.negative?
     if is_dispatched?(package)
       on_error(package, MISSING_ORDERS_PACKAGE % [package.id]) if package.orders_packages.count.zero?
+    else
+      on_error(package, NO_LOCATION_ERR % [package.id]) if package.locations.length.zero?
     end
   end
 
@@ -243,7 +244,7 @@ class PackagesInventoriesImporter
   TEXT
 
   MULTIPLE_LOCATIONS_ERR = '[Err] Package (%s) has multiple locations'
-  NO_LOCATION_ERR = '[Err] Package (%s) has no location'
+  NO_LOCATION_ERR = '[Err] Package (%s) doesnt look dispatched but has no location'
   INVALID_QUANTITY = '[Err] Package (%s) has an invalid quantity of %s'
   MISSING_ORDERS_PACKAGE = '[Err] Package (%s) looks dispatched, but has no orders_package'
 end
