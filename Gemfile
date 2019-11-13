@@ -90,4 +90,6 @@ group :test do
   gem "shoulda-callback-matchers"
   gem 'rspec_junit_formatter'
   gem 'timecop'
+  gem 'cucumber-rails', require: false
+  gem 'database_cleaner'
 end

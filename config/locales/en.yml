@@ -84,6 +84,10 @@ en:
   orders_package:
     already_dispatched: "This has been already dispatched."
     order_status_error: "You need to complete processing Order first before dispatching."
+    action_disabled: "Action %{name} is not possible at the moment"
+    qty_not_available: "We do not currently have the requested quantity in stock"
+    qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
+    invalid_qty: "Invalid quantity"
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"
@@ -95,3 +99,8 @@ en:
       present: "User already exists in this organisation"
   appointment_slots:
     already_exists: "An appointment slot already exists for this time"
+  operations:
+    dispatch:
+      unprocessed_order: Cannot dispatch packages from an unprocessed order
+    move:
+      not_enough_at_source: Not enough packages available to move from that location

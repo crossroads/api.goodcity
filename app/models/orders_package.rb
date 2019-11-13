@@ -1,5 +1,7 @@
 class OrdersPackage < ActiveRecord::Base
   include RollbarSpecification
+  include OrdersPackageActions
+
   belongs_to :order
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
@@ -84,6 +86,13 @@ class OrdersPackage < ActiveRecord::Base
     update(order_id: order_id_to_update, updated_by: User.current_user)
   end
 
+  def redesignate(new_order_id)
+    ActiveRecord::Base.transaction do
+      update_designation new_order_id
+      update_state_to_designated
+    end
+  end
+
   def delete_unwanted_cancelled_packages(order_to_delete)
     OrdersPackage.where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
   end
@@ -147,6 +156,22 @@ class OrdersPackage < ActiveRecord::Base
       updated_by: User.current_user,
       state: 'designated'
     )
+  end
+
+  def edit_quantity(desired_quantity)
+    raise ArgumentError.new(I18n.t('orders_package.invalid_qty')) if desired_quantity.nil?
+    raise StandardError.new(I18n.t('orders_package.qty_edit_denied_for_inactive')) if dispatched? || cancelled?
+
+    target_quantity = desired_quantity.to_i
+
+    # Check if there is enough in stock to increase the qty
+    if target_quantity > quantity
+      has_enough = (target_quantity - quantity) <= package.in_hand_quantity
+      raise ArgumentError.new(I18n.t('orders_package.qty_not_available')) unless has_enough
+    end
+
+    # Update the quantity
+    update(quantity: target_quantity)
   end
 
   private

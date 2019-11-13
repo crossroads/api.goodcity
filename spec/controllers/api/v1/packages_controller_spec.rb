@@ -731,5 +731,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
       expect(subject["items"].count).to eq(1)
     end
+
+    it "response should have total_pages, and search in meta data" do
+      create(:package, inventory_number: "F00001Q1")
+      create(:package, inventory_number: "F00001Q2")
+      create(:package, inventory_number: "F00001Q3")
+      searchText = 'F00001Q'
+      params = {
+        searchText: searchText,
+        stockRequest: true,
+        restrictMultiQuantity: 'true',
+        withInventoryNumber: 'true',
+        page:1,
+        per_page:25
+      }
+      get :search_stockit_items, params
+      expect(subject["meta"]["search"]).to eq(searchText)
+      expect(subject["meta"].keys).to include("total_pages")
+    end
   end
 end

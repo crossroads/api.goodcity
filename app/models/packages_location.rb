@@ -1,5 +1,8 @@
 class PackagesLocation < ActiveRecord::Base
   include RollbarSpecification
+  include LocationOperations
+  include PushUpdatesMinimal
+
   belongs_to :location
   belongs_to :package
 
@@ -17,6 +20,15 @@ class PackagesLocation < ActiveRecord::Base
   scope :with_eager_load, -> {
     includes([:package, :location])
   }
+
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |record|
+    chans = [Channel::STOCK_CHANNEL]
+    chans << Channel::STAFF_CHANNEL if record.package.item_id # The item_id indicates it was donated via the admin app
+    chans
+  end
 
   def update_quantity(received_quantity)
     update(quantity: received_quantity)
