@@ -9,7 +9,7 @@ module Goodcity
         if ids.size == 0
           pass!
         else
-          fail_with_message!("GoodCity OrdersPackages where state is not dispatched but packages.stockit_sent_on is set. orders_packages.id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity OrdersPackages where state is not dispatched but packages.stockit_sent_on is set. orders_packages.id (#{ids.size}): #{ids.join(', ')}")
         end
       end
     end

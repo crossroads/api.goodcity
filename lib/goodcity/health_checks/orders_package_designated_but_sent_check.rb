@@ -9,7 +9,7 @@ module Goodcity
         if ids.size == 0
           pass!
         else
-          fail_with_message!("GoodCity OrdersPackages that should be dispatched. orders_packages.id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity OrdersPackages that should be dispatched. orders_packages.id (#{ids.size}): #{ids.join(', ')}")
         end
       end
     end

@@ -12,7 +12,7 @@ module Goodcity
         if ids.count.zero?
           pass!
         else
-          fail_with_message!("GoodCity OrdersPackages in state 'dispatched' but sent_on date is not set. orders_packages.id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity OrdersPackages in state 'dispatched' but sent_on date is not set. orders_packages.id (#{ids.size}): #{ids.join(', ')}")
         end
       end
     end
