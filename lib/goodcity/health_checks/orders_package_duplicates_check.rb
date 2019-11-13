@@ -2,7 +2,7 @@ require 'goodcity/health_checks/base'
 
 module Goodcity
   class HealthChecks
-    class OrdersPackagesDuplicatesCheck < Base
+    class OrdersPackageDuplicatesCheck < Base
       desc "Orders Packages should not contain duplicate package_id and order_id references."
       def run
         ids = OrdersPackage.select([:package_id, :order_id]).group([:package_id, :order_id]).having('COUNT(*) > 1').pluck(:package_id, :order_id)

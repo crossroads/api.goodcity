@@ -1,7 +1,7 @@
 require 'rails_helper' # needed to configure transaction rollback
 require 'goodcity/health_checks'
 
-context Goodcity::HealthChecks::DispatchedPackagesOrderIdCheck do
+context Goodcity::HealthChecks::PackageDispatchedOrderIdNilCheck do
 
   subject { described_class.new }
 
@@ -24,10 +24,10 @@ context Goodcity::HealthChecks::DispatchedPackagesOrderIdCheck do
 
   context "fails" do
     it "with nil order_id" do
-      create :package, stockit_sent_on: Date.today, order_id: nil
+      create(:package, stockit_sent_on: Date.today, order_id: nil)
       subject.run
       expect(subject.passed?).to eql(false)
-      expect(subject.message).to include("GoodCity Dispatched Packages with nil sent_on or order_id")
+      expect(subject.message).to include("GoodCity Dispatched Packages with nil sent_on and order_id")
     end
   end
 

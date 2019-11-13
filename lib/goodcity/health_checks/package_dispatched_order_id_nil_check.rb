@@ -9,7 +9,7 @@ module Goodcity
         if ids.count.zero?
           pass!
         else
-          fail_with_message!("GoodCity Dispatched Packages with nil sent_on and order_id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity Dispatched Packages with nil sent_on and order_id. packages.id: #{ids.join(', ')}")
         end
       end
     end
