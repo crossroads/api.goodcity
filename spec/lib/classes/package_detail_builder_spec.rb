@@ -22,7 +22,7 @@ require "rails_helper"
 
     describe "build_detail" do
       it "builds detail" do
-        pkg_detail = pkg_builder.build_detail
+        pkg_detail = pkg_builder.build_or_update_record
         expect(pkg_detail).to_not be nil
         expect(pkg_detail.brand).to eq(detail_attributes["brand"])
       end
