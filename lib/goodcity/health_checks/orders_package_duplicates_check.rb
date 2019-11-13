@@ -9,7 +9,7 @@ module Goodcity
         if ids.size == 0
           pass!
         else
-          fail_with_message!("GoodCity OrdersPackages with duplicate package_id and order_id: #{ids.map{|p,o| "package_id: #{p}, order_id: #{o}"}.join('; ')}")
+          fail_with_message!("GoodCity OrdersPackages with duplicate package_id and order_id (#{ids.size}): #{ids.map{|p,o| "package_id: #{p}, order_id: #{o}"}.join('; ')}")
         end
       end
     end

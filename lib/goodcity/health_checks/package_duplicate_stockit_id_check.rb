@@ -9,7 +9,7 @@ module Goodcity
         if ids.count.zero?
           pass!
         else
-          fail_with_message!("GoodCity Packages with duplicate stockit_ids. stockit_id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity Packages with duplicate stockit_ids. stockit_id (#{ids.size}): #{ids.join(', ')}")
         end
       end
     end

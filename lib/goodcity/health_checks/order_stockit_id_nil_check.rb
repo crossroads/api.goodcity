@@ -9,7 +9,7 @@ module Goodcity
         if ids.count.zero?
           pass!
         else
-          fail_with_message!("GoodCity Orders with nil stockit_id. orders.id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity Orders with nil stockit_id. orders.id (#{ids.size}): #{ids.join(', ')}")
         end
       end
     end

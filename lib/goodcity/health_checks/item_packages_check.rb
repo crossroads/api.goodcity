@@ -13,7 +13,7 @@ module Goodcity
         if ids.size == 0
           pass!
         else
-          fail_with_message!("GoodCity accepted (not deleted) items with no related packages. items.id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity accepted (not deleted) items with no related packages. items.id (#{ids.size}): #{ids.join(', ')}")
         end
       end
 
