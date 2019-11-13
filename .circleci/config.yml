@@ -141,4 +141,4 @@ workflows:
             - audit
           filters:
             branches:
-              only: /^(master|live|GCW-2812-support-additional-fields)$/
+              only: /^(master|live)$/
