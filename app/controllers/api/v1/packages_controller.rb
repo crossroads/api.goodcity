@@ -285,7 +285,8 @@ module Api
                       :pieces, :quantity, :received_at, :received_quantity, :rejected_at, :state,
                       :state_event, :stockit_designated_on, :stockit_id, :stockit_sent_on, :weight,
                       :width, packages_locations_attributes: [:id, :location_id, :quantity],
-                              detail_attributes: [computer_attributes, electrical_attributes,
+                              detail_attributes: [:id, computer_attributes,
+                                                  electrical_attributes,
                                                   computer_accessory_attributes].flatten.uniq]
         params.require(:package).permit(attributes)
       end
@@ -421,7 +422,10 @@ module Api
 
       def assign_detail
         request_from_stockit = GoodcitySync.request_from_stockit
-        PackageDetailBuilder.new(package_params, request_from_stockit).build_detail
+        PackageDetailBuilder.new(
+          package_params,
+          request_from_stockit
+        ).build_or_update_record
       end
 
       def inventory_number

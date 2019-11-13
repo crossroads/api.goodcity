@@ -5,7 +5,7 @@ module Api
 
       def index
         @countries = @countries.search(params["searchText"])
-          .page(page).per(per_page) if params["searchText"]
+          .page(page).per(per_page).order(:name_en) if params["searchText"]
         render json: @countries, each_serializer: Api::V1::CountrySerializer
       end
 
