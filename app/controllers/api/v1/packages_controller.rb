@@ -58,7 +58,7 @@ module Api
                                           root: "item",
                                           include_order: true,
                                           include_orders_packages: true,
-                                          exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
+                                          exclude_stockit_set_item: @package.set_item_id.blank?,
                                           include_images: @package.set_item_id.blank?,
                                           include_allowed_actions: true).as_json
       end
@@ -139,10 +139,15 @@ module Api
 
       def search_stockit_items
         records = @packages # security
-        records = records.search(search_text: params["searchText"], item_id: params["itemId"],
-                                 restrict_multi_quantity: params["restrictMultiQuantity"],
-                                 with_inventory_no: params["withInventoryNumber"] == "true") if params["searchText"].present?
-        params_for_filter = ["state", "location"].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
+        if params["searchText"].present?
+          records = records.search(
+            search_text: params["searchText"],
+            item_id: params["itemId"],
+            restrict_multi_quantity: params["restrictMultiQuantity"],
+            with_inventory_no: params["withInventoryNumber"] == "true"
+          )
+        end
+        params_for_filter = %w[state location].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
@@ -258,7 +263,7 @@ module Api
         render json: {
           status: status,
           errors: errors,
-          inventory_number: @package.inventory_number,
+          inventory_number: @package.inventory_number
         }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
       end
 
@@ -279,36 +284,45 @@ module Api
       def package_params
         get_package_type_id_value
         set_favourite_image if @package && !@package.new_record?
-        attributes = [:allow_web_publish, :box_id, :case_number, :designation_name,
-                      :detail_id, :detail_type, :donor_condition_id, :grade, :height, :inventory_number,
-                      :item_id, :length, :location_id, :notes, :order_id, :package_type_id, :pallet_id,
-                      :pieces, :quantity, :received_at, :received_quantity, :rejected_at, :state,
-                      :state_event, :stockit_designated_on, :stockit_id, :stockit_sent_on, :weight,
-                      :width, packages_locations_attributes: [:id, :location_id, :quantity],
-                              detail_attributes: [:id, computer_attributes,
-                                                  electrical_attributes,
-                                                  computer_accessory_attributes].flatten.uniq]
+        attributes = [
+          :allow_web_publish, :box_id, :case_number, :designation_name,
+          :detail_id, :detail_type, :donor_condition_id, :grade, :height,
+          :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
+          :package_type_id, :pallet_id, :pieces, :quantity, :received_at,
+          :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
+          :stockit_id, :stockit_sent_on, :weight, :width,
+          packages_locations_attributes: %i[id location_id quantity],
+          detail_attributes: [:id, computer_attributes, electrical_attributes,
+                              computer_accessory_attributes].flatten.uniq
+        ]
+
         params.require(:package).permit(attributes)
       end
 
       # comp_test_status, frequency, test_status, voltage kept for stockit sync
       # will be removed later once we get rid of stockit
       def computer_attributes
-        [:brand, :comp_test_status, :comp_test_status_id, :comp_voltage, :country_id, :cpu,
-          :hdd, :lan, :mar_ms_office_serial_num, :mar_os_serial_num, :model,
-          :ms_office_serial_num, :optical, :os, :os_serial_num, :ram, :serial_num, :size,
-          :sound, :updated_by_id, :usb, :video, :wireless]
+        %i[
+          brand comp_test_status comp_test_status_id comp_voltage country_id cpu
+          hdd lan mar_ms_office_serial_num mar_os_serial_num model
+          ms_office_serial_num optical os os_serial_num ram serial_num size
+          sound updated_by_id usb video wireless
+        ]
       end
 
       def electrical_attributes
-        [:brand, :country_id, :frequency, :frequency_id, :model, :power, :serial_number, :standard,
-         :system_or_region, :test_status, :test_status_id, :tested_on, :updated_by_id,
-         :voltage, :voltage_id]
+        %i[
+          brand country_id frequency frequency_id model power serial_number standard
+          system_or_region test_status test_status_id tested_on updated_by_id
+          voltage voltage_id
+        ]
       end
 
       def computer_accessory_attributes
-        [:brand, :comp_test_status, :comp_test_status_id, :comp_voltage, :country_id,
-          :interface, :model, :serial_num, :size, :updated_by_id]
+        %i[
+          brand comp_test_status comp_test_status_id comp_voltage country_id
+          interface model serial_num size updated_by_id
+        ]
       end
 
       def set_favourite_image
@@ -405,7 +419,7 @@ module Api
       end
 
       def order_id
-        if (package_params[:order_id])
+        if package_params[:order_id]
           Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
         end
       end

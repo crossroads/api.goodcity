@@ -39,6 +39,7 @@ module Stockit
         new(package, offset, per_page).index
       end
 
+      # temporary method, to be removed after data import
       def index_with_detail(package, offset, per_page)
         new(package, offset, per_page).index_with_detail
       end
@@ -53,6 +54,7 @@ module Stockit
       get(url, { offset: offset, per_page: per_page })
     end
 
+    # temporary method, to be removed after data import
     def index_with_detail
       url = url_for("/api/v1/items_with_detail")
       get(url, { offset: offset, per_page: per_page })

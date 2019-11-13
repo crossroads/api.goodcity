@@ -77,7 +77,7 @@ module Api
 
       def time_epoch_param(key)
         timestamp = params.fetch(key, nil)
-        return timestamp ? Time.at(Integer(timestamp) / 1000).in_time_zone : nil
+        timestamp ? Time.at(Integer(timestamp) / 1000).in_time_zone : nil
       end
 
       private

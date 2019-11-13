@@ -6,9 +6,9 @@ class Country < ActiveRecord::Base
   validates :name_en, presence: true
 
   def self.search(search_text = "")
-    search_query = %w[name_en name_zh_tw]
-      .map { |f| "countries.#{f} ILIKE :search_text" }
-      .join(" OR ")
+    search_query =  %w[name_en name_zh_tw]
+                    .map { |f| "countries.#{f} ILIKE :search_text" }
+                    .join(" OR ")
     where(search_query, search_text: "%#{search_text}%")
   end
 end
