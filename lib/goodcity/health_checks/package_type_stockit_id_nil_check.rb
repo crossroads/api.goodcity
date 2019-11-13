@@ -9,7 +9,7 @@ module Goodcity
         if ids.count == 0
           pass!
         else
-          fail_with_message!("GoodCity PackageTypes with nil stockit_id: #{ids.join(', ')}")
+          fail_with_message!("GoodCity PackageTypes with nil stockit_id. packages.id: #{ids.join(', ')}")
         end
       end
     end

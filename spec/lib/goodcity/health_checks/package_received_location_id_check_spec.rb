@@ -1,7 +1,7 @@
 require 'rails_helper' # needed to configure transaction rollback
 require 'goodcity/health_checks'
 
-context Goodcity::HealthChecks::ReceivedPackagesLocationIdCheck do
+context Goodcity::HealthChecks::PackageReceivedLocationIdCheck do
 
   subject { described_class.new }
 
