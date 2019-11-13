@@ -39,6 +39,10 @@ module Stockit
         new(package, offset, per_page).index
       end
 
+      def index_with_detail(package, offset, per_page)
+        new(package, offset, per_page).index_with_detail
+      end
+
       def dispatch(package)
         new(package).dispatch
       end
@@ -46,6 +50,11 @@ module Stockit
 
     def index
       url = url_for("/api/v1/items")
+      get(url, { offset: offset, per_page: per_page })
+    end
+
+    def index_with_detail
+      url = url_for("/api/v1/items_with_detail")
       get(url, { offset: offset, per_page: per_page })
     end
 
