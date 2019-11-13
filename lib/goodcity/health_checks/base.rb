@@ -68,6 +68,18 @@ module Goodcity
       def report
         "#{status} #{name}" << (!message.blank? ? " - #{message}" : "")
       end
+
+      def write_log_file(ids)
+        file_name = self.class.name
+        file_path = File.join(Rails.application.root, "tmp", file_name, Rails.application.env)
+        CSV.open(file_path, "wb") do |csv|
+          csv << headers
+          contents.each do |row|
+            csv << row
+          end
+        end
+      end
+
     end
   end
 end
