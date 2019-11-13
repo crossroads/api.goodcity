@@ -5,9 +5,10 @@ module Stockit
     include Stockit::Base
     attr_accessor :detail, :detail_type
 
-    REJECT_ATTRIBUTES = %w[id created_at updated_at stockit_id
-                          updated_by_id voltage_id frequency_id
-                          comp_test_status_id test_status_id].freeze
+    REJECT_ATTRIBUTES = %w[
+      id created_at updated_at stockit_id updated_by_id voltage_id
+      frequency_id comp_test_status_id test_status_id
+    ].freeze
 
     def initialize(detail)
       @detail = detail
@@ -38,10 +39,10 @@ module Stockit
 
     def detail_params
       params = detail.attributes
-      if ['computer', "computer_accessories"].include?(detail_type)
+      if %w[computer computer_accessories].include?(detail_type)
         params["comp_test_status"] = Lookup.find_by(id: params["comp_test_status_id"])&.key
       else
-        ["voltage", "frequency", "test_status"].each do |attr|
+        %w[voltage frequency test_status].each do |attr|
           params[attr] = Lookup.find_by(id: params["#{attr}_id"])&.key
         end
       end
