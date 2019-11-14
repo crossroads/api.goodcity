@@ -18,7 +18,7 @@ namespace :health_checks do
     task check.name.split("::").last.underscore => :environment do
       c = check.new
       c.run
-      puts c.report
+      puts(c.report) if c.failed?
     end
   end
 
