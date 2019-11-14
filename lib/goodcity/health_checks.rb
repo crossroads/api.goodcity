@@ -18,7 +18,7 @@ module Goodcity
           check = check_klass.new
           check.run
           check.report
-        end
+        end.compact
       end
 
       def list_checks

@@ -16,7 +16,7 @@ module Goodcity
       PENDING = "PENDING"
       attr :status, :message
 
-      # This method registers the check subclass whereever the Base module is subclassed
+      # This method registers the check subclass wherever the Base module is subclassed
       def self.inherited(subclass)
         ActiveSupport.on_load(:health_checks) do
           Goodcity::HealthChecks.register_check(subclass)
@@ -66,7 +66,9 @@ module Goodcity
       end
 
       def report
-        "#{status} #{name}" << (!message.blank? ? " - #{message}" : "")
+        if failed?
+          "#{status} #{name}" << (!message.blank? ? " - #{message}" : "")
+        end
       end
 
       def write_log_file(ids)
