@@ -35,34 +35,37 @@ module Api
       end
 
       api :GET, "/v1/packages", "get all packages for the item"
+
       def index
         @packages = @packages.browse_public_packages if is_browse_app?
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
-        @packages = @packages.search({search_text: params['searchText']})
-          .page(page).per(per_page) if params['searchText']
+        @packages = @packages.search({ search_text: params["searchText"] })
+          .page(page).per(per_page) if params["searchText"]
         render json: @packages, each_serializer: serializer, include_orders_packages: is_stock_app?, is_browse_app: is_browse_app?
       end
 
-      api :GET, '/v1/packages/1', "Details of a package"
+      api :GET, "/v1/packages/1", "Details of a package"
+
       def show
         render json: serializer.new(@package, include_orders_packages: true).as_json
       end
 
-      api :GET, '/v1/stockit_items/1', "Details of a stockit_item(package)"
+      api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
+
       def stockit_item_details
         render json: stock_serializer.new(@package,
-          serializer: stock_serializer,
-          root: "item",
-          include_order: true,
-          include_orders_packages: true,
-          exclude_stockit_set_item: @package.set_item_id.blank? ? true : false,
-          include_images: @package.set_item_id.blank?,
-          include_allowed_actions: true
-        ).as_json
+                                          serializer: stock_serializer,
+                                          root: "item",
+                                          include_order: true,
+                                          include_orders_packages: true,
+                                          exclude_stockit_set_item: @package.set_item_id.blank?,
+                                          include_images: @package.set_item_id.blank?,
+                                          include_allowed_actions: true).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
       param_group :package
+
       def create
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
         if package_record
@@ -70,7 +73,7 @@ module Api
           if @package.valid? && @package.save
             if is_stock_app?
               render json: @package, serializer: stock_serializer, root: "item",
-            include_order: false, include_orders_packages: true
+                     include_order: false, include_orders_packages: true
             else
               render json: @package, serializer: serializer, status: 201
             end
@@ -84,6 +87,7 @@ module Api
 
       api :PUT, "/v1/packages/1", "Update a package"
       param_group :package
+
       def update
         @package.assign_attributes(package_params)
         @package.received_quantity = package_params[:quantity] if package_params[:quantity]
@@ -99,7 +103,7 @@ module Api
             render json: @package, serializer: serializer, include_orders_packages: true
           end
         else
-          render json: { errors: @package.errors.full_messages } , status: 422
+          render json: { errors: @package.errors.full_messages }, status: 422
         end
       end
 
@@ -109,18 +113,20 @@ module Api
 
       api :DELETE, "/v1/packages/1", "Delete an package"
       description "Deletion of the Package item in review mode"
+
       def destroy
         @package.really_destroy!
         render json: {}
       end
 
       api :POST, "/v1/packages/print_barcode", "Print barcode"
+
       def print_barcode
-        return render json: { errors: I18n.t('package.max_print_error', max_barcode_qty: MAX_BARCODE_PRINT) }, status: 400 unless print_count.between?(1, MAX_BARCODE_PRINT)
+        return render json: { errors: I18n.t("package.max_print_error", max_barcode_qty: MAX_BARCODE_PRINT) }, status: 400 unless print_count.between?(1, MAX_BARCODE_PRINT)
         begin
           @package = Package.find params[:package_id]
         rescue ActiveRecord::RecordNotFound
-          return render json: { errors:"Package not found with supplied package_id" }, status: 400
+          return render json: { errors: "Package not found with supplied package_id" }, status: 400
         end
         if @package.inventory_number.blank?
           @package.inventory_number = InventoryNumber.next_code
@@ -130,23 +136,29 @@ module Api
       end
 
       api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
+
       def search_stockit_items
         records = @packages # security
-        records = records.search(search_text: params['searchText'], item_id: params['itemId'],
-          restrict_multi_quantity: params['restrictMultiQuantity'],
-          with_inventory_no: params['withInventoryNumber'] == 'true') if params['searchText'].present?
-        params_for_filter = ['state', 'location'].each_with_object({}){|k, h| h[k] = params[k] if params[k].present?}
+        if params["searchText"].present?
+          records = records.search(
+            search_text: params["searchText"],
+            item_id: params["itemId"],
+            restrict_multi_quantity: params["restrictMultiQuantity"],
+            with_inventory_no: params["withInventoryNumber"] == "true"
+          )
+        end
+        params_for_filter = %w[state location].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
         records = records.filter(params_for_filter)
-        records = records.order('packages.id desc').page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+        records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
-          each_serializer: stock_serializer,
-          root: "items",
-          include_order: true,
-          include_packages: false,
-          include_orders_packages: true,
-          exclude_stockit_set_item: true,
-          include_images: true).as_json
-        render json: { meta: { total_pages: records.total_pages, search: params['searchText'] } }.merge(packages)
+                                                    each_serializer: stock_serializer,
+                                                    root: "items",
+                                                    include_order: true,
+                                                    include_packages: false,
+                                                    include_orders_packages: true,
+                                                    exclude_stockit_set_item: true,
+                                                    include_images: true).as_json
+        render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
 
       def designate_stockit_item(order_id)
@@ -175,7 +187,7 @@ module Api
           package_splitter.split!
           send_stock_item_response
         else
-          render json: { errors: I18n.t('package.split_qty_error', qty: @package.quantity) }, status: 422
+          render json: { errors: I18n.t("package.split_qty_error", qty: @package.quantity) }, status: 422
         end
       end
 
@@ -198,7 +210,7 @@ module Api
           @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
           send_stock_item_response
         else
-          render json: { errors: I18n.t('orders_package.already_dispatched') } , status: 422
+          render json: { errors: I18n.t("orders_package.already_dispatched") }, status: 422
         end
       end
 
@@ -242,7 +254,7 @@ module Api
             include_packages: false,
             include_images: @package.set_item_id.blank?
         else
-          render json: { errors: @package.errors.full_messages } , status: 422
+          render json: { errors: @package.errors.full_messages }, status: 422
         end
       end
 
@@ -258,7 +270,7 @@ module Api
       private
 
       def render_order_status_error
-        render json: { errors: I18n.t('orders_package.order_status_error') }, status: 403
+        render json: { errors: I18n.t("orders_package.order_status_error") }, status: 403
       end
 
       def stock_serializer
@@ -266,24 +278,55 @@ module Api
       end
 
       def remove_stockit_prefix(stockit_inventory_number)
-        stockit_inventory_number.gsub(/^x/i, '') unless stockit_inventory_number.blank?
+        stockit_inventory_number.gsub(/^x/i, "") unless stockit_inventory_number.blank?
       end
 
       def package_params
         get_package_type_id_value
         set_favourite_image if @package && !@package.new_record?
-        attributes = [:quantity, :length, :width, :height, :weight, :pieces, :notes, :item_id,
-          :received_at, :rejected_at, :package_type_id, :state_event,
-          :inventory_number, :designation_name, :donor_condition_id, :grade,
-          :location_id, :box_id, :pallet_id, :stockit_id,
-          :order_id, :stockit_designated_on, :stockit_sent_on,
-          :case_number, :allow_web_publish, :received_quantity, :state,
-          packages_locations_attributes: [:id, :location_id, :quantity]]
+        attributes = [
+          :allow_web_publish, :box_id, :case_number, :designation_name,
+          :detail_id, :detail_type, :donor_condition_id, :grade, :height,
+          :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
+          :package_type_id, :pallet_id, :pieces, :quantity, :received_at,
+          :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
+          :stockit_id, :stockit_sent_on, :weight, :width,
+          packages_locations_attributes: %i[id location_id quantity],
+          detail_attributes: [:id, computer_attributes, electrical_attributes,
+                              computer_accessory_attributes].flatten.uniq
+        ]
+
         params.require(:package).permit(attributes)
       end
 
+      # comp_test_status, frequency, test_status, voltage kept for stockit sync
+      # will be removed later once we get rid of stockit
+      def computer_attributes
+        %i[
+          brand comp_test_status comp_test_status_id comp_voltage country_id cpu
+          hdd lan mar_ms_office_serial_num mar_os_serial_num model
+          ms_office_serial_num optical os os_serial_num ram serial_num size
+          sound updated_by_id usb video wireless
+        ]
+      end
+
+      def electrical_attributes
+        %i[
+          brand country_id frequency frequency_id model power serial_number standard
+          system_or_region test_status test_status_id tested_on updated_by_id
+          voltage voltage_id
+        ]
+      end
+
+      def computer_accessory_attributes
+        %i[
+          brand comp_test_status comp_test_status_id comp_voltage country_id
+          interface model serial_num size updated_by_id
+        ]
+      end
+
       def set_favourite_image
-        if(image_id = params["package"]["favourite_image_id"]).present?
+        if (image_id = params["package"]["favourite_image_id"]).present?
           if @package.images.pluck(:id).include?(image_id)
             @package.update_favourite_image(image_id)
           end
@@ -294,7 +337,7 @@ module Api
       def add_favourite_image
         image = Image.find_by(id: params["package"]["favourite_image_id"])
         @package.images.build(favourite: true, angle: image.angle,
-          cloudinary_id: image.cloudinary_id) if image
+                              cloudinary_id: image.cloudinary_id) if image
         params["package"].delete("favourite_image_id")
       end
 
@@ -324,6 +367,7 @@ module Api
         else
           @package.assign_attributes(package_params)
         end
+        @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity ||= received_quantity
         add_favourite_image if params["package"]["favourite_image_id"]
         @package
@@ -336,9 +380,9 @@ module Api
         delete_params_quantity_if_all_quantity_designated(new_package_params)
         @package.assign_attributes(new_package_params)
         @package.received_quantity = received_quantity
-        @package.build_or_create_packages_location(location_id, 'build')
+        @package.build_or_create_packages_location(location_id, "build")
         @package.location_id = location_id
-        @package.state = 'received'
+        @package.state = "received"
         @package.order_id = order_id
         @package.inventory_number = inventory_number
         @package.box_id = box_id
@@ -348,7 +392,7 @@ module Api
 
       def packages_location_for_admin
         if is_admin_app? && params[:package][:location_id].present?
-          @package.build_or_create_packages_location(params[:package][:location_id], 'create')
+          @package.build_or_create_packages_location(params[:package][:location_id], "create")
         end
       end
 
@@ -375,7 +419,7 @@ module Api
       end
 
       def order_id
-        if(package_params[:order_id])
+        if package_params[:order_id]
           Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
         end
       end
@@ -390,13 +434,21 @@ module Api
         end
       end
 
+      def assign_detail
+        request_from_stockit = GoodcitySync.request_from_stockit
+        PackageDetailBuilder.new(
+          package_params,
+          request_from_stockit
+        ).build_or_update_record
+      end
+
       def inventory_number
         remove_stockit_prefix(@package.inventory_number)
       end
 
       def delete_params_quantity_if_all_quantity_designated(new_package_params)
-        if new_package_params['quantity'].to_i == @package.total_assigned_quantity
-          new_package_params.delete('quantity')
+        if new_package_params["quantity"].to_i == @package.total_assigned_quantity
+          new_package_params.delete("quantity")
         end
       end
     end

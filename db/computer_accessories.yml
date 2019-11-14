@@ -1,0 +1,8 @@
+---
+1:
+  :brand:  "HP"
+  :country_id: "234"
+  :size: "22\""
+  :interface: "DisplayPort/DVI/VGA/USB"
+  :comp_voltage: "110-220V"
+  :comp_test_status_id: "1"

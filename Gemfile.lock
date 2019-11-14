@@ -491,7 +491,7 @@ DEPENDENCIES
   jwt (~> 1.2.0)
   kaminari
   lograge
-  loofah
+  loofah (>= 2.3.1)
   nestful!
   newrelic_rpm
   nokogiri

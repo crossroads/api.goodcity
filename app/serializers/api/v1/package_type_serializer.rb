@@ -2,7 +2,7 @@ module Api::V1
   class PackageTypeSerializer < ApplicationSerializer
     embed :ids, include: true
     attributes :id, :name, :code, :other_child_packages,
-      :default_child_packages, :other_terms, :visible_in_selects, :allow_requests, :allow_pieces
+      :default_child_packages, :other_terms, :visible_in_selects, :allow_requests, :allow_pieces, :subform
 
     has_one :location, serializer: LocationSerializer
 
