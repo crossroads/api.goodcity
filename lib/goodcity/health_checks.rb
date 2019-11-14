@@ -1,21 +1,5 @@
-require 'goodcity/health_checks/item_packages_check'
-require 'goodcity/health_checks/location_stockit_id_nil_check'
-require 'goodcity/health_checks/order_stockit_id_nil_check'
-require 'goodcity/health_checks/orders_package_duplicates_check'
-require 'goodcity/health_checks/orders_package_designated_but_sent_check'
-require 'goodcity/health_checks/orders_package_not_dispatched_but_stockit_sent_on_set_check'
-require 'goodcity/health_checks/orders_package_order_id_check'
-require 'goodcity/health_checks/orders_package_partial_quantity_not_allowed_check'
-require 'goodcity/health_checks/orders_package_state_dispatched_sent_on_nil_check'
-require 'goodcity/health_checks/orders_package_zero_quantity_check'
-require 'goodcity/health_checks/package_stockit_id_nil_check'
-require 'goodcity/health_checks/package_dispatched_order_id_nil_check'
-require 'goodcity/health_checks/package_duplicate_inventory_number_check'
-require 'goodcity/health_checks/package_duplicate_stockit_id_check'
-require 'goodcity/health_checks/package_location_id_nil_check'
-require 'goodcity/health_checks/package_received_quantity_greater_than_zero_check'
-require 'goodcity/health_checks/package_type_stockit_id_nil_check'
-# require 'goodcity/health_checks/missing_ids_and_inventory_numbers_check' # Best run standalone from rails console
+# require *_check.rb files in the health_checks folder
+Dir.glob(Rails.root.join('lib/goodcity/health_checks/**/*_check.rb')).sort.each {|f| require f }
 
 module Goodcity
   class HealthChecks
