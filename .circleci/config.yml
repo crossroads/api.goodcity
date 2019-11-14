@@ -138,4 +138,4 @@ workflows:
             - audit
           filters:
             branches:
-              only: /^(GCW-1895-twilio-upgrade|live)$/
+              only: /^(master|live)$/
