@@ -10,17 +10,12 @@ namespace :stockit do
       items_json = Stockit::ItemSync.new(nil, offset, per_page).index_with_detail
       offset += per_page
       stockit_items = JSON.parse(items_json["items"])
-      bar = RakeProgressbar.new(stockit_items.size)
       break if stockit_items.blank?
 
       stockit_items.each do |item|
-        bar.inc
         package = Package.find_by(stockit_id: item["id"]) if item["id"]
-        next unless package
-
         Goodcity::DetailFactory.new(item, package).run
       end
     end
-    bar.finished
   end
 end

@@ -1,6 +1,6 @@
 module Goodcity
   class DetailFactory
-    PERMITTED_DETAIL_TYPES = %w[computer electrical computer_accessory].freeze
+    PERMITTED_DETAIL_TYPES = %w[Computer Electrical ComputerAccessory].freeze
     FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
 
     attr_accessor :item, :package
@@ -11,11 +11,12 @@ module Goodcity
     end
 
     def run
-      if import_and_save_detail? && update_package_detail?
+      if package && import_and_save_detail? && update_package_detail?
         package&.update_columns(
           detail_id: detail_id,
           detail_type: detail_type,
         )
+        print "."
       end
     end
 
@@ -30,7 +31,7 @@ module Goodcity
     end
 
     def detail_type
-      item["detail_type"] || package&.package_type&.subform
+      item["detail_type"] || package&.package_type&.subform.titleize
     end
 
     def detail_id
@@ -40,11 +41,11 @@ module Goodcity
 
     def create_detail_record
       case detail_type
-      when "computer"
+      when "Computer"
         Computer.create(computer_attributes)
-      when "electrical"
+      when "Electrical"
         Electrical.create(electrical_attributes)
-      when "computer_accessory"
+      when "Computer_accessory"
         ComputerAccessory.create(computer_accessory_attributes)
       end
     end
@@ -79,10 +80,10 @@ module Goodcity
     end
 
     def lookup_hash
-      FIXED_DETAIL_ATTRIBUTES.each_with_object({}) do |item, hash|
-        if (key = detail_params[item].presence)
-          name = "electrical_#{item}" unless (item == "comp_test_status")
-          hash["#{item}_id"] = Lookup.find_by(name: name, key: key)&.id
+      FIXED_DETAIL_ATTRIBUTES.each_with_object({}) do |attr, hash|
+        if (key = item[attr].presence)
+          name = "electrical_#{attr}" unless (attr == "comp_test_status")
+          hash["#{attr}_id"] = Lookup.find_by(name: name, key: key)&.id
         end
       end
     end
