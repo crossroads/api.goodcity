@@ -5,7 +5,11 @@ module Goodcity
     class PackageDuplicateInventoryNumberCheck < Base
       desc "Packages should not have duplicate inventory_numbers."
       def run
-        ids = Package.select(:inventory_number).group(:inventory_number).having('COUNT(*) > 1').where('inventory_number IS NOT NULL').pluck(:inventory_number)
+        ids = Package.select(:inventory_number).
+          group(:inventory_number).
+          having('COUNT(*) > 1').
+          where('inventory_number IS NOT NULL').
+          pluck(:inventory_number)
         if ids.count.zero?
           pass!
         else
