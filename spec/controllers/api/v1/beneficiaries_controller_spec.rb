@@ -58,9 +58,17 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
         expect(response.status).to eq(403)
       end
 
-      it 'returns a beneficiary created by someone else for user\'s order' do
+      it 'returns a beneficiary if user is the order was submitted by user' do
         create(:order, submitted_by: charity_user, beneficiary: beneficiary)
         get :show, id: beneficiary.id
+        expect(response.status).to eq(200)
+        expect(parsed_body['beneficiary']['id']).to eq(beneficiary.id)
+      end
+
+      it 'returns a beneficiary if user is the order was created by user' do
+        create(:order, created_by: charity_user, beneficiary: beneficiary)
+        get :show, id: beneficiary.id
+        expect(response.status).to eq(200)
         expect(parsed_body['beneficiary']['id']).to eq(beneficiary.id)
       end
     end
