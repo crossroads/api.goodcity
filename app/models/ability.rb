@@ -98,7 +98,9 @@ class Ability
 
   def beneficiary_abilities
     can :create, Beneficiary
-    can [:create, :index, :show, :update], Beneficiary, created_by_id: @user_id
+    can [:index, :show, :update], Beneficiary, created_by_id: @user_id
+    can [:show, :update], Beneficiary, order: { submitted_by_id: @user_id }
+    can [:show, :update], Beneficiary, order: { created_by_id: @user_id }
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :destroy], Beneficiary
     end
@@ -273,7 +275,7 @@ class Ability
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :designate_stockit_item, :remove_from_set,
         :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,
-        :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
+        :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item, :move,
         :move_partial_quantity, :move_full_quantity, :print_inventory_label,
         :undispatch_stockit_item, :stockit_item_details, :split_package], Package
     end
