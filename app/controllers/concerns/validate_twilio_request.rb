@@ -10,7 +10,7 @@ module ValidateTwilioRequest
   end
 
   def validator
-    Twilio::Util::RequestValidator.new twilio_token
+    Twilio::Security::RequestValidator.new twilio_token
   end
 
   def post_vars
