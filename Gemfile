@@ -44,7 +44,7 @@ gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
-gem 'nokogiri'
+gem 'nokogiri', '>= 1.0.4'
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
