@@ -25,7 +25,7 @@ gem 'ffaker'
 gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
 gem 'jwt', '~> 1.2.0'
-gem 'rack-cors'
+gem 'rack-cors', '>= 1.0.4'
 gem 'rack-protection'
 gem 'state_machine'
 gem 'twilio-ruby'
