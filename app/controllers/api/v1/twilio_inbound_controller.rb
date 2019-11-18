@@ -111,7 +111,7 @@ module Api
         Rollbar.error(Exception, parameters: params,
           error_class: "TwilioError", error_message: "Twilio Voice Call Error")
         response = Twilio::TwiML::VoiceResponse.new do |r|
-          r.say(message:"Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you.")
+          r.say(message: "Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you.")
           r.hangup
         end
         render_twiml response
