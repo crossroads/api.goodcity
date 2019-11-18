@@ -25,7 +25,7 @@ gem 'ffaker'
 gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
 gem 'jwt', '~> 1.2.0'
-gem 'rack-cors'
+gem 'rack-cors', '>= 1.0.4'
 gem 'rack-protection'
 gem 'state_machine'
 gem 'twilio-ruby'
@@ -44,7 +44,7 @@ gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
-gem 'nokogiri'
+gem 'nokogiri', '>= 1.0.4'
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console

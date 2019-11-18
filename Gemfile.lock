@@ -251,7 +251,7 @@ GEM
     net-ssh (5.0.2)
     netrc (0.11.0)
     newrelic_rpm (5.2.0.345)
-    nokogiri (1.10.4)
+    nokogiri (1.10.5)
       mini_portile2 (~> 2.4.0)
     notiffany (0.1.1)
       nenv (~> 0.1)
@@ -279,7 +279,8 @@ GEM
     public_suffix (3.0.3)
     puma (3.12.0)
     rack (1.6.11)
-    rack-cors (1.0.2)
+    rack-cors (1.0.6)
+      rack (>= 1.6.0)
     rack-protection (2.0.3)
       rack
     rack-test (0.6.3)
@@ -494,7 +495,7 @@ DEPENDENCIES
   loofah (>= 2.3.1)
   nestful!
   newrelic_rpm
-  nokogiri
+  nokogiri (>= 1.0.4)
   oj
   paper_trail (~> 4.0.0.beta)
   paranoia (~> 2.1.0)
@@ -502,7 +503,7 @@ DEPENDENCIES
   postgres_ext (~> 2.4.0.beta.1)
   postgres_ext-serializers!
   puma
-  rack-cors
+  rack-cors (>= 1.0.4)
   rack-protection
   rack-timeout
   railroady
