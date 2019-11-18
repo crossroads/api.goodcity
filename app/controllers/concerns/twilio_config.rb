@@ -6,7 +6,7 @@ module TwilioConfig
   end
 
   def render_twiml(response)
-    render text: response.text
+    render text: response.to_s
   end
 
   def set_json_header
@@ -46,10 +46,33 @@ module TwilioConfig
   end
 
   def twilio_outgoing_call_capability
-    @capability ||= Twilio::Util::Capability.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"])
-    @capability.allow_client_outgoing(twilio_creds["call_app_sid"])
-    @capability
+    account_sid = twilio_creds["account_sid"]
+    api_key = twilio_creds["api_key"]
+    api_secret = twilio_creds["twilio_secret"]
+
+    # Required for Voice
+    outgoing_application_sid = twilio_creds["call_app_sid"]
+    identity = 'user'
+
+    # Create Voice grant for our token
+    grant = Twilio::JWT::AccessToken::VoiceGrant.new
+    grant.outgoing_application_sid = outgoing_application_sid
+
+    # Optional: add to allow incoming calls
+    grant.incoming_allow = true
+
+    # Create an Access Token
+    token = Twilio::JWT::AccessToken.new(
+      account_sid,
+      api_key,
+      api_secret,
+      [grant],
+      identity: identity
+    )
+
+    # Generate the token
+    token.to_jwt
+
   end
 
   def twilio_creds

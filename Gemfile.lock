@@ -98,7 +98,7 @@ GEM
     arel (6.0.4)
     aws_cf_signer (0.1.3)
     backports (3.15.0)
-    barby (0.6.6)
+    barby (0.6.8)
     builder (3.2.3)
     bullet (5.7.6)
       activesupport (>= 3.0.0)
@@ -191,7 +191,7 @@ GEM
       thor (~> 0.19.1)
     formatador (0.2.5)
     gherkin (5.1.0)
-    gli (2.18.0)
+    gli (2.19.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     guard (2.14.2)
@@ -216,7 +216,7 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     json (2.1.0)
-    jwt (1.2.1)
+    jwt (1.5.6)
     kaminari (0.16.3)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -435,10 +435,10 @@ GEM
     traco (3.1.6)
       activerecord (>= 3.0)
     ttfunk (1.4.0)
-    twilio-ruby (4.11.1)
-      builder (>= 2.1.2)
-      jwt (~> 1.0)
-      multi_json (>= 1.3.0)
+    twilio-ruby (5.11.2)
+      faraday (~> 0.9)
+      jwt (>= 1.5, <= 2.5)
+      nokogiri (>= 1.6, < 2.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     unf (0.1.4)
@@ -489,7 +489,7 @@ DEPENDENCIES
   go_go_van_api!
   guard-rspec
   http_accept_language
-  jwt (~> 1.2.0)
+  jwt (~> 1.5.0)
   kaminari
   lograge
   loofah (>= 2.3.1)
@@ -503,7 +503,7 @@ DEPENDENCIES
   postgres_ext (~> 2.4.0.beta.1)
   postgres_ext-serializers!
   puma
-  rack-cors (>= 1.0.4)
+  rack-cors
   rack-protection
   rack-timeout
   railroady
@@ -534,7 +534,7 @@ DEPENDENCIES
   state_machine
   timecop
   traco
-  twilio-ruby
+  twilio-ruby (~> 5.11.0)
   warden
   webmock
   whenever (~> 0.9.5)
