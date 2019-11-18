@@ -15,7 +15,6 @@ class PackageDetailBuilder
   def build_or_update_record
     klass = detail_class if build_or_update_record?
     return unless klass
-
     detail_record = klass.find_by(stockit_id: detail_params["id"]) if stockit_id_present?
     if detail_record
       detail_record.assign_attributes(detail_attributes)
@@ -51,7 +50,7 @@ class PackageDetailBuilder
     FIXED_DETAIL_ATTRIBUTES.each_with_object({}) do |item, hash|
       if (key = detail_params[item].presence)
         name = "electrical_#{item}" unless item.eql?("comp_test_status")
-        hash["#{item}_id"] = Lookup.find_by(name: name, key: key)&.id
+        hash["#{item}_id"] = Lookup.find_by(name: name || item, key: key)&.id
       end
     end
   end
