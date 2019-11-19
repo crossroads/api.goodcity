@@ -218,6 +218,34 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(package.packages_locations.last.location).to eq(location2)
       expect(package.packages_locations.last.quantity).to eq(4)
     end
+
+    context 'with bad parameters' do
+      let(:error_msg) { parsed_body['errors'][0]['message'] }
+
+      it 'fails if the from location is missing' do
+        put :move, format: :json, id: package.id, quantity: 3, to: location2.id
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Location/)
+      end
+
+      it 'fails if the to location is missing' do
+        put :move, format: :json, id: package.id, quantity: 3, from: location2.id
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Location/)
+      end
+
+      it 'fails if the the package_id is wrong' do
+        put :move, format: :json, id: '9999', from: location2.id
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Package with 'id'=9999/)
+      end
+
+      it 'fails if the quantity is missing' do
+        put :move, format: :json, id: package.id, from: location2.id
+        expect(response.status).to eq(422)
+        expect(error_msg).to match(/^Invalid move quantity/)
+      end
+    end
   end
 
   describe "POST package/1" do

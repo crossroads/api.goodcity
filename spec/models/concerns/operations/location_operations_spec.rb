@@ -74,15 +74,15 @@ context LocationOperations do
 
     describe 'Validations' do
       it 'fails to move an invalid quantity (<=0)' do
-        expect { move(-1) }.to raise_error(StandardError).with_message('Invalid move quantity (-1)')
+        expect { move(-1) }.to raise_error(Goodcity::BaseError).with_message('Invalid move quantity (-1)')
       end
 
       it 'fails to move from a bad location' do
-        expect { move(1, from: 0) }.to raise_error(StandardError).with_message("Couldn't find Location with 'id'=0")
+        expect { move(1, from: 0) }.to raise_error(ActiveRecord::RecordNotFound).with_message("Couldn't find Location with 'id'=0")
       end
 
       it 'fails to move to a bad location' do
-        expect { move(1, to: 0) }.to raise_error(StandardError).with_message("Couldn't find Location with 'id'=0")
+        expect { move(1, to: 0) }.to raise_error(ActiveRecord::RecordNotFound).with_message("Couldn't find Location with 'id'=0")
       end
     end
   end

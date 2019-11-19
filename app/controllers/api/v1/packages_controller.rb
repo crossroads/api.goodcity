@@ -220,7 +220,7 @@ module Api
       end
 
       def move
-        quantity = Integer(params[:quantity])
+        quantity = params[:quantity].to_i
         Package::Operations.move(quantity, @package, from: params[:from], to: params[:to])
         send_stock_item_response
       end

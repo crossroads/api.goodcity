@@ -7,6 +7,7 @@ module Api
       rescue_from CanCan::AccessDenied, with: :access_denied
       rescue_from Apipie::ParamInvalid, with: :invalid_params
       rescue_from Apipie::ParamMissing, with: :invalid_params
+      rescue_from Goodcity::BaseError, with: :invalid_params
 
       def serializer_for(object)
         "Api::V1::#{object.class}Serializer".safe_constantize
@@ -88,11 +89,13 @@ module Api
       end
 
       def invalid_params(e)
-        render json: { error: e.message }, status: 422
+        message = e&.message || :invalid_params
+        render_error(message, code: 422)
       end
 
-      def not_found
-        render json: {}, status: 404
+      def not_found(e)
+        message = e&.message || :not_found
+        render_error(message, code: 404)
       end
     end
   end

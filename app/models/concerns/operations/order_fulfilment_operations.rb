@@ -74,24 +74,8 @@ module OrderFulfilmentOperations
     end
 
     def assert_can_dispatch(ord_pkg)
-      raise AlredyDispatchedError.new if ord_pkg.dispatched?
-      raise UnprocessedError.new if order_unprocessed?(ord_pkg.order)
-    end
-
-    # ---
-
-    class OperationsError < StandardError; end
-
-    class UnprocessedError < OperationsError
-      def initialize
-        super(I18n.t('operations.dispatch.unprocessed_order'))
-      end
-    end
-
-    class AlredyDispatchedError < OperationsError
-      def initialize
-        super(I18n.t('orders_package.already_dispatched'))
-      end
+      raise Goodcity::AlredyDispatchedError.new if ord_pkg.dispatched?
+      raise Goodcity::UnprocessedError.new if order_unprocessed?(ord_pkg.order)
     end
   end
 end
