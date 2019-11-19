@@ -99,3 +99,4 @@ zh-tw:
       unprocessed_order: Cannot dispatch packages from an unprocessed order
     move:
       not_enough_at_source: Not enough packages available to move from that location
+      bad_quantity_param: Invalid move quantity (%{quantity})

@@ -63,6 +63,7 @@ Rails.application.routes.draw do
 
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
+        put :move, on: :member
       end
       resources :requested_packages, only: [:index, :create, :destroy] do
         post :checkout, on: :collection
@@ -167,10 +168,7 @@ Rails.application.routes.draw do
       put "items/:id/undesignate_stockit_item", to: "packages#undesignate_stockit_item"
       put "items/:id/dispatch_stockit_item", to: "packages#dispatch_stockit_item"
       put "items/:id/undispatch_stockit_item", to: "packages#undispatch_stockit_item"
-      put "items/:id/move_stockit_item", to: "packages#move_stockit_item"
-      put "items/:id/move_partial_quantity", to: "packages#move_partial_quantity"
-      put "items/:id/move_full_quantity", to: "packages#move_full_quantity"
-      put "items/:id/move_stockit_item_set", to: "items#move_stockit_item_set"
+      put "items/:id/move", to: "packages#move"
       put "items/:id/remove_from_set", to: "packages#remove_from_set"
       get "stockit_items/:id", to: "packages#stockit_item_details"
       put "orders_packages/:id/actions/:action_name", to: "orders_packages#exec_action"
