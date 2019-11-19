@@ -8,8 +8,8 @@ module SubformUtilities
   module ClassMethods
     def distinct_by_column(column)
       raise StandardError.new("Column name invalid!") unless column_names.include?(column)
-      tbl_name = self.name.tableize
-      sql_select = self.send(
+      tbl_name = name.tableize
+      sql_select = send(
         :sanitize_sql, ["DISTINCT ON (#{tbl_name}.#{column}) #{tbl_name}.*"]
       )
       select(sql_select)
