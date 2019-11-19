@@ -220,7 +220,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     context 'with bad parameters' do
-      let(:error_msg) { parsed_body['errors'][0]['message'] }
+      let(:error_msg) do
+        return parsed_body['error'] if parsed_body['error'].present?
+        parsed_body['errors'][0]['message']
+      end
 
       it 'fails if the from location is missing' do
         put :move, format: :json, id: package.id, quantity: 3, to: location2.id
