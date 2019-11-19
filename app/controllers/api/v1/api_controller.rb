@@ -89,13 +89,12 @@ module Api
       end
 
       def invalid_params(e)
-        message = e&.message || :invalid_params
-        render_error(message, code: 422)
+        render json: { error: e.message }, status: 422
       end
 
       def not_found(e)
-        message = e&.message || :not_found
-        render_error(message, code: 404)
+        message = e&.message || I18n.t('errors.not_found')
+        render json: { error: message }, status: 404
       end
     end
   end

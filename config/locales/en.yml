@@ -2,6 +2,9 @@
 en:
   success: Success
   email_from_name: "GoodCity for Charities"
+  errors:
+    not_found: Not Found
+    bad_request: Bad Request
   warden:
     token_invalid: Invalid token
     token_expired: Expired token

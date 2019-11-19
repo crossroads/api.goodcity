@@ -2,6 +2,9 @@
 zh-tw:
   success: 成功
   email_from_name: "好人好巿 (慈善組織)"
+  errors:
+    not_found: Not Found
+    bad_request: Bad Request
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
