@@ -39,7 +39,7 @@ module Stockit
 
     def detail_params
       params = detail.attributes
-      if %w[computer computer_accessories].include?(detail_type)
+      if %w[computer computer_accessory].include?(detail_type)
         params["comp_test_status"] = Lookup.find_by(id: params["comp_test_status_id"])&.key
       else
         %w[voltage frequency test_status].each do |attr|
