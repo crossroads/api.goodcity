@@ -24,7 +24,7 @@ module Goodcity
 
     def run
       @packages = Package.where(inventory_number: @inventory_numbers).order(:inventory_number)
-      @packages.each do |package|
+      @packages.find_each do |package|
         destroy_package(package) if ok_to_destroy?(package)
       end
       write_csv("package_delete_#{Rails.env}.csv", ['inventory_number', 'message'], @csv_log)
@@ -74,7 +74,7 @@ module Goodcity
     def destroy_inventory_number(inventory_number)
       return if inventory_number.blank?
       return unless inventory_number.match(/^[0-9]+$/) # A GC number
-      if Package.where(inventory_number: inventory_number).size == 0
+      if !Package.where(inventory_number: inventory_number).exists?
         InventoryNumber.find_by(code: inventory_number).try(:destroy)
         log(inventory_number, "Deleting inventory_number from InventoryNumber table")
       end
