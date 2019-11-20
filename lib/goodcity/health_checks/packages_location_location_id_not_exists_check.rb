@@ -1,7 +1,7 @@
-# SELECT packages_location.*
-# FROM packages_location
+# SELECT packages_locations.*
+# FROM packages_locations
 # WHERE location_id IN (
-#   SELECT location_id FROM packages_location
+#   SELECT location_id FROM packages_locations
 #   EXCEPT SELECT id FROM locations
 # )
 require 'goodcity/health_checks/base'
