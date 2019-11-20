@@ -6,7 +6,7 @@ module Goodcity
       desc "Locations should contain a stockit_id reference."
       def run
         ids = Location.where(stockit_id: nil).pluck(:id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity Locations with nil stockit_id. locations.id (#{ids.size}): #{ids.join(', ')}")

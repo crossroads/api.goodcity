@@ -11,7 +11,7 @@ module Goodcity
           where("orders_packages.quantity != packages.received_quantity").
           where("orders_packages.state != 'cancelled'").
           pluck(:id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity OrdersPackages partially designated/dispatched. orders_packages.id (#{ids.size}): #{ids.join(', ')}")

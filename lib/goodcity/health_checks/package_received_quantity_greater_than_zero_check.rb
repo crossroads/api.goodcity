@@ -6,7 +6,7 @@ module Goodcity
       desc "Packages should have received_quantity > 0."
       def run
         ids = Package.where('received_quantity < 1').pluck(:id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity Packages with received_quantity < 1. packages.id (#{ids.size}): #{ids.join(', ')}")

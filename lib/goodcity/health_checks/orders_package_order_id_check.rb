@@ -6,7 +6,7 @@ module Goodcity
       desc "OrdersPackages should contain an order_id reference."
       def run
         ids = OrdersPackage.where(order_id: nil).pluck(:id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity OrdersPackages with nil order_id. orders_packages.id (#{ids.size}): #{ids.join(', ')}")

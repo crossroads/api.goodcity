@@ -10,7 +10,7 @@ module Goodcity
                    where('NOT EXISTS (SELECT 1 FROM packages WHERE packages.item_id = items.id)').
                    select(:id).
                    pluck(:id)
-        if ids.size == 0
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity accepted (not deleted) items with no related packages. items.id (#{ids.size}): #{ids.join(', ')}")

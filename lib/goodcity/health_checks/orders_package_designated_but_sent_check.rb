@@ -6,7 +6,7 @@ module Goodcity
       desc "Orders Packages should not be in state designated and have a sent_on date"
       def run
         ids = OrdersPackage.select(:id).where("sent_on IS NOT NULL AND state NOT IN ('dispatched', 'cancelled', 'requested')").pluck(:id)
-        if ids.size == 0
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity OrdersPackages that should be dispatched. orders_packages.id (#{ids.size}): #{ids.join(', ')}")

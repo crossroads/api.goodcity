@@ -6,7 +6,7 @@ module Goodcity
       desc "Orders Packages state not dispatched but packages.stockit_sent_on is set"
       def run
         ids = OrdersPackage.joins(:package).where("packages.stockit_sent_on IS NOT NULL and orders_packages.state NOT IN ('dispatched', 'cancelled', 'requested')").select(:id).pluck(:id)
-        if ids.size == 0
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity OrdersPackages where state is not dispatched but packages.stockit_sent_on is set. orders_packages.id (#{ids.size}): #{ids.join(', ')}")

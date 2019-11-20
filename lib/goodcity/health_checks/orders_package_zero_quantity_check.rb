@@ -9,8 +9,10 @@ module Goodcity
     class OrdersPackageZeroQuantityCheck < Base
       desc "OrdersPackages should not have quantity < 1"
       def run
-        ids = OrdersPackage.where('quantity < 1').where('NOT state = \'cancelled\'').pluck(:id)
-        if ids.count.zero?
+        ids = OrdersPackage.where('quantity < 1').
+          where.not(state: 'cancelled').
+          pluck(:id)
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity OrdersPackages should not have quantity < 1. orders_packages.id (#{ids.size}): #{ids.join(', ')}")

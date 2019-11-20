@@ -6,7 +6,7 @@ module Goodcity
       desc "Received Packages should contain location_id reference."
       def run
         ids = Package.where('inventory_number is not null and location_id is null').pluck(:id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity received Packages with nil location_id. packages.id (#{ids.size}): #{ids.join(', ')}")
