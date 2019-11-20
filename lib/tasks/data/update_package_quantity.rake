@@ -10,7 +10,7 @@ namespace :goodcity do
       dry_run = (ENV['DRY_RUN'] == 'true')
       puts "Doing dry_run" if dry_run
       packages = Package.where("quantity < 0 AND stockit_sent_on IS NOT NULL")
-      packages.each do |package|
+      packages.find_each do |package|
         old_quantity = package.quantity
         package.quantity = 0
         csv << [package.id, package.inventory_number, package.designation_name, "Quantity was #{old_quantity}. Changing to 0."]
