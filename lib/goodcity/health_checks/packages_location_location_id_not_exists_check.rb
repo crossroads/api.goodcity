@@ -14,7 +14,7 @@ module Goodcity
         ids = PackagesLocation.
           where('location_id IN (SELECT location_id FROM packages_locations EXCEPT SELECT id FROM locations)').
           pluck(:id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity PackagesLocation location_id doesn't exist in locations table. packages_location.location_id (#{ids.size}): #{ids.join(', ')}")

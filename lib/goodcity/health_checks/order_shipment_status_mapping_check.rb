@@ -9,7 +9,7 @@ module Goodcity
         Order::SHIPMENT_STATUS_MAP.each do |status, state|
           ids << Order.shipments.select(:id).where(status: status).where('state != ?', state).pluck(:id)
         end
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity Orders with shipment status should map to specific state. Run 'rake orders:map_shipment_status' to remediate. (#{ids.size}): #{ids.join(', ')}")

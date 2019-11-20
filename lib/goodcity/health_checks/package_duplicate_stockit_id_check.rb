@@ -6,7 +6,7 @@ module Goodcity
       desc "Packages should not have duplicate stockit_ids."
       def run
         ids = Package.select(:stockit_id).group(:stockit_id).having('COUNT(*) > 1').where('stockit_id IS NOT NULL').pluck(:stockit_id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity Packages with duplicate stockit_ids. stockit_id (#{ids.size}): #{ids.join(', ')}")

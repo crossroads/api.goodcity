@@ -9,7 +9,7 @@ module Goodcity
       desc "OrdersPackages in state 'dispatched' should have a sent_on date"
       def run
         ids = OrdersPackage.where(sent_on: nil).where(state: 'dispatched').pluck(:id)
-        if ids.count.zero?
+        if ids.empty?
           pass!
         else
           fail_with_message!("GoodCity OrdersPackages in state 'dispatched' but sent_on date is not set. orders_packages.id (#{ids.size}): #{ids.join(', ')}")
