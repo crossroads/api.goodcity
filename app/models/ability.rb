@@ -179,7 +179,7 @@ class Ability
 
   def item_abilities
     if can_manage_items?
-      can [:index, :show, :create, :update, :messages, :move_set_partial_qty,
+      can [:index, :show, :create, :update, :messages,
         :designate_stockit_item_set, :dispatch_stockit_item_set, :update_designation_of_set, :destroy], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
