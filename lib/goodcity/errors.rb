@@ -9,7 +9,7 @@ module Goodcity
     end
   end
 
-  class AlredyDispatchedError < OperationsError
+  class AlreadyDispatchedError < OperationsError
     def initialize
       super(I18n.t('orders_package.already_dispatched'))
     end

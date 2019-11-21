@@ -74,7 +74,7 @@ module OrderFulfilmentOperations
     end
 
     def assert_can_dispatch(ord_pkg)
-      raise Goodcity::AlredyDispatchedError.new if ord_pkg.dispatched?
+      raise Goodcity::AlreadyDispatchedError.new if ord_pkg.dispatched?
       raise Goodcity::UnprocessedError.new if order_unprocessed?(ord_pkg.order)
     end
   end
