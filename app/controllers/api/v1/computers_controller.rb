@@ -42,6 +42,14 @@ module Api
         render json: @computers, each_serializer: serializer
       end
 
+      def create
+        debugger
+        PackageDetailBuilder.new(
+          {},
+          request_from_stockit=false
+        ).build_or_update_record
+      end
+
       def show
         render json: @computer, serializer: serializer, include_country: true
       end
@@ -52,6 +60,11 @@ module Api
       def update
         @computer.assign_attributes(computer_params)
         update_and_render_object_with_errors(@computer)
+      end
+
+      def destroy
+        @computer.destroy
+        render json: {}
       end
 
       private

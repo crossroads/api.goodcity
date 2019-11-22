@@ -33,6 +33,13 @@ module Api
         render json: @electricals, each_serializer: serializer
       end
 
+      def create
+        PackageDetailBuilder.new(
+          electrical_params,
+          request_from_stockit=false
+        ).build_or_update_record
+      end
+
       def show
         render json: @electrical, serializer: serializer, include_country: true
       end
@@ -42,6 +49,11 @@ module Api
       def update
         @electrical.assign_attributes(electrical_params)
         update_and_render_object_with_errors(@electrical)
+      end
+
+      def destroy
+        @electrical.destroy
+        render json: {}
       end
 
       private
