@@ -30,6 +30,13 @@ module Api
         render json: @computer_accessories, each_serializer: serializer
       end
 
+      def create
+        PackageDetailBuilder.new(
+          computer_accessory_params,
+          request_from_stockit=false
+        ).build_or_update_record
+      end
+
       def show
         render json: @computer_accessory, serializer: serializer, include_country: true
       end
@@ -40,6 +47,11 @@ module Api
       def update
         @computer_accessory.assign_attributes(computer_accessory_params)
         update_and_render_object_with_errors(@computer_accessory)
+      end
+
+      def destroy
+        @computer_accessory.destroy
+        render json: {}
       end
 
       private
