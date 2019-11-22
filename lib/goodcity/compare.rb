@@ -19,9 +19,8 @@ module Goodcity
       compare_locations
       compare_pallets
       compare_contacts
-      # compare_local_orders
       compare_organisations
-      # compare_items
+      compare_local_orders
       compare_orders
     end
 
@@ -94,34 +93,6 @@ module Goodcity
       compare_objects(StockitOrganisation, stockit_organisations, [:name])
     end
 
-    def compare_items
-      # Missing mappings
-      # Stockit : GoodCity
-      # : deleted_at
-      # code_id: :package_type_id
-      # donor_condition_id : condition
-      # designation_code :
-      # designation_id: order_id
-      # : designation_name
-      # sent_on : stockit_sent_on
-      # : stockit_sent_by_id
-      # : stockit_moved_on
-      # : stockit_moved_by_id
-      # : stockit_designated_on
-      # : stockit_designated_by_id
-      # location_id : location.stockit_id
-      # pallet_id : pallet.stockit_id
-      # description : notes
-      # quantity : received_quantity
-      # TO DO
-      # also use 'select' statements so not building AR objects
-      attributes = [:box_id, :case_number, :grade, :height, :inventory_number, :length, :width]
-      paginated_json(Stockit::ItemSync, "items", 0, 1000) do |stockit_items|
-        compare_stockit_objects(Package, stockit_items, attributes)
-      end
-      compare_goodcity_objects(Package, attributes)
-    end
-
     def compare_orders
       # TO DO: pagination
       # Not in Stockit JSON
@@ -133,7 +104,7 @@ module Goodcity
       # organisation_id : stockit_organisation -> stockit_id
       # detail_id : detail.stockit_id
       stockit_designations = stockit_json(Stockit::DesignationSync, "designations")
-      compare_objects(Order, stockit_designations, [:code, :country_id, :description, :detail_type, :status])
+      compare_objects(Order, stockit_designations, [:code, :country_id, :description, :status])
     end
 
     private
