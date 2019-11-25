@@ -39,6 +39,11 @@ module Stockit
         new(package, offset, per_page).index
       end
 
+      # temporary method, to be removed after data import
+      def index_with_detail(package, offset, per_page)
+        new(package, offset, per_page).index_with_detail
+      end
+
       def dispatch(package)
         new(package).dispatch
       end
@@ -46,6 +51,12 @@ module Stockit
 
     def index
       url = url_for("/api/v1/items")
+      get(url, { offset: offset, per_page: per_page })
+    end
+
+    # temporary method, to be removed after data import
+    def index_with_detail
+      url = url_for("/api/v1/items_with_detail")
       get(url, { offset: offset, per_page: per_page })
     end
 
@@ -120,6 +131,8 @@ module Stockit
         location_id: package.stockit_location_id,
         id: package.stockit_id,
         pieces: package.pieces,
+        detail_id: package&.detail_id,
+        detail_type: package&.detail_type,
         # designation_id: package.singleton_package? ? package.stockit_order_id : nil,
         # designated_on: package.singleton_package? ? package.stockit_designated_on : nil
         designation_id: package.stockit_order_id,

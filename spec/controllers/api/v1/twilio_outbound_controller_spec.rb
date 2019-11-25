@@ -34,13 +34,13 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
     let(:offer)  { create :offer, :submitted }
     let(:params) { basic_outbound_call_params.merge({
       "CallStatus"   => "ringing",
-      "phone_number" => "#{offer.id}#9"
+      "To" => "#{offer.id}#9"
     }) }
 
     it "will generate response for twilio when Admin calling Donor's number", :show_in_doc do
       post :connect_call, params
       expect(response.status).to eq(200)
-      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Dial callerId=\"+163456799\" action=\"/api/v1/twilio_outbound/completed_call\"><Number>#{offer.created_by.mobile}</Number></Dial></Response>")
+      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say voice=\"alice\">Connecting call to #{offer.created_by.full_name}</Say>\n<Dial action=\"/api/v1/twilio_outbound/completed_call\" callerId=\"+163456799\">#{offer.created_by.mobile}</Dial>\n</Response>\n")
     end
   end
 
@@ -63,13 +63,13 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
     it "will generate response for twilio when Admin-Donor call is completed", :show_in_doc do
       post :completed_call, params
       expect(response.status).to eq(200)
-      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Hangup/></Response>")
+      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Hangup/>\n</Response>\n")
     end
 
     it "will generate response for twilio when Donor is not-answering or busy or call-fails", :show_in_doc do
       post :completed_call, failed_call_params
       expect(response.status).to eq(200)
-      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response><Say>Couldn't reach #{user.full_name} try again soon. Goodbye.</Say><Hangup/></Response>")
+      expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say voice=\"alice\">Couldn't reach User try again soon. Goodbye.</Say>\n<Hangup/>\n</Response>\n")
     end
   end
 

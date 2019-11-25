@@ -1,0 +1,96 @@
+---
+-
+  name: "comp_test_status"
+  key: "A"
+  label_en: "Active"
+  label_zh_tw: "Active"
+-
+  name: "comp_test_status"
+  key: "F"
+  label_en: "Failure"
+  label_zh_tw: "Failure"
+-
+  name: "comp_test_status"
+  key: "O"
+  label_en: "Obsolete"
+  label_zh_tw: "Obsolete"
+-
+  name: "comp_test_status"
+  key: "R"
+  label_en: "Reserved"
+  label_zh_tw: "Reserved"
+-
+  name: "comp_test_status"
+  key: "S"
+  label_en: "Spare"
+  label_zh_tw: "Spare"
+-
+  name: "electrical_test_status"
+  key: "T"
+  label_en: "Tested (DO NOT USE)"
+  label_zh_tw: "Tested (DO NOT USE)"
+-
+  name: "electrical_test_status"
+  key: "U"
+  label_en: "Untested (DO NOT USE)"
+  label_zh_tw: "Untested (DO NOT USE)"
+-
+  name: "electrical_test_status"
+  key: "M"
+  label_en: "Maintenance (DO NOT USE)"
+  label_zh_tw: "Maintenance (DO NOT USE)"
+-
+  name: "electrical_frequency"
+  key: "0"
+  label_en: "N/A"
+  label_zh_tw: "N/A"
+-
+  name: "electrical_frequency"
+  key: "1"
+  label_en: "50"
+  label_zh_tw: "50"
+-
+  name: "electrical_frequency"
+  key: "2"
+  label_en: "60"
+  label_zh_tw: "60"
+-
+  name: "electrical_frequency"
+  key: "3"
+  label_en: "50/60 (Multi)"
+  label_zh_tw: "50/60 (Multi)"
+-
+  name: "electrical_frequency"
+  key: "4"
+  label_en: "Other"
+  label_zh_tw: "Other"
+-
+  name: "electrical_voltage"
+  key: "0"
+  label_en: "N/A"
+  label_zh_tw: "N/A"
+-
+  name: "electrical_voltage"
+  key: "1"
+  label_en: "120V ~ (100-200V)"
+  label_zh_tw: "120V ~ (100-200V)"
+-
+  name: "electrical_voltage"
+  key: "2"
+  label_en: "240V ~ (200-300V)"
+  label_zh_tw: "240V ~ (200-300V)"
+-
+  name: "electrical_voltage"
+  key: "3"
+  label_en: "> 300V"
+  label_zh_tw: "> 300V"
+-
+  name: "electrical_voltage"
+  key: "4"
+  label_en: "Multi"
+  label_zh_tw: "Multi"
+-
+  name: "electrical_voltage"
+  key: "5"
+  label_en: "Other"
+  label_zh_tw: "Other"
