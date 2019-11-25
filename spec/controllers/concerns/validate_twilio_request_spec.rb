@@ -9,10 +9,10 @@ end
 describe TwilioFakeController do
 
   let(:validator) {
-    Twilio::Util::RequestValidator.new ENV['TWILIO_AUTH_TOKEN']
+    Twilio::Security::RequestValidator.new ENV['TWILIO_AUTH_TOKEN']
   }
 
-  before { expect(Twilio::Util::RequestValidator).to receive(:new).
+  before { expect(Twilio::Security::RequestValidator).to receive(:new).
     and_return(validator) }
 
   it "should successfully validate a good token" do

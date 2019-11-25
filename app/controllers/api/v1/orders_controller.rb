@@ -55,15 +55,17 @@ module Api
       api :GET, '/v1/designations/1', "Get a order"
       def show
         root = is_browse_app? ? "order" : "designation"
-        render json: @order,
-          serializer: serializer,
+        render json: serializer.new(@order,
           root: root,
           exclude_code_details: true,
           include_packages: bool_param(:include_packages, true),
           include_order: false,
           include_territory: true,
           include_images: true,
+          include_allowed_actions: true,
+          include_orders_packages: true,
           exclude_stockit_set_item: true
+        )
       end
 
       def transition

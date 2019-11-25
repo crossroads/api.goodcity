@@ -6,17 +6,20 @@ class Ability
 
   attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids, :user_permissions
 
-  PERMISSION_NAMES = ['can_manage_items', 'can_manage_goodcity_requests', 'can_manage_packages',
-    'can_manage_offers', 'can_manage_organisations_users', 'can_search_browse_packages',
-    'can_manage_deliveries', 'can_manage_delivery_address', 'can_manage_delivery_address',
-    'can_manage_orders', 'can_manage_order_transport', 'can_manage_holidays',
-    'can_manage_orders_packages', 'can_manage_images', 'can_manage_messages',
-    'can_add_package_types', 'can_add_or_remove_inventory_number', 'can_check_organisations',
-    'can_access_packages_locations', 'can_destroy_image_for_imageable_states',
-    'can_create_and_read_messages', 'can_destroy_contacts', 'can_read_or_modify_user',
-    'can_handle_gogovan_order', 'can_read_schedule', 'can_destroy_image',
-    'can_destroy_package_with_specific_states', 'can_manage_locations',
-    'can_read_versions', 'can_create_goodcity_requests', 'can_manage_settings', 'can_manage_companies', 'can_create_donor'].freeze
+  PERMISSION_NAMES = %w[
+    can_manage_items can_manage_goodcity_requests
+    can_manage_packages can_manage_offers can_manage_organisations_users
+    can_search_browse_packages can_manage_deliveries can_manage_delivery_address
+    can_manage_delivery_address can_manage_orders can_manage_order_transport
+    can_manage_holidays can_manage_orders_packages can_manage_images
+    can_manage_messages can_add_package_types can_add_or_remove_inventory_number
+    can_check_organisations can_access_packages_locations can_create_donor
+    can_destroy_image_for_imageable_states can_create_and_read_messages
+    can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
+    can_read_schedule can_destroy_image can_destroy_package_with_specific_states
+    can_manage_locations can_read_versions can_create_goodcity_requests
+    can_manage_settings can_manage_companies can_manage_package_detail
+  ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
@@ -73,6 +76,9 @@ class Ability
     user_abilities
     version_abilities
     company_abilities
+    computer_abilities
+    computer_accessory_abilities
+    electrical_abilities
   end
 
   def address_abilities
@@ -98,6 +104,18 @@ class Ability
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :destroy], Beneficiary
     end
+  end
+
+  def computer_abilities
+    can [:create, :index, :show, :update, :destroy], Computer if can_manage_package_detail?
+  end
+
+  def computer_accessory_abilities
+    can [:create, :index, :show, :update, :destroy], ComputerAccessory if can_manage_package_detail?
+  end
+
+  def electrical_abilities
+    can [:create, :index, :show, :update, :destroy], Electrical if can_manage_package_detail?
   end
 
   def goodcity_request_abilitites
@@ -286,6 +304,7 @@ class Ability
     can [:index, :show], IdentityType
     can [:index, :show], Territory
     can :index, Timeslot
+    can :index, Country
     can :index, GogovanTransport
     can :index, CrossroadsTransport
     can :index, BookingType
