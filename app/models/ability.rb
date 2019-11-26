@@ -179,7 +179,7 @@ class Ability
 
   def item_abilities
     if can_manage_items?
-      can [:index, :show, :create, :update, :messages, :move_stockit_item_set, :move_set_partial_qty,
+      can [:index, :show, :create, :update, :messages,
         :designate_stockit_item_set, :dispatch_stockit_item_set, :update_designation_of_set, :destroy], Item
     else
       can [:index, :show, :create], Item, Item.donor_items(user_id) do |item|
@@ -275,9 +275,8 @@ class Ability
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :designate_stockit_item, :remove_from_set,
         :undesignate_stockit_item, :designate_partial_item, :update_partial_quantity_of_same_designation,
-        :undesignate_partial_item, :dispatch_stockit_item, :move_stockit_item,
-        :move_partial_quantity, :move_full_quantity, :print_inventory_label,
-        :undispatch_stockit_item, :stockit_item_details, :split_package], Package
+        :undesignate_partial_item, :dispatch_stockit_item, :move,
+        :print_inventory_label, :undispatch_stockit_item, :stockit_item_details, :split_package], Package
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }

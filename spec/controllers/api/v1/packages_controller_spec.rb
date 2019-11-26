@@ -163,34 +163,90 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
- describe "PUT move_full_quantity" do
+ describe "Moving the package (PUT /:id/move) " do
     before { generate_and_set_token(user) }
 
-    let!(:location) { create :location }
-    let!(:order) { create :order }
-    let!(:package) { create :package, order: order, stockit_sent_on: Time.zone.now.to_date, received_quantity: 1,
-      quantity: 0 }
-    let(:dispatched_location) { create :location, :dispatched }
-    let!(:orders_package) { create :orders_package, package: package, order: order, state: 'dispatched', quantity: 1 }
-    let!(:packages_location) { create :packages_location, package: package,
-      location: dispatched_location, reference_to_orders_package: orders_package.id, quantity: 1 }
+    let!(:location1) { create :location }
+    let!(:location2) { create :location }
+    let!(:package) { create :package, received_quantity: 1 }
+    let!(:packages_location) { create(:packages_location, package: package, location: location1, quantity: 5) }
 
-    before(:all) do
-      Timecop.freeze('2013-04-24'.to_date) { Time.zone.now.to_date }
+    it 'moves the entire quantity to the desired location' do
+      expect(Stockit::ItemSync).to receive(:move)
+      expect(package.packages_locations.length).to eq(1)
+      expect(package.packages_locations.first.location).to eq(location1)
+      expect(package.packages_locations.first.quantity).to eq(5)
+
+      put :move, format: :json, id: package.id, quantity: 5, from: location1.id, to: location2.id
+
+      package.reload
+      expect(package.packages_locations.length).to eq(1)
+      expect(package.packages_locations.first.location).to eq(location2)
+      expect(package.packages_locations.first.quantity).to eq(5)
     end
 
-    after(:all) do
-      Timecop.return
+    it 'moves part of the quantity to the desired location' do
+      expect(package.packages_locations.length).to eq(1)
+      expect(package.packages_locations.first.location).to eq(location1)
+      expect(package.packages_locations.first.quantity).to eq(5)
+
+      put :move, format: :json, id: package.id, quantity: 3, from: location1.id, to: location2.id
+
+      package.reload
+      expect(package.packages_locations.length).to eq(2)
+      expect(package.packages_locations.first.location).to eq(location1)
+      expect(package.packages_locations.first.quantity).to eq(2)
+      expect(package.packages_locations.last.location).to eq(location2)
+      expect(package.packages_locations.last.quantity).to eq(3)
     end
 
-    context 'undispatch from gc' do
-      it 'undispatches orders_package with matching order_id when undispatched from gc and assigns locaion aginst package' do
-        put :move_full_quantity, format: :json, location_id: location.id, ordersPackageId: orders_package.id, id: package.id
-        expect(package.reload.locations).to include(location)
-        expect(package.packages_locations.count).to eq 1
-        expect(package.reload.order_id).to eq order.id
-        #expect(package.reload.stockit_sent_on).to eq nil
-        expect(orders_package.reload.state).to eq 'designated'
+    it 'updates existing packages_location with the moved quantity' do
+      create(:packages_location, package: package, quantity: 1, location: location2)
+
+      expect(package.packages_locations.length).to eq(2)
+      expect(package.packages_locations.first.location).to eq(location1)
+      expect(package.packages_locations.first.quantity).to eq(5)
+      expect(package.packages_locations.last.location).to eq(location2)
+      expect(package.packages_locations.last.quantity).to eq(1)
+
+      put :move, format: :json, id: package.id, quantity: 3, from: location1.id, to: location2.id
+
+      package.reload
+      expect(package.packages_locations.length).to eq(2)
+      expect(package.packages_locations.first.location).to eq(location1)
+      expect(package.packages_locations.first.quantity).to eq(2)
+      expect(package.packages_locations.last.location).to eq(location2)
+      expect(package.packages_locations.last.quantity).to eq(4)
+    end
+
+    context 'with bad parameters' do
+      let(:error_msg) do
+        return parsed_body['error'] if parsed_body['error'].present?
+        parsed_body['errors'][0]['message']
+      end
+
+      it 'fails if the from location is missing' do
+        put :move, format: :json, id: package.id, quantity: 3, to: location2.id
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Location/)
+      end
+
+      it 'fails if the to location is missing' do
+        put :move, format: :json, id: package.id, quantity: 3, from: location2.id
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Location/)
+      end
+
+      it 'fails if the the package_id is wrong' do
+        put :move, format: :json, id: '9999', from: location2.id
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Package with 'id'=9999/)
+      end
+
+      it 'fails if the quantity is missing' do
+        put :move, format: :json, id: package.id, from: location2.id
+        expect(response.status).to eq(422)
+        expect(error_msg).to match(/^Invalid move quantity/)
       end
     end
   end
