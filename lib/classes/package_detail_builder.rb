@@ -31,7 +31,7 @@ class PackageDetailBuilder
   end
 
   def build_or_update_record?
-    PERMITTED_DETAIL_TYPES.include?(detail_type.downcase)
+    PERMITTED_DETAIL_TYPES.include?(detail_type.underscore)
   end
 
   def detail_attributes
