@@ -33,13 +33,6 @@ module Api
         render json: @electricals, each_serializer: serializer
       end
 
-      def create
-        PackageDetailBuilder.new(
-          electrical_params,
-          request_from_stockit=false
-        ).build_or_update_record
-      end
-
       def show
         render json: @electrical, serializer: serializer, include_country: true
       end
