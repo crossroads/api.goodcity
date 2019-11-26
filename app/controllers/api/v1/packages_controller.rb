@@ -54,13 +54,13 @@ module Api
 
       def stockit_item_details
         render json: stock_serializer.new(@package,
-                                          serializer: stock_serializer,
-                                          root: "item",
-                                          include_order: true,
-                                          include_orders_packages: true,
-                                          exclude_stockit_set_item: @package.set_item_id.blank?,
-                                          include_images: @package.set_item_id.blank?,
-                                          include_allowed_actions: true).as_json
+          serializer: stock_serializer,
+          root: "item",
+          include_order: true,
+          include_orders_packages: true,
+          exclude_stockit_set_item: @package.set_item_id.blank?,
+          include_images: @package.set_item_id.blank?,
+          include_allowed_actions: true).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -219,24 +219,12 @@ module Api
         send_stock_item_response
       end
 
-      def move_partial_quantity
-        package_params = JSON.parse(params["package"])
-        @package.move_partial_quantity(params["location_id"], package_params, params["total_qty"])
+      def move
+        quantity = params[:quantity].to_i
+        Package::Operations.move(quantity, @package, from: params[:from], to: params[:to])
         send_stock_item_response
       end
 
-      def move_full_quantity
-        orders_package = OrdersPackage.find_by(id: params["ordersPackageId"])
-        orders_package.undispatch_orders_package
-        @package.move_full_quantity(params["location_id"], params["ordersPackageId"])
-        @package.undispatch_stockit_item
-        send_stock_item_response
-      end
-
-      def move_stockit_item
-        @package.move_stockit_item(params["location_id"])
-        send_stock_item_response
-      end
 
       def remove_from_set
         @package.remove_from_set
@@ -247,12 +235,13 @@ module Api
       def send_stock_item_response
         @package.reload
         if @package.errors.blank? && @package.valid? && @package.save
-          render json: @package,
-            serializer: stock_serializer,
+          render json: stock_serializer.new(@package,
             root: "item",
             include_order: true,
             include_packages: false,
+            include_allowed_actions: true,
             include_images: @package.set_item_id.blank?
+          )
         else
           render json: { errors: @package.errors.full_messages }, status: 422
         end
