@@ -30,13 +30,6 @@ module Api
         render json: @computer_accessories, each_serializer: serializer
       end
 
-      def create
-        PackageDetailBuilder.new(
-          computer_accessory_params,
-          request_from_stockit=false
-        ).build_or_update_record
-      end
-
       def show
         render json: @computer_accessory, serializer: serializer, include_country: true
       end
