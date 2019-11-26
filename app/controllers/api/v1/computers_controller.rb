@@ -42,14 +42,6 @@ module Api
         render json: @computers, each_serializer: serializer
       end
 
-      def create
-        debugger
-        PackageDetailBuilder.new(
-          {},
-          request_from_stockit=false
-        ).build_or_update_record
-      end
-
       def show
         render json: @computer, serializer: serializer, include_country: true
       end
