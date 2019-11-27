@@ -101,6 +101,16 @@ RSpec.describe Package, type: :model do
       package.add_to_stockit
       expect(package.stockit_id).to be_nil
     end
+
+    it "should not allow to send sync request to stockit if the detail is invalid" do
+      detail = build :computer, {os_serial_num: nil, mar_os_serial_num: "xyz"}
+      package = build :package, :received
+      package.detail = detail
+      expect(Stockit::ItemSync).to_not receive(:create)
+      package.save
+      package.add_to_stockit
+      expect(package.errors).to include(:"detail.mar_os_serial_num", :"detail.os_serial_num")
+    end
   end
 
   describe "remove_from_stockit" do
