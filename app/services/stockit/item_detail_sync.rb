@@ -23,6 +23,10 @@ module Stockit
       def update(detail)
         new(detail).update if detail
       end
+
+      def destroy(detail)
+        new(detail).delete if detail
+      end
     end
 
     def create
@@ -33,6 +37,11 @@ module Stockit
     def update
       url = url_for("/api/v1/#{detail_type.pluralize}/update")
       put(url, detail_params)
+    end
+
+    def delete
+      url = url_for("/api/v1/#{detail_type.pluralize}/destroy")
+      put(url, { detail_type => { 'id' => detail.stockit_id }})
     end
 
     private
