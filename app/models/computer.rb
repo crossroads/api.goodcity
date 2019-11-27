@@ -10,5 +10,13 @@ class Computer < ActiveRecord::Base
   before_save :set_updated_by
   after_commit :create_on_stockit, on: :create, unless: :request_from_stockit?
   after_update :update_on_stockit, unless: :request_from_stockit?
-  validates :mar_os_serial_num, :mar_ms_office_serial_num, length: { minimum: 14 }, allow_nil: true, allow_blank: true
+  validates :mar_os_serial_num, :mar_ms_office_serial_num, length: { is: 14 }, allow_nil: true, allow_blank: true
+  validate :validate_fields
+
+  private
+
+  def validate_fields
+    errors.add(:os_serial_num, "'Mar OS serial #' cannot be used if 'OS Serial #' is blank.") if os_serial_num.blank? and !mar_os_serial_num.blank?
+    errors.add(:os_serial_num, "'Mar Office serial #' cannot be used if 'OS Serial #' is blank.") if os_serial_num.blank? and !mar_ms_office_serial_num.blank?
+  end
 end
