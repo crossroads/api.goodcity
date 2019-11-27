@@ -109,7 +109,7 @@ RSpec.describe Package, type: :model do
       expect(Stockit::ItemSync).to_not receive(:create)
       package.save
       package.add_to_stockit
-      expect(package.errors).to include(:"detail.mar_os_serial_num", :"detail.os_serial_num")
+      expect(package.errors).to include(:"detail.mar_os_serial_num")
     end
   end
 
