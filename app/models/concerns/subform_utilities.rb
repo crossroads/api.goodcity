@@ -18,7 +18,6 @@ module SubformUtilities
 
   def create_on_stockit
     return if request_from_stockit?
-
     response = Stockit::ItemDetailSync.create(self)
     add_stockit_id(response)
   end
