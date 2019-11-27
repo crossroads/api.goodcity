@@ -318,7 +318,8 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    return unless detail && detail.valid?
+    return if detail.present? && !detail.valid?
+
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
