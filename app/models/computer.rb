@@ -16,7 +16,7 @@ class Computer < ActiveRecord::Base
   private
 
   def validate_fields
-    errors.add(:os_serial_num, "'Mar OS serial #' cannot be used if 'OS Serial #' is blank.") if os_serial_num.blank? and !mar_os_serial_num.blank?
-    errors.add(:os_serial_num, "'Mar Office serial #' cannot be used if 'OS Serial #' is blank.") if os_serial_num.blank? and !mar_ms_office_serial_num.blank?
+    errors.add(:os_serial_num, "'Mar OS serial #' cannot be used if 'OS Serial #' is blank.") if os_serial_num.blank? && !mar_os_serial_num.blank?
+    errors.add(:os_serial_num, "'Mar Office serial #' cannot be used if 'OS Serial #' is blank.") if os_serial_num.blank? && !mar_ms_office_serial_num.blank?
   end
 end
