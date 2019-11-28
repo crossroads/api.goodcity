@@ -11,7 +11,7 @@ module Goodcity
     end
 
     def run
-      if package && import_and_save_detail? && update_package_detail?
+      if package && import_and_save_detail?
         package&.update_columns(
           detail_id: detail_id,
           detail_type: detail_type,
@@ -26,10 +26,6 @@ module Goodcity
       item["id"] && item["detail_type"] && item["detail_id"]
     end
 
-    def update_package_detail?
-      detail_id && detail_type
-    end
-
     def detail_type
       item["detail_type"] || package&.package_type&.subform.titleize
     end
@@ -40,13 +36,14 @@ module Goodcity
     end
 
     def create_detail_record
+      GoodcitySync.request_from_stockit = true
       case detail_type
       when "Computer"
-        Computer.create(computer_attributes)
+        Computer.where(stockit_id: item["detail_id"]).first_or_create(computer_attributes)
       when "Electrical"
-        Electrical.create(electrical_attributes)
+        Electrical.where(stockit_id: item["detail_id"]).first_or_create(electrical_attributes)
       when "Computer_accessory"
-        ComputerAccessory.create(computer_accessory_attributes)
+        ComputerAccessory.where(stockit_id: item["detail_id"]).first_or_create(computer_accessory_attributes)
       end
     end
 
@@ -58,6 +55,7 @@ module Goodcity
         size sound usb video wireless].each do |attr|
         attr_hash.merge({ "#{attr}": item["#{attr}"] })
       end
+      attr_hash["stockit_id"] = item["detail_id"]
       attr_hash.merge(lookup_hash)
     end
 
@@ -67,6 +65,7 @@ module Goodcity
         system_or_region].each do |attr|
         attr_hash.merge({ "#{attr}": item["#{attr}"] })
       end
+      attr_hash["stockit_id"] = item["detail_id"]
       attr_hash.merge(lookup_hash)
     end
 
@@ -76,6 +75,7 @@ module Goodcity
         model serial_num size].each do |attr|
         attr_hash.merge({ "#{attr}": item["#{attr}"] })
       end
+      attr_hash["stockit_id"] = item["detail_id"]
       attr_hash.merge(lookup_hash)
     end
 
