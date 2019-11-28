@@ -26,6 +26,12 @@ describe PackagesInventoriesImporter do
     expect { PackagesInventoriesImporter.import }.to raise_error(StandardError)
   end
 
+  it 'should delete old records if run with the force flag' do
+    old_record = create(:packages_inventory)
+    expect { PackagesInventoriesImporter.import(force: true) }.not_to raise_error
+    expect(PackagesInventory.find_by(id: old_record.id)).to be_nil
+  end
+
   describe "For on hand packages" do
 
     before do
