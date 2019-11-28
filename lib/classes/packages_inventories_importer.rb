@@ -88,7 +88,7 @@ class PackagesInventoriesImporter
     prepare(force: force)
 
     # -- Import
-    output('---> IMPORTING')  if importing
+    output('---> IMPORTING')
     each_package { |package| import_package(package) }
 
     output(COMPLETED)
