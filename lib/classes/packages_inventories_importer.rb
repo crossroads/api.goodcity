@@ -33,7 +33,7 @@ class PackagesInventoriesImporter
   def prepare(force: false)
     if PackagesInventory.count.positive?
       raise ALREADY_RAN_MSG unless force
-      confirm(FORCE_CONFIRMATION_MSG) { Package.destroy_all }
+      confirm(FORCE_CONFIRMATION_MSG) { PackagesInventory.destroy_all }
     end
   end
 
