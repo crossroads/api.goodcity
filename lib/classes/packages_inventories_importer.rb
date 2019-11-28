@@ -24,8 +24,10 @@ class PackagesInventoriesImporter
 
   # --- Prompts the user to connfirm an action before running it
   def confirm(msg)
-    STDOUT.puts(msg)
-    raise CANCELLED unless STDIN.gets.chomp.eql?('yes')
+    unless Rails.env.test?
+      STDOUT.puts(msg)
+      raise CANCELLED unless STDIN.gets.chomp.eql?('yes')
+    end
     yield
   end
 
@@ -33,7 +35,9 @@ class PackagesInventoriesImporter
   def prepare(force: false)
     if PackagesInventory.count.positive?
       raise ALREADY_RAN_MSG unless force
-      confirm(FORCE_CONFIRMATION_MSG) { PackagesInventory.destroy_all }
+      confirm(FORCE_CONFIRMATION_MSG) do
+        ActiveRecord::Base.connection.execute('DELETE FROM packages_inventories')
+      end
     end
   end
 
