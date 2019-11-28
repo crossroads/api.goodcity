@@ -13,8 +13,8 @@ class PackagesInventoriesImporter
   Actions = PackagesInventory::Actions
 
   # --- Entry point
-  def self.import(force: false)
-    PackagesInventoriesImporter.new.import(force: force)
+  def self.import(force: false, rehearsal: false)
+    PackagesInventoriesImporter.new.import(force: force, rehearsal: rehearsal)
   end
 
   # --- Prints out messages
@@ -72,6 +72,8 @@ class PackagesInventoriesImporter
     if failed?
       write_csv("packages_inventory_import_errors", error_headers, @errors)
       raise REHEARSAL_FAILURE
+    else
+      output('--> Rehearsal completed with no errors');
     end
   end
 
@@ -80,14 +82,10 @@ class PackagesInventoriesImporter
   # Will first run a sanity check before proceeding with the actual import
   #
   def import(force: false, rehearsal: true)
-    importing = !rehearsal
-    @errors = []
+    return rehearse if rehearsal
 
     # -- Pre-import checks
     prepare(force: force)
-
-    # -- Rehearse
-    rehearse if rehearsal
 
     # -- Import
     output('---> IMPORTING')  if importing
