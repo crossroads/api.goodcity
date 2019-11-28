@@ -1,8 +1,11 @@
 #rake stockit:add_stockit_items_detail_to_packages
 require "goodcity/detail_factory"
+require "goodcity/rake_logger"
+
 namespace :stockit do
   desc 'Import data from stockit for item detail and save it in package'
   task add_stockit_items_detail_to_packages: :environment do
+    log = Goodcity::RakeLogger.new("add_stockit_items_detail_to_packages")
     offset = 0
     per_page = 1000
 
@@ -14,7 +17,11 @@ namespace :stockit do
 
       stockit_items.each do |item|
         package = Package.find_by(stockit_id: item["id"]) if item["id"]
-        Goodcity::DetailFactory.new(item, package).run
+        begin
+          Goodcity::DetailFactory.new(item, package).run
+        rescue => exception
+          log.error "(#{exception.message})"
+        end
       end
     end
   end
