@@ -10,5 +10,5 @@ class Computer < ActiveRecord::Base
   before_save :set_updated_by
   after_commit :create_on_stockit, on: :create, unless: :request_from_stockit?
   after_update :update_on_stockit, unless: :request_from_stockit?
-  validates :mar_os_serial_num, :mar_ms_office_serial_num, length: { minimum: 14 }, allow_nil: true, allow_blank: true
+  validates :mar_os_serial_num, :mar_ms_office_serial_num, length: { is: 14 }, allow_nil: true, allow_blank: true
 end
