@@ -1,9 +1,9 @@
 class PrintLabel
-  attr_accessor :printer, :label
+  attr_accessor :printer, :label_file
 
   def initialize(printer, label_file)
     @printer    = printer
-    @label_file = label
+    @label_file = label_file
   end
 
   def print
@@ -32,7 +32,7 @@ class PrintLabel
       "HOST" => printer.host,
       "USER" => printer.username,
       "PWD" => printer.password,
-      "FILE" => @label_file.path,
+      "FILE" => label_file.path,
     }
   end
 end
