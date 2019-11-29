@@ -1,4 +1,4 @@
-#rake stockit:add_stockit_items_detail_to_packages
+# rake stockit:add_stockit_items_detail_to_packages
 require "goodcity/detail_factory"
 require "goodcity/rake_logger"
 
@@ -7,9 +7,9 @@ namespace :stockit do
   task add_stockit_items_detail_to_packages: :environment do
     log = Goodcity::RakeLogger.new("add_stockit_items_detail_to_packages")
     count = 0
-    ["electricals", "computers", "computer_accessories"].each do |table_name|
+    %w[electricals computers computer_accessories].each do |table_name|
       offset = 0
-      per_page = 10000000
+      per_page = 1000
       loop do
         items_json = Stockit::ItemSync.index_with_detail(offset, per_page, table_name)
         offset += per_page
@@ -20,7 +20,7 @@ namespace :stockit do
           package = Package.find_by(stockit_id: item["package_id"]) if item_id
           begin
             is_package_updated = Goodcity::DetailFactory.new(item, package).run
-          rescue => exception
+          rescue StandardError => exception
             log.error("package: #{package.id}, stockit_item: #{item_id} #{exception.message}")
           end
           if is_package_updated

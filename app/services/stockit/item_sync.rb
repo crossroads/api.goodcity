@@ -57,7 +57,8 @@ module Stockit
     # temporary method, to be removed after data import
     def index_with_detail(table_name)
       url = url_for("/api/v1/items_with_detail")
-      get(url, { offset: offset, per_page: per_page, table_name: table_name})
+      options = { offset: offset, per_page: per_page, table_name: table_name }
+      get(url, options)
     end
 
     def create
