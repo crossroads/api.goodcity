@@ -247,8 +247,8 @@ module Api
         end
       end
 
-      def print_inventory_label(package_id = @package.id, printer_id = 1)
-        PrintInventoryLabelJob.enqueue(package_id, printer_id)
+      def print_inventory_label(printer_id)
+        PrintLabelJob.perform_now(@package.id, printer_id, 'inventory_label')
       end
 
       def print_inventory_label
