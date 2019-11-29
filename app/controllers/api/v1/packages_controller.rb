@@ -247,6 +247,10 @@ module Api
         end
       end
 
+      def print_inventory_label(package_id = @package.id, printer_id = 1)
+        PrintInventoryLabelJob.enqueue(package_id, printer_id)
+      end
+
       def print_inventory_label
         _print_id, errors, status = barcode_service.print(@package.inventory_number, print_count)
         render json: {
