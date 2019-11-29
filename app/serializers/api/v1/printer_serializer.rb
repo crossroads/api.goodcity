@@ -3,6 +3,6 @@ module Api::V1
     embed :ids, include: true
     attributes :id
 
-    belongs_to :location
+    has_one :location, serializer: LocationSerializer
   end
 end
