@@ -13,6 +13,7 @@ module Goodcity
         @missing_in_goodcity = []
         @missing_in_stockit = []
         @verbose = true
+        @updated_by_id = User.system_user.id
       end
 
       def run
@@ -20,6 +21,7 @@ module Goodcity
         header_check
         calculate_differences
         populate_counters
+        auto_fix
         report
         write_differences_to_file
         write_missing_file("stockit")
@@ -41,6 +43,7 @@ module Goodcity
         @stockit_data.each do |stockit_id, stockit_row|
           goodcity_row = @goodcity_data[stockit_id]
           if goodcity_row.present?
+            # Note: Stockit is always left hand side and GoodCity is always right hand side
             d = diff(stockit_row, goodcity_row)
             @differences[stockit_id] = d if d.any?
           else
@@ -71,11 +74,19 @@ module Goodcity
 
       # Return the result of any differences between 2 hashes
       #   Treat nil and '' as equal
+      #   For dates, anything within 25 hours (90000 seconds) is considered 'equal'
       #  a = {"width" => 1}; b = {"width" => 2}
       #  returns { "width" => [1, 2] }
+      # Note: Stockit is always left hand side (a) and GoodCity is always right hand side (b)
       def diff(a,b)
         a.merge(b) do |k, v1, v2|
-          (v1 || '') == (v2 || '') ? :equal : [v1, v2]
+          if ['created_at', 'updated_at', 'sent_on'].include?(k)
+            x1= v1.blank? ? 0 : Time.parse(v1).to_f
+            x2= v2.blank? ? 0 : Time.parse(v2).to_f
+            ((x1 - x2).abs < 90000) ? :equal : [v1, v2]
+          else
+            (v1 || '') == (v2 || '') ? :equal : [v1, v2]
+          end
         end.reject { |_, v| v == :equal }
       end
 
@@ -90,6 +101,10 @@ module Goodcity
 
       def log(msg)
         puts msg if @verbose
+      end
+
+      # Overridden in subclasses if required
+      def auto_fix
       end
       
       # confirm both datasets return the correct columns and in the correct order
@@ -155,6 +170,16 @@ module Goodcity
         end
       end
 
+      # sql_insert('packages', {'quantity': 20, 'stockit_sent_on': '2019-11-28'})
+      # NO sanitization, you are responsible for SQL injection issues
+      def sql_insert(table_name, attrs)
+        ActiveRecord::Base.connection.execute <<-SQL
+          INSERT INTO #{table_name}
+            (#{attrs.keys.join(', ')})
+          VALUES ('#{attrs.values.join('\', \'')}')
+        SQL
+      end
+
       def raise_missing_database_params_error
         raise MissingDatabaseParamsError.new(
           <<-MSG
@@ -175,6 +200,9 @@ module Goodcity
     end
 
     class MissingDatabaseParamsError < Exception
+    end
+
+    class NilStockitIdError < Exception
     end
 
   end
