@@ -3,27 +3,26 @@ module Goodcity
     PERMITTED_DETAIL_TYPES = %w[Computer Electrical ComputerAccessory].freeze
     FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
 
-    attr_accessor :item, :package
+    attr_accessor :item, :package, :stockit_detail_id
 
     def initialize(item, package)
       @item = item
       @package = package
+      @stockit_detail_id = item["detail_id"]
     end
 
     def run
-      if package && import_and_save_detail?
-        package&.update_columns(
-          detail_id: detail_id,
-          detail_type: detail_type,
-        )
-        print "."
-      end
+      package && import_and_save_detail? && package_updated?
     end
 
     private
 
+    def package_updated?
+      package.update_columns(detail_id: detail_id, detail_type: detail_type)
+    end
+
     def import_and_save_detail?
-      item["id"] && item["detail_type"] && item["detail_id"]
+      item["id"] && item["detail_type"] && stockit_detail_id
     end
 
     def detail_type
@@ -37,14 +36,8 @@ module Goodcity
 
     def create_detail_record
       GoodcitySync.request_from_stockit = true
-      case detail_type
-      when "Computer"
-        Computer.where(stockit_id: item["detail_id"]).first_or_create(computer_attributes)
-      when "Electrical"
-        Electrical.where(stockit_id: item["detail_id"]).first_or_create(electrical_attributes)
-      when "Computer_accessory"
-        ComputerAccessory.where(stockit_id: item["detail_id"]).first_or_create(computer_accessory_attributes)
-      end
+      detail_type.classify.constantize.where(stockit_id: stockit_detail_id)
+      .first_or_create(send "#{detail_type.underscore}_attributes".to_sym)
     end
 
     def computer_attributes
@@ -55,7 +48,7 @@ module Goodcity
         size sound usb video wireless].each do |attr|
         attr_hash.merge({ "#{attr}": item["#{attr}"] })
       end
-      attr_hash["stockit_id"] = item["detail_id"]
+      attr_hash["stockit_id"] = stockit_detail_id
       attr_hash.merge(lookup_hash)
     end
 
@@ -65,7 +58,7 @@ module Goodcity
         system_or_region].each do |attr|
         attr_hash.merge({ "#{attr}": item["#{attr}"] })
       end
-      attr_hash["stockit_id"] = item["detail_id"]
+      attr_hash["stockit_id"] = stockit_detail_id
       attr_hash.merge(lookup_hash)
     end
 
@@ -75,7 +68,7 @@ module Goodcity
         model serial_num size].each do |attr|
         attr_hash.merge({ "#{attr}": item["#{attr}"] })
       end
-      attr_hash["stockit_id"] = item["detail_id"]
+      attr_hash["stockit_id"] = stockit_detail_id
       attr_hash.merge(lookup_hash)
     end
 

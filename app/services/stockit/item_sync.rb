@@ -40,8 +40,8 @@ module Stockit
       end
 
       # temporary method, to be removed after data import
-      def index_with_detail(package, offset, per_page)
-        new(package, offset, per_page).index_with_detail
+      def index_with_detail(offset, per_page, table_name)
+        new(nil, offset, per_page).index_with_detail(table_name)
       end
 
       def dispatch(package)
@@ -55,9 +55,9 @@ module Stockit
     end
 
     # temporary method, to be removed after data import
-    def index_with_detail
+    def index_with_detail(table_name)
       url = url_for("/api/v1/items_with_detail")
-      get(url, { offset: offset, per_page: per_page })
+      get(url, { offset: offset, per_page: per_page, table_name: table_name})
     end
 
     def create
