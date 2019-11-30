@@ -8,12 +8,10 @@ module LocationOperations
   extend ActiveSupport::Concern
 
   module Operations
-    MISSING_QTY = StandardError.new(I18n.t('operations.move.not_enough_at_source'))
-
     # --- Moving a package from one location to another
     class Move
       def initialize(quantity, package, from:, to:)
-        @quantity = quantity
+        @quantity = positive_integer(quantity)
         @package = package
         @from = Utils.to_model(from, Location)
         @to = Utils.to_model(to, Location)
@@ -25,9 +23,15 @@ module LocationOperations
           dest_packages_location.increment(:quantity, @quantity).save
           source_packages_location.destroy if source_packages_location.quantity.zero?
         end
+        Stockit::ItemSync.move(@package)
       end
 
       private
+
+      def positive_integer(n)
+        return n if n.positive?
+        raise Goodcity::InvalidQuantityError.new(n)
+      end
 
       def source_packages_location
         @source ||= PackagesLocation.find_by(package: @package, location: @from)
@@ -39,7 +43,7 @@ module LocationOperations
 
       def secure
         source = source_packages_location
-        raise MISSING_QTY if source.nil? || source.quantity < @quantity
+        raise MissingQuantityError if source.nil? || source.quantity < @quantity
         ActiveRecord::Base.transaction { yield }
       end
     end

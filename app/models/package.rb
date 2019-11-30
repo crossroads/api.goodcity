@@ -5,6 +5,7 @@ class Package < ActiveRecord::Base
   include PushUpdatesMinimal
   include RollbarSpecification
   include PackageFiltering
+  include LocationOperations
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
@@ -317,6 +318,8 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
+    return if detail.present? && !detail.valid?
+
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
@@ -411,25 +414,6 @@ class Package < ActiveRecord::Base
     self.box = nil
     response = Stockit::ItemSync.undispatch(self)
     add_errors(response)
-  end
-
-  def move_partial_quantity(location_id, package_qty_changes, total_qty)
-    package_qty_changes.each do |pckg_qty_param|
-      update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["new_qty"])
-    end
-    update_or_create_qty_moved_to_location(location_id, total_qty)
-  end
-
-  def move_full_quantity(location_id, orders_package_id)
-    orders_package = orders_packages.find_by(id: orders_package_id)
-    referenced_package_location = packages_locations.find_by(reference_to_orders_package: orders_package_id)
-    if (packages_location_record = find_packages_location_with_location_id(location_id))
-      new_qty = orders_package.quantity + packages_location_record.quantity
-      referenced_package_location.destroy
-      packages_location_record.update(quantity: new_qty, reference_to_orders_package: nil)
-    else
-      update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
-    end
   end
 
   def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)

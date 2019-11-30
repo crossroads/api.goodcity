@@ -11,10 +11,10 @@ context LocationOperations do
       Class.new { include LocationOperations }
     }
 
-    def move(qty)
+    def move(qty, from: src_location, to: dest_location)
       subject::Operations::move(qty, pkg,
-        from: src_location,
-        to: dest_location)
+        from: from,
+        to: to)
     end
 
     context 'the destination location already has some packages' do
@@ -69,6 +69,20 @@ context LocationOperations do
 
         expect(dest_pkg_loc.quantity).to eq(30)
         expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
+      end
+    end
+
+    describe 'Validations' do
+      it 'fails to move an invalid quantity (<=0)' do
+        expect { move(-1) }.to raise_error(Goodcity::BaseError).with_message('Invalid move quantity (-1)')
+      end
+
+      it 'fails to move from a bad location' do
+        expect { move(1, from: 0) }.to raise_error(ActiveRecord::RecordNotFound).with_message("Couldn't find Location with 'id'=0")
+      end
+
+      it 'fails to move to a bad location' do
+        expect { move(1, to: 0) }.to raise_error(ActiveRecord::RecordNotFound).with_message("Couldn't find Location with 'id'=0")
       end
     end
   end
