@@ -2,6 +2,9 @@
 en:
   success: Success
   email_from_name: "GoodCity for Charities"
+  errors:
+    not_found: Not Found
+    bad_request: Bad Request
   warden:
     token_invalid: Invalid token
     token_expired: Expired token
@@ -104,3 +107,4 @@ en:
       unprocessed_order: Cannot dispatch packages from an unprocessed order
     move:
       not_enough_at_source: Not enough packages available to move from that location
+      bad_quantity_param: Invalid move quantity (%{quantity})

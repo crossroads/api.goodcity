@@ -50,7 +50,7 @@ context OrderFulfilmentOperations do
           expect {
             subject::Operations::dispatch(orders_package)
           }.to raise_error(
-            subject::Operations::OperationsError
+            Goodcity::OperationsError
           ).with_message('Cannot dispatch packages from an unprocessed order')
         end
       end

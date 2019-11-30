@@ -10,14 +10,14 @@ RSpec.describe Api::V1::ApiController, type: :controller do
 
     controller do
       def index
-        raise ActiveRecord::RecordNotFound
+        raise ActiveRecord::RecordNotFound.new('Oh noes !')
       end
     end
 
     it do
       get :index
       expect(response.status).to eq(404)
-      expect(subject).to eql( {} )
+      expect(subject).to eql( {"error"=>"Oh noes !"} )
     end
 
   end
