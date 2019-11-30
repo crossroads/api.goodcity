@@ -58,7 +58,7 @@ class PackagesInventoriesImporter
     count = Package.count
     bar = Progressbar.new(count)
     begin
-      Package.find_each do |package|
+      Package.where("inventory_number IS NOT NULL").find_each do |package|
         yield(package)
         bar.inc
       end
