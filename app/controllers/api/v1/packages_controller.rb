@@ -153,7 +153,7 @@ module Api
         packages = ActiveModel::ArraySerializer.new(records,
                                                     each_serializer: stock_serializer,
                                                     root: "items",
-                                                    include_order: true,
+                                                    include_order: false,
                                                     include_packages: false,
                                                     include_orders_packages: true,
                                                     exclude_stockit_set_item: true,
