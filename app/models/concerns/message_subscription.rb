@@ -33,7 +33,7 @@ module MessageSubscription
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
     subscribe_all_staff = is_private ?
       is_first_message_for(klass, obj.id) :
-      [self.sender_id] == user_ids
+      ([self.sender_id] == user_ids) && (obj&.created_by_id != nil)
 
     user_ids += User.staff.pluck(:id) if subscribe_all_staff
 

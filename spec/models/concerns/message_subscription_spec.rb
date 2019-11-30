@@ -57,6 +57,19 @@ context MessageSubscription do
       end
     end
 
+    context "should not subscribe all reviewers if there is no donor (an admin created the offer)" do
+      let!(:reviewer) { create :user, :reviewer }
+      let!(:reviewer2) { create :user, :reviewer }
+      let(:offer) { create :offer, created_by_id: nil }
+      let(:message) { create :message, sender: reviewer, offer: offer }
+      it do
+        expect(message.offer.reviewed_by_id).to eql(nil)
+        expect(message).to receive(:add_subscription).with('read', reviewer.id)
+        expect(message).to_not receive(:add_subscription).with('unread', reviewer2.id)
+        message.subscribe_users_to_message
+      end
+    end
+
     context "should not subscribe system users" do
       let(:sender) { create :user, :system }
       before(:each) { allow(message).to receive(:sender_id).and_return(sender.id) }
