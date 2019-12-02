@@ -1,6 +1,6 @@
 module Label
   class InventoryLabel < BaseLabel
-    attr_accessor :inventory_number, :label, :dots, :width, :field_orientation, :height
+    attr_accessor :inventory_number, :label, :dots, :width, :field_orientation, :height, :print_count
 
     BARCODE_QR_URL = "https://redirect.crossroads.org.hk/inventory?num="
 
@@ -11,9 +11,10 @@ module Label
     INVENTORY_LABEL_HEIGHT   = 1
     INVENTORY_LABEL_FIELD_ORIENTATION = :landscape
 
-    def initialize(inventory_number)
+    def initialize(inventory_number, print_count)
       super(INVENTORY_LABEL_DOTS, INVENTORY_LABEL_WIDTH, INVENTORY_LABEL_FIELD_ORIENTATION, INVENTORY_LABEL_HEIGHT)
-      @inventory_number = inventory_number
+      self.inventory_number = inventory_number
+      self.print_count      = print_count
     end
 
     def design_label
