@@ -31,7 +31,7 @@ module SubformUtilities
 
   def delete_on_stockit
     return if request_from_stockit?
-    response = Stockit::ItemDetailSync.destroy(self)
+    Stockit::ItemDetailSync.destroy(self)
   end
 
   def add_stockit_id(response)

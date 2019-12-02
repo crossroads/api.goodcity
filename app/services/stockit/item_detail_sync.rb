@@ -40,8 +40,8 @@ module Stockit
     end
 
     def delete
-      url = url_for("/api/v1/#{detail_type.pluralize}/destroy")
-      put(url, { detail_type => { 'id' => detail.stockit_id, 'item_id' => detail&.package&.stockit_id }})
+      url = url_for("/api/v1/#{ detail_type.pluralize }/destroy")
+      put(url, { detail_type => { 'id' => detail.stockit_id, 'item_id' => detail&.package&.stockit_id } })
     end
 
     private
