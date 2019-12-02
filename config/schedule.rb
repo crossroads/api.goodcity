@@ -7,6 +7,6 @@ every :tuesday, at: '5 pm' do
   rake 'goodcity:import_swd_organisations'
 end
 
-every '*/5 * * * *' do
+every '*/15 0-12 * * *' do
   rake 'goodcity:send_unread_message_reminders'
 end
