@@ -737,8 +737,8 @@ RSpec.describe Order, type: :model do
   end
 
   describe 'Processing checklist' do
-    let!(:booking_type) { create :booking_type }
-    let!(:booking_type2) { create :booking_type }
+    let!(:booking_type) { create :booking_type, identifier: 'aaa' }
+    let!(:booking_type2) { create :booking_type, identifier: 'bbb' }
     let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
     let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
     let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
