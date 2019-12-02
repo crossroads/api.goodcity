@@ -50,4 +50,12 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
       expect(@computer.reload.brand).to eq("lenovo")
     end
   end
+
+  describe "DELETE destroy" do
+    it "returns 200" do
+      allow(Stockit::ItemDetailSync).to receive(:destroy).with(@computer).and_return({"status"=>201})
+      delete :destroy, id: @computer.id
+      expect(response.status).to eq(200)
+    end
+  end
 end

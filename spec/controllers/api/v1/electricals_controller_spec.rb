@@ -51,4 +51,12 @@ RSpec.describe Api::V1::ElectricalsController, type: :controller do
       expect(@electrical.reload.brand).to eq("havells")
     end
   end
+
+  describe "DELETE destroy" do
+    it "returns 200" do
+      allow(Stockit::ItemDetailSync).to receive(:destroy).with(@electrical).and_return({"status"=>201})
+      delete :destroy, id: @electrical.id
+      expect(response.status).to eq(200)
+    end
+  end
 end
