@@ -12,6 +12,8 @@ context LocationOperations do
       Class.new { include LocationOperations }
     }
 
+    before { touch(pkg) }
+
     def move(qty, from: src_location, to: dest_location)
       subject::Operations::move(qty, pkg,
         from: from,

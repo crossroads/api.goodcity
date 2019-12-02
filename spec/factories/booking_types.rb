@@ -1,6 +1,11 @@
 FactoryBot.define do
   factory :booking_type do
-    name_en "MyString"
-    name_zh_tw "MyString"
+    identifier "online-order"
+    name_en "online order"
+    name_zh_tw "online order"
+
+    initialize_with {
+      BookingType.find_or_initialize_by(identifier: identifier)
+    }
   end
 end
