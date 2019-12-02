@@ -105,7 +105,13 @@ zh-tw:
       unprocessed_order: Cannot dispatch packages from an unprocessed order
     move:
       not_enough_at_source: Not enough packages available to move from that location
-      bad_quantity_param: Invalid move quantity (%{quantity})
+    mark_lost:
+      required_for_orders: Will break the quantity required for orders (%{orders}), please undesignate first
+    generic:
+      not_inventorized: Cannot operate on uninventorized packages
+      inactive_order: Operation forbidden, order %{code} is inactive
+      insufficient_quantity: The selected quantity (%{quantity}) is unavailable
+      bad_quantity_param: Invalid quantity (%{quantity})
   package_inventory:
     bad_action: "Inventory action %{action} is not permitted"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"

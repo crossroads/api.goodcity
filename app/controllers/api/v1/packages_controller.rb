@@ -162,25 +162,6 @@ module Api
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
 
-      def designate_stockit_item(order_id)
-        @package.designate_to_stockit_order(order_id)
-      end
-
-      def undesignate_partial_item
-        Designator.new(@package, params[:package]).undesignate
-        send_stock_item_response
-      end
-
-      def designate_partial_item
-        designator = Designator.new(@package, params[:package]).designate
-        if designator.errors.blank?
-          designate_stockit_item(params[:package][:order_id])
-          send_stock_item_response
-        else
-          render json: { errors: designator.errors.full_messages }, status: 422
-        end
-      end
-
       def split_package
         qty_to_split = package_params[:quantity].to_i
         package_splitter = PackageSplitter.new(@package, qty_to_split)
@@ -190,34 +171,6 @@ module Api
         else
           render json: { errors: I18n.t("package.split_qty_error", qty: @package.quantity) }, status: 422
         end
-      end
-
-      def update_partial_quantity_of_same_designation
-        Designator.new(@package, params[:package]).undesignate_and_update_partial_quantity
-        designate_stockit_item(params[:package][:order_id])
-        send_stock_item_response
-      end
-
-      def undesignate_stockit_item
-        @package.undesignate_from_stockit_order
-        send_stock_item_response
-      end
-
-      def dispatch_stockit_item
-        @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
-        return render_order_status_error if @orders_package.order.can_dispatch_item?
-
-        if @orders_package.dispatch_orders_package
-          @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
-          send_stock_item_response
-        else
-          render json: { errors: I18n.t("orders_package.already_dispatched") }, status: 422
-        end
-      end
-
-      def undispatch_stockit_item
-        @package.undispatch_stockit_item
-        send_stock_item_response
       end
 
       def move

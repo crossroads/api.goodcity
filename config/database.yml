@@ -7,7 +7,7 @@ default: &default
 
 development:
   <<: *default
-  database: goodcity_server_development
+  database: goodcity_server_development_2
 
 test:
   <<: *default
