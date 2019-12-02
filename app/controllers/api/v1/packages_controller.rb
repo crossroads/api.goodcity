@@ -135,6 +135,19 @@ module Api
         print_inventory_label
       end
 
+      def print_inventory_label(printer_id)
+        PrintLabelJob.perform_now(@package.id, printer_id, "inventory_label", print_count)
+      end
+
+      # def print_inventory_label
+      #   _print_id, errors, status = barcode_service.print(@package.inventory_number, print_count)
+      #   render json: {
+      #           status: status,
+      #           errors: errors,
+      #           inventory_number: @package.inventory_number,
+      #         }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
+      # end
+
       api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
 
       def search_stockit_items
@@ -247,18 +260,7 @@ module Api
         end
       end
 
-      def print_inventory_label(printer_id)
-        PrintLabelJob.perform_now(@package.id, printer_id, 'inventory_label')
-      end
 
-      def print_inventory_label
-        _print_id, errors, status = barcode_service.print(@package.inventory_number, print_count)
-        render json: {
-          status: status,
-          errors: errors,
-          inventory_number: @package.inventory_number
-        }, status: /pid \d+ exit 0/ =~ status.to_s ? 200 : 400
-      end
 
       private
 
