@@ -73,7 +73,7 @@ module OrderFulfilmentOperations
     #
     # @param [OrdersPackage] orders_package the orders package to undispatch
     #
-    # @raise [StandardError]
+    # @raise [GoodcityError]
     # @raise [ActiveRecord::RecordNotFound]
     #
     def dispatch(ord_pkg, quantity:, from_location:)
