@@ -22,11 +22,11 @@ module LocationOperations
         return if @quantity.zero?
 
         PackagesInventory.secured_transaction do
-          raise MISSING_QTY if available_qty < @quantity
+          raise Goodcity::MissingQuantityError if qty_at_source < @quantity
           decrement_origin
           increment_destination
         end
-        Stockit::ItemSync.move(@package)
+        Stockit::ItemSync.move(@package) if STOCKIT_ENABLED
       end
 
       private
@@ -62,7 +62,7 @@ module LocationOperations
         User.current_user || User.system_user
       end
 
-      def available_qty
+      def qty_at_source
         PackagesInventory::Computer.quantity_where(package: @package, location: @from)
       end
     end
