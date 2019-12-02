@@ -51,4 +51,12 @@ RSpec.describe Api::V1::ComputerAccessoriesController, type: :controller do
       expect(@record.reload.brand).to eq("lenovo")
     end
   end
+
+  describe "DELETE destroy" do
+    it "returns 200" do
+      allow(Stockit::ItemDetailSync).to receive(:destroy).with(@record).and_return({"status"=>201})
+      delete :destroy, id: @record.id
+      expect(response.status).to eq(200)
+    end
+  end
 end
