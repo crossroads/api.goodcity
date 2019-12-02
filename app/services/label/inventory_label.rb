@@ -1,6 +1,6 @@
 module Label
   class InventoryLabel < BaseLabel
-    attr_accessor :inventory_number, :label
+    attr_accessor :inventory_number, :label, :dots, :width, :field_orientation, :height
 
     BARCODE_QR_URL = "https://redirect.crossroads.org.hk/inventory?num="
 
@@ -12,9 +12,8 @@ module Label
     INVENTORY_LABEL_FIELD_ORIENTATION = :landscape
 
     def initialize(inventory_number)
+      super(INVENTORY_LABEL_DOTS, INVENTORY_LABEL_WIDTH, INVENTORY_LABEL_FIELD_ORIENTATION, INVENTORY_LABEL_HEIGHT)
       @inventory_number = inventory_number
-      @label            = Easyzpl::Label.new(dots: INVENTORY_LABEL_DOTS, width: INVENTORY_LABEL_WIDTH,
-                          field_orientation: INVENTORY_LABEL_FIELD_ORIENTATION, height: INVENTORY_LABEL_HEIGHT)
     end
 
     def design_label
@@ -39,10 +38,6 @@ module Label
                       :orientation => :landscape,
                       :width => 0.3,
                       :height => 0.4)
-    end
-
-    def label_to_print
-      BaseLabel.new(@label).tmp_label_file
     end
   end
 end
