@@ -8,8 +8,20 @@ describe PackagesInventoriesImporter do
   let(:dispatched_packages) {
     quantities.map { |qty|  create(:package, :dispatched, :with_inventory_number, received_quantity: qty) }
   }
+  let(:uninventorized_packages) {
+    quantities.map { |qty|  create(:package, :package_with_locations, quantity: qty, received_quantity: qty) }
+  }
 
-  before(:each) { allow(Stockit::OrdersPackageSync).to receive(:create) }
+  before(:each) do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    touch(uninventorized_packages)
+  end
+
+  after(:each) do
+    uninventorized_packages.each do |pkg|
+      expect(PackagesInventory.where(package_id: pkg.id).count).to eq(0)
+    end
+  end
 
   def all_rows
     PackagesInventory.all
@@ -58,7 +70,7 @@ describe PackagesInventoriesImporter do
       end
 
       it "should compute the correct quantity in the inventory" do
-        Package.all.each do |p|
+        Package.inventorized.each do |p|
           expect(PackagesInventory::Computer.package_quantity(p)).to eq(p.quantity)
         end
       end
