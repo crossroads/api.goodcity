@@ -10,20 +10,23 @@ module LocationOperations
   module Operations
     # --- Moving a package from one location to another
     class Move
-      def initialize(quantity, package, from:, to:)
+      def initialize(quantity, package, from:, to:, cause: nil)
         @quantity = positive_integer(quantity)
         @package = package
         @from = Utils.to_model(from, Location)
         @to = Utils.to_model(to, Location)
+        @cause = cause
       end
 
       def perform
-        secure do
-          source_packages_location.decrement(:quantity, @quantity).save
-          dest_packages_location.increment(:quantity, @quantity).save
-          source_packages_location.destroy if source_packages_location.quantity.zero?
+        return if @quantity.zero?
+
+        PackagesInventory.secured_transaction do
+          raise Goodcity::MissingQuantityError if qty_at_source < @quantity
+          decrement_origin
+          increment_destination
         end
-        Stockit::ItemSync.move(@package)
+        Stockit::ItemSync.move(@package) if STOCKIT_ENABLED
       end
 
       private
@@ -33,23 +36,48 @@ module LocationOperations
         raise Goodcity::InvalidQuantityError.new(n)
       end
 
-      def source_packages_location
-        @source ||= PackagesLocation.find_by(package: @package, location: @from)
+      def increment_destination
+        PackagesInventory.create(
+          package: @package,
+          quantity: @quantity,
+          action: PackagesInventory::Actions::GAIN,
+          source: @cause,
+          location: @to,
+          user: author
+        )
       end
 
-      def dest_packages_location
-        @dest ||= PackagesLocation.where(package: @package, location: @to).first_or_create(quantity: 0)
+      def decrement_origin
+        PackagesInventory.create(
+          package: @package,
+          quantity: -1 * @quantity,
+          action: PackagesInventory::Actions::LOSS,
+          source: @cause,
+          location: @from,
+          user: author
+        )
       end
 
-      def secure
-        source = source_packages_location
-        raise MissingQuantityError if source.nil? || source.quantity < @quantity
-        ActiveRecord::Base.transaction { yield }
+      def author
+        User.current_user || User.system_user
+      end
+
+      def qty_at_source
+        PackagesInventory::Computer.quantity_where(package: @package, location: @from)
       end
     end
 
-    def move(quantity, package, from:, to:)
-      Move.new(quantity, package, from: from, to: to).perform
+    ##
+    # Moves a package from a location to another through Packages
+    #
+    # @param [Integer] quantity the amount to move
+    # @param [Package] package the package we want to move
+    # @param [Location|Id] from the location to move out of (or its id)
+    # @param [Location|Id] to the location to move into (or its id)
+    # @param [Model] cause the source model that caused the move
+    #
+    def move(quantity, package, from:, to:, cause: nil)
+      Move.new(quantity, package, from: from, to: to, cause: cause).perform
     end
 
     module_function :move

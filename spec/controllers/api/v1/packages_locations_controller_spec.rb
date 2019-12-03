@@ -4,6 +4,7 @@ RSpec.describe Api::V1::PackagesLocationsController, type: :controller do
   let(:packages_location) { create :packages_location }
   let(:user) { create(:user_with_token, :with_can_access_packages_locations_permission, role_name: 'Reviewer') }
 
+  before { User.current_user = user }
   subject { JSON.parse(response.body) }
 
   describe "GET packages for Item" do

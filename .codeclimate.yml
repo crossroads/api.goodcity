@@ -32,6 +32,10 @@ engines:
         enabled: false
       Rubocop/Style/StringLiterals:
         enabled: false
+      Rubocop/Style/BlockComments:
+        enabled: false
+      Rubocop/Style/Alias:
+        enabled: false
 languages:
   Ruby: true
   JavaScript: false

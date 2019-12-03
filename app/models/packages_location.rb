@@ -2,6 +2,7 @@ class PackagesLocation < ActiveRecord::Base
   include RollbarSpecification
   include LocationOperations
   include PushUpdatesMinimal
+  include InventoryLegacySupport
 
   belongs_to :location
   belongs_to :package

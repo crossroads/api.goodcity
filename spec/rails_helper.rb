@@ -39,6 +39,7 @@ RSpec.configure do |config|
   config.include ControllerMacros, type: :controller
   config.include ActiveJob::TestHelper
   config.include LocaleSwitcher
+  config.include Touch
 
   Warden.test_mode!
 
