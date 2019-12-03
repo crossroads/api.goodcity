@@ -8,7 +8,7 @@ context Goodcity::HealthChecks::OrdersPackageOrderIdCheck do
 
   before { User.current_user = create(:user) }
 
-  it { expect(subject.desc).to eql("OrdersPackages should contain an order_id reference.") }
+  it { expect(subject.class.desc).to eql("OrdersPackages should contain an order_id reference.") }
 
   it "passes" do
     subject.run
