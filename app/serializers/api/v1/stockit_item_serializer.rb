@@ -5,7 +5,7 @@ module Api::V1
     has_one :package_type, serializer: PackageTypeSerializer, root: :code
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_one :donor_condition, serializer: DonorConditionSerializer
-    has_one :order, serializer: Api::V1::OrderSerializer, root: :designation, include_items: false
+    has_one :order, serializer: Api::V1::OrderShallowSerializer, root: :designation, include_items: false
     has_one :set_item, serializer: Api::V1::StockitSetItemSerializer, include_items: false
     has_many :images, serializer: StockitImageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
