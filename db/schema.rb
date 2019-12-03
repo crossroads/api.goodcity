@@ -920,6 +920,7 @@ ActiveRecord::Schema.define(version: 20191211032725) do
     t.boolean  "is_email_verified",    default: false
     t.boolean  "receive_email",        default: false
     t.string   "other_phone"
+    t.integer  "printer_id"
   end
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree
