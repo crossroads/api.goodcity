@@ -136,45 +136,8 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def assign_or_update_dispatched_location(orders_package_id, quantity)
-    if dispatch_from_stockit?
-      create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
-    else
-      create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
-    end
-  end
-
   def dispatched_location
     Location.dispatch_location
-  end
-
-  def destroy_stale_packages_locations(new_quantity)
-    if (singleton_package? || total_quantity_move_without_dispatch_location?(new_quantity))
-      delete_associated_packages_locations
-    end
-  end
-
-  def total_quantity_move_without_dispatch_location?(new_quantity)
-    packages_location_quantity_equal_to_received_quantity?(new_quantity) && !(locations.include?(dispatched_location))
-  end
-
-  def packages_location_quantity_equal_to_received_quantity?(new_quantity)
-    received_quantity == packages_locations.pluck(:quantity).sum && new_quantity == received_quantity
-  end
-
-  def create_dispatched_packages_location_from_gc(dispatched_location, orders_package_id, quantity)
-    unless locations.include?(dispatched_location)
-      create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
-    end
-  end
-
-  def create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package_id, quantity)
-    destroy_stale_packages_locations(quantity)
-    if (dispatched_packages_location = find_packages_location_with_location_id(dispatched_location.id))
-      dispatched_packages_location.update_referenced_orders_package(orders_package_id)
-    else
-      create_associated_packages_location(dispatched_location.id, quantity, orders_package_id)
-    end
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
@@ -325,14 +288,6 @@ class Package < ActiveRecord::Base
       errors.each { |key, value| self.errors.add(key, value) }
     elsif response && (item_id = response["item_id"]).present?
       self.stockit_id = item_id
-    end
-  end
-
-  def stockit_location_id
-    if packages_locations.count > 1
-      Location.multiple_location.try(:stockit_id)
-    else
-      packages_locations.first.try(:location).try(:stockit_id) || Location.find_by(id: location_id).try(:stockit_id)
     end
   end
 

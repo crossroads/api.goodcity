@@ -162,8 +162,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
             expect(status).to eq(200)
             expect(new_state).to eq('dispatched')
             expect(orders_package.reload.state).to eq('dispatched')
-            expect(package.reload.locations.length).to eq(1)
-            expect(package.reload.locations.first.dispatch?).to eq(true)
+            expect(package.reload.locations.length).to eq(0)
           end
         end
 
@@ -191,11 +190,14 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
         let!(:dispatch_location) { create(:location, :dispatched) }
         let(:location) { create(:location) }
         let(:order) { create :order, :with_state_dispatching }
-        let(:package) { create(:package, quantity: 10) }
-        let(:orders_package) { create :orders_package, :with_state_dispatched, order: order, package: package, quantity: package.quantity }
+        let(:quantity) { 10 }
+        let(:package) { create(:package, quantity: 0) } # 0 quantity because it has been dispatched
+        let(:orders_package) { create :orders_package, :with_state_dispatched, order: order, package: package, quantity: quantity }
 
         before do
-          create(:packages_location, package: package,location: dispatch_location, quantity: package.quantity)
+          # Mock history
+          build(:packages_inventory, action: 'inventory', package: package, quantity: quantity).sneaky(:save)
+          build(:packages_inventory, action: 'dispatch', package: package, source: orders_package, quantity: -1 * quantity).sneaky(:save)
         end
 
         it 'fails to undispatch the packages if no valid location is provided' do

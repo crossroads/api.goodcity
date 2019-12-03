@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 describe Package do
+  before { User.current_user = create(:user) }
   
   # testing dispatched packages
   context 'in_stock packages' do

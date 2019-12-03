@@ -38,6 +38,10 @@ class Location < ActiveRecord::Base
     where("building || area ILIKE ?", "%#{key}%")
   end
 
+  def display_name
+    "#{building} #{area}"
+  end
+
   # For a given user_id, return their 15 most recently used locations
   def self.recently_used(user_id)
     # the following SQL is carefully crafted to use versions.partial_index_recent_locations
