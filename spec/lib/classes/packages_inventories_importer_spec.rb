@@ -3,11 +3,13 @@ require "rails_helper"
 describe PackagesInventoriesImporter do
   let(:quantities) { [1,2,3] }
   let(:on_hand_packages) {
-    quantities.map { |qty|  create(:package, :package_with_locations, quantity: qty, received_quantity: qty) }
+    quantities.map { |qty|  create(:package, :package_with_locations, :with_inventory_number, quantity: qty, received_quantity: qty) }
   }
   let(:dispatched_packages) {
-    quantities.map { |qty|  create(:package, :dispatched, received_quantity: qty) }
+    quantities.map { |qty|  create(:package, :dispatched, :with_inventory_number, received_quantity: qty) }
   }
+
+  before(:each) { allow(Stockit::OrdersPackageSync).to receive(:create) }
 
   def all_rows
     PackagesInventory.all

@@ -58,7 +58,7 @@ class PackagesInventoriesImporter
     count = Package.count
     bar = Progressbar.new(count)
     begin
-      Package.where("inventory_number IS NOT NULL").find_each do |package|
+      Package.find_each do |package|
         yield(package)
         bar.inc
       end
@@ -123,6 +123,8 @@ class PackagesInventoriesImporter
 
   # --- Adds the necessary rows to the inventory for a package
   def import_package(package)
+    return if package.inventory_number.blank?
+
     insert_row(package: package, action: Actions::INVENTORY, time: inventory_time(package), quantity: package.received_quantity)
 
     if is_dispatched?(package)
@@ -141,9 +143,10 @@ class PackagesInventoriesImporter
   def verify_package(package)
     on_error(package, MULTIPLE_LOCATIONS_ERR % [package.id]) if package.locations.length > 1
     on_error(package, INVALID_QUANTITY % [package.id, package.quantity]) if package.quantity.negative?
+    on_error(package, UNINVENTORIZED_WITH_LOCATION % [package.id]) if package.inventory_number.blank? && package.locations.count.positive?
     if is_dispatched?(package)
       on_error(package, MISSING_ORDERS_PACKAGE % [package.id]) if package.orders_packages.count.zero?
-    else
+    elsif package.inventory_number.present?
       on_error(package, NO_LOCATION_ERR % [package.id]) if package.locations.length.zero?
     end
   end
@@ -245,6 +248,7 @@ class PackagesInventoriesImporter
     Please type 'yes' to proceed
   TEXT
 
+  UNINVENTORIZED_WITH_LOCATION = '[Err] Package (%s) is not inventorized but has packages_locations'
   MULTIPLE_LOCATIONS_ERR = '[Err] Package (%s) has multiple locations'
   NO_LOCATION_ERR = '[Err] Package (%s) doesnt look dispatched but has no location'
   INVALID_QUANTITY = '[Err] Package (%s) has an invalid quantity of %s'
