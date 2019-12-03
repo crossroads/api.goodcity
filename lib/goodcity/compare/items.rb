@@ -93,7 +93,7 @@ module Goodcity
           auto_fix_single_columns(stockit_id, diffs)
           # auto_fix_box_id(stockit_id, diffs)
           # auto_fix_pallet_id(stockit_id, diffs)
-          # auto_fix_dispatched(stockit_id, diffs) # DONE
+          auto_fix_dispatched(stockit_id, diffs) # DONE
           auto_fix_quantity(stockit_id, diffs)
           auto_fix_locations(stockit_id, diffs)
           # auto_fix_timestamp(stockit_id, diffs, 'created_at', 'min') # DONE
