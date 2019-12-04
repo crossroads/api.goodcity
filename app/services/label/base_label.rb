@@ -7,8 +7,10 @@ module Label
 
     def initialize(dots, width, field_orientation, height)
       self.print_count = nil
-      self.label       = Easyzpl::Label.new(dots: dots, width: width,
-                          field_orientation: field_orientation, height: height)
+      self.label       = Easyzpl::Label.new(dots: dots,
+                                            width: width,
+                                            field_orientation: field_orientation,
+                                            height: height)
     end
 
     def tmp_label_file
@@ -31,4 +33,3 @@ module Label
     end
   end
 end
-
