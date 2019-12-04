@@ -47,7 +47,7 @@ context StockOperations do
       context 'with some quantity remaining for designated items' do
         before { create(:orders_package, package: package, quantity: 26) } # Location 1+2 have enough to fulfill this order
 
-        it 'suceeds' do
+        it 'succeeds' do
           expect { register_loss(10, location1) }.to change {
             PackagesInventory::Computer.quantity_where(location: location1, package: package)
           }.from(33).to(23)

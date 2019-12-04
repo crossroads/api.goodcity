@@ -252,10 +252,10 @@ class PackagesInventoriesImporter
     Please type 'yes' to proceed
   TEXT
 
-  BAD_PACKAGES_LOCATION_QUANTITY = '[Err] Package (%s) doesnt look dispatched but the packages_location quantity doesnt match the received qty'
-  UNINVENTORIZED_WITH_LOCATION = '[Err] Package (%s) is not inventorized but has packages_locations'
-  MULTIPLE_LOCATIONS_ERR = '[Err] Package (%s) has multiple locations'
-  NO_LOCATION_ERR = '[Err] Package (%s) doesnt look dispatched but has no location'
-  INVALID_QUANTITY = '[Err] Package (%s) has an invalid quantity of %s'
-  MISSING_ORDERS_PACKAGE = '[Err] Package (%s) looks dispatched, but has no orders_package'
+  BAD_PACKAGES_LOCATION_QUANTITY = '[Err] Package (%s) doesnt look dispatched but the packages_location quantity doesnt match the received qty'.freeze
+  UNINVENTORIZED_WITH_LOCATION = '[Err] Package (%s) is not inventorized but has packages_locations'.freeze
+  MULTIPLE_LOCATIONS_ERR = '[Err] Package (%s) has multiple locations'.freeze
+  NO_LOCATION_ERR = '[Err] Package (%s) doesnt look dispatched but has no location'.freeze
+  INVALID_QUANTITY = '[Err] Package (%s) has an invalid quantity of %s'.freeze
+  MISSING_ORDERS_PACKAGE = '[Err] Package (%s) looks dispatched, but has no orders_package'.freeze
 end
