@@ -1,6 +1,6 @@
 module Goodcity
   class DetailFactory
-    PERMITTED_DETAIL_TYPES = %w[Computer Electrical ComputerAccessory].freeze
+    PERMITTED_DETAIL_TYPES = %w[computer electrical computer_accessory].freeze
     FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
 
     attr_accessor :item, :package, :stockit_detail_id
@@ -12,7 +12,7 @@ module Goodcity
     end
 
     def run
-      package && import_and_save_detail? && package_updated?
+      import_and_save_detail? && !detail_present? && package_updated?
     end
 
     private
@@ -25,12 +25,16 @@ module Goodcity
       item["id"] && item["detail_type"] && stockit_detail_id
     end
 
+    def detail_present?
+      package.detail.present?
+    end
+
     def detail_type
       item["detail_type"] || package&.package_type&.subform&.titleize
     end
 
     def detail_id
-      return unless PERMITTED_DETAIL_TYPES.include?(item["detail_type"])
+      return unless PERMITTED_DETAIL_TYPES.include?(item["detail_type"].underscore)
       create_detail_record&.id
     end
 
