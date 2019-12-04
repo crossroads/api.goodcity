@@ -15,12 +15,19 @@ RSpec.describe InventoryNumber, type: :model do
       expect(InventoryNumber.first.code).to_not be_nil
     end
 
+    it "returns if previous inventory_number if not been assigned to any package" do
+      InventoryNumber.create(code: "000001")
+      InventoryNumber.create(code: "000002")
+      InventoryNumber.create_with_next_code!
+      expect(InventoryNumber.last.code).to eql("000002")
+    end
+
     it "assigns count of inventory code during create" do
       InventoryNumber.create(code: "000001")
       InventoryNumber.create(code: "000002")
       InventoryNumber.create(code: "000003")
       InventoryNumber.create_with_next_code!
-      expect(InventoryNumber.last.code).to eql("000004")
+      expect(InventoryNumber.last.code).to eql("000003")
     end
   end
 

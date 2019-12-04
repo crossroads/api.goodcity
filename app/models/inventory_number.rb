@@ -4,7 +4,17 @@ class InventoryNumber < ActiveRecord::Base
   validates :code, presence: true, uniqueness: true
 
   def self.create_with_next_code!
+    return lastInventoryNumber unless lastInventoryNumberUsedOrEmpty?
     self.create!(code: next_code)
+  end
+
+  def self.lastInventoryNumberUsedOrEmpty?
+    return true if lastInventoryNumber.nil?
+    Package.where(inventory_number: lastInventoryNumber.code).any?
+  end
+
+  def self.lastInventoryNumber
+    InventoryNumber.last
   end
 
   def self.next_code
@@ -18,8 +28,8 @@ class InventoryNumber < ActiveRecord::Base
        FROM generate_series(1,?) s(i)
        WHERE NOT EXISTS (
          SELECT 1 FROM (
-           SELECT inventory_number FROM packages WHERE inventory_number ~ '^\d+$' 
-           UNION 
+           SELECT inventory_number FROM packages WHERE inventory_number ~ '^\d+$'
+           UNION
            SELECT code as inventory_number from inventory_numbers ORDER BY inventory_number
          ) as inventory_number
        WHERE CAST(inventory_number AS INTEGER) = s.i)
