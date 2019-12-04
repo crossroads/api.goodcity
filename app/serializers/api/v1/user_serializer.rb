@@ -6,7 +6,7 @@ module Api::V1
 
     has_one :image, serializer: ImageSerializer
     has_one :address, serializer: AddressSerializer
-    has_one :printer, serializer: PrinterSerializer, if: User.current_user.staff?
+    has_one :printer, serializer: PrinterSerializer
 
     def user_roles_ids
       object.user_roles.pluck(:id)
