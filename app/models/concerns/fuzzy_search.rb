@@ -30,19 +30,17 @@ module FuzzySearch
     #     SIMILARITY(name_zh_tw, 'steve') DESC
     #
     def search(search_text)
-      sanitized_text = sanitize(search_text)
-      similarities = self.search_props.map { |f| "SIMILARITY(#{f}, #{sanitized_text})" }
+      similarities = search_props.map { |f| "SIMILARITY(#{f}, #{sanitize(search_text)})" }
 
       fields = similarities + ["#{table_name}.*"]
       conditions = similarities.map { |s| "#{s} > #{similarity_threshold}" }
-      ordering = similarities.map { |q| "#{q} DESC" }
+      ordering = similarities.map { |s| "#{s} DESC" }
 
       select(fields.join(','))
         .where(conditions.join(' OR '))
         .order(ordering.join(','))
         .distinct
     end
-
 
     #
     # Configuration of fuzzy search
@@ -65,8 +63,7 @@ module FuzzySearch
 
     def search_props
       return @search_props unless @search_props.blank?
-      self.columns.select{ |c| c.type == :string }.map(&:name)
+      columns.select { |c| c.type == :string }.map(&:name)
     end
   end
 end
-
