@@ -42,7 +42,7 @@ module Api::V1
       if params['ids'].present?
         records = @organisations.where(id: params['ids']).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       else
-        records = @organisations.search(params["searchText"]).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+        records = Organisation.search(params["searchText"]).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       end
       data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
       render json: { "meta": { total_pages: records.total_pages, "search": params["searchText"] } }.merge(data)
