@@ -99,10 +99,13 @@ class PackagesInventoriesImporter
   end
 
   # --- Returns the 'most appropriate' location for a package
+  def fallback_location
+    @fallback_location ||= Location.find_by(area: 'Incoming') || Location.first
+    @fallback_location
+  end
+
   def inventory_location(package)
-    loc = package.locations.first
-    return loc unless (loc.nil? || loc.dispatch?)
-    package.package_type.location
+    package.locations.first || package.package_type.location || fallback_location
   end
 
   # --- Returns the time at which a package was inventorized
@@ -148,6 +151,7 @@ class PackagesInventoriesImporter
       on_error(package, MISSING_ORDERS_PACKAGE % [package.id]) if package.orders_packages.count.zero?
     elsif package.inventory_number.present?
       on_error(package, NO_LOCATION_ERR % [package.id]) if package.locations.length.zero?
+      on_error(package, BAD_PACKAGES_LOCATION_QUANTITY % [package.id]) if package.packages_locations.first.quantity != package.received_quantity
     end
   end
 
@@ -248,6 +252,7 @@ class PackagesInventoriesImporter
     Please type 'yes' to proceed
   TEXT
 
+  BAD_PACKAGES_LOCATION_QUANTITY = '[Err] Package (%s) doesnt look dispatched but the packages_location quantity doesnt match the received qty'
   UNINVENTORIZED_WITH_LOCATION = '[Err] Package (%s) is not inventorized but has packages_locations'
   MULTIPLE_LOCATIONS_ERR = '[Err] Package (%s) has multiple locations'
   NO_LOCATION_ERR = '[Err] Package (%s) doesnt look dispatched but has no location'

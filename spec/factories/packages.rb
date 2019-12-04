@@ -37,21 +37,15 @@ FactoryBot.define do
     end
 
     trait :dispatched do
-      before(:create) do |package|
-        dispatch_loc = create(:location, :dispatched)
-        build(:packages_location, location: dispatch_loc, package: package, quantity: package.received_quantity).sneaky do |packages_location|
-          packages_location.save
-          package.quantity = 0;
-          package.packages_locations = [packages_location]
-          package.orders_packages = [
-            create(
-              :orders_package,
-              :with_state_dispatched,
-              package_id: package.id,
-              quantity: package.received_quantity
-            )
-          ]
-        end
+      after(:create) do |package|
+        package.orders_packages = [
+          create(
+            :orders_package,
+            :with_state_dispatched,
+            package_id: package.id,
+            quantity: package.received_quantity
+          )
+        ]
       end
     end
 
