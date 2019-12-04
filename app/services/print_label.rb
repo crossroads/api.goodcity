@@ -1,8 +1,8 @@
 class PrintLabel
   attr_accessor :printer, :label_file
 
-  def initialize(printer, label_file)
-    @printer    = printer
+  def initialize(label_file)
+    @printer    = User.current_user.printer
     @label_file = label_file
   end
 
@@ -10,12 +10,14 @@ class PrintLabel
     print_id, errors, status = Open3.capture3(print_options,
       Rails.root.join("app", "services", "barcode_service.exp").to_s)
 
-    log_hash = { printer_name: "\"#{print_options["NAME"]}\"",
-            printer_host: "\"#{print_options["HOST"]}\"",
-            printer_user: "\"#{print_options["USER"]}\"",
-            print_job_errors: "\"#{errors}\"",
-            print_job_status: "\"#{status}\"",
-            class: self.class.name }
+    log_hash = {
+                printer_name: print_options['NAME'],
+                printer_host: print_options['HOST'],
+                printer_user: print_options['USER'],
+                print_job_errors: errors,
+                print_job_status: status,
+                class: self.class.name
+                }
 
     Rails.logger.info(log_hash)
 
@@ -32,7 +34,7 @@ class PrintLabel
       "HOST" => printer.host,
       "USER" => printer.username,
       "PWD" => printer.password,
-      "FILE" => label_file.path,
+      "FILE" => label_file.path
     }
   end
 end
