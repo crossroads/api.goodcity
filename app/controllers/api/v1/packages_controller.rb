@@ -142,11 +142,12 @@ module Api
           @package.inventory_number = InventoryNumber.next_code
           @package.save
         end
-        print_inventory_label(1)
+        print_inventory_label
       end
 
-      def print_inventory_label(printer_id)
-        PrintLabelJob.perform_now(@package.id, printer_id, "inventory_label", print_count)
+      def print_inventory_label
+        PrintLabelJob.perform_later(@package.id, "inventory_label", print_count)
+        render json: {}, status: 204
       end
 
       api :GET, "/v1/packages/search_stockit_items", "Search packages (items for stock app) using inventory-number"
