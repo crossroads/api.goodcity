@@ -199,8 +199,9 @@ module Goodcity
         if stockit_location == 'Dispatched' or goodcity_location == 'Dispatched'
           # just delete the GoodCity PackageLocation record, regardless of it's entry
           PackagesLocation.unscoped.joins(:package).where('packages.stockit_id = ?', stockit_id).delete_all
+          log("Deleting dispatched locations for #{stockit_id}")
         end
-        if !stockit_location.blank? && goodcity_location != 'Dispatched'
+        if !stockit_location.blank?
           # Just move it to where Stockit says it is
           location_id = Location.unscoped.where("COALESCE(locations.building, '') || COALESCE(locations.area, '') = ?", stockit_location).first&.id
           if location_id
@@ -209,10 +210,13 @@ module Goodcity
             PackagesLocation.unscoped.joins(:package).where('packages.stockit_id = ?', stockit_id).delete_all
             sql_insert('packages_locations', location_id: location_id, package_id: package.id, 
               quantity: package.received_quantity, created_at: package.created_at, updated_at: package.created_at)
+            log("Fixing location for #{stockit_id}")
             @auto_fix_counter += 1
           else
             log("Missing location: #{stockit_location} for stockit_id #{stockit_id}")
           end
+        else
+          log("Stockit location is blank for #{stockit_id}. Can't fix. diffs[location]: #{diffs['location']}")
         end
       end
 
