@@ -4,6 +4,34 @@ module FuzzySearch
   class_methods do
     attr_reader :search_joins
 
+    #
+    # Configuration of fuzzy search
+    #
+    # @param [string[]] props array of columns to search against
+    # @param [float] tolerance the tolerance of the search between 0 and 1 \
+    #     1 requires a perfect match and 0 lets any similarity through
+    #
+    # @return [<Type>] <description>
+    #
+    def configure_search(props: [], tolerance: 0.1)
+      @search_props ||= []
+      @search_props = (@search_props << props).flatten
+      @similarity_threshold = tolerance
+    end
+
+    def similarity_threshold
+      @similarity_threshold.present? ? @similarity_threshold : 0.1
+    end
+
+    def search_props
+      return @search_props unless @search_props.blank?
+      columns.select { |c| c.type == :string }.map(&:name)
+    end
+  end
+
+  included do
+
+
     ##
     # Fuzzy search entry point
     #
@@ -29,41 +57,17 @@ module FuzzySearch
     #     SIMILARITY(name_en, 'steve') DESC,
     #     SIMILARITY(name_zh_tw, 'steve') DESC
     #
-    def search(search_text)
+    scope :search, -> (search_text) {
       similarities = search_props.map { |f| "SIMILARITY(#{f}, #{sanitize(search_text)})" }
 
-      fields = similarities + ["#{table_name}.*"]
+      select_list = similarities + ["#{table_name}.*"]
       conditions = similarities.map { |s| "#{s} > #{similarity_threshold}" }
       ordering = similarities.map { |s| "#{s} DESC" }
 
-      select(fields.join(','))
+      select(select_list.join(','))
         .where(conditions.join(' OR '))
         .order(ordering.join(','))
         .distinct
-    end
-
-    #
-    # Configuration of fuzzy search
-    #
-    # @param [string[]] props array of columns to search against
-    # @param [float] tolerance the tolerance of the search between 0 and 1 \
-    #     1 requires a perfect match and 0 lets any similarity through
-    #
-    # @return [<Type>] <description>
-    #
-    def configure_search(props: [], tolerance: 0.1)
-      @search_props ||= []
-      @search_props = (@search_props << props).flatten
-      @similarity_threshold = tolerance
-    end
-
-    def similarity_threshold
-      @similarity_threshold.present? ? @similarity_threshold : 0.1
-    end
-
-    def search_props
-      return @search_props unless @search_props.blank?
-      columns.select { |c| c.type == :string }.map(&:name)
-    end
+    }
   end
 end
