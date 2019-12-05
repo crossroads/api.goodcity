@@ -22,6 +22,7 @@ class Package < ActiveRecord::Base
   belongs_to :pallet
   belongs_to :box
   belongs_to :order
+  belongs_to :storage_type, required: false
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
