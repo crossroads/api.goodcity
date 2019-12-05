@@ -11,18 +11,26 @@ module FuzzySearch
     # @param [float] tolerance the tolerance of the search between 0 and 1 \
     #     1 requires a perfect match and 0 lets any similarity through
     #
-    # @return [<Type>] <description>
-    #
     def configure_search(props: [], tolerance: 0.1)
       @search_props ||= []
       @search_props = (@search_props << props).flatten
       @similarity_threshold = tolerance
     end
 
+    ##
+    # Returns the search tolerance factor, a float between 0 and 1
+    #
+    # @return [float]
+    #
     def similarity_threshold
       @similarity_threshold.present? ? @similarity_threshold : 0.1
     end
 
+    ##
+    # Returns the columns that are included in the search
+    #
+    # @return [string[]]
+    #
     def search_props
       return @search_props unless @search_props.blank?
       columns.select { |c| c.type == :string }.map(&:name)
@@ -30,8 +38,6 @@ module FuzzySearch
   end
 
   included do
-
-
     ##
     # Fuzzy search entry point
     #
