@@ -318,6 +318,7 @@ module Api
         if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
+          @package.storage_type = assign_storage_type
           @package
         elsif inventory_number
           assign_values_to_existing_or_new_package
@@ -397,6 +398,11 @@ module Api
           package_params,
           request_from_stockit
         ).build_or_update_record
+      end
+
+      def assign_storage_type
+        return unless params["package"]["storage_type"]
+        StorageType.find_by(name: params["package"]["storage_type"])
       end
 
       def inventory_number
