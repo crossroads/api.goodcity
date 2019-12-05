@@ -1,4 +1,6 @@
 class Organisation < ActiveRecord::Base
+  include FuzzySearch
+
   belongs_to :organisation_type
   belongs_to :country
   belongs_to :district
@@ -6,10 +8,7 @@ class Organisation < ActiveRecord::Base
   has_many :orders
   has_many :users, through: :organisations_users
 
-  def self.search(search_text)
-    where("name_en ILIKE :search_text OR name_zh_tw ILIKE :search_text",
-      search_text: "%#{search_text}%")
-  end
+  configure_search props: [:name_en, :name_zh_tw], tolerance: 0.1
 
   def name_as_per_locale
     I18n.locale == :en ? name_en : name_zh_tw
