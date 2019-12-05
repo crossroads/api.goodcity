@@ -89,6 +89,7 @@ module Api
       param_group :package
 
       def update
+        @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.assign_attributes(package_params)
         @package.received_quantity = package_params[:quantity] if package_params[:quantity]
         @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
