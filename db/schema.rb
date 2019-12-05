@@ -655,7 +655,6 @@ ActiveRecord::Schema.define(version: 20191211032725) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
     t.integer  "weight"
     t.integer  "pieces"
     t.integer  "detail_id"
