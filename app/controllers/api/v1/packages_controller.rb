@@ -401,8 +401,10 @@ module Api
       end
 
       def assign_storage_type
-        return unless params["package"]["storage_type"]
-        StorageType.find_by(name: params["package"]["storage_type"])
+        storage_type_name = params["package"]["storage_type"]
+        return StorageType.find_by(name: "Package") unless storage_type_name
+
+        StorageType.find_by(name: storage_type_name)
       end
 
       def inventory_number
