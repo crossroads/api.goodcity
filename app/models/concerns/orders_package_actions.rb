@@ -23,7 +23,7 @@ module OrdersPackageActions
     DISPATCH        = Action.new('dispatch') { |op| Operations.dispatch_singleton(op) }
     UNDISPATCH      = Action.new('undispatch') { |op, opts| Operations.undispatch_singleton(op, to_location: opts[:location_id]) }
     REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
-    EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| op.edit_quantity(opts[:quantity]) }
+    EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| Package::Operations.designate(op.package, quantity: opts[:quantity], to_order: op.order) }
 
     ALL_ACTIONS = [CANCEL, DISPATCH, UNDISPATCH, REDESIGNATE, EDIT_QUANTITY]
   end

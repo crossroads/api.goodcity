@@ -351,7 +351,7 @@ RSpec.describe OrdersPackage, type: :model do
       let(:orders_package) { order.orders_packages.first }
 
       it "calls :edit_quantity when the 'edit_quantity' action is trigerred" do
-        expect(orders_package).to receive(:edit_quantity)
+        expect(Package::Operations).to receive(:designate)
         orders_package.exec_action 'edit_quantity'
       end
 
