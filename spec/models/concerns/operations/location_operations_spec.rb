@@ -144,7 +144,7 @@ context LocationOperations do
 
     describe 'Validations' do
       it 'fails to move an invalid quantity (<=0)' do
-        expect { move(-1) }.to raise_error(Goodcity::BaseError).with_message('Invalid move quantity (-1)')
+        expect { move(-1) }.to raise_error(Goodcity::BaseError).with_message('Invalid quantity (-1)')
       end
 
       it 'fails to move from a bad location' do

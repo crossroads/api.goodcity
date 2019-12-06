@@ -24,7 +24,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
     it 'returns designated and dispatched orders_packages' do
       order = create :order
-      package = create :package, quantity: 8, received_quantity: 8
+      package = create :package, :with_inventory_number, quantity: 8, received_quantity: 8
       3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
       get :index, search_by_package_id: package.id
       expect( subject["orders_packages"].size ).to eq(3)
@@ -115,7 +115,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
       describe 'Editing Quantity' do
         context 'of a designated orders_package' do
-          let(:pkg) { create :package, received_quantity: 10  }
+          let(:pkg) { create :package, :with_inventory_number, received_quantity: 10  }
           let(:order) { create :order, :with_state_dispatching }
           let!(:orders_package) {
             create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
