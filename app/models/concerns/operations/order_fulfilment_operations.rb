@@ -10,10 +10,9 @@
 #
 #
 module OrderFulfilmentOperations
-  extend ActiveSupport::Concern
+  extend Composite
 
-  module Operations
-    extend LocationOperations::Operations
+  compose_module :Operations do
 
     module_function
 
