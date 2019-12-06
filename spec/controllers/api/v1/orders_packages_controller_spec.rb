@@ -23,6 +23,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     end
 
     it 'returns designated and dispatched orders_packages' do
+      expect(Stockit::OrdersPackageSync).to receive(:create).exactly(3).times
       order = create :order
       package = create :package, :with_inventory_number, quantity: 8, received_quantity: 8
       3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
@@ -117,11 +118,18 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
         context 'of a designated orders_package' do
           let(:pkg) { create :package, :with_inventory_number, received_quantity: 10  }
           let(:order) { create :order, :with_state_dispatching }
-          let!(:orders_package) {
+          let(:orders_package) {
             create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
           }
 
+          before do
+            expect(Stockit::OrdersPackageSync).to receive(:create)
+            touch(orders_package)
+            create(:packages_inventory, action: 'inventory', package: pkg, location: create(:location), quantity: pkg.received_quantity)
+          end
+
           it 'updates correctly' do
+            expect(Stockit::OrdersPackageSync).to receive(:update)
             expect(pkg.reload.in_hand_quantity).to eq(8)
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 9
             expect(status).to eq(200)
@@ -133,13 +141,13 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
             expect(pkg.reload.in_hand_quantity).to eq(8)
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 11
             expect(status).to eq(422)
-            expect(error_text).to eq('We do not currently have the requested quantity in stock')
+            expect(error_text).to eq('The selected quantity (11) is unavailable')
           end
 
           it 'fails if we dont pass a desired quantity' do
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity'
             expect(status).to eq(422)
-            expect(error_text).to eq('Invalid quantity')
+            expect(error_text).to match(/^Invalid quantity/)
           end
         end
       end
