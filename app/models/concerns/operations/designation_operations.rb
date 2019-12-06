@@ -31,6 +31,8 @@ module DesignationOperations
     # @todo remove stockit references
     #
     def designate(package, quantity:, to_order:)
+      quantity = quantity.to_i
+
       orders_package = init_orders_package(
         Utils.to_model(package, Package),
         Utils.to_model(to_order, Order)
