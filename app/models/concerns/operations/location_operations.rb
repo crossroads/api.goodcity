@@ -5,9 +5,24 @@
 #   Operations::move(2, package_a, from: A, to: B)
 #
 module LocationOperations
-  extend ActiveSupport::Concern
+  extend Composite
 
-  module Operations
+  compose_module :Operations do
+    module_function
+
+    ##
+    # Moves a package from a location to another through Packages
+    #
+    # @param [Integer] quantity the amount to move
+    # @param [Package] package the package we want to move
+    # @param [Location|Id] from the location to move out of (or its id)
+    # @param [Location|Id] to the location to move into (or its id)
+    # @param [Model] cause the source model that caused the move
+    #
+    def move(quantity, package, from:, to:, cause: nil)
+      Move.new(quantity, package, from: from, to: to, cause: cause).perform
+    end
+
     # --- Moving a package from one location to another
     class Move
       def initialize(quantity, package, from:, to:, cause: nil)
@@ -66,20 +81,5 @@ module LocationOperations
         PackagesInventory::Computer.quantity_where(package: @package, location: @from)
       end
     end
-
-    ##
-    # Moves a package from a location to another through Packages
-    #
-    # @param [Integer] quantity the amount to move
-    # @param [Package] package the package we want to move
-    # @param [Location|Id] from the location to move out of (or its id)
-    # @param [Location|Id] to the location to move into (or its id)
-    # @param [Model] cause the source model that caused the move
-    #
-    def move(quantity, package, from:, to:, cause: nil)
-      Move.new(quantity, package, from: from, to: to, cause: cause).perform
-    end
-
-    module_function :move
   end
 end

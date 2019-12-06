@@ -15,6 +15,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
   let(:parsed_body) { JSON.parse(response.body) }
+  let(:error_msg) do
+    return parsed_body['error'] if parsed_body['error'].present?
+    parsed_body['errors'][0]['message']
+  end
 
   let(:package_params) do
     FactoryBot.attributes_for(:package, item_id: "#{item.id}", package_type_id: "#{package_type.id}")
@@ -38,19 +42,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   def test_packages_location_changes(package)
     expect(package.packages_locations.count).to eq 1
     expect(package.locations.first.building).to eq 'Dispatched'
-  end
-
-  describe "Dispatching item" do
-    before { generate_and_set_token(user) }
-    let(:order) { create :order, state: Order::ORDER_UNPROCESSED_STATES.sample}
-    let(:orders_package) { create :orders_package, package: package, order: order }
-
-    it "throws error if order is not processed" do
-      put :dispatch_stockit_item, id: package.id, package: {
-        order_package_id: orders_package.id }
-      expect(response.status).to eq(403)
-      expect(subject['errors']).to eq('You need to complete processing Order first before dispatching.')
-    end
   end
 
   describe "GET packages for Item" do
@@ -163,7 +154,92 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
- describe "Moving the package (PUT /:id/move) " do
+  describe "Designating the package (PUT /:id/designate)" do
+    let(:location) { create :location }
+    let(:order) { create :order, :with_state_submitted }
+    let(:package) { create :package, :with_inventory_number, received_quantity: 5 }
+    let(:uninventorized_package) { create :package, inventory_number: nil }
+
+    before do
+      # Initialize stock quantity
+      create(:packages_inventory, action: 'inventory', package: package, location: location, quantity: package.received_quantity)
+      generate_and_set_token(user)
+    end
+
+    it 'fails to designate an uninventorized package' do
+      expect(Stockit::OrdersPackageSync).not_to receive(:create)
+
+      put :designate, format: :json, id: uninventorized_package.id, quantity: 5, order_id: order.id
+
+      expect(response.status).to eq(422)
+      expect(parsed_body["error"]).to eq("Cannot operate on uninventorized packages")
+    end
+
+    it 'designates the entire quantity to the order' do
+      expect(Stockit::OrdersPackageSync).to receive(:create).once
+
+      expect {
+        put :designate, format: :json, id: package.id, quantity: 5, order_id: order.id
+      }.to change { package.reload.orders_packages.count }.from(0).to(1)
+
+      expect(response.status).to eq(200)
+      expect(package.orders_packages.first).to have_attributes(:quantity => 5, :order_id => order.id, :package_id => package.id)
+      expect(PackagesInventory::Computer.available_quantity_of(package)).to eq(0)
+    end
+
+    it 'designates the part of the quantity to the order' do
+      expect(Stockit::OrdersPackageSync).to receive(:create).once
+
+      expect {
+        put :designate, format: :json, id: package.id, quantity: 2, order_id: order.id
+      }.to change { package.reload.orders_packages.count }.from(0).to(1)
+
+      expect(response.status).to eq(200)
+      expect(package.orders_packages.first).to have_attributes(:quantity => 2, :order_id => order.id, :package_id => package.id)
+      expect(PackagesInventory::Computer.available_quantity_of(package)).to eq(3)
+    end
+
+    it 'updates an existing designation' do
+      expect(Stockit::OrdersPackageSync).to receive(:create).once
+      expect(Stockit::OrdersPackageSync).to receive(:update).once
+
+      Package::Operations.designate(package, quantity: 3, to_order: order)
+
+      expect(PackagesInventory::Computer.available_quantity_of(package)).to eq(2)
+      expect(package.reload.orders_packages.count).to eq(1)
+
+      expect {
+        put :designate, format: :json, id: package.id, quantity: 5, order_id: order.id
+      }.to change { package.reload.orders_packages.first.quantity }.from(3).to(5)
+
+      expect(response.status).to eq(200)
+      expect(package.reload.orders_packages.count).to eq(1)
+      expect(PackagesInventory::Computer.available_quantity_of(package)).to eq(0)
+    end
+
+    context 'with bad parameters' do
+      it 'fails if the order_id is bad' do
+        put :designate, format: :json, id: package.id, quantity: 5, order_id: 'i.dont.exist'
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Order/)
+      end
+
+      it 'fails if the package_id is bad' do
+        put :designate, format: :json, id: 'i.dont.exist', quantity: 5, order_id: order.id
+        expect(response.status).to eq(404)
+        expect(error_msg).to match(/^Couldn't find Package/)
+      end
+
+      it 'fails if the quantity is bad' do
+        put :designate, format: :json, id: package.id, quantity: -5, order_id: order.id
+        expect(response.status).to eq(422)
+        expect(error_msg).to match(/^Invalid quantity/)
+      end
+    end
+
+  end
+
+  describe "Moving the package (PUT /:id/move) " do
     before { generate_and_set_token(user) }
 
     let!(:location1) { create :location }
@@ -179,6 +255,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       put :move, format: :json, id: package.id, quantity: 5, from: location1.id, to: location2.id
 
+      expect(response.status).to eq(200)
+
       package.reload
       expect(package.packages_locations.length).to eq(1)
       expect(package.packages_locations.first.location).to eq(location2)
@@ -191,6 +269,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(package.packages_locations.first.quantity).to eq(5)
 
       put :move, format: :json, id: package.id, quantity: 3, from: location1.id, to: location2.id
+
+      expect(response.status).to eq(200)
 
       package.reload
       expect(package.packages_locations.length).to eq(2)
@@ -211,6 +291,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       put :move, format: :json, id: package.id, quantity: 3, from: location1.id, to: location2.id
 
+      expect(response.status).to eq(200)
+
       package.reload
       expect(package.packages_locations.length).to eq(2)
       expect(package.packages_locations.first.location).to eq(location1)
@@ -220,11 +302,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     context 'with bad parameters' do
-      let(:error_msg) do
-        return parsed_body['error'] if parsed_body['error'].present?
-        parsed_body['errors'][0]['message']
-      end
-
       it 'fails if the from location is missing' do
         put :move, format: :json, id: package.id, quantity: 3, to: location2.id
         expect(response.status).to eq(404)
@@ -246,7 +323,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it 'fails if the quantity is missing' do
         put :move, format: :json, id: package.id, from: location2.id
         expect(response.status).to eq(422)
-        expect(error_msg).to match(/^Invalid move quantity/)
+        expect(error_msg).to match(/^Invalid quantity/)
       end
     end
   end

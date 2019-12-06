@@ -34,6 +34,13 @@ module Api
         end
       end
 
+      def_param_group :operations do
+        param :quantity, [Integer, String], desc: "Package quantity", allow_nil: true
+        param :order_id, [Integer, String], desc: "Order involved in the package's designation", allow_nil: true
+        param :to, [Integer, String], desc: "Location the package is moved to", allow_nil: true
+        param :from, [Integer, String], desc: "Location the package is moved from", allow_nil: true
+      end
+
       api :GET, "/v1/packages", "get all packages for the item"
 
       def index
@@ -173,12 +180,23 @@ module Api
         end
       end
 
+      api :PUT, "/v1/packages/1/move", "Move a package's quantity to an new location"
+      param_group :operations
       def move
         quantity = params[:quantity].to_i
         Package::Operations.move(quantity, @package, from: params[:from], to: params[:to])
         send_stock_item_response
       end
 
+      api :PUT, "/v1/packages/1/designate", "Designate a package's quantity to an order"
+      param_group :operations
+      def designate
+        quantity = params[:quantity].to_i
+        order_id = params[:order_id]
+
+        Package::Operations.designate(@package, quantity: quantity, to_order: order_id)
+        send_stock_item_response
+      end
 
       def remove_from_set
         @package.remove_from_set

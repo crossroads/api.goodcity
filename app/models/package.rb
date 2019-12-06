@@ -6,6 +6,7 @@ class Package < ActiveRecord::Base
   include RollbarSpecification
   include PackageFiltering
   include LocationOperations
+  include DesignationOperations
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)

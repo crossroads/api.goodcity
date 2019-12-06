@@ -10,12 +10,10 @@
 #
 #
 module DesignationOperations
-  extend ActiveSupport::Concern
+  extend Composite
 
-  module Operations
-
+  compose_module :Operations do
     module_function
-
     ##
     # Undispatch an orders_package
     # Partial undispatch is not currently supported
@@ -33,29 +31,16 @@ module DesignationOperations
     # @todo remove stockit references
     #
     def designate(package, quantity:, to_order:)
-      orders_package = init_orders_package(package, to_order);
+      orders_package = init_orders_package(
+        Utils.to_model(package, Package),
+        Utils.to_model(to_order, Order)
+      );
 
       assert_can_designate(orders_package, quantity);
 
       orders_package.quantity = quantity
       orders_package.save
       orders_package
-
-      # PackagesInventory.secured_transaction do
-      #   assert_can_designate(package, quantity, to_order)
-      #   PackagesInventory.append_undispatch(
-      #     package: ord_pkg.package,
-      #     quantity: quantity,
-      #     source: ord_pkg,
-      #     location: Utils.to_model(to_location, Location)
-      #   )
-
-      #   if ord_pkg.dispatched?
-      #     ord_pkg.update!(state: "designated", sent_on: nil)
-      #     ord_pkg.package.undispatch_stockit_item
-      #     ord_pkg.package.save
-      #   end
-      # end
     end
 
     # --- HELPERS

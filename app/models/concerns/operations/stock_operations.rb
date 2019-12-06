@@ -1,7 +1,7 @@
 module StockOperations
-  extend ActiveSupport::Concern
+  extend Composite
 
-  module Operations
+  compose_module :Operations do
 
     module_function
 

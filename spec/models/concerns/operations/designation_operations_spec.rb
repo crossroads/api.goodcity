@@ -51,6 +51,13 @@ context DesignationOperations do
         designate(4, to_order: order)
         expect { designate(1, to_order: other_order) }.to change(OrdersPackage, :count).by(1)
       end
+
+      it 'fails to designate more than the remaining quantity to another order' do
+        expect(Stockit::OrdersPackageSync).to receive(:create).once
+
+        designate(4, to_order: order)
+        expect { designate(2, to_order: other_order) }.to raise_error(Goodcity::InsufficientQuantityError).with_message("The selected quantity (2) is unavailable")
+      end
     end
 
     describe 'Validations' do

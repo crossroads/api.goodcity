@@ -4,6 +4,10 @@ context OrderFulfilmentOperations do
   let(:inventory_length_before) { PackagesInventory.count }
   let(:dispatch_location) { create(:location, :dispatched) }
 
+  subject {
+    Class.new { include OrderFulfilmentOperations }
+  }
+
   before { touch(dispatch_location) }
 
   after(:each) do
@@ -153,9 +157,6 @@ context OrderFulfilmentOperations do
     let(:pkg_loc) { create(:packages_location, package: pkg, location: location, quantity: 30) }
     let(:src_location) { pkg_loc.location }
     let(:orders_package) { create(:orders_package, :with_state_designated, package: pkg, order: order, quantity: 30) }
-    let(:subject) {
-      Class.new { include OrderFulfilmentOperations }
-    }
 
     before do
       # Run the dispatch method to setup the test
