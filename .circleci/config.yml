@@ -116,7 +116,9 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: |
-          [ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy || bundle exec cap staging deploy
+          [ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy
+          [ "$CIRCLE_BRANCH" == "master" ] && bundle exec cap staging deploy
+          [ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy
 
 workflows:
   version: 2
@@ -141,4 +143,4 @@ workflows:
             - audit
           filters:
             branches:
-              only: /^(master|live)$/
+              only: /^(master|live|preview)$/
