@@ -36,10 +36,3 @@ namespace :pg do
     end
   end
 end
-
-namespace :deploy do
-  desc 'Testing stage value'
-  task :testing_stage_value do
-    puts "Stage variable value: #{stage}"
-  end
-end
