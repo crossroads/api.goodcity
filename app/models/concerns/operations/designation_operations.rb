@@ -41,6 +41,7 @@ module DesignationOperations
       assert_can_designate(orders_package, quantity);
 
       orders_package.quantity = quantity
+      orders_package.state = OrdersPackage::States::DESIGNATED
       orders_package.save
       orders_package
     end

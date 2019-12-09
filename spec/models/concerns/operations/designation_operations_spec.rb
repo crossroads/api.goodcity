@@ -60,6 +60,17 @@ context DesignationOperations do
       end
     end
 
+    describe 'when previously cancelled' do
+      it 'updates the state of the existing orders_package' do
+        expect(Stockit::OrdersPackageSync).to receive(:create).once
+        expect(Stockit::OrdersPackageSync).to receive(:update).twice
+
+        ord_pkg = designate(4)
+        ord_pkg.cancel
+        expect { designate(5) }.to change { OrdersPackage.find(ord_pkg.id).state }.from('cancelled').to('designated')
+      end
+    end
+
     describe 'Validations' do
       it 'fails to designate more packages than are on hand' do
         expect { designate(6) }.to raise_error(Goodcity::InsufficientQuantityError).with_message('The selected quantity (6) is unavailable')
