@@ -18,6 +18,7 @@ module OfferFiltering
       res = res.due_after(options[:after]) if options[:after].present?
       res = res.due_before(options[:before]) if options[:before].present?
       res = res.order("id DESC") if options[:recent_offers]
+      res = sort_offer(res, options[:column], options[:is_desc]) if options[:column]
       res = res.with_notifications(options[:with_notifications]) if options[:with_notifications].present?
       res.distinct
     end
@@ -29,6 +30,12 @@ module OfferFiltering
         (offers.state = 'under_review' AND reviewed_at::timestamptz < '#{24.hours.ago}') OR
         (offers.state = 'receiving' AND start_receiving_at::timestamptz < timestamptz '#{last_6pm}')
       SQL
+    end
+
+    def self.sort_offer(res, column="id", is_desc=false)
+      sort_type = is_desc ? "DESC" : "ASC"
+      res = order("#{column} #{sort_type}")
+      res
     end
 
     def self.self_reviewer
