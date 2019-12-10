@@ -318,7 +318,7 @@ module Api
         if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
-          @package.storage_type = assign_storage_type
+          @package.storage_type = assign_storage_type if enable_box_pallet_creation
           @package
         elsif inventory_number
           assign_values_to_existing_or_new_package
@@ -402,13 +402,15 @@ module Api
 
       def assign_storage_type
         storage_type_name = params["package"]["storage_type"]
-        return StorageType.find_by(name: "Package") unless storage_type_name
-
         StorageType.find_by(name: storage_type_name)
       end
 
       def inventory_number
         remove_stockit_prefix(@package.inventory_number)
+      end
+
+      def enable_box_pallet_creation
+        GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation").value.eql?("true")
       end
 
       def delete_params_quantity_if_all_quantity_designated(new_package_params)
