@@ -654,7 +654,6 @@ ActiveRecord::Schema.define(version: 20191105094920) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
-    t.boolean  "last_allow_web_published"
     t.integer  "weight"
     t.integer  "pieces"
     t.integer  "detail_id"
@@ -915,7 +914,7 @@ ActiveRecord::Schema.define(version: 20191105094920) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree

@@ -6,8 +6,6 @@ module Api
       load_and_authorize_resource :package, parent: false
       skip_before_action :validate_token, only: [:index, :show]
 
-      before_action :set_user_default_printer, only: [:print_barcode, :print_inventory_label]
-
       resource_description do
         short "Create, update and delete a package."
         formats ["json"]
@@ -138,7 +136,7 @@ module Api
       end
 
       def print_inventory_label
-        PrintLabelJob.perform_later(@package.id, "inventory_label", print_count)
+        PrintLabelJob.perform_later(@package.id, User.current_user.id, "inventory_label", print_count)
         render json: {}, status: 204
       end
 
@@ -255,12 +253,6 @@ module Api
       end
 
       private
-
-      def set_user_default_printer
-        printer_id = params['printer_id'].presence || Printer.first.try(:id)
-        return if current_user.printer_id == printer_id
-        current_user.update_column(:printer_id, printer_id)
-      end
 
       def render_order_status_error
         render json: { errors: I18n.t("orders_package.order_status_error") }, status: 403
