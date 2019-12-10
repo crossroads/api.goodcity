@@ -683,6 +683,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     before { generate_and_set_token(user) }
     let(:inventory_number) {"000055"}
     let(:package) { create :package }
+    let!(:printer_1) { create :printer, :active }
+    let!(:printer_2) { create :printer }
+
 
     it "returns 400 if package does not exist" do
       post :print_barcode, package_id: 1, labels:1
@@ -700,7 +703,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "should print barcode service call with inventory number" do
       package.inventory_number = inventory_number
       package.save
-      expect(PrintLabelJob).to receive(:perform_later).with(package.id, 'inventory_label', 1)
+      expect(PrintLabelJob).to receive(:perform_later).with(package.id, user.id, 'inventory_label', 1)
 
       post :print_barcode, package_id: package.id, labels: 1
     end
@@ -714,6 +717,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       post :print_barcode, package_id: package.id, labels:301
       expect(response.status).to eq(400)
       expect(subject["errors"]).to eq("Print value should be between 0 and #{MAX_BARCODE_PRINT}.")
+    end
+
+    it 'sets default printer as printer_id from params if printer_id exists in params' do
+      post :print_barcode, package_id: package.id, labels: 1, printer_id: printer_2.id
+      expect(user.reload.printer_id).to eq(printer_2.id)
+    end
+
+    it 'sets default printer as first active printer if printer_id do not exists in params and user do not have default printer' do
+      post :print_barcode, package_id: package.id, labels: 1
+      expect(user.reload.printer_id).to eq(Printer.active.first.id)
+    end
+
+    it "do not sets first printer_id as default if user already has default printer set and there is no printer_id" do
+      user.update_column(:printer_id, printer_2.id)
+      post :print_barcode, package_id: package.id, labels: 1
+      expect(user.reload.printer_id).to eq(printer_2.id)
     end
   end
 

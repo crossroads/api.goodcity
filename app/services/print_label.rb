@@ -1,9 +1,9 @@
 class PrintLabel
   attr_accessor :printer, :label_file
 
-  def initialize(label_file)
-    @printer    = User.current_user.printer
-    @label_file = label_file
+  def initialize(label_file, current_user_id)
+    @printer     = User.find_by_id(current_user_id).try(:printer)
+    @label_file  = label_file
   end
 
   def print

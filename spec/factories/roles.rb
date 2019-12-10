@@ -164,6 +164,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_access_printers do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: "can_access_printers")
+      end
+    end
+
   end
 
 end

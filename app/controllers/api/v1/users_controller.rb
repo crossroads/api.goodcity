@@ -76,7 +76,7 @@ module Api
 
       def user_params
         attributes = %i[last_connected last_disconnected
-        first_name last_name email receive_email other_phone title mobile]
+        first_name last_name email receive_email other_phone title mobile printer_id]
         attributes.concat([:user_role_ids]) if User.current_user.supervisor?
         params.require(:user).permit(attributes)
       end
