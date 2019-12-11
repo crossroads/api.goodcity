@@ -34,13 +34,15 @@ class CartCheckout
   def to_order(order)
     steps = [
       -> { validate(order) },
-      -> { add_requested_packages_to_order(order) },
-      -> { submit_order(order) }
+      -> { submit_order(order) },
+      -> { add_requested_packages_to_order(order) }
     ]
 
-    steps.each do |step|
-      step.call()
-      break if errors.any?
+    ActiveRecord::Base.transaction do
+      steps.each do |step|
+        step.call()
+        raise ActiveRecord::Rollback if errors.any?
+      end
     end
     errors
   end
@@ -76,19 +78,18 @@ class CartCheckout
   end
 
   def designate_package(package, order)
-    results = Designator.new(package, {
-      order_id: order.id,
-      package_id: package.id,
-      quantity: 1,
-    }).designate()
-
-    return add_errors(results.errors) if results.errors.any?
-
-    package.designate_to_stockit_order!(order.id)
-    add_errors(package.errors) if package.errors.any?
+    begin
+      Package::Operations.designate(package, quantity: 1, to_order: order)
+    rescue Goodcity::OperationsError => e
+      add_errors(e.message)
+    end
   end
 
   def add_errors(errs)
-    errs.full_messages.each { |m| errors.add(:base, m) }
+    if errs.is_a?(String)
+      errors.add(:base, errs)
+    else
+      errs.full_messages.each { |m| errors.add(:base, m) }
+    end
   end
 end
