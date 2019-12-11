@@ -120,8 +120,7 @@ module Stockit
 
     def item_params
       {
-        quantity: package.singleton_package? ? package.received_quantity : package.quantity,
-        # quantity: package.quantity,
+        quantity: package.received_quantity
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.blank? ? nil : package.case_number,
@@ -131,8 +130,6 @@ module Stockit
         location_id: stockit_location_id,
         id: package.stockit_id,
         pieces: package.pieces,
-        # designation_id: package.singleton_package? ? package.stockit_order_id : nil,
-        # designated_on: package.singleton_package? ? package.stockit_designated_on : nil
         designation_id: package.stockit_order_id,
         designated_on: package.stockit_designated_on
       }
