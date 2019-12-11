@@ -14,6 +14,7 @@ describe RequestedPackage, :type => :model do
   describe "Database columns" do
     it { is_expected.to have_db_column(:user_id).of_type(:integer) }
     it { is_expected.to have_db_column(:package_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:quantity).of_type(:integer) }
     it { is_expected.to have_db_column(:is_available).of_type(:boolean) }
   end
 
