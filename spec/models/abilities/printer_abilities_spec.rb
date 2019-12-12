@@ -29,6 +29,5 @@ describe "Printer abilities" do
     let(:printer) { create :printer }
 
     it { is_expected.to_not be_able_to(:index, printer) }
-
   end
 end
