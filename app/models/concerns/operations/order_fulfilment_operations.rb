@@ -10,10 +10,9 @@
 #
 #
 module OrderFulfilmentOperations
-  extend ActiveSupport::Concern
+  extend Composite
 
-  module Operations
-    extend LocationOperations::Operations
+  compose_module :Operations do
 
     module_function
 
@@ -73,7 +72,7 @@ module OrderFulfilmentOperations
     #
     # @param [OrdersPackage] orders_package the orders package to undispatch
     #
-    # @raise [StandardError]
+    # @raise [GoodcityError]
     # @raise [ActiveRecord::RecordNotFound]
     #
     def dispatch(ord_pkg, quantity:, from_location:)

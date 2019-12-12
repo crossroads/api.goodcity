@@ -46,10 +46,18 @@ module InventoryComputer
         quantity_where(location: location)
       end
 
-      def designated_quantity_of(package)
-        OrdersPackage.designated.where(package: package).sum(:quantity)
+      def designated_quantity_of(package, to_order: nil)
+        query = OrdersPackage.designated.where(package: package)
+        query = query.where(order: to_order) if to_order.present?
+        query.sum(:quantity)
       end
 
+      #
+      # Returns quantity which not designated
+      #
+      # @param [Package] package the package to compute the quantity of
+      # @return [Integer] the on-hand undesignated quantity
+      #
       def available_quantity_of(package)
         package_quantity(package) - designated_quantity_of(package)
       end

@@ -19,7 +19,7 @@ class PackagesInventory < ActiveRecord::Base
   include InventoryLegacySupport
   include InventoryComputer
 
-  belongs_to :package
+  belongs_to :package, touch: true
   belongs_to :location
   belongs_to :user
   belongs_to :source, polymorphic: true, touch: true
@@ -44,7 +44,7 @@ class PackagesInventory < ActiveRecord::Base
 
     # Generate append_gain, append_dispatch, etc
     define_singleton_method "append_#{action_name}"  do |params|
-      PackagesInventory.create({
+      PackagesInventory.create!({
         action: action_name,
         user: User.current_user || User.system_user
       }.merge(params))

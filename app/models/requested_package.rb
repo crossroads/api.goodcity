@@ -19,6 +19,7 @@ class RequestedPackage < ActiveRecord::Base
   # --- Validations
 
   validates_uniqueness_of :package_id, scope: :user_id
+  validates :quantity, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
 
   # --- Hooks
 
@@ -26,8 +27,7 @@ class RequestedPackage < ActiveRecord::Base
 
   def update_availability
     self.is_available = package.published? &&
-      package.orders_packages.none? { |pkg| pkg.designated? || pkg.dispatched? } &&
-      package.quantity.positive?
+      PackagesInventory::Computer.available_quantity_of(package) >= quantity
     true
   end
 
