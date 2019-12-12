@@ -19,6 +19,7 @@ RSpec.describe Printer, type: :model do
   describe "scope: active" do
     let!(:active_printer) { create :printer, :active }
     let!(:inactive_printer) { create :printer }
+
     it "return records having visible_to_admin as true" do
       active_printers = Printer.active
       expect(active_printers).to include(active_printer)

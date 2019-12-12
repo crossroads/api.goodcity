@@ -718,22 +718,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(400)
       expect(subject["errors"]).to eq("Print value should be between 0 and #{MAX_BARCODE_PRINT}.")
     end
-
-    it 'sets default printer as printer_id from params if printer_id exists in params' do
-      post :print_barcode, package_id: package.id, labels: 1, printer_id: printer_2.id
-      expect(user.reload.printer_id).to eq(printer_2.id)
-    end
-
-    it 'sets default printer as first active printer if printer_id do not exists in params and user do not have default printer' do
-      post :print_barcode, package_id: package.id, labels: 1
-      expect(user.reload.printer_id).to eq(Printer.active.first.id)
-    end
-
-    it "do not sets first printer_id as default if user already has default printer set and there is no printer_id" do
-      user.update_column(:printer_id, printer_2.id)
-      post :print_barcode, package_id: package.id, labels: 1
-      expect(user.reload.printer_id).to eq(printer_2.id)
-    end
   end
 
   describe "Items search" do
