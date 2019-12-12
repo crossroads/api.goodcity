@@ -27,7 +27,7 @@ class RequestedPackage < ActiveRecord::Base
 
   def update_availability
     self.is_available = package.published? &&
-      PackagesInventory::Computer.available_quantity_of(package) > quantity
+      PackagesInventory::Computer.available_quantity_of(package) >= quantity
     true
   end
 

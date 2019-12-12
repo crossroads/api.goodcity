@@ -7,6 +7,7 @@ class Package < ActiveRecord::Base
   include PackageFiltering
   include LocationOperations
   include DesignationOperations
+  include StockOperations
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
@@ -24,6 +25,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
+
 
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
   has_many   :images, as: :imageable, dependent: :destroy
@@ -43,6 +45,7 @@ class Package < ActiveRecord::Base
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   after_save :dispatch_orders_package, if: :dispatch_from_stockit?
   after_save :update_carts
+  after_touch :update_carts # Temporary, will be removed once quantity fields are updated by the inventory
 
   # Live update rules
   after_save :push_changes
