@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191204035945) do
+ActiveRecord::Schema.define(version: 20191211032725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -606,8 +606,8 @@ ActiveRecord::Schema.define(version: 20191204035945) do
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
     t.boolean  "allow_stock",        default: false
-    t.string   "subform"
     t.boolean  "allow_pieces",       default: false
+    t.string   "subform"
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
@@ -762,6 +762,7 @@ ActiveRecord::Schema.define(version: 20191204035945) do
     t.integer "user_id"
     t.integer "package_id"
     t.boolean "is_available"
+    t.integer "quantity",     default: 1
   end
 
   add_index "requested_packages", ["package_id", "user_id"], name: "index_requested_packages_on_package_id_and_user_id", unique: true, using: :btree

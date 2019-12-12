@@ -40,6 +40,7 @@ RSpec.configure do |config|
   config.include ActiveJob::TestHelper
   config.include LocaleSwitcher
   config.include Touch
+  config.include InventoryInitializer
 
   Warden.test_mode!
 

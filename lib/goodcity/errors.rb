@@ -23,7 +23,25 @@ module Goodcity
 
   class InvalidQuantityError < OperationsError
     def initialize(quantity)
-      super(I18n.t('operations.move.bad_quantity_param', quantity: quantity))
+      super(I18n.t('operations.generic.bad_quantity_param', quantity: quantity))
+    end
+  end
+
+  class InsufficientQuantityError < OperationsError
+    def initialize(quantity)
+      super(I18n.t('operations.generic.insufficient_quantity', quantity: quantity))
+    end
+  end
+
+  class InactiveOrderError < OperationsError
+    def initialize(order)
+      super(I18n.t('operations.generic.inactive_order', code: order.code))
+    end
+  end
+
+  class NotInventorizedError < OperationsError
+    def initialize()
+      super(I18n.t('operations.generic.not_inventorized'))
     end
   end
 

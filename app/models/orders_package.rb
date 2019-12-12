@@ -2,6 +2,12 @@ class OrdersPackage < ActiveRecord::Base
   include RollbarSpecification
   include OrdersPackageActions
 
+  module States
+    DESIGNATED = 'designated'.freeze
+    DISPATCHED = 'dispatched'.freeze
+    CANCELLED  = 'cancelled'.freeze
+  end
+
   belongs_to :order
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'

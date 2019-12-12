@@ -100,6 +100,5 @@ module Stockit
         package.packages_locations.first.try(:location).try(:stockit_id) || Location.find_by(id: package.location_id).try(:stockit_id)
       end
     end
-
   end
 end
