@@ -480,7 +480,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       }
 
       it "can return offers in descending order if 'sort_type' is 'created_at_desc' in params" do
-        get :search, column: 'created_at', is_desc: true
+        get :search, column: 'created_at', isDesc: true
         expect(response.status).to eq(200)
         expect(subject['offers'].first["id"]).to eq(scheduled_offer1.attributes["id"])
       end
@@ -492,7 +492,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       it "can return offers in descending order if 'sort_type' is 'scheduled_at_desc' in params" do
-        get :search, column: 'schedules.scheduled_at', is_desc: true
+        get :search, column: 'schedules.scheduled_at', isDesc: true
         expect(response.status).to eq(200)
         expect(subject['offers'].first["id"]).to eq(scheduled_offer1.attributes["id"])
       end
