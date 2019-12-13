@@ -8,6 +8,7 @@ class Location < ActiveRecord::Base
   has_many :packages_locations
   has_many :packages, through: :packages_locations
   has_many :package_types, inverse_of: :location
+  has_one  :printer
 
   def label
     "#{building}#{area}"

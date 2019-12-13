@@ -172,6 +172,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_access_printers do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_access_printers, name: evaluator.role_name)
+      end
+    end
+
     trait :api_user do
       after(:create) do |user|
         user.roles << create(:api_write_role)
