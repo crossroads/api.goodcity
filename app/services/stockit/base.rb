@@ -14,7 +14,7 @@ module Stockit::Base
   end
 
   def nestful_connection(request_type, url, params , options)
-    return if disabled?
+    return {} if disabled? || !STOCKIT_ENABLED
     options = default_options.merge(options)
     begin
       Nestful.send(request_type, url, params, options).as_json
