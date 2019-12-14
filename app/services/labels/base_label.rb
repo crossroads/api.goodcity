@@ -12,10 +12,10 @@ module Labels
       @options = options
       @label = Easyzpl::Label.new(options)
       @label.change_quantity(@options[:print_count])
+      draw
     end
 
     def to_s
-      draw
       @label.to_s
     end
 
