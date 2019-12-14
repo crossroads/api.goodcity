@@ -24,9 +24,10 @@ cancellation_reasons.each do |name_en, value|
 end
 
 booking_types = YAML.load_file("#{Rails.root}/db/booking_types.yml")
-booking_types.each do |name_en, value|
+booking_types.each do |identifier, value|
   FactoryBot.create(:booking_type,
-    name_en: name_en,
+    identifier: identifier,
+    name_en: value[:name_en],
     name_zh_tw: value[:name_zh_tw] )
 end
 
@@ -79,7 +80,8 @@ package_types.each do |code, value|
     name_en: value[:name_en],
     name_zh_tw: value[:name_zh_tw],
     other_terms_en: value[:other_terms_en],
-    other_terms_zh_tw: value[:other_terms_zh_tw] )
+    other_terms_zh_tw: value[:other_terms_zh_tw],
+    allow_stock: true )
 end
 
 package_types.each do |code, value|
