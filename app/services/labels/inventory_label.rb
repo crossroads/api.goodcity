@@ -4,9 +4,8 @@ module Labels
     attr_accessor :options
     
     #
-    # InventoryLabel.new(inventory_number: "F1234", print_count: 1)
+    # InventoryLabel.new(inventory_number: "F12345", print_count: 2)
     def initialize(options={})
-      @print_count = options[:print_count]
       @options = default_options.merge(options)
       super(@options)
     end
