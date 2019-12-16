@@ -75,6 +75,11 @@ module Api
 
       def create
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
+        if disable_box_pallet_creation
+          render json: {errors: ["Creation of Box/Pallet not allowed."]}, status: 422
+          return
+        end
+
         if package_record
           @package.offer_id = offer_id
           if @package.valid? && @package.save
@@ -318,7 +323,7 @@ module Api
         if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
-          @package.storage_type = assign_storage_type if enable_box_pallet_creation
+          @package.storage_type = assign_storage_type
           @package
         elsif inventory_number
           assign_values_to_existing_or_new_package
@@ -409,8 +414,9 @@ module Api
         remove_stockit_prefix(@package.inventory_number)
       end
 
-      def enable_box_pallet_creation
-        GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation").value.eql?("true")
+      def disable_box_pallet_creation
+        ["Box", "Pallet"].include?(params["package"]["storage_type"]) &&
+        !GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation")&.value&.eql?("true")
       end
 
       def delete_params_quantity_if_all_quantity_designated(new_package_params)
