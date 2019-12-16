@@ -116,7 +116,7 @@ jobs:
           key: v1-bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle --path vendor/bundle
       - run: |
-          ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "master" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
+          ([ "$CIRCLE_BRANCH" == "live" ] && bundle exec cap production deploy) || ([ "$CIRCLE_BRANCH" == "sms-fallback-testing" ] && bundle exec cap staging deploy) || ([ "$CIRCLE_BRANCH" == "preview" ] && bundle exec cap preview deploy)
 
 workflows:
   version: 2
@@ -132,14 +132,13 @@ workflows:
       - audit:
           requires:
             - checkout_code
-      - upload-coverage:
-          requires:
-            - test
+      # - upload-coverage:
+      #     requires:
+      #       - test
       - deploy:
           requires:
-            - test
             - audit
           filters:
             branches:
-              only: /^(master|live|preview)$/
+              only: /^(master|live|preview|sms-fallback-testing)$/
 
