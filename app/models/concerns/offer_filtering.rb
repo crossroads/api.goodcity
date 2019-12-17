@@ -12,6 +12,7 @@ module OfferFiltering
     scope :filter, -> (options = {}) do
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
+      res = res.select('offers.*, schedules.scheduled_at')
       res = res.where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
       res = res.self_reviewer if options[:self_reviewer].present?
