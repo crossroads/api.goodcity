@@ -19,9 +19,9 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       .map { |d| Order.find(d['id']) }
   end
 
-  before {
-    FactoryBot.generate(:booking_types).values.each { |btype|
-      FactoryBot.create :booking_type, identifier: btype[:identifier]
+  before(:all) {
+    FactoryBot.generate(:booking_types).keys.each { |identifier|
+      create :booking_type, identifier: identifier
     }
   }
 
@@ -91,8 +91,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       }
 
       it 'returns all the non goodcity-draft orders' do
-        5.times { FactoryBot.create :order, :with_state_submitted }
-        5.times { FactoryBot.create :order, :with_state_draft }
+        5.times { create :order, :with_state_submitted }
+        5.times { create :order, :with_state_draft }
         get :index
         expect(parsed_body['designations'].count).to eq(Order.where.not(state: 'draft').count)
         expect(parsed_body['designations'].map { |it| it['state'] }).to_not include('draft')
@@ -100,14 +100,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       # Test turned off as currently hardcoded to 150
       # it 'returns the number of items specified for the page' do
-      #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 no-draft orders in total
+      #   5.times { create :order, :with_state_submitted } # There are now 7 no-draft orders in total
       #   get :index, page: 1, per_page: 5
       #   expect(parsed_body['designations'].count).to eq(5)
       # end
 
       # Test turned off as currently hardcoded to 150
       # it 'returns the remaining items in the last page' do
-      #   5.times { FactoryBot.create :order, :with_state_submitted } # There are now 7 non-draft orders in total
+      #   5.times { create :order, :with_state_submitted } # There are now 7 non-draft orders in total
       #   get :index, page: 2, per_page: 5
       #   expect(parsed_body['designations'].count).to eq(2)
       # end
@@ -136,8 +136,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it 'can search orders using their description (case insensitive)' do
-        FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
-        FactoryBot.create :order, :with_state_submitted, description: 'Android T'
+        create :order, :with_state_submitted, description: 'IPhone 100s'
+        create :order, :with_state_submitted, description: 'Android T'
         get :index, searchText: 'iphone'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -147,8 +147,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it 'can search orders by the organization that submitted them' do
-        organisation = FactoryBot.create :organisation, name_en: "Crossroads Foundation LTD"
-        FactoryBot.create :order, :with_state_submitted, organisation: organisation
+        organisation = create :organisation, name_en: "Crossroads Foundation LTD"
+        create :order, :with_state_submitted, organisation: organisation
         get :index, searchText: 'crossroads'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -158,8 +158,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a user's first or last name" do
-        submitter = FactoryBot.create :user, first_name: 'Jane', last_name: 'Doe'
-        FactoryBot.create :order, :with_state_submitted, submitted_by: submitter
+        submitter = create :user, first_name: 'Jane', last_name: 'Doe'
+        create :order, :with_state_submitted, submitted_by: submitter
         get :index, searchText: 'jan'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -169,8 +169,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a user's full name" do
-        submitter = FactoryBot.create :user, first_name: 'John', last_name: 'Smith'
-        FactoryBot.create :order, :with_state_submitted, submitted_by: submitter
+        submitter = create :user, first_name: 'John', last_name: 'Smith'
+        create :order, :with_state_submitted, submitted_by: submitter
         get :index, searchText: 'john smith'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -180,8 +180,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a beneficiary's first name" do
-        beneficiary = FactoryBot.create :beneficiary, first_name: 'Steeeve', last_name: 'Sinatra'
-        FactoryBot.create :order, :with_state_submitted, beneficiary: beneficiary
+        beneficiary = create :beneficiary, first_name: 'Steeeve', last_name: 'Sinatra'
+        create :order, :with_state_submitted, beneficiary: beneficiary
         get :index, searchText: 'eeev'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -191,8 +191,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a beneficiary's last name" do
-        beneficiary = FactoryBot.create :beneficiary, first_name: 'Dave', last_name: 'Grohl'
-        FactoryBot.create :order, :with_state_submitted, beneficiary: beneficiary
+        beneficiary = create :beneficiary, first_name: 'Dave', last_name: 'Grohl'
+        create :order, :with_state_submitted, beneficiary: beneficiary
         get :index, searchText: 'Groh'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -202,8 +202,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a beneficiary's full name" do
-        beneficiary = FactoryBot.create :beneficiary, first_name: 'Damon', last_name: 'Albarn'
-        FactoryBot.create :order, :with_state_submitted, beneficiary: beneficiary
+        beneficiary = create :beneficiary, first_name: 'Damon', last_name: 'Albarn'
+        create :order, :with_state_submitted, beneficiary: beneficiary
         get :index, searchText: 'Damon Alba'
         expect(response.status).to eq(200)
         expect(parsed_body['designations'].count).to eq(1)
@@ -221,13 +221,13 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       describe "when filtering the search results" do
-        let(:online_orders) { create :order_transport, transport_type: 'ggv'}
+        let(:ggv_transport) { create :order_transport, transport_type: 'ggv'}
         let(:order_transport) { create :order_transport }
 
         it 'can return only records with the specified states' do
-          2.times { FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s' }
-          2.times { FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s' }
-          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s'
+          2.times { create :order, :with_state_submitted, description: 'IPhone 100s' }
+          2.times { create :order, :awaiting_dispatch, description: 'IPhone 100s' }
+          create :order, :with_state_processing, description: 'IPhone 100s'
 
           get :index, searchText: 'iphone', state: 'awaiting_dispatch,processing'
           expect(response.status).to eq(200)
@@ -243,11 +243,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
         ['appointment', 'online_orders', 'shipment', 'other'].each do |type|
           it "can return a single order of type #{type}" do
-            FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s',
-            booking_type: BookingType.appointment, order_transport: order_transport
-            FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_orders, booking_type: BookingType.online_order
-            FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'shipment'
-            FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'other'
+            create :appointment, :with_state_submitted, description: 'IPhone 100s'
+            create :online_order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: ggv_transport
+            create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'shipment'
+            create :order, :with_state_processing, description: 'IPhone 100s', detail_type: 'other'
 
             get :index, searchText: 'iphone', type: type
             expect(response.status).to eq(200)
@@ -258,8 +257,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         it 'returns records with multiple specified types' do
-          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s', order_transport: order_transport, booking_type: BookingType.appointment
-          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: online_orders, booking_type: BookingType.online_order
+          create :appointment, :with_state_submitted, description: 'IPhone 100s', order_transport: order_transport
+          create :online_order, :awaiting_dispatch, description: 'IPhone 100s', order_transport: ggv_transport
 
           get :index, searchText: 'iphone', type: 'appointment,online_orders'
           expect(response.status).to eq(200)
@@ -273,17 +272,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         it 'should return nothing if searching for an invalid type' do
-          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
+          create :order, :with_state_submitted, description: 'IPhone 100s'
           get :index, searchText: 'iphone', type: 'bad_type'
           expect(response.status).to eq(200)
           expect(parsed_body['designations'].count).to eq(0)
         end
 
         it 'can return only priority records' do
-          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
-          FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
-          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
-          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s'
+          create :order, :with_state_submitted, description: 'IPhone 100s'
+          create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
+          create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
+          create :order, :awaiting_dispatch, description: 'IPhone 100s'
 
           get :index, searchText: 'iphone', priority: 'true'
           expect(response.status).to eq(200)
@@ -297,10 +296,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         it 'can return only priority records of a certain state' do
-          FactoryBot.create :order, :with_state_submitted, description: 'IPhone 100s'
-          FactoryBot.create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
-          FactoryBot.create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
-          FactoryBot.create :order, :awaiting_dispatch, description: 'IPhone 100s'
+          create :order, :with_state_submitted, description: 'IPhone 100s'
+          create :order, :with_state_submitted, description: 'IPhone Y', submitted_at: Time.now - 1.year
+          create :order, :with_state_processing, description: 'IPhone 100s', processed_at: Time.now - 2.days
+          create :order, :awaiting_dispatch, description: 'IPhone 100s'
 
           get :index, searchText: 'iphone', state: 'processing', priority: 'true'
           expect(response.status).to eq(200)

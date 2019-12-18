@@ -24,9 +24,7 @@ class PackageSplitter
   private
 
   def deduct_qty_and_make_copies
-    1..@qty_to_split.times do
-      create_and_save_copy
-    end
+    create_and_save_copy
     @package.update(
       quantity: @package.quantity - @qty_to_split,
       received_quantity: @package.received_quantity - @qty_to_split
@@ -35,8 +33,8 @@ class PackageSplitter
 
   def create_and_save_copy
     copy = @package.dup
-    copy.quantity = 1
-    copy.received_quantity = 1
+    copy.quantity = @qty_to_split
+    copy.received_quantity = @qty_to_split
     copy.inventory_number = generate_q_inventory_number
     copy.stockit_id = nil
     copy.add_to_stockit

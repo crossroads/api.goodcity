@@ -110,4 +110,12 @@ FactoryBot.define do
       association :process_complted_by, factory: :user, strategy: :build
     end
   end
+
+  factory :online_order, parent: :order do
+    booking_type { create(:booking_type, identifier: 'online-order') }
+  end
+
+  factory :appointment, parent: :order do
+    booking_type { create(:booking_type, identifier: 'appointment') }
+  end
 end
