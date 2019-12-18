@@ -286,6 +286,7 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
+    return if is_box_or_pallet?
     return if detail.present? && !detail.valid?
 
     response = Stockit::ItemSync.create(self)
@@ -579,5 +580,9 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
+  end
+
+  def is_box_or_pallet?
+    %w[Box Pallet].include?(storage_type&.name)
   end
 end
