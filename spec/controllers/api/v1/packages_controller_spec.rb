@@ -339,6 +339,110 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
     end
 
+    context "create package with storage type with creation of box/pallet setting enabled" do
+      let!(:location) { create :location }
+      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:box) { create :storage_type, :with_box }
+      let!(:pallet) { create :storage_type, :with_pallet }
+      let!(:pkg_storage) { create :storage_type, :with_pkg }
+      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+
+      let(:stockit_item_params) {
+        {
+          quantity: 1,
+          inventory_number: "123456",
+          location_id: location.stockit_id,
+          grade: "C",
+          stockit_id: 1,
+          code_id: code.stockit_id,
+        }
+      }
+      let(:package_params){
+        stockit_item_params.merge({
+          quantity: 1,
+          received_quantity: package.received_quantity,
+          package_type_id:package.package_type_id,
+          state: package.state,
+          stockit_id: package.stockit_id,
+          donor_condition_id: package.donor_condition_id,
+          storage_type: "Package"
+        })
+      }
+
+      describe "create with storage type box" do
+        it "creates package with box storage type" do
+          expect(GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation").value).to eq(setting.value)
+          package_params[:storage_type] = "Box"
+          post :create, format: :json, package: package_params
+          expect(response.status).to eq(201)
+          package = Package.last
+          expect(parsed_body["package"]["id"]).to eq(package.id)
+          expect(parsed_body["package"]["storage_type_id"]).to eq(package.storage_type_id)
+        end
+      end
+
+      it "creates package with pallet storage type" do
+        package_params[:storage_type] = "Pallet"
+        post :create, format: :json, package: package_params
+        expect(response.status).to eq(201)
+        package = Package.last
+        expect(parsed_body["package"]["id"]).to eq(package.id)
+        expect(parsed_body["package"]["storage_type_id"]).to eq(package.storage_type_id)
+      end
+
+      it "creates package with package storage type" do
+        package_params[:storage_type] = "Package"
+        post :create, format: :json, package: package_params
+        expect(response.status).to eq(201)
+        package = Package.last
+        expect(parsed_body["package"]["id"]).to eq(package.id)
+        expect(parsed_body["package"]["storage_type_id"]).to eq(package.storage_type_id)
+      end
+    end
+
+    context "should not create package with creation of box/pallet setting disabled" do
+      let!(:location) { create :location }
+      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:box) { create :storage_type, :with_box }
+      let!(:pallet) { create :storage_type, :with_pallet }
+      let!(:pkg_storage) { create :storage_type, :with_pkg }
+      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false") }
+
+      let(:stockit_item_params) {
+        {
+          quantity: 1,
+          inventory_number: "123456",
+          location_id: location.stockit_id,
+          grade: "C",
+          stockit_id: 1,
+          code_id: code.stockit_id,
+        }
+      }
+      let(:package_params) {
+        stockit_item_params.merge({
+          quantity: 1,
+          received_quantity: package.received_quantity,
+          package_type_id: package.package_type_id,
+          state: package.state,
+          stockit_id: package.stockit_id,
+          donor_condition_id: package.donor_condition_id,
+          storage_type: "Package"
+        })
+      }
+
+      describe "create with storage type box" do
+        it "creates package with box storage type" do
+          expect(GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation").value).to eq(setting.value)
+          package_params[:storage_type] = "Box"
+          post :create, format: :json, package: package_params
+          expect(response.status).to eq(422)
+          expect(parsed_body["errors"]).to_not be_nil
+          expect(parsed_body["errors"]).to eq(["Creation of Box/Pallet not allowed."])
+
+        end
+      end
+    end
+
     context "create package from gc with sub detail" do
       let!(:location) { create :location }
       let!(:code) { create :package_type, :with_stockit_id }
