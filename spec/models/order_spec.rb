@@ -7,7 +7,7 @@ RSpec.describe Order, type: :model do
 
   let(:user) { create :user }
 
-  before {
+  before(:all) {
     FactoryBot.generate(:booking_types).keys.each { |identifier|
       FactoryBot.create :booking_type, identifier: identifier
     }

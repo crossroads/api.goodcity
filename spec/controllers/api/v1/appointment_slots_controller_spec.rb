@@ -5,7 +5,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
 
-  before {
+  before(:all) {
     FactoryBot.generate(:booking_types).keys.each { |identifier|
       FactoryBot.create :booking_type, identifier: identifier
     }
