@@ -6,8 +6,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   before {
-    FactoryBot.generate(:booking_types).values.each { |btype|
-      FactoryBot.create :booking_type, identifier: btype[:identifier]
+    FactoryBot.generate(:booking_types).keys.each { |identifier|
+      FactoryBot.create :booking_type, identifier: identifier
     }
   }
 
