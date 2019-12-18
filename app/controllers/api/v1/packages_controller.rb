@@ -76,7 +76,7 @@ module Api
       def create
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
         if disable_box_pallet_creation
-          render json: {errors: ["Creation of Box/Pallet not allowed."]}, status: 422
+          render json: { errors: [I18n.t("package.creation_of_box/pallet_error", storage_type: params[:package][:storage_type])] }, status: 422
           return
         end
 
