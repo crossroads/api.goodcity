@@ -438,7 +438,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(response.status).to eq(422)
           expect(parsed_body["errors"]).to_not be_nil
           expect(parsed_body["errors"]).to eq(["Creation of #{package_params[:storage_type]} not allowed."])
-
         end
       end
     end
