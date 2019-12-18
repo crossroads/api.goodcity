@@ -19,7 +19,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       .map { |d| Order.find(d['id']) }
   end
 
-  before {
+  before(:all) {
     FactoryBot.generate(:booking_types).keys.each { |identifier|
       FactoryBot.create :booking_type, identifier: identifier
     }
