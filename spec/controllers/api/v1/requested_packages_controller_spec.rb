@@ -141,9 +141,9 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "Checkout process" do
 
-    before {
-      FactoryBot.generate(:booking_types).values.each { |btype|
-        FactoryBot.create :booking_type, identifier: btype[:identifier]
+    before(:all) {
+      FactoryBot.generate(:booking_types).keys.each { |identifier|
+        FactoryBot.create :booking_type, identifier: identifier
       }
     }
 
@@ -158,12 +158,12 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
       context "as a #{user_type}" do
         let(:user) { create(:user, user_type) }
         let(:other_user) { create(:user, user_type) }
-        let(:other_order) { create(:order, :with_state_draft, created_by: other_user) }
-        let(:draft_order) { create(:order, :with_state_draft, created_by: user) }
-        let(:draft_appointment) { create(:order, :with_state_draft, booking_type: BookingType.appointment, created_by: user) }
-        let(:submitted_order) { create(:order, :with_state_submitted, submitted_by: user, created_by: user) }
-        let(:processing_order) { create(:order, :with_state_processing, submitted_by: user, created_by: user) }
-        let(:awaiting_dispatch_order) { create(:order, :with_state_awaiting_dispatch, submitted_by: user, created_by: user) }
+        let(:other_order) { create(:online_order, :with_state_draft, created_by: other_user) }
+        let(:draft_order) { create(:online_order, :with_state_draft, created_by: user) }
+        let(:draft_appointment) { create(:appointment, :with_state_draft, created_by: user) }
+        let(:submitted_order) { create(:online_order, :with_state_submitted, submitted_by: user, created_by: user) }
+        let(:processing_order) { create(:online_order, :with_state_processing, submitted_by: user, created_by: user) }
+        let(:awaiting_dispatch_order) { create(:online_order, :with_state_awaiting_dispatch, submitted_by: user, created_by: user) }
         let(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
 
         before do
