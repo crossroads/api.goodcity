@@ -142,8 +142,8 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
   describe "Checkout process" do
 
     before {
-      FactoryBot.generate(:booking_types).values.each { |btype|
-        FactoryBot.create :booking_type, identifier: btype[:identifier]
+      FactoryBot.generate(:booking_types).keys.each { |identifier|
+        FactoryBot.create :booking_type, identifier: identifier
       }
     }
 
