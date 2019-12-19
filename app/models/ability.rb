@@ -18,7 +18,7 @@ class Ability
     can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail
+    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -79,6 +79,11 @@ class Ability
     computer_abilities
     computer_accessory_abilities
     electrical_abilities
+    printer_abilities
+  end
+
+  def printer_abilities
+    can :index, Printer if can_access_printers?
   end
 
   def address_abilities

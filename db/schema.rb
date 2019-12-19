@@ -712,6 +712,18 @@ ActiveRecord::Schema.define(version: 20191105094920) do
     t.datetime "updated_at"
   end
 
+  create_table "printers", force: :cascade do |t|
+    t.boolean  "active"
+    t.integer  "location_id"
+    t.string   "name"
+    t.string   "host"
+    t.string   "port"
+    t.string   "username"
+    t.string   "password"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "process_checklists", force: :cascade do |t|
     t.string  "text_en"
     t.string  "text_zh_tw"
@@ -883,6 +895,7 @@ ActiveRecord::Schema.define(version: 20191105094920) do
     t.boolean  "is_email_verified",                default: false
     t.boolean  "receive_email",                    default: false
     t.string   "other_phone"
+    t.integer  "printer_id"
   end
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree

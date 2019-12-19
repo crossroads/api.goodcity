@@ -683,11 +683,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     before { generate_and_set_token(user) }
     let(:inventory_number) {"000055"}
     let(:package) { create :package }
-    let(:barcode_service) { BarcodeService.new }
-    before(:each) {
-      allow(barcode_service).to receive(:print).and_return(["", "", "pid 111 exit 0"])
-      allow(controller).to receive(:barcode_service).and_return(barcode_service)
-    }
+    let!(:printer_1) { create :printer, :active }
+    let!(:printer_2) { create :printer }
+
 
     it "returns 400 if package does not exist" do
       post :print_barcode, package_id: 1, labels:1
@@ -705,13 +703,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "should print barcode service call with inventory number" do
       package.inventory_number = inventory_number
       package.save
-      expect(barcode_service).to receive(:print).with(inventory_number, labels=1).and_return(["pid 111 exit 0", "", ""])
+      expect(PrintLabelJob).to receive(:perform_later).with(package.id, user.id, 'inventory_label', 1)
+
       post :print_barcode, package_id: package.id, labels: 1
     end
 
-    it "return 200 status" do
+    it "return 204 status" do
       post :print_barcode, package_id: package.id, labels:1
-      expect(response.status).to eq(200)
+      expect(response.status).to eq(204)
     end
 
     it "returns 400 if labels quantity is more than 300" do
