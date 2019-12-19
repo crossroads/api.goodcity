@@ -18,7 +18,7 @@ module OfferFiltering
       res = res.self_reviewer if options[:self_reviewer].present?
       res = res.due_after(options[:after]) if options[:after].present?
       res = res.due_before(options[:before]) if options[:before].present?
-      res = res.order(sort_offer(options)) if options[:column] || options[:recent_offers]
+      res = res.order(sort_offer(options)) if options[:sort_column] || options[:recent_offers]
       res = res.with_notifications(options[:with_notifications]) if options[:with_notifications].present?
       res.distinct
     end
@@ -35,7 +35,7 @@ module OfferFiltering
     def self.sort_offer(options)
       return "id DESC" if options[:recent_offers]
       sort_type = options[:is_desc] ? "DESC" : "ASC"
-      "#{options[:column]} #{sort_type}"
+      "#{options[:sort_column]} #{sort_type}"
     end
 
     def self.self_reviewer

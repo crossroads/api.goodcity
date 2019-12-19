@@ -179,7 +179,7 @@ module Api
           before: time_epoch_param(:before),
           after: time_epoch_param(:after),
           with_notifications: params[:with_notifications],
-          column: params[:column],
+          sort_column: params[:sort_column],
           is_desc: bool_param(:is_desc, false),
         })
       end

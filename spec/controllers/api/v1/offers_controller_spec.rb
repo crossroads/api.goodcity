@@ -480,27 +480,27 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       }
 
       it "can return offers in descending order if 'sort_type' is 'created_at_desc' in params" do
-        get :search, column: 'created_at', is_desc: true
+        get :search, sort_column: 'created_at', is_desc: true
         expect(response.status).to eq(200)
-        expect(subject['offers'].first["id"]).to eq(scheduled_offer1.attributes["id"])
+        expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer1.id, scheduled_offer.id])
       end
 
       it "can return offers in ascending order if 'sort_type' is 'created_at_asc' in params" do
-        get :search, column: 'created_at'
+        get :search, sort_column: 'created_at'
         expect(response.status).to eq(200)
-        expect(subject['offers'].first["id"]).to eq(scheduled_offer.attributes["id"])
+        expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer.id, scheduled_offer1.id])
       end
 
       it "can return offers in descending order if 'sort_type' is 'scheduled_at_desc' in params" do
-        get :search, column: 'schedules.scheduled_at', is_desc: true
+        get :search, sort_column: 'schedules.scheduled_at', is_desc: true
         expect(response.status).to eq(200)
-        expect(subject['offers'].first["id"]).to eq(scheduled_offer1.attributes["id"])
+        expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer1.id, scheduled_offer.id])
       end
 
       it "can return offers in descending order if 'sort_type' is 'scheduled_at_asc' in params" do
-        get :search, column: 'schedules.scheduled_at'
+        get :search, sort_column: 'schedules.scheduled_at'
         expect(response.status).to eq(200)
-        expect(subject['offers'].first["id"]).to eq(scheduled_offer.attributes["id"])
+        expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer.id, scheduled_offer1.id])
       end
     end
 
