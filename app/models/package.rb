@@ -11,7 +11,9 @@ class Package < ActiveRecord::Base
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
+  SETTINGS_KEYS =%w[enable_box_pallet_creation]
 
+  validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :is_box_or_pallet?
   belongs_to :item
   belongs_to :set_item, class_name: 'Item'
   has_many :locations, through: :packages_locations
@@ -582,7 +584,11 @@ class Package < ActiveRecord::Base
     inventory_number && inventory_number.match(/^[0-9]+$/)
   end
 
+  def storage_type_name
+    storage_type&.name
+  end
+
   def is_box_or_pallet?
-    %w[Box Pallet].include?(storage_type&.name)
+    %w[Box Pallet].include?(storage_type_name)
   end
 end

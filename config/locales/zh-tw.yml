@@ -50,6 +50,8 @@ zh-tw:
           attributes:
             package_id:
               taken: "已加入購物車"
+        package:
+          enable_box_pallet_creation: "Creation of box/pallet is not allowed."
         user:
           attributes:
             mobile:

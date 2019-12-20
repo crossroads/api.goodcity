@@ -75,13 +75,6 @@ module Api
 
       def create
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-        if disable_box_pallet_creation
-          render json: {
-            errors: [I18n.t("package.creation_of_box/pallet_error",
-            storage_type: params[:package][:storage_type])]
-          }, status: 422
-          return
-        end
 
         if package_record
           @package.offer_id = offer_id
@@ -415,11 +408,6 @@ module Api
 
       def inventory_number
         remove_stockit_prefix(@package.inventory_number)
-      end
-
-      def disable_box_pallet_creation
-        !GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation")&.value&.eql?("true") &&
-          %w[Box Pallet].include?(params["package"]["storage_type"])
       end
 
       def delete_params_quantity_if_all_quantity_designated(new_package_params)
