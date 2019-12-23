@@ -20,7 +20,7 @@ RSpec.describe Api::V1::BookingTypesController, type: :controller do
     it "return serialized booking_type" do
       booking_type
       get :index
-      expect(parsed_body['booking_types'].length).to eq(2)
+      expect(parsed_body['booking_types'].length).to eq(1)
       expect(parsed_body['booking_types'][0]['name_en']).to eq(booking_type.name_en)
     end
   end
