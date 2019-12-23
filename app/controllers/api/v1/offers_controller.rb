@@ -178,7 +178,9 @@ module Api
           recent_offers: bool_param(:recent_offers, false),
           before: time_epoch_param(:before),
           after: time_epoch_param(:after),
-          with_notifications: params[:with_notifications]
+          with_notifications: params[:with_notifications],
+          sort_column: params[:sort_column],
+          is_desc: bool_param(:is_desc, false),
         })
       end
 
