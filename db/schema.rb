@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191211032725) do
+ActiveRecord::Schema.define(version: 20191223134926) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -96,9 +96,10 @@ ActiveRecord::Schema.define(version: 20191211032725) do
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.boolean  "visible_to_admin", default: true
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.boolean  "visible_to_offer", default: true
+    t.boolean  "visible_to_order", default: false
   end
 
   create_table "companies", force: :cascade do |t|
@@ -474,9 +475,10 @@ ActiveRecord::Schema.define(version: 20191211032725) do
     t.integer  "beneficiary_id"
     t.integer  "address_id"
     t.integer  "district_id"
-    t.text     "cancellation_reason"
+    t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.integer  "cancellation_reason_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
