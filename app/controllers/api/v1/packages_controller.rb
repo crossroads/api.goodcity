@@ -319,13 +319,13 @@ module Api
         if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
-          @package.storage_type = assign_storage_type
           @package
         elsif inventory_number
           assign_values_to_existing_or_new_package
         else
           @package.assign_attributes(package_params)
         end
+        @package.storage_type = assign_storage_type
         @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity ||= received_quantity
         add_favourite_image if params["package"]["favourite_image_id"]
@@ -402,7 +402,9 @@ module Api
       end
 
       def assign_storage_type
-        storage_type_name = params["package"]["storage_type"]
+        storage_type_name = params["package"]["storage_type"] || "Package"
+        return unless %w[Box Pallet Package].include?(storage_type_name)
+
         StorageType.find_by(name: storage_type_name)
       end
 

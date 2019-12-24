@@ -430,14 +430,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         })
       }
 
-      describe "create with storage type box" do
-        it "creates package with box storage type" do
+      describe "creation with setting false" do
+        it "should not create package if setting is false" do
           expect(GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation").value).to eq(setting.value)
           package_params[:storage_type] = "Box"
           post :create, format: :json, package: package_params
           expect(response.status).to eq(422)
           expect(parsed_body["errors"]).to_not be_nil
-          expect(parsed_body["errors"]).to eq(["Creation of #{package_params[:storage_type]} not allowed."])
+          expect(parsed_body["errors"]).to eq(["Creation of box/pallet is not allowed."])
         end
       end
     end

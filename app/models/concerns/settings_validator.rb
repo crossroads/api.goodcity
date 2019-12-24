@@ -4,11 +4,12 @@ class SettingsValidator < ActiveModel::Validator
     @keys = options[:settings][:keys]
   end
 
+  # Create setting with app_name in the beggining of the key to identify. eg 'stock.abc'
   def validate(record)
     error_messages = []
     @keys.each do |key|
       unless action_allowed?(key)
-        error_message_key = "activerecord.errors.models.#{record.class.name.underscore}.#{key}"
+        error_message_key = "activerecord.errors.models.#{record.class.name.underscore}.#{key.split('.').last}"
         error_messages << I18n.t(error_message_key)
       end
     end
@@ -18,6 +19,6 @@ class SettingsValidator < ActiveModel::Validator
   private
 
   def action_allowed?(key)
-    GoodcitySetting.where("key ILIKE ?", "%#{key}%").last&.value&.eql?("true")
+    GoodcitySetting.find_by(key: key)&.value&.eql?("true")
   end
 end
