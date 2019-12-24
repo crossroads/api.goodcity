@@ -3,6 +3,7 @@ class CancellationReason < ActiveRecord::Base
   include RollbarSpecification
 
   has_many :offers
+  has_many :orders
   translates :name
   validates :name_en, presence: true
 
