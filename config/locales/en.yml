@@ -50,6 +50,8 @@ en:
           attributes:
             package_id:
               taken: "already in the cart"
+        package:
+          enable_box_pallet_creation: "Creation of box/pallet is not allowed."
         user:
           attributes:
             mobile:
@@ -80,10 +82,12 @@ en:
     drop_off_message: "%{name} will deliver the items between %{time}, %{date}"
   package:
     max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
+    creation_of_box/pallet_error: "Creation of %{storage_type} not allowed."
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."
     split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
+
   orders_package:
     already_dispatched: "This has been already dispatched."
     order_status_error: "You need to complete processing Order first before dispatching."
@@ -124,4 +128,5 @@ en:
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
+
 

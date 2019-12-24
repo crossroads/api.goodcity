@@ -75,6 +75,7 @@ module Api
 
       def create
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
+
         if package_record
           @package.offer_id = offer_id
           if @package.valid? && @package.save
@@ -324,6 +325,7 @@ module Api
         else
           @package.assign_attributes(package_params)
         end
+        @package.storage_type = assign_storage_type
         @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity ||= received_quantity
         add_favourite_image if params["package"]["favourite_image_id"]
@@ -397,6 +399,13 @@ module Api
           package_params,
           request_from_stockit
         ).build_or_update_record
+      end
+
+      def assign_storage_type
+        storage_type_name = params["package"]["storage_type"] || "Package"
+        return unless %w[Box Pallet Package].include?(storage_type_name)
+
+        StorageType.find_by(name: storage_type_name)
       end
 
       def inventory_number
