@@ -13,6 +13,7 @@ class Order < ActiveRecord::Base
     ]
   end
 
+  belongs_to :cancellation_reason
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
   belongs_to :country
@@ -68,7 +69,7 @@ class Order < ActiveRecord::Base
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
 
   # Stockit Shipment Status => GoodCity State
-  SHIPMENT_STATUS_MAP = { 
+  SHIPMENT_STATUS_MAP = {
     "Processing" => "processing",
     "Sent" => "closed",
     "Loaded" => "dispatching",
