@@ -11,9 +11,9 @@ class Package < ActiveRecord::Base
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
-  SETTINGS_KEYS =%w[stock.enable_box_pallet_creation]
+  SETTINGS_KEYS = %w[stock.enable_box_pallet_creation].freeze
 
-  validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :is_box_or_pallet?
+  validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
   belongs_to :set_item, class_name: 'Item'
   has_many :locations, through: :packages_locations
@@ -288,8 +288,7 @@ class Package < ActiveRecord::Base
   end
 
   def add_to_stockit
-    return if is_box_or_pallet?
-    return if detail.present? && !detail.valid?
+    return if box_or_pallet? || (detail.present? && !detail.valid?)
 
     response = Stockit::ItemSync.create(self)
     if response && (errors = response["errors"]).present?
@@ -588,7 +587,7 @@ class Package < ActiveRecord::Base
     storage_type&.name
   end
 
-  def is_box_or_pallet?
+  def box_or_pallet?
     %w[Box Pallet].include?(storage_type_name)
   end
 end
