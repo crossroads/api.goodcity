@@ -1,0 +1,24 @@
+---
+1:
+  :name_en: "No show"
+  :name_zh_tw: "No show"
+  :visible_to_offer: false
+  :visible_to_order: true
+
+2:
+  :name_en: "Nothing suitable"
+  :name_zh_tw: "Nothing suitable"
+  :visible_to_offer: false
+  :visible_to_order: true
+
+3:
+  :name_en: "Changed mind"
+  :name_zh_tw: "Changed mind"
+  :visible_to_offer: false
+  :visible_to_order: true
+
+4:
+  :name_en: "Other"
+  :name_zh_tw: "Other"
+  :visible_to_offer: false
+  :visible_to_order: true
