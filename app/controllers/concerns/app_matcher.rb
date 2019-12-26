@@ -18,7 +18,7 @@ module AppMatcher
   def is_stockit_request?
     app_name == STOCKIT_APP
   end
-  
+
   # return sanitized app name from request header
   # return 'app', 'admin', 'stock', 'browse', 'stockit'
 
