@@ -549,6 +549,14 @@ class Package < ActiveRecord::Base
     requested_packages.each(&:update_availability!)
   end
 
+  def storage_type_name
+    storage_type&.name
+  end
+
+  def box_or_pallet?
+    %w[Box Pallet].include?(storage_type_name)
+  end
+
   private
 
   def set_default_values
@@ -581,13 +589,5 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
-  end
-
-  def storage_type_name
-    storage_type&.name
-  end
-
-  def box_or_pallet?
-    %w[Box Pallet].include?(storage_type_name)
   end
 end
