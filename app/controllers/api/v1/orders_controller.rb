@@ -70,10 +70,10 @@ module Api
 
       def transition
         transition_event = params['transition'].to_sym
-        cancellation_reason = params["cancellation_reason"]
+        cancellation_reason_id = params['cancellation_reason_id'] if params['cancellation_reason_id']
         if @order.state_events.include?(transition_event)
           @order.fire_state_event(transition_event)
-          @order.update(cancellation_reason: cancellation_reason) if cancellation_reason.presence
+          @order.update(cancellation_reason_id: cancellation_reason_id, cancel_reason: params["cancel_reason"]) if cancellation_reason_id
         end
         render json: @order, serializer: serializer
       end
