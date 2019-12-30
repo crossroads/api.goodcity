@@ -119,6 +119,10 @@ class Order < ActiveRecord::Base
     end
   end
 
+  def remove_cancellation_reason
+    update(cancellation_reason_id: nil, cancel_reason: nil)
+  end
+
   def designate_orders_packages
     orders_packages.each do |orders_package|
       orders_package.update_state_to_designated
