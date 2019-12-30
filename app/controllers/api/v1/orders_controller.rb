@@ -70,6 +70,7 @@ module Api
 
       def transition
         transition_event = params['transition'].to_sym
+        @order.remove_cancellation_reason if transition_event.eql?(:resubmit)
         cancellation_reason_id = params['cancellation_reason_id'] if params['cancellation_reason_id']
         if @order.state_events.include?(transition_event)
           @order.fire_state_event(transition_event)

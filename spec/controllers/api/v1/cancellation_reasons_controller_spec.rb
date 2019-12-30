@@ -8,10 +8,18 @@ RSpec.describe Api::V1::CancellationReasonsController, type: :controller do
   before { generate_and_set_token(user) }
 
   describe 'GET cancellation_reasons' do
-    it 'returns visible cancellation_reasons if ids do not exists in params' do
-      create :cancellation_reason, :visible
-      create :cancellation_reason, :invisible
-      get :index
+    it 'returns cancellation_reasons visible to offer if `offer` exist in params' do
+      create :cancellation_reason, :visible_to_offer
+      create :cancellation_reason, :visible_to_order
+      get :index, offer: true
+      expect(response.status).to eq(200)
+      expect(parsed_body['cancellation_reasons'].length).to eq(1)
+    end
+
+    it 'returns cancellation_reasons visible to offer if `order` exist in params' do
+      create :cancellation_reason, :visible_to_offer
+      create :cancellation_reason, :visible_to_order
+      get :index, order: true
       expect(response.status).to eq(200)
       expect(parsed_body['cancellation_reasons'].length).to eq(1)
     end
