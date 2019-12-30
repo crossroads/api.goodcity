@@ -1,14 +1,16 @@
 class CancellationReason < ActiveRecord::Base
   include CacheableJson
   include RollbarSpecification
+  CANCELLATION_REASONS_TYPE = ["offer", "order"].freeze
 
   has_many :offers
   has_many :orders
   translates :name
   validates :name_en, presence: true
 
-  scope :visible_to_offer, -> { where(visible_to_offer: true) }
-  scope :visible_to_order, -> { where(visible_to_order: true) }
+  CANCELLATION_REASONS_TYPE.each do |type|
+    scope :"visible_to_#{type}", -> { where("visible_to_#{type}": true) }
+  end
 
   def self.unwanted
     find_by(name_en: "Unwanted")
@@ -16,5 +18,15 @@ class CancellationReason < ActiveRecord::Base
 
   def self.donor_cancelled
     find_by(name_en: "Donor cancelled")
+  end
+
+  def self.get_cancellation_reasons_by(params)
+    if params["ids"]
+      where(id: params["ids"].split(",").flatten)
+    elsif params["offer"]
+      visible_to_offer
+    else
+      visible_to_order
+    end
   end
 end

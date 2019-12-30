@@ -5,8 +5,12 @@ FactoryBot.define do
     visible_to_offer { generate(:cancellation_reasons)[name_en][:visible_to_offer] }
     # initialize_with { CancellationReason.find_or_initialize_by(name_en: name_en) }
 
-    trait :visible do
+    trait :visible_to_offer do
       visible_to_offer true
+    end
+
+    trait :visible_to_order do
+      visible_to_order true
     end
 
     trait :invisible do

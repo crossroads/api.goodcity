@@ -4,13 +4,7 @@ module Api
       load_and_authorize_resource :cancellation_reason, parent: false
 
       def index
-        if params["ids"].present?
-          @cancellation_reasons = @cancellation_reasons.where(id: params["ids"].split(",").flatten)
-        elsif params["isStock"]
-          @cancellation_reasons = @cancellation_reasons.visible_to_order
-        else
-          @cancellation_reasons = @cancellation_reasons.visible_to_offer
-        end
+        @cancellation_reasons = @cancellation_reasons.get_cancellation_reasons_by(params)
         render json: @cancellation_reasons, each_serializer: serializer
       end
 
