@@ -20,10 +20,10 @@ class CancellationReason < ActiveRecord::Base
     find_by(name_en: "Donor cancelled")
   end
 
-  def self.get_cancellation_reasons_by(params)
-    if params["ids"]
-      where(id: params["ids"].split(",").flatten)
-    elsif params["offer"]
+  def self.get_cancellation_reasons_by(options)
+    if options[:ids]
+      where(id: options[:ids].split(",").flatten)
+    elsif options[:offer]
       visible_to_offer
     else
       visible_to_order

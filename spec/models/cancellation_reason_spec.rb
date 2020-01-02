@@ -13,7 +13,7 @@ RSpec.describe CancellationReason, type: :model do
     let!(:order_cancellation_reason) { create :cancellation_reason, :visible_to_order }
 
     it "return records having visible_to_offer as true" do
-      visible_scope_ids = CancellationReason.visible_to_offer.pluck(:id)
+      visible_scope_ids = described_class.visible_to_offer.pluck(:id)
       expect(visible_scope_ids).to include(offer_cancellation_reason.id)
       expect(visible_scope_ids).to_not include(order_cancellation_reason.id)
     end
@@ -24,7 +24,7 @@ RSpec.describe CancellationReason, type: :model do
     let!(:order_cancellation_reason) { create :cancellation_reason, :visible_to_order }
 
     it "return records having visible_to_order as true" do
-      visible_scope_ids = CancellationReason.visible_to_order.pluck(:id)
+      visible_scope_ids = described_class.visible_to_order.pluck(:id)
       expect(visible_scope_ids).to include(order_cancellation_reason.id)
       expect(visible_scope_ids).to_not include(offer_cancellation_reason.id)
     end
