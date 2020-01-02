@@ -69,13 +69,7 @@ module Api
       end
 
       def transition
-        transition_event = params['transition'].to_sym
-        @order.remove_cancellation_reason if transition_event.eql?(:resubmit)
-        cancellation_reason_id = params['cancellation_reason_id'] if params['cancellation_reason_id']
-        if @order.state_events.include?(transition_event)
-          @order.fire_state_event(transition_event)
-          @order.update(cancellation_reason_id: cancellation_reason_id, cancel_reason: params["cancel_reason"]) if cancellation_reason_id
-        end
+        update_transition_and_cancel_reason
         render json: @order, serializer: serializer
       end
 
@@ -122,6 +116,17 @@ module Api
           include_order: false,
           include_images: true,
           exclude_stockit_set_item: true).as_json
+      end
+
+      def update_transition_and_cancel_reason
+        transition_event = params['transition'].to_sym
+        cancellation_reason_id = CancellationReason.find_by_name_en("Changed mind")&.id  if is_browse_app? && transition_event.eql?(:cancel)
+        cancellation_reason_id = params['cancellation_reason_id'] if params['cancellation_reason_id']
+
+        @order.update_cancellation_reason_and_transition(transition_event, {
+          cancel_reason: params["cancel_reason"],
+          cancellation_reason_id: cancellation_reason_id
+        })
       end
 
       def order_record
