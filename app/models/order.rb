@@ -119,7 +119,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def remove_cancellation_reason(cancellation_reason_id=nil, cancel_reason=nil)
+  def remove_cancellation_reason(cancellation_reason_id = nil, cancel_reason = nil)
     update(cancellation_reason_id: cancellation_reason_id, cancel_reason: cancel_reason)
   end
 
@@ -127,7 +127,7 @@ class Order < ActiveRecord::Base
     remove_cancellation_reason if transition_event.eql?(:resubmit)
     if state_events.include?(transition_event)
       fire_state_event(transition_event)
-      remove_cancellation_reason(cancellation_reason_id = opts[:cancellation_reason_id], cancel_reason = opts[:cancel_reason]) if opts[:cancellation_reason_id]
+      remove_cancellation_reason(opts[:cancellation_reason_id], opts[:cancel_reason]) if opts[:cancellation_reason_id]
     end
   end
 
