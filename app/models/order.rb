@@ -75,7 +75,7 @@ class Order < ActiveRecord::Base
     "Loaded" => "dispatching",
     "Cancelled" => "cancelled",
     "Upcoming" => "awaiting_dispatch"
-  }
+  }.freeze
 
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
