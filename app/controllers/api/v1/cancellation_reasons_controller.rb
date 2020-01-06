@@ -18,10 +18,9 @@ module Api
       end
 
       def cancellation_reasons
-        @cancellation_reasons.get_cancellation_reasons_by({
+        @cancellation_reasons.cancellation_reasons_by({
           ids: params["ids"],
-          offer: params["offer"],
-          order: params["stock"]
+          offer: params["offer"]
         })
       end
     end
