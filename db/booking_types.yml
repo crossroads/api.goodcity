@@ -1,10 +1,8 @@
 ---
-1:
-  :identifier: appointment
+appointment:
   :name_en: appointment
   :name_zh_tw: appointment
 
-2: 
-  :identifier: online-order
+online-order: 
   :name_en: online order
   :name_zh_tw: online order

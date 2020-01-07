@@ -9,12 +9,13 @@ module Api::V1
     has_one :set_item, serializer: Api::V1::StockitSetItemSerializer, include_items: false
     has_many :images, serializer: StockitImageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
+    has_one :storage_type, serializer: StorageTypeSerializer
 
     attributes :id, :quantity, :length, :width, :height, :weight, :pieces, :notes,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
-      :allow_web_publish, :received_quantity, :detail_type, :detail_id
+      :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id
 
     def include_images?
       @options[:include_images]
