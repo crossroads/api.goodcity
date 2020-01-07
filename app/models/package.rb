@@ -147,6 +147,10 @@ class Package < ActiveRecord::Base
     Location.dispatch_location
   end
 
+  def packages
+    PackagesInventory.where(source_id: id, source_type: "Package")&.map(&:package)
+  end
+
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
     packages_locations.create(
       location_id: location_id,
