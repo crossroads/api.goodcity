@@ -49,6 +49,21 @@ RSpec.describe Organisation, type: :model do
           expect(Organisation.search("進念二十")).to include(organisation)
         end
       end
+
+      context 'typo tolerance' do
+        let(:organisation) { create :organisation, name_en: "The Steve Inc."}
+
+        before { touch(organisation) }
+
+        it { expect(Organisation.search("Stve")).to include(organisation) }
+        it { expect(Organisation.search("steve el")).to include(organisation) }
+        it { expect(Organisation.search("The Inc.")).to include(organisation) }
+        it { expect(Organisation.search("Inc Steve The.")).to include(organisation) }
+        it { expect(Organisation.search("The Inc.")).to include(organisation) }
+        it { expect(Organisation.search("The Stephen Inc.")).to include(organisation) }
+        it { expect(Organisation.search("Ic Steve The.")).to include(organisation) }
+        it { expect(Organisation.search("Patrick Corp")).not_to include(organisation) }
+      end
     end
   end
 

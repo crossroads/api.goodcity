@@ -6,6 +6,7 @@ describe RequestedPackage, :type => :model do
   let(:orders_packages_sync) { double "orders_packages_sync", { create: nil, update: nil } }
 
   before do
+    User.current_user = create(:user)
     allow(Stockit::OrdersPackageSync).to receive(:new).and_return(orders_packages_sync)
     allow(Stockit::DesignationSync).to receive(:new).and_return(designation_sync)
   end
@@ -13,6 +14,7 @@ describe RequestedPackage, :type => :model do
   describe "Database columns" do
     it { is_expected.to have_db_column(:user_id).of_type(:integer) }
     it { is_expected.to have_db_column(:package_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:quantity).of_type(:integer) }
     it { is_expected.to have_db_column(:is_available).of_type(:boolean) }
   end
 
@@ -56,20 +58,28 @@ describe RequestedPackage, :type => :model do
     let(:package2) { create(:package) }
     let(:user) { create(:user) }
     let!(:dispatch_location) { create(:location, :dispatched) }
+    let(:order) { create(:order, :with_state_awaiting_dispatch) }
 
     let(:undesignated_package_unpublished) { create(:package, :unpublished) }
     let(:undesignated_package_published) { create(:package, :published) }
-    let(:undesignated_package_published_qty_0) { create(:package, :published, quantity: 0) }
+    let(:undesignated_package_published_qty_0) { create(:package, :published) }
     let(:designated_orders_package) {
-      create(:orders_package, :with_state_designated, package: create(:package, :published, quantity: 1))
+      create(:orders_package, :with_state_designated, quantity: 1, package: create(:package, :published, received_quantity: 1), order: order)
     }
     let(:undesignated_orders_package) {
-      create(:orders_package, :with_state_requested, package: create(:package, :published, quantity: 1))
+      create(:orders_package, :with_state_requested, quantity: 1, package: create(:package, :published, received_quantity: 1), order: order)
     }
     let(:dispatched_orders_package) {
-      create(:orders_package, :with_state_dispatched, package: create(:package, :published, quantity: 1))
+      create(:orders_package, :with_state_dispatched, quantity: 1, package: create(:package, :published, received_quantity: 1), order: order)
     }
 
+    before do
+      initialize_inventory(
+        undesignated_package_unpublished,
+        undesignated_package_published,
+        [designated_orders_package, undesignated_orders_package, dispatched_orders_package].map(&:package)
+      )
+    end
 
     it "marks cart item as available when the package is published" do
       requested_package = create(:requested_package, package: undesignated_package_unpublished)
@@ -88,14 +98,17 @@ describe RequestedPackage, :type => :model do
     it "marks cart item as unavailable when the package has 0 quantity" do
       requested_package = create(:requested_package, package: undesignated_package_published)
       expect(requested_package.is_available).to eq(true)
-      Package.find(requested_package.package_id).update(quantity: 0)
+      package = requested_package.package.reload
+      PackagesInventory.append_loss(package: package, quantity: - package.received_quantity, location: package.locations.first)
       expect(requested_package.reload.is_available).to eq(false)
     end
 
     it "marks cart item as available when the package's quantity is increased > 0" do
+      expect(PackagesInventory::Computer.package_quantity(undesignated_package_published_qty_0)).to eq(0)
       requested_package = create(:requested_package, package: undesignated_package_published_qty_0)
       expect(requested_package.is_available).to eq(false)
-      Package.find(requested_package.package_id).update(quantity: 1)
+      package = requested_package.package.reload
+      PackagesInventory.append_gain(package_id: package.id, quantity: 1, location: create(:location))
       expect(requested_package.reload.is_available).to eq(true)
     end
 
@@ -119,15 +132,16 @@ describe RequestedPackage, :type => :model do
       pkg = dispatched_orders_package.package
       requested_package = create(:requested_package, package: pkg)
       expect(pkg.allow_web_publish).to eq(true)
-      expect(pkg.quantity.positive?).to eq(true)
+      expect(PackagesInventory::Computer.available_quantity_of(pkg)).to eq(0)
       expect(requested_package.is_available).to eq(false)
     end
 
     it "cart item is still marked as unavailable after a designated package gets dispatched" do
+      expect(Stockit::ItemSync).to receive(:dispatch).once
       pkg = designated_orders_package.package
       requested_package = create(:requested_package, package: pkg)
       expect(requested_package.is_available).to eq(false)
-      designated_orders_package.reload.dispatch!
+      OrdersPackage::Operations.dispatch(designated_orders_package, quantity: designated_orders_package.quantity, from_location: pkg.locations.first)
       expect(requested_package.reload.is_available).to eq(false)
     end
   end
@@ -151,7 +165,9 @@ describe RequestedPackage, :type => :model do
     end
 
     context "When creating a requested_package" do
-      let!(:pkg) { create(:package, :published) }
+      let(:pkg) { create(:package, :published) }
+
+      before { initialize_inventory pkg }
 
       it "Sends changes to the user's browse channel" do
         expect(push_service).to receive(:send_update_store) do |channels, data|
@@ -167,8 +183,13 @@ describe RequestedPackage, :type => :model do
     end
 
     context "When a cart item is updated" do
-      let!(:pkg) { create(:package, :published) }
-      let!(:requested_package) { create(:requested_package, user: user, package: pkg) }
+      let(:pkg) { create(:package, :published) }
+      let(:requested_package) { create(:requested_package, user: user, package: pkg) }
+
+      before do
+        initialize_inventory pkg
+        touch requested_package
+      end
 
       it "Sends changes to the user's browse channel" do
         expect(push_service).to receive(:send_update_store).twice do |channels, data|
@@ -185,8 +206,13 @@ describe RequestedPackage, :type => :model do
     end
 
     context "When deleting a cart item" do
-      let!(:pkg) { create(:package, :published) }
-      let!(:requested_package) { create(:requested_package, user: user, package: pkg) }
+      let(:pkg) { create(:package, :published) }
+      let(:requested_package) { create(:requested_package, user: user, package: pkg) }
+
+      before do
+        initialize_inventory pkg
+        touch requested_package
+      end
 
       it "Sends changes to the user's browse channel" do
         expect(push_service).to receive(:send_update_store) do |channels, data|

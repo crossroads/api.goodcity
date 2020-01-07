@@ -49,16 +49,16 @@ FactoryBot.define do
 
   sequence :fake_cloudinary_image_id do |n|
     seq = %w(
-      1416897663/szfmfbmjeq6aphyfflmg.jpg
-      1416902230/mmguhm3zdkonc2nynjue.jpg
-      1416229451/jgpyo4oxrnfnjriofdjd.jpg
-      1416817641/auyhxsvppoohnubhtdvp.jpg
-      1416375331/zppxdm5fljlyv3tcfo3p.jpg
-      1415435713/i6lzfri9xpjzzznxgfnv.jpg
-      1415379081/hbqmdhzk47524ppxw7xs.jpg
-      1415015815/iijhzfxwjrkavecs8wjp.jpg
-      1414914035/ijip6ea6kjy6zn4mz81q.jpg
-      1414308170/kdc3pkmli7du4wcnyppz.jpg
+      1544512902/test/b888c7e4fe64284b81a510ed425d07e2.jpg
+      1544512919/test/ConstructionDrawing.png
+      1544512889/test/construction-lines-drawing.jpg
+      1544512857/test/3dd7cb65ea694b5f3953632dbc965fcc--structural-drawing-opt-art.jpg
+      1544512847/test/89d5cf10e1335a99da4091de089864f9.jpg
+      1544512838/test/main-qimg-ab4027fbfdf6e22127294610115fb34f-c.jpg
+      1544512823/test/430226-265-635784416490957418_338x600_thumb.jpg
+      1544512817/test/bottle1.jpg
+      1544512809/test/object-drawing-22.jpg
+      1544512555/test/6205979_f520.jpg
     )
     i = n.modulo(seq.size)
     seq[i]

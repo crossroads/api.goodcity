@@ -131,34 +131,6 @@ class Item < ActiveRecord::Base
     end
   end
 
-  def designate_set_to_stockit_order(params)
-    inventory_packages.set_items.each do |package|
-      orders_package = package.orders_packages.find_by(order_id: params[:order_id])
-      if orders_package
-        orders_package.update_partially_designated_item({ "orders_package_id": orders_package.id, "quantity": params[:quantity] })
-      else
-        OrdersPackage.add_partially_designated_item(
-          order_id: params[:order_id],
-          package_id: package.id,
-          quantity: params[:quantity]
-        )
-      end
-      package.designate_to_stockit_order(params[:order_id])
-      package.valid? && package.save
-    end
-  end
-
-  def dispatch_set_to_stockit_order(params)
-    inventory_packages.set_items.each do |package|
-      orders_package = package.orders_packages.find_by(order_id: params[:order_id])
-      if orders_package
-        orders_package.dispatch_orders_package
-      end
-      package.dispatch_stockit_item(orders_package, nil, true)
-      package.valid? && package.save
-    end
-  end
-
   def move_set_to_location(location_id)
     inventory_packages.set_items.each do |package|
       package.move_stockit_item(location_id)

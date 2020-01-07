@@ -7,9 +7,9 @@ RSpec.describe Order, type: :model do
 
   let(:user) { create :user }
 
-  before {
-    FactoryBot.generate(:booking_types).values.each { |btype|
-      FactoryBot.create :booking_type, identifier: btype[:identifier]
+  before(:all) {
+    FactoryBot.generate(:booking_types).keys.each { |identifier|
+      FactoryBot.create :booking_type, identifier: identifier
     }
   }
 
@@ -737,8 +737,8 @@ RSpec.describe Order, type: :model do
   end
 
   describe 'Processing checklist' do
-    let!(:booking_type) { create :booking_type }
-    let!(:booking_type2) { create :booking_type }
+    let!(:booking_type) { create :booking_type, identifier: 'aaa' }
+    let!(:booking_type2) { create :booking_type, identifier: 'bbb' }
     let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
     let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
     let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
@@ -776,12 +776,12 @@ RSpec.describe Order, type: :model do
       email_service_method: :send_appointment_confirmation_email
     },
     {
-      booking_type: 'online_order',
+      booking_type: 'online-order',
       transport_type: 'self',
       email_service_method: :send_order_confirmation_pickup_email
     },
     {
-      booking_type: 'online_order',
+      booking_type: 'online-order',
       transport_type: 'ggv',
       email_service_method: :send_order_confirmation_delivery_email
     }
@@ -794,7 +794,7 @@ RSpec.describe Order, type: :model do
       let(:sendgrid) { SendgridService.new(user) }
       let(:order) do
         order_transport = transport_type ? create(:order_transport, transport_type: transport_type) : nil
-        create(:order, :with_state_draft, :with_created_by, order_transport: order_transport, booking_type: BookingType.send(type))
+        create(:order, :with_state_draft, :with_created_by, order_transport: order_transport, booking_type: create(:booking_type, identifier: type))
       end
 
       before(:each) do

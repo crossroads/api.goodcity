@@ -42,6 +42,11 @@ module Api
         update_and_render_object_with_errors(@computer_accessory)
       end
 
+      def destroy
+        @computer_accessory.destroy
+        render json: {}
+      end
+
       private
 
       def serializer

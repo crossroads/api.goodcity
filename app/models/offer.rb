@@ -9,6 +9,8 @@ class Offer < ActiveRecord::Base
 
   NOT_ACTIVE_STATES = %w[received closed cancelled inactive].freeze
   ACTIVE_OFFERS = %w[under_review reviewed scheduled receiving].freeze
+  SUBSCRIPTIONS_REMINDER_STATES = %w[under_review submitted reviewed scheduled receiving
+                                     received closed cancelled inactive].freeze
 
   belongs_to :created_by, class_name: 'User', inverse_of: :offers
   belongs_to :reviewed_by, class_name: 'User', inverse_of: :reviewed_offers

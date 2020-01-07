@@ -27,13 +27,15 @@ module MessageSubscription
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
     user_ids -= [obj.try(:created_by_id)] if self.is_private or obj.try('cancelled?')
 
-
-    # Cases where we subscribe every stafff member
+    # Cases where we subscribe every staff member
     #  - For private messages, subscribe all supervisors ONLY for the first message
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
-    subscribe_all_staff = is_private ?
-      is_first_message_for(klass, obj.id) :
-      [self.sender_id] == user_ids
+    subscribe_all_staff =
+      if is_private
+        is_first_message_for(klass, obj.id)
+      else
+        obj&.created_by_id.present? && (user_ids == [self.sender_id])
+      end
 
     user_ids += User.staff.pluck(:id) if subscribe_all_staff
 

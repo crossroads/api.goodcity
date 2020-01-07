@@ -22,7 +22,7 @@ class SubscriptionsReminder
   # IMPORANT NOTE: When a user submits an offer, we set the sms_reminder_sent_at time to now + 1.minute
   #   to avoid alerting on the system 'thank you for submitting your offer' message
   def user_candidates_for_reminder
-    offer_states = ['submitted', 'under_review', 'reviewed', 'scheduled', 'received', 'receiving', 'inactive'] # NOT draft, closed or cancelled
+    offer_states = Offer::SUBSCRIPTIONS_REMINDER_STATES # NOT Draft offers
     User.joins(subscriptions: [:message, :offer])
         .where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601)
         .where('subscriptions.state': 'unread')

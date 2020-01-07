@@ -1,11 +1,11 @@
 require 'rails_helper' # needed to configure transaction rollback
-require 'goodcity/health_checks/location_stockit_id_nil_check'
+require 'goodcity/health_checks'
 
 context Goodcity::HealthChecks::LocationStockitIdNilCheck do
 
   subject { described_class.new }
 
-  it { expect(subject.desc).to eql("Locations should contain a stockit_id reference.") }
+  it { expect(subject.class.desc).to eql("Locations should contain a stockit_id reference.") }
 
   it "passes" do
     FactoryBot.create :location, stockit_id: 123

@@ -32,6 +32,9 @@ module Api
 
       api :POST, '/v1/requested_packages', "Create a cart item"
       def create
+        if params[:quantity].blank?
+          @requested_package.quantity = PackagesInventory::Computer.available_quantity_of(@requested_package.package)
+        end
         save_and_render_object_with_errors(@requested_package)
       end
 
@@ -65,7 +68,8 @@ module Api
         params.require(:requested_package).permit(
           :is_available,
           :user_id,
-          :package_id
+          :package_id,
+          :quantity
         )
       end
 

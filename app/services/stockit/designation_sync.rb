@@ -7,8 +7,9 @@ module Stockit
 
     attr_accessor :designation
 
-    def initialize(designation = nil)
+    def initialize(designation = nil, params = {})
       @designation = designation
+      @params = params
     end
 
     def self.index
@@ -17,6 +18,11 @@ module Stockit
 
     def index
       url = url_for("/api/v1/designations")
+      get(url)
+    end
+
+    def show
+      url = url_for("/api/v1/designations/#{@params[:id]}")
       get(url)
     end
 

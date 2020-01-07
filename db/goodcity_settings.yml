@@ -1,0 +1,9 @@
+---
+-
+  key: "stock.enable_box_pallet_creation"
+  value: "false"
+  description: "Manages the settings for allowance of box pallet creation"
+-
+  key: "stock.allow_box_pallet_item_addition"
+  value: "false"
+  description: "Manages the settings for addition/removal of items to box"
