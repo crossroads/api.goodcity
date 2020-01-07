@@ -2,8 +2,8 @@ require 'goodcity/health_checks'
 
 context Goodcity::HealthChecks do
 
-  subject { described_class.new }
-  let(:check_one) { CheckOne.new }
+  subject { described_class }
+  let(:check_one) { CheckOne }
 
   class CheckOne < Goodcity::HealthChecks::Base
     desc "Check One"
@@ -11,16 +11,17 @@ context Goodcity::HealthChecks do
   end
 
   context "initialization" do
-    it { expect(subject.instance_variable_get("@checks").class).to eql(Array) }
+    it { expect(subject.checks.class).to eql(Array) }
   end
 
   context "enumeration methods" do
-    before { subject.instance_variable_set("@checks", [check_one]) }
+    before { subject.checks = [check_one] }
     
-    context "run" do
+    context "run_all" do
       it do
-        expect(check_one).to receive(:run)
-        subject.run
+        expect_any_instance_of(check_one).to receive(:run)
+        expect_any_instance_of(check_one).to receive(:report)
+        subject.run_all
       end
     end
 
@@ -32,11 +33,10 @@ context Goodcity::HealthChecks do
       end
     end
 
-    context "report" do
+    context "register_check" do
       it do
-        expect(check_one).to receive(:status)
-        expect(check_one).to receive(:name)
-        subject.report(check_one)
+        subject.register_check(CheckOne)
+        expect(subject.checks).to include(CheckOne)
       end
     end
   end

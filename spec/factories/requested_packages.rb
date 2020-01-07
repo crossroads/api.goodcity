@@ -1,7 +1,8 @@
 FactoryBot.define do
   factory :requested_package do
+    quantity { 1 }
     association :user
-    association :package
+    association :package, :with_inventory_number
   end
 
   trait :with_available_package do

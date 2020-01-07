@@ -5,7 +5,7 @@ RSpec.describe Api::V1::BookingTypesController, type: :controller do
   let(:booking_type) { create(:booking_type) }
   let(:parsed_body) { JSON.parse(response.body) }
 
-  describe "GET booking_type" do   
+  describe "GET booking_type" do
     before { generate_and_set_token(reviewer) }
 
     it "returns 200", :show_in_doc do

@@ -67,6 +67,15 @@ class Order < ActiveRecord::Base
 
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
 
+  # Stockit Shipment Status => GoodCity State
+  SHIPMENT_STATUS_MAP = { 
+    "Processing" => "processing",
+    "Sent" => "closed",
+    "Loaded" => "dispatching",
+    "Cancelled" => "cancelled",
+    "Upcoming" => "awaiting_dispatch"
+  }
+
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
@@ -93,6 +102,7 @@ class Order < ActiveRecord::Base
   scope :my_orders, -> { where("created_by_id = (?) and ((state = 'draft' and submitted_by_id is NULL) OR state IN (?))", User.current_user.try(:id), MY_ORDERS_AUTHORISED_STATES) }
 
   scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
+  scope :shipments, -> { where(detail_type: 'Shipment') }
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)

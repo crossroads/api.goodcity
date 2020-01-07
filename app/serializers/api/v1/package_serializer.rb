@@ -7,6 +7,7 @@ module Api::V1
     has_one :item, serializer: BrowseItemSerializer
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
+    has_one :storage_type, serializer: StorageTypeSerializer
 
     attributes :id, :quantity, :length, :width, :height, :weight, :pieces, :notes,
                :item_id, :state, :received_at, :rejected_at, :inventory_number,

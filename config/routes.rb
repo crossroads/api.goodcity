@@ -64,6 +64,7 @@ Rails.application.routes.draw do
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
         put :move, on: :member
+        put :designate, on: :member
       end
       resources :requested_packages, only: [:index, :create, :destroy] do
         post :checkout, on: :collection
@@ -159,16 +160,6 @@ Rails.application.routes.draw do
       get "designations/:id", to: "orders#show"
       get "items", to: "packages#search_stockit_items"
       put "items/:id/split_item", to: "packages#split_package"
-      put "items/:id/undesignate_partial_item", to: "packages#undesignate_partial_item"
-      put "items/:id/designate_partial_item", to: "packages#designate_partial_item"
-      put "items/:id/update_partial_quantity_of_same_designation", to: "packages#update_partial_quantity_of_same_designation"
-      put "items/:id/designate_stockit_item", to: "packages#designate_stockit_item"
-      put "items/:id/designate_stockit_item_set", to: "items#designate_stockit_item_set"
-      put "items/:id/dispatch_stockit_item_set", to: "items#dispatch_stockit_item_set"
-      put "items/:id/update_designation_of_set", to: "items#update_designation_of_set"
-      put "items/:id/undesignate_stockit_item", to: "packages#undesignate_stockit_item"
-      put "items/:id/dispatch_stockit_item", to: "packages#dispatch_stockit_item"
-      put "items/:id/undispatch_stockit_item", to: "packages#undispatch_stockit_item"
       put "items/:id/move", to: "packages#move"
       put "items/:id/remove_from_set", to: "packages#remove_from_set"
       get "stockit_items/:id", to: "packages#stockit_item_details"

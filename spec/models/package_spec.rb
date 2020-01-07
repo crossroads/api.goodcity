@@ -3,6 +3,8 @@ require "rspec/mocks/standalone"
 
 RSpec.describe Package, type: :model do
 
+  before { User.current_user = create(:user) }
+
   before(:all) do
     allow_any_instance_of(Package).to receive(:update_client_store)
   end
@@ -110,6 +112,30 @@ RSpec.describe Package, type: :model do
       package.save
       package.add_to_stockit
       expect(package.errors).to include(:"detail.mar_os_serial_num")
+    end
+
+    it "should not allow to send sync request to stockit if it is a box or pallet" do
+      storage_type = create(:storage_type, :with_box)
+      package = build(:package, :received, storage_type_id: storage_type.id)
+      expect(Stockit::ItemSync).to_not receive(:create)
+      package.add_to_stockit
+      package.save
+    end
+
+    it "should not allow to send sync request to stockit if it is a pallet" do
+      storage_type = create(:storage_type, :with_pallet)
+      package = build(:package, :received, storage_type_id: storage_type.id)
+      expect(Stockit::ItemSync).to_not receive(:create)
+      package.add_to_stockit
+      package.save
+    end
+
+    it "should allow to send sync request to stockit if it is a package" do
+      storage_type = create(:storage_type, :with_pkg)
+      package = build(:package, :received, storage_type_id: storage_type.id)
+      expect(Stockit::ItemSync).to receive(:create).with(package).and_return({"status" => 201, "item_id" => 12})
+      package.add_to_stockit
+      package.save
     end
   end
 
@@ -363,26 +389,6 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe '#create_or_update_location_for_dispatch_from_stockit' do
-    let(:package) { create :package }
-    let(:order) { create :order }
-    let(:orders_package) { create :orders_package, state: 'dispatched', package: package, order: order }
-    let(:dispatched_location) { create :location, :dispatched }
-
-    it 'updates orders_package_id against packages_location record if dispatched' do
-      packages_location = create :packages_location, package: package, location: dispatched_location
-      package.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package.id, orders_package.quantity)
-      expect(packages_location.reload.reference_to_orders_package).to eq orders_package.id
-    end
-
-    it 'creates new packages_location record with orders_package_id if packages_location record do not exist and package dispatched' do
-      expect{
-        package.create_or_update_location_for_dispatch_from_stockit(dispatched_location, orders_package.id, orders_package.quantity)
-      }.to change(PackagesLocation, :count).by(1)
-      expect(package.reload.packages_locations.first.reference_to_orders_package).to eq orders_package.id
-    end
-  end
-
   describe '#create_or_update_orders_package_for_nested_designation_ and_dispatch_from_Stockit' do
     let(:order) { create :order }
     it 'creates new orders_package record for the package and recalculates quantity' do
@@ -393,31 +399,6 @@ RSpec.describe Package, type: :model do
       expect(package.quantity).to eq 0
       orders_package = package.reload.orders_packages.first
       expect(orders_package.quantity).to eq(package.received_quantity)
-    end
-  end
-
-  describe '#create_dispatched_packages_location_from_gc' do
-    let(:dispatched_location) { create :location, :dispatched }
-    let(:order) { create :order }
-    let(:orders_package) { create :orders_package, state: 'dispatched', package: package, order: order }
-    let(:dispatched_location) { create :location, :dispatched }
-
-    it 'creates dispatched packages location record against package if do not exist' do
-      expect{
-        package.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
-      }.to change(PackagesLocation, :count).by(1)
-      first_location = package.reload.packages_locations.first
-      expect(first_location.location).to eq dispatched_location
-      expect(first_location.reference_to_orders_package).to eq orders_package.id
-      expect(first_location.quantity).to eq 1
-    end
-
-    it 'do not creates dispatched packages_location record if already exists' do
-      packages_location = create :packages_location, package: package, location: dispatched_location,
-        reference_to_orders_package: orders_package.id
-      expect{
-        package.create_dispatched_packages_location_from_gc(dispatched_location, orders_package.id, 1)
-      }.to change(PackagesLocation, :count).by(0)
     end
   end
 

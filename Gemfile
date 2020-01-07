@@ -25,12 +25,12 @@ gem 'ffaker'
 gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
 gem 'jwt', '~> 1.5.0'
+gem 'puma', '>= 4.3.1'
 gem 'rack-cors'
 gem 'rack-protection'
 gem 'state_machine'
 gem 'twilio-ruby', '~> 5.11.0'
 gem 'warden'
-gem 'puma'
 gem 'rack-timeout'
 gem 'newrelic_rpm'
 gem 'traco'
@@ -61,6 +61,7 @@ gem 'slack-ruby-client'
 gem 'whenever', '~>  0.9.5', require: false
 gem 'sendgrid-ruby'
 gem 'fake_email_validator'
+gem 'with_advisory_lock'
 
 group :development do
   gem 'spring'

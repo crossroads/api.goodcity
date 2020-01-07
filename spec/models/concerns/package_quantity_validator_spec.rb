@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe Offer do
   before(:each) do
+    User.current_user = create :user
     @package = create :package, :package_with_locations, quantity: 10, received_quantity: 10
     @package_quantity_validator = PackageQuantityValidator.new
     @order = create :order

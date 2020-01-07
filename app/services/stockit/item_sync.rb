@@ -120,15 +120,14 @@ module Stockit
 
     def item_params
       {
-        quantity: package.singleton_package? ? package.received_quantity : package.quantity,
-        # quantity: package.quantity,
+        quantity: package.received_quantity,
         code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.blank? ? nil : package.case_number,
         condition: PackageConditionMapper.to_stockit(@package.donor_condition_name),
         grade: package.grade,
         description: package.notes,
-        location_id: package.stockit_location_id,
+        location_id: stockit_location_id,
         id: package.stockit_id,
         pieces: package.pieces,
         # designation_id: package.singleton_package? ? package.stockit_order_id : nil,
@@ -146,6 +145,18 @@ module Stockit
         weight: package.weight,
         description: package.notes
       }
+    end
+
+    # GoodCity doesn't keep location records for dispatched packages
+    #   but Stockit likes to put them in the Dispatched location
+    def stockit_location_id
+      if package.stockit_sent_on.present? or package.orders_packages.where(state: 'dispatched').any?
+        Location.dispatch_location.stockit_id
+      elsif package.packages_locations.count > 1
+        Location.multiple_location.try(:stockit_id)
+      else
+        package.locations.first.try(:stockit_id) || Location.find_by(id: package.location_id).try(:stockit_id)
+      end
     end
   end
 end

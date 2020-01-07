@@ -10,6 +10,10 @@ class Location < ActiveRecord::Base
   has_many :package_types, inverse_of: :location
   has_one  :printer
 
+  def label
+    "#{building}#{area}"
+  end
+
   # to satisfy PushUpdate module
   def offer
     nil
@@ -33,6 +37,10 @@ class Location < ActiveRecord::Base
 
   def self.search(key)
     where("building || area ILIKE ?", "%#{key}%")
+  end
+
+  def display_name
+    "#{building} #{area}"
   end
 
   # For a given user_id, return their 15 most recently used locations

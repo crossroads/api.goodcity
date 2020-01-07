@@ -12,12 +12,13 @@ module OfferFiltering
     scope :filter, -> (options = {}) do
       res = where.not(state: 'draft')
       res = res.assoicate_delivery_and_schedule
+      res = res.select('offers.*, schedules.scheduled_at')
       res = res.where("offers.state IN (?)", options[:state_names]) unless options[:state_names].empty?
       res = res.priority if options[:priority].present?
       res = res.self_reviewer if options[:self_reviewer].present?
       res = res.due_after(options[:after]) if options[:after].present?
       res = res.due_before(options[:before]) if options[:before].present?
-      res = res.order("id DESC") if options[:recent_offers]
+      res = res.order(sort_offer(options)) if options[:sort_column] || options[:recent_offers]
       res = res.with_notifications(options[:with_notifications]) if options[:with_notifications].present?
       res.distinct
     end
@@ -29,6 +30,18 @@ module OfferFiltering
         (offers.state = 'under_review' AND reviewed_at::timestamptz < '#{24.hours.ago}') OR
         (offers.state = 'receiving' AND start_receiving_at::timestamptz < timestamptz '#{last_6pm}')
       SQL
+    end
+
+    def self.sort_offer(options)
+      return "id DESC" if options[:recent_offers]
+      # prevent SQL injection by sanitizing the input
+      sort_column = if self.column_names.include?(options[:sort_column]) || (options[:sort_column] == 'schedules.scheduled_at')
+          options[:sort_column]
+        else
+          'id'
+        end
+      sort_type = options[:is_desc] ? "DESC" : "ASC"
+      "#{sort_column} #{sort_type}"
     end
 
     def self.self_reviewer

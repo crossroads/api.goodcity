@@ -85,11 +85,11 @@ module OrderFiltering
     end
 
     def appointment_sql
-      "orders.booking_type_id = #{BookingType.appointment.id}"
+      "lower(detail_type) = 'goodcity' AND orders.booking_type_id = #{BookingType.appointment.id}"
     end
 
     def online_orders_sql
-      "orders.booking_type_id = #{BookingType.online_order.id}"
+      "lower(detail_type) = 'goodcity' AND orders.booking_type_id = #{BookingType.online_order.id}"
     end
 
     def shipment_sql

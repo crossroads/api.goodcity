@@ -34,6 +34,13 @@ module Api
         end
       end
 
+      def_param_group :operations do
+        param :quantity, [Integer, String], desc: "Package quantity", allow_nil: true
+        param :order_id, [Integer, String], desc: "Order involved in the package's designation", allow_nil: true
+        param :to, [Integer, String], desc: "Location the package is moved to", allow_nil: true
+        param :from, [Integer, String], desc: "Location the package is moved from", allow_nil: true
+      end
+
       api :GET, "/v1/packages", "get all packages for the item"
 
       def index
@@ -68,6 +75,7 @@ module Api
 
       def create
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
+
         if package_record
           @package.offer_id = offer_id
           if @package.valid? && @package.save
@@ -89,6 +97,7 @@ module Api
       param_group :package
 
       def update
+        @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.assign_attributes(package_params)
         @package.received_quantity = package_params[:quantity] if package_params[:quantity]
         @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
@@ -166,25 +175,6 @@ module Api
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
 
-      def designate_stockit_item(order_id)
-        @package.designate_to_stockit_order(order_id)
-      end
-
-      def undesignate_partial_item
-        Designator.new(@package, params[:package]).undesignate
-        send_stock_item_response
-      end
-
-      def designate_partial_item
-        designator = Designator.new(@package, params[:package]).designate
-        if designator.errors.blank?
-          designate_stockit_item(params[:package][:order_id])
-          send_stock_item_response
-        else
-          render json: { errors: designator.errors.full_messages }, status: 422
-        end
-      end
-
       def split_package
         qty_to_split = package_params[:quantity].to_i
         package_splitter = PackageSplitter.new(@package, qty_to_split)
@@ -196,40 +186,23 @@ module Api
         end
       end
 
-      def update_partial_quantity_of_same_designation
-        Designator.new(@package, params[:package]).undesignate_and_update_partial_quantity
-        designate_stockit_item(params[:package][:order_id])
-        send_stock_item_response
-      end
-
-      def undesignate_stockit_item
-        @package.undesignate_from_stockit_order
-        send_stock_item_response
-      end
-
-      def dispatch_stockit_item
-        @orders_package = OrdersPackage.find_by(id: params[:package][:order_package_id])
-        return render_order_status_error if @orders_package.order.can_dispatch_item?
-
-        if @orders_package.dispatch_orders_package
-          @package.dispatch_stockit_item(@orders_package, params["packages_location_and_qty"], true)
-          send_stock_item_response
-        else
-          render json: { errors: I18n.t("orders_package.already_dispatched") }, status: 422
-        end
-      end
-
-      def undispatch_stockit_item
-        @package.undispatch_stockit_item
-        send_stock_item_response
-      end
-
+      api :PUT, "/v1/packages/1/move", "Move a package's quantity to an new location"
+      param_group :operations
       def move
         quantity = params[:quantity].to_i
         Package::Operations.move(quantity, @package, from: params[:from], to: params[:to])
         send_stock_item_response
       end
 
+      api :PUT, "/v1/packages/1/designate", "Designate a package's quantity to an order"
+      param_group :operations
+      def designate
+        quantity = params[:quantity].to_i
+        order_id = params[:order_id]
+
+        Package::Operations.designate(@package, quantity: quantity, to_order: order_id)
+        send_stock_item_response
+      end
 
       def remove_from_set
         @package.remove_from_set
@@ -352,6 +325,7 @@ module Api
         else
           @package.assign_attributes(package_params)
         end
+        @package.storage_type = assign_storage_type
         @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity ||= received_quantity
         add_favourite_image if params["package"]["favourite_image_id"]
@@ -425,6 +399,13 @@ module Api
           package_params,
           request_from_stockit
         ).build_or_update_record
+      end
+
+      def assign_storage_type
+        storage_type_name = params["package"]["storage_type"] || "Package"
+        return unless %w[Box Pallet Package].include?(storage_type_name)
+
+        StorageType.find_by(name: storage_type_name)
       end
 
       def inventory_number

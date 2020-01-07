@@ -23,8 +23,9 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     end
 
     it 'returns designated and dispatched orders_packages' do
+      expect(Stockit::OrdersPackageSync).to receive(:create).exactly(3).times
       order = create :order
-      package = create :package, quantity: 8, received_quantity: 8
+      package = create :package, :with_inventory_number, quantity: 8, received_quantity: 8
       3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
       get :index, search_by_package_id: package.id
       expect( subject["orders_packages"].size ).to eq(3)
@@ -115,13 +116,20 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
       describe 'Editing Quantity' do
         context 'of a designated orders_package' do
-          let(:pkg) { create :package, received_quantity: 10  }
+          let(:pkg) { create :package, :with_inventory_number, received_quantity: 10  }
           let(:order) { create :order, :with_state_dispatching }
-          let!(:orders_package) {
+          let(:orders_package) {
             create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
           }
 
+          before do
+            expect(Stockit::OrdersPackageSync).to receive(:create)
+            touch(orders_package)
+            create(:packages_inventory, action: 'inventory', package: pkg, location: create(:location), quantity: pkg.received_quantity)
+          end
+
           it 'updates correctly' do
+            expect(Stockit::OrdersPackageSync).to receive(:update)
             expect(pkg.reload.in_hand_quantity).to eq(8)
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 9
             expect(status).to eq(200)
@@ -133,13 +141,13 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
             expect(pkg.reload.in_hand_quantity).to eq(8)
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 11
             expect(status).to eq(422)
-            expect(error_text).to eq('We do not currently have the requested quantity in stock')
+            expect(error_text).to eq('The selected quantity (11) is unavailable')
           end
 
           it 'fails if we dont pass a desired quantity' do
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity'
             expect(status).to eq(422)
-            expect(error_text).to eq('Invalid quantity')
+            expect(error_text).to match(/^Invalid quantity/)
           end
         end
       end
@@ -162,8 +170,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
             expect(status).to eq(200)
             expect(new_state).to eq('dispatched')
             expect(orders_package.reload.state).to eq('dispatched')
-            expect(package.reload.locations.length).to eq(1)
-            expect(package.reload.locations.first.dispatch?).to eq(true)
+            expect(package.reload.locations.length).to eq(0)
           end
         end
 
@@ -191,11 +198,14 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
         let!(:dispatch_location) { create(:location, :dispatched) }
         let(:location) { create(:location) }
         let(:order) { create :order, :with_state_dispatching }
-        let(:package) { create(:package, quantity: 10) }
-        let(:orders_package) { create :orders_package, :with_state_dispatched, order: order, package: package, quantity: package.quantity }
+        let(:quantity) { 10 }
+        let(:package) { create(:package, quantity: 0) } # 0 quantity because it has been dispatched
+        let(:orders_package) { create :orders_package, :with_state_dispatched, order: order, package: package, quantity: quantity }
 
         before do
-          create(:packages_location, package: package,location: dispatch_location, quantity: package.quantity)
+          # Mock history
+          build(:packages_inventory, action: 'inventory', package: package, quantity: quantity).sneaky(:save)
+          build(:packages_inventory, action: 'dispatch', package: package, source: orders_package, quantity: -1 * quantity).sneaky(:save)
         end
 
         it 'fails to undispatch the packages if no valid location is provided' do

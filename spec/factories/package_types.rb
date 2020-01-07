@@ -7,6 +7,7 @@ FactoryBot.define do
     other_terms_zh_tw  { generate(:package_types)[code][:other_terms_zh_tw] }
     visible_in_selects { true }
     initialize_with    { PackageType.find_or_initialize_by(code: code) }
+    association        :location
   end
 
   factory :package_type, parent: :base_package_type do

@@ -18,7 +18,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
   ]
 
   before do
-    10.times { create(:requested_package) }
+    initialize_inventory 10.times.map { create(:requested_package) }.map(&:package)
   end
 
   describe "GET requested_pacakges" do
@@ -71,7 +71,10 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
           return { requested_package: { user_id: user.id, package_id: package.id } }
         end
 
-        before { generate_and_set_token(user) }
+        before {
+          initialize_inventory(package)
+          generate_and_set_token(user)
+        }
 
         it "returns 201" do
           post :create, payload
@@ -138,9 +141,9 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "Checkout process" do
 
-    before {
-      FactoryBot.generate(:booking_types).values.each { |btype|
-        FactoryBot.create :booking_type, identifier: btype[:identifier]
+    before(:all) {
+      FactoryBot.generate(:booking_types).keys.each { |identifier|
+        FactoryBot.create :booking_type, identifier: identifier
       }
     }
 
@@ -155,21 +158,25 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
       context "as a #{user_type}" do
         let(:user) { create(:user, user_type) }
         let(:other_user) { create(:user, user_type) }
-        let(:other_order) { create(:order, :with_state_draft, created_by: other_user) }
-        let(:draft_order) { create(:order, :with_state_draft, created_by: user) }
-        let(:draft_appointment) { create(:order, :with_state_draft, booking_type: BookingType.appointment, created_by: user) }
-        let(:submitted_order) { create(:order, :with_state_submitted, submitted_by: user, created_by: user) }
-        let(:processing_order) { create(:order, :with_state_processing, submitted_by: user, created_by: user) }
-        let(:awaiting_dispatch_order) { create(:order, :with_state_awaiting_dispatch, submitted_by: user, created_by: user) }
-        let!(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
+        let(:other_order) { create(:online_order, :with_state_draft, created_by: other_user) }
+        let(:draft_order) { create(:online_order, :with_state_draft, created_by: user) }
+        let(:draft_appointment) { create(:appointment, :with_state_draft, created_by: user) }
+        let(:submitted_order) { create(:online_order, :with_state_submitted, submitted_by: user, created_by: user) }
+        let(:processing_order) { create(:online_order, :with_state_processing, submitted_by: user, created_by: user) }
+        let(:awaiting_dispatch_order) { create(:online_order, :with_state_awaiting_dispatch, submitted_by: user, created_by: user) }
+        let(:requested_packages) { 3.times.map { create(:requested_package, :with_available_package, user: user) } }
 
         before do
           3.times.map { create(:requested_package) } # requested_packages for other users
           generate_and_set_token(user)
+          initialize_inventory(requested_packages.map(&:package))
         end
 
         it "returns a submitted order" do
+          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(3).times
+
           post :checkout, order_id: draft_order.id
+
           expect(response.status).to eq(200)
           expect(parsed_body['order']).not_to be_nil
           expect(parsed_body['order']['id']).to eq(draft_order.id)
@@ -185,6 +192,8 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "doesn't modify the state of a submitted order" do
+          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length).times
+
           post :checkout, order_id: submitted_order.id
           expect(response.status).to eq(200)
 
@@ -194,6 +203,8 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "doesn't modify the state of a processing order" do
+          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length).times
+
           post :checkout, order_id: processing_order.id
           expect(response.status).to eq(200)
 
@@ -204,6 +215,9 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
         it "ignores unavailable packages if the 'ignore_unavailable' flag is set" do
           requested_packages[0].package.update!(allow_web_publish: false)
+
+          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length - 1).times
+
           expect {
             post :checkout, order_id: draft_order.id, ignore_unavailable: true
           }.to change(RequestedPackage, :count).by(-3)
@@ -223,6 +237,8 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "clears the requested packages" do
+          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length).times
+
           expect {
             post :checkout, order_id: draft_order.id
           }.to change(RequestedPackage, :count).by(- requested_packages.length)

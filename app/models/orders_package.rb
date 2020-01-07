@@ -2,6 +2,12 @@ class OrdersPackage < ActiveRecord::Base
   include RollbarSpecification
   include OrdersPackageActions
 
+  module States
+    DESIGNATED = 'designated'.freeze
+    DISPATCHED = 'dispatched'.freeze
+    CANCELLED  = 'cancelled'.freeze
+  end
+
   belongs_to :order
   belongs_to :package
   belongs_to :updated_by, class_name: 'User'
@@ -19,6 +25,7 @@ class OrdersPackage < ActiveRecord::Base
   scope :get_records_associated_with_package_and_order, ->(order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
   scope :get_dispatched_records_with_order_id, ->(order_id) { where(order_id: order_id, state: 'dispatched') }
   scope :designated, ->{ where(state: 'designated') }
+  scope :dispatched, ->{ where(state: 'dispatched') }
 
   scope :with_eager_load, ->{
     includes([
@@ -59,14 +66,14 @@ class OrdersPackage < ActiveRecord::Base
       orders_package.updated_by =  User.current_user
     end
 
-    after_transition on: :dispatch, do: :assign_dispatched_location
+    after_transition on: :dispatch, do: :delete_packages_locations
   end
 
-  def assign_dispatched_location
+  # Once a package is dispatched, remove the location entry
+  def delete_packages_locations
     if package.singleton_package?
-      package.destroy_stale_packages_locations(quantity)
+      package.packages_locations.destroy_all
     end
-    package.assign_or_update_dispatched_location(id, quantity)
   end
 
   def undispatch_orders_package
@@ -116,7 +123,7 @@ class OrdersPackage < ActiveRecord::Base
   def update_quantity_based_on_dispatch_state(total_quantity)
     location_id = Location.dispatch_location.id
     package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
-    package.update_location_quantity(total_quantity, location_id)
+    package.packages_locations.where(location_id: location_id).destroy_all # No longer record Dispatched location
   end
 
   def dispatch_orders_package

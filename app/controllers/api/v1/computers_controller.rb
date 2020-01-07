@@ -54,6 +54,11 @@ module Api
         update_and_render_object_with_errors(@computer)
       end
 
+      def destroy
+        @computer.destroy
+        render json: {}
+      end
+
       private
 
       def serializer
