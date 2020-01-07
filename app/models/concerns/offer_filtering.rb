@@ -34,8 +34,14 @@ module OfferFiltering
 
     def self.sort_offer(options)
       return "id DESC" if options[:recent_offers]
+      # prevent SQL injection by sanitizing the input
+      sort_column = if self.column_names.include?(options[:sort_column]) || (options[:sort_column] == 'schedules.scheduled_at')
+          options[:sort_column]
+        else
+          'id'
+        end
       sort_type = options[:is_desc] ? "DESC" : "ASC"
-      "#{options[:sort_column]} #{sort_type}"
+      "#{sort_column} #{sort_type}"
     end
 
     def self.self_reviewer
