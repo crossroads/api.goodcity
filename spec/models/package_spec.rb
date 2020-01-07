@@ -113,6 +113,30 @@ RSpec.describe Package, type: :model do
       package.add_to_stockit
       expect(package.errors).to include(:"detail.mar_os_serial_num")
     end
+
+    it "should not allow to send sync request to stockit if it is a box or pallet" do
+      storage_type = create(:storage_type, :with_box)
+      package = build(:package, :received, storage_type_id: storage_type.id)
+      expect(Stockit::ItemSync).to_not receive(:create)
+      package.add_to_stockit
+      package.save
+    end
+
+    it "should not allow to send sync request to stockit if it is a pallet" do
+      storage_type = create(:storage_type, :with_pallet)
+      package = build(:package, :received, storage_type_id: storage_type.id)
+      expect(Stockit::ItemSync).to_not receive(:create)
+      package.add_to_stockit
+      package.save
+    end
+
+    it "should allow to send sync request to stockit if it is a package" do
+      storage_type = create(:storage_type, :with_pkg)
+      package = build(:package, :received, storage_type_id: storage_type.id)
+      expect(Stockit::ItemSync).to receive(:create).with(package).and_return({"status" => 201, "item_id" => 12})
+      package.add_to_stockit
+      package.save
+    end
   end
 
   describe "remove_from_stockit" do

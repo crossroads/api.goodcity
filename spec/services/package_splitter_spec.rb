@@ -34,20 +34,19 @@ describe PackageSplitter do
 
   context "split!" do
     let(:qty_to_split) { 2 }
-    context "create 2 copies from qty 5 split (3,1,1)" do
-      let(:inventory_number) { "F00001Q" }
+    context "create 1 copies from qty 5 split (3,2)" do
+      let(:inventory_number) { "F00001" }
+      let(:inventory_number_q) { "#{inventory_number}Q" }
       let(:package) { create(:package, quantity: 5, received_quantity: 5, inventory_number: inventory_number) }
       it do
-        expect(Stockit::ItemSync).to receive(:create).exactly(2).times
+        expect(Stockit::ItemSync).to receive(:create).exactly(1).times
         expect{ package_splitter.split! }.to change(package.reload, :quantity).from(5).to(3)
           .and change {package.received_quantity}.from(5).to(3)
-        packages = Package.where("inventory_number LIKE ?", "#{inventory_number}%").order(:created_at)
-        expect(packages.count).to eql(3)
-        packages.each do |pkg|
-          break if pkg.inventory_number == inventory_number
-          expect(pkg.quantity).to eql(1)
-          expect(pkg.received_quantity).to eql(1)
-        end
+        packages = Package.where("inventory_number LIKE ?", "#{inventory_number_q}%").order(:created_at)
+        expect(packages.count).to eql(1)
+        pkg = packages.first
+        expect(pkg.quantity).to eql(2)
+        expect(pkg.received_quantity).to eql(2)
       end
     end
   end

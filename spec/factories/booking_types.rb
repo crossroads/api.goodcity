@@ -1,11 +1,8 @@
 FactoryBot.define do
   factory :booking_type do
-    identifier "lorem-ipsum"
-    name_en "lorem ipsum"
-    name_zh_tw "lorem ipsum"
-
-    initialize_with {
-      BookingType.find_or_initialize_by(identifier: identifier)
-    }
+    identifier { generate(:booking_types).keys.sample }
+    name_en    { generate(:booking_types)[:name_en] }
+    name_zh_tw { generate(:booking_types)[:name_zh_tw] }
+    initialize_with { BookingType.find_or_initialize_by(identifier: identifier) }
   end
 end
