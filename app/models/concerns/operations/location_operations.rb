@@ -52,23 +52,20 @@ module LocationOperations
       end
 
       def increment_destination
-        PackagesInventory.create(
-          package: @package,
-          quantity: @quantity,
-          action: PackagesInventory::Actions::GAIN,
-          source: @cause,
-          location: @to,
-          user: author
-        )
+        register_change(@to, @quantity)
       end
 
       def decrement_origin
+        register_change(@from, -1 * @quantity)
+      end
+
+      def register_change(location, qty_change)
         PackagesInventory.create(
           package: @package,
-          quantity: -1 * @quantity,
-          action: PackagesInventory::Actions::LOSS,
+          quantity: qty_change,
+          action: PackagesInventory::Actions::MOVE,
           source: @cause,
-          location: @from,
+          location: location,
           user: author
         )
       end
