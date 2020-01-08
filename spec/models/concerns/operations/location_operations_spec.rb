@@ -39,24 +39,24 @@ context LocationOperations do
         expect(dest_pkg_loc.reload.quantity).to eq(17)
       end
 
-      it 'adds a loss row for the source location' do
+      it 'adds a decremental move row for the source location' do
         expect(PackagesInventory.count).to eq(2)
         expect { move(15) }.to change(PackagesInventory, :count).by(2)
 
         record = PackagesInventory.last(2).first
         expect(record.location_id).to eq(src_location.id)
-        expect(record.action).to eq('loss')
+        expect(record.action).to eq('move')
         expect(record.quantity).to eq(-15)
       end
 
 
-      it 'adds a gain row for the dest location' do
+      it 'adds an incremental move row for the dest location' do
         expect(PackagesInventory.count).to eq(2)
         expect { move(15) }.to change(PackagesInventory, :count).by(2)
 
         record = PackagesInventory.last
         expect(record.location_id).to eq(dest_location.id)
-        expect(record.action).to eq('gain')
+        expect(record.action).to eq('move')
         expect(record.quantity).to eq(15)
       end
 
