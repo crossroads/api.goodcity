@@ -96,7 +96,7 @@ module OrderFulfilmentOperations
     #
     # @todo remove this from our lives
     #
-    def dispatch_singleton(ord_pkg)
+    def dispatch_full_qty(ord_pkg)
       dispatch(ord_pkg, quantity: ord_pkg.quantity, from_location: ord_pkg.package.locations.first)
     end
 
