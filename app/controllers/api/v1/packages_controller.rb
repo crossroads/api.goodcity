@@ -226,15 +226,11 @@ module Api
       end
 
       def perform_action
-        action = params[:action]
-        entity = Package.find(params[:id])
-        item = Package.find(params[:item_id])
-        response = BoxPalletManager.new(entity, action).run
-
-        if response.success
-          render response.packages_inventory ,status: 201
+        response = BoxPalletManager.new(params, User.current_user.id).run
+        if response[:success]
+          render json: { packages_inventories: response[:packages_inventory], status: 201}
         else
-          render response.errors, status: 422
+          render json: { errors: response[:errors], status: 422 }
         end
       end
 

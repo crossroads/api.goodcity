@@ -1,9 +1,11 @@
 class BoxPalletManager
-  def initialize(entity, item)
-    @entity = entity # box or pallet
-    @item = item # item to add or remove
-    @action = params[:action] # action pack or unpack
-    @user_id = params[:user_id]
+  attr_accessor :entity, :item, :action, :user_id
+
+  def initialize(params, user_id)
+    @entity = Package.find(params[:id]) # box or pallet
+    @item = Package.find(params[:item_id]) # item to add or remove
+    @action = params[:task] # action pack or unpack
+    @user_id = user_id
     @quantity = params[:quantity] # quantity to pack or unpack
   end
 
@@ -19,22 +21,23 @@ class BoxPalletManager
   private
 
   def create_packages_inventory
-    return unless @action
+    return unless action
     PackagesInventory.new(
-      source: @entity,
-      acton: @action,
-      location_id: @entity.location_id,
-      user_id: @user_id,
+      package: item,
+      source: entity,
+      action: action,
+      location_id: entity.location_id,
+      user_id: user_id,
       quantity: quantity
     )
   end
 
   def quantity
-    qty = @quantity || @item.quantity
+    qty = @quantity || item.quantity
     pack_action? ? qty * -1 : qty
   end
 
   def pack_action?
-    @action.eql?("pack")
+    action.eql?("pack")
   end
 end
