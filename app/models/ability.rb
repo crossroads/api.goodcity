@@ -281,7 +281,7 @@ class Ability
     if can_manage_packages?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :remove_from_set, :designate,
-        :move, :print_inventory_label, :stockit_item_details, :split_package], Package
+        :move, :print_inventory_label, :stockit_item_details, :split_package, :perform_action], Package
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }
