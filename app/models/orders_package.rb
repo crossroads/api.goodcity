@@ -33,6 +33,17 @@ class OrdersPackage < ActiveRecord::Base
     ])
   }
 
+  PackagesInventory.on [:dispatch, :undispatch] do |pkg_inv|
+    if pkg_inv.source_id.present? || pkg_inv.source_type.eql?('OrdersPackage')
+      ord_pkg = pkg_inv.source
+      ord_pkg.update(
+        dispatched_quantity: PackagesInventory::Computer.dispatched_quantity(
+          orders_package:  ord_pkg
+        )
+      )
+    end
+  end
+
   def set_initial_state
     self.state ||= :requested
   end
