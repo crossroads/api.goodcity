@@ -70,11 +70,12 @@ module StockOperations
     end
 
     def pack_or_unpack(params, user_id)
-      task = params[:task] == "pack" ? "pack" : "unpack"
-      PackUnpack.new(params, user_id).send(task)
+      PackUnpack.new(params, user_id).public_send(params[:task])
     end
 
     class PackUnpack
+      ALLOWED_ACTIONS = %w[pack unpack].freeze
+
       def initialize(params, user_id)
         @cause = Package.find(params[:id]) # box or pallet
         @item = Package.find(params[:item_id]) # item to add or remove
@@ -103,6 +104,8 @@ module StockOperations
       private
 
       def pack_or_unpack(task)
+        raise ActionNotAllowedError.new unless ALLOWED_ACTIONS.include?(task)
+
         PackagesInventory.new(
           package: @item,
           source: @cause,
@@ -127,6 +130,12 @@ module StockOperations
       def initialize(orders)
         order_text = orders.count == 1 ? orders.first.code : "#{orders.count}x"
         super(I18n.t('operations.mark_lost.required_for_orders', orders: order_text))
+      end
+    end
+
+    class ActionNotAllowedError < OperationsError
+      def initialize()
+        super(I18n.t("operations.generic.action_not_allowed"))
       end
     end
   end
