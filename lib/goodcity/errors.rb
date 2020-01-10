@@ -21,6 +21,13 @@ module Goodcity
     end
   end
 
+  class QuantityDesignatedError < OperationsError
+    def initialize(orders)
+      order_text = orders.count == 1 ? orders.first.code : "#{orders.count}x"
+      super(I18n.t('operations.mark_lost.required_for_orders', orders: order_text))
+    end
+  end
+
   class InvalidQuantityError < OperationsError
     def initialize(quantity)
       super(I18n.t('operations.generic.bad_quantity_param', quantity: quantity))

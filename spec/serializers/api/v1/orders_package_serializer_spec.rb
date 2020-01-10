@@ -18,6 +18,7 @@ describe Api::V1::OrdersPackageSerializer do
     expect(record['order_id']).to eq(orders_package.order_id)
     expect(record['state']).to eq(orders_package.state)
     expect(record['quantity']).to eq(orders_package.quantity)
+    expect(record['dispatched_quantity']).to eq(orders_package.dispatched_quantity)
     expect(record['sent_on']).to eq(orders_package.sent_on)
     expect(utc(record['created_at'])).to eq(utc(orders_package.created_at))
     expect(record['allowed_actions']).to eq(

@@ -73,9 +73,9 @@ RSpec.describe PackagesInventory, type: :model do
   describe 'Computations' do
     let(:package1) { create :package }
     let(:package2) { create :package }
-    let(:location1) { create :location }
-    let(:location2) { create :location }
-    let(:location3) { create :location }
+    let(:location1) { create :location, building: 55 }
+    let(:location2) { create :location, building: 56 }
+    let(:location3) { create :location, building: 57 }
     let(:cpu) { PackagesInventory::Computer }
 
     before do
@@ -107,10 +107,7 @@ RSpec.describe PackagesInventory, type: :model do
       end
 
       context 'by action' do
-        it { expect(cpu.dispatch_quantity).to eq(1) }
-        it { expect(cpu.inventory_quantity).to eq(105) }
-        it { expect(cpu.gain_quantity).to eq(50) }
-        it { expect(cpu.loss_quantity).to eq(1) }
+        it { expect(cpu.dispatched_quantity).to eq(1) }
       end
     end
 
@@ -177,6 +174,22 @@ RSpec.describe PackagesInventory, type: :model do
       it { expect(cpu.designated_quantity_of(package1)).to eq(3) }
     end
 
+    context 'Dispatched quantity' do
+      let(:orders_package_1) { create(:orders_package, :with_state_designated, quantity: 3, package: package2) }
+      let(:orders_package_2) { create(:orders_package, :with_state_designated, quantity: 3, package: package2) }
+
+      before do
+        touch(orders_package_1, orders_package_2)
+        build(:packages_inventory, action: 'dispatch', source: orders_package_1, quantity: -2, package: package2, location: location1).sneaky(:save)
+        build(:packages_inventory, action: 'dispatch', source: orders_package_2, quantity: -2, package: package2, location: location1).sneaky(:save)
+        build(:packages_inventory, action: 'undispatch', source: orders_package_2, quantity: 1, package: package2, location: location1).sneaky(:save)
+      end
+
+      it { expect(cpu.dispatched_quantity(package: package2)).to eq(3) }
+      it { expect(cpu.dispatched_quantity(orders_package: orders_package_1)).to eq(2) }
+      it { expect(cpu.dispatched_quantity(orders_package: orders_package_2)).to eq(1) }
+    end
+
     context 'Available quantity' do
       before do
         create(:orders_package, :with_state_dispatched, quantity: 1, package: package1)
@@ -186,7 +199,7 @@ RSpec.describe PackagesInventory, type: :model do
 
       it { expect(cpu.package_quantity(package1)).to eq(10) }
       it { expect(cpu.designated_quantity_of(package1)).to eq(3) }
-      it { expect(cpu.dispatch_quantity_of(package1)).to eq(1) }
+      it { expect(cpu.dispatched_quantity(package: package1)).to eq(1) }
       it { expect(cpu.available_quantity_of(package1)).to eq(7) }
     end
   end
