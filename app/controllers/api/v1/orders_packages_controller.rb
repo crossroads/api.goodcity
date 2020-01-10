@@ -38,6 +38,17 @@ module Api
         render json: {}
       end
 
+      def get_orders_op
+        records = OrdersPackage.joins(:order).where(orders: {id: params["order_id"]})
+        orders_packages = records.page(params["page"]).per(params["per_page"])
+        render json: ActiveModel::ArraySerializer.new(orders_packages,
+          each_serializer: serializer,
+          root: "orders_packages",
+          include_package: true,
+          include_orders_packages: true
+        ).as_json
+      end
+
       api :PUT, '/v1/orders_packages/:id/actions/:action_name', 'Executes an action'
       def exec_action
         begin
