@@ -85,7 +85,9 @@ Rails.application.routes.draw do
       resources :contacts, only: [:create]
       resources :versions, only: [:index, :show]
       resources :holidays, only: [:index, :create, :destroy, :update]
-      resources :orders_packages
+      resources :orders_packages do
+        get 'get_orders_op', on: :collection
+      end
       resources :packages_locations, only: [:index, :show]
       resources :organisations_users, only: [:create, :index, :update, :show]
       resources :gc_organisations, only: [:index, :show] do
