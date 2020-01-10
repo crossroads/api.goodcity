@@ -120,6 +120,7 @@ zh-tw:
       inactive_order: Operation forbidden, order %{code} is inactive
       insufficient_quantity: The selected quantity (%{quantity}) is unavailable
       bad_quantity_param: Invalid quantity (%{quantity})
+      action_not_allowed: Action you are trying to perform is not allowed
   package_inventory:
     bad_action: "Inventory action %{action} is not permitted"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
