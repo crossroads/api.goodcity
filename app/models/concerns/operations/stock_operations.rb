@@ -70,52 +70,52 @@ module StockOperations
     end
 
     def pack_or_unpack(params, user_id)
-      PackUnpack.new(params, user_id).run
+      task = params[:task] == "pack" ? "pack" : "unpack"
+      PackUnpack.new(params, user_id).send(task)
     end
 
     class PackUnpack
       def initialize(params, user_id)
         @cause = Package.find(params[:id]) # box or pallet
         @item = Package.find(params[:item_id]) # item to add or remove
-        @action = params[:task] # action pack or unpack
         @user_id = user_id
         @quantity = params[:quantity] # quantity to pack or unpack
       end
 
-      def run
-        pkg_inventory = register_change
-        if pkg_inventory&.save
-          return { packages_inventory: pkg_inventory, success: true }
-        elsif pkg_inventory&.errors
-          return { errors: pkg_inventory.errors.full_messages, success: false }
+      def pack
+        pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
+        response(pkg_inventory)
+      end
+
+      def unpack
+        pkg_inventory = pack_or_unpack(PackagesInventory::Actions::UNPACK)
+        response(pkg_inventory)
+      end
+
+      def response(pkg_inventory)
+        if pkg_inventory.save
+          { packges_inventory: pkg_inventory, success: true }
+        else pkg_inventory.errors
+          { errors: pkg_inventory.errors.full_messages, success: false }
         end
       end
 
       private
 
-      def register_change
-        return unless action
+      def pack_or_unpack(task)
         PackagesInventory.new(
           package: @item,
           source: @cause,
-          action: action,
-          location_id: @entity.location_id,
+          action: task,
+          location_id: @cause.location_id,
           user_id: @user_id,
-          quantity: quantity
+          quantity: quantity(task)
         )
       end
 
-      def quantity
-        qty = @quantity || item.quantity
-        pack_action? ? qty * -1 : qty
-      end
-
-      def action
-        pack_action? ? PackagesInventory::Actions::PACK : PackagesInventory::Actions::UNPACK
-      end
-
-      def pack_action?
-        action.eql?("pack")
+      def quantity(task)
+        qty = @quantity || @item.quantity
+        task.eql?("pack") ? qty * -1 : qty
       end
     end
 
