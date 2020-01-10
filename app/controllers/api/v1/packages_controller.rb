@@ -226,7 +226,7 @@ module Api
       end
 
       def perform_action
-        response = BoxPalletManager.new(params, User.current_user.id).run
+        response = Package::Operations.pack_or_unpack(params, User.current_user.id)
         if response[:success]
           render json: { packages_inventories: response[:packages_inventory], status: 201}
         else
