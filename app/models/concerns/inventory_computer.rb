@@ -1,26 +1,9 @@
 module InventoryComputer
   extend ActiveSupport::Concern
 
-=begin
-  Adds a sub module containing all the needed SQL computations
-
-  @example
-
-  PackagesInventory::Computer.compute_quantity.of(package).as_of_now
-  PackagesInventory::Computer.compute_quantity.where({ package_id: 1 }).as_of_now
-  PackagesInventory::Computer.package_quantity(package2).now
-  PackagesInventory::Computer.package_quantity(package1).now
-  PackagesInventory::Computer.package_quantity(package1).as_of(3.years.ago)
-  PackagesInventory::Computer.package_quantity(package1).as_of(5.months.ago)
-  PackagesInventory::Computer.quantity.now
-  PackagesInventory::Computer.dispatch_quantity.now.abs
-  PackagesInventory::Computer.inventory_quantity.now
-  PackagesInventory::Computer.inventory_quantity.as_of(6.months.ago)
-  PackagesInventory::Computer.location_quantity(location2).as_of(4.months.ago)
-  PackagesInventory::Computer.location_quantity(location2).now
-  PackagesInventory::Computer.inventory_quantity.of(package2).as_of(6.months.ago)
-  PackagesInventory::Computer.dispatch_quantity.of(package2).as_of(6.months.ago)
-=end
+  ##
+  # Adds a sub module containing all the needed SQL computations
+  #
   class Computer
 
     class << self
@@ -52,7 +35,19 @@ module InventoryComputer
         query.sum(:quantity)
       end
 
-      #
+      def dispatched_quantity(package: nil, orders_package: nil)
+        res = historical_quantity.where(
+          action: [
+            PackagesInventory::Actions::DISPATCH,
+            PackagesInventory::Actions::UNDISPATCH
+          ]
+        )
+        res = res.where(package: package) if package.present?
+        res = res.where(source: orders_package) if orders_package.present?
+        res.as_of_now
+      end
+
+      ##
       # Returns quantity which not designated
       #
       # @param [Package] package the package to compute the quantity of
@@ -64,21 +59,6 @@ module InventoryComputer
 
       def total_quantity
         historical_quantity.as_of_now
-      end
-
-      # Creates gain_quantity, loss_quantity, dispatch_quantity, ...
-      PackagesInventory::ALLOWED_ACTIONS.each do |action|
-        define_method("#{action}_quantity") do
-          historical_quantity.where("action = (?)", action).as_of_now
-        end
-
-        define_method("#{action}_quantity_where") do |query|
-          historical_quantity.where("action = (?)", action).where(query).as_of_now
-        end
-
-        define_method("#{action}_quantity_of") do |record|
-          historical_quantity.where("action = (?)", action).of(record).as_of_now
-        end
       end
     end
 

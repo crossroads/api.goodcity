@@ -2,8 +2,8 @@ require 'rails_helper'
 
 context StockOperations do
   describe 'Marking packages as lost/missing' do
-    let(:location1) { create(:location) }
-    let(:location2) { create(:location) }
+    let(:location1) { create(:location, building: 61) }
+    let(:location2) { create(:location, building: 52) }
     let(:package) { create(:package) }
     let(:subject) {
       Class.new { include StockOperations }
@@ -45,8 +45,10 @@ context StockOperations do
       end
 
       context 'with some quantity remaining for designated items' do
-        before { create(:orders_package, package: package, quantity: 26) } # Location 1+2 have enough to fulfill this order
-
+        before { create(:orders_package, :with_state_designated, package: package, quantity: 26) } # Location 1+2 have enough to fulfill this order
+        # 36 on hand
+        # 26 designated
+        # 10 available
         it 'succeeds' do
           expect { register_loss(10, location1) }.to change {
             PackagesInventory::Computer.quantity_where(location: location1, package: package)
@@ -57,7 +59,9 @@ context StockOperations do
       context 'breaking the required quantity for designated items' do
         let!(:orders_package) { create(:orders_package, :with_state_designated, package: package, quantity: 27) } # Location 1+2 do not have enough to fulfill this order
         let(:order_code) { orders_package.order.code }
-
+        # 36 on hand
+        # 27 designated
+        # 9 available
         it 'fails' do
           expect { register_loss(10, location1) }.to raise_error(StandardError).with_message(
             "Will break the quantity required for orders (#{order_code}), please undesignate first"

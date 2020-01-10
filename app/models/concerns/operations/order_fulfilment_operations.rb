@@ -32,8 +32,6 @@ module OrderFulfilmentOperations
     # @todo remove stockit references
     #
     def undispatch(ord_pkg, quantity:, to_location:)
-      return unless ord_pkg.dispatched?
-
       PackagesInventory.secured_transaction do
         assert_can_undispatch(ord_pkg, quantity)
         PackagesInventory.append_undispatch(
@@ -45,7 +43,7 @@ module OrderFulfilmentOperations
 
         if ord_pkg.dispatched?
           ord_pkg.update!(state: "designated", sent_on: nil)
-          ord_pkg.package.undispatch_stockit_item
+          ord_pkg.package.undispatch_stockit_item if STOCKIT_ENABLED
           ord_pkg.package.save
         end
       end
@@ -57,7 +55,7 @@ module OrderFulfilmentOperations
     #
     # @todo remove this from our lives
     #
-    def undispatch_singleton(ord_pkg, to_location:)
+    def undispatch_full_qty(ord_pkg, to_location:)
       undispatch(ord_pkg, to_location: to_location, quantity: ord_pkg.quantity)
     end
 
@@ -98,7 +96,7 @@ module OrderFulfilmentOperations
     #
     # @todo remove this from our lives
     #
-    def dispatch_singleton(ord_pkg)
+    def dispatch_full_qty(ord_pkg)
       dispatch(ord_pkg, quantity: ord_pkg.quantity, from_location: ord_pkg.package.locations.first)
     end
 
@@ -119,7 +117,7 @@ module OrderFulfilmentOperations
     end
 
     def dispatched_count(ord_pkg)
-      PackagesInventory::Computer.dispatch_quantity_where(source: ord_pkg)
+      PackagesInventory::Computer.dispatched_quantity(orders_package: ord_pkg)
     end
 
     def on_hand(pkg, location)
