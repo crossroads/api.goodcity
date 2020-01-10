@@ -28,6 +28,7 @@ module Api
         return search_by_package_id if params['search_by_package_id'].present?
         # needs to be removed as it makes unwanted orders_packages request and makes the app slow
         return all_orders_packages if params['all_orders_packages'].present?
+        return orders_package_by_order_id if params['order_id'].present?
       end
 
       api :DELETE, '/v1/orders_package/1', "Delete an orders_package"
@@ -36,17 +37,6 @@ module Api
           @orders_package.delete_orders_package
         end
         render json: {}
-      end
-
-      def get_orders_op
-        records = OrdersPackage.joins(:order).where(orders: {id: params["order_id"]})
-        orders_packages = records.page(params["page"]).per(params["per_page"])
-        render json: ActiveModel::ArraySerializer.new(orders_packages,
-          each_serializer: serializer,
-          root: "orders_packages",
-          include_package: true,
-          include_orders_packages: true
-        ).as_json
       end
 
       api :PUT, '/v1/orders_packages/:id/actions/:action_name', 'Executes an action'
@@ -94,6 +84,17 @@ module Api
             include_orders_packages: true
           )
         end
+      end
+
+      def orders_package_by_order_id
+        records = @orders_packages.get_orders_package_by(params["order_id"])
+        orders_packages = records.page(params["page"]).per(params["per_page"])
+        render json: ActiveModel::ArraySerializer.new(orders_packages,
+          each_serializer: serializer,
+          root: "orders_packages",
+          include_package: true,
+          include_orders_packages: true
+        ).as_json
       end
 
       def orders_packages_params
