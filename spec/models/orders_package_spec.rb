@@ -13,6 +13,7 @@ RSpec.describe OrdersPackage, type: :model do
     it{ is_expected.to have_db_column(:package_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:order_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:quantity).of_type(:integer)}
+    it{ is_expected.to have_db_column(:dispatched_quantity).of_type(:integer)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:sent_on).of_type(:datetime)}
   end
@@ -330,6 +331,43 @@ RSpec.describe OrdersPackage, type: :model do
         expect {
           orders_package.edit_quantity(11)
         }.to raise_error(ArgumentError).with_message('We do not currently have the requested quantity in stock')
+      end
+    end
+  end
+
+  describe 'Computing quantities' do
+    context 'when dispatching' do
+      let(:order) { create :order, :with_designated_orders_packages, :with_state_dispatching }
+      let(:orders_package) { order.orders_packages.first }
+      let(:package) { orders_package.package }
+      let(:location) { package.locations.first }
+
+      before { initialize_inventory(package) }
+
+      it 'updates the dispatched_quantity column' do
+        expect(PackagesInventory::Computer.package_quantity(package)).to eq(5)
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package, quantity: 2, from_location: location)
+        }.to change { orders_package.reload.dispatched_quantity }.from(0).to(2)
+      end
+    end
+
+    context 'when undispatching' do
+      let(:order) { create :order, :with_designated_orders_packages, :with_state_dispatching }
+      let(:orders_package) { order.orders_packages.first }
+      let(:package) { orders_package.package }
+      let(:location) { package.locations.first }
+
+      before do
+        initialize_inventory(package)
+        OrdersPackage::Operations.dispatch(orders_package, quantity: 2, from_location: location)
+      end
+
+      it 'updates the dispatched_quantity column' do
+        expect(PackagesInventory::Computer.package_quantity(package)).to eq(3)
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package, quantity: 1, to_location: location)
+        }.to change { orders_package.reload.dispatched_quantity }.from(2).to(1)
       end
     end
   end
