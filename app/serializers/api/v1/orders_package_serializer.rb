@@ -1,7 +1,7 @@
 module Api::V1
   class OrdersPackageSerializer < ApplicationSerializer
     embed :ids, include: true
-    attributes :id, :package_id, :order_id, :state, :quantity, :sent_on, :designation_id, :item_id, :created_at, :allowed_actions
+    attributes :id, :package_id, :order_id, :state, :quantity, :dispatched_quantity, :sent_on, :designation_id, :item_id, :created_at, :allowed_actions
 
     has_one :package, serializer: PackageSerializer
 
