@@ -234,6 +234,11 @@ module Api
         end
       end
 
+      def fetch_associated_packages
+        @packages = Package.find(params[:id])&.packages
+        render json: @packages, each_serializer: serializer, include_orders_packages: false
+      end
+
       private
 
       def render_order_status_error
