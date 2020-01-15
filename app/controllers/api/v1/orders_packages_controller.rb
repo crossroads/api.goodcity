@@ -87,7 +87,7 @@ module Api
       end
 
       def orders_package_by_order_id
-        records = @orders_packages.get_orders_package_by(params["order_id"])
+        records = @orders_packages.for_order(params["order_id"])
         orders_packages = records.page(params["page"]).per(params["per_page"])
         render json: ActiveModel::ArraySerializer.new(orders_packages,
           each_serializer: serializer,
