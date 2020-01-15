@@ -34,9 +34,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     it "return orders_packages of order_id mentioned in params" do
       order = create :order
       order2 = create :order
-      orders_package1 =  create :orders_package, order_id: order.id
-      orders_package2 =  create :orders_package, order_id: order.id
-      orders_package3 =  create :orders_package, order_id: order2.id
+      create_list(:orders_package, 2, order_id: order.id)
+      create_list(:orders_package, 2,order_id: order2.id)
       get :index, order_id: order.id
       expect( subject["orders_packages"].size ).to eq(2)
     end

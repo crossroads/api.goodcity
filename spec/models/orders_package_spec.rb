@@ -114,13 +114,12 @@ RSpec.describe OrdersPackage, type: :model do
     end
   end
 
-  describe "#get_orders_package_by" do
+  describe "#for_order" do
     it "return orders_package according to order_id" do
       order = create :order
-      orders_package = create :orders_package, order_id: order.id
-      orders_package = create :orders_package, order_id: order.id
+      create_list(:orders_package, 2, order_id: order.id)
       orders_package = create :orders_package
-      expect(OrdersPackage.get_orders_package_by(order.id).size ).to eq(2)
+      expect(OrdersPackage.for_order(order.id).size ).to eq(2)
     end
   end
 
