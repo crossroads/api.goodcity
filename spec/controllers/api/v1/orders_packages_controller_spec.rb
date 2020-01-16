@@ -38,6 +38,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       create_list(:orders_package, 2,order_id: order2.id)
       get :index, order_id: order.id
       expect( subject["orders_packages"].size ).to eq(2)
+      expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
+      expect(subject["orders_packages"][1]["order_id"]).to eq(order.id)
     end
   end
 
