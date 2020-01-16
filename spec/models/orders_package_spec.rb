@@ -118,8 +118,10 @@ RSpec.describe OrdersPackage, type: :model do
     it "return orders_package according to order_id" do
       order = create :order
       create_list(:orders_package, 2, order_id: order.id)
-      orders_package = create :orders_package
-      expect(OrdersPackage.for_order(order.id).size ).to eq(2)
+      create_list(:orders_package, 2)
+      orders_packages = OrdersPackage.for_order(order.id)
+      expect(orders_packages.size ).to eq(2)
+      expect(orders_packages.pluck(:order_id)).to eq([order.id, order.id])
     end
   end
 
