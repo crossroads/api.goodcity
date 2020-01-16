@@ -30,6 +30,17 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       get :index, search_by_package_id: package.id
       expect( subject["orders_packages"].size ).to eq(3)
     end
+
+    it "return orders_packages of order_id mentioned in params" do
+      order = create :order
+      order2 = create :order
+      create_list(:orders_package, 2, order_id: order.id)
+      create_list(:orders_package, 2,order_id: order2.id)
+      get :index, order_id: order.id
+      expect( subject["orders_packages"].size ).to eq(2)
+      expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
+      expect(subject["orders_packages"][1]["order_id"]).to eq(order.id)
+    end
   end
 
   describe "DELETE orders_package/1 " do
