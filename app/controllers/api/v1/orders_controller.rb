@@ -120,7 +120,6 @@ module Api
 
       def update_transition_and_cancel_reason
         event = params['transition'].to_sym
-        @order.remove_cancellation_reason if event.eql?(:resubmit)
         @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
       end
 
