@@ -119,14 +119,16 @@ module Api
       end
 
       def update_transition_and_cancel_reason
-        transition_event = params['transition'].to_sym
-        cancellation_reason_id = CancellationReason.find_by_name_en("Changed mind")&.id  if is_browse_app? && transition_event.eql?(:cancel)
-        cancellation_reason_id = params['cancellation_reason_id'] if params['cancellation_reason_id']
+        event = params['transition'].to_sym
+        @order.remove_cancellation_reason if event.eql?(:resubmit)
+        @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
+      end
 
-        @order.update_cancellation_reason_and_transition(transition_event, {
+      def cancel_params
+        {
           cancel_reason: params["cancel_reason"],
-          cancellation_reason_id: cancellation_reason_id
-        })
+          cancellation_reason_id: params['cancellation_reason_id']
+        }
       end
 
       def order_record
