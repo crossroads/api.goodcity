@@ -28,6 +28,7 @@ module Api
         return search_by_package_id if params['search_by_package_id'].present?
         # needs to be removed as it makes unwanted orders_packages request and makes the app slow
         return all_orders_packages if params['all_orders_packages'].present?
+        return orders_package_by_order_id if params['order_id'].present?
       end
 
       api :DELETE, '/v1/orders_package/1', "Delete an orders_package"
@@ -83,6 +84,18 @@ module Api
             include_orders_packages: true
           )
         end
+      end
+
+      def orders_package_by_order_id
+        records = @orders_packages.for_order(params["order_id"])
+        orders_packages = records.page(params["page"]).per(params["per_page"])
+        render json: ActiveModel::ArraySerializer.new(
+          orders_packages,
+          each_serializer: serializer,
+          root: "orders_packages",
+          include_package: true,
+          include_orders_packages: true
+        ).as_json
       end
 
       def orders_packages_params
