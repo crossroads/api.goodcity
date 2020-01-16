@@ -119,7 +119,7 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def remove_cancellation_reason
+  def nullify_cancellation_reason
     update(cancellation_reason_id: nil, cancel_reason: nil)
   end
 
@@ -264,6 +264,7 @@ class Order < ActiveRecord::Base
 
     before_transition on: :resubmit do |order|
       if order.cancelled?
+        order.nullify_cancellation_reason
         order.nullify_columns(:processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id,
           :cancelled_at, :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
       end
