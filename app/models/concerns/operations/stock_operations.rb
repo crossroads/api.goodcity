@@ -70,6 +70,7 @@ module StockOperations
     end
 
     def pack_or_unpack(params, user_id)
+      raise ActionNotAllowedError.new unless PackUnpack::ALLOWED_ACTIONS.include?(params[:task])
       PackUnpack.new(params, user_id).public_send(params[:task])
     end
 
@@ -95,7 +96,7 @@ module StockOperations
 
       def response(pkg_inventory)
         if pkg_inventory.save
-          { packges_inventory: pkg_inventory, success: true }
+          { packages_inventory: pkg_inventory, success: true }
         else pkg_inventory.errors
           { errors: pkg_inventory.errors.full_messages, success: false }
         end
@@ -104,8 +105,6 @@ module StockOperations
       private
 
       def pack_or_unpack(task)
-        raise ActionNotAllowedError.new unless ALLOWED_ACTIONS.include?(task)
-
         PackagesInventory.new(
           package: @item,
           source: @cause,
