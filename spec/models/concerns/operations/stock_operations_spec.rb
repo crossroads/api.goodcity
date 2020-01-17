@@ -178,4 +178,69 @@ context StockOperations do
       end
     end
   end
+
+  describe 'Adding/removing items from box and pallets' do
+    let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+    let(:box_storage_type) { create(:storage_type, :with_box) }
+    let(:pallet_storage_type) { create(:storage_type, :with_box) }
+    let(:box) { create(:package, :package_with_locations, storage_type: box_storage_type) }
+    let(:pallet) { create(:package, :package_with_locations, storage_type: pallet_storage_type) }
+    let(:packages) { create_list(:package, 5, :package_with_locations) }
+    let(:user) {create :user, :supervisor}
+    let(:subject) {
+      Class.new { include StockOperations }
+    }
+
+    def pack_or_unpack(params)
+      subject::Operations::pack_or_unpack(params, user.id)
+    end
+
+    context "adding items to box and pallets" do
+      it "creates a packages_inventory record to register loss due to packing in a box" do
+        params = {
+          item_id: packages.sample.id,
+          task: "pack",
+          id: box.id
+        }
+        response = pack_or_unpack(params)
+        expect(response[:success]).to eq(true)
+        expect(response[:packages_inventory].source).to eq(box)
+      end
+
+      it "raises an exception if action is not allowed" do
+        params = {
+          item_id: packages.sample.id,
+          task: "not_allowed_task",
+          id: box.id
+        }
+        expect { pack_or_unpack(params) }.to raise_error(
+          "Action you are trying to perform is not allowed"
+        )
+      end
+    end
+
+    context "removing items from box and pallets" do
+      it "creates a packages_inventory record to register gain due to unpacking item from a box" do
+        params = {
+          item_id: packages.sample.id,
+          task: "unpack",
+          id: pallet.id
+        }
+        response = pack_or_unpack(params)
+        expect(response[:success]).to eq(true)
+        expect(response[:packages_inventory].source).to eq(pallet)
+      end
+
+      it "raises an exception if action is not allowed" do
+        params = {
+          item_id: packages.sample.id,
+          task: "not_allowed_task",
+          id: pallet.id
+        }
+        expect { pack_or_unpack(params) }.to raise_error(
+          "Action you are trying to perform is not allowed"
+        )
+      end
+    end
+  end
 end
