@@ -237,7 +237,7 @@ class Ability
   def orders_package_abilities
     if can_manage_orders_packages? || @api_user
       can [:index, :search, :show, :destroy, :exec_action], OrdersPackage
-    else 
+    else
       can [:index, :search, :show, :destroy, :exec_action], OrdersPackage, order: { created_by_id: @user_id }
       can [:index, :search, :show, :destroy, :exec_action], OrdersPackage, order: { submitted_by_id: @user_id }
     end
