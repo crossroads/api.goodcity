@@ -90,7 +90,8 @@ module Api
           each_serializer: serializer,
           root: "orders_packages",
           include_package: true,
-          include_orders_packages: true
+          include_orders_packages: true,
+          include_allowed_actions: true
         ).as_json
       end
 
