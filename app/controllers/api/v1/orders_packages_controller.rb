@@ -2,7 +2,6 @@ module Api
   module V1
     class OrdersPackagesController < Api::V1::ApiController
       load_and_authorize_resource :orders_package, parent: false
-      before_action :eager_load_orders_package, only: :show
 
       resource_description do
         formats ['json']
@@ -64,11 +63,8 @@ module Api
       end
 
       def show
-        render json: @orders_package, serializer: serializer
-      end
-
-      def eager_load_orders_package
         @orders_package = OrdersPackage.accessible_by(current_ability).with_eager_load.find(params[:id])
+        render json: @orders_package, serializer: serializer
       end
 
       private
@@ -87,14 +83,16 @@ module Api
       end
 
       def orders_package_by_order_id
-        records = @orders_packages.for_order(params["order_id"])
-        orders_packages = records.page(params["page"]).per(params["per_page"])
+        @orders_packages = @orders_packages.with_eager_load
+          .for_order(params["order_id"])
+          .page(page).per(per_page)
         render json: ActiveModel::ArraySerializer.new(
-          orders_packages,
+          @orders_packages,
           each_serializer: serializer,
           root: "orders_packages",
           include_package: true,
-          include_orders_packages: true
+          include_orders_packages: true,
+          include_allowed_actions: true
         ).as_json
       end
 
