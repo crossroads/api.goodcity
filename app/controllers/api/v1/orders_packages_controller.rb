@@ -85,7 +85,7 @@ module Api
       def orders_package_by_order_id
         orders_packages = @orders_packages.with_eager_load.for_order(params["order_id"])
         @orders_packages = orders_packages.page(page).per(per_page)
-        render json: {meta: {orders_packages_count: orders_packages.size}}.merge(serialized_orders_packages)
+        render json: { meta: { orders_packages_count: orders_packages.size } }.merge(serialized_orders_packages)
       end
 
       def orders_packages_params
