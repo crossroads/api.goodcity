@@ -36,10 +36,12 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       order2 = create :order
       create_list(:orders_package, 2, order_id: order.id)
       create_list(:orders_package, 2,order_id: order2.id)
+      order_packages = Order.find(order.id).orders_packages
       get :index, order_id: order.id
       expect( subject["orders_packages"].size ).to eq(2)
       expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
       expect(subject["orders_packages"][1]["order_id"]).to eq(order.id)
+      expect(subject['meta']['orders_packages_count']).to eql(order_packages.size)
     end
   end
 
