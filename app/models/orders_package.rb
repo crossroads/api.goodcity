@@ -30,7 +30,7 @@ class OrdersPackage < ActiveRecord::Base
 
   scope :with_eager_load, ->{
     includes([
-      { package: [:locations, :package_type] }
+      { package: [ :locations, {package_type: [:location]}, :images, :orders_packages] }
     ])
   }
 
