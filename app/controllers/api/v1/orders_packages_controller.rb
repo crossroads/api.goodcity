@@ -83,17 +83,9 @@ module Api
       end
 
       def orders_package_by_order_id
-        @orders_packages = @orders_packages.with_eager_load
-          .for_order(params["order_id"])
-          .page(page).per(per_page)
-        render json: ActiveModel::ArraySerializer.new(
-          @orders_packages,
-          each_serializer: serializer,
-          root: "orders_packages",
-          include_package: true,
-          include_orders_packages: true,
-          include_allowed_actions: true
-        ).as_json
+        orders_packages = @orders_packages.with_eager_load.for_order(params["order_id"])
+        @orders_packages = orders_packages.page(page).per(per_page)
+        render json: { meta: { orders_packages_count: orders_packages.size } }.merge(serialized_orders_packages)
       end
 
       def orders_packages_params
@@ -102,6 +94,17 @@ module Api
 
       def serializer
         Api::V1::OrdersPackageSerializer
+      end
+
+      def serialized_orders_packages
+        ActiveModel::ArraySerializer.new(
+          @orders_packages,
+          each_serializer: serializer,
+          root: "orders_packages",
+          include_package: true,
+          include_orders_packages: true,
+          include_allowed_actions: true
+        ).as_json
       end
     end
   end

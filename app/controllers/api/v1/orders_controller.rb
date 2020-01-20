@@ -55,7 +55,7 @@ module Api
       api :GET, '/v1/designations/1', "Get a order"
       def show
         root = is_browse_app? ? "order" : "designation"
-        serialized_orders = serializer.new(@order,
+        render json: serializer.new(@order,
           root: root,
           exclude_code_details: true,
           include_packages: bool_param(:include_packages, true),
@@ -65,8 +65,7 @@ module Api
           include_allowed_actions: true,
           include_orders_packages: bool_param(:include_orders_packages, true),
           exclude_stockit_set_item: true
-        ).as_json
-        render json: {meta: {counts: {orders_packages_count: @order.orders_packages.size}}}.merge(serialized_orders)
+        )
       end
 
       def transition
