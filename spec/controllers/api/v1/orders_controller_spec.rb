@@ -490,7 +490,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     before{ generate_and_set_token(user) }
     it "returns meta with count of orders_packages" do
       get :show, id: order.id
-      expect(parsed_body['meta']['counts']['orders_packages_count']).to eql(order.orders_packages.size)
+      expect(parsed_body["designation"]["id"]).to eq(order.id)
     end
   end
 
