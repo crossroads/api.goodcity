@@ -22,7 +22,7 @@ module Api
       def index
         return search_user_and_render_json if params[:searchText].present?
         @users = @users.except_stockit_user
-        @users = @users.find(ids_param) if ids_param.present?
+        @users = @users.where(id: ids_param) if ids_param.present?
         render json: @users, each_serializer: serializer
       end
 
