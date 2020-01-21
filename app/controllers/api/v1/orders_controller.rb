@@ -59,11 +59,11 @@ module Api
           root: root,
           exclude_code_details: true,
           include_packages: bool_param(:include_packages, true),
-          include_order: false,
+          include_order: bool_param(:include_order, false),
           include_territory: true,
           include_images: true,
           include_allowed_actions: true,
-          include_orders_packages: true,
+          include_orders_packages: bool_param(:include_orders_packages, true),
           exclude_stockit_set_item: true
         )
       end

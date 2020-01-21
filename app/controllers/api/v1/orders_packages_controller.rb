@@ -2,7 +2,6 @@ module Api
   module V1
     class OrdersPackagesController < Api::V1::ApiController
       load_and_authorize_resource :orders_package, parent: false
-      before_action :eager_load_orders_package, only: :show
 
       resource_description do
         formats ['json']
@@ -28,6 +27,7 @@ module Api
         return search_by_package_id if params['search_by_package_id'].present?
         # needs to be removed as it makes unwanted orders_packages request and makes the app slow
         return all_orders_packages if params['all_orders_packages'].present?
+        return orders_package_by_order_id if params['order_id'].present?
       end
 
       api :DELETE, '/v1/orders_package/1', "Delete an orders_package"
@@ -63,11 +63,8 @@ module Api
       end
 
       def show
-        render json: @orders_package, serializer: serializer
-      end
-
-      def eager_load_orders_package
         @orders_package = OrdersPackage.accessible_by(current_ability).with_eager_load.find(params[:id])
+        render json: @orders_package, serializer: serializer
       end
 
       private
@@ -85,12 +82,29 @@ module Api
         end
       end
 
+      def orders_package_by_order_id
+        orders_packages = @orders_packages.with_eager_load.for_order(params["order_id"])
+        @orders_packages = orders_packages.page(page).per(per_page).order('id')
+        render json: { meta: { total_pages: @orders_packages.total_pages, orders_packages_count: orders_packages.size } }.merge(serialized_orders_packages)
+      end
+
       def orders_packages_params
         params.require(:orders_packages).permit(:package_id, :order_id, :state, :quantity, :sent_on)
       end
 
       def serializer
         Api::V1::OrdersPackageSerializer
+      end
+
+      def serialized_orders_packages
+        ActiveModel::ArraySerializer.new(
+          @orders_packages,
+          each_serializer: serializer,
+          root: "orders_packages",
+          include_package: true,
+          include_orders_packages: true,
+          include_allowed_actions: true
+        ).as_json
       end
     end
   end
