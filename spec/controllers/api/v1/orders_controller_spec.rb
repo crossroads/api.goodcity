@@ -485,6 +485,15 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
   end
 
+  context "GET orders/1" do
+    let(:order) { create(:order, :with_orders_packages) }
+    before{ generate_and_set_token(user) }
+    it "returns meta with count of orders_packages" do
+      get :show, id: order.id
+      expect(parsed_body["designation"]["id"]).to eq(order.id)
+    end
+  end
+
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
 

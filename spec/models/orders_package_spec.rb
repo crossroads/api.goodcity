@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe OrdersPackage, type: :model do
   before { User.current_user = create(:user) }
-  
+
   describe "Associations" do
     it { is_expected.to belong_to :order }
     it { is_expected.to belong_to :package }
@@ -111,6 +111,17 @@ RSpec.describe OrdersPackage, type: :model do
       existing_state = orders_package.state
       orders_package.reload.update_partially_designated_item(package)
       expect(orders_package.reload.state).to eq existing_state
+    end
+  end
+
+  describe "#for_order" do
+    it "return orders_package according to order_id" do
+      order = create :order
+      create_list(:orders_package, 2, order_id: order.id)
+      create_list(:orders_package, 2)
+      orders_packages = OrdersPackage.for_order(order.id)
+      expect(orders_packages.size ).to eq(2)
+      expect(orders_packages.pluck(:order_id)).to eq([order.id, order.id])
     end
   end
 
