@@ -161,7 +161,7 @@ module Api
             with_inventory_no: true
           )
         end
-        params_for_filter = %w[state location].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
+        params_for_filter = %w[state location filter_box_pallet].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
@@ -225,7 +225,7 @@ module Api
         end
       end
 
-      def perform_action
+      def add_remove_item
         response = Package::Operations.pack_or_unpack(params, User.current_user.id)
         if response[:success]
           render json: { packages_inventories: response[:packages_inventory], status: 201}

@@ -66,7 +66,7 @@ Rails.application.routes.draw do
         get :fetch_associated_packages, on: :member
         put :move, on: :member
         put :designate, on: :member
-        put :perform_action, on: :member
+        put :add_remove_item, on: :member
       end
 
       resources :requested_packages, only: [:index, :create, :destroy] do
