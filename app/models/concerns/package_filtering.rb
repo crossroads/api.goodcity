@@ -43,6 +43,7 @@ module PackageFiltering
       state_filters = states & %w[in_stock received designated dispatched]
       query = query.where_states(state_filters) if state_filters.any?
       query = query.filter_by_location(location) if location.present?
+      query = query.filter_box_pallet if options['filter_box_pallet']
 
       publish_filters = states & %w[published private]
       query = query.filter_by_publish_status(publish_filters) if publish_filters.any?
@@ -68,6 +69,11 @@ module PackageFiltering
       else
         where(nil)
       end
+    end
+
+    def filter_box_pallet
+      storage_type_id = StorageType.find_by(name: "Package").id
+      where("packages.storage_type_id = ? or packages.storage_type_id IS NULL", storage_type_id)
     end
 
     def filter_by_image_status(image_filters)
