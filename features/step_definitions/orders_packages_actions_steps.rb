@@ -29,6 +29,14 @@ And(/^Their OrdersPackages are of state "([^"]*)"$/) do |orders_package_states|
   end
 end
 
+And(/^Their OrdersPackages are partially dispatched$/) do
+  @orders_packages_per_state.each do |_, order_packages|
+    order_packages.each do |op|
+      op.dispatched_quantity = 1
+    end
+  end
+end
+
 # We pass in quantity properties and state as a table
 And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
   properties = qty_table.hashes

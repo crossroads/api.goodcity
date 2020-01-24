@@ -1,6 +1,8 @@
 module Goodcity
   class BaseError < StandardError; end
 
+  class InvalidStateError < BaseError; end
+
   class OperationsError < BaseError; end
 
   class UnprocessedError < OperationsError
@@ -11,7 +13,7 @@ module Goodcity
 
   class AlreadyDispatchedError < OperationsError
     def initialize
-      super(I18n.t('orders_package.already_dispatched'))
+      super(I18n.t('orders_package.quantity_already_dispatched'))
     end
   end
 

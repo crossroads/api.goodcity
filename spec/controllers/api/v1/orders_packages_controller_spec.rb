@@ -165,7 +165,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
           it 'dispatches the packages successfully' do
             expect(current_state).to eq('designated')
 
-            put :exec_action, id: orders_package.id, action_name: 'dispatch'
+            put :exec_action, id: orders_package.id, action_name: 'dispatch', quantity: 10, location_id: package.locations.first
 
             expect(status).to eq(200)
             expect(new_state).to eq('dispatched')
@@ -186,7 +186,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
           it 'fails to dispatch the packages' do
             expect(current_state).to eq('designated')
 
-            put :exec_action, id: orders_package.id, action_name: 'dispatch'
+            put :exec_action, id: orders_package.id, action_name: 'dispatch', quantity: 10, location_id: package.locations.first
 
             expect(status).to eq(422)
             expect(error_text).to eq("Cannot dispatch packages from an unprocessed order")
