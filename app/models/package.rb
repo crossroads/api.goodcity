@@ -147,8 +147,18 @@ class Package < ActiveRecord::Base
     Location.dispatch_location
   end
 
-  def packages
-    PackagesInventory.where(source_id: id, source_type: "Package")&.map(&:package)
+  def associated_packages
+    sql =
+      <<-SQL
+      select distinct pi.package_id
+      from packages_inventories pi
+      WHERE pi.source_type = 'Package' AND pi.source_id = #{id}
+      AND pi.action in ('pack', 'unpack')
+      group by pi.package_id
+      HAVING sum(pi.quantity) < 0
+      SQL
+    ids = Package.connection.execute(sql ).map{|res| res['package_id']}.uniq.compact
+    result = Package.where(id: ids)
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
