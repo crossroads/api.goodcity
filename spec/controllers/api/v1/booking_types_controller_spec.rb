@@ -5,8 +5,8 @@ RSpec.describe Api::V1::BookingTypesController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   before do
-    generate(:booking_types).keys.each do |name_en|
-      create(:booking_type, name_en: name_en)
+    generate(:booking_types).keys.each do |identifier|
+      create(:booking_type, identifier: identifier)
     end
   end
 

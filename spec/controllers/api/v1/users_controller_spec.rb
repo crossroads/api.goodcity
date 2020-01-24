@@ -8,8 +8,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   let(:users) { create_list(:user, 2) }
 
-  let(:charity_users) { (1..26).map { create(:user, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}, last_name: 'Jones')}}
+  let(:charity_users) { ('a'..'z').map { |i|
+    create(:user, :with_multiple_roles_and_permissions,
+    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}, first_name: "Jane_#{i}", last_name: 'Doe')}}
 
   let(:parsed_body) { JSON.parse(response.body) }
 
