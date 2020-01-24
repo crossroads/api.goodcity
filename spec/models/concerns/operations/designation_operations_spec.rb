@@ -5,6 +5,7 @@ context DesignationOperations do
   let(:uninventorized_package) { create(:package) }
   let(:other_order) { create(:order, :with_state_processing) }
   let(:order) { create(:order, :with_state_processing) }
+  let(:dispatching_order) { create(:order, :with_state_dispatching) }
   let(:inactive_order) { create(:order, :with_state_draft) }
   let(:subject) {
     Class.new { include DesignationOperations }
@@ -45,6 +46,17 @@ context DesignationOperations do
         expect { designate(5) }.to change { OrdersPackage.find(ord_pkg.id).quantity }.from(4).to(5)
       end
 
+      it 'marks the orders_package as dispatched if the quantity is lowered to match the already dispatched quantity' do
+        expect(Stockit::OrdersPackageSync).to receive(:create)
+        expect(Stockit::OrdersPackageSync).to receive(:update).twice
+
+        ord_pkg = designate(4, to_order: dispatching_order)
+        OrdersPackage::Operations.dispatch(ord_pkg, quantity: 3, from_location: package.locations.first)
+        expect { designate(3, to_order: dispatching_order) }.to change {
+          OrdersPackage.find(ord_pkg.id).state
+        }.from("designated").to("dispatched")
+      end
+
       it 'can designate the remaining quantity to another order' do
         expect(Stockit::OrdersPackageSync).to receive(:create).twice
 
@@ -57,6 +69,18 @@ context DesignationOperations do
 
         designate(4, to_order: order)
         expect { designate(2, to_order: other_order) }.to raise_error(Goodcity::InsufficientQuantityError).with_message("The selected quantity (2) is unavailable")
+      end
+
+      it 'fails to set a new quantity if more has already been dispatched' do
+        expect(Stockit::OrdersPackageSync).to receive(:create).once
+        expect(Stockit::OrdersPackageSync).to receive(:update).once
+
+        designate(4, to_order: dispatching_order)
+        orders_package = dispatching_order.reload.orders_packages.first
+        OrdersPackage::Operations.dispatch(orders_package, quantity: 3, from_location: package.locations.first)
+        expect {
+          designate(2, to_order: dispatching_order)
+        }.to raise_error(Goodcity::AlreadyDispatchedError).with_message('Some has been already dispatched, please undispatch and try again.')
       end
     end
 

@@ -32,7 +32,7 @@ module InventoryComputer
       def designated_quantity_of(package, to_order: nil)
         query = OrdersPackage.designated.where(package: package)
         query = query.where(order: to_order) if to_order.present?
-        query.sum(:quantity)
+        query.reduce(0) { |sum, op| sum + op.quantity - op.dispatched_quantity }
       end
 
       def dispatched_quantity(package: nil, orders_package: nil)
