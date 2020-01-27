@@ -157,7 +157,7 @@ class Package < ActiveRecord::Base
       group by pi.package_id
       HAVING sum(pi.quantity) < 0
       SQL
-    ids = Package.connection.execute(sql ).map{|res| res['package_id']}.uniq.compact
+    ids = PackagesInventory.connection.execute(sql ).map{|res| res['package_id']}.uniq.compact
     result = Package.where(id: ids)
   end
 
