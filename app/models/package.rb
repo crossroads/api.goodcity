@@ -11,7 +11,7 @@ class Package < ActiveRecord::Base
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
-  SETTINGS_KEYS = %w[stock.enable_box_pallet_creation].freeze
+  SETTINGS_KEYS = %w[stock.enable_box_pallet_creation stock.allow_box_pallet_item_addition].freeze
 
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
@@ -34,6 +34,7 @@ class Package < ActiveRecord::Base
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy
+  has_many   :packages_inventories, dependent: :destroy, inverse_of: :package
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
