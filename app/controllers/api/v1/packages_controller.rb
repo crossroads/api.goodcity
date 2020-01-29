@@ -238,7 +238,7 @@ module Api
         return unless params[:id]
 
         @packages = Package.find(params[:id]).associated_packages
-        render json: @packages, each_serializer: serializer, include_orders_packages: false
+        render json: @packages, each_serializer: stock_serializer, include_orders_packages: false
       end
 
       private
