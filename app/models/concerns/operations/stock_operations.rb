@@ -81,7 +81,8 @@ module StockOperations
         @cause = Package.find(params[:id]) # box or pallet
         @item = Package.find(params[:item_id]) # item to add or remove
         @user_id = user_id
-        @quantity = params[:quantity] # quantity to pack or unpack
+        @location_id = params[:location_id]
+        @quantity = params[:quantity].to_i # quantity to pack or unpack
       end
 
       def pack
@@ -109,15 +110,15 @@ module StockOperations
           package: @item,
           source: @cause,
           action: task,
-          location_id: @cause.location_id,
+          location_id: @location_id,
           user_id: @user_id,
           quantity: quantity(task)
         )
       end
 
       def quantity(task)
-        qty = @quantity || @item.quantity
-        task.eql?("pack") ? qty * -1 : qty
+        return unless @quantity
+        task.eql?("pack") ? @quantity * -1 : @quantity
       end
     end
 
