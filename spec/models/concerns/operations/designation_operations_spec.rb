@@ -57,6 +57,17 @@ context DesignationOperations do
         }.from("designated").to("dispatched")
       end
 
+      it 'marks the orders_package as dispatched if the remaining undispatched quantity is dispatched' do
+        allow(Stockit::OrdersPackageSync).to receive(:create)
+        allow(Stockit::OrdersPackageSync).to receive(:update)
+
+        ord_pkg = designate(4, to_order: dispatching_order)
+        OrdersPackage::Operations.dispatch(ord_pkg, quantity: 2, from_location: package.locations.first)
+        expect { OrdersPackage::Operations.dispatch(ord_pkg, quantity: 2, from_location: package.locations.first) }.to change {
+          OrdersPackage.find(ord_pkg.id).state
+        }.from("designated").to("dispatched")
+      end
+
       it 'can designate the remaining quantity to another order' do
         expect(Stockit::OrdersPackageSync).to receive(:create).twice
 
