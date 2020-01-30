@@ -70,7 +70,7 @@ class OrdersPackage < ActiveRecord::Base
 
     before_transition on: :cancel do |orders_package, _transition|
       if orders_package.designated? && orders_package.dispatched_quantity.positive?
-        raise Goodcity::InvalidStateError.new(I18n.t('orders_package.cancel_requires_undispatch'));
+        raise Goodcity::InvalidStateError.new(I18n.t('orders_package.cancel_requires_undispatch'))
       end
       orders_package.quantity   = 0
       orders_package.updated_by = User.current_user
