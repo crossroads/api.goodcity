@@ -127,6 +127,11 @@ lookups.each do |record|
   Lookup.find_or_create_by(record)
 end
 
+locations = YAML.load_file("#{Rails.root}/db/locations.yml")
+locations.each do |record|
+  Location.find_or_create_by(record)
+end
+
 storage_types = YAML.load_file("#{Rails.root}/db/storage_types.yml")
 storage_types.each do |storage_type|
   StorageType.find_or_create_by(storage_type)
