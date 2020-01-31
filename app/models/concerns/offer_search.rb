@@ -13,13 +13,13 @@ module OfferSearch
 
     scope :search, -> (options = {}) {
       search_text = options[:search_text] || ''
-      search_query = ['offers.notes', 'users.first_name', 'users.last_name',
+      search_query = ['offers.notes', 'offers.id', 'users.first_name', 'users.last_name',
          'users.email', 'users.mobile', 'items.donor_description',
          'messages.body', 'companies.name', 'packages.inventory_number',
          'package_types.name_en', 'package_types.name_zh_tw',
          'gogovan_orders.driver_name', 'gogovan_orders.driver_mobile', 'gogovan_orders.driver_license'
         ].
-        map { |f| "#{f} ILIKE :search_text" }.
+        map { |f| "#{f}::text ILIKE :search_text" }.
         join(" OR ")
       where(search_query, search_text: "%#{search_text}%")
         .joins("LEFT OUTER JOIN companies ON offers.company_id = companies.id")
