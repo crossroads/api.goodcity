@@ -162,9 +162,8 @@ class Package < ActiveRecord::Base
     result = Package.where(id: ids)
   end
 
-  def current_in_hand_quantity
-    response = PackagesInventory.connection.execute("Select sum(quantity) from packages_inventories where package_id=#{id}")
-    response.result_status
+  def run_sql(sql)
+    PackagesInventory.connection.execute(sql).map { |res| res["sum"] }[0].to_i.abs
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
