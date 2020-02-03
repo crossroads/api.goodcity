@@ -33,6 +33,7 @@ class Offer < ActiveRecord::Base
   has_many :messages, dependent: :destroy
   has_one  :delivery, dependent: :destroy
   has_many :users, through: :subscriptions
+  has_and_belongs_to_many :packages
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
 
