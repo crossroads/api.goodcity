@@ -96,6 +96,8 @@ module StockOperations
       end
 
       def response(pkg_inventory)
+        return unless pkg_inventory
+
         if pkg_inventory.save
           { packages_inventory: pkg_inventory, success: true }
         else pkg_inventory.errors
@@ -106,6 +108,7 @@ module StockOperations
       private
 
       def pack_or_unpack(task)
+        return unless @quantity > 0
         PackagesInventory.new(
           package: @item,
           source: @cause,
@@ -117,7 +120,6 @@ module StockOperations
       end
 
       def quantity(task)
-        return unless @quantity
         task.eql?("pack") ? @quantity * -1 : @quantity
       end
     end

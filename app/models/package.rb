@@ -158,8 +158,13 @@ class Package < ActiveRecord::Base
       group by pi.package_id
       HAVING sum(pi.quantity) < 0
       SQL
-    ids = PackagesInventory.connection.execute(sql ).map{|res| res['package_id']}.uniq.compact
+    ids = PackagesInventory.connection.execute(sql).map{|res| res['package_id']}.uniq.compact
     result = Package.where(id: ids)
+  end
+
+  def current_in_hand_quantity
+    response = PackagesInventory.connection.execute("Select sum(quantity) from packages_inventories where package_id=#{id}")
+    response.result_status
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
