@@ -67,7 +67,8 @@ module Api
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank?,
           include_images: @package.set_item_id.blank?,
-          include_allowed_actions: true).as_json
+          include_allowed_actions: true,
+          include_added_quantity: false).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -161,7 +162,7 @@ module Api
             with_inventory_no: true
           )
         end
-        params_for_filter = %w[state location filter_box_pallet].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
+        params_for_filter = %w[state location filter_box_pallet associated_package_types].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
@@ -238,9 +239,19 @@ module Api
 
       def fetch_associated_packages
         return unless params[:id]
-
         @packages = Package.find(params[:id]).associated_packages
-        render json: @packages, each_serializer: stock_serializer, include_orders_packages: false
+
+        packages = ActiveModel::ArraySerializer.new(@packages,
+                                            each_serializer: stock_serializer,
+                                            root: "items",
+                                            include_order: false,
+                                            include_packages: false,
+                                            include_orders_packages: true,
+                                            exclude_stockit_set_item: true,
+                                            include_in_hand_quantity: false,
+                                            include_added_quantity: true,
+                                            include_images: true).as_json
+        render json: packages
       end
 
       private
