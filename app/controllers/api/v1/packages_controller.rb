@@ -171,6 +171,7 @@ module Api
                                                     include_packages: false,
                                                     include_orders_packages: true,
                                                     exclude_stockit_set_item: true,
+                                                    include_in_hand_quantity: !!params["filter_box_pallet"],
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
@@ -226,6 +227,7 @@ module Api
       end
 
       def add_remove_item
+        render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
         response = Package::Operations.pack_or_unpack(params, User.current_user.id)
         if response[:success]
           render json: { packages_inventories: response[:packages_inventory], status: 201}
