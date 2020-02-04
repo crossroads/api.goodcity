@@ -20,8 +20,8 @@ module OrdersPackageActions
     end
 
     CANCEL          = Action.new('cancel') { |op| op.cancel }
-    DISPATCH        = Action.new('dispatch') { |op| Operations.dispatch_full_qty(op) }
-    UNDISPATCH      = Action.new('undispatch') { |op, opts| Operations.undispatch_full_qty(op, to_location: opts[:location_id]) }
+    DISPATCH        = Action.new('dispatch') { |op, opts| Operations.dispatch(op, from_location: opts[:location_id], quantity: opts[:quantity]) }
+    UNDISPATCH      = Action.new('undispatch') { |op, opts| Operations.undispatch_dispatched_quantity(op, to_location: opts[:location_id]) }
     REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
     EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| Package::Operations.designate(op.package, quantity: opts[:quantity], to_order: op.order) }
 
@@ -86,8 +86,9 @@ module OrdersPackageActions
         ]
         when PACKAGE_DESIGNATED then [
           Actions::EDIT_QUANTITY.if(editable_qty?),
-          Actions::CANCEL.on,
-          Actions::DISPATCH.on
+          Actions::CANCEL.if(!partially_dispatched?),
+          Actions::DISPATCH.on,
+          Actions::UNDISPATCH.if(partially_dispatched?),
         ]
         when PACKAGE_DISPATCHED then [ Actions::UNDISPATCH.on ]
         else [] # default
@@ -100,6 +101,10 @@ module OrdersPackageActions
     PACKAGE_CANCELLED = -> (model) { model.cancelled? }
     PACKAGE_DESIGNATED = -> (model) { model.designated? }
     PACKAGE_DISPATCHED = -> (model) { model.dispatched? }
+
+    def partially_dispatched?
+      @model.designated? && @model.dispatched_quantity.positive?
+    end
 
     def has_quantity_to_redesignate?
       package_has_quantity? && @model.quantity.positive?
@@ -114,7 +119,7 @@ module OrdersPackageActions
     end
 
     def editable_qty?
-      can_decrease_qty? || can_increase_qty?
+      !partially_dispatched? && (can_decrease_qty? || can_increase_qty?)
     end
 
     alias_method :can_increase_qty?, :package_has_quantity?
