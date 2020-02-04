@@ -162,7 +162,7 @@ class Package < ActiveRecord::Base
     result = Package.where(id: ids)
   end
 
-  def run_sql(sql)
+  def abs_quantity(sql)
     PackagesInventory.connection.execute(sql).map { |res| res["sum"] }[0].to_i.abs
   end
 
