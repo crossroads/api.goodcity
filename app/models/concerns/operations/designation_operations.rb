@@ -42,7 +42,18 @@ module DesignationOperations
 
       orders_package.quantity = quantity
       orders_package.updated_by = User.current_user
-      orders_package.state = OrdersPackage::States::DESIGNATED
+
+      if orders_package.dispatched_quantity.eql?(quantity)
+        # Case: we reduced the quantity, enough quantity has been dispatched to change the state of the orders_package
+        orders_package.state = OrdersPackage::States::DISPATCHED
+        if STOCKIT_ENABLED
+          # @TODO: Remove after destroying stockit
+          orders_package.package.dispatch_stockit_item(orders_package)
+          orders_package.package.save
+        end
+      else
+        orders_package.state = OrdersPackage::States::DESIGNATED
+      end
       orders_package.save
       orders_package
     end
@@ -54,11 +65,16 @@ module DesignationOperations
       raise Goodcity::InvalidQuantityError.new(quantity) unless quantity.positive?
       raise Goodcity::InsufficientQuantityError.new(quantity) unless assignable_quantity(orders_package) >= quantity
       raise Goodcity::InactiveOrderError.new(orders_package.order) unless order_active?(orders_package.order)
+      raise Goodcity::AlreadyDispatchedError.new if quantity < orders_package.dispatched_quantity
     end
 
     def init_orders_package(package, order)
       OrdersPackage.where(package: package, order: order)
-        .first_or_initialize(quantity: 0, state: OrdersPackage::States::DESIGNATED)
+        .first_or_initialize(
+          dispatched_quantity: 0,
+          quantity: 0,
+          state: OrdersPackage::States::DESIGNATED
+        )
     end
 
     def order_active?(order)

@@ -50,13 +50,10 @@ module OrderFulfilmentOperations
     end
 
     ##
-    # Undispatch the full quantity of an orders_package.
-    # Assumes we live in a stockit world where everything is a singleton
+    # Undispatch the already dispatched quantity of an orders_package.
     #
-    # @todo remove this from our lives
-    #
-    def undispatch_full_qty(ord_pkg, to_location:)
-      undispatch(ord_pkg, to_location: to_location, quantity: ord_pkg.quantity)
+    def undispatch_dispatched_quantity(ord_pkg, to_location:)
+      undispatch(ord_pkg, to_location: to_location, quantity: ord_pkg.dispatched_quantity)
     end
 
     ##
@@ -74,13 +71,16 @@ module OrderFulfilmentOperations
     # @raise [ActiveRecord::RecordNotFound]
     #
     def dispatch(ord_pkg, quantity:, from_location:)
+      location = Utils.to_model(from_location, Location)
+      quantity = quantity.to_i
+
       PackagesInventory.secured_transaction do
-        assert_can_dispatch(ord_pkg, quantity, from_location)
+        assert_can_dispatch(ord_pkg, quantity, location)
         PackagesInventory.append_dispatch(
           package: ord_pkg.package,
           quantity: -1 * quantity.abs,
           source: ord_pkg,
-          location: Utils.to_model(from_location, Location)
+          location: location
         )
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch

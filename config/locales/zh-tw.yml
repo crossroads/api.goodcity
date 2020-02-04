@@ -83,12 +83,13 @@ zh-tw:
     move_stockit: "You can only move it using Stockit."
     split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
   orders_package:
-    already_dispatched: "This has been already dispatched."
+    quantity_already_dispatched: "Some has been already dispatched, please undispatch and try again."
     order_status_error: "You need to complete processing Order first before dispatching."
     action_disabled: "Action %{name} is not possible at the moment"
     qty_not_available: "We do not currently have the requested quantity in stock"
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
+    cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"
