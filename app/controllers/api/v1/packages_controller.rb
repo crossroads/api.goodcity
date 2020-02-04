@@ -172,7 +172,6 @@ module Api
                                                     include_packages: false,
                                                     include_orders_packages: true,
                                                     exclude_stockit_set_item: true,
-                                                    include_in_hand_quantity: !!params["filter_box_pallet"],
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
@@ -248,7 +247,6 @@ module Api
                                             include_packages: false,
                                             include_orders_packages: true,
                                             exclude_stockit_set_item: true,
-                                            include_in_hand_quantity: false,
                                             include_added_quantity: true,
                                             include_images: true).as_json
         render json: packages

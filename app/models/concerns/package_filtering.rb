@@ -74,8 +74,7 @@ module PackageFiltering
 
     def filter_by_package_types(associated_package_types)
       storage_type_id = StorageType.find_by(name: "Package").id
-      where("packages.storage_type_id = ?", storage_type_id)
-      where("packages.package_type_id in (?)", associated_package_types)
+      where("packages.storage_type_id = ? and packages.package_type_id in (?)", storage_type_id, associated_package_types)
     end
 
     def filter_by_image_status(image_filters)
