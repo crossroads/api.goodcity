@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200107034249) do
+ActiveRecord::Schema.define(version: 20200205114323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -450,7 +450,7 @@ ActiveRecord::Schema.define(version: 20200107034249) do
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
     t.datetime "created_at"
-    t.datetime "updated_at",                           null: false
+    t.datetime "updated_at",                              null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
@@ -477,6 +477,8 @@ ActiveRecord::Schema.define(version: 20200107034249) do
     t.text     "cancellation_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.boolean  "continuous",              default: false
+    t.date     "shipment_date"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -606,9 +608,9 @@ ActiveRecord::Schema.define(version: 20200107034249) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
-    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_pieces",       default: false
     t.string   "subform"
+    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_box",          default: false
     t.boolean  "allow_pallet",       default: false
   end
@@ -656,6 +658,7 @@ ActiveRecord::Schema.define(version: 20200107034249) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
     t.integer  "weight"
     t.integer  "pieces"
     t.integer  "detail_id"
@@ -949,7 +952,7 @@ ActiveRecord::Schema.define(version: 20200107034249) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
