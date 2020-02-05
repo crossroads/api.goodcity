@@ -113,7 +113,7 @@ module OrderFulfilmentOperations
     end
 
     def assert_can_undispatch(ord_pkg, quantity)
-      raise Goodcity::MissingDispatchedQuantityError.new if dispatched_count(ord_pkg) < quantity
+      raise Goodcity::BadUndispatchQuantity.new if dispatched_count(ord_pkg) < quantity
     end
 
     def dispatched_count(ord_pkg)
