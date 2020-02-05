@@ -37,8 +37,7 @@ module Api::V1
     end
 
     def added_quantity
-      sql = added_quantity__sql
-      object.abs_quantity(sql)
+      object.quantity_in_a_box
     end
 
     def added_quantity__sql
