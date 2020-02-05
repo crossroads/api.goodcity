@@ -162,8 +162,12 @@ class Package < ActiveRecord::Base
     result = Package.where(id: ids)
   end
 
-  def abs_quantity(sql)
-    PackagesInventory.connection.execute(sql).map { |res| res["sum"] }[0].to_i.abs
+  def quantity_in_a_box
+    PackagesInventory::Computer.quantity_of_package_in_box(package: self)
+  end
+
+  def total_quantity_in_box
+    box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
