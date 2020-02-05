@@ -29,6 +29,18 @@ module InventoryComputer
         quantity_where(location: location)
       end
 
+      def total_quantity_in_box(box)
+        historical_quantity
+          .where(source: box, action: ['pack', 'unpack'])
+          .as_of_now
+      end
+
+      def quantity_of_package_in_box(package:)
+        historical_quantity
+          .where(package: package, action: ['pack', 'unpack'])
+          .as_of_now
+      end
+
       def designated_quantity_of(package, to_order: nil)
         query = OrdersPackage.designated.where(package: package)
         query = query.where(order: to_order) if to_order.present?
