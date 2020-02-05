@@ -9,6 +9,7 @@ module Api::V1
     has_one :set_item, serializer: Api::V1::StockitSetItemSerializer, include_items: false
     has_many :images, serializer: StockitImageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
+    has_many :offers, serializer: OfferSerializer
     has_one :storage_type, serializer: StorageTypeSerializer
 
     attributes :id, :quantity, :length, :width, :height, :weight, :pieces, :notes,
