@@ -124,7 +124,7 @@ module StockOperations
         return unless pkg_inventory
         if pkg_inventory.save
           { packages_inventory: pkg_inventory, success: true }
-        else pkg_inventory.errors
+        elsif pkg_inventory.errors
           error(pkg_inventory.errors.full_messages)
         end
       end
@@ -134,7 +134,7 @@ module StockOperations
       end
 
       def adding_box_to_a_box?
-        @item.is_box? && @cause.is_box?
+        @item.box? && @cause.box?
       end
 
       def item_designated?
@@ -154,7 +154,7 @@ module StockOperations
     end
 
     class ActionNotAllowedError < OperationsError
-      def initialize()
+      def initialize
         super(I18n.t("operations.generic.action_not_allowed"))
       end
     end
