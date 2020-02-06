@@ -32,7 +32,7 @@ class PackagesInventory < ActiveRecord::Base
   # Undo feature
   # --------------------
 
-  REVERSABLE_ACTIONS = {
+  REVERSIBLE_ACTIONS = {
     Actions::INVENTORY    => Actions::UNINVENTORY,
     Actions::DISPATCH     => Actions::UNDISPATCH,
     Actions::GAIN         => Actions::LOSS,
@@ -42,10 +42,10 @@ class PackagesInventory < ActiveRecord::Base
   }
 
   def undo
-    raise Goodcity::InventoryError.new(I18n.t('packages_inventory.cannot_undo')) unless REVERSABLE_ACTIONS.key?(action)
+    raise Goodcity::InventoryError.new(I18n.t('packages_inventory.cannot_undo')) unless REVERSIBLE_ACTIONS.key?(action)
 
     PackagesInventory.create!({
-      action:   REVERSABLE_ACTIONS[action],
+      action:   REVERSIBLE_ACTIONS[action],
       user:     User.current_user || User.system_user,
       package:  package,
       source:   source,
