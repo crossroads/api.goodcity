@@ -68,12 +68,21 @@ class Order < ActiveRecord::Base
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
 
   # Stockit Shipment Status => GoodCity State
-  SHIPMENT_STATUS_MAP = { 
+  SHIPMENT_STATUS_MAP = {
     "Processing" => "processing",
     "Sent" => "closed",
     "Loaded" => "dispatching",
     "Cancelled" => "cancelled",
     "Upcoming" => "awaiting_dispatch"
+  }
+
+  # Stockit LocalOrder Status => GoodCity State
+  LOCAL_ORDER_STATUS_MAP = {
+    "From website" => "Processing",
+    "Active" => "Processing",
+    "Pending agreement" => "Processing",
+    "Cancelled" => "Cancelled",
+    "Closed" => "Closed",
   }
 
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
