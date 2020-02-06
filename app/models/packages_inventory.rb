@@ -59,7 +59,7 @@ class PackagesInventory < ActiveRecord::Base
   # --------------------
 
   def inventorized?(package)
-    last = PackagesInventory.order('id DESC').where(package: package).first
+    last = PackagesInventory.order('id DESC').where(package: package).limit(1).first
     last.present? && !last.uninventory?
   end
 

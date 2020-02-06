@@ -16,7 +16,7 @@ module StockOperations
     # @param [Location|String] the location to place the package in
     #
     def inventorize(package, location)
-      last = PackagesInventory.order('id DESC').where(package: package).first
+      last = PackagesInventory.order('id DESC').where(package: package).limit(1).first
 
       raise Goodcity::AlreadyInventorizedError if last.present? && !last.uninventory?
 
@@ -37,7 +37,7 @@ module StockOperations
     # @param [Location|String] the location to place the package in
     #
     def uninventorize(package)
-      last_action = PackagesInventory.order('id DESC').where(package: package).first
+      last_action = PackagesInventory.order('id DESC').where(package: package).limit(1).first
       raise Goodcity::UninventoryError if last_action.blank? || !last_action.inventory?
       last_action.undo
     end
