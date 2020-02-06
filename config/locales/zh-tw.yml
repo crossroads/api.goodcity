@@ -57,6 +57,7 @@ zh-tw:
               taken: "已加入購物車"
         package:
           enable_box_pallet_creation: "Creation of box/pallet is not allowed."
+          allow_box_pallet_item_addition: "Addition of items to box/pallet are not allowed."
         user:
           attributes:
             mobile:
@@ -85,6 +86,7 @@ zh-tw:
   package:
     max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
     creation_of_box/pallet_error: "Creation of %{storage_type} not allowed."
+    allow_box_pallet_item_addition: "Addition of items to box/pallet are not allowed."
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."

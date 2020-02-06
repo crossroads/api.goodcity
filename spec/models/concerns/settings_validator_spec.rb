@@ -10,14 +10,16 @@ context SettingsValidator do
     storage_type = create(:storage_type, :with_box)
     package = build(:package, storage_type_id: storage_type.id)
     gc_setting1 = create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false")
+    gc_setting2 = create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false")
     expect(package.valid?).to eq(false)
-    expect(package.errors.full_messages).to eq(["Creation of box/pallet is not allowed."])
+    expect(package.errors.full_messages).to eq(["Creation of box/pallet is not allowed. Addition of items to box/pallet are not allowed."])
   end
 
   it 'doesnot add any error on the record' do
     storage_type = create(:storage_type, :with_box)
     package = build(:package, storage_type_id: storage_type.id)
     gc_setting = create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true")
+    gc_setting = create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true")
     expect(package.valid?).to eq(true)
     expect(package.save).to eq(true)
   end

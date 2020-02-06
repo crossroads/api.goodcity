@@ -580,7 +580,7 @@ class Package < ActiveRecord::Base
     storage_type&.name
   end
 
-  def is_box?
+  def box?
     storage_type_name&.eql?("Box")
   end
 

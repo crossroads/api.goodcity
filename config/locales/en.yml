@@ -57,6 +57,7 @@ en:
               taken: "already in the cart"
         package:
           enable_box_pallet_creation: "Creation of box/pallet is not allowed."
+          allow_box_pallet_item_addition: "Addition of items to box/pallet are not allowed."
         user:
           attributes:
             mobile:

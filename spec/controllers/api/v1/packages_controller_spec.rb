@@ -346,6 +346,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
       let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+      let!(:setting2) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
       let(:stockit_item_params) {
         {
@@ -407,6 +408,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
       let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false") }
+      let!(:setting1) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false") }
 
       let(:stockit_item_params) {
         {
@@ -437,7 +439,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           post :create, format: :json, package: package_params
           expect(response.status).to eq(422)
           expect(parsed_body["errors"]).to_not be_nil
-          expect(parsed_body["errors"]).to eq(["Creation of box/pallet is not allowed."])
+          expect(parsed_body["errors"]).to eq(["Creation of box/pallet is not allowed. Addition of items to box/pallet are not allowed."])
         end
       end
     end
@@ -1040,5 +1042,31 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(subject["meta"]["search"]).to eq(searchText)
       expect(subject["meta"].keys).to include("total_pages")
     end
+  end
+
+  describe "fetch_associated_records" do
+    it "fetches all the items that are present inside a box" do
+    end
+  end
+
+  describe "adding_items_to_box" do
+    it "adds an item to the box" do
+    end
+
+    it "removes an item to the box" do
+    end
+
+    it "doesnot create packages inventory record if selected quantity is 0" do
+    end
+
+    it "throws adding box to a box error" do
+    end
+
+    it "throws quantity error" do
+    end
+
+    it "throws already designated error" do
+    end
+
   end
 end
