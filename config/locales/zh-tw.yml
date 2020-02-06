@@ -16,6 +16,11 @@ zh-tw:
     mobile_exists: 這個電話號碼已存在。
     invalid_mobile: 對不起，您的電話號碼並不正確。
     invalid_pin: 驗證碼不正確。
+  box_pallet:
+    errors:
+      invalid_quantity: Added quantity cannot be larger than available quantity.
+      adding_box_to_box: Cannot add a box to another box.
+      item_designated: Please undesignate the item first before adding it to the box.
   token:
     invalid: 代碼不正確
     expired: 代碼已過期

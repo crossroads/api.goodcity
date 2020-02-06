@@ -16,6 +16,11 @@ en:
     mobile_exists: Mobile number already exists.
     invalid_mobile: Sorry, your mobile number is invalid.
     invalid_pin: Invalid SMS code.
+  box_pallet:
+    errors:
+      invalid_quantity: Added quantity cannot be larger than available quantity.
+      adding_box_to_box: Cannot add a box to another box.
+      item_designated: Please undesignate the item first before adding it to the box.
   token:
     invalid: Invalid token
     expired: Expired token
