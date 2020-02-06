@@ -162,7 +162,7 @@ module Api
             with_inventory_no: true
           )
         end
-        params_for_filter = %w[state location filter_box_pallet associated_package_types].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
+        params_for_filter = %w[state location associated_package_types].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
@@ -172,6 +172,7 @@ module Api
                                                     include_packages: false,
                                                     include_orders_packages: true,
                                                     exclude_stockit_set_item: true,
+                                                    include_in_hand_quantity: true,
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
@@ -230,9 +231,9 @@ module Api
         render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
         response = Package::Operations.pack_or_unpack(params, User.current_user.id)
         if response[:success]
-          render json: { packages_inventories: response[:packages_inventory], status: 201}
+          render json: { packages_inventories: response[:packages_inventory] }, status: 201
         else
-          render json: { errors: response[:errors], status: 422 }
+          render json: { errors: response[:errors] }, status: 422
         end
       end
 

@@ -16,7 +16,7 @@ module Api::V1
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
       :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id,
-      :added_quantity
+      :added_quantity, :in_hand_quantity
 
     def include_images?
       @options[:include_images]
@@ -34,6 +34,18 @@ module Api::V1
 
     def include_added_quantity?
       @options[:include_added_quantity]
+    end
+
+    def include_in_hand_quantity?
+      @options[:include_in_hand_quantity]
+    end
+
+    def in_hand_quantity
+      object.total_in_hand_quantity
+    end
+
+    def in_hand_quantity__sql
+      "select sum(quantity) from packages_inventories where package_id = #{object.id}"
     end
 
     def added_quantity
