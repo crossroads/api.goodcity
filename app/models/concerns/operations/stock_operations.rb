@@ -130,7 +130,12 @@ module StockOperations
       end
 
       def invalid_quantity?
-        @quantity > @item.quantity
+        available_quantity = available_quantity_on_location(@location_id)
+        @quantity > available_quantity
+      end
+
+      def available_quantity_on_location(location_id)
+        PackagesLocation.where(location_id: location_id, package_id: @item.id).first.quantity
       end
 
       def adding_box_to_a_box?

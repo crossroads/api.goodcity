@@ -497,5 +497,33 @@ RSpec.describe Package, type: :model do
         package_published.save
       end
     end
+
+    describe "#associated_packages" do
+      it "fetches all the associated packages with a box" do
+      end
+    end
+
+    describe "#total_in_hand_quantity" do
+      it "returns the total in hand quantity for a package" do
+      end
+    end
+
+    describe "#quantity_in_a_box" do
+      it "returns the quantity of an item in the box" do
+      end
+    end
+
+    describe "#total_quantity_in_box" do
+      it "returns the total quantity of items in the box" do
+      end
+    end
+
+    describe "#box?" do
+      it "returns true if is box" do
+      end
+
+      it "returns false if is box" do
+      end
+    end
   end
 end
