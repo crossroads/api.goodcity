@@ -73,8 +73,8 @@ module PackageFiltering
     end
 
     def filter_by_package_types(associated_package_types)
-      storage_type_id = StorageType.find_by(name: "Package").id
-      where("packages.storage_type_id = ? and packages.package_type_id in (?) and quantity > 0 and inventory_number is not NULL", storage_type_id, associated_package_types)
+      ids =  [StorageType.find_by(name: "Package").id, StorageType.find_by(name: "Box").id]
+      where("packages.storage_type_id in (?) and packages.package_type_id in (?)", ids, associated_package_types)
     end
 
     def filter_by_image_status(image_filters)

@@ -166,6 +166,10 @@ class Package < ActiveRecord::Base
     PackagesInventory::Computer.quantity_of_package_in_box(package: self)
   end
 
+  def total_in_hand_quantity
+    PackagesInventory::Computer.package_quantity(self)
+  end
+
   def total_quantity_in_box
     box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
   end
@@ -574,6 +578,10 @@ class Package < ActiveRecord::Base
 
   def storage_type_name
     storage_type&.name
+  end
+
+  def is_box?
+    storage_type_name&.eql?("Box")
   end
 
   def box_or_pallet?
