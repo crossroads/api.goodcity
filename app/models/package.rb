@@ -108,7 +108,7 @@ class Package < ActiveRecord::Base
 
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
-      package.add_to_stockit
+      package.add_to_stockit if STOCKIT_ENABLED
     end
 
     after_transition on: [:mark_received, :mark_missing] do |package|
