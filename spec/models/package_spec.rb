@@ -498,31 +498,42 @@ RSpec.describe Package, type: :model do
       end
     end
 
-    describe "#associated_packages" do
-      it "fetches all the associated packages with a box" do
-      end
-    end
+    context "box/pallet" do
+      let(:box_storage) { create(:storage_type, :with_box) }
+      let(:pallet_storage) { create(:storage_type, :with_pallet) }
+      let(:box) { create(:package, storage_type: box_storage) }
+      let(:pallet) { create(:package, storage_type: pallet_storage) }
+      let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+      let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
-    describe "#total_in_hand_quantity" do
-      it "returns the total in hand quantity for a package" do
-      end
-    end
-
-    describe "#quantity_in_a_box" do
-      it "returns the quantity of an item in the box" do
-      end
-    end
-
-    describe "#total_quantity_in_box" do
-      it "returns the total quantity of items in the box" do
-      end
-    end
-
-    describe "#box?" do
-      it "returns true if is box" do
+      describe "#associated_packages" do
+        it "fetches all the associated packages with a box" do
+        end
       end
 
-      it "returns false if is box" do
+      describe "#total_in_hand_quantity" do
+        it "returns the total in hand quantity for a package" do
+        end
+      end
+
+      describe "#quantity_in_a_box" do
+        it "returns the quantity of an item in the box" do
+        end
+      end
+
+      describe "#total_quantity_in_box" do
+        it "returns the total quantity of items in the box" do
+        end
+      end
+
+      describe "#box?" do
+        it "returns true if is box" do
+          expect(box.box?).to eq(true)
+        end
+
+        it "returns false if is box" do
+          expect(pallet.box?).to eq(false)
+        end
       end
     end
   end

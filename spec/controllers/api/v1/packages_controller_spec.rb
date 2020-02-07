@@ -1044,29 +1044,37 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
-  describe "fetch_associated_records" do
-    it "fetches all the items that are present inside a box" do
-    end
-  end
+  context "box/pallet" do
+    let(:box_storage) { create(:storage_type, :with_box) }
+    let(:pallet_storage) { create(:storage_type, :with_pallet) }
+    let(:box) { create(:package, storage_type: box_storage) }
+    let(:pallet) { create(:package, storage_type: pallet_storage) }
+    let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+    let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
-  describe "adding_items_to_box" do
-    it "adds an item to the box" do
-    end
-
-    it "removes an item to the box" do
-    end
-
-    it "doesnot create packages inventory record if selected quantity is 0" do
+    describe "fetch_associated_records" do
+      it "fetches all the items that are present inside a box" do
+      end
     end
 
-    it "throws adding box to a box error" do
-    end
+    describe "adding_items_to_box" do
+      it "adds an item to the box" do
+      end
 
-    it "throws quantity error" do
-    end
+      it "removes an item to the box" do
+      end
 
-    it "throws already designated error" do
-    end
+      it "doesnot create packages inventory record if selected quantity is 0" do
+      end
 
+      it "throws adding box to a box error" do
+      end
+
+      it "throws quantity error" do
+      end
+
+      it "throws already designated error" do
+      end
+    end
   end
 end
