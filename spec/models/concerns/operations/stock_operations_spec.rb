@@ -1,13 +1,76 @@
 require 'rails_helper'
 
 context StockOperations do
+  let(:location1) { create(:location, building: 61) }
+  let(:location2) { create(:location, building: 52) }
+  let(:subject) {
+    Class.new { include StockOperations }
+  }
+
+  describe 'Inventorizing a package' do
+    let(:package) { create(:package, received_quantity: 21) }
+
+    def inventorize
+      subject::Operations::inventorize(package, location1);
+    end
+
+    def register_loss
+      create(:packages_inventory, package: package, location: location1, quantity: -1, action: 'loss')
+    end
+
+    def uninventorize
+      subject::Operations::uninventorize(package);
+    end
+
+    def package_quantity
+      PackagesInventory::Computer.package_quantity(package)
+    end
+
+    it 'appends an inventory action' do
+      expect { inventorize }.to change {
+        PackagesInventory.where(package: package).count
+      }.from(0).to(1)
+
+      last_action = PackagesInventory.last
+      expect(last_action.action).to eq('inventory')
+      expect(last_action.quantity).to eq(21)
+    end
+
+    it 'updates the quantity' do
+      expect { inventorize }.to change { package_quantity }.from(0).to(21)
+    end
+
+    it 'fails to inventorize an already inventorized package' do
+      expect { inventorize }.to change(PackagesInventory, :count).by(1)
+      expect { inventorize }.to raise_error(Goodcity::AlreadyInventorizedError).with_message('Package already inventorized')
+    end
+
+    it 'allows to uninventorize a package which has just been inventorized' do
+      expect { inventorize }.to change { package_quantity }.by(21)
+      expect { uninventorize }.to change { package_quantity }.by(-21)
+
+      last_action = PackagesInventory.last
+      expect(last_action.action).to eq('uninventory')
+      expect(last_action.quantity).to eq(-21)
+    end
+
+    it 'fails to uninventorize a package if it is not done immediatly after the inventory action' do
+      expect { inventorize }.to change { package_quantity }.by(21)
+      expect { register_loss }.to change { package_quantity }.by(-1)
+      expect { uninventorize }.to raise_error(Goodcity::UninventoryError).with_message('Package cannot be uninventorized')
+    end
+
+    it 'allows to re-inventorize a package which has been uninventorized' do
+      expect { inventorize }.to change { package_quantity }.by(21)
+      expect { uninventorize }.to change { package_quantity }.by(-21)
+      expect { inventorize }.to change { package_quantity }.by(21)
+
+      expect(package_quantity).to eq(21)
+    end
+  end
+
   describe 'Marking packages as lost/missing' do
-    let(:location1) { create(:location, building: 61) }
-    let(:location2) { create(:location, building: 52) }
     let(:package) { create(:package) }
-    let(:subject) {
-      Class.new { include StockOperations }
-    }
 
     before do
       create(:packages_inventory, :inventory, quantity: 30, package: package, location: location1)
