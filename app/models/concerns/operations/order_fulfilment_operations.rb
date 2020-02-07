@@ -84,7 +84,7 @@ module OrderFulfilmentOperations
         )
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch
-          ord_pkg.package.dispatch_stockit_item(ord_pkg)
+          ord_pkg.package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED
           ord_pkg.package.save
         end
       end
