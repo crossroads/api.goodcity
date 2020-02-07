@@ -448,7 +448,6 @@ ActiveRecord::Schema.define(version: 20200219081357) do
   add_index "order_transports", ["scheduled_at"], name: "index_order_transports_on_scheduled_at", using: :btree
 
   create_table "orders", force: :cascade do |t|
-    t.string   "status"
     t.string   "code"
     t.string   "detail_type"
     t.integer  "detail_id"
@@ -456,7 +455,7 @@ ActiveRecord::Schema.define(version: 20200219081357) do
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
     t.datetime "created_at"
-    t.datetime "updated_at",                           null: false
+    t.datetime "updated_at",                              null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
@@ -483,6 +482,8 @@ ActiveRecord::Schema.define(version: 20200219081357) do
     t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.boolean  "continuous",              default: false
+    t.date     "shipment_date"
     t.integer  "cancellation_reason_id"
   end
 
@@ -613,9 +614,9 @@ ActiveRecord::Schema.define(version: 20200219081357) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
-    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_pieces",       default: false
     t.string   "subform"
+    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_box",          default: false
     t.boolean  "allow_pallet",       default: false
   end
@@ -958,7 +959,7 @@ ActiveRecord::Schema.define(version: 20200219081357) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
