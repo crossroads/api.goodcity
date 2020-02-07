@@ -5,6 +5,43 @@ module StockOperations
 
     module_function
 
+
+    ##
+    # Adds a package to the inventory
+    #
+    #
+    # @raise [Goodcity::AlreadyInventorizedError] thrown if trying to inventorize twice
+    #
+    # @param [Package|String] the package to inventorize or its id
+    # @param [Location|String] the location to place the package in
+    #
+    def inventorize(package, location)
+      last = PackagesInventory.order('id DESC').where(package: package).limit(1).first
+
+      raise Goodcity::AlreadyInventorizedError if last.present? && !last.uninventory?
+
+      PackagesInventory.append_inventory(
+        package:  package,
+        quantity: package.received_quantity,
+        location: location
+      )
+    end
+
+    ##
+    # Undo the latest inventory action
+    # Will fail if
+    #
+    # @raise [Goodcity::UninventoryError] thrown if actions were taken since the initial inventory action
+    #
+    # @param [Package|String] the package to inventorize or its id
+    # @param [Location|String] the location to place the package in
+    #
+    def uninventorize(package)
+      last_action = PackagesInventory.order('id DESC').where(package: package).limit(1).first
+      raise Goodcity::UninventoryError if last_action.blank? || !last_action.inventory?
+      last_action.undo
+    end
+
     ##
     # Registers the loss of some package
     #

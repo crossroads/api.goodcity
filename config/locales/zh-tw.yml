@@ -75,6 +75,8 @@ zh-tw:
   delivery:
     gogovan_message: "%{name} 已預約 GoGoVan，時間為 %{time}, %{date}"
     drop_off_message: "%{name} 將會在以下時間 %{time}, %{date} 送抵物資。"
+  packages_inventory:
+    cannot_undo: Action cannot be undone
   package:
     max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
     creation_of_box/pallet_error: "Creation of %{storage_type} not allowed."
@@ -113,6 +115,8 @@ zh-tw:
       required_for_orders: Will break the quantity required for orders (%{orders}), please undesignate first
     generic:
       not_inventorized: Cannot operate on uninventorized packages
+      already_inventorized: Package already inventorized
+      uninventorize_error: Package cannot be uninventorized
       inactive_order: Operation forbidden, order %{code} is inactive
       insufficient_quantity: The selected quantity (%{quantity}) is unavailable
       bad_quantity_param: Invalid quantity (%{quantity})
