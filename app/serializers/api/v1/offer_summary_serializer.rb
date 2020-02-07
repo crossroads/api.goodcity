@@ -7,7 +7,7 @@ module Api::V1
       :received_at, :cancelled_at, :start_receiving_at,
       :submitted_items_count, :accepted_items_count, :rejected_items_count,
       :expecting_packages_count, :missing_packages_count, :received_packages_count,
-      :display_image_cloudinary_id, :notes
+      :display_image_cloudinary_id, :notes, :inventoried_package_count, :unrecorded_package_count
 
     has_one  :closed_by, serializer: UserSummarySerializer, root: :user
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
@@ -20,6 +20,22 @@ module Api::V1
     def include_messages?
       return false unless goodcity_user?
       @options[:include_messages] == true
+    end
+
+    def inventoried_package_count
+      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is not null").count
+    end
+
+    def inventoried_package_count__sql
+      "SELECT COUNT(*) FROM packages INNER JOIN items ON items.id = packages.item_id INNER JOIN offers ON offers.id = items.offer_id WHERE items.offer_id = 729 and inventory_number is not null"
+    end
+
+    def unrecorded_package_count
+      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is null").count
+    end
+
+    def unrecorded_package_count__sql
+      "SELECT COUNT(*) FROM packages INNER JOIN items ON items.id = packages.item_id INNER JOIN offers ON offers.id = items.offer_id WHERE items.offer_id = 729 and inventory_number is null"
     end
 
     def display_image_cloudinary_id
