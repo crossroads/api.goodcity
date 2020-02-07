@@ -238,9 +238,9 @@ module Api
       end
 
       def fetch_associated_packages
-        return unless params[:id]
-        @packages = Package.find(params[:id]).associated_packages
-        render json: ActiveModel::ArraySerializer.new(@packages,
+        entity = Package.find(params[:id]) if params[:id] # fetch or pallet
+        return unless entity
+        render json: ActiveModel::ArraySerializer.new(entity.associated_packages,
                                                       each_serializer: stock_serializer,
                                                       root: "items",
                                                       include_order: false,
@@ -248,7 +248,8 @@ module Api
                                                       include_orders_packages: true,
                                                       exclude_stockit_set_item: true,
                                                       include_added_quantity: true,
-                                                      include_images: true).as_json
+                                                      include_images: true
+                                                    ).as_json
       end
 
       private

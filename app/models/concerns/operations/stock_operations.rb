@@ -1,4 +1,6 @@
 module StockOperations
+  PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
+
   extend Composite
 
   compose_module :Operations do
@@ -70,13 +72,11 @@ module StockOperations
     end
 
     def pack_or_unpack(params, user_id)
-      raise ActionNotAllowedError.new unless PackUnpack::ALLOWED_ACTIONS.include?(params[:task])
+      raise ActionNotAllowedError.new unless PACK_UNPACK_ALLOWED_ACTIONS.include?(params[:task])
       PackUnpack.new(params, user_id).public_send(params[:task])
     end
 
     class PackUnpack
-      ALLOWED_ACTIONS = %w[pack unpack].freeze
-
       def initialize(params, user_id)
         @cause = Package.find(params[:id]) # box or pallet
         @item = Package.find(params[:item_id]) # item to add or remove
