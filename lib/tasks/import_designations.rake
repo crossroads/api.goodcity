@@ -55,4 +55,3 @@ namespace :stockit do
     bar.finished
   end
 end
-
