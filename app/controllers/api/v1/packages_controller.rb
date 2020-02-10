@@ -238,7 +238,7 @@ module Api
       end
 
       def fetch_associated_packages
-        entity = Package.find_by(params[:id]) if params[:id] # fetch box or pallet
+        entity = Package.find_by(id: params[:id]) if params[:id] # fetch box or pallet
         return unless entity
         render json: ActiveModel::ArraySerializer.new(entity.associated_packages,
                                                       each_serializer: stock_serializer,
