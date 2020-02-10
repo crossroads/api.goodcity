@@ -1206,11 +1206,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(parsed_body["errors"]).to eq(["Added quantity cannot be larger than available quantity."])
       end
 
-      # it "throws already designated error" do
-      #   put :add_remove_item, @params2
-      #   expect(response.status).to eq(422)
-      #   expect(parsed_body["errors"]).to eq(["Please undesignate the item first before adding it to the box."])
-      # end
+      it "throws already designated error" do
+        package2.order = create(:order)
+        package2.save
+        put :add_remove_item, @params2
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"]).to eq(["Please undesignate the item first before adding it to the box."])
+      end
     end
   end
 end
