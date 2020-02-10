@@ -162,7 +162,7 @@ module Api
             with_inventory_no: params["withInventoryNumber"] == "true"
           )
         end
-        params_for_filter = %w[state location associated_package_types].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
+        params_for_filter = %w[state location associated_package_types].each_with_object({}) { |k, h| h[k] = params[k].presence }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
@@ -238,7 +238,7 @@ module Api
       end
 
       def fetch_associated_packages
-        entity = Package.find(params[:id]) if params[:id] # fetch or pallet
+        entity = Package.find_by(params[:id]) if params[:id] # fetch box or pallet
         return unless entity
         render json: ActiveModel::ArraySerializer.new(entity.associated_packages,
                                                       each_serializer: stock_serializer,
