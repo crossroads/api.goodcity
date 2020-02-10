@@ -1045,36 +1045,172 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   end
 
   context "box/pallet" do
+    let(:user) { create(:user, :supervisor, :with_can_manage_packages_permission) }
     let(:box_storage) { create(:storage_type, :with_box) }
     let(:pallet_storage) { create(:storage_type, :with_pallet) }
+    let(:package_storage) { create(:storage_type, :with_pkg) }
     let(:box) { create(:package, storage_type: box_storage) }
     let(:pallet) { create(:package, storage_type: pallet_storage) }
+    let(:package1) { create(:package, :with_inventory_number, :package_with_locations, quantity: 50, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, :with_inventory_number, :package_with_locations, quantity: 40, received_quantity: 40, storage_type: package_storage)}
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
     describe "fetch_associated_records" do
+      before do
+        generate_and_set_token(user)
+        current_user = user
+        params1 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: package1.location_id,
+          task: 'pack',
+          quantity: 5
+        }
+        params2 = {
+          id: box.id,
+          item_id: package2.id,
+          location_id: package2.location_id,
+          task: 'pack',
+          quantity: 2
+        }
+        params3 = {
+          id: pallet.id,
+          item_id: package2.id,
+          location_id: package2.location_id,
+          task: 'pack',
+          quantity: 5
+        }
+        put :add_remove_item, params1
+        put :add_remove_item, params2
+        put :add_remove_item, params3
+      end
+
       it "fetches all the items that are present inside a box" do
+        params = {
+          id: box.id
+        }
+        get :fetch_associated_packages, params
+        expect(response.status).to eq(200)
+        expect(parsed_body["items"].length).to eq(2)
+      end
+
+      it "fetches all the items that are present inside a pallet" do
+        params = {
+          id: pallet.id
+        }
+        get :fetch_associated_packages, params
+        expect(response.status).to eq(200)
+        expect(parsed_body["items"].length).to eq(1)
       end
     end
 
     describe "adding_items_to_box" do
-      it "adds an item to the box" do
+      before(:each) do
+        generate_and_set_token(user)
+        current_user = user
+
+        @params1 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: package1.location_id,
+          task: 'pack',
+          quantity: 5
+        }
+
+        @params2 = {
+          id: box.id,
+          item_id: package2.id,
+          location_id: package2.location_id,
+          task: 'pack',
+          quantity: 2
+        }
+
+        @params3 = {
+          id: pallet.id,
+          item_id: package2.id,
+          location_id: package2.location_id,
+          task: 'pack',
+          quantity: 5
+        }
+
+        @params4 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: package1.location_id,
+          task: 'unpack',
+          quantity: 5
+        }
+
+        @params5 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: package1.location_id,
+          task: 'pack',
+          quantity: 0
+        }
+
+        @params6 = {
+          id: box.id,
+          item_id: box.id,
+          location_id: box.location_id,
+          task: 'pack',
+          quantity: 5
+        }
+        @params7 = {
+          id: box.id,
+          item_id: package2.id,
+          location_id: package2.location_id,
+          task: "pack",
+          quantity: package2.quantity + 20,
+        }
       end
 
-      it "removes an item to the box" do
+      it "adds an item to the box" do
+        put :add_remove_item, @params1
+        expect(response.status).to eq(201)
+        expect([parsed_body["packages_inventories"]].length).to eq(1)
+        expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
+        expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
+        expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
+        expect(parsed_body["packages_inventories"]["action"]).to eq("pack")
+        expect(parsed_body["packages_inventories"]["quantity"]).to eq(-5)
+      end
+
+      it "removes an item from the box" do
+        put :add_remove_item, @params1 # add to box
+        put :add_remove_item, @params4 # remove it
+        expect(response.status).to eq(201)
+        expect([parsed_body["packages_inventories"]].length).to eq(1)
+        expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
+        expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
+        expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
+        expect(parsed_body["packages_inventories"]["action"]).to eq("unpack")
+        expect(parsed_body["packages_inventories"]["quantity"]).to eq(5)
       end
 
       it "doesnot create packages inventory record if selected quantity is 0" do
+        put :add_remove_item, @params5
+        expect(response.status).to eq(204)
       end
 
       it "throws adding box to a box error" do
+        put :add_remove_item, @params6
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"]).to eq(["Cannot add a box to another box."])
       end
 
       it "throws quantity error" do
+        put :add_remove_item, @params7
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"]).to eq(["Added quantity cannot be larger than available quantity."])
       end
 
-      it "throws already designated error" do
-      end
+      # it "throws already designated error" do
+      #   put :add_remove_item, @params2
+      #   expect(response.status).to eq(422)
+      #   expect(parsed_body["errors"]).to eq(["Please undesignate the item first before adding it to the box."])
+      # end
     end
   end
 end
