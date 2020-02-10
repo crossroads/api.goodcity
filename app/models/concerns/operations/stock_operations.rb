@@ -101,7 +101,7 @@ module StockOperations
       private
 
       def pack_or_unpack(task)
-        return unless @quantity > 0
+        return unless @quantity.positive?
         PackagesInventory.new(
           package: @item,
           source: @cause,
