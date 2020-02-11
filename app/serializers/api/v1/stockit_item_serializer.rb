@@ -30,6 +30,10 @@ module Api::V1
       @options[:include_order]
     end
 
+    def entity_id
+      @options[:entity_id]
+    end
+
     alias_method :include_designation_id?, :include_order?
 
     def include_added_quantity?
@@ -49,11 +53,11 @@ module Api::V1
     end
 
     def added_quantity
-      object.quantity_in_a_box
+      object.quantity_in_a_box(entity_id)
     end
 
     def added_quantity__sql
-      "select sum(quantity) from packages_inventories where package_id = #{object.id} and packages_inventories.action in ('pack', 'unpack')"
+      "select sum(quantity) from packages_inventories where package_id = #{object.id} and source_type = 'Package' and source_id = #{entity_id} packages_inventories.action in ('pack', 'unpack')"
     end
 
     def designation_id

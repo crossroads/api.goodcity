@@ -194,8 +194,8 @@ context StockOperations do
 
     def pack_or_unpack(params)
       subject::Operations::pack_or_unpack(
-        box: params[:id] ,
-        package: params[:item_id],
+        container: Package.find(params[:id]),
+        package: Package.find(params[:item_id]),
         quantity: params[:quantity],
         location_id: params[:location_id],
         user_id: user.id,
