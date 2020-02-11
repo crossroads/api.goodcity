@@ -40,8 +40,8 @@ module Api::V1
       @options[:include_added_quantity]
     end
 
-    def include_in_hand_quantity?
-      @options[:include_in_hand_quantity]
+    def include_on_hand_quantity?
+      @options[:include_on_hand_quantity]
     end
 
     def on_hand_quantity
