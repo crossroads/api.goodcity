@@ -255,7 +255,8 @@ module Api
                                                       include_orders_packages: true,
                                                       exclude_stockit_set_item: true,
                                                       include_added_quantity: true,
-                                                      include_images: true
+                                                      include_images: true,
+                                                      entity_id: params[:id]
                                                     ).as_json
       end
 

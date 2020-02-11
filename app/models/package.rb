@@ -161,8 +161,8 @@ class Package < ActiveRecord::Base
     Package.where(id: ids)
   end
 
-  def quantity_in_a_box
-    PackagesInventory::Computer.quantity_of_package_in_box(package: self)
+  def quantity_in_a_box(entity_id)
+    PackagesInventory::Computer.quantity_of_package_in_box(package: self, source: Package.find(entity_id))
   end
 
   def total_in_hand_quantity

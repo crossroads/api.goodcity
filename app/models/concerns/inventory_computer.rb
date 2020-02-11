@@ -35,9 +35,9 @@ module InventoryComputer
           .as_of_now
       end
 
-      def quantity_of_package_in_box(package:)
+      def quantity_of_package_in_box(package:, source:)
         historical_quantity
-          .where(package: package, action: ['pack', 'unpack'])
+          .where(package: package, source: source, action: ['pack', 'unpack'])
           .as_of_now
       end
 
