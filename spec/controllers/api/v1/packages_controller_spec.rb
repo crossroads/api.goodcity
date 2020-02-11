@@ -1056,7 +1056,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
-    describe "fetch_associated_records" do
+    describe "fetch_contained_packages" do
       before do
         generate_and_set_token(user)
         current_user = user
@@ -1090,7 +1090,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         params = {
           id: box.id
         }
-        get :fetch_associated_packages, params
+        get :contained_packages, params
         expect(response.status).to eq(200)
         expect(parsed_body["items"].length).to eq(2)
       end
@@ -1099,7 +1099,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         params = {
           id: pallet.id
         }
-        get :fetch_associated_packages, params
+        get :contained_packages, params
         expect(response.status).to eq(200)
         expect(parsed_body["items"].length).to eq(1)
       end

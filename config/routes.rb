@@ -63,7 +63,7 @@ Rails.application.routes.draw do
 
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
-        get :fetch_associated_packages, on: :member
+        get :contained_packages, on: :member
         put :move, on: :member
         put :designate, on: :member
         put :add_remove_item, on: :member
