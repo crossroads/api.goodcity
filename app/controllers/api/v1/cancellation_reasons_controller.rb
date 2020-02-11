@@ -4,7 +4,8 @@ module Api
       load_and_authorize_resource :cancellation_reason, parent: false
 
       def index
-        render json: cancellation_reasons, each_serializer: serializer
+        reasons = @cancellation_reasons.cancellation_reasons_for(params['for'])
+        render json: reasons, each_serializer: serializer
       end
 
       def show
@@ -15,13 +16,6 @@ module Api
 
       def serializer
         Api::V1::CancellationReasonSerializer
-      end
-
-      def cancellation_reasons
-        @cancellation_reasons.cancellation_reasons_by({
-          ids: params["ids"],
-          offer: params["offer"]
-        })
       end
     end
   end

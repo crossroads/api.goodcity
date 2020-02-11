@@ -8,30 +8,22 @@ RSpec.describe Api::V1::CancellationReasonsController, type: :controller do
   before { generate_and_set_token(user) }
 
   describe 'GET cancellation_reasons' do
-    it 'returns cancellation_reasons visible to offer if `offer` exist in params' do
+    it 'returns cancellation_reasons visible to offer if `for:offer` exist in params' do
       visible_to_offer = create :cancellation_reason, :visible_to_offer
       visible_to_order = create :cancellation_reason, :visible_to_order
-      get :index, offer: true
+      get :index, for: 'offer'
       expect(response.status).to eq(200)
       expect(parsed_body['cancellation_reasons'].length).to eq(1)
       expect(parsed_body['cancellation_reasons'].map{ |reason| reason["id"] }).to include(visible_to_offer.id)
     end
 
-    it 'returns cancellation_reasons visible to offer if `order` exist in params' do
+    it 'returns cancellation_reasons visible to order `for:offer` exist in params' do
       visible_to_offer = create :cancellation_reason, :visible_to_offer
       visible_to_order = create :cancellation_reason, :visible_to_order
-      get :index, order: true
+      get :index, for: 'order'
       expect(response.status).to eq(200)
       expect(parsed_body['cancellation_reasons'].length).to eq(1)
       expect(parsed_body['cancellation_reasons'].map{ |reason| reason["id"] }).to include(visible_to_order.id)
-    end
-
-    it 'returns cancellation_reasons with ids present in params' do
-      2.times { create :cancellation_reason }
-      get :index, ids: [cancellation_reason.id]
-      expect(response.status).to eq(200)
-      expect(parsed_body['cancellation_reasons'].length).to eq(1)
-      expect(parsed_body['cancellation_reasons'].map{ |reason| reason["id"] }).to eq([cancellation_reason.id])
     end
   end
 
