@@ -48,4 +48,17 @@ module Goodcity
       super(I18n.t('operations.generic.inactive_order', code: order.code))
     end
   end
+
+  class MissingQuantityRequiredError < OperationsError
+    def initialize(orders)
+      order_text = orders.count == 1 ? orders.first.code : "#{orders.count}x"
+      super(I18n.t('operations.mark_lost.required_for_orders', orders: order_text))
+    end
+  end
+
+  class ActionNotAllowedError < OperationsError
+    def initialize
+      super(I18n.t("operations.generic.action_not_allowed"))
+    end
+  end
 end
