@@ -172,7 +172,7 @@ module Api
                                                     include_packages: false,
                                                     include_orders_packages: true,
                                                     exclude_stockit_set_item: true,
-                                                    include_in_hand_quantity: true,
+                                                    include_on_hand_quantity: true,
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
