@@ -119,9 +119,10 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def update_transition_and_reason(event, opts)
+  def update_transition_and_reason(event, cancel_opts)
     fire_state_event(event)
-    update(cancellation_reason_id: opts[:cancellation_reason_id], cancel_reason: opts[:cancel_reason]) if opts[:cancellation_reason_id]
+    opts = cancel_opts.select{ |k| [:cancellation_reason_id, :cancel_reason].include?(k) }
+    update(opts)
   end
 
   def designate_orders_packages

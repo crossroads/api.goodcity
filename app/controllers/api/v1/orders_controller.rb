@@ -69,7 +69,8 @@ module Api
       end
 
       def transition
-        update_transition_and_cancel_reason
+        event = params['transition'].to_sym
+        @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
         render json: @order, serializer: serializer
       end
 
@@ -116,11 +117,6 @@ module Api
           include_order: false,
           include_images: true,
           exclude_stockit_set_item: true).as_json
-      end
-
-      def update_transition_and_cancel_reason
-        event = params['transition'].to_sym
-        @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
       end
 
       def cancel_params
