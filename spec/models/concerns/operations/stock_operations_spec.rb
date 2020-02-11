@@ -193,7 +193,14 @@ context StockOperations do
     }
 
     def pack_or_unpack(params)
-      subject::Operations::pack_or_unpack(params, user.id)
+      subject::Operations::pack_or_unpack(
+        box: params[:id] ,
+        package: params[:item_id],
+        quantity: params[:quantity],
+        location_id: params[:location_id],
+        user_id: user.id,
+        task: params[:task]
+      )
     end
 
     context "adding items to box and pallets" do
