@@ -71,18 +71,18 @@ module StockOperations
       )
     end
 
-    def pack_or_unpack(params, user_id)
-      raise ActionNotAllowedError.new unless PACK_UNPACK_ALLOWED_ACTIONS.include?(params[:task])
-      PackUnpack.new(params, user_id).public_send(params[:task])
+    def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )
+      raise ActionNotAllowedError.new unless PACK_UNPACK_ALLOWED_ACTIONS.include?(task)
+      PackUnpack.new(container, package, location_id, quantity, user_id).public_send(task)
     end
 
     class PackUnpack
-      def initialize(params, user_id)
-        @cause = Package.find(params[:id]) # box or pallet
-        @item = Package.find(params[:item_id]) # item to add or remove
+      def initialize(container, package, location_id, quantity, user_id)
+        @cause = container # box or pallet
+        @package = package # item to add or remove
+        @location_id = location_id
+        @quantity = quantity # quantity to pack or unpack
         @user_id = user_id
-        @location_id = params[:location_id]
-        @quantity = params[:quantity].to_i # quantity to pack or unpack
       end
 
       def pack
@@ -103,7 +103,7 @@ module StockOperations
       def pack_or_unpack(task)
         return unless @quantity.positive?
         PackagesInventory.new(
-          package: @item,
+          package: @package,
           source: @cause,
           action: task,
           location_id: @location_id,
@@ -135,15 +135,15 @@ module StockOperations
       end
 
       def available_quantity_on_location(location_id)
-        PackagesLocation.where(location_id: location_id, package_id: @item.id).first.quantity
+        PackagesLocation.where(location_id: location_id, package_id: @package.id).first.quantity
       end
 
       def adding_box_to_a_box?
-        @item.box? && @cause.box?
+        @package.box? && @cause.box?
       end
 
       def item_designated?
-        @item.order.presence
+        @package.order.presence
       end
     end
 

@@ -229,7 +229,14 @@ module Api
 
       def add_remove_item
         render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
-        response = Package::Operations.pack_or_unpack(params, User.current_user.id)
+        response = Package::Operations.pack_or_unpack(
+                    container: Package.find(params[:id]),
+                    package: Package.find(params[:item_id]),
+                    quantity: params[:quantity].to_i, # quantity to pack or unpack
+                    location_id: params[:location_id],
+                    user_id: User.current_user.id,
+                    task: params[:task]
+                  )
         if response[:success]
           render json: { packages_inventories: response[:packages_inventory] }, status: 201
         else
@@ -237,7 +244,7 @@ module Api
         end
       end
 
-      def fetch_associated_packages
+      def contained_packages
         entity = Package.find_by(id: params[:id]) if params[:id] # fetch box or pallet
         return unless entity
         render json: ActiveModel::ArraySerializer.new(entity.associated_packages,
