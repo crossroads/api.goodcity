@@ -256,7 +256,7 @@ module Api
                                                       exclude_stockit_set_item: true,
                                                       include_added_quantity: true,
                                                       include_images: true,
-                                                      entity_id: params[:id]
+                                                      entity_id: entity.id
                                                     ).as_json
       end
 
