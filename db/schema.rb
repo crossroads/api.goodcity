@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200107034249) do
+ActiveRecord::Schema.define(version: 20200207120244) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -96,9 +96,10 @@ ActiveRecord::Schema.define(version: 20200107034249) do
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.boolean  "visible_to_admin", default: true
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.boolean  "visible_to_offer", default: true
+    t.boolean  "visible_to_order", default: false
   end
 
   create_table "companies", force: :cascade do |t|
@@ -418,6 +419,11 @@ ActiveRecord::Schema.define(version: 20200107034249) do
   add_index "offers", ["reviewed_by_id"], name: "index_offers_on_reviewed_by_id", using: :btree
   add_index "offers", ["state"], name: "index_offers_on_state", using: :btree
 
+  create_table "offers_packages", force: :cascade do |t|
+    t.integer "package_id"
+    t.integer "offer_id"
+  end
+
   create_table "order_transports", force: :cascade do |t|
     t.datetime "scheduled_at"
     t.string   "timeslot"
@@ -474,9 +480,10 @@ ActiveRecord::Schema.define(version: 20200107034249) do
     t.integer  "beneficiary_id"
     t.integer  "address_id"
     t.integer  "district_id"
-    t.text     "cancellation_reason"
+    t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.integer  "cancellation_reason_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -656,6 +663,7 @@ ActiveRecord::Schema.define(version: 20200107034249) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
     t.integer  "weight"
     t.integer  "pieces"
     t.integer  "detail_id"
@@ -962,6 +970,8 @@ ActiveRecord::Schema.define(version: 20200107034249) do
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
   add_foreign_key "messages", "orders"
+  add_foreign_key "offers_packages", "offers"
+  add_foreign_key "offers_packages", "packages"
   add_foreign_key "orders_process_checklists", "orders"
   add_foreign_key "orders_process_checklists", "process_checklists"
   add_foreign_key "organisations", "countries"
