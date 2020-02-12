@@ -13,6 +13,7 @@ class Order < ActiveRecord::Base
     ]
   end
 
+  belongs_to :cancellation_reason
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
   belongs_to :country
@@ -68,13 +69,13 @@ class Order < ActiveRecord::Base
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
 
   # Stockit Shipment Status => GoodCity State
-  SHIPMENT_STATUS_MAP = { 
+  SHIPMENT_STATUS_MAP = {
     "Processing" => "processing",
     "Sent" => "closed",
     "Loaded" => "dispatching",
     "Cancelled" => "cancelled",
     "Upcoming" => "awaiting_dispatch"
-  }
+  }.freeze
 
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
@@ -116,6 +117,12 @@ class Order < ActiveRecord::Base
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
     end
+  end
+
+  def update_transition_and_reason(event, cancel_opts)
+    fire_state_event(event)
+    opts = cancel_opts.select{ |k| [:cancellation_reason_id, :cancel_reason].include?(k) }
+    update(opts)
   end
 
   def designate_orders_packages
@@ -254,7 +261,7 @@ class Order < ActiveRecord::Base
 
     before_transition on: :resubmit do |order|
       if order.cancelled?
-        order.nullify_columns(:processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id,
+        order.nullify_columns(:cancellation_reason_id, :cancel_reason, :processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id,
           :cancelled_at, :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
       end
     end
