@@ -1,0 +1,7 @@
+---
+-
+  active: true
+  name: "Printer 1"
+-
+  active: false
+  name: "Printer 2"

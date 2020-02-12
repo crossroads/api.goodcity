@@ -127,6 +127,11 @@ lookups.each do |record|
   Lookup.find_or_create_by(record)
 end
 
+printers = YAML.load_file("#{Rails.root}/db/printers.yml")
+printers.each do |record|
+  Printer.find_or_create_by(record)
+end
+
 locations = YAML.load_file("#{Rails.root}/db/locations.yml")
 locations.each do |record|
   Location.find_or_create_by(record)
