@@ -329,13 +329,73 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   end
 
   describe "POST package/1" do
-   before { generate_and_set_token(user) }
+    let(:location) { create(:location) }
+
+    before { generate_and_set_token(user) }
 
     context "create package from gc" do
+      let(:created_package_id) { parsed_body['package']['id'] }
+      let(:created_package) { Package.find(created_package_id) }
+
       it "reviewer can create", :show_in_doc do
         post :create, format: :json, package: package_params
         expect(response.status).to eq(201)
         expect(GoodcitySync.request_from_stockit).to eq(false)
+      end
+
+      context "without an inventory_number" do
+        context "but with a location" do
+          before { package_params[:location_id] = location.id }
+
+          it "creates a package with no packages_location" do
+            post :create, format: :json, package: package_params
+            expect(response.status).to eq(201)
+            expect(created_package.packages_locations.count).to eq(0)
+          end
+
+          it "creates a package with no packages_inventory record" do
+            post :create, format: :json, package: package_params
+            expect(response.status).to eq(201)
+            expect(PackagesInventory.count).to eq(0)
+          end
+        end
+      end
+
+      context "with an inventory_number" do
+        before { package_params[:inventory_number] = '98767' }
+
+        context "and a location_id" do
+          before { package_params[:location_id] = location.id }
+
+          it "created a packages_inventory 'inventory' action row" do
+            expect {
+              post :create, format: :json, package: package_params
+            }.to change(PackagesInventory, :count).from(0).to(1)
+
+            expect(PackagesInventory.last.package_id).to eq(created_package_id)
+            expect(PackagesInventory.last.quantity).to eq(created_package.received_quantity)
+            expect(PackagesInventory.last.location_id).to eq(location.id)
+            expect(PackagesInventory.last.action).to eq('inventory')
+          end
+
+          it "creates the packages_locations relation (through packages_inventory sync)" do
+            post :create, format: :json, package: package_params
+            expect(response.status).to eq(201)
+            expect(created_package.packages_locations.count).to eq(1)
+            expect(created_package.packages_locations.first.location_id).to eq(location.id)
+            expect(created_package.packages_locations.first.quantity).to eq(package.received_quantity)
+          end
+        end
+
+        context "but no location_id" do
+          it "fails to create the package" do
+            expect {
+              post :create, format: :json, package: package_params
+              expect(response.status).to eq(422)
+              expect(parsed_body['errors'][0]).to match(/location can't be blank/)
+            }.not_to change(Package, :count)
+          end
+        end
       end
     end
 
@@ -826,7 +886,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
 
   describe "PUT package/1" do
-   before { generate_and_set_token(user) }
+    let(:location) { create :location }
+    let(:updated_package_id) { parsed_body['package']['id'] }
+    let(:updated_package) { Package.find(updated_package_id) }
+
+    before { generate_and_set_token(user) }
+
     it "reviewer can update", :show_in_doc do
       updated_params = { quantity: 30, width: 100 }
       put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
@@ -840,6 +905,52 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       put :update, format: :json, id: package.id, package: package_params.merge(updated_params)
     end
 
+    context "by setting an inventory_number for the first time" do
+      before { package_params[:inventory_number] = '98767' }
+
+      context "and a location_id" do
+        before { package_params[:location_id] = location.id }
+
+        it "created a packages_inventory 'inventory' action row" do
+          expect(package.inventory_number).to be_nil
+
+          expect {
+            put :update, format: :json, id: package.id, package: package_params
+          }.to change(PackagesInventory, :count).from(0).to(1)
+
+          expect(PackagesInventory.last.package_id).to eq(updated_package_id)
+          expect(PackagesInventory.last.quantity).to eq(updated_package.received_quantity)
+          expect(PackagesInventory.last.location_id).to eq(location.id)
+          expect(PackagesInventory.last.action).to eq('inventory')
+        end
+
+        it "creates the packages_locations relation (through packages_inventory sync)" do
+          put :update, format: :json, id: package.id, package: package_params
+          expect(response.status).to eq(200)
+          expect(updated_package.packages_locations.count).to eq(1)
+          expect(updated_package.packages_locations.first.location_id).to eq(location.id)
+          expect(updated_package.packages_locations.first.quantity).to eq(package.received_quantity)
+        end
+      end
+    end
+
+    context "without setting an inventory_number" do
+      context "but with a location" do
+        before { package_params[:location_id] = location.id }
+
+        it "does not create any packages_location" do
+          post :create, format: :json, package: package_params
+          expect(response.status).to eq(201)
+          expect(updated_package.packages_locations.count).to eq(0)
+        end
+
+        it "does not create any packages_inventory record" do
+          post :create, format: :json, package: package_params
+          expect(response.status).to eq(201)
+          expect(PackagesInventory.count).to eq(0)
+        end
+      end
+    end
   end
 
   describe "DELETE package/1" do
