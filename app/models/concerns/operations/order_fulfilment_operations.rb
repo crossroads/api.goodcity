@@ -90,16 +90,6 @@ module OrderFulfilmentOperations
       end
     end
 
-    ##
-    # Dispatches the full quantity of an orders_package.
-    # Assumes we live in a stockit world where everything is a singleton
-    #
-    # @todo remove this from our lives
-    #
-    def dispatch_full_qty(ord_pkg)
-      dispatch(ord_pkg, quantity: ord_pkg.quantity, from_location: ord_pkg.package.locations.first)
-    end
-
     # --- HELPERS
 
     def order_unprocessed?(order)

@@ -370,7 +370,7 @@ module Api
 
       def assign_values_to_existing_or_new_package
         new_package_params = package_params
-        GoodcitySync.request_from_stockit = true
+        GoodcitySync.request_from_stockit = !is_admin_app? # TODO: remove
         @package = existing_package || Package.new()
         delete_params_quantity_if_all_quantity_designated(new_package_params)
         @package.assign_attributes(new_package_params)
@@ -400,8 +400,10 @@ module Api
       end
 
       def location_id
-        if package_params[:location_id]
+        if GoodcitySync.request_from_stockit
           Location.find_by(stockit_id: package_params[:location_id]).try(:id)
+        else
+          package_params[:location_id]
         end
       end
 
