@@ -254,10 +254,16 @@ module Api
                                                       include_packages: false,
                                                       include_orders_packages: true,
                                                       exclude_stockit_set_item: true,
-                                                      include_added_quantity: true,
-                                                      include_images: true,
-                                                      entity_id: entity.id
+                                                      include_images: true
+                                                      #include_added_quantity: true,
+                                                      #entity_id: entity.id
                                                     ).as_json
+      end
+
+      def fetch_added_quantity
+        entity_id = params[:entity_id]
+        package = Package.find(params[:id])
+        render json: { added_quantity: package.quantity_in_a_box(entity_id) }, status: 200
       end
 
       private
