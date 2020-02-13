@@ -6,7 +6,7 @@ namespace :stockit do
     orders = JSON.parse(designations_json["designations"]) || []
 
     bar = RakeProgressbar.new(orders.size)
-    Order.record_timestamps=false
+    Order.record_timestamps = false
     orders.each do |value|
       bar.inc
       order = Order.where(stockit_id: value["id"]).first_or_initialize
@@ -35,7 +35,7 @@ namespace :stockit do
         order.state = Order::SHIPMENT_STATUS_MAP[value["status"]]
       elsif value["detail_type"] == "LocalOrder"
         order.state = Order::LOCAL_ORDER_STATUS_MAP[value["status"]]
-      elsif
+      else
         order.state = value["status"].try(:downcase)
       end
 
@@ -50,12 +50,12 @@ namespace :stockit do
       order.purpose_description = value["description"]
 
       ["process_completed_by_id", "cancelled_by_id", "closed_by_id", "dispatch_started_by_id",
-        "submitted_by_id", "created_by_id"].each do |column_name|
+       "submitted_by_id", "created_by_id"].each do |column_name|
         order.send("#{column_name}=", User.stockit_user.id)
       end
       order.save
     end
-    Order.record_timestamps=true
+    Order.record_timestamps = true
     bar.finished
   end
 end
