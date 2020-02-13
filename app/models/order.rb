@@ -84,7 +84,7 @@ class Order < ActiveRecord::Base
     "Pending agreement" => "processing",
     "Cancelled" => "cancelled",
     "Closed" => "closed"
-  }
+  }.freeze
 
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
