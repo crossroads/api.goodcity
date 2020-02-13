@@ -63,7 +63,6 @@ module Api
         render json: stock_serializer.new(@package,
           serializer: stock_serializer,
           root: "item",
-          include_offers: true,
           include_order: true,
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank?,
