@@ -80,6 +80,7 @@ class Ability
     computer_accessory_abilities
     electrical_abilities
     printer_abilities
+    offers_package_abilities
   end
 
   def printer_abilities
@@ -223,6 +224,10 @@ class Ability
       can [:index, :show, :update, :complete_review, :close_offer, :search,
         :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary], Offer
     end
+  end
+
+  def offers_package_abilities
+    can [:destroy], OffersPackage
   end
 
   def order_abilities

@@ -51,6 +51,7 @@ Rails.application.routes.draw do
           put :merge_offer
         end
       end
+      resources :offers_packages, only: [:destroy]
 
       resources :computers
       resources :computer_accessories
