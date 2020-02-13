@@ -921,9 +921,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by notes' do
-      create :package, received_quantity: 1, notes: "butter"
-      create :package, received_quantity: 1, notes: "butterfly"
-      create :package, received_quantity: 1, notes: "margarine"
+      create :package, received_quantity: 1, notes: "butter", inventory_number: "456333"
+      create :package, received_quantity: 1, notes: "butterfly", inventory_number: "456222"
+      create :package, received_quantity: 1, notes: "margarine", inventory_number: "456111"
       get :search_stockit_items, searchText: "UTter", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("UTter")
@@ -931,9 +931,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by case number' do
-      create :package, received_quantity: 1, case_number: "CAS-123"
-      create :package, received_quantity: 1, case_number: "CAS-124"
-      create :package, received_quantity: 1, case_number: "CAS-666"
+      create :package, received_quantity: 1, case_number: "CAS-123", inventory_number: "456333"
+      create :package, received_quantity: 1, case_number: "CAS-124", inventory_number: "456222"
+      create :package, received_quantity: 1, case_number: "CAS-666", inventory_number: "456111"
       get :search_stockit_items, searchText: "cas-12", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("cas-12")
@@ -941,9 +941,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by designation_name' do
-      create :package, received_quantity: 1, designation_name: "pepper"
-      create :package, received_quantity: 1, designation_name: "peppermint"
-      create :package, received_quantity: 1, designation_name: "garlic"
+      create :package, received_quantity: 1, designation_name: "pepper", inventory_number: "456333"
+      create :package, received_quantity: 1, designation_name: "peppermint", inventory_number: "456222"
+      create :package, received_quantity: 1, designation_name: "garlic", inventory_number: "456111"
       get :search_stockit_items, searchText: "peP", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("peP")
@@ -955,11 +955,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 1, designation_name: "couch", inventory_number: '22222', state: 'missing'
       create :package, received_quantity: 1, designation_name: "couch", inventory_number: nil, state: 'received'
       create :package, received_quantity: 1, designation_name: "couch", inventory_number: nil, state: 'missing'
-      get :search_stockit_items, searchText: 'couch', showQuantityItems: 'true', state: 'received', withInventoryNumber: 'true'
+      get :search_stockit_items, searchText: 'couch', showQuantityItems: 'true', state: 'received'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql('couch')
       expect(subject['items'].map{|i| i['inventory_number']}).to match_array(['11111'])
-
     end
 
     it 'should filter out item with published, has_images, and in_stock status' do

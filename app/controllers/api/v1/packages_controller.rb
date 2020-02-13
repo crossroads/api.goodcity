@@ -158,7 +158,7 @@ module Api
             search_text: params["searchText"],
             item_id: params["itemId"],
             restrict_multi_quantity: params["restrictMultiQuantity"],
-            with_inventory_no: params["withInventoryNumber"] == "true"
+            with_inventory_no: true
           )
         end
         params_for_filter = %w[state location].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
