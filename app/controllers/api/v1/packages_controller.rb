@@ -247,17 +247,11 @@ module Api
       def contained_packages
         entity = Package.find_by(id: params[:id]) if params[:id] # fetch box or pallet
         return unless entity
-        render json: ActiveModel::ArraySerializer.new(entity.associated_packages,
-                                                      each_serializer: stock_serializer,
-                                                      root: "items",
-                                                      include_order: false,
-                                                      include_packages: false,
-                                                      include_orders_packages: true,
-                                                      exclude_stockit_set_item: true,
-                                                      include_images: true
-                                                      #include_added_quantity: true,
-                                                      #entity_id: entity.id
-                                                    ).as_json
+
+        added_packages = entity.associated_packages&.page(page)&.per(per_page)
+        render json: added_packages, each_serializer: stock_serializer, include_items: true,
+          include_orders_packages: false, include_storage_type: false,
+          include_donor_conditions: false, exclude_stockit_set_item: true, root: "items"
       end
 
       def fetch_added_quantity

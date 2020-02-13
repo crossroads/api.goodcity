@@ -39,6 +39,8 @@ class PackagesInventory < ActiveRecord::Base
     Actions::DISPATCH     => Actions::UNDISPATCH,
     Actions::GAIN         => Actions::LOSS,
     Actions::UNINVENTORY  => Actions::INVENTORY,
+    Actions::PACK         => Actions::UNPACK,
+    Actions::UNPACK       => Actions::PACK,
     Actions::UNDISPATCH   => Actions::DISPATCH,
     Actions::LOSS         => Actions::GAIN
   }
