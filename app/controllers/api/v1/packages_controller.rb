@@ -245,9 +245,10 @@ module Api
       end
 
       def contained_packages
-        return unless @package.present?
+        entity = Package.find(params[:id])
+        return unless entity.present?
 
-        contained_pkgs = @package.associated_packages&.page(page)&.per(per_page)
+        contained_pkgs = entity.associated_packages&.page(page)&.per(per_page)
         render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
           include_orders_packages: false, include_storage_type: false,
           include_donor_conditions: false, exclude_stockit_set_item: true, root: "items"
@@ -255,7 +256,8 @@ module Api
 
       def fetch_added_quantity
         entity_id = params[:entity_id]
-        render json: { added_quantity: @package.quantity_in_a_box(entity_id) }, status: 200
+        package = Package.find(params[:id])
+        render json: { added_quantity: package.quantity_in_a_box(entity_id) }, status: 200
       end
 
       private
