@@ -245,19 +245,17 @@ module Api
       end
 
       def contained_packages
-        entity = Package.find_by(id: params[:id]) if params[:id] # fetch box or pallet
-        return unless entity
+        return unless @package.present?
 
-        added_packages = entity.associated_packages&.page(page)&.per(per_page)
-        render json: added_packages, each_serializer: stock_serializer, include_items: true,
+        contained_pkgs = @package.associated_packages&.page(page)&.per(per_page)
+        render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
           include_orders_packages: false, include_storage_type: false,
           include_donor_conditions: false, exclude_stockit_set_item: true, root: "items"
       end
 
       def fetch_added_quantity
         entity_id = params[:entity_id]
-        package = Package.find(params[:id])
-        render json: { added_quantity: package.quantity_in_a_box(entity_id) }, status: 200
+        render json: { added_quantity: @package.quantity_in_a_box(entity_id) }, status: 200
       end
 
       private
