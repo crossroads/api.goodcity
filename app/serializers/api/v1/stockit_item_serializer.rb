@@ -16,12 +16,8 @@ module Api::V1
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
-<<<<<<< HEAD
       :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id,
-      :on_hand_quantity
-=======
-      :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id, :offer_id
->>>>>>> added hasOne relation for offer
+      :on_hand_quantity, :offer_id
 
     def include_images?
       @options[:include_images]
