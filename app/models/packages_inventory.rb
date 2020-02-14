@@ -1,16 +1,18 @@
 class PackagesInventory < ActiveRecord::Base
   module Actions
-    INVENTORY     = 'inventory'.freeze
-    UNINVENTORY   = 'uninventory'.freeze
-    LOSS          = 'loss'.freeze
-    GAIN          = 'gain'.freeze
-    DISPATCH      = 'dispatch'.freeze
-    UNDISPATCH    = 'undispatch'.freeze
-    MOVE          = 'move'.freeze
+    INVENTORY   = 'inventory'.freeze
+    UNINVENTORY = "uninventory".freeze
+    LOSS        = 'loss'.freeze
+    GAIN        = 'gain'.freeze
+    DISPATCH    = 'dispatch'.freeze
+    UNDISPATCH  = 'undispatch'.freeze
+    MOVE        = 'move'.freeze
+    PACK        = "pack".freeze
+    UNPACK      = "unpack".freeze
   end
 
-  INCREMENTAL_ACTIONS = [Actions::INVENTORY, Actions::UNDISPATCH, Actions::GAIN].freeze
-  DECREMENTAL_ACTIONS = [Actions::UNINVENTORY, Actions::LOSS, Actions::DISPATCH].freeze
+  INCREMENTAL_ACTIONS = [Actions::INVENTORY, Actions::UNDISPATCH, Actions::GAIN, Actions::UNPACK].freeze
+  DECREMENTAL_ACTIONS = [Actions::UNINVENTORY, Actions::LOSS, Actions::DISPATCH, Actions::PACK].freeze
   UNRESTRICTED_ACTIONS = [Actions::MOVE].freeze
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
 
@@ -37,6 +39,8 @@ class PackagesInventory < ActiveRecord::Base
     Actions::DISPATCH     => Actions::UNDISPATCH,
     Actions::GAIN         => Actions::LOSS,
     Actions::UNINVENTORY  => Actions::INVENTORY,
+    Actions::PACK         => Actions::UNPACK,
+    Actions::UNPACK       => Actions::PACK,
     Actions::UNDISPATCH   => Actions::DISPATCH,
     Actions::LOSS         => Actions::GAIN
   }

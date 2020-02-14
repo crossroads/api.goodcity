@@ -11,7 +11,7 @@ class Package < ActiveRecord::Base
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
-  SETTINGS_KEYS = %w[stock.enable_box_pallet_creation].freeze
+  SETTINGS_KEYS = %w[stock.enable_box_pallet_creation stock.allow_box_pallet_item_addition].freeze
 
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
@@ -145,6 +145,32 @@ class Package < ActiveRecord::Base
 
   def dispatched_location
     Location.dispatch_location
+  end
+
+  def associated_packages
+    sql =
+      <<-SQL
+      select distinct pi.package_id
+      from packages_inventories pi
+      WHERE pi.source_type = 'Package' AND pi.source_id = #{id}
+      AND pi.action in ('pack', 'unpack')
+      group by pi.package_id
+      HAVING sum(pi.quantity) < 0
+      SQL
+    ids = PackagesInventory.connection.execute(sql).map{ |res| res['package_id'] }.uniq.compact
+    Package.where(id: ids)
+  end
+
+  def quantity_in_a_box(entity_id)
+    PackagesInventory::Computer.quantity_of_package_in_box(package: self, source: Package.find(entity_id))
+  end
+
+  def total_in_hand_quantity
+    PackagesInventory::Computer.package_quantity(self)
+  end
+
+  def total_quantity_in_box
+    box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
@@ -551,6 +577,10 @@ class Package < ActiveRecord::Base
 
   def storage_type_name
     storage_type&.name
+  end
+
+  def box?
+    storage_type_name&.eql?("Box")
   end
 
   def box_or_pallet?

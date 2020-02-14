@@ -15,7 +15,8 @@ module Api::V1
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
-      :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id
+      :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id,
+      :on_hand_quantity
 
     def include_images?
       @options[:include_images]
@@ -30,6 +31,18 @@ module Api::V1
     end
 
     alias_method :include_designation_id?, :include_order?
+
+    def include_on_hand_quantity?
+      @options[:include_on_hand_quantity]
+    end
+
+    def on_hand_quantity
+      object.total_in_hand_quantity
+    end
+
+    def on_hand_quantity__sql
+      "select sum(quantity) from packages_inventories where package_id = #{object.id}"
+    end
 
     def designation_id
       object.order_id
