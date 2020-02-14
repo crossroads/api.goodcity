@@ -67,7 +67,8 @@ module Api
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank?,
           include_images: @package.set_item_id.blank?,
-          include_allowed_actions: true).as_json
+          include_allowed_actions: true,
+          include_added_quantity: false).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -161,7 +162,7 @@ module Api
             with_inventory_no: true
           )
         end
-        params_for_filter = %w[state location].each_with_object({}) { |k, h| h[k] = params[k] if params[k].present? }
+        params_for_filter = %w[state location associated_package_types].each_with_object({}) { |k, h| h[k] = params[k].presence }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
@@ -171,6 +172,7 @@ module Api
                                                     include_packages: false,
                                                     include_orders_packages: true,
                                                     exclude_stockit_set_item: true,
+                                                    include_on_hand_quantity: true,
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
@@ -223,6 +225,37 @@ module Api
         else
           render json: { errors: @package.errors.full_messages }, status: 422
         end
+      end
+
+      def add_remove_item
+        render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
+        response = Package::Operations.pack_or_unpack(
+                    container: Package.find(params[:id]),
+                    package: Package.find(params[:item_id]),
+                    quantity: params[:quantity].to_i, # quantity to pack or unpack
+                    location_id: params[:location_id],
+                    user_id: User.current_user.id,
+                    task: params[:task]
+                  )
+        if response[:success]
+          render json: { packages_inventories: response[:packages_inventory] }, status: 201
+        else
+          render json: { errors: response[:errors] }, status: 422
+        end
+      end
+
+      def contained_packages
+        return unless @package.present?
+
+        contained_pkgs = @package.associated_packages&.page(page)&.per(per_page)
+        render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
+          include_orders_packages: false, include_storage_type: false,
+          include_donor_conditions: false, exclude_stockit_set_item: true, root: "items"
+      end
+
+      def fetch_added_quantity
+        entity_id = params[:entity_id]
+        render json: { added_quantity: @package.quantity_in_a_box(entity_id) }, status: 200
       end
 
       private

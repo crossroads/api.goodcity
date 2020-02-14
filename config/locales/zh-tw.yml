@@ -16,6 +16,11 @@ zh-tw:
     mobile_exists: 這個電話號碼已存在。
     invalid_mobile: 對不起，您的電話號碼並不正確。
     invalid_pin: 驗證碼不正確。
+  box_pallet:
+    errors:
+      invalid_quantity: Added quantity cannot be larger than available quantity.
+      adding_box_to_box: Cannot add a box to another box.
+      item_designated: Please undesignate the item first before adding it to the box.
   token:
     invalid: 代碼不正確
     expired: 代碼已過期
@@ -52,6 +57,7 @@ zh-tw:
               taken: "已加入購物車"
         package:
           enable_box_pallet_creation: "Creation of box/pallet is not allowed."
+          allow_box_pallet_item_addition: "Addition of items to box/pallet are not allowed."
         user:
           attributes:
             mobile:
@@ -80,6 +86,7 @@ zh-tw:
   package:
     max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
     creation_of_box/pallet_error: "Creation of %{storage_type} not allowed."
+    allow_box_pallet_item_addition: "Addition of items to box/pallet are not allowed."
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."
@@ -120,6 +127,7 @@ zh-tw:
       inactive_order: Operation forbidden, order %{code} is inactive
       insufficient_quantity: The selected quantity (%{quantity}) is unavailable
       bad_quantity_param: Invalid quantity (%{quantity})
+      action_not_allowed: Action you are trying to perform is not allowed
   package_inventory:
     bad_action: "Inventory action %{action} is not permitted"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
