@@ -31,13 +31,14 @@ namespace :stockit do
         order.country_id = Country.find_by(stockit_id: value["country_id"]).try(:id)
       end
 
-      if ["CarryOut", "Shipment"].include?(value["detail_type"])
-        order.state = Order::SHIPMENT_STATUS_MAP[value["status"]]
-      elsif value["detail_type"] == "LocalOrder"
-        order.state = Order::LOCAL_ORDER_STATUS_MAP[value["status"]]
-      else
-        order.state = value["status"].try(:downcase)
-      end
+      order.state = case value["detail_type"]
+                    when "CarryOut", "Shipment"
+                      Order::SHIPMENT_STATUS_MAP[value["status"]]
+                    when "LocalOrder"
+                      Order::LOCAL_ORDER_STATUS_MAP[value["status"]]
+                    else
+                      value["status"].try(:downcase)
+                    end
 
       order.code = value["code"]
       order.detail_type = value["detail_type"]
