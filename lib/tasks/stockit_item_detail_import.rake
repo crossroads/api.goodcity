@@ -15,17 +15,16 @@ namespace :stockit do
         offset += per_page
         stockit_items = JSON.parse(items_json["items"])
         break if stockit_items.blank?
-        stockit_items.each do |item|
-          item_id = item["package_id"].presence
-          package = Package.find_by(stockit_id: item["package_id"]) if item_id
-          begin
-            is_package_updated = Goodcity::DetailFactory.new(item, package).run
-          rescue StandardError => exception
-            log.error("package: #{package.id}, stockit_item: #{item_id} #{exception.message}")
-          end
-          if is_package_updated
-            print "."
-            count += 1
+        stockit_items.each do |stockit_item|
+          stockit_item_id = stockit_item["package_id"].presence
+          package = Package.find_by(stockit_id: stockit_item["package_id"])
+          if package
+            begin
+              package_updated = Goodcity::DetailFactory.new(stockit_item, package).run
+            rescue StandardError => exception
+              log.error("package: #{package.id}, stockit_item: #{stockit_item_id} #{exception.message}")
+            end
+            print "."; count += 1 if package_updated
           end
         end
       end
