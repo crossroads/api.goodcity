@@ -23,7 +23,7 @@ module Api::V1
     end
 
     def inventoried_package_count
-      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is not null").count
+      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is not null").size
     end
 
     def inventoried_package_count__sql
@@ -31,7 +31,7 @@ module Api::V1
     end
 
     def unrecorded_package_count
-      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is null").count
+      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is null").size
     end
 
     def unrecorded_package_count__sql

@@ -11,8 +11,8 @@ module Api
         error 500, "Internal Server Error"
       end
 
-      def_param_group :orders_packages do
-        param :orders_packages, Hash, required: true do
+      def_param_group :offers_packages do
+        param :offers_packages, Hash, required: true do
           param :package_id, Integer, desc: "Id of package"
           param :offer_id, Integer, desc: "Id of offer"
         end
@@ -28,7 +28,7 @@ module Api
 
       private
 
-      def orders_packages_params
+      def offers_packages_params
         params.require(:offers_packages).permit(:package_id, :offer_id)
       end
     end
