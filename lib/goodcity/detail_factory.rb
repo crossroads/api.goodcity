@@ -22,6 +22,7 @@ module Goodcity
     end
 
     def run
+      debugger
       create_detail_and_update_package
     end
 
@@ -29,7 +30,7 @@ module Goodcity
 
     def create_detail_and_update_package
       return false if package.detail.present? # check if records is present on GC
-
+      debugger
       package && package.update_columns(detail_id: create_detail, detail_type: detail_type)
     end
 
@@ -42,6 +43,7 @@ module Goodcity
     end
 
     def create_detail
+      debugger
       return unless PERMITTED_DETAIL_TYPES.include?(detail_type.underscore)
       create_detail_record.id
     end
