@@ -28,15 +28,13 @@ module Goodcity
     private
 
     def create_detail_and_update_package
+      return false if package.detail.present? # check if records is present on GC
+
       package && package.update_columns(detail_id: create_detail, detail_type: detail_type)
     end
 
     def detail_present_on_stockit?
       stockit_item_hash["id"] && stockit_item_hash["detail_type"] && stockit_detail_id
-    end
-
-    def detail_present?
-      package.detail.present?
     end
 
     def detail_type
