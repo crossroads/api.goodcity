@@ -10,7 +10,7 @@ RSpec.describe Api::V1::OffersPackagesController, type: :controller do
     it "returns 200", :show_in_doc do
       delete :destroy, id: offers_package.id
       expect(response.status).to eq(200)
-      expect(subject).to eq( {} )
+      expect(JSON.parse(response.body)).to eq( {} )
     end
   end
 end

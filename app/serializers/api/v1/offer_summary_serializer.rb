@@ -108,7 +108,7 @@ module Api::V1
       include_received_at? include_cancelled_at? include_start_receiving_at?
       include_submitted_items_count? include_accepted_items_count? include_rejected_items_count?
       include_expecting_packages_count? include_missing_packages_count? include_received_packages_count?
-      include_display_image_cloudinary_id? include_notes? include_closed_by? include_created_by? include_reviewed_by?
+      include_display_image_cloudinary_id? include_notes? include_closed_by? include_reviewed_by?
       include_received_by? include_delivery?].each do |method|
         alias_method method.to_sym, :restrict_payload_for_offers_package?
       end
