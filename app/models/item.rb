@@ -15,7 +15,8 @@ class Item < ActiveRecord::Base
   has_many   :expecting_packages, -> { where(state: 'expecting') }, class_name: "Package" # Used in Offer
   has_many   :missing_packages,   -> { where(state: 'missing') },   class_name: "Package" # Used in Offer
   has_many   :received_packages,  -> { where(state: 'received') },  class_name: "Package" # Used in Offer
-  has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
+  has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package" # Used in Offer
+  has_many   :non_inventoried_packages, -> { where(inventory_number: nil) }, class_name: "Package" # Used in Offer
 
   scope :with_eager_load, -> {
     eager_load([:package_type, :rejection_reason, :donor_condition, :images,

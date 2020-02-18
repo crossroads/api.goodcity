@@ -28,6 +28,8 @@ class Offer < ActiveRecord::Base
   has_many :expecting_packages, class_name: 'Package', through: :items, source: :expecting_packages
   has_many :missing_packages, class_name: 'Package', through: :items, source: :missing_packages
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
+  has_many :non_inventoried_packages, class_name: 'Package', through: :items, source: :non_inventoried_packages
+  has_many :inventory_packages, class_name: 'Package', through: :items, source: :inventory_packages
   has_many :images, through: :items
   has_many :subscriptions, dependent: :destroy
   has_many :messages, dependent: :destroy
@@ -52,7 +54,7 @@ class Offer < ActiveRecord::Base
   scope :with_summary_eager_load, -> {
     includes([:created_by, :reviewed_by, :received_by, :closed_by, :images,
       :submitted_items, :accepted_items, :rejected_items,
-      :expecting_packages, :missing_packages, :received_packages,
+      :expecting_packages, :missing_packages, :received_packages, :non_inventoried_packages, :inventory_packages,
       { delivery: [:schedule, :gogovan_order ] }
     ])
   }

@@ -166,7 +166,8 @@ module Api
         ActiveModel::ArraySerializer.new(records,
           each_serializer: summary_serializer,
           root: "offers",
-          include_messages: params[:include_messages] == "true"
+          include_messages: params[:include_messages] == "true",
+          restrict_payload_for_offers_package: bool_param(:for_offers_package, false),
         ).as_json
       end
 

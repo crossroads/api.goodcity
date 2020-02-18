@@ -23,7 +23,7 @@ module Api::V1
     end
 
     def inventoried_package_count
-      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is not null").size
+      object.inventory_packages.size
     end
 
     def inventoried_package_count__sql
@@ -31,7 +31,7 @@ module Api::V1
     end
 
     def unrecorded_package_count
-      Package.joins(item: :offer).where("items.offer_id = #{object.id} and inventory_number is null").size
+      object.non_inventoried_packages.size
     end
 
     def unrecorded_package_count__sql
@@ -99,5 +99,18 @@ module Api::V1
       User.current_user.present?
     end
 
+    def restrict_payload_for_offers_package?
+      !options[:restrict_payload_for_offers_package]
+    end
+
+    %w[include_state? include_created_at? include_inactive_at?
+      include_updated_at? include_submitted_at? include_reviewed_at? include_review_completed_at?
+      include_received_at? include_cancelled_at? include_start_receiving_at?
+      include_submitted_items_count? include_accepted_items_count? include_rejected_items_count?
+      include_expecting_packages_count? include_missing_packages_count? include_received_packages_count?
+      include_display_image_cloudinary_id? include_notes? include_closed_by? include_created_by? include_reviewed_by?
+      include_received_by? include_delivery?].each do |method|
+        alias_method method.to_sym, :restrict_payload_for_offers_package?
+      end
   end
 end
