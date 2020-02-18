@@ -2,15 +2,15 @@ require 'rails_helper'
 
 describe Package do
   before { User.current_user = create(:user) }
-  
+
   # testing dispatched packages
   context 'in_stock packages' do
     before(:each) do
-      create(:package, state: 'received', quantity: 1)
-      create(:package, state: 'received', allow_web_publish: true, quantity: 1)
-      create(:package, state: 'received', quantity: 0)
-      create(:package, :with_images, state: 'received', quantity: 1)
-      create(:package, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      create(:package, :with_inventory_number, state: 'received', quantity: 1)
+      create(:package, :with_inventory_number, state: 'received', allow_web_publish: true, quantity: 1)
+      create(:package, :with_inventory_number, state: 'received', quantity: 0)
+      create(:package, :with_inventory_number, :with_images, state: 'received', quantity: 1)
+      create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
     end
 
     subject { Package.filter('state' => state).count }
@@ -59,34 +59,40 @@ describe Package do
 
   context 'designated packages' do
     before(:each) do
-      create(:orders_package, :with_state_designated, quantity: 1)
-      create(:package, :with_images, state: 'received', quantity: 1)
-      create(:package, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      GoodcitySync.request_from_stockit = true
+      package = create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      order = create(:order)
+      create(:package, :with_inventory_number, :with_images, state: 'received', quantity: 1)
+      create(:orders_package, :with_state_designated, quantity: 1, order_id: order.id, package_id: package.id)
     end
+
     it 'filters out only designated packages' do
-      expect(Package.filter.count).to eq(3)
+      expect(Package.filter.count).to eq(2)
       expect(Package.filter('state' => 'designated').count).to eq(1)
     end
   end
 
   context 'dispatched packages' do
     before(:each) do
-      create(:orders_package, :with_state_dispatched, quantity: 1)
-      create(:package, :with_images, state: 'received', quantity: 1)
-      create(:package, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      GoodcitySync.request_from_stockit = true
+      package = create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      order = create(:order)
+      create(:package, :with_inventory_number, :with_images, state: 'received', quantity: 1)
+      create(:orders_package, :with_state_dispatched, quantity: 1, order_id: order.id, package_id: package.id)
     end
+
     it 'filters out only dispatched packages' do
-      expect(Package.filter.count).to eq(3)
+      expect(Package.filter.count).to eq(2)
       expect(Package.filter('state' => 'dispatched').count).to eq(1)
     end
   end
 
   context 'filters based on location' do
     before(:each) do
-      create(:package, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
-      create(:package, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
     end
-    let(:package_with_location) { create(:package, :package_with_locations, state: 'received', quantity: 1) }
+    let(:package_with_location) { create(:package, :with_inventory_number, :package_with_locations, state: 'received', quantity: 1) }
 
     it 'filters out item based on location' do
       pkg_location_name = package_with_location.locations.pluck(:building, :area).first.join('-')
@@ -99,7 +105,7 @@ describe Package do
     let(:item_id) { nil }
     let(:state) { [] }
     let(:options) { {search_text: search_text, item_id: item_id, state: state} }
-    
+
     subject { Package.search(options) }
 
     context 'should find items by inventory number' do
