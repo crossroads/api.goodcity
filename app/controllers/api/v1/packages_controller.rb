@@ -68,7 +68,8 @@ module Api
           exclude_stockit_set_item: @package.set_item_id.blank?,
           include_images: @package.set_item_id.blank?,
           include_allowed_actions: true,
-          include_added_quantity: false).as_json
+          include_on_hand_quantity: true
+        ).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"

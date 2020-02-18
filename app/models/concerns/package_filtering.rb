@@ -40,7 +40,7 @@ module PackageFiltering
       location = options['location']
       associated_package_types = options['associated_package_types']
 
-      query = where(nil)
+      query = where.not(inventory_number: nil)
       state_filters = states & %w[in_stock received designated dispatched]
       query = query.where_states(state_filters) if state_filters.any?
       query = query.filter_by_location(location) if location.present?
