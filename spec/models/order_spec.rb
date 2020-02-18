@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 require "rspec/mocks/standalone"
 
 RSpec.describe Order, type: :model do
@@ -16,7 +16,7 @@ RSpec.describe Order, type: :model do
   context "create an order" do
     let(:order) { Order.new }
     it "state should not be blank" do
-      expect(order.state).to eql('draft')
+      expect(order.state).to eql("draft")
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe Order, type: :model do
   end
 
   describe "Associations" do
-    it { is_expected.to belong_to :detail  }
+    it { is_expected.to belong_to :detail }
     it { is_expected.to belong_to :stockit_activity }
     it { is_expected.to belong_to :booking_type }
     it { is_expected.to belong_to :country }
@@ -41,50 +41,49 @@ RSpec.describe Order, type: :model do
     it { is_expected.to belong_to :address }
     it { is_expected.to belong_to :district }
     it { is_expected.to belong_to :cancellation_reason }
-    it { is_expected.to belong_to(:created_by).class_name('User') }
-    it { is_expected.to belong_to(:processed_by).class_name('User') }
+    it { is_expected.to belong_to(:created_by).class_name("User") }
+    it { is_expected.to belong_to(:processed_by).class_name("User") }
 
     it { is_expected.to have_many :packages }
     it { is_expected.to have_many :goodcity_requests }
     it { is_expected.to have_many :messages }
     it { is_expected.to have_many :subscriptions }
     it { is_expected.to have_many(:purposes).through(:orders_purposes) }
-    it { is_expected.to have_and_belong_to_many(:cart_packages).class_name('Package')}
+    it { is_expected.to have_and_belong_to_many(:cart_packages).class_name("Package") }
     it { is_expected.to have_many :orders_packages }
     it { is_expected.to have_many :orders_purposes }
     it { is_expected.to have_many(:process_checklists).through(:orders_process_checklists) }
     it { is_expected.to have_one :order_transport }
   end
 
-  describe 'Database columns' do
-    it{ is_expected.to have_db_column(:status).of_type(:string)}
-    it{ is_expected.to have_db_column(:code).of_type(:string)}
-    it{ is_expected.to have_db_column(:detail_type).of_type(:string)}
-    it{ is_expected.to have_db_column(:description).of_type(:text)}
-    it{ is_expected.to have_db_column(:cancel_reason).of_type(:text)}
-    it{ is_expected.to have_db_column(:state).of_type(:string)}
-    it{ is_expected.to have_db_column(:purpose_description).of_type(:text)}
-    it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:updated_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:dispatch_started_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:dispatch_started_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:cancelled_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:cancelled_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:process_completed_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:process_completed_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:processed_at).of_type(:datetime)}
-    it{ is_expected.to have_db_column(:processed_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:beneficiary_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:address_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:booking_type_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:staff_note).of_type(:string)}
+  describe "Database columns" do
+    it { is_expected.to have_db_column(:code).of_type(:string) }
+    it { is_expected.to have_db_column(:detail_type).of_type(:string) }
+    it { is_expected.to have_db_column(:description).of_type(:text) }
+    it { is_expected.to have_db_column(:cancel_reason).of_type(:text) }
+    it { is_expected.to have_db_column(:state).of_type(:string) }
+    it { is_expected.to have_db_column(:purpose_description).of_type(:text) }
+    it { is_expected.to have_db_column(:created_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:updated_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:dispatch_started_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:dispatch_started_by_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:cancelled_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:cancelled_by_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:process_completed_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:process_completed_by_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:processed_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:processed_by_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:beneficiary_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:address_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:booking_type_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:staff_note).of_type(:string) }
   end
 
-  describe '.counts_for' do
+  describe ".counts_for" do
     let(:user) { create :user }
     let(:user1) { create :user }
     TOTAL_REQUESTS_STATES.each do |state|
-      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id, status: nil }
+      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id }
     end
 
     it "will return submitted orders count for the user" do
@@ -104,7 +103,7 @@ RSpec.describe Order, type: :model do
     end
 
     it "will not return draft orders count for the user" do
-      expect(Order.counts_for(user.id).keys).to_not include('draft')
+      expect(Order.counts_for(user.id).keys).to_not include("draft")
       expect(Order.counts_for(user.id)["draft"]).to eq(nil)
     end
 
@@ -113,15 +112,17 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe '.my_orders' do
+  describe ".my_orders" do
     let(:user) { create :user, :charity, :with_can_manage_orders_permission }
     let(:supervisor) { create :user, :supervisor, :with_can_manage_orders_permission }
-    let(:authorised_by_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+    let(:authorised_by_user) {
+      create(:user_with_token, :with_multiple_roles_and_permissions,
+             roles_and_permissions: {"Supervisor" => ["can_manage_orders"]})
+    }
 
     ALL_ORDER_STATES.each do |state|
-      let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  supervisor.id }
-      let(:"unauthorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  nil }
+      let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id: supervisor.id }
+      let(:"unauthorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id: nil }
     end
 
     let!(:orders) { (1..5).map { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: nil } }
@@ -142,44 +143,44 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    context 'with submitted_by_id' do
+    context "with submitted_by_id" do
       it "will not return authorised draft orders" do
         authorised_draft_order
         expect(Order.my_orders.count).to eq(5)
         expect(Order.my_orders).not_to include(authorised_draft_order)
       end
 
-      it 'returns authorised submitted orders' do
+      it "returns authorised submitted orders" do
         authorised_submitted_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(authorised_submitted_order)
       end
 
-      it 'returns authorised processing orders' do
+      it "returns authorised processing orders" do
         authorised_processing_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(authorised_processing_order)
       end
 
-      it 'returns authorised scheduled orders' do
+      it "returns authorised scheduled orders" do
         authorised_awaiting_dispatch_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(authorised_awaiting_dispatch_order)
       end
 
-      it 'returns authorised dispatch orders' do
+      it "returns authorised dispatch orders" do
         authorised_dispatching_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(authorised_dispatching_order)
       end
 
-      it 'returns authorised closed orders' do
+      it "returns authorised closed orders" do
         authorised_closed_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(authorised_closed_order)
       end
 
-      it 'returns authorised cancelled orders' do
+      it "returns authorised cancelled orders" do
         authorised_cancelled_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(authorised_cancelled_order)
@@ -193,37 +194,37 @@ RSpec.describe Order, type: :model do
         expect(Order.my_orders).to include(unauthorised_draft_order)
       end
 
-      it 'returns unauthorised submitted orders' do
+      it "returns unauthorised submitted orders" do
         unauthorised_submitted_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(unauthorised_submitted_order)
       end
 
-      it 'returns unauthorised processing orders' do
+      it "returns unauthorised processing orders" do
         unauthorised_processing_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(unauthorised_processing_order)
       end
 
-      it 'returns unauthorised scheduled orders' do
+      it "returns unauthorised scheduled orders" do
         unauthorised_awaiting_dispatch_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(unauthorised_awaiting_dispatch_order)
       end
 
-      it 'returns unauthorised dispatch orders' do
+      it "returns unauthorised dispatch orders" do
         unauthorised_dispatching_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(unauthorised_dispatching_order)
       end
 
-      it 'returns unauthorised closed orders' do
+      it "returns unauthorised closed orders" do
         unauthorised_closed_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(unauthorised_closed_order)
       end
 
-      it 'returns unauthorised cancelled orders' do
+      it "returns unauthorised cancelled orders" do
         unauthorised_cancelled_order
         expect(Order.my_orders.count).to eq(6)
         expect(Order.my_orders).to include(unauthorised_cancelled_order)
@@ -231,25 +232,29 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe '.recently_used' do
-    let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+  describe ".recently_used" do
+    let!(:user) {
+      create(:user_with_token, :with_multiple_roles_and_permissions,
+             roles_and_permissions: {"Supervisor" => ["can_manage_orders"]})
+    }
 
-    let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-    let(:package1) { create(:package)}
-    let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
-    let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
+    let!(:user1) {
+      create(:user_with_token, :with_multiple_roles_and_permissions,
+             roles_and_permissions: {"Supervisor" => ["can_manage_orders"]})
+    }
+    let(:package1) { create(:package) }
+    let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now }
+    let!(:version1) { order1.versions.first.update(whodunnit: order1.created_by_id) }
 
-    let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + 1.hour }
-    let!(:version2) {order2.versions.first.update(whodunnit: order2.created_by_id)}
+    let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now + 1.hour }
+    let!(:version2) { order2.versions.first.update(whodunnit: order2.created_by_id) }
 
     before(:each) {
       User.current_user = user
     }
 
     it "will show latest updated order as the first order" do
-      order1.update(state: 'processing', processed_by_id: user.id, updated_at: Time.now + 2.day)
+      order1.update(state: "processing", processed_by_id: user.id, updated_at: Time.now + 2.day)
       order1.versions.last.update(whodunnit: user.id)
       expect(Order.recently_used(user.id).first.id).to eq(order1.id)
       expect(Order.recently_used(user.id)).to include(order1)
@@ -261,32 +266,32 @@ RSpec.describe Order, type: :model do
 
     it "will not show updated position of order if other user has updated the record" do
       expect(Order.recently_used(user.id).first).to eq(order2)
-      order1.update(state: 'processing', processed_by_id: user1.id, updated_at: Time.now + 2.day)
+      order1.update(state: "processing", processed_by_id: user1.id, updated_at: Time.now + 2.day)
       expect(Order.recently_used(user.id).first).to eq(order2)
     end
 
     it "will not show updated order position if other user has added goodcity request" do
       expect(Order.recently_used(user.id).first).to eq(order2)
-      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user1.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user1.id, created_at: Time.now + 2.hours, updated_at: Time.now + 2.hours
       expect(Order.recently_used(user.id).first).to eq(order2)
     end
 
     it "will show updated order position if loggedin user has added goodcity request" do
       expect(Order.recently_used(user.id).first).to eq(order2)
-      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      gc_request1 = create :goodcity_request, order_id: order1.id, created_by_id: user.id, created_at: Time.now + 2.hours, updated_at: Time.now + 2.hours
       gc_request1.versions.last.update(whodunnit: user.id)
       expect(Order.recently_used(user.id).first).to eq(order1)
     end
 
     it "will not show updated order position if other user has added packages in order" do
       expect(Order.recently_used(user.id).first).to eq(order2)
-      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user1.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user1.id, created_at: Time.now + 2.hours, updated_at: Time.now + 2.hours
       expect(Order.recently_used(user.id).first).to eq(order2)
     end
 
     it "will add show updated order position if loggedin user has added packages in order" do
       expect(Order.recently_used(user.id).first).to eq(order2)
-      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user.id, created_at: Time.now+2.hours, updated_at: Time.now+2.hours
+      orders_package1 = create :orders_package, package_id: package1.id, order_id: order1.id, state: "designated", quantity: 1, updated_by_id: user.id, created_at: Time.now + 2.hours, updated_at: Time.now + 2.hours
       expect(Order.recently_used(user.id).first).to eq(order1)
     end
 
@@ -329,7 +334,7 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe 'priority rules' do
+  describe "priority rules" do
     let(:at_6pm_today) { Time.now.in_time_zone.change(hour: 18) }
     let(:at_6pm_yesterday) { at_6pm_today - 24.hours }
     let(:after_6pm_today) { Time.now.in_time_zone.change(hour: 19) }
@@ -337,26 +342,25 @@ RSpec.describe Order, type: :model do
     let(:before_6pm_today) { Time.now.in_time_zone.change(hour: 15) }
     let(:before_6pm_yesterday) { before_6pm_today - 24.hours }
 
-    context 'A submitted order' do
-      it 'should be prioritised if it was submitted more than 24hours ago' do
+    context "A submitted order" do
+      it "should be prioritised if it was submitted more than 24hours ago" do
         old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
         order = create :order, state: "submitted", submitted_at: Time.now - 23.hours
         expect(old_order.is_priority?).to eq(true)
         expect(order.is_priority?).to eq(false)
       end
 
-      it 'should filter prioritised orders if it was submitted more than 24hours ago' do
+      it "should filter prioritised orders if it was submitted more than 24hours ago" do
         create :order, state: "submitted", submitted_at: Time.now - 23.hours
         old_order = create :order, state: "submitted", submitted_at: Time.now - 25.hours
-        records = Order.where(state: 'submitted')
+        records = Order.where(state: "submitted")
         expect(records.count).to eq(2)
         expect(records.priority.count).to eq(1)
         expect(records.priority.first.id).to eq(old_order.id)
       end
     end
 
-    context 'An order under review (aka processing)' do
-
+    context "An order under review (aka processing)" do
       after { Timecop.return }
 
       context 'If we\'re past 6pm' do
@@ -375,13 +379,13 @@ RSpec.describe Order, type: :model do
           order_started_before_6 = create :order, state: "processing", processed_at: before_6pm_today
           order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
           create :order, state: "processing", processed_at: after_6pm_today
-          records = Order.where(state: 'processing')
+          records = Order.where(state: "processing")
           expect(records.count).to eq(3)
           expect(records.priority.count).to eq(2)
           expect(records.priority.map(&:id)).to match_array [
-            order_started_before_6.id,
-            order_started_before_6_ytd.id
-          ]
+                        order_started_before_6.id,
+                        order_started_before_6_ytd.id,
+                      ]
         end
       end
 
@@ -401,7 +405,7 @@ RSpec.describe Order, type: :model do
           create :order, state: "processing", processed_at: before_6pm_today
           create :order, state: "processing", processed_at: after_6pm_yesterday
           order_started_before_6_ytd = create :order, state: "processing", processed_at: before_6pm_yesterday
-          records = Order.where(state: 'processing')
+          records = Order.where(state: "processing")
           expect(records.count).to eq(3)
           expect(records.priority.count).to eq(1)
           expect(records.priority.first.id).to eq(order_started_before_6_ytd.id)
@@ -409,7 +413,7 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    context 'An order awaiting dispatch' do
+    context "An order awaiting dispatch" do
       let(:transport_before_6) { create :order_transport, scheduled_at: before_6pm_today, timeslot: "3PM" }
       let(:transport_after_6) { create :order_transport, scheduled_at: after_6pm_today, timeslot: "19PM" }
 
@@ -424,22 +428,21 @@ RSpec.describe Order, type: :model do
         #expect(non_priority_order.is_priority?).to eq(false)
       end
 
-      it 'should filter prioritised orders awaiting dispatch' do
+      it "should filter prioritised orders awaiting dispatch" do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
         create :order, state: "awaiting_dispatch", order_transport: transport_after_6
-        records = Order.where(state: 'awaiting_dispatch')
+        records = Order.where(state: "awaiting_dispatch")
         expect(records.count).to eq(2)
         expect(records.priority.count).to eq(1)
         expect(records.priority.first.id).to eq(priority_order.id)
       end
     end
 
-    context 'An order is dispatching' do
-
+    context "An order is dispatching" do
       context 'If we\'re past 6pm' do
         before { Timecop.freeze(after_6pm_today) }
 
-        it 'should be prioritised if it was started before 6pm' do
+        it "should be prioritised if it was started before 6pm" do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_after_6 = create :order, state: "dispatching", dispatch_started_at: after_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
@@ -448,16 +451,16 @@ RSpec.describe Order, type: :model do
           expect(dispatching_started_after_6.is_priority?).to eq(false)
         end
 
-        it 'should filter prioritised orders if it was started before 6pm' do
+        it "should filter prioritised orders if it was started before 6pm" do
           create :order, state: "dispatching", dispatch_started_at: after_6pm_today
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
-          records = Order.where(state: 'dispatching')
+          records = Order.where(state: "dispatching")
           expect(records.count).to eq(3)
           expect(records.priority.count).to eq(2)
           expect(records.priority.map(&:id)).to match_array([
             dispatching_started_yesterday.id,
-            dispatching_started_before_6.id
+            dispatching_started_before_6.id,
           ])
         end
       end
@@ -465,17 +468,17 @@ RSpec.describe Order, type: :model do
       context 'If we\'re before 6pm' do
         before { Timecop.freeze(before_6pm_today) }
 
-        it 'should be prioritised if it was started before 6pm the previous day' do
+        it "should be prioritised if it was started before 6pm the previous day" do
           dispatching_started_before_6 = create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
           expect(dispatching_started_before_6.is_priority?).to eq(false)
           expect(dispatching_started_yesterday.is_priority?).to eq(true)
         end
 
-        it 'should filter prioritised orders if it was started before 6pm the previous day' do
+        it "should filter prioritised orders if it was started before 6pm the previous day" do
           create :order, state: "dispatching", dispatch_started_at: before_6pm_today
           dispatching_started_yesterday = create :order, state: "dispatching", dispatch_started_at: before_6pm_yesterday
-          records = Order.where(state: 'dispatching')
+          records = Order.where(state: "dispatching")
           expect(records.count).to eq(2)
           expect(records.priority.count).to eq(1)
           expect(records.priority.first.id).to eq(dispatching_started_yesterday.id)
@@ -484,77 +487,76 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe 'state transitions' do
-
+  describe "state transitions" do
     before { User.current_user = user }
 
-    describe '#start_processing' do
-      it 'sets processed_at time and processed_by_id as current user if order is in submitted state' do
-        order = create :order, state: 'submitted'
+    describe "#start_processing" do
+      it "sets processed_at time and processed_by_id as current user if order is in submitted state" do
+        order = create :order, state: "submitted"
         order.start_processing
         expect(order.reload.processed_at).to eq(Time.now)
         expect(order.reload.processed_by_id).to eq(user.id)
       end
 
-      it 'do not sets processed_at time and processed_by_id as current user if order is not in submitted state' do
-        order = create :order, state: 'draft'
+      it "do not sets processed_at time and processed_by_id as current user if order is not in submitted state" do
+        order = create :order, state: "draft"
         order.start_processing
         expect(order.reload.processed_at).to eq(nil)
         expect(order.reload.processed_by_id).to eq(nil)
       end
     end
 
-    describe '#start_dispatching' do
-      it 'sets dispatch_started_at time and dispatch_started_by as current user if order is in awaiting_dispatch state' do
-        order = create :order, state: 'awaiting_dispatch'
+    describe "#start_dispatching" do
+      it "sets dispatch_started_at time and dispatch_started_by as current user if order is in awaiting_dispatch state" do
+        order = create :order, state: "awaiting_dispatch"
         order.start_dispatching
         expect(order.reload.dispatch_started_at).to eq(Time.now)
         expect(order.reload.dispatch_started_by_id).to eq(user.id)
       end
 
-      it 'do not sets dispatch_started_at time and dispatch_started_by as current user if order is not in awaiting_dispatch state' do
-        order = create :order, state: 'draft'
+      it "do not sets dispatch_started_at time and dispatch_started_by as current user if order is not in awaiting_dispatch state" do
+        order = create :order, state: "draft"
         order.start_processing
         expect(order.reload.processed_at).to eq(nil)
         expect(order.reload.processed_by_id).to eq(nil)
       end
     end
 
-    describe '#finish_processing' do
-      it 'sets process_completed_at time and process_completed_by_id as current user if order is in processing state' do
-        order = create :order, state: 'processing'
+    describe "#finish_processing" do
+      it "sets process_completed_at time and process_completed_by_id as current user if order is in processing state" do
+        order = create :order, state: "processing"
         order.finish_processing
         expect(order.reload.process_completed_at).to eq(Time.now)
         expect(order.reload.process_completed_by_id).to eq(user.id)
       end
 
-      it 'do not sets process_completed_at time and process_completed_by_id as current user if order is not in processing state' do
-        order = create :order, state: 'draft'
+      it "do not sets process_completed_at time and process_completed_by_id as current user if order is not in processing state" do
+        order = create :order, state: "draft"
         order.finish_processing
         expect(order.reload.process_completed_at).to eq(nil)
         expect(order.reload.process_completed_by_id).to eq(nil)
       end
     end
 
-    describe '#close' do
-      it 'sets closed_at time and closed_by_id as current user if order is in dispatching state' do
-        order = create :order, state: 'dispatching'
+    describe "#close" do
+      it "sets closed_at time and closed_by_id as current user if order is in dispatching state" do
+        order = create :order, state: "dispatching"
         order.close
         expect(order.reload.closed_at).to eq(Time.now)
         expect(order.reload.closed_by_id).to eq(user.id)
       end
 
-      it 'do not sets closed_at time and closed_by_id as current user if order is not in dispatching state' do
-        order = create :order, state: 'draft'
+      it "do not sets closed_at time and closed_by_id as current user if order is not in dispatching state" do
+        order = create :order, state: "draft"
         order.close
         expect(order.reload.closed_at).to eq(nil)
         expect(order.reload.closed_by_id).to eq(nil)
       end
     end
 
-    describe '#reopen' do
-      it 'sets dispatch attributes and nullyfies closed_at and closed_by' do
-        order = create :order, state: 'closed', closed_at: Time.now, closed_by_id: user.id
+    describe "#reopen" do
+      it "sets dispatch attributes and nullyfies closed_at and closed_by" do
+        order = create :order, state: "closed", closed_at: Time.now, closed_by_id: user.id
         order.reopen
         expect(order.reload.closed_at).to eq(nil)
         expect(order.reload.closed_by_id).to eq(nil)
@@ -563,8 +565,8 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    describe '#restart_process' do
-      it 'resets attributes relatred to process started and process completed if order is in awaiting state' do
+    describe "#restart_process" do
+      it "resets attributes relatred to process started and process completed if order is in awaiting state" do
         order = create :order, :awaiting_dispatch
         order.restart_process
         expect(order.reload.processed_by_id).to eq(nil)
@@ -574,10 +576,10 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    describe '#redesignate_cancelled_order' do
-      it 'sets processed_at and processed_by columns and nullyfies other order workflow related columns' do
-        order = create :order, state: 'cancelled', process_completed_at: Time.now, process_completed_by_id: user.id, cancelled_at: Time.now, cancelled_by_id: user.id,
-          dispatch_started_by_id: user.id, dispatch_started_at: Time.now
+    describe "#redesignate_cancelled_order" do
+      it "sets processed_at and processed_by columns and nullyfies other order workflow related columns" do
+        order = create :order, state: "cancelled", process_completed_at: Time.now, process_completed_by_id: user.id, cancelled_at: Time.now, cancelled_by_id: user.id,
+                               dispatch_started_by_id: user.id, dispatch_started_at: Time.now
         order.redesignate_cancelled_order
         expect(order.reload.processed_at).to eq(Time.now)
         expect(order.reload.processed_by_id).to eq(user.id)
@@ -590,49 +592,49 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    describe '#cancel' do
+    describe "#cancel" do
       before do
         allow_any_instance_of(PushService).to receive(:send_update_store)
       end
 
-      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in submitted state' do
-        order = create :order, state: 'submitted'
-        orders_package = create :orders_package, order: order, state: 'designated'
+      it "set cancelled_by_id with current_user id and cancelled_at time with current time when in submitted state" do
+        order = create :order, state: "submitted"
+        orders_package = create :orders_package, order: order, state: "designated"
         order.cancel
         expect(order.reload.cancelled_at).to eq(Time.now)
         expect(order.reload.cancelled_by_id).to eq(user.id)
-        expect(orders_package.reload.state).to eq('cancelled')
+        expect(orders_package.reload.state).to eq("cancelled")
       end
 
-      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in proceesin state' do
-        order = create :order, state: 'processing'
-        order.cancel
-        expect(order.reload.cancelled_at).to eq(Time.now)
-        expect(order.reload.cancelled_by_id).to eq(user.id)
-      end
-
-      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in awaiting_dispatch state' do
-        order = create :order, state: 'awaiting_dispatch'
+      it "set cancelled_by_id with current_user id and cancelled_at time with current time when in proceesin state" do
+        order = create :order, state: "processing"
         order.cancel
         expect(order.reload.cancelled_at).to eq(Time.now)
         expect(order.reload.cancelled_by_id).to eq(user.id)
       end
 
-      it 'set cancelled_by_id with current_user id and cancelled_at time with current time when in dispatching state' do
-        order = create :order, state: 'dispatching'
+      it "set cancelled_by_id with current_user id and cancelled_at time with current time when in awaiting_dispatch state" do
+        order = create :order, state: "awaiting_dispatch"
+        order.cancel
+        expect(order.reload.cancelled_at).to eq(Time.now)
+        expect(order.reload.cancelled_by_id).to eq(user.id)
+      end
+
+      it "set cancelled_by_id with current_user id and cancelled_at time with current time when in dispatching state" do
+        order = create :order, state: "dispatching"
         order.cancel
         expect(order.reload.cancelled_at).to eq(Time.now)
         expect(order.reload.cancelled_by_id).to eq(user.id)
       end
     end
 
-    describe '#resubmit' do
-      it 'nullyfies all columns related to order workflow if order is in cancelled state' do
-        order = create :order, state: 'cancelled', processed_at: Time.now,
-        processed_by_id: user.id, process_completed_at: Time.now,
-        process_completed_by_id: user.id, cancelled_at: Time.now,
-        cancelled_by_id: user.id, dispatch_started_by_id: user.id,
-        dispatch_started_at: Time.now
+    describe "#resubmit" do
+      it "nullyfies all columns related to order workflow if order is in cancelled state" do
+        order = create :order, state: "cancelled", processed_at: Time.now,
+                               processed_by_id: user.id, process_completed_at: Time.now,
+                               process_completed_by_id: user.id, cancelled_at: Time.now,
+                               cancelled_by_id: user.id, dispatch_started_by_id: user.id,
+                               dispatch_started_at: Time.now
         order.resubmit
         expect(order.reload.processed_at).to be_nil
         expect(order.reload.processed_by_id).to be_nil
@@ -645,21 +647,21 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    describe '#can_dispatch_item' do
-      it 'should be truthy for unprocessed states' do
-        order = create :order, state:  Order::ORDER_UNPROCESSED_STATES.sample
+    describe "#can_dispatch_item" do
+      it "should be truthy for unprocessed states" do
+        order = create :order, state: Order::ORDER_UNPROCESSED_STATES.sample
         expect(order.can_dispatch_item?).to be_truthy
       end
 
-      it 'should be falsey for awaiting_dispatch state' do
-        order = create :order, state: 'awaiting_dispatch'
+      it "should be falsey for awaiting_dispatch state" do
+        order = create :order, state: "awaiting_dispatch"
         expect(order.can_dispatch_item?).to be_falsey
       end
     end
 
-    describe '#dispatch_later' do
-      it 'nullyfies dispatch_started_at and dispatch_started_by if order is in dispatching state' do
-        order = create :order, state: 'dispatching', dispatch_started_at: Time.now, dispatch_started_by_id: user.id
+    describe "#dispatch_later" do
+      it "nullyfies dispatch_started_at and dispatch_started_by if order is in dispatching state" do
+        order = create :order, state: "dispatching", dispatch_started_at: Time.now, dispatch_started_by_id: user.id
         order.dispatch_later
         expect(order.reload.dispatch_started_at).to be_nil
         expect(order.reload.dispatch_started_by_id).to be_nil
@@ -682,7 +684,7 @@ RSpec.describe Order, type: :model do
   end
 
   describe "Update OrdersPackages state" do
-    let(:order) { create :order, :with_orders_packages  }
+    let(:order) { create :order, :with_orders_packages }
     it "Updates state to designated" do
       order.orders_packages.each do |orders_package|
         orders_package.update_state_to_designated
@@ -691,11 +693,11 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe '#send_new_order_confirmed_sms_to_charity' do
+  describe "#send_new_order_confirmed_sms_to_charity" do
     let(:charity) { create(:user, :charity) }
     let(:supervisor) { create(:user, :supervisor) }
     let(:order) { build(:order, submitted_by: supervisor, created_by: charity) }
-    let(:twilio)     { TwilioService.new(charity) }
+    let(:twilio) { TwilioService.new(charity) }
 
     it "send order submission sms to charity user who submitted order" do
       expect(TwilioService).to receive(:new).with(charity).and_return(twilio)
@@ -704,7 +706,7 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe 'Order filtering rules' do
+  describe "Order filtering rules" do
     before do
       create :order, state: "submitted", description: "A table", submitted_at: Time.now - 25.hours
       create :order, state: "submitted", description: "Another table", submitted_at: Time.now - 25.hours
@@ -714,40 +716,39 @@ RSpec.describe Order, type: :model do
       create :order, state: "closed", description: "A trampoline", closed_at: Time.now - 25.hours
     end
 
-    it 'Should allow filtering a scoped relation' do
+    it "Should allow filtering a scoped relation" do
       expect(Order.count).to eq(6)
       expect(Order.where("description ILIKE '%table%'").count).to eq(3)
-      expect(Order.where("description ILIKE '%table%'").filter(states: ['submitted']).count(:all)).to eq(2)
+      expect(Order.where("description ILIKE '%table%'").filter(states: ["submitted"]).count(:all)).to eq(2)
     end
 
-    it 'Should allow filtering an unscoped relation' do
+    it "Should allow filtering an unscoped relation" do
       expect(Order.count).to eq(6)
-      expect(Order.filter(states: ['submitted', 'closed']).count(:all)).to eq(4)
+      expect(Order.filter(states: ["submitted", "closed"]).count(:all)).to eq(4)
     end
 
-    it 'Should allow chaining a scope' do
+    it "Should allow chaining a scope" do
       expect(Order.count).to eq(6)
-      expect(Order.filter(states: ['submitted']).where("description ILIKE '%table%'").count(:all)).to eq(2)
+      expect(Order.filter(states: ["submitted"]).where("description ILIKE '%table%'").count(:all)).to eq(2)
     end
 
-    it 'Should not filter out anything if no explicit arguments are provided' do
+    it "Should not filter out anything if no explicit arguments are provided" do
       expect(Order.count).to eq(6)
       expect(Order.where("description ILIKE '%table%'").count).to eq(3)
       expect(Order.where("description ILIKE '%table%'").filter.count(:all)).to eq(3)
     end
   end
 
-  describe 'Processing checklist' do
-    let!(:booking_type) { create :booking_type, identifier: 'aaa' }
-    let!(:booking_type2) { create :booking_type, identifier: 'bbb' }
+  describe "Processing checklist" do
+    let!(:booking_type) { create :booking_type, identifier: "aaa" }
+    let!(:booking_type2) { create :booking_type, identifier: "bbb" }
     let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
     let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
     let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
     let!(:checklist_unrequired) { create :process_checklist, booking_type: booking_type2 }
     let!(:order) { create :order, booking_type: booking_type, state: "processing", description: "", process_checklists: [checklist_it1] }
 
-
-    it 'Should be allowed to transition only if all checklist items have been added to the order' do
+    it "Should be allowed to transition only if all checklist items have been added to the order" do
       expect(order.process_checklists.count).to eq(1)
       expect(order.can_transition).to eq(false) # 1/3
 
@@ -772,22 +773,22 @@ RSpec.describe Order, type: :model do
     # Different scenarios to test
     #
     {
-      booking_type: 'appointment',
+      booking_type: "appointment",
       transport_type: nil,
-      email_service_method: :send_appointment_confirmation_email
+      email_service_method: :send_appointment_confirmation_email,
     },
     {
-      booking_type: 'online-order',
-      transport_type: 'self',
-      email_service_method: :send_order_confirmation_pickup_email
+      booking_type: "online-order",
+      transport_type: "self",
+      email_service_method: :send_order_confirmation_pickup_email,
     },
     {
-      booking_type: 'online-order',
-      transport_type: 'ggv',
-      email_service_method: :send_order_confirmation_delivery_email
-    }
+      booking_type: "online-order",
+      transport_type: "ggv",
+      email_service_method: :send_order_confirmation_delivery_email,
+    },
   ].each do |test_scenario|
-    type, transport_type, email_service_method  = test_scenario.values_at(
+    type, transport_type, email_service_method = test_scenario.values_at(
       :booking_type, :transport_type, :email_service_method
     )
 
@@ -804,7 +805,7 @@ RSpec.describe Order, type: :model do
         [
           :send_new_order_notification,
           :add_to_stockit,
-          :send_new_order_confirmed_sms_to_charity
+          :send_new_order_confirmed_sms_to_charity,
         ].each do |f|
           # mock calls that require external services
           allow(order).to receive(f).and_return(true)
@@ -856,13 +857,13 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe 'Submission Emails' do
+  describe "Submission Emails" do
     let(:sendgrid) { SendgridService.new(user) }
-    let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment )}
-    let(:online_order1) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
-    let(:online_order2) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
+    let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment) }
+    let(:online_order1) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft") }
+    let(:online_order2) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft") }
     let(:order_transport1) { create(:order_transport, order: online_order1) }
-    let(:order_transport2) { create(:order_transport, order: online_order2, transport_type: 'ggv') }
+    let(:order_transport2) { create(:order_transport, order: online_order2, transport_type: "ggv") }
 
     before(:each) do
       User.current_user = user
@@ -870,7 +871,7 @@ RSpec.describe Order, type: :model do
       [
         :send_new_order_notification,
         :add_to_stockit,
-        :send_new_order_confirmed_sms_to_charity
+        :send_new_order_confirmed_sms_to_charity,
       ].each do |f|
         # mock calls that require external services
         allow(appointment).to receive(f).and_return(true)
@@ -879,7 +880,7 @@ RSpec.describe Order, type: :model do
       end
     end
 
-    context '#send_submission_pickup_email?' do
+    context "#send_submission_pickup_email?" do
       it "should return true for appointment and self_pickup online order" do
         online_order1.submit!
         expect(order_transport1.order.send_submission_pickup_email?).to be_truthy
@@ -893,8 +894,10 @@ RSpec.describe Order, type: :model do
 
   describe "Live updates" do
     let(:push_service) { PushService.new }
-    let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-      roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
+    let(:charity_user) {
+      create(:user_with_token, :with_multiple_roles_and_permissions,
+             roles_and_permissions: {"Charity" => ["can_login_to_browse"]})
+    }
 
     before(:each) do
       allow(PushService).to receive(:new).and_return(push_service)
@@ -904,7 +907,7 @@ RSpec.describe Order, type: :model do
       expect(push_service).to receive(:send_update_store) do |channels, data|
         expect(channels.flatten).to eq([
           Channel.private_channels_for(charity_user, BROWSE_APP),
-          Channel::ORDER_FULFILMENT_CHANNEL
+          Channel::ORDER_FULFILMENT_CHANNEL,
         ].flatten)
         yield(channels, data) if block_given?
       end
@@ -915,7 +918,7 @@ RSpec.describe Order, type: :model do
 
       it "Sends changes to the stock channel and the user's browse channel" do
         validate_channels do |channels, data|
-          record = data.as_json['item'][:order]
+          record = data.as_json["item"][:order]
           expect(record[:created_by_id]).to eq(charity_user.id)
         end
         create(:order, created_by: charity_user)
@@ -927,7 +930,7 @@ RSpec.describe Order, type: :model do
 
       it "Sends changes to the stock channel and the user's browse channel" do
         validate_channels do |channels, data|
-          record = data.as_json['item'][:order]
+          record = data.as_json["item"][:order]
           expect(record[:id]).to eq(existing_order.id)
           expect(record[:staff_note]).to eq("Steve is happy")
         end
@@ -944,6 +947,5 @@ RSpec.describe Order, type: :model do
         existing_order.destroy
       end
     end
-
   end
 end

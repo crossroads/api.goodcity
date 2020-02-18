@@ -1,22 +1,21 @@
 FactoryBot.define do
   factory :order do
-    status   ["draft", "submitted", "processing", "closed", "cancelled"].sample
-    state    ["draft", "submitted", "processing", "closed", "cancelled"].sample
+    state ["draft", "submitted", "processing", "closed", "cancelled"].sample
 
-    code          { generate(:code) }
-    description     FFaker::Lorem.sentence
+    code { generate(:code) }
+    description FFaker::Lorem.sentence
     purpose_description FFaker::Lorem.sentence
-    stockit_id      nil
-    detail_type     "GoodCity"
-    people_helped   { rand(10) + 1 }
-    association     :stockit_organisation
-    association     :stockit_activity
-    association     :organisation
-    association     :stockit_contact
-    association     :beneficiary
-    association     :country
-    association     :district
-    association     :booking_type
+    stockit_id nil
+    detail_type "GoodCity"
+    people_helped { rand(10) + 1 }
+    association :stockit_organisation
+    association :stockit_activity
+    association :organisation
+    association :stockit_contact
+    association :beneficiary
+    association :country
+    association :district
+    association :booking_type
 
     trait :with_orders_packages do
       after(:create) do |order|
@@ -47,7 +46,7 @@ FactoryBot.define do
     end
 
     trait :with_goodcity_requests do
-      goodcity_requests { create_list :goodcity_request, 1}
+      goodcity_requests { create_list :goodcity_request, 1 }
     end
 
     trait :with_stockit_id do
@@ -56,10 +55,6 @@ FactoryBot.define do
 
     trait :with_state_submitted do
       state "submitted"
-    end
-
-    trait :with_status_processing do
-      status "processing"
     end
 
     trait :with_state_processing do
@@ -87,7 +82,7 @@ FactoryBot.define do
     end
 
     trait :awaiting_dispatch do
-      state 'awaiting_dispatch'
+      state "awaiting_dispatch"
       :with_processed_by
       processed_at { Time.now }
       :with_process_completed_by
@@ -112,10 +107,10 @@ FactoryBot.define do
   end
 
   factory :online_order, parent: :order do
-    booking_type { create(:booking_type, identifier: 'online-order') }
+    booking_type { create(:booking_type, identifier: "online-order") }
   end
 
   factory :appointment, parent: :order do
-    booking_type { create(:booking_type, identifier: 'appointment') }
+    booking_type { create(:booking_type, identifier: "appointment") }
   end
 end
