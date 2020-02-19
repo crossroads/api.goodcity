@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200219081357) do
+ActiveRecord::Schema.define(version: 20200219121920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -500,6 +500,7 @@ ActiveRecord::Schema.define(version: 20200219081357) do
   add_index "orders", ["organisation_id"], name: "index_orders_on_organisation_id", using: :btree
   add_index "orders", ["process_completed_by_id"], name: "index_orders_on_process_completed_by_id", using: :btree
   add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
+  add_index "orders", ["shipment_date"], name: "index_orders_on_shipment_date", using: :btree
   add_index "orders", ["state"], name: "index_orders_on_state", using: :btree
   add_index "orders", ["stockit_activity_id"], name: "index_orders_on_stockit_activity_id", using: :btree
   add_index "orders", ["stockit_contact_id"], name: "index_orders_on_stockit_contact_id", using: :btree
