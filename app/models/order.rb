@@ -506,4 +506,3 @@ class Order < ActiveRecord::Base
     nil
   end
 end
-
