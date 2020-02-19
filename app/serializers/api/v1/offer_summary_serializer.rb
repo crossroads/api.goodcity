@@ -7,7 +7,7 @@ module Api::V1
       :received_at, :cancelled_at, :start_receiving_at,
       :submitted_items_count, :accepted_items_count, :rejected_items_count,
       :expecting_packages_count, :missing_packages_count, :received_packages_count,
-      :display_image_cloudinary_id, :notes, :inventoried_package_count, :unrecorded_package_count
+      :display_image_cloudinary_id, :notes
 
     has_one  :closed_by, serializer: UserSummarySerializer, root: :user
     has_one  :created_by, serializer: UserSummarySerializer, root: :user
@@ -20,22 +20,6 @@ module Api::V1
     def include_messages?
       return false unless goodcity_user?
       @options[:include_messages] == true
-    end
-
-    def inventoried_package_count
-      object.inventory_packages.size
-    end
-
-    def inventoried_package_count__sql
-      "SELECT COUNT(*) FROM packages INNER JOIN items ON items.id = packages.item_id INNER JOIN offers ON offers.id = items.offer_id WHERE items.offer_id = 729 and inventory_number is not null"
-    end
-
-    def unrecorded_package_count
-      object.non_inventoried_packages.size
-    end
-
-    def unrecorded_package_count__sql
-      "SELECT COUNT(*) FROM packages INNER JOIN items ON items.id = packages.item_id INNER JOIN offers ON offers.id = items.offer_id WHERE items.offer_id = 729 and inventory_number is null"
     end
 
     def display_image_cloudinary_id
@@ -98,19 +82,5 @@ module Api::V1
     def goodcity_user?
       User.current_user.present?
     end
-
-    def restrict_payload_for_offers_package?
-      !options[:restrict_payload_for_offers_package]
-    end
-
-    %w[include_state? include_created_at? include_inactive_at?
-      include_updated_at? include_submitted_at? include_reviewed_at? include_review_completed_at?
-      include_received_at? include_cancelled_at? include_start_receiving_at?
-      include_submitted_items_count? include_accepted_items_count? include_rejected_items_count?
-      include_expecting_packages_count? include_missing_packages_count? include_received_packages_count?
-      include_display_image_cloudinary_id? include_notes? include_closed_by? include_reviewed_by?
-      include_received_by? include_delivery?].each do |method|
-        alias_method method.to_sym, :restrict_payload_for_offers_package?
-      end
   end
 end

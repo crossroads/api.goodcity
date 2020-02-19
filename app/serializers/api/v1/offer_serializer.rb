@@ -19,7 +19,6 @@ module Api::V1
     has_one  :crossroads_transport, serializer: CrossroadsTransportSerializer
     has_one  :cancellation_reason, serializer: CancellationReasonSerializer
     has_one  :company, serializer: CompanySerializer
-    has_many :offers_packages, serializer: OffersPackageSerializer
 
     def include_messages?
       return false unless goodcity_user?

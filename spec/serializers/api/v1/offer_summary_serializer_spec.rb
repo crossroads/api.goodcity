@@ -3,7 +3,7 @@ require 'rails_helper'
 context Api::V1::OfferSummarySerializer do
   let(:company) { create :company }
   let(:offer)      { create(:offer, :with_items, company: company) }
-  let(:serializer) { Api::V1::OfferSummarySerializer.new(offer, root: 'offer', restrict_payload_for_offers_package: false).as_json }
+  let(:serializer) { Api::V1::OfferSummarySerializer.new(offer, root: 'offer').as_json }
 
   subject { JSON.parse( serializer.to_json ) }
 
@@ -45,17 +45,4 @@ context Api::V1::OfferSummarySerializer do
     expect(subject['offer'].keys).to include("missing_packages_count")
     expect(subject['offer'].keys).to include("received_packages_count")
   end
-end
-
-context "only includes company,  if restrict_payload_for_offers_package = true" do
-  let(:company) { create :company }
-  let(:offer)      { create(:offer, :with_items, company: company) }
-  let(:serializer) { Api::V1::OfferSummarySerializer.new(offer, root: 'offer', restrict_payload_for_offers_package: true).as_json }
-  subject { JSON.parse( serializer.to_json ) }
-
-  it { expect(subject.keys).to include('companies') }
-  it { expect(subject.keys).to_not include('items') }
-  it { expect(subject.keys).to_not include('messages') }
-  it { expect(subject.keys).to_not include('crossroads_transport') }
-  it { expect(subject.keys).to_not include('cancellation_reason') }
 end
