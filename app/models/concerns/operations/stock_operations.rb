@@ -1,6 +1,4 @@
 module StockOperations
-  PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
-
   extend Composite
 
   compose_module :Operations do
@@ -72,7 +70,7 @@ module StockOperations
     end
 
     def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )
-      raise Goodcity::ActionNotAllowedError.new unless PACK_UNPACK_ALLOWED_ACTIONS.include?(task)
+      raise Goodcity::ActionNotAllowedError.new unless PackUnpack.action_allowed?(task)
       PackUnpack.new(container, package, location_id, quantity, user_id).public_send(task)
     end
 
@@ -99,6 +97,11 @@ module StockOperations
       end
 
       private
+
+      def self.action_allowed?(task)
+        GoodcitySetting.enabled?("stock.allow_box_pallet_item_addition") &&
+        PACK_UNPACK_ALLOWED_ACTIONS.include?(task)
+      end
 
       def pack_or_unpack(task)
         return unless @quantity.positive?
