@@ -11,7 +11,7 @@ class Package < ActiveRecord::Base
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
-  SETTINGS_KEYS = %w[stock.enable_box_pallet_creation stock.allow_box_pallet_item_addition].freeze
+  SETTINGS_KEYS = %w[stock.enable_box_pallet_creation].freeze
 
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
