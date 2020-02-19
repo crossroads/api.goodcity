@@ -13,7 +13,7 @@ module Api::V1
                :item_id, :state, :received_at, :rejected_at, :inventory_number,
                :created_at, :updated_at, :package_type_id, :designation_id, :sent_on,
                :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
-               :allow_web_publish, :detail_type, :detail_id
+               :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity
 
     def designation_id
       object.order_id
@@ -37,6 +37,14 @@ module Api::V1
 
     def sent_on__sql
       "stockit_sent_on"
+    end
+
+    def on_hand_quantity
+      object.total_in_hand_quantity
+    end
+
+    def on_hand_quantity__sql
+      "(SELECT sum(quantity) FROM packages_inventories where packages_inventories.package_id = packages.id)"
     end
 
     def include_orders_packages?
