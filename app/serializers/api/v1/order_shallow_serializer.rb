@@ -1,7 +1,7 @@
 module Api::V1
   class OrderShallowSerializer < ApplicationSerializer
     embed :ids, include: true
-    attributes :status, :created_at, :code, :detail_type, :id, :detail_id,
+    attributes :created_at, :code, :detail_type, :id, :detail_id,
       :contact_id, :local_order_id, :organisation_id, :description, :activity,
       :country_name, :state, :purpose_description, :created_by_id, :cancel_reason,
       :gc_organisation_id, :processed_at, :processed_by_id, :cancelled_at, :cancelled_by_id,
@@ -60,4 +60,3 @@ module Api::V1
     end
   end
 end
-
