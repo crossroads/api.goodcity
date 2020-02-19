@@ -1,5 +1,5 @@
 class Order < ActiveRecord::Base
-  has_paper_trail class_name: 'Version'
+  has_paper_trail class_name: "Version"
   include PushUpdatesMinimal
   include OrderFiltering
 
@@ -9,7 +9,7 @@ class Order < ActiveRecord::Base
   push_targets do |record|
     [
       Channel.private_channels_for(record.created_by, BROWSE_APP),
-      Channel::ORDER_FULFILMENT_CHANNEL
+      Channel::ORDER_FULFILMENT_CHANNEL,
     ]
   end
 
@@ -24,14 +24,14 @@ class Order < ActiveRecord::Base
   belongs_to :beneficiary
   belongs_to :address
   belongs_to :booking_type
-  belongs_to :created_by, class_name: 'User'
-  belongs_to :processed_by, class_name: 'User'
-  belongs_to :cancelled_by, class_name: 'User'
-  belongs_to :process_completed_by, class_name: 'User'
-  belongs_to :dispatch_started_by, class_name: 'User'
-  belongs_to :closed_by, class_name: 'User'
-  belongs_to :submitted_by, class_name: 'User'
-  belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: 'detail_id'
+  belongs_to :created_by, class_name: "User"
+  belongs_to :processed_by, class_name: "User"
+  belongs_to :cancelled_by, class_name: "User"
+  belongs_to :process_completed_by, class_name: "User"
+  belongs_to :dispatch_started_by, class_name: "User"
+  belongs_to :closed_by, class_name: "User"
+  belongs_to :submitted_by, class_name: "User"
+  belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: "detail_id"
 
   has_many :packages
   has_many :goodcity_requests, dependent: :destroy
@@ -40,7 +40,7 @@ class Order < ActiveRecord::Base
   has_many :orders_purposes, dependent: :destroy
   has_many :messages, dependent: :destroy, inverse_of: :order
   has_many :subscriptions, dependent: :destroy, inverse_of: :order
-  has_and_belongs_to_many :cart_packages, class_name: 'Package'
+  has_and_belongs_to_many :cart_packages, class_name: "Package"
   has_one :order_transport, dependent: :destroy
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
@@ -56,17 +56,17 @@ class Order < ActiveRecord::Base
   accepts_nested_attributes_for :address
   accepts_nested_attributes_for :orders_process_checklists, allow_destroy: true
 
-  INACTIVE_STATUS = ['Closed', 'Sent', 'Cancelled'].freeze
+  INACTIVE_STATUS = ["Closed", "Sent", "Cancelled"].freeze
 
-  INACTIVE_STATES = ['cancelled', 'closed', 'draft'].freeze
+  INACTIVE_STATES = ["cancelled", "closed", "draft"].freeze
 
-  ACTIVE_STATES = ['submitted', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
+  ACTIVE_STATES = ["submitted", "processing", "awaiting_dispatch", "dispatching"].freeze
 
-  MY_ORDERS_AUTHORISED_STATES = ['submitted', 'closed', 'cancelled', 'processing', 'awaiting_dispatch', 'dispatching'].freeze
+  MY_ORDERS_AUTHORISED_STATES = ["submitted", "closed", "cancelled", "processing", "awaiting_dispatch", "dispatching"].freeze
 
   NON_PROCESSED_STATES = ["processing", "submitted", "draft"].freeze
 
-  ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, 'submitted', 'processing', 'draft'].flatten.uniq.freeze
+  ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, "submitted", "processing", "draft"].flatten.uniq.freeze
 
   # Stockit Shipment Status => GoodCity State
   SHIPMENT_STATUS_MAP = {
@@ -74,43 +74,42 @@ class Order < ActiveRecord::Base
     "Sent" => "closed",
     "Loaded" => "dispatching",
     "Cancelled" => "cancelled",
-    "Upcoming" => "awaiting_dispatch"
+    "Upcoming" => "awaiting_dispatch",
   }.freeze
 
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
-    includes([:subscriptions, :order_transport,
-      { packages: [:locations, :package_type] }
-    ])
-  }
+          includes([:subscriptions, :order_transport,
+                    {packages: [:locations, :package_type]}])
+        }
 
-  scope :descending, -> { order('orders.id desc') }
+  scope :descending, -> { order("orders.id desc") }
 
-  scope :active_orders, -> { where('status NOT IN (?) or orders.state NOT IN (?)', INACTIVE_STATUS, INACTIVE_STATES) }
+  scope :active_orders, -> { where("orders.state NOT IN (?)", INACTIVE_STATUS, INACTIVE_STATES) }
 
   scope :designatable_orders, -> {
-    query = <<-SQL
+          query = <<-SQL
       (
         submitted_at IS NOT NULL
-        AND (status NOT IN (:inactive_status) OR orders.state NOT IN (:inactive_states))
+        AND (orders.state NOT IN (:inactive_states))
       )
       OR (state = 'draft' AND detail_type != 'GoodCity')
     SQL
-    where(query, inactive_status: INACTIVE_STATUS, inactive_states: INACTIVE_STATES)
-  }
+          where(query, inactive_states: INACTIVE_STATES)
+        }
 
   scope :my_orders, -> { where("created_by_id = (?) and ((state = 'draft' and submitted_by_id is NULL) OR state IN (?))", User.current_user.try(:id), MY_ORDERS_AUTHORISED_STATES) }
 
-  scope :goodcity_orders, -> { where(detail_type: 'GoodCity') }
-  scope :shipments, -> { where(detail_type: 'Shipment') }
+  scope :goodcity_orders, -> { where(detail_type: "GoodCity") }
+  scope :shipments, -> { where(detail_type: "Shipment") }
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
   end
 
   def self.counts_for(created_by_id)
-    where.not(state: 'draft').group(:state).where(created_by_id: created_by_id).count
+    where.not(state: "draft").group(:state).where(created_by_id: created_by_id).count
   end
 
   def delete_orders_packages
@@ -121,7 +120,7 @@ class Order < ActiveRecord::Base
 
   def update_transition_and_reason(event, cancel_opts)
     fire_state_event(event)
-    opts = cancel_opts.select{ |k| [:cancellation_reason_id, :cancel_reason].include?(k) }
+    opts = cancel_opts.select { |k| [:cancellation_reason_id, :cancel_reason].include?(k) }
     update(opts)
   end
 
@@ -206,7 +205,7 @@ class Order < ActiveRecord::Base
         order.processed_at = Time.now
         order.processed_by = User.current_user
         order.nullify_columns(:process_completed_at, :process_completed_by_id, :cancelled_at,
-          :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
+                              :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
       end
     end
 
@@ -262,7 +261,7 @@ class Order < ActiveRecord::Base
     before_transition on: :resubmit do |order|
       if order.cancelled?
         order.nullify_columns(:cancellation_reason_id, :cancel_reason, :processed_at, :processed_by_id, :process_completed_at, :process_completed_by_id,
-          :cancelled_at, :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
+                              :cancelled_at, :cancelled_by_id, :dispatch_started_by_id, :dispatch_started_at)
       end
     end
 
@@ -322,12 +321,12 @@ class Order < ActiveRecord::Base
 
   def send_new_order_notification
     PushService.new.send_notification(Channel::ORDER_FULFILMENT_CHANNEL, STOCK_APP, {
-      category:   'new_order',
-      message:    I18n.t('twilio.order_submitted_sms_to_order_fulfilment_users',
-        code: code, submitter_name: created_by.full_name,
-        organisation_name: organisation.try(:name_en)),
-      order_id:   id,
-      author_id:  created_by_id
+      category: "new_order",
+      message: I18n.t("twilio.order_submitted_sms_to_order_fulfilment_users",
+                      code: code, submitter_name: created_by.full_name,
+                      organisation_name: organisation.try(:name_en)),
+      order_id: id,
+      author_id: created_by_id,
     })
   end
 
@@ -394,7 +393,7 @@ class Order < ActiveRecord::Base
           left join goodcity_requests on goodcity_requests.order_id = orders.id
           join versions on versions.item_type in ('Order', 'GoodcityRequest') AND (versions.item_id = orders.id OR versions.item_id = goodcity_requests.id)
           LEFT join orders_packages on orders_packages.order_id = orders.id AND orders_packages.updated_by_id = ?
-          where orders.detail_type='GoodCity' AND versions.whodunnit = ? AND (orders.state not in ('cancelled', 'closed', 'draft') OR orders.status not in ('Closed', 'Sent', 'Cancelled'))
+          where orders.detail_type='GoodCity' AND versions.whodunnit = ? AND (orders.state not in ('cancelled', 'closed', 'draft') OR orders.state not in ('closed', 'cancelled'))
           order by GREATEST(orders_packages.updated_at, versions.created_at) DESC", user_id, user_id.to_s]
     ).uniq.first(5)
   end
@@ -417,7 +416,7 @@ class Order < ActiveRecord::Base
   end
 
   def self.orders_count_per_state(orders)
-    orders.each { |key, value|  orders[key] = value.count }
+    orders.each { |key, value| orders[key] = value.count }
   end
 
   def self.generate_gc_code
@@ -426,7 +425,7 @@ class Order < ActiveRecord::Base
   end
 
   def self.gc_code(record)
-    record ? record.code.gsub(/\D/, '').to_i + 1 : 1
+    record ? record.code.gsub(/\D/, "").to_i + 1 : 1
   end
 
   def goodcity_order?
@@ -453,25 +452,25 @@ class Order < ActiveRecord::Base
     end
     if beneficiary.present?
       props["client"] = {
-        name: beneficiary.first_name + ' ' + beneficiary.last_name,
+        name: beneficiary.first_name + " " + beneficiary.last_name,
         phone: beneficiary.phone_number,
         id_type: beneficiary.identity_type.name_en,
-        id_no: beneficiary.identity_number
+        id_no: beneficiary.identity_number,
       }
     end
-    props['requests'] = goodcity_requests.map do |gc|
+    props["requests"] = goodcity_requests.map do |gc|
       {
         quantity: gc.quantity,
         type_en: gc.package_type.name_en,
         type_zh_tw: gc.package_type.name_zh_tw,
-        description: gc.description
+        description: gc.description,
       }
     end
-    props['goods'] = orders_packages.select(&:designated?).map do |op|
+    props["goods"] = orders_packages.select(&:designated?).map do |op|
       {
         quantity: op.quantity,
         type_en: op.package.package_type.name_en,
-        type_zh_tw: op.package.package_type.name_zh_tw
+        type_zh_tw: op.package.package_type.name_zh_tw,
       }
     end
     props
