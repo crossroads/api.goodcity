@@ -44,9 +44,9 @@ FactoryBot.define do
       end
     end
 
-    trait :with_can_manage_offers_packages_permission do
+    trait :with_can_remove_offers_packages_permission do
       after(:create) do |role|
-        role.permissions << (create :permission, name: 'can_manage_offers_packages')
+        role.permissions << (create :permission, name: 'can_remove_offers_packages')
       end
     end
 
