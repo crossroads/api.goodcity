@@ -18,7 +18,7 @@ class Ability
     can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_manage_offers_packages
+    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -227,7 +227,7 @@ class Ability
   end
 
   def offers_package_abilities
-    if can_manage_offers_packages?
+    if can_remove_offers_packages?
       can [:destroy], OffersPackage
     end
   end

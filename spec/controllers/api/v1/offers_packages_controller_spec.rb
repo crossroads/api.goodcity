@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::OffersPackagesController, type: :controller do
-  let(:supervisor) { create(:user, :supervisor, :with_can_manage_offers_packages_permission )}
+  let(:supervisor) { create(:user, :supervisor, :with_can_remove_offers_packages_permission )}
   let(:reviewer) { create(:user, :reviewer)}
   let(:offers_package) {create :offers_package}
 
