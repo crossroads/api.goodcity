@@ -12,7 +12,7 @@ context SettingsValidator do
     gc_setting1 = create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false")
     gc_setting2 = create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false")
     expect(package.valid?).to eq(false)
-    expect(package.errors.full_messages).to eq(["Creation of box/pallet is not allowed. Addition of items to box/pallet are not allowed."])
+    expect(package.errors.full_messages).to eq(["Creation of box/pallet is not allowed."])
   end
 
   it 'doesnot add any error on the record' do
