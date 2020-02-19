@@ -19,7 +19,6 @@ describe Api::V1::OrderSerializer do
   let(:json_with_stockit_organisation) { JSON.parse( serializer_with_stockit_organisation.to_json ) }
 
   it 'creates json' do
-    expect(json['order']['status']).to eq(order.status)
     expect(json['order']['code']).to eq(order.code)
     expect(json['order']['detail_type']).to eq(order.detail_type)
     expect(json['order']['detail_id']).to eq(order.detail_id)
