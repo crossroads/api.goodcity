@@ -1,7 +1,8 @@
 module Api::V1
   class OffersPackageSerializer < ApplicationSerializer
     embed :ids, include: true
-    attributes :id, :offer_id, :item_id
+    attributes :id, :offer_id, :package_id
+    has_one :offer, serializer: OfferShallowSummarySerializer
 
     def offer_id
       object.offer_id
@@ -11,11 +12,11 @@ module Api::V1
       "offer_id"
     end
 
-    def item_id
+    def package_id
       object.package_id
     end
 
-    def item_id__sql
+    def package_id__sql
       "package_id"
     end
   end

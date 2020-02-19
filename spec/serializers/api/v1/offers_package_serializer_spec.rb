@@ -9,7 +9,7 @@ describe Api::V1::OffersPackageSerializer do
   it "creates JSON" do
     record = json['offers_package']
     expect(record['id']).to eq(offers_package.id)
-    expect(record['item_id']).to eq(offers_package.package_id)
+    expect(record['package_id']).to eq(offers_package.package_id)
     expect(record['offer_id']).to eq(offers_package.offer_id)
   end
 end
