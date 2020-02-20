@@ -1,4 +1,4 @@
-
+# rake stockit:import_designations
 namespace :stockit do
   desc "Load designation details from Stockit"
   task import_designations: :environment do
@@ -49,11 +49,6 @@ namespace :stockit do
       order.shipment_date = value["sent_on"]
       order.staff_note = value["comments"]
       order.purpose_description = value["description"]
-
-      ["process_completed_by_id", "cancelled_by_id", "closed_by_id", "dispatch_started_by_id",
-       "submitted_by_id", "created_by_id"].each do |column_name|
-        order.send("#{column_name}=", User.stockit_user.id)
-      end
       order.save
     end
     Order.record_timestamps = true
