@@ -42,7 +42,7 @@ module Api::V1
     end
 
     def on_hand_quantity__sql
-      "select sum(quantity) from packages_inventories where package_id = #{object.id}"
+      "select sum(quantity) from packages_inventories where packages_inventories.package_id = packages.id"
     end
 
     def designation_id
