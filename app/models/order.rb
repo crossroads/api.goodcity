@@ -178,7 +178,8 @@ class Order < ActiveRecord::Base
     end
 
     event :restart_process do
-      transition awaiting_dispatch: :submitted
+      transition awaiting_dispatch: :submitted, :if => lambda {|order| order.goodcity_order?}
+      transition awaiting_dispatch: :processing, :if => lambda {|order| !order.goodcity_order?}
     end
 
     event :resubmit do
