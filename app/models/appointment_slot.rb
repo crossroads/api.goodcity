@@ -30,25 +30,24 @@ class AppointmentSlot < ActiveRecord::Base
     val
   end
 
-  def self.active_range(booking_type = nil)
-    end_date = Date::Infinity.new
+  #
+  # For a requested range, returns the subset which is allowed to be used
+  # Based on various settings and conditions
+  #
+  def self.active_range(requested_range, booking_type = nil)
+    end_date          = requested_range.max
+    start_date        = requested_range.min
+    booking_type_id   = Utils.to_id(booking_type)
 
-    start_date = begin
-      booking_type = Utils.to_model(booking_type, BookingType)
-      if booking_type&.appointment?
-        Date.parse GoodcitySetting.find_by(key: 'api.appointments.prevent_booking_until')&.value
-      else
-        Date.today
-      end
-    rescue
-      Date.today
+    if BookingType.find_by(id: booking_type_id)&.appointment?
+      start_date = GoodcitySetting.get_date('api.appointments.prevent_booking_until', default: start_date)
     end
 
     (start_date .. end_date)
   end
 
   def self.calendar(from, to, booking_type: nil)
-    allowed_range = active_range(booking_type)
+    allowed_range = active_range(from..to, booking_type)
     (from..to).map { |date|
       item = Hash.new
       item["date"] = date
