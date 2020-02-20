@@ -10,10 +10,9 @@ RSpec.describe Api::V1::OffersPackagesController, type: :controller do
     context 'With Supervisor role' do
       before { generate_and_set_token(supervisor) }
 
-      it "returns 200", :show_in_doc do
+      it "returns 204", :show_in_doc do
         delete :destroy, id: offers_package.id
-        expect(response.status).to eq(200)
-        expect(JSON.parse(response.body)).to eq( {} )
+        expect(response.status).to eq(204)
       end
     end
 

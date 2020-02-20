@@ -23,7 +23,7 @@ module Api
         if @offers_package
           @offers_package.destroy
         end
-        render json: {}
+        render nothing: true, status: 204
       end
 
       private
