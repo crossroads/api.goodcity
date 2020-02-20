@@ -279,7 +279,7 @@ class Order < ActiveRecord::Base
     end
 
     after_transition on: :submit do |order|
-      if order.detail_type == "GoodCity"
+      if order.goodcity_order?
         order.designate_orders_packages
         order.send_new_order_notification
         order.send_new_order_confirmed_sms_to_charity
@@ -288,7 +288,7 @@ class Order < ActiveRecord::Base
     end
 
     after_transition on: :finish_processing do |order|
-      if order.awaiting_dispatch?
+      if order.awaiting_dispatch? && order.goodcity_order?
         order.send_confirmation_email
       end
     end
