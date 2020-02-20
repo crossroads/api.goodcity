@@ -153,6 +153,36 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
     end
 
+    describe 'Special rules' do
+      let!(:appointment_booking_type) { create :booking_type, identifier: 'appointment' }
+
+      before {
+        (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
+        generate_and_set_token(order_administrator)
+      }
+
+      describe 'Blocking dates for booking_type=appointment' do
+        let(:calendar_dates) { parsed_body['appointment_calendar_dates'] }
+
+        context 'with goodcity_setting \'api.appointments.prevent_booking_until\'' do
+
+          it 'doesnt change the behaviour if unset' do
+            get :calendar, to: (Date.today + 20.days).to_s
+            expect(calendar_dates.count).to eq(21)
+            expect(calendar_dates.map { |day| day['isClosed'] }.uniq).to eq([false])
+          end
+
+          it 'locks all dates before the specified date' do
+            create :goodcity_setting, key: 'api.appointments.prevent_booking_until', value: (Date.today + 10.days).strftime("%d-%m-%Y")
+
+            get :calendar, to: (Date.today + 20.days).to_s, booking_type_id: appointment_booking_type.id
+            expect(calendar_dates.count).to eq(21)
+            expect(calendar_dates.slice(0, 10).map { |day| day['isClosed'] }.uniq).to eq([true])
+            expect(calendar_dates.slice(11, 20).map { |day| day['isClosed'] }.uniq).to eq([false])
+          end
+        end
+      end
+    end
   end
 
   describe "POST /appointment_slots" do

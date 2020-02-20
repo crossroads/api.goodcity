@@ -7,3 +7,7 @@
   key: "stock.allow_box_pallet_item_addition"
   value: "false"
   description: "Manages the settings for addition/removal of items to box"
+-
+  key: "api.appointments.prevent_booking_until"
+  value: "24-03-2020"
+  description: "If a date value is set (DD-MM-YYYY), no appointment will be allowed before that date"
