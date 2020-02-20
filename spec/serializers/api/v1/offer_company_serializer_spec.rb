@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-context Api::V1::OfferShallowSummarySerializer do
+context Api::V1::OfferCompanySerializer do
   let(:company) { create :company }
   let(:user) { create :user }
   let(:offer)      { create(:offer, :with_items, company: company, created_by: user) }
-  let(:serializer) { Api::V1::OfferShallowSummarySerializer.new(offer, root: 'offer').as_json }
+  let(:serializer) { Api::V1::OfferCompanySerializer.new(offer, root: 'offer').as_json }
 
   subject { JSON.parse( serializer.to_json ) }
 

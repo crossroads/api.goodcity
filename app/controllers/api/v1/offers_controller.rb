@@ -163,8 +163,8 @@ module Api
       end
 
       def offer_summary_response(records)
-        records = params["shallow"]== 'true' ? records : records.with_summary_eager_load
-        serializer = params[:shallow] == 'true' ? shallow_summary_serializer : summary_serializer
+        records = params[:companies]== 'true' ? records : records.with_summary_eager_load
+        serializer = params[:companies] == 'true' ? offer_company_serializer : summary_serializer
         ActiveModel::ArraySerializer.new(records,
           each_serializer: serializer,
           root: "offers",
@@ -216,8 +216,8 @@ module Api
         Api::V1::OfferSummarySerializer
       end
 
-      def shallow_summary_serializer
-        Api::V1::OfferShallowSummarySerializer
+      def offer_company_serializer
+        Api::V1::OfferCompanySerializer
       end
 
       def select_serializer
