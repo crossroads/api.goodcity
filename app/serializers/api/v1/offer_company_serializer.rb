@@ -1,5 +1,5 @@
 module Api::V1
-  class OfferShallowSummarySerializer < ApplicationSerializer
+  class OfferCompanySerializer < ApplicationSerializer
     embed :ids, include: true
 
     attributes :id, :company_id, :created_by_id
