@@ -93,6 +93,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_remove_offers_packages_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_remove_offers_packages_permission, name: evaluator.role_name)
+      end
+    end
+
     trait :with_can_check_organisations_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_check_organisations_permission, name: evaluator.role_name)

@@ -74,7 +74,7 @@ module Api
         records = records.search({ search_text: params['searchText'], states: array_param(:state) }) if params['searchText'].present?
         records = apply_filters(records)
         records = records.page(params["page"]).per(params["per_page"] || params["recent_offer_count"] || DEFAULT_SEARCH_COUNT)
-        offers = offer_summary_response(records.with_summary_eager_load)
+        offers  = offer_summary_response(records)
         render json: {meta: {total_pages: records.total_pages, search: params['searchText']}}.merge(offers)
       end
 
@@ -163,8 +163,10 @@ module Api
       end
 
       def offer_summary_response(records)
+        records = params[:companies]== 'true' ? records : records.with_summary_eager_load
+        serializer = params[:companies] == 'true' ? offer_company_serializer : summary_serializer
         ActiveModel::ArraySerializer.new(records,
-          each_serializer: summary_serializer,
+          each_serializer: serializer,
           root: "offers",
           include_messages: params[:include_messages] == "true"
         ).as_json
@@ -212,6 +214,10 @@ module Api
 
       def summary_serializer
         Api::V1::OfferSummarySerializer
+      end
+
+      def offer_company_serializer
+        Api::V1::OfferCompanySerializer
       end
 
       def select_serializer

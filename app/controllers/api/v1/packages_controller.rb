@@ -285,6 +285,7 @@ module Api
           :package_type_id, :pallet_id, :pieces, :quantity, :received_at,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
           :stockit_id, :stockit_sent_on, :weight, :width,
+          offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
                               computer_accessory_attributes].flatten.uniq

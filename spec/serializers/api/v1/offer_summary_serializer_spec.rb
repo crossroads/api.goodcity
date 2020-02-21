@@ -45,5 +45,4 @@ context Api::V1::OfferSummarySerializer do
     expect(subject['offer'].keys).to include("missing_packages_count")
     expect(subject['offer'].keys).to include("received_packages_count")
   end
-
 end
