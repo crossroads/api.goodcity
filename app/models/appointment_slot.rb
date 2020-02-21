@@ -30,12 +30,29 @@ class AppointmentSlot < ActiveRecord::Base
     val
   end
 
-  def self.calendar(from, to)
+  #
+  # For a requested range, returns the subset which is allowed to be used
+  # Based on various settings and conditions
+  #
+  def self.active_range(requested_range, booking_type = nil)
+    end_date          = requested_range.max
+    start_date        = requested_range.min
+    booking_type_id   = Utils.to_id(booking_type)
+
+    if BookingType.find_by(id: booking_type_id)&.appointment?
+      start_date = GoodcitySetting.get_date('api.appointments.prevent_booking_until', default: start_date)
+    end
+
+    (start_date .. end_date)
+  end
+
+  def self.calendar(from, to, booking_type: nil)
+    allowed_range = active_range(from..to, booking_type)
     (from..to).map { |date|
       item = Hash.new
       item["date"] = date
       item["slots"] = AppointmentSlot.for_date(date).map(&method(:wrap_slot))
-      item["isClosed"] = item["slots"].find { |s| not s['isClosed'] }.nil?
+      item["isClosed"] = allowed_range.exclude?(date) || item["slots"].find { |s| not s['isClosed'] }.nil?
       item
     }
   end
@@ -49,9 +66,14 @@ class AppointmentSlot < ActiveRecord::Base
 
     return [] if Holiday.is_holiday?(date)
 
+    # wday is 0-indexed and starts on Sunday, as opposed to our data which is 1-indexed and start on Monday
+    # we convert Sundays which are 0 into 7 to handle that
+    day = date.wday
+    day = 7 if day.zero?
+
     # Generate slots based on preset if no special slot have been specified for that date
     AppointmentSlotPreset
-      .where(day: date.wday)
+      .where(day: day)
       .ascending
       .map { |preset|
         t = date.to_datetime.in_time_zone.change(hour: preset.hours, min: preset.minutes, sec: 0)
