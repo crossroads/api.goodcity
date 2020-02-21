@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200207120244) do
+ActiveRecord::Schema.define(version: 20200219081357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -677,6 +677,7 @@ ActiveRecord::Schema.define(version: 20200207120244) do
   add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
   add_index "packages", ["detail_type", "detail_id"], name: "index_packages_on_detail_type_and_detail_id", using: :btree
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
+  add_index "packages", ["inventory_number"], name: "index_packages_on_inventory_number", using: :btree
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
   add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
   add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
