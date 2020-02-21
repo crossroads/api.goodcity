@@ -66,9 +66,14 @@ class AppointmentSlot < ActiveRecord::Base
 
     return [] if Holiday.is_holiday?(date)
 
+    # wday is 0-indexed and starts on Sunday, as opposed to our data which is 1-indexed and start on Monday
+    # we convert Sundays which are 0 into 7 to handle that
+    day = date.wday
+    day = 7 if day.zero?
+
     # Generate slots based on preset if no special slot have been specified for that date
     AppointmentSlotPreset
-      .where(day: date.wday + 1)
+      .where(day: day)
       .ascending
       .map { |preset|
         t = date.to_datetime.in_time_zone.change(hour: preset.hours, min: preset.minutes, sec: 0)
