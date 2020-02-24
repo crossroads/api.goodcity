@@ -163,7 +163,7 @@ module Api
             with_inventory_no: true
           )
         end
-        params_for_filter = %w[state location associated_package_types].each_with_object({}) { |k, h| h[k] = params[k].presence }
+        params_for_filter = %w[state location associated_package_types storage_type_name].each_with_object({}) { |k, h| h[k] = params[k].presence }
         records = records.filter(params_for_filter)
         records = records.order("packages.id desc").page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
         packages = ActiveModel::ArraySerializer.new(records,
