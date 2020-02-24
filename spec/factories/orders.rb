@@ -9,6 +9,7 @@ FactoryBot.define do
     stockit_id      nil
     detail_type     "GoodCity"
     people_helped   { rand(10) + 1 }
+    shipment_date    { Date.today }
     association     :stockit_organisation
     association     :stockit_activity
     association     :organisation
@@ -19,6 +20,7 @@ FactoryBot.define do
     booking_type do |b|
       BookingType.first || association(:booking_type)
     end
+
 
     trait :with_orders_packages do
       after(:create) do |order|
