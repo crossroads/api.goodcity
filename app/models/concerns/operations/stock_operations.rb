@@ -127,7 +127,7 @@ module StockOperations
       end
 
       def box_dispatched?
-        @cause.orders_packages.last.dispatched?
+        @cause.orders_packages&.last&.dispatched?
       end
 
       def response(pkg_inventory)
