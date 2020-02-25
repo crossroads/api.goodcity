@@ -20,7 +20,6 @@ en:
     errors:
       invalid_quantity: Added quantity cannot be larger than available quantity.
       adding_box_to_box: Cannot add a box to another box.
-      item_designated: Please undesignate the item first before adding it to the box.
       disable_addition: Cannot add/remove designated/dispatched items.
       disable_if_unavailable: Cannot perform add/remove operations if box/pallet is dispatched.
   token:

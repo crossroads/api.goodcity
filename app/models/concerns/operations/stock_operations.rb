@@ -85,8 +85,8 @@ module StockOperations
 
       def pack
         return error(I18n.t("box_pallet.errors.adding_box_to_box")) if adding_box_to_a_box?
-        return error(I18n.t("box_pallet.errors.disable_addition")) unless disable_addition_to_box?
         return error(I18n.t("box_pallet.errors.invalid_quantity")) if invalid_quantity?
+        return error(I18n.t("box_pallet.errors.disable_addition")) unless addition_allowed?
 
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
         response(pkg_inventory)
@@ -117,6 +117,7 @@ module StockOperations
         )
       end
 
+      # calculate quantity based on the operation
       def quantity(task)
         task.eql?("pack") ? @quantity * -1 : @quantity
       end
@@ -125,16 +126,17 @@ module StockOperations
         { errors: [error], success: false }
       end
 
-      # checks if the box/pallet is on hand, to perform operations
+      # checks if the box/pallet is on hand, to perform operations.
       def operation_allowed?
         @cause.total_in_hand_quantity.positive?
       end
 
-      # checks if the package has available quantity to add inside a box
-      def disable_addition_to_box?
+      # checks if the package has available quantity to add inside a box.
+      def addition_allowed?
         @package.total_available_quantity.positive?
       end
 
+      # checks if the addable quantity is greater than available quantity.
       def invalid_quantity?
         @quantity > @package.total_available_quantity
       end
@@ -148,6 +150,7 @@ module StockOperations
         end
       end
 
+      # checks if a box is added to a box.
       def adding_box_to_a_box?
         @package.box? && @cause.box?
       end
