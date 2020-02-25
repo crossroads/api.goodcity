@@ -85,7 +85,7 @@ module StockOperations
 
       def pack
         return error(I18n.t("box_pallet.errors.adding_box_to_box")) if adding_box_to_a_box?
-        return error(I18n.t("box_pallet.errors.disable_addition")) unless pkg_has_available_quantity?
+        return error(I18n.t("box_pallet.errors.disable_addition")) unless disable_addition_to_box?
         return error(I18n.t("box_pallet.errors.invalid_quantity")) if invalid_quantity?
 
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
@@ -93,7 +93,7 @@ module StockOperations
       end
 
       def unpack
-        return error(I18n.t("box_pallet.errors.disable_if_unavailable")) unless box_has_available_quantity?
+        return error(I18n.t("box_pallet.errors.disable_if_unavailable")) unless operation_allowed?
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::UNPACK)
         response(pkg_inventory)
       end
@@ -125,16 +125,18 @@ module StockOperations
         { errors: [error], success: false }
       end
 
-      def box_has_available_quantity?
-        PackagesInventory::Computer.available_quantity_of(@cause).positive?
+      # checks if the box/pallet is on hand, to perform operations
+      def operation_allowed?
+        @cause.total_in_hand_quantity.positive?
       end
 
-      def pkg_has_available_quantity?
-        PackagesInventory::Computer.available_quantity_of(@package).positive?
+      # checks if the package has available quantity to add inside a box
+      def disable_addition_to_box?
+        @package.total_available_quantity.positive?
       end
 
       def invalid_quantity?
-        @quantity >= PackagesInventory::Computer.available_quantity_of(@package)
+        @quantity > @package.total_available_quantity
       end
 
       def response(pkg_inventory)
