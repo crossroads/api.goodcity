@@ -133,6 +133,10 @@ module StockOperations
         PackagesInventory::Computer.available_quantity_of(@package).positive?
       end
 
+      def invalid_quantity?
+        @quantity >= PackagesInventory::Computer.available_quantity_of(@package)
+      end
+
       def response(pkg_inventory)
         return unless pkg_inventory
         if pkg_inventory.save
@@ -140,14 +144,6 @@ module StockOperations
         elsif pkg_inventory.errors
           error(pkg_inventory.errors.full_messages)
         end
-      end
-
-      def invalid_quantity?
-        @quantity > available_quantity_on_location(@location_id)
-      end
-
-      def available_quantity_on_location(location_id)
-        PackagesLocation.where(location_id: location_id, package_id: @package.id).first.quantity
       end
 
       def adding_box_to_a_box?
