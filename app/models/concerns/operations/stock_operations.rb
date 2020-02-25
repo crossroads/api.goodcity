@@ -84,9 +84,8 @@ module StockOperations
       end
 
       def pack
-        return error(I18n.t("box_pallet.errors.disable_operations")) if box_dispatched?
         return error(I18n.t("box_pallet.errors.adding_box_to_box")) if adding_box_to_a_box?
-        return error(I18n.t("box_pallet.errors.item_designated")) if item_designated?
+        return error(I18n.t("box_pallet.errors.disable_add_remove")) unless pkg_has_available_quantity?
         return error(I18n.t("box_pallet.errors.invalid_quantity")) if invalid_quantity?
 
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
@@ -94,7 +93,7 @@ module StockOperations
       end
 
       def unpack
-        return error(I18n.t("box_pallet.errors.disable_operations")) if box_dispatched?
+        return error(I18n.t("box_pallet.errors.disable_if_unavailable")) unless box_has_available_quantity?
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::UNPACK)
         response(pkg_inventory)
       end
@@ -126,8 +125,12 @@ module StockOperations
         { errors: [error], success: false }
       end
 
-      def box_dispatched?
-        @cause.orders_packages&.last&.dispatched?
+      def box_has_available_quantity?
+        PackagesInventory::Computer.available_quantity_of(@cause).positive?
+      end
+
+      def pkg_has_available_quantity?
+        PackagesInventory::Computer.available_quantity_of(@package).positive?
       end
 
       def response(pkg_inventory)
@@ -149,10 +152,6 @@ module StockOperations
 
       def adding_box_to_a_box?
         @package.box? && @cause.box?
-      end
-
-      def item_designated?
-        @package.order.presence
       end
     end
   end
