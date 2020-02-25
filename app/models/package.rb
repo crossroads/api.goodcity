@@ -171,6 +171,10 @@ class Package < ActiveRecord::Base
     PackagesInventory::Computer.package_quantity(self)
   end
 
+  def total_available_quantity
+    PackagesInventory::Computer.available_quantity_of(self)
+  end
+
   def total_quantity_in_box
     box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
   end

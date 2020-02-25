@@ -22,7 +22,7 @@ en:
       adding_box_to_box: Cannot add a box to another box.
       item_designated: Please undesignate the item first before adding it to the box.
       disable_addition: Cannot add/remove designated/dispatched items.
-      disabled_if_unavailable: Cannot perform add/remove operations if box/pallet is dispatched.
+      disable_if_unavailable: Cannot perform add/remove operations if box/pallet is dispatched.
   token:
     invalid: Invalid token
     expired: Expired token
