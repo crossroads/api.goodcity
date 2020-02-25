@@ -182,10 +182,11 @@ context StockOperations do
   describe 'Adding/removing items from box and pallets' do
     let(:box_storage_type) { create(:storage_type, :with_box) }
     let(:pallet_storage_type) { create(:storage_type, :with_box) }
-    let(:box) { create(:package, :package_with_locations, storage_type: box_storage_type) }
-    let(:pallet) { create(:package, :package_with_locations, storage_type: pallet_storage_type) }
-    let(:packages) { create_list(:package, 5, :package_with_locations) }
+    let(:box) { create(:package, :with_inventory_number, storage_type: box_storage_type) }
+    let(:pallet) { create(:package, :with_inventory_number, storage_type: pallet_storage_type) }
+    let(:packages) { create_list(:package, 5, :with_inventory_number) }
     let(:user) {create :user, :supervisor}
+    let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
     let(:subject) {
@@ -206,9 +207,11 @@ context StockOperations do
     context "adding items to box and pallets" do
       it "creates a packages_inventory record to register loss due to packing in a box" do
         package = packages.sample
+        Package::Operations.inventorize(package, location)
+        Package::Operations.inventorize(box, location)
         params = {
           item_id: package.id,
-          location_id: package.location_id,
+          location_id: location.id,
           quantity: package.quantity,
           task: "pack",
           id: box.id
@@ -220,9 +223,11 @@ context StockOperations do
 
       it "raises an exception if action is not allowed" do
         package = packages.sample
+        Package::Operations.inventorize(package, location)
+        Package::Operations.inventorize(box, location)
         params = {
           item_id: package.id,
-          location_id: package.location_id,
+          location_id: location.id,
           quantity: package.quantity,
           task: "not_allowed",
           id: box.id
@@ -236,9 +241,11 @@ context StockOperations do
     context "removing items from box and pallets" do
       it "creates a packages_inventory record to register gain due to unpacking item from a box" do
         package = packages.sample
+        Package::Operations.inventorize(package, location)
+        Package::Operations.inventorize(pallet, location)
         params = {
           item_id: package.id,
-          location_id: package.location_id,
+          location_id: location.id,
           quantity: package.quantity,
           task: "unpack",
           id: pallet.id
@@ -250,9 +257,11 @@ context StockOperations do
 
       it "raises an exception if action is not allowed" do
         package = packages.sample
+        Package::Operations.inventorize(package, location)
+        Package::Operations.inventorize(box, location)
         params = {
           item_id: package.id,
-          location_id: package.location_id,
+          location_id: location.id,
           quantity: package.quantity,
           task: "not_allowed",
           id: box.id
