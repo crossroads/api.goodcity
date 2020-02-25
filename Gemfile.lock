@@ -252,7 +252,7 @@ GEM
     netrc (0.11.0)
     newrelic_rpm (5.2.0.345)
     nio4r (2.5.2)
-    nokogiri (1.10.5)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
     notiffany (0.1.1)
       nenv (~> 0.1)
@@ -499,7 +499,7 @@ DEPENDENCIES
   loofah (>= 2.3.1)
   nestful!
   newrelic_rpm
-  nokogiri (>= 1.0.4)
+  nokogiri (>= 1.10.8)
   oj
   paper_trail (~> 4.0.0.beta)
   paranoia (~> 2.1.0)
@@ -548,4 +548,4 @@ RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.17.2
+   1.17.3

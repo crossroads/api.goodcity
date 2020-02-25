@@ -38,14 +38,15 @@ module PackageFiltering
     def filter(options={})
       states = (options['state'] || '').strip.split(',') || []
       location = options['location']
-      associated_package_types = options['associated_package_types']
+      associated_package_type_ids = options['associated_package_types']
       storage_type_name = options['storage_type_name']
 
       query = where.not(inventory_number: nil)
       state_filters = states & %w[in_stock received designated dispatched]
       query = query.where_states(state_filters) if state_filters.any?
       query = query.filter_by_location(location) if location.present?
-      query = query.filter_by_package_types(associated_package_types, storage_type_name) if associated_package_types
+      query = query.filter_by_storage_type(storage_type_name) if storage_type_name.present?
+      query = query.filter_by_package_types(associated_package_type_ids) if associated_package_type_ids.any?
 
       publish_filters = states & %w[published private]
       query = query.filter_by_publish_status(publish_filters) if publish_filters.any?
@@ -73,16 +74,14 @@ module PackageFiltering
       end
     end
 
-    def filter_by_package_types(associated_package_types, storage_type_name)
-      package_storage_type_id = StorageType.find_by(name: "Package").id
-      storage_type_ids = if storage_type_name == "Pallet"
-                           [ package_storage_type_id, StorageType.find_by(name: "Box").id]
-                         else
-                           [ package_storage_type_id ]
-                         end
-      where("packages.storage_type_id in (:ids)
-      and packages.package_type_id in (:package_type_ids)",
-      { ids: storage_type_ids, package_type_ids: associated_package_types })
+    def filter_by_package_types(associated_package_type_ids)
+      where("packages.package_type_id in (:package_type_ids)",
+        { package_type_ids: associated_package_type_ids })
+    end
+
+    def filter_by_storage_type(storage_type_name)
+      where("packages.storage_type_id in (:ids)",
+        { ids: StorageType.storage_type_ids(storage_type_name) })
     end
 
     def filter_by_image_status(image_filters)
