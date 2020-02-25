@@ -506,8 +506,9 @@ RSpec.describe Package, type: :model do
     let(:package_storage) { create(:storage_type, :with_pkg) }
     let(:box) { create(:package, :with_inventory_number, :package_with_locations, storage_type: box_storage) }
     let(:pallet) { create(:package, :with_inventory_number, :package_with_locations, storage_type: pallet_storage) }
-    let(:package1) { create(:package, :with_inventory_number, :package_with_locations, quantity: 50, received_quantity: 50, storage_type: package_storage)}
-    let(:package2) { create(:package, :with_inventory_number, :package_with_locations, quantity: 40, received_quantity: 40, storage_type: package_storage)}
+    let(:package1) { create(:package, quantity: 50, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, quantity: 40, received_quantity: 40, storage_type: package_storage)}
+    let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
@@ -516,24 +517,25 @@ RSpec.describe Package, type: :model do
         container: Package.find(params[:id]),
         package: Package.find(params[:item_id]),
         quantity: params[:quantity],
-        location_id: params[:location_id],
+        location_id: location.id,
         user_id: user.id,
         task: params[:task]
       )
     end
 
     before(:each) do
+      Package::Operations.inventorize(package1, location)
+      Package::Operations.inventorize(package2, location)
+
       @params1 = {
         id: box.id,
         item_id: package1.id,
-        location_id: package1.location_id,
         task: 'pack',
         quantity: 5
       }
       @params2 = {
         id: box.id,
         item_id: package2.id,
-        location_id: package2.location_id,
         task: 'pack',
         quantity: 2
       }
@@ -551,7 +553,7 @@ RSpec.describe Package, type: :model do
       it "returns the total in hand quantity for a package" do
         pack_or_unpack(@params1)
         pack_or_unpack(@params2)
-        expect(package1.total_in_hand_quantity).to eq(5)
+        expect(package1.total_in_hand_quantity).to eq(45)
       end
     end
 

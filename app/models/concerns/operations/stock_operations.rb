@@ -85,13 +85,15 @@ module StockOperations
 
       def pack
         return error(I18n.t("box_pallet.errors.adding_box_to_box")) if adding_box_to_a_box?
-        return error(I18n.t("box_pallet.errors.item_designated")) if item_designated?
+        return error(I18n.t("box_pallet.errors.disable_addition")) unless addition_allowed?
         return error(I18n.t("box_pallet.errors.invalid_quantity")) if invalid_quantity?
+
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
         response(pkg_inventory)
       end
 
       def unpack
+        return error(I18n.t("box_pallet.errors.disable_if_unavailable")) unless operation_allowed?
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::UNPACK)
         response(pkg_inventory)
       end
@@ -115,12 +117,28 @@ module StockOperations
         )
       end
 
+      # calculate quantity based on the operation
       def quantity(task)
         task.eql?("pack") ? @quantity * -1 : @quantity
       end
 
       def error(error)
         { errors: [error], success: false }
+      end
+
+      # checks if the box/pallet is on hand, to perform operations.
+      def operation_allowed?
+        @cause.total_in_hand_quantity.positive?
+      end
+
+      # checks if the package has available quantity to add inside a box.
+      def addition_allowed?
+        @package.total_available_quantity.positive?
+      end
+
+      # checks if the addable quantity is greater than available quantity.
+      def invalid_quantity?
+        @quantity > @package.total_available_quantity
       end
 
       def response(pkg_inventory)
@@ -132,20 +150,9 @@ module StockOperations
         end
       end
 
-      def invalid_quantity?
-        @quantity > available_quantity_on_location(@location_id)
-      end
-
-      def available_quantity_on_location(location_id)
-        PackagesLocation.where(location_id: location_id, package_id: @package.id).first.quantity
-      end
-
+      # checks if a box is added to a box.
       def adding_box_to_a_box?
         @package.box? && @cause.box?
-      end
-
-      def item_designated?
-        @package.order.presence
       end
     end
   end
