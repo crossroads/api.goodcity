@@ -85,7 +85,7 @@ module StockOperations
 
       def pack
         return error(I18n.t("box_pallet.errors.adding_box_to_box")) if adding_box_to_a_box?
-        return error(I18n.t("box_pallet.errors.disable_add_remove")) unless pkg_has_available_quantity?
+        return error(I18n.t("box_pallet.errors.disable_addition")) unless pkg_has_available_quantity?
         return error(I18n.t("box_pallet.errors.invalid_quantity")) if invalid_quantity?
 
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
