@@ -40,6 +40,11 @@ end
 
 World(FactoryBot::Syntax::Methods)
 
+Before do
+  User.current_user ||= FactoryBot.create(:user, :supervisor)
+end
+
+
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
 # See the DatabaseCleaner documentation for details. Example:
 #
