@@ -45,9 +45,8 @@ module PackageFiltering
       state_filters = states & %w[in_stock received designated dispatched]
       query = query.where_states(state_filters) if state_filters.any?
       query = query.filter_by_location(location) if location.present?
-      query = query.filter_by_storage_type(storage_type_name) if storage_type_name.present?
-      query = query.filter_by_package_types(associated_package_type_ids) if associated_package_type_ids.any?
-
+      query = query.filter_by_storage_type(storage_type_name) if storage_type_name
+      query = query.filter_by_package_types(associated_package_type_ids) if associated_package_type_ids
       publish_filters = states & %w[published private]
       query = query.filter_by_publish_status(publish_filters) if publish_filters.any?
 
