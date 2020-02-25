@@ -1211,7 +1211,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         package2.save
         put :add_remove_item, @params2
         expect(response.status).to eq(422)
-        expect(parsed_body["errors"]).to eq(["Please undesignate the item first before adding it to the box."])
+        expect(parsed_body["errors"]).to eq(["Cannot add/remove designated/dispatched items."])
       end
     end
   end
