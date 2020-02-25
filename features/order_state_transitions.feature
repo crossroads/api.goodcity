@@ -3,24 +3,24 @@ Feature: Changing the states of an order
 
   Scenario: Cannot dispatch a package from a Submitted order
     Given I have an order of state "submitted"
-    And It has a orders_package of state "designated"
+    And It has an orders_package of state "designated"
     Then Dispatching the orders_package should "fail"
 
   Scenario: Cannot dispatch a package from a Processing order
     Given I have an order of state "processing"
-    And It has a orders_package of state "designated"
+    And It has an orders_package of state "designated"
     Then Dispatching the orders_package should "fail"
 
-  # Scenario: Dispatching a package of a Scheduled order changes the state of the order to Dispatching
-  #   Given I have an order of state "awaiting_dispatch"
-  #   And It has a orders_package of state "designated"
-  #   When I dispatch the orders_package
-  #   Then The order transitions to the "dispatching" state
+  Scenario: Dispatching a package of a Scheduled order changes the state of the order to Dispatching
+    Given I have an order of state "awaiting_dispatch"
+    And It has an orders_package of state "designated"
+    When I dispatch the orders_package
+    Then The order transitions to the "dispatching" state
 
-  # Scenario: Cancelling an order with dispatched packages fails
-  #   Given I have an order of state "dispatching"
-  #   And It has an orders_package of state "dispatched"
-  #   Then Applying the "cancel" transition to the order "fails"
+  Scenario: An order with dispatched packages should not be cancellable
+    Given I have an order of state "dispatching"
+    And It has an orders_package of state "dispatched"
+    Then Applying the "cancel" transition to the order "fails"
 
 
 

@@ -225,6 +225,10 @@ class Order < ActiveRecord::Base
     end
 
     before_transition on: :cancel do |order|
+      if OrdersPackage.where(order: order).any? { |op| op.dispatched? || op.dispatched_quantity.positive? }
+        raise Goodcity::InvalidStateError.new(I18n.t('orders_package.cancel_requires_undispatch'))
+      end
+
       order.cancelled_at = Time.now
       order.cancelled_by = User.current_user
       order.orders_packages.each do |orders_package|

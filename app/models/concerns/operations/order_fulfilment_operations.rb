@@ -82,6 +82,9 @@ module OrderFulfilmentOperations
           source: ord_pkg,
           location: location
         )
+
+        ord_pkg.order.start_dispatching if ord_pkg.order.awaiting_dispatch?
+
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch
           ord_pkg.package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED
