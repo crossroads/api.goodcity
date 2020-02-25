@@ -19,11 +19,13 @@ module StockOperations
       last = PackagesInventory.order('id DESC').where(package: package).limit(1).first
 
       raise Goodcity::AlreadyInventorizedError if last.present? && !last.uninventory?
-
+      raise Goodcity::BadOrMissingRecord.new(Location) unless Utils.record_exists?(location, Location)
+      raise Goodcity::BadOrMissingField.new(:inventory_number) unless package.inventory_number.present?
+      
       PackagesInventory.append_inventory(
-        package:  package,
-        quantity: package.received_quantity,
-        location: location
+        package_id:   package.id,
+        quantity:     package.received_quantity,
+        location_id:  Utils.to_id(location)
       )
     end
 
@@ -47,12 +49,12 @@ module StockOperations
     #
     # @param [Package] package the package that went missing
     # @param [Integer] quantity the quantity that was lost
-    # @param [Location|Id] from the location to negate the quantity from(or its id)
+    # @param [Location|Id] from_location the location to negate the quantity from(or its id)
     #
     def register_loss(package, quantity:, location_id: nil, action: 'loss', description: nil)
       available_count = PackagesInventory::Computer.available_quantity_of(package)
 
-      if (quantity > available_count)
+      if (quantity.abs > available_count)
         designated_count = PackagesInventory::Computer.designated_quantity_of(package)
         if designated_count.positive?
           orders = package.orders_packages.designated.map(&:order).uniq
@@ -68,6 +70,37 @@ module StockOperations
         location_id: location_id,
         description: description
       })
+    end
+
+
+    ##
+    # Registers the gain of some package
+    #
+    # @param [Package] package the package that went missing
+    # @param [Integer] quantity the quantity that was lost
+    # @param [Location|Id] to_location the location to add the quantity to (or its id)
+    #
+    def register_gain(package, quantity:, to_location:)
+      raise Goodcity::NotInventorizedError unless PackagesInventory.inventorized?(package)
+      PackagesInventory.append_gain(
+        package: package,
+        quantity: quantity,
+        location: Utils.to_model(to_location, Location)
+      )
+    end
+
+    ##
+    # Registers either a gain or a loss action depending on the change value
+    #
+    # @param [Package] package the package that went missing
+    # @param [Integer] quantity the quantity that was lost
+    # @param [Location|Id] location the location to add the quantity to (or its id)
+    #
+    def register_quantity_change(package, delta:, location:)
+      return if delta.zero?
+      return delta.positive? ?
+        register_gain(package, quantity: delta, to_location: location) :
+        register_loss(package, quantity: delta, from_location: location)
     end
 
     def perform_action(package, quantity:, location_id:, action: 'loss', description: nil)

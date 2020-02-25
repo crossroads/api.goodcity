@@ -7,6 +7,18 @@ module Goodcity
 
   class InventoryError < BaseError; end
 
+  class BadOrMissingRecord < BaseError
+    def initialize(klass)
+      super(I18n.t('errors.bad_or_missing_record', klass: klass.to_s))
+    end
+  end
+
+  class BadOrMissingField < BaseError
+    def initialize(field)
+      super(I18n.t('errors.bad_or_missing_field', field: field.to_s))
+    end
+  end
+
   def factory(base, translation_key)
     Class.new(base) do
       define_method(:initialize) { super(I18n.t(translation_key)) }
@@ -23,7 +35,6 @@ module Goodcity
   UninventoryError                = factory(OperationsError, 'operations.generic.uninventorize_error')
   MissingQuantityforDispatchError = factory(OperationsError, 'operations.dispatch.missing_quantity_for_dispatch')
   BadUndispatchQuantity           = factory(OperationsError, 'operations.undispatch.missing_dispatched_quantity')
-
   class QuantityDesignatedError < OperationsError
     def initialize(orders)
       order_text = orders.count == 1 ? orders.first.code : "#{orders.count}x"

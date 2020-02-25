@@ -80,7 +80,7 @@ namespace :demo do
         item.packages.each do |package|
           location_id = Location.pluck(:id).sample
           package.update(inventory_number: InventoryNumber.next_code, allow_web_publish: true, location_id: location_id)
-          package.build_or_create_packages_location(location_id, 'create')
+          Package::Operations.inventorize(package, location_id)
           package.mark_received
         end
       end
