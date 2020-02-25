@@ -76,22 +76,36 @@ module Api
       param_group :package
 
       def create
+        # Callers
+        # - Goodcity for create
+        # - StockIt for create+update+designate+dispatch
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
 
-        if package_record
-          @package.offer_id = offer_id
+        success = ActiveRecord::Base.transaction do
+          initialize_package_record
+          dispatch_from_stockit = is_stockit_request? && (@package.stockit_sent_on_changed? || @package.order_id_changed?)
+          quantity_changed = @package.received_quantity_changed?
+          quantity_was = @package.received_quantity_was || 0
           if @package.valid? && @package.save
-            if is_stock_app?
-              render json: @package, serializer: stock_serializer, root: "item",
-                     include_order: false, include_orders_packages: true
-            else
-              render json: @package, serializer: serializer, status: 201
-            end
+            try_inventorize_package(@package) if @package.inventory_number.present?
+            apply_stockit_quantity_change(@package, previous: quantity_was, current: @package.received_quantity) if quantity_changed && quantity_was > 0
+            apply_stockit_dispatch(@package)  if dispatch_from_stockit
+            true
           else
-            render json: { errors: @package.errors.full_messages }, status: 422
+            false
+          end
+        end
+
+        if success
+          # @TODO: unify package under a single serializer
+          if is_stock_app?
+            render json: @package, serializer: stock_serializer, root: "item",
+                    include_order: false, include_orders_packages: true
+          else
+            render json: @package, serializer: serializer, status: 201
           end
         else
-          render nothing: true, status: 204
+          render json: { errors: @package.errors.full_messages }, status: 422
         end
       end
 
@@ -104,10 +118,17 @@ module Api
         @package.received_quantity = package_params[:quantity] if package_params[:quantity].to_i.positive?
         @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
         @package.request_from_admin = is_admin_app?
-        packages_location_for_admin
 
-        # use valid? to ensure mark_received errors get caught
-        if @package.valid? and @package.save
+        success = ActiveRecord::Base.transaction do
+          if @package.valid? && @package.save
+            try_inventorize_package(@package) if location_id.present? && @package.inventory_number.present?
+            true
+          else
+            false
+          end
+        end
+
+        if success
           if is_stock_app?
             stockit_item_details
           else
@@ -351,7 +372,7 @@ module Api
         @package.try(:item).try(:offer_id)
       end
 
-      def package_record
+      def initialize_package_record
         if is_stock_app?
           @package.donor_condition_id = package_params[:donor_condition_id] if assign_donor_condition?
           @package.inventory_number = inventory_number
@@ -364,18 +385,57 @@ module Api
         @package.storage_type = assign_storage_type
         @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity ||= received_quantity
+        @package.offer_id = offer_id
         add_favourite_image if params["package"]["favourite_image_id"]
         @package
       end
 
+      def try_inventorize_package(pkg)
+        unless PackagesInventory.inventorized?(pkg)
+          Package::Operations.inventorize(pkg, location_id)
+        end
+      end
+
+      # @TODO: remove
+      # We assume aingle location and orders_package
+      #
+      def apply_stockit_quantity_change(pkg, current:, previous:)
+        OrdersPackage.where(package: pkg).where('quantity > 0').each { |ord_pkg| ord_pkg.update(quantity: current) }
+        Package::Operations.register_quantity_change(pkg, delta: current - previous, location: pkg.locations.first)
+      end
+
+      # @TODO: remove
+      #
+      def apply_stockit_dispatch(pkg)
+
+        return unless is_stockit_request? && STOCKIT_ENABLED
+
+        qty = pkg.received_quantity # StockIt only deals with full quantity
+
+        if pkg.stockit_sent_on.nil?
+          # Case: stockit undispatched the package
+          OrdersPackage.dispatched.where(package: pkg).each do |ord_pkg|
+            OrdersPackage::Operations.undispatch(ord_pkg, quantity: qty, to_location: location_id)
+          end
+        end
+
+        OrdersPackage.designated.where(package: pkg).each do |ord_pkg|
+          ord_pkg.cancel if order_id != ord_pkg.order_id
+        end
+
+        if order_id.present?
+          ord_pkg = OrdersPackage.where(package: pkg, order_id: order_id).first_or_create(state: OrdersPackage::States::DESIGNATED, quantity: qty)
+          OrdersPackage::Operations.dispatch(ord_pkg, quantity: qty, from_location: pkg.locations.first) if ord_pkg&.designated? && pkg.stockit_sent_on.present?
+        end
+      end
+
       def assign_values_to_existing_or_new_package
         new_package_params = package_params
-        GoodcitySync.request_from_stockit = !is_admin_app? # TODO: remove
+        GoodcitySync.request_from_stockit = is_stockit_request? # @TODO remove
         @package = existing_package || Package.new()
         delete_params_quantity_if_all_quantity_designated(new_package_params)
         @package.assign_attributes(new_package_params)
         @package.received_quantity = received_quantity
-        @package.build_or_create_packages_location(location_id, "build")
         @package.location_id = location_id
         @package.state = "received"
         @package.order_id = order_id
@@ -383,12 +443,6 @@ module Api
         @package.box_id = box_id
         @package.pallet_id = pallet_id
         @package
-      end
-
-      def packages_location_for_admin
-        if is_admin_app? && params[:package][:location_id].present?
-          @package.build_or_create_packages_location(params[:package][:location_id], "create")
-        end
       end
 
       def print_count
@@ -400,7 +454,7 @@ module Api
       end
 
       def location_id
-        if GoodcitySync.request_from_stockit
+        if is_stockit_request? # @TODO remove
           Location.find_by(stockit_id: package_params[:location_id]).try(:id)
         else
           package_params[:location_id]

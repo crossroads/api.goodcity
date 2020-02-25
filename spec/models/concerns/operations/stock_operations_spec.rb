@@ -67,6 +67,43 @@ context StockOperations do
 
       expect(package_quantity).to eq(21)
     end
+
+    it 'fails to inventorize a package without an inventory_number' do
+      package.inventory_number = nil
+      expect { inventorize }.to raise_error(Goodcity::BadOrMissingField).with_message("Invalid or empty field 'inventory_number'")
+    end
+  end
+
+  describe 'Gain' do
+    let(:package) { create(:package, :with_inventory_number) }
+    let(:uninventorized_package) { create(:package) }
+
+    before do
+      create(:packages_inventory, :inventory, quantity: 30, package: package, location: location1)
+      create(:packages_inventory, :inventory, quantity: 3, package: package, location: location2)
+      create(:packages_inventory, :gain, quantity: 3, package: package, location: location1)
+    end
+
+    before(:each) do
+      expect(PackagesInventory.inventorized?(package)).to eq(true)
+      expect(PackagesInventory.inventorized?(uninventorized_package)).to eq(false)
+    end
+
+    def register_gain(pkg, quantity, to_location)
+      subject::Operations::register_gain(pkg,
+        quantity: quantity,
+        to_location: to_location)
+    end
+
+    it 'succeeds for inventorized packages' do
+      expect { register_gain(package, 10, location1) }.to change {
+        PackagesInventory::Computer.quantity_where(location: location1, package: package)
+      }.from(33).to(43)
+    end
+
+    it 'fails for uninventorized packages' do
+      expect { register_gain(uninventorized_package, 10, location1) }.to raise_error(Goodcity::NotInventorizedError).with_message('Cannot operate on uninventorized packages')
+    end
   end
 
   describe 'Marking packages as lost/missing' do

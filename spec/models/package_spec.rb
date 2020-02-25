@@ -195,24 +195,6 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe "after_update" do
-    it "#update_packages_location_quantity" do
-      package = create(:package, :received, :package_with_locations)
-      new_quantity = 4
-      packages_location = package.packages_locations.first
-      expect {
-        package.update(received_quantity: new_quantity)
-        packages_location.reload
-      }.to change(packages_location, :quantity).from(package.received_quantity).to(new_quantity)
-    end
-
-    it "#received_quantity_changed_and_locations_exists?" do
-      new_quantity = rand(4)+2
-      package.update(received_quantity: new_quantity)
-      expect(package.received_quantity_changed_and_locations_exists?).to eq(false)
-    end
-  end
-
   describe 'set_item_id' do
 
     let(:item) { create :item }
@@ -271,55 +253,6 @@ RSpec.describe Package, type: :model do
       package.save
       expect(package.set_item_id).to be_nil
       expect(sibling_package.reload.set_item_id).to be_nil
-    end
-  end
-
-  describe '#update_or_create_qty_moved_to_location' do
-    let!(:package) { create :package }
-    let!(:location) { create :location }
-
-    it 'creates associated packages_location record if we do not have packages_location record with provided location_id' do
-      expect{
-        package.update_or_create_qty_moved_to_location(location.id, 4)
-      }.to change(PackagesLocation, :count).by(1)
-    end
-
-    it 'creates associated packages_location record with quantity to move' do
-      package.update_or_create_qty_moved_to_location(location.id, 4)
-      expect(package.packages_locations.first.quantity).to eq 4
-    end
-
-    it 'do not creates packages_location record if packages_location record with provided location id already exist' do
-      packages_location = create :packages_location, quantity: 4, location: location, package: package
-      expect{
-        package.update_or_create_qty_moved_to_location(location.id, 4)
-      }.to change(PackagesLocation, :count).by(0)
-    end
-
-    it 'updates existing packages_location quantity to with new quantity which is addition of qty to move and packages_location quantity' do
-      packages_location = create :packages_location, quantity: 2, location: location, package: package
-      package.update_or_create_qty_moved_to_location(location.id, 2)
-      expect(packages_location.reload.quantity).to eq 4
-    end
-  end
-
-  describe '#update_existing_package_location_qty' do
-    let!(:package) { create :package, received_quantity: 10, quantity: 10 }
-    let!(:packages_location) { create :packages_location, quantity: package.received_quantity, package: package }
-
-    it 'subtracts quantity to move from existing packages location record if record exist' do
-      quantity_to_move = 8
-      new_quantity     = packages_location.quantity - quantity_to_move
-      package.update_existing_package_location_qty(packages_location.id, quantity_to_move)
-      expect(packages_location.reload.quantity).to eq new_quantity
-    end
-
-    it 'destroys packages_location record if remaining quantity for packages_location is zero' do
-      quantity_to_move = package.received_quantity
-      new_quantity     = packages_location.quantity - quantity_to_move
-      expect{
-        package.update_existing_package_location_qty(packages_location.id, quantity_to_move)
-      }.to change(PackagesLocation, :count).by(-1)
     end
   end
 

@@ -5,6 +5,8 @@ zh-tw:
   errors:
     not_found: Not Found
     bad_request: Bad Request
+    bad_or_missing_record: Invalid or missing %{klass}
+    bad_or_missing_field: Invalid or empty field '%{field}'
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期

@@ -40,13 +40,9 @@ class Package < ActiveRecord::Base
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
-  after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
-  after_update :update_orders_package_quantity, if: :received_quantity_changed_and_orders_packages_exists?
   after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
-  after_save :dispatch_orders_package, if: :dispatch_from_stockit?
   after_save :update_carts
   after_touch :update_carts # Temporary, will be removed once quantity fields are updated by the inventory
 
@@ -181,40 +177,8 @@ class Package < ActiveRecord::Base
     )
   end
 
-  def received_quantity_changed_and_locations_exists?
-    received_quantity_changed? && locations.exists?
-  end
-
-  def update_packages_location_quantity
-    packages_locations.first.update_quantity(received_quantity)
-  end
-
-  def received_quantity_changed_and_orders_packages_exists?
-    received_quantity_changed? && orders_packages.exists?
-  end
-
-  def update_orders_package_quantity
-    if GoodcitySync.request_from_stockit
-      update_in_stock_quantity
-      orders_packages.first.update(quantity: received_quantity)
-    end
-  end
-
   def dispatch_from_stockit?
     stockit_sent_on_changed? && GoodcitySync.request_from_stockit
-  end
-
-  def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && packages_locations.exists?
-      packages_locations.first.update(location_id: location_id)
-    elsif (packages_location = packages_locations.find_by(location_id: location_id))
-      packages_location.update_quantity(received_quantity)
-    elsif !stockit_sent_on
-      packages_locations.send(operation, {
-        location_id: location_id,
-        quantity: received_quantity
-      })
-    end
   end
 
   def order_id_nil?
@@ -225,54 +189,8 @@ class Package < ActiveRecord::Base
     stockit_sent_on.present?
   end
 
-  def dispatch_orders_package
-    if designation && stockit_sent_on_present? && same_order_id_as_designation?
-      designation.dispatch
-    elsif designation && stockit_sent_on_present?
-      designation.update(order_id: order_id, state_event: "dispatch")
-    elsif stockit_sent_on.blank?
-      requested_undispatch_from_stockit
-    else
-      create_associated_dispatched_orders_package
-    end
-    update_in_stock_quantity
-  end
-
-  def requested_undispatch_from_stockit
-    if dispatched_orders_package
-      dispatched_orders_package.undispatch_orders_package
-    end
-  end
-
   def same_order_id_as_designation?
     designation.order_id == order_id
-  end
-
-  def create_associated_dispatched_orders_package
-    orders_package = orders_packages.create(
-      order_id: order_id,
-      quantity: received_quantity,
-      sent_on: Time.now,
-      updated_by: User.current_user,
-      state: 'designated'
-    )
-    update_in_stock_quantity
-    orders_package.dispatch!
-  end
-
-  def designate_and_undesignate_from_stockit
-    if designation && order_id_nil?
-      designation.destroy
-    elsif designation && order_id
-      designation.update_designation(order_id)
-    else
-      OrdersPackage.add_partially_designated_item(
-        order_id: order_id,
-        package_id: id,
-        quantity: quantity
-      )
-    end
-    update_in_stock_quantity
   end
 
   def designation
@@ -382,17 +300,8 @@ class Package < ActiveRecord::Base
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    deduct_dispatch_quantity(package_location_changes)
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
-  end
-
-  def deduct_dispatch_quantity(package_qty_changes)
-    if package_qty_changes && !singleton_package?
-      package_qty_changes.each_pair do |_key, pckg_qty_param|
-        update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
-      end
-    end
   end
 
   def undispatch_stockit_item
@@ -404,44 +313,8 @@ class Package < ActiveRecord::Base
     add_errors(response)
   end
 
-  def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
-    if referenced_package_location
-      referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
-    elsif (packages_location = packages_locations.first)
-      packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
-    end
-  end
-
   def find_packages_location_with_location_id(location_id)
     packages_locations.find_by(location_id: location_id)
-  end
-
-  def update_or_create_qty_moved_to_location(location_id, total_qty)
-    if (packages_location = find_packages_location_with_location_id(location_id))
-      packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
-    else
-      create_associated_packages_location(location_id, total_qty)
-    end
-  end
-
-  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if (packages_location = packages_locations.find_by(id: packages_location_id))
-      new_qty = packages_location.quantity - quantity_to_move.to_i
-      new_qty.zero? ? packages_location.destroy : packages_location.update(quantity: new_qty)
-    end
-  end
-
-  def move_stockit_item(location_id)
-    response =
-      if box_id? || pallet_id?
-        has_box_or_pallet_error
-      else
-        build_or_create_packages_location(location_id, 'create')
-        self.stockit_moved_on = Date.today
-        self.stockit_moved_by = User.current_user
-        Stockit::ItemSync.move(self)
-      end
-    add_errors(response)
   end
 
   def has_box_or_pallet_error
