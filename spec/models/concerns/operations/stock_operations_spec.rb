@@ -7,8 +7,13 @@ context StockOperations do
     Class.new { include StockOperations }
   }
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
+
   describe 'Inventorizing a package' do
-    let(:package) { create(:package, received_quantity: 21) }
+    let(:package) { create(:package, :with_inventory_number, received_quantity: 21) }
 
     def inventorize
       subject::Operations::inventorize(package, location1);
@@ -107,7 +112,7 @@ context StockOperations do
   end
 
   describe 'Marking packages as lost/missing' do
-    let(:package) { create(:package) }
+    let(:package) { create(:package, :with_inventory_number) }
 
     before do
       create(:packages_inventory, :inventory, quantity: 30, package: package, location: location1)
