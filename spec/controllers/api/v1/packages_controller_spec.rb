@@ -1051,33 +1051,38 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package_storage) { create(:storage_type, :with_pkg) }
     let(:box) { create(:package, storage_type: box_storage) }
     let(:pallet) { create(:package, storage_type: pallet_storage) }
-    let(:package1) { create(:package, :with_inventory_number, :package_with_locations, quantity: 50, received_quantity: 50, storage_type: package_storage)}
-    let(:package2) { create(:package, :with_inventory_number, :package_with_locations, quantity: 40, received_quantity: 40, storage_type: package_storage)}
+    let(:package1) { create(:package, :with_inventory_number, quantity: 50, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, :with_inventory_number, quantity: 40, received_quantity: 40, storage_type: package_storage)}
+    let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
     describe "fetch_contained_packages" do
-      before do
+      before :each do
+        Package::Operations.inventorize(package1, location)
+        Package::Operations.inventorize(package2, location)
+        Package::Operations.inventorize(box, location)
+        Package::Operations.inventorize(pallet, location)
         generate_and_set_token(user)
         current_user = user
         params1 = {
           id: box.id,
           item_id: package1.id,
-          location_id: package1.location_id,
+          location_id: location.id,
           task: 'pack',
           quantity: 5
         }
         params2 = {
           id: box.id,
           item_id: package2.id,
-          location_id: package2.location_id,
+          location_id: location.id,
           task: 'pack',
           quantity: 2
         }
         params3 = {
           id: pallet.id,
           item_id: package2.id,
-          location_id: package2.location_id,
+          location_id: location.id,
           task: 'pack',
           quantity: 5
         }
@@ -1107,13 +1112,17 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     describe "adding_items_to_box" do
       before(:each) do
+        Package::Operations.inventorize(box, location)
+        Package::Operations.inventorize(pallet, location)
+        Package::Operations.inventorize(package1, location)
+        Package::Operations.inventorize(package2, location)
         generate_and_set_token(user)
         current_user = user
 
         @params1 = {
           id: box.id,
           item_id: package1.id,
-          location_id: package1.location_id,
+          location_id: location.id,
           task: 'pack',
           quantity: 5
         }
@@ -1121,7 +1130,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         @params2 = {
           id: box.id,
           item_id: package2.id,
-          location_id: package2.location_id,
+          location_id: location.id,
           task: 'pack',
           quantity: 2
         }
@@ -1129,7 +1138,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         @params3 = {
           id: pallet.id,
           item_id: package2.id,
-          location_id: package2.location_id,
+          location_id: location.id,
           task: 'pack',
           quantity: 5
         }
@@ -1137,7 +1146,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         @params4 = {
           id: box.id,
           item_id: package1.id,
-          location_id: package1.location_id,
+          location_id: location.id,
           task: 'unpack',
           quantity: 5
         }
@@ -1145,7 +1154,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         @params5 = {
           id: box.id,
           item_id: package1.id,
-          location_id: package1.location_id,
+          location_id: location.id,
           task: 'pack',
           quantity: 0
         }
@@ -1160,7 +1169,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         @params7 = {
           id: box.id,
           item_id: package2.id,
-          location_id: package2.location_id,
+          location_id: location.id,
           task: "pack",
           quantity: package2.quantity + 20,
         }
@@ -1207,8 +1216,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       it "throws already designated error" do
-        package2.order = create(:order)
-        package2.save
+        GoodcitySync.request_from_stockit = true
+        Package::Operations.designate(package2, quantity: package2.total_available_quantity, to_order: create(:order, state: "submitted").id)
         put :add_remove_item, @params2
         expect(response.status).to eq(422)
         expect(parsed_body["errors"]).to eq(["Cannot add/remove designated/dispatched items."])
