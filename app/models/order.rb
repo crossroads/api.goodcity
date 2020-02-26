@@ -77,6 +77,15 @@ class Order < ActiveRecord::Base
     "Upcoming" => "awaiting_dispatch"
   }.freeze
 
+  # Stockit LocalOrder Status => GoodCity State
+  LOCAL_ORDER_STATUS_MAP = {
+    "From website" => "processing",
+    "Active" => "processing",
+    "Pending agreement" => "processing",
+    "Cancelled" => "cancelled",
+    "Closed" => "closed"
+  }.freeze
+
   scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
