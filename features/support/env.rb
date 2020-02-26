@@ -40,8 +40,8 @@ end
 
 World(FactoryBot::Syntax::Methods)
 
-Before do
-  User.current_user ||= FactoryBot.create(:user, :supervisor)
+Before('@supervisor') do
+  User.current_user = FactoryBot.create(:user, :supervisor)
 end
 
 
