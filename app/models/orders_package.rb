@@ -27,6 +27,8 @@ class OrdersPackage < ActiveRecord::Base
   scope :designated, ->{ where(state: 'designated') }
   scope :dispatched, ->{ where(state: 'dispatched') }
   scope :for_order, ->(order_id) { joins(:order).where(orders: { id: order_id }) }
+  scope :not_cancellable, -> () { where("orders_packages.state = 'dispatched' OR dispatched_quantity > 0") }
+  scope :cancellable, -> () { where("orders_packages.state = 'designated' AND dispatched_quantity = 0") }
 
   scope :with_eager_load, ->{
     includes([
