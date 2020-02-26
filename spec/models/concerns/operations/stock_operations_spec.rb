@@ -15,7 +15,7 @@ context StockOperations do
     end
 
     def register_loss
-      create(:packages_inventory, package: package, location: location1, quantity: -1, action: 'loss')
+      subject::Operations::register_loss(package, quantity: -1, from_location: location1)
     end
 
     def uninventorize
@@ -23,7 +23,7 @@ context StockOperations do
     end
 
     def package_quantity
-      PackagesInventory::Computer.package_quantity(package)
+      package.total_in_hand_quantity
     end
 
     it 'appends an inventory action' do

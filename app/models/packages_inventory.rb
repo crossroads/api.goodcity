@@ -9,10 +9,18 @@ class PackagesInventory < ActiveRecord::Base
     MOVE        = 'move'.freeze
     PACK        = "pack".freeze
     UNPACK      = "unpack".freeze
+    TRASH       = "trash".freeze
+    UNTRASH     = "untrash".freeze
+    PROCESS     = "process".freeze
+    UNPROCESS   = "unprocess".freeze
+    RECYCLE     = "recycle".freeze
+    PRESERVE    = "preserve".freeze
   end
 
-  INCREMENTAL_ACTIONS = [Actions::INVENTORY, Actions::UNDISPATCH, Actions::GAIN, Actions::UNPACK].freeze
-  DECREMENTAL_ACTIONS = [Actions::UNINVENTORY, Actions::LOSS, Actions::DISPATCH, Actions::PACK].freeze
+  INCREMENTAL_ACTIONS = [Actions::INVENTORY, Actions::UNDISPATCH, Actions::GAIN, Actions::UNPACK,
+    Actions::UNTRASH, Actions::UNPROCESS, Actions::PRESERVE].freeze
+  DECREMENTAL_ACTIONS = [Actions::UNINVENTORY, Actions::LOSS, Actions::DISPATCH, Actions::PACK,
+    Actions::TRASH, Actions::PROCESS, Actions::RECYCLE].freeze
   UNRESTRICTED_ACTIONS = [Actions::MOVE].freeze
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
 
@@ -42,7 +50,10 @@ class PackagesInventory < ActiveRecord::Base
     Actions::PACK         => Actions::UNPACK,
     Actions::UNPACK       => Actions::PACK,
     Actions::UNDISPATCH   => Actions::DISPATCH,
-    Actions::LOSS         => Actions::GAIN
+    Actions::LOSS         => Actions::GAIN,
+    Actions::TRASH        => Actions::UNTRASH,
+    Actions::PROCESS      => Actions::UNPROCESS,
+    Actions::RECYCLE      => Actions::PRESERVE,
   }
 
   def undo

@@ -46,4 +46,8 @@ class PackagesLocation < ActiveRecord::Base
       reference_to_orders_package: reference_to_orders_package
     )
   end
+
+  def self.available_quantity_at_location(location_id, package_id)
+    where(location_id: location_id, package_id: package_id).first&.quantity
+  end
 end
