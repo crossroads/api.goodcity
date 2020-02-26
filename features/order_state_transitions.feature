@@ -1,3 +1,4 @@
+@supervisor
 Feature: Changing the states of an order
   As a Stock user, I transition the orders through multiple states
 
