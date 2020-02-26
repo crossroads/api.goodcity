@@ -36,8 +36,8 @@ module StockOperations
     # @param [Package|String] the package to inventorize or its id
     # @param [Location|String] the location to place the package in
     #
-    def uninventorize(package)
-      last_action = PackagesInventory.order('id DESC').where(package: package).limit(1).first
+    def uninventorize(package, package_inventory_id)
+      last_action = PackagesInventory.find(package_inventory_id)
       raise Goodcity::UninventoryError if last_action.blank? || !last_action.inventory?
       last_action.undo
     end
@@ -49,7 +49,7 @@ module StockOperations
     # @param [Integer] quantity the quantity that was lost
     # @param [Location|Id] from the location to negate the quantity from(or its id)
     #
-    def register_loss(package, quantity:, from_location:, action: 'loss', comment: nil)
+    def register_loss(package, quantity:, from_location:, action: 'loss', description: nil)
       available_count = PackagesInventory::Computer.available_quantity_of(package)
 
       if (quantity > available_count)
@@ -66,8 +66,18 @@ module StockOperations
         package: package,
         quantity: quantity.abs * -1,
         location: from_location,
-        description: comment,
+        description: description,
       })
+    end
+
+    def perform_action(package, quantity:, from_location:, action: 'loss', description: nil)
+      if PackagesInventory::DECREMENTAL_ACTIONS.includes?(action)
+        register_loss(package,
+          quantity: quantity,
+          from_location: from_location,
+          action: action,
+          description: description)
+      end
     end
 
     def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )

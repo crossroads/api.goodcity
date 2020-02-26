@@ -39,6 +39,7 @@ module Api
         param :order_id, [Integer, String], desc: "Order involved in the package's designation", allow_nil: true
         param :to, [Integer, String], desc: "Location the package is moved to", allow_nil: true
         param :from, [Integer, String], desc: "Location the package is moved from", allow_nil: true
+        param :description, [Integer, String], desc: "Location the package is moved from", allow_nil: true
       end
 
       api :GET, "/v1/packages", "get all packages for the item"
@@ -204,6 +205,27 @@ module Api
         order_id = params[:order_id]
 
         Package::Operations.designate(@package, quantity: quantity, to_order: order_id)
+        send_stock_item_response
+      end
+
+      api :PUT, "/v1/packages/1/actions/:action_name", "Executes an action on a package"
+      param_group :operations
+
+      def exec_action
+        Package::Operations.perform_action(@package,
+          quantity: params[:quantity].to_i,
+          from_location: params[:from],
+          action: params[:action],
+          description: params[:description])
+
+        send_stock_item_response
+      end
+
+      api :PUT, "/v1/packages/1/undo_action/:packages_inventory_id", "Executes an action on a package"
+      param_group :operations
+
+      def undo_action
+        Package::Operations.uninventorize(@package, params[:packages_inventory_id])
         send_stock_item_response
       end
 
