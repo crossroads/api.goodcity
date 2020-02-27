@@ -16,7 +16,9 @@ FactoryBot.define do
     association     :beneficiary
     association     :country
     association     :district
-    association     :booking_type
+    booking_type do |b|
+      BookingType.first || association(:booking_type)
+    end
 
     trait :with_orders_packages do
       after(:create) do |order|
