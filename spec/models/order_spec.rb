@@ -301,17 +301,17 @@ RSpec.describe Order, type: :model do
 
   describe ".active_orders_count_as_per_priority_and_state" do
     before do
-      non_priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 25.hours
-      priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 23.hours
+      non_priority_submitted = create :order, booking_type: appointment, state: "submitted", submitted_at: Time.zone.now - 25.hours
+      priority_submitted = create :order, state: "submitted", booking_type: appointment, submitted_at: Time.zone.now - 23.hours
 
-      non_priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 25.hours
-      priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 23.hours
+      non_priority_processing = create :order, booking_type: appointment, state: "processing", processed_at: Time.zone.now - 25.hours
+      priority_processing = create :order, state: "processing", booking_type: appointment, processed_at: Time.zone.now - 23.hours
     end
 
     context "for Non Priority Orders" do
       it "returns non priority orders hash with state as key and its corresponding count as value" do
         expect(Order.active_orders_count_as_per_priority_and_state(is_priority: false)).to eq(
-          {"submitted" => 2, "processing" => 2}
+          { "submitted" => 2, "processing" => 2 }
         )
       end
     end
