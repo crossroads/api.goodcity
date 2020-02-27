@@ -58,9 +58,7 @@ module PackageFiltering
     def where_states(states)
       sql_query = states.map{|state| send("#{state}_sql") }.join(' OR ')
       return none if sql_query.blank?
-      query = where(sql_query)
-      query = query.join_order_packages if (states & ['designated', 'dispatched']).any?
-      query
+      where(sql_query)
     end
 
     def filter_by_publish_status(publish_filters)
@@ -109,10 +107,6 @@ module PackageFiltering
       end
     end
 
-    def join_order_packages
-      joins("LEFT OUTER JOIN orders_packages ON orders_packages.package_id = packages.id")
-    end
-
     private
 
     def received_sql
@@ -120,15 +114,15 @@ module PackageFiltering
     end
 
     def in_stock_sql
-      "packages.state = 'received' AND packages.quantity > 0"
+      "packages.state = 'received' AND packages.available_quantity > 0"
     end
 
     def designated_sql
-      "orders_packages.state = 'designated'"
+      "packages.state = 'received' AND packages.designated_quantity > 0"
     end
 
     def dispatched_sql
-      "orders_packages.state = 'dispatched'"
+      "packages.state = 'received' AND packages.dispatched_quantity > 0"
     end
 
   end

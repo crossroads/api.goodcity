@@ -98,12 +98,13 @@ namespace :demo do
       offer.reload.items.each do |item|
         item.packages.each do |pkg|
           pkg.designate_to_stockit_order(order.id)
-          params = {
+          orders_package = OrdersPackage.create({
             order_id: order.id,
             package_id: pkg.id,
-            quantity: pkg.quantity
-          }
-          orders_package = OrdersPackage.add_partially_designated_item(params)
+            quantity: 1,
+            updated_by: User.current_user,
+            state: 'designated'
+          })
           orders_packages_ids << orders_package.id
         end
       end

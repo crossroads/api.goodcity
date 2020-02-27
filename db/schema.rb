@@ -633,7 +633,6 @@ ActiveRecord::Schema.define(version: 20200226111634) do
   add_index "package_types", ["visible_in_selects"], name: "index_package_types_on_visible_in_selects", using: :btree
 
   create_table "packages", force: :cascade do |t|
-    t.integer  "quantity"
     t.integer  "length"
     t.integer  "width"
     t.integer  "height"
@@ -699,7 +698,6 @@ ActiveRecord::Schema.define(version: 20200226111634) do
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
-  add_index "packages", ["quantity"], name: "partial_index_quantity_greater_than_zero", where: "(quantity > 0)", using: :btree
   add_index "packages", ["set_item_id"], name: "index_packages_on_set_item_id", using: :btree
   add_index "packages", ["state"], name: "index_packages_on_state", using: :gin
   add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree

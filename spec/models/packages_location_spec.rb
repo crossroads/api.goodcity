@@ -21,17 +21,6 @@ RSpec.describe PackagesLocation, type: :model do
     end
   end
 
-  describe '#update_quantity' do
-    it 'should update quantity' do
-      packages_location = create(:packages_location)
-      new_quantity = rand(4)+2
-      expect {
-        packages_location.update(quantity: new_quantity)
-
-      }.to change(packages_location, :quantity).from(packages_location.quantity).to(new_quantity)
-    end
-  end
-
   describe "Live updates" do
     let(:push_service) { PushService.new }
     let!(:package) { create :package, :package_with_locations, received_quantity: 1, quantity: 0 }
