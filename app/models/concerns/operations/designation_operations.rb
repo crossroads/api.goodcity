@@ -46,7 +46,7 @@ module DesignationOperations
       if orders_package.dispatched_quantity.eql?(quantity)
         # Case: we reduced the quantity, enough quantity has been dispatched to change the state of the orders_package
         orders_package.state = OrdersPackage::States::DISPATCHED
-        if STOCKIT_ENABLED
+        if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
           # @TODO: Remove after destroying stockit
           orders_package.package.dispatch_stockit_item(orders_package)
           orders_package.package.save

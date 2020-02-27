@@ -14,4 +14,6 @@ module InventoryInitializer
       pkg.requested_packages.each(&:update_availability!)
     end
   end
+
+  module_function :initialize_inventory
 end

@@ -14,16 +14,14 @@ class OrdersPackage < ActiveRecord::Base
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :order, :quantity, presence: true
   after_initialize :set_initial_state
-  after_create -> { recalculate_quantity("create") }
-  after_update -> { recalculate_quantity("update") }
-  before_destroy -> { destroy_stockit_record("destroy") }
-  #after_destroy -> { order.delete_if_no_orders_packages }
+  after_create -> { push_to_stockit("create") }
+  after_update -> { push_to_stockit("update") }
+  before_destroy -> { push_to_stockit("destroy") }
   after_commit -> { package.update_carts }
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
   scope :get_records_associated_with_package_and_order, ->(order_id, package_id) { where("order_id = ? and package_id = ?", order_id, package_id) }
-  scope :get_dispatched_records_with_order_id, ->(order_id) { where(order_id: order_id, state: 'dispatched') }
   scope :designated, ->{ where(state: 'designated') }
   scope :dispatched, ->{ where(state: 'dispatched') }
   scope :for_order, ->(order_id) { joins(:order).where(orders: { id: order_id }) }
@@ -41,9 +39,7 @@ class OrdersPackage < ActiveRecord::Base
     if pkg_inv.source_id.present? && pkg_inv.source_type.eql?('OrdersPackage')
       ord_pkg = pkg_inv.source
       ord_pkg.update(
-        dispatched_quantity: PackagesInventory::Computer.dispatched_quantity(
-          orders_package:  ord_pkg
-        )
+        dispatched_quantity: PackagesInventory::Computer.dispatched_quantity(orders_package:  ord_pkg)
       )
     end
   end
@@ -103,10 +99,6 @@ class OrdersPackage < ActiveRecord::Base
     update(state: 'designated')
   end
 
-  def update_quantity
-    update(quantity: package.quantity)
-  end
-
   def update_designation(order_id_to_update)
     update(order_id: order_id_to_update, updated_by: User.current_user)
   end
@@ -122,104 +114,14 @@ class OrdersPackage < ActiveRecord::Base
     OrdersPackage.where("order_id = ? and package_id = ? and state = ?", order_to_delete, package_id, "cancelled").destroy_all
   end
 
-  def update_partially_designated_item(package)
-    total_quantity = quantity + package["quantity"].to_i
-    if state == "cancelled"
-      update(quantity: total_quantity, state: 'designated')
-    elsif (state == "dispatched")
-      update(quantity: total_quantity)
-      update_quantity_based_on_dispatch_state(total_quantity)
-    else
-      update(quantity: total_quantity)
-    end
-  end
-
-  def delete_orders_package
-    self.destroy and order.delete_if_no_orders_packages
-  end
-
-  def update_quantity_based_on_dispatch_state(total_quantity)
-    location_id = Location.dispatch_location.id
-    package.destroy_other_locations(location_id) if total_quantity == package.received_quantity
-    package.packages_locations.where(location_id: location_id).destroy_all # No longer record Dispatched location
-  end
-
   def dispatch_orders_package
     self.dispatch
   end
 
-  def self.undesignate_partially_designated_item(packages)
-    packages.each_pair do |_key, package|
-      orders_package = find_by(id: package["orders_package_id"])
-      orders_package.remove_designation_of_associated_package
-      calculate_total_quantity_and_update_state(package['quantity'], orders_package)
-    end
-  end
-
-  def self.calculate_total_quantity_and_update_state(package_quantity, orders_package)
-    total_quantity = orders_package.quantity - package_quantity.to_i
-    orders_package.update_orders_package_state(total_quantity)
-  end
-
-  def remove_designation_of_associated_package
-    package.undesignate_from_stockit_order if package.singleton_package?
-  end
-
-  def update_orders_package_state(total_quantity)
-    if total_quantity == 0
-      self.cancel
-    else
-      update(quantity: total_quantity, state: "designated")
-    end
-  end
-
-  def self.add_partially_designated_item(order_id:, package_id:, quantity:)
-    create(
-      order_id: order_id.to_i,
-      package_id: package_id.to_i,
-      quantity: quantity.to_i,
-      updated_by: User.current_user,
-      state: 'designated'
-    )
-  end
-
-  def edit_quantity(desired_quantity)
-    raise ArgumentError.new(I18n.t('orders_package.invalid_qty')) if desired_quantity.nil?
-    raise StandardError.new(I18n.t('orders_package.qty_edit_denied_for_inactive')) if dispatched? || cancelled?
-
-    target_quantity = desired_quantity.to_i
-
-    # Check if there is enough in stock to increase the qty
-    if target_quantity > quantity
-      has_enough = (target_quantity - quantity) <= package.in_hand_quantity
-      raise ArgumentError.new(I18n.t('orders_package.qty_not_available')) unless has_enough
-    end
-
-    # Update the quantity
-    update(quantity: target_quantity)
-  end
-
   private
 
-  def recalculate_quantity(operation)
-    unless (state == "requested" || GoodcitySync.request_from_stockit)
-      update_designation_of_package
-      package.update_in_stock_quantity
-      StockitSyncOrdersPackageJob.perform_now(package_id, self.id, operation) unless package.singleton_package?
-    end
-  end
-
-  def update_designation_of_package
-    designated_orders_packages = package.orders_packages.where(state: 'designated')
-    dispatched_orders_packages = package.orders_packages.where(state: 'dispatched')
-    if package && designated_orders_packages.count == 1
-      package.update_designation(designated_orders_packages.first.order_id)
-    elsif designated_orders_packages.count == 0 && dispatched_orders_packages.count == 0
-      package.remove_designation
-    end
-  end
-
-  def destroy_stockit_record(operation)
+  def push_to_stockit(operation)
+    return if state == "requested" || GoodcitySync.request_from_stockit
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.singleton_package?
   end
 end

@@ -34,14 +34,14 @@ module LocationOperations
       end
 
       def perform
-        return if @quantity.zero?
+        return if @quantity.zero? || @from == @to
 
         PackagesInventory.secured_transaction do
           raise Goodcity::MissingQuantityError if qty_at_source < @quantity
           decrement_origin
           increment_destination
         end
-        Stockit::ItemSync.move(@package) if STOCKIT_ENABLED
+        Stockit::ItemSync.move(@package) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
       end
 
       private

@@ -27,6 +27,8 @@ module Goodcity
 
   module_function :factory
 
+  InventorizedPackageError        = factory(BaseError, 'package.cannot_delete_inventorized')
+
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')
   MissingQuantityError            = factory(OperationsError, 'operations.move.not_enough_at_source')

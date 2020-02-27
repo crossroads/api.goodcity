@@ -1,3 +1,5 @@
+require "#{Rails.root}/spec/support/inventory_initializer.rb"
+
 #
 # Order state prerequisites
 #
@@ -40,16 +42,23 @@ end
 # We pass in quantity properties and state as a table
 And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
   properties = qty_table.hashes
+  location = create :location
   @orders_packages_per_state = @order_states.reduce({}) do |dict, state|
     dict[state] = properties.map do |row|
-      remaining_qty = row['Remaining Quantity'].to_i
+      remaining_qty = row['On-site Quantity'].to_i
       requested_qty = row['Requested Quantity'].to_i
       received_qty  = row['Received Quantity'].to_i
       # Build the package
       pkg = create(:package, received_quantity: received_qty)
+      InventoryInitializer.initialize_inventory(pkg, location: location)
+
       # Dispatch some quantity in order to reach the desired "Remaining Quantity"
-      dispatched_qty = received_qty - remaining_qty - (row['State'] == 'designated' ? requested_qty : 0)
-      create(:orders_package, state: 'dispatched', package: pkg, quantity: dispatched_qty)
+      already_dispatched_qty = received_qty - remaining_qty
+      if already_dispatched_qty.positive?
+        dispatched_op = create(:orders_package, state: 'designated', package: pkg, quantity: already_dispatched_qty)
+        PackagesInventory.append_dispatch(package: pkg, source: dispatched_op, quantity: -1 * already_dispatched_qty, location: location)
+      end
+
       # Create the actual orders_package to test on
       orders_package = create(
         :orders_package,
@@ -58,7 +67,7 @@ And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
         order: create(:order, state: state),
         package: pkg.reload
       )
-      expect(pkg.reload.in_hand_quantity).to eq(remaining_qty)
+      expect(pkg.reload.total_on_hand_quantity).to eq(remaining_qty)
       orders_package
     end
     dict

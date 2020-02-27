@@ -43,8 +43,8 @@ module OrderFulfilmentOperations
 
         if ord_pkg.dispatched?
           ord_pkg.update!(state: "designated", sent_on: nil)
-          ord_pkg.package.undispatch_stockit_item if STOCKIT_ENABLED
-          ord_pkg.package.save
+          ord_pkg.package.undispatch_stockit_item if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
+          ord_pkg.package.save!
         end
       end
     end
@@ -87,7 +87,7 @@ module OrderFulfilmentOperations
 
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch
-          ord_pkg.package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED
+          ord_pkg.package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
           ord_pkg.package.save
         end
       end

@@ -68,8 +68,7 @@ module Api
           include_orders_packages: true,
           exclude_stockit_set_item: @package.set_item_id.blank?,
           include_images: @package.set_item_id.blank?,
-          include_allowed_actions: true,
-          include_on_hand_quantity: true
+          include_allowed_actions: true
         ).as_json
       end
 
@@ -89,8 +88,11 @@ module Api
           quantity_was = @package.received_quantity_was || 0
           if @package.valid? && @package.save
             try_inventorize_package(@package) if @package.inventory_number.present?
-            apply_stockit_quantity_change(@package, previous: quantity_was, current: @package.received_quantity) if quantity_changed && quantity_was > 0
-            apply_stockit_dispatch(@package)  if dispatch_from_stockit
+            if is_stockit_request?
+              apply_stockit_quantity_change(@package, previous: quantity_was, current: @package.received_quantity) if quantity_changed && quantity_was > 0
+              apply_stockit_dispatch(@package) if dispatch_from_stockit
+              apply_stockit_move(@package) unless location_id == @package.locations.first.try(:id)
+            end
             true
           else
             false
@@ -150,6 +152,8 @@ module Api
       def destroy
         @package.really_destroy!
         render json: {}
+      rescue ActiveRecord::InvalidForeignKey
+        raise Goodcity::InventorizedPackageError
       end
 
       api :POST, "/v1/packages/print_barcode", "Print barcode"
@@ -195,7 +199,6 @@ module Api
                                                     include_packages: false,
                                                     include_orders_packages: true,
                                                     exclude_stockit_set_item: true,
-                                                    include_on_hand_quantity: true,
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
@@ -317,7 +320,7 @@ module Api
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
-          :package_type_id, :pallet_id, :pieces, :quantity, :received_at,
+          :package_type_id, :pallet_id, :pieces, :received_at,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
           :stockit_id, :stockit_sent_on, :weight, :width,
           offer_ids: [],
@@ -409,6 +412,17 @@ module Api
         unless PackagesInventory.inventorized?(pkg)
           Package::Operations.inventorize(pkg, location_id)
         end
+      end
+
+      # @TODO: remove
+      # Case: Stockit changes the location_id
+      # We assume aingle location
+      #
+      def apply_stockit_move(pkg)
+        quantity = PackagesInventory::Computer.package_quantity(pkg)
+        return if !STOCKIT_ENABLED || location_id.nil? || quantity.zero?
+
+        Package::Operations.move(quantity, pkg, from: pkg.locations.first, to: location_id)
       end
 
       # @TODO: remove

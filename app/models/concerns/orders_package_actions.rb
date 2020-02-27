@@ -81,16 +81,16 @@ module OrdersPackageActions
     def resolve
       case @model
         when ORDER_FINISHED then []
-        when PACKAGE_CANCELLED then [
+        when ORDERS_PACKAGE_CANCELLED then [
           Actions::REDESIGNATE.if(has_quantity_to_redesignate?)
         ]
-        when PACKAGE_DESIGNATED then [
+        when ORDERS_PACKAGE_DESIGNATED then [
           Actions::EDIT_QUANTITY.if(editable_qty?),
           Actions::CANCEL.if(!partially_dispatched?),
           Actions::DISPATCH.on,
           Actions::UNDISPATCH.if(partially_dispatched?),
         ]
-        when PACKAGE_DISPATCHED then [ Actions::UNDISPATCH.on ]
+        when ORDERS_PACKAGE_DISPATCHED then [ Actions::UNDISPATCH.on ]
         else [] # default
       end
     end
@@ -98,20 +98,25 @@ module OrdersPackageActions
     private
 
     ORDER_FINISHED = -> (model) { Order::INACTIVE_STATES.include?(model.order.state) }
-    PACKAGE_CANCELLED = -> (model) { model.cancelled? }
-    PACKAGE_DESIGNATED = -> (model) { model.designated? }
-    PACKAGE_DISPATCHED = -> (model) { model.dispatched? }
+    ORDERS_PACKAGE_CANCELLED = -> (model) { model.cancelled? }
+    ORDERS_PACKAGE_DESIGNATED = -> (model) { model.designated? }
+    ORDERS_PACKAGE_DISPATCHED = -> (model) { model.dispatched? }
 
     def partially_dispatched?
       @model.designated? && @model.dispatched_quantity.positive?
     end
 
     def has_quantity_to_redesignate?
-      package_has_quantity? && @model.quantity.positive?
+      available_qty = PackagesInventory::Computer.available_quantity_of(@model.package)
+      @model.quantity.positive? && available_qty >= @model.quantity
     end
 
     def package_has_quantity?
-      @model.package.in_hand_quantity.positive?
+      PackagesInventory::Computer.package_quantity(@model.package).positive?
+    end
+
+    def can_increase_qty?
+      PackagesInventory::Computer.available_quantity_of(@model.package).positive?
     end
 
     def can_decrease_qty?
@@ -121,7 +126,5 @@ module OrdersPackageActions
     def editable_qty?
       !partially_dispatched? && (can_decrease_qty? || can_increase_qty?)
     end
-
-    alias_method :can_increase_qty?, :package_has_quantity?
   end
 end

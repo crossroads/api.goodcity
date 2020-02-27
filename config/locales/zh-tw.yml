@@ -94,6 +94,7 @@ zh-tw:
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."
     split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
+    cannot_delete_inventorized: "Inventorized packages cannot be deleted"
   orders_package:
     quantity_already_dispatched: "Some has been already dispatched, please undispatch and try again."
     order_status_error: "You need to complete processing Order first before dispatching."
