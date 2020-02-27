@@ -14,7 +14,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     create(:user_with_token, :with_multiple_roles_and_permissions,
            roles_and_permissions: {"Supervisor" => ["can_manage_orders"]})
   }
-  let!(:order_created_by_supervisor) { create :order, :with_state_submitted, created_by: user }
+  let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type, created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
   let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id) }
   let(:returned_orders) do
