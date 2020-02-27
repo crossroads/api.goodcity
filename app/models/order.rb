@@ -421,7 +421,7 @@ class Order < ActiveRecord::Base
   end
 
   def self.active_orders_count_as_per_priority_and_state(is_priority: false)
-    orders = filter(states: ACTIVE_ORDERS, priority: is_priority).group_by(&:state)
+    orders = filter(states: ACTIVE_ORDERS, priority: is_priority, types: GOODCITY_BOOKING_TYPES).group_by(&:state)
     if is_priority
       orders_count_per_state(orders).transform_keys { |key| "priority_".concat(key) }
     else
