@@ -254,7 +254,7 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "pack",
           id: box.id
         }
@@ -270,7 +270,7 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "not_allowed",
           id: box.id
         }
@@ -288,7 +288,7 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "unpack",
           id: pallet.id
         }
@@ -304,7 +304,7 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "not_allowed",
           id: box.id
         }
