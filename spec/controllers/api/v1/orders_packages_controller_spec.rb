@@ -8,6 +8,13 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   let(:status) { response.status }
   subject { JSON.parse(response.body) }
 
+  before do
+    allow(Stockit::ItemSync).to receive(:create)
+    allow(Stockit::ItemSync).to receive(:update)
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
+
   describe "GET packages for Item" do
    before { generate_and_set_token(user) }
     it "returns 200" do
@@ -25,7 +32,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     it 'returns designated and dispatched orders_packages' do
       expect(Stockit::OrdersPackageSync).to receive(:create).exactly(3).times
       order = create :order
-      package = create :package, :with_inventory_number, quantity: 8, received_quantity: 8
+      package = create :package, :with_inventory_record, received_quantity: 8
       3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
       get :index, search_by_package_id: package.id
       expect( subject["orders_packages"].size ).to eq(3)
@@ -137,7 +144,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
       describe 'Editing Quantity' do
         context 'of a designated orders_package' do
-          let(:pkg) { create :package, :with_inventory_number, received_quantity: 10  }
+          let(:pkg) { create :package, :with_inventory_record, received_quantity: 10  }
           let(:order) { create :order, :with_state_dispatching }
           let(:orders_package) {
             create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
@@ -197,12 +204,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
         context 'items of an unprocessed order' do
           let(:order) { create :order, :with_state_processing }
-          let(:package) { create(:package, quantity: 10) }
-          let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: package.quantity }
-
-          before do
-            create(:packages_location, package: package, quantity: package.quantity)
-          end
+          let(:package) { create(:package, :with_inventory_record, received_quantity: 10) }
+          let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: package.received_quantity }
 
           it 'fails to dispatch the packages' do
             expect(current_state).to eq('designated')
@@ -220,14 +223,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
         let(:location) { create(:location) }
         let(:order) { create :order, :with_state_dispatching }
         let(:quantity) { 10 }
-        let(:package) { create(:package, quantity: 0) } # 0 quantity because it has been dispatched
-        let(:orders_package) { create :orders_package, :with_state_dispatched, order: order, package: package, quantity: quantity }
-
-        before do
-          # Mock history
-          build(:packages_inventory, action: 'inventory', package: package, quantity: quantity).sneaky(:save)
-          build(:packages_inventory, action: 'dispatch', package: package, source: orders_package, quantity: -1 * quantity).sneaky(:save)
-        end
+        let(:package) { create(:package, :with_inventory_record, received_quantity: quantity) } # 0 quantity because it has been dispatched
+        let(:orders_package) { create :orders_package, :with_inventory_record, :with_state_dispatched, order: order, package: package, quantity: quantity }
 
         it 'fails to undispatch the packages if no valid location is provided' do
           expect(current_state).to eq('dispatched')

@@ -4,6 +4,8 @@ namespace :goodcity do
     # rake goodcity:data:update_package_quantity
     desc 'Fix negative package quantities'
     task update_package_quantity: :environment do
+      raise Goodcity::BaseError.new('DEPRECATED: package column no longer exists')
+
       file_path = File.join(Rails.application.root, "tmp", "update_package_quantity.csv")
       csv = CSV.open(file_path, "wb")
       csv << ["id", "inventory_number", "code", "action"]
