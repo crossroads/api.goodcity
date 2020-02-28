@@ -141,12 +141,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "Checkout process" do
 
-    before(:all) {
-      FactoryBot.generate(:booking_types).keys.each { |identifier|
-        FactoryBot.create :booking_type, identifier: identifier
-      }
-    }
-
     context "as a guest" do
       it "returns 401" do
         post :checkout
