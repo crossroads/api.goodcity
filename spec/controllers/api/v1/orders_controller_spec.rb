@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
-  let(:booking_type) { create :booking_type }
+  let!(:appointment_type) { create(:booking_type, :appointment) }
+  let!(:online_order_type) { create(:booking_type, :online_order) }
   let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
-  let!(:order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: booking_type }
+  let!(:order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: appointment_type }
   let!(:dispatching_order) { create :order, :with_state_dispatching }
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch }
   let!(:processing_order) { create :order, :with_state_processing }
@@ -18,12 +19,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     parsed_body['designations']
       .map { |d| Order.find(d['id']) }
   end
-
-  before(:all) {
-    FactoryBot.generate(:booking_types).keys.each { |identifier|
-      create :booking_type, identifier: identifier
-    }
-  }
 
   # Helper
   def timeslot_of(t)
@@ -529,9 +524,9 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       context 'Processing checklist' do
-        let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
-        let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
-        let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
+        let!(:checklist_it1) { create :process_checklist, booking_type: appointment_type }
+        let!(:checklist_it2) { create :process_checklist, booking_type: appointment_type }
+        let!(:checklist_it3) { create :process_checklist, booking_type: appointment_type }
 
         let(:payload) do
           payload = {}
