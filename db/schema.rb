@@ -456,7 +456,7 @@ ActiveRecord::Schema.define(version: 20200220061105) do
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
     t.datetime "created_at"
-    t.datetime "updated_at",                           null: false
+    t.datetime "updated_at",                              null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
@@ -484,6 +484,8 @@ ActiveRecord::Schema.define(version: 20200220061105) do
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
     t.integer  "cancellation_reason_id"
+    t.boolean  "continuous",              default: false
+    t.date     "shipment_date"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -499,6 +501,7 @@ ActiveRecord::Schema.define(version: 20200220061105) do
   add_index "orders", ["organisation_id"], name: "index_orders_on_organisation_id", using: :btree
   add_index "orders", ["process_completed_by_id"], name: "index_orders_on_process_completed_by_id", using: :btree
   add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
+  add_index "orders", ["shipment_date"], name: "index_orders_on_shipment_date", using: :btree
   add_index "orders", ["state"], name: "index_orders_on_state", using: :btree
   add_index "orders", ["stockit_activity_id"], name: "index_orders_on_stockit_activity_id", using: :btree
   add_index "orders", ["stockit_contact_id"], name: "index_orders_on_stockit_contact_id", using: :btree
