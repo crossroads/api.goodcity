@@ -1,4 +1,8 @@
 module Goodcity
+  # ----------------------------
+  # Bases
+  # ----------------------------
+
   class BaseError < StandardError; end
 
   class InvalidStateError < BaseError; end
@@ -6,6 +10,10 @@ module Goodcity
   class OperationsError < BaseError; end
 
   class InventoryError < BaseError; end
+
+  # ----------------------------
+  # Generic
+  # ----------------------------
 
   class BadOrMissingRecord < BaseError
     def initialize(klass)
@@ -19,15 +27,20 @@ module Goodcity
     end
   end
 
+  # ----------------------------
+  # I18n based errors
+  # ----------------------------
+
   def factory(base, translation_key)
     Class.new(base) do
-      define_method(:initialize) { super(I18n.t(translation_key)) }
+      define_method(:initialize) { |i18n_data = {}| super(I18n.t(translation_key, i18n_data)) }
     end
   end
 
   module_function :factory
 
   InventorizedPackageError        = factory(BaseError, 'package.cannot_delete_inventorized')
+  DisabledFeatureError            = factory(BaseError, 'goodcity.disabled_feature')
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')
@@ -36,7 +49,13 @@ module Goodcity
   AlreadyInventorizedError        = factory(OperationsError, 'operations.generic.already_inventorized')
   UninventoryError                = factory(OperationsError, 'operations.generic.uninventorize_error')
   MissingQuantityforDispatchError = factory(OperationsError, 'operations.dispatch.missing_quantity_for_dispatch')
-  BadUndispatchQuantity           = factory(OperationsError, 'operations.undispatch.missing_dispatched_quantity')
+  BadUndispatchQuantityError      = factory(OperationsError, 'operations.undispatch.missing_dispatched_quantity')
+  ActionNotAllowedError           = factory(OperationsError, 'operations.generic.action_not_allowed')
+
+  # ----------------------------
+  # Custom errors (unique params)
+  # ----------------------------
+
   class QuantityDesignatedError < OperationsError
     def initialize(orders)
       order_text = orders.count == 1 ? orders.first.code : "#{orders.count}x"
@@ -66,12 +85,6 @@ module Goodcity
     def initialize(orders)
       order_text = orders.count == 1 ? orders.first.code : "#{orders.count}x"
       super(I18n.t('operations.mark_lost.required_for_orders', orders: order_text))
-    end
-  end
-
-  class ActionNotAllowedError < OperationsError
-    def initialize
-      super(I18n.t("operations.generic.action_not_allowed"))
     end
   end
 end

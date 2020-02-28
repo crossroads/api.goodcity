@@ -67,7 +67,7 @@ And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
         order: create(:order, state: state),
         package: pkg.reload
       )
-      expect(pkg.reload.total_on_hand_quantity).to eq(remaining_qty)
+      expect(pkg.reload.on_hand_quantity).to eq(remaining_qty)
       orders_package
     end
     dict

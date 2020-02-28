@@ -175,17 +175,17 @@ module StockOperations
 
       # checks if the box/pallet is on hand, to perform operations.
       def operation_allowed?
-        @cause.total_in_hand_quantity.positive?
+        @cause.on_hand_quantity.positive?
       end
 
       # checks if the package has available quantity to add inside a box.
       def addition_allowed?
-        @package.total_available_quantity.positive?
+        @package.available_quantity.positive?
       end
 
       # checks if the addable quantity is greater than available quantity.
       def invalid_quantity?
-        @quantity > @package.total_available_quantity
+        @quantity > @package.available_quantity
       end
 
       def response(pkg_inventory)

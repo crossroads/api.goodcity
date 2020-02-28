@@ -355,10 +355,11 @@ RSpec.describe Package, type: :model do
     let(:box_storage) { create(:storage_type, :with_box) }
     let(:pallet_storage) { create(:storage_type, :with_pallet) }
     let(:package_storage) { create(:storage_type, :with_pkg) }
-    let(:box) { create(:package, :with_inventory_number, :package_with_locations, storage_type: box_storage) }
-    let(:pallet) { create(:package, :with_inventory_number, :package_with_locations, storage_type: pallet_storage) }
-    let(:package1) { create(:package, :with_inventory_number, :package_with_locations, received_quantity: 50, storage_type: package_storage)}
-    let(:package2) { create(:package, :with_inventory_number, :package_with_locations, received_quantity: 40, storage_type: package_storage)}
+    let(:box) { create(:package, :with_inventory_record, :package_with_locations, storage_type: box_storage) }
+    let(:pallet) { create(:package, :with_inventory_record, :package_with_locations, storage_type: pallet_storage) }
+    let(:package1) { create(:package, :with_inventory_record, :package_with_locations, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, :with_inventory_record, :package_with_locations, received_quantity: 40, storage_type: package_storage)}
+    let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
@@ -374,9 +375,6 @@ RSpec.describe Package, type: :model do
     end
 
     before(:each) do
-      Package::Operations.inventorize(package1, location)
-      Package::Operations.inventorize(package2, location)
-
       @params1 = {
         id: box.id,
         item_id: package1.id,
@@ -396,14 +394,6 @@ RSpec.describe Package, type: :model do
         pack_or_unpack(@params1)
         pack_or_unpack(@params2)
         expect(box.associated_packages.length).to eq(2)
-      end
-    end
-
-    describe "#total_on_hand_quantity" do
-      it "returns the total in hand quantity for a package" do
-        pack_or_unpack(@params1)
-        pack_or_unpack(@params2)
-        expect(package1.total_on_hand_quantity).to eq(5)
       end
     end
 
@@ -428,7 +418,7 @@ RSpec.describe Package, type: :model do
         expect(box.box?).to eq(true)
       end
 
-      it "returns false if is box" do
+      it "returns false if it is not a box" do
         expect(pallet.box?).to eq(false)
       end
     end

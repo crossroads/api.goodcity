@@ -1,6 +1,6 @@
 class RemoveQuantityField < ActiveRecord::Migration
   def change
-    remove_column :packages, :quantity
+    remove_column :packages, :quantity, :integer
 
     add_column    :packages, :available_quantity,   :integer, default: 0
     add_column    :packages, :on_hand_quantity,     :integer, default: 0
