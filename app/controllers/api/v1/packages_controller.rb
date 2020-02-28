@@ -214,20 +214,20 @@ module Api
       def exec_action
         Package::Operations.perform_action(@package,
           quantity: params[:quantity].to_i,
-          from_location: params[:from],
-          action: params[:action],
+          location_id: params[:from],
+          action: params[:action_name],
           description: params[:description])
 
         send_stock_item_response
       end
 
-      api :PUT, "/v1/packages/1/undo_action/:packages_inventory_id", "Executes an action on a package"
-      param_group :operations
+      # api :PUT, "/v1/packages/1/undo_action/:packages_inventory_id", "Executes an action on a package"
+      # param_group :operations
 
-      def undo_action
-        Package::Operations.uninventorize(@package, params[:packages_inventory_id])
-        send_stock_item_response
-      end
+      # def undo_action
+      #   Package::Operations.uninventorize(@package, params[:packages_inventory_id])
+      #   send_stock_item_response
+      # end
 
       def remove_from_set
         @package.remove_from_set
