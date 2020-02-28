@@ -287,7 +287,7 @@ class Ability
   def package_abilities
     if can_manage_packages?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :remove_from_set, :designate,
+        :search_stockit_items, :remove_from_set, :designate, :exec_action,
         :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item, :contained_packages, :fetch_added_quantity], Package
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}

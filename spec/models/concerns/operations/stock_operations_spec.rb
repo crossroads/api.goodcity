@@ -15,7 +15,7 @@ context StockOperations do
     end
 
     def register_loss
-      subject::Operations::register_loss(package, quantity: -1, from_location: location1)
+      subject::Operations::register_loss(package, quantity: -1, location_id: location1.id, description: "Package Loss Action")
     end
 
     def uninventorize
@@ -78,31 +78,31 @@ context StockOperations do
       create(:packages_inventory, :gain, quantity: 3, package: package, location: location1)
     end
 
-    def register_loss(quantity, from_location)
+    def register_loss(quantity, location_id)
       subject::Operations::register_loss(package,
         quantity: quantity,
-        from_location: from_location)
+        location_id: location_id)
     end
 
     context 'for a partial quantity of one location' do
       it 'negates the amount from the inventory' do
-        expect { register_loss(10, location1) }.to change {
-          PackagesInventory::Computer.quantity_where(location: location1, package: package)
+        expect { register_loss(10, location1.id) }.to change {
+          PackagesInventory::Computer.quantity_where(location: location1.id, package: package)
         }.from(33).to(23)
       end
 
       it 'adds a single row the packages_inventory' do
-        expect { register_loss(10, location1) }.to change(PackagesInventory, :count).by(1)
+        expect { register_loss(10, location1.id) }.to change(PackagesInventory, :count).by(1)
       end
 
       it 'updates the packages_location record' do
-        expect { register_loss(10, location1) }.to change {
-          PackagesLocation.find_by(package: package, location: location1).quantity
+        expect { register_loss(10, location1.id) }.to change {
+          PackagesLocation.find_by(package: package, location: location1.id).quantity
         }.from(33).to(23)
       end
 
       it 'doesnt affect other locations' do
-        expect { register_loss(10, location1) }.not_to change {
+        expect { register_loss(10, location1.id) }.not_to change {
           PackagesInventory::Computer.quantity_where(location: location2, package: package)
         }
       end
@@ -113,7 +113,7 @@ context StockOperations do
         # 26 designated
         # 10 available
         it 'succeeds' do
-          expect { register_loss(10, location1) }.to change {
+          expect { register_loss(10, location1.id) }.to change {
             PackagesInventory::Computer.quantity_where(location: location1, package: package)
           }.from(33).to(23)
         end
@@ -126,7 +126,7 @@ context StockOperations do
         # 27 designated
         # 9 available
         it 'fails' do
-          expect { register_loss(10, location1) }.to raise_error(StandardError).with_message(
+          expect { register_loss(10, location1.id) }.to raise_error(StandardError).with_message(
             "Will break the quantity required for orders (#{order_code}), please undesignate first"
           )
         end
@@ -135,23 +135,23 @@ context StockOperations do
 
     context 'for the entire quantity of one location' do
       it 'negates the amount from the inventory' do
-        expect { register_loss(33, location1) }.to change {
+        expect { register_loss(33, location1.id) }.to change {
           PackagesInventory::Computer.quantity_where(location: location1, package: package)
         }.from(33).to(0)
       end
 
       it 'adds a single row the packages_inventory' do
-        expect { register_loss(33, location1) }.to change(PackagesInventory, :count).by(1)
+        expect { register_loss(33, location1.id) }.to change(PackagesInventory, :count).by(1)
       end
 
       it 'destroys the packages_location record' do
-        expect { register_loss(33, location1) }.to change {
+        expect { register_loss(33, location1.id) }.to change {
           PackagesLocation.where(package: package, location: location1).count
         }.from(1).to(0)
       end
 
       it 'doesnt affect other locations' do
-        expect { register_loss(33, location1) }.not_to change {
+        expect { register_loss(33, location1.id) }.not_to change {
           PackagesInventory::Computer.quantity_where(location: location2, package: package)
         }
       end
@@ -160,7 +160,7 @@ context StockOperations do
         before { create(:orders_package, package: package, quantity: 3) } # Location 2 has enough to fulfill this order
 
         it 'suceeds' do
-          expect { register_loss(33, location1) }.to change {
+          expect { register_loss(33, location1.id) }.to change {
             PackagesInventory::Computer.quantity_where(location: location1, package: package)
           }.from(33).to(0)
         end
