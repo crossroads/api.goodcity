@@ -206,12 +206,8 @@ module Api
       def split_package
         qty_to_split = package_params[:quantity].to_i
         package_splitter = PackageSplitter.new(@package, qty_to_split)
-        if package_splitter.splittable?
-          package_splitter.split!
-          send_stock_item_response
-        else
-          render json: { errors: I18n.t("package.split_qty_error", qty: @package.quantity) }, status: 422
-        end
+        package_splitter.split!
+        send_stock_item_response
       end
 
       api :PUT, "/v1/packages/1/move", "Move a package's quantity to an new location"

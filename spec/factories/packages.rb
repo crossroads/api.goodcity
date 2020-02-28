@@ -28,6 +28,7 @@ FactoryBot.define do
     end
 
     trait :with_inventory_record do
+      inventory_number      { InventoryNumber.next_code }
       after(:create) do |package|
         location = package.locations.first || create(:location)
         create :packages_inventory, package: package, quantity: package.received_quantity, location: location, action: 'inventory'

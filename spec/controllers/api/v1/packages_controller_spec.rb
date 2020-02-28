@@ -1241,19 +1241,16 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:box_storage) { create(:storage_type, :with_box) }
     let(:pallet_storage) { create(:storage_type, :with_pallet) }
     let(:package_storage) { create(:storage_type, :with_pkg) }
-    let(:box) { create(:package, storage_type: box_storage) }
-    let(:pallet) { create(:package, storage_type: pallet_storage) }
-    let(:package1) { create(:package, :with_inventory_number, :package_with_locations, received_quantity: 50, storage_type: package_storage)}
-    let(:package2) { create(:package, :with_inventory_number, :package_with_locations, received_quantity: 40, storage_type: package_storage)}
+    let(:box) { create(:package, :with_inventory_record, storage_type: box_storage) }
+    let(:pallet) { create(:package, :with_inventory_record, storage_type: pallet_storage) }
+    let(:package1) { create(:package, :with_inventory_record, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, :with_inventory_record, received_quantity: 40, storage_type: package_storage)}
+    let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
     describe "fetch_contained_packages" do
       before :each do
-        Package::Operations.inventorize(package1, location)
-        Package::Operations.inventorize(package2, location)
-        Package::Operations.inventorize(box, location)
-        Package::Operations.inventorize(pallet, location)
         generate_and_set_token(user)
         current_user = user
         params1 = {
@@ -1303,10 +1300,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     describe "adding_items_to_box" do
       before(:each) do
-        Package::Operations.inventorize(box, location)
-        Package::Operations.inventorize(pallet, location)
-        Package::Operations.inventorize(package1, location)
-        Package::Operations.inventorize(package2, location)
         generate_and_set_token(user)
         current_user = user
 
@@ -1408,7 +1401,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "throws already designated error" do
         GoodcitySync.request_from_stockit = true
-        Package::Operations.designate(package2, quantity: package2.total_available_quantity, to_order: create(:order, state: "submitted").id)
+        Package::Operations.designate(package2, quantity: package2.available_quantity, to_order: create(:order, state: "submitted").id)
         put :add_remove_item, @params2
         expect(response.status).to eq(422)
         expect(parsed_body["errors"]).to eq(["Cannot add/remove designated/dispatched items."])
