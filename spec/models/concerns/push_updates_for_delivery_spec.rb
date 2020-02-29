@@ -36,6 +36,51 @@ context PushUpdatesForDelivery do
       end
     end
   end
+
+  context "delivery_notify_message" do
+    subject { delivery.send(:delivery_notify_message) }
+    context "when a new drop-off is scheduled" do
+      context "by donor" do
+        it { expect(subject).to match(/#{donor.full_name} will deliver the items/) }
+      end
+      context "by reviewer" do
+        before(:each) do
+          delivery.offer.created_by = nil
+          User.current_user = reviewer
+        end
+        it { expect(subject).to match(/#{reviewer.full_name} will deliver the items/) }
+      end
+      context "from console" do
+        before(:each) do
+          delivery.offer.created_by = nil
+          User.current_user = nil
+        end
+        it { expect(subject).to match(/Someone will deliver the items/) }
+      end
+    end
+
+    context "when a new GogoVan is scheduled" do
+      let!(:delivery) { create :gogovan_delivery }
+      context "by donor" do
+        it { expect(subject).to match(/#{donor.full_name} booked a GoGoVan/) }
+      end
+      context "by reviewer" do
+        before(:each) do
+          delivery.offer.created_by = nil
+          User.current_user = reviewer
+        end
+        it { expect(subject).to match(/#{reviewer.full_name} booked a GoGoVan/) }
+      end
+      context "from console" do
+        before(:each) do
+          delivery.offer.created_by = nil
+          User.current_user = nil
+        end
+        it { expect(subject).to match(/Someone booked a GoGoVan/) }
+      end
+    end
+
+  end
   
   context "push_updates" do
     it "to donor and admin" do

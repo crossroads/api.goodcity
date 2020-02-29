@@ -60,7 +60,7 @@ module PushUpdatesForDelivery
   def delivery_notify_message
     formatted_date = schedule.scheduled_at.strftime("%a #{schedule.scheduled_at.day.ordinalize} %b %Y")
     I18n.t("delivery.#{delivery_type.downcase.tr(' ', '_')}_message",
-      name: donor.full_name,
+      name: donor&.full_name || User&.current_user&.full_name || 'Someone',
       time: schedule.slot_name,
       date: formatted_date)
   end
