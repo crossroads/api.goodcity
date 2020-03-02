@@ -16,6 +16,12 @@ en:
     mobile_exists: Mobile number already exists.
     invalid_mobile: Sorry, your mobile number is invalid.
     invalid_pin: Invalid SMS code.
+  box_pallet:
+    errors:
+      invalid_quantity: Added quantity cannot be larger than available quantity.
+      adding_box_to_box: Cannot add a box to another box.
+      disable_addition: Cannot add/remove designated/dispatched items.
+      disable_if_unavailable: Cannot perform add/remove operations if box/pallet is dispatched.
   token:
     invalid: Invalid token
     expired: Expired token
@@ -52,6 +58,7 @@ en:
               taken: "already in the cart"
         package:
           enable_box_pallet_creation: "Creation of box/pallet is not allowed."
+          allow_box_pallet_item_addition: "Addition of items to box/pallet are not allowed."
         user:
           attributes:
             mobile:
@@ -80,6 +87,8 @@ en:
   delivery:
     gogovan_message: "%{name} booked a GoGoVan for %{time}, %{date}"
     drop_off_message: "%{name} will deliver the items between %{time}, %{date}"
+  packages_inventory:
+    cannot_undo: Action cannot be undone
   package:
     max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
     creation_of_box/pallet_error: "Creation of %{storage_type} not allowed."
@@ -87,14 +96,14 @@ en:
     has_box_error: "This item is on box %{box_number}."
     move_stockit: "You can only move it using Stockit."
     split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
-
   orders_package:
-    already_dispatched: "This has been already dispatched."
+    quantity_already_dispatched: "Some has been already dispatched, please undispatch and try again."
     order_status_error: "You need to complete processing Order first before dispatching."
     action_disabled: "Action %{name} is not possible at the moment"
     qty_not_available: "We do not currently have the requested quantity in stock"
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
+    cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"
@@ -118,9 +127,12 @@ en:
       required_for_orders: Will break the quantity required for orders (%{orders}), please undesignate first
     generic:
       not_inventorized: Cannot operate on uninventorized packages
+      already_inventorized: Package already inventorized
+      uninventorize_error: Package cannot be uninventorized
       inactive_order: Operation forbidden, order %{code} is inactive
       insufficient_quantity: The selected quantity (%{quantity}) is unavailable
       bad_quantity_param: Invalid quantity (%{quantity})
+      action_not_allowed: Action you are trying to perform is not allowed
   package_inventory:
     bad_action: "Inventory action %{action} is not permitted"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"

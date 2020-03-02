@@ -12,6 +12,12 @@ Feature: Listing OrdersPackage available actions
     And Their OrdersPackages are of state "designated"
     Then They should have the "edit_quantity|cancel|dispatch" actions enabled
 
+  Scenario: For active orders with partially dispatched orders_package
+    Given I have Orders with states of type: "ACTIVE_STATES"
+    And Their OrdersPackages are of state "designated"
+    And Their OrdersPackages are partially dispatched
+    Then They should have the "dispatch|undispatch" actions enabled
+
   Scenario: Editing quantity for active orders with designated orders_package
     Given I have Orders with states of type: "ACTIVE_STATES"
     And Their OrdersPackages have the following stock properties

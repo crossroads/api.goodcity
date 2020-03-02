@@ -346,6 +346,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
       let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+      let!(:setting2) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
       let(:stockit_item_params) {
         {
@@ -407,6 +408,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
       let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "false") }
+      let!(:setting1) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "false") }
 
       let(:stockit_item_params) {
         {
@@ -921,9 +923,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by notes' do
-      create :package, received_quantity: 1, notes: "butter"
-      create :package, received_quantity: 1, notes: "butterfly"
-      create :package, received_quantity: 1, notes: "margarine"
+      create :package, received_quantity: 1, notes: "butter", inventory_number: "456333"
+      create :package, received_quantity: 1, notes: "butterfly", inventory_number: "456222"
+      create :package, received_quantity: 1, notes: "margarine", inventory_number: "456111"
       get :search_stockit_items, searchText: "UTter", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("UTter")
@@ -931,9 +933,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by case number' do
-      create :package, received_quantity: 1, case_number: "CAS-123"
-      create :package, received_quantity: 1, case_number: "CAS-124"
-      create :package, received_quantity: 1, case_number: "CAS-666"
+      create :package, received_quantity: 1, case_number: "CAS-123", inventory_number: "456333"
+      create :package, received_quantity: 1, case_number: "CAS-124", inventory_number: "456222"
+      create :package, received_quantity: 1, case_number: "CAS-666", inventory_number: "456111"
       get :search_stockit_items, searchText: "cas-12", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("cas-12")
@@ -941,9 +943,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'should find items by designation_name' do
-      create :package, received_quantity: 1, designation_name: "pepper"
-      create :package, received_quantity: 1, designation_name: "peppermint"
-      create :package, received_quantity: 1, designation_name: "garlic"
+      create :package, received_quantity: 1, designation_name: "pepper", inventory_number: "456333"
+      create :package, received_quantity: 1, designation_name: "peppermint", inventory_number: "456222"
+      create :package, received_quantity: 1, designation_name: "garlic", inventory_number: "456111"
       get :search_stockit_items, searchText: "peP", showQuantityItems: 'true'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql("peP")
@@ -955,11 +957,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       create :package, received_quantity: 1, designation_name: "couch", inventory_number: '22222', state: 'missing'
       create :package, received_quantity: 1, designation_name: "couch", inventory_number: nil, state: 'received'
       create :package, received_quantity: 1, designation_name: "couch", inventory_number: nil, state: 'missing'
-      get :search_stockit_items, searchText: 'couch', showQuantityItems: 'true', state: 'received', withInventoryNumber: 'true'
+      get :search_stockit_items, searchText: 'couch', showQuantityItems: 'true', state: 'received'
       expect(response.status).to eq(200)
       expect(subject['meta']['search']).to eql('couch')
       expect(subject['items'].map{|i| i['inventory_number']}).to match_array(['11111'])
-
     end
 
     it 'should filter out item with published, has_images, and in_stock status' do
@@ -1040,6 +1041,187 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       get :search_stockit_items, params
       expect(subject["meta"]["search"]).to eq(searchText)
       expect(subject["meta"].keys).to include("total_pages")
+    end
+  end
+
+  context "box/pallet" do
+    let(:user) { create(:user, :supervisor, :with_can_manage_packages_permission) }
+    let(:box_storage) { create(:storage_type, :with_box) }
+    let(:pallet_storage) { create(:storage_type, :with_pallet) }
+    let(:package_storage) { create(:storage_type, :with_pkg) }
+    let(:box) { create(:package, storage_type: box_storage) }
+    let(:pallet) { create(:package, storage_type: pallet_storage) }
+    let(:package1) { create(:package, :with_inventory_number, quantity: 50, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, :with_inventory_number, quantity: 40, received_quantity: 40, storage_type: package_storage)}
+    let(:location) { Location.create(building: "21", area: "D") }
+    let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+    let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+
+    describe "fetch_contained_packages" do
+      before :each do
+        Package::Operations.inventorize(package1, location)
+        Package::Operations.inventorize(package2, location)
+        Package::Operations.inventorize(box, location)
+        Package::Operations.inventorize(pallet, location)
+        generate_and_set_token(user)
+        current_user = user
+        params1 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 5
+        }
+        params2 = {
+          id: box.id,
+          item_id: package2.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 2
+        }
+        params3 = {
+          id: pallet.id,
+          item_id: package2.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 5
+        }
+        put :add_remove_item, params1
+        put :add_remove_item, params2
+        put :add_remove_item, params3
+      end
+
+      it "fetches all the items that are present inside a box" do
+        params = {
+          id: box.id
+        }
+        get :contained_packages, params
+        expect(response.status).to eq(200)
+        expect(parsed_body["items"].length).to eq(2)
+      end
+
+      it "fetches all the items that are present inside a pallet" do
+        params = {
+          id: pallet.id
+        }
+        get :contained_packages, params
+        expect(response.status).to eq(200)
+        expect(parsed_body["items"].length).to eq(1)
+      end
+    end
+
+    describe "adding_items_to_box" do
+      before(:each) do
+        Package::Operations.inventorize(box, location)
+        Package::Operations.inventorize(pallet, location)
+        Package::Operations.inventorize(package1, location)
+        Package::Operations.inventorize(package2, location)
+        generate_and_set_token(user)
+        current_user = user
+
+        @params1 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 5
+        }
+
+        @params2 = {
+          id: box.id,
+          item_id: package2.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 2
+        }
+
+        @params3 = {
+          id: pallet.id,
+          item_id: package2.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 5
+        }
+
+        @params4 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: location.id,
+          task: 'unpack',
+          quantity: 5
+        }
+
+        @params5 = {
+          id: box.id,
+          item_id: package1.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 0
+        }
+
+        @params6 = {
+          id: box.id,
+          item_id: box.id,
+          location_id: box.location_id,
+          task: 'pack',
+          quantity: 5
+        }
+        @params7 = {
+          id: box.id,
+          item_id: package2.id,
+          location_id: location.id,
+          task: "pack",
+          quantity: package2.quantity + 20,
+        }
+      end
+
+      it "adds an item to the box" do
+        put :add_remove_item, @params1
+        expect(response.status).to eq(201)
+        expect([parsed_body["packages_inventories"]].length).to eq(1)
+        expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
+        expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
+        expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
+        expect(parsed_body["packages_inventories"]["action"]).to eq("pack")
+        expect(parsed_body["packages_inventories"]["quantity"]).to eq(-5)
+      end
+
+      it "removes an item from the box" do
+        put :add_remove_item, @params1 # add to box
+        put :add_remove_item, @params4 # remove it
+        expect(response.status).to eq(201)
+        expect([parsed_body["packages_inventories"]].length).to eq(1)
+        expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
+        expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
+        expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
+        expect(parsed_body["packages_inventories"]["action"]).to eq("unpack")
+        expect(parsed_body["packages_inventories"]["quantity"]).to eq(5)
+      end
+
+      it "doesnot create packages inventory record if selected quantity is 0" do
+        put :add_remove_item, @params5
+        expect(response.status).to eq(204)
+      end
+
+      it "throws adding box to a box error" do
+        put :add_remove_item, @params6
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"]).to eq(["Cannot add a box to another box."])
+      end
+
+      it "throws quantity error" do
+        put :add_remove_item, @params7
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"]).to eq(["Added quantity cannot be larger than available quantity."])
+      end
+
+      it "throws already designated error" do
+        GoodcitySync.request_from_stockit = true
+        Package::Operations.designate(package2, quantity: package2.total_available_quantity, to_order: create(:order, state: "submitted").id)
+        put :add_remove_item, @params2
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"]).to eq(["Cannot add/remove designated/dispatched items."])
+      end
     end
   end
 end

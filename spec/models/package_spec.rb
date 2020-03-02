@@ -323,24 +323,6 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe '#build_or_create_packages_location' do
-    let!(:package) { create :package }
-    let!(:location) { create :location }
-
-    it 'creates new packages_location record with provided location id if it do not exist' do
-      expect{
-        package.build_or_create_packages_location(location.id, 'create')
-      }.to change(PackagesLocation, :count).by(1)
-    end
-
-    it 'do not create packages_location record with provided location if already exist' do
-      packages_location = create :packages_location, package: package, location: location
-      expect{
-        package.build_or_create_packages_location(location.id, 'create')
-      }.to change(PackagesLocation, :count).by(0)
-    end
-  end
-
   describe '#update_designation' do
     let(:package) { create :package }
     let(:order) { create :order, state: 'submitted' }
@@ -513,6 +495,91 @@ RSpec.describe Package, type: :model do
         end
         package_published.allow_web_publish = false
         package_published.save
+      end
+    end
+  end
+
+  describe "box/pallets" do
+    let(:user) { create(:user, :supervisor, :with_can_manage_packages_permission) }
+    let(:box_storage) { create(:storage_type, :with_box) }
+    let(:pallet_storage) { create(:storage_type, :with_pallet) }
+    let(:package_storage) { create(:storage_type, :with_pkg) }
+    let(:box) { create(:package, :with_inventory_number, :package_with_locations, storage_type: box_storage) }
+    let(:pallet) { create(:package, :with_inventory_number, :package_with_locations, storage_type: pallet_storage) }
+    let(:package1) { create(:package, quantity: 50, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, quantity: 40, received_quantity: 40, storage_type: package_storage)}
+    let(:location) { Location.create(building: "21", area: "D") }
+    let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+    let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+
+    def pack_or_unpack(params)
+      Package::Operations.pack_or_unpack(
+        container: Package.find(params[:id]),
+        package: Package.find(params[:item_id]),
+        quantity: params[:quantity],
+        location_id: location.id,
+        user_id: user.id,
+        task: params[:task]
+      )
+    end
+
+    before(:each) do
+      Package::Operations.inventorize(package1, location)
+      Package::Operations.inventorize(package2, location)
+
+      @params1 = {
+        id: box.id,
+        item_id: package1.id,
+        task: 'pack',
+        quantity: 5
+      }
+      @params2 = {
+        id: box.id,
+        item_id: package2.id,
+        task: 'pack',
+        quantity: 2
+      }
+    end
+
+    describe "#associated_packages" do
+      it "fetches all the associated packages with a box" do
+        pack_or_unpack(@params1)
+        pack_or_unpack(@params2)
+        expect(box.associated_packages.length).to eq(2)
+      end
+    end
+
+    describe "#total_in_hand_quantity" do
+      it "returns the total in hand quantity for a package" do
+        pack_or_unpack(@params1)
+        pack_or_unpack(@params2)
+        expect(package1.total_in_hand_quantity).to eq(45)
+      end
+    end
+
+    describe "#quantity_in_a_box" do
+      it "returns the quantity of an item in the box" do
+        pack_or_unpack(@params1)
+        pack_or_unpack(@params2)
+        expect(package1.quantity_in_a_box(box.id)).to eq(5)
+      end
+    end
+
+    describe "#total_quantity_in_box" do
+      it "returns the total quantity of items in the box" do
+        pack_or_unpack(@params1)
+        pack_or_unpack(@params2)
+        expect(box.total_quantity_in_box).to eq(7)
+      end
+    end
+
+    describe "#box?" do
+      it "returns true if is box" do
+        expect(box.box?).to eq(true)
+      end
+
+      it "returns false if is box" do
+        expect(pallet.box?).to eq(false)
       end
     end
   end

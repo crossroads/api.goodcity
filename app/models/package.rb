@@ -34,6 +34,8 @@ class Package < ActiveRecord::Base
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy
+  has_many   :offers_packages
+  has_many   :offers, through: :offers_packages
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
@@ -108,7 +110,7 @@ class Package < ActiveRecord::Base
 
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
-      package.add_to_stockit
+      package.add_to_stockit if STOCKIT_ENABLED
     end
 
     after_transition on: [:mark_received, :mark_missing] do |package|
@@ -145,6 +147,36 @@ class Package < ActiveRecord::Base
 
   def dispatched_location
     Location.dispatch_location
+  end
+
+  def associated_packages
+    sql =
+      <<-SQL
+      select distinct pi.package_id
+      from packages_inventories pi
+      WHERE pi.source_type = 'Package' AND pi.source_id = #{id}
+      AND pi.action in ('pack', 'unpack')
+      group by pi.package_id
+      HAVING sum(pi.quantity) < 0
+      SQL
+    ids = PackagesInventory.connection.execute(sql).map{ |res| res['package_id'] }.uniq.compact
+    Package.where(id: ids)
+  end
+
+  def quantity_in_a_box(entity_id)
+    PackagesInventory::Computer.quantity_of_package_in_box(package: self, source: Package.find(entity_id))
+  end
+
+  def total_in_hand_quantity
+    PackagesInventory::Computer.package_quantity(self)
+  end
+
+  def total_available_quantity
+    PackagesInventory::Computer.available_quantity_of(self)
+  end
+
+  def total_quantity_in_box
+    box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
   end
 
   def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
@@ -551,6 +583,10 @@ class Package < ActiveRecord::Base
 
   def storage_type_name
     storage_type&.name
+  end
+
+  def box?
+    storage_type_name&.eql?("Box")
   end
 
   def box_or_pallet?

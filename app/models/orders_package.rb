@@ -27,6 +27,8 @@ class OrdersPackage < ActiveRecord::Base
   scope :designated, ->{ where(state: 'designated') }
   scope :dispatched, ->{ where(state: 'dispatched') }
   scope :for_order, ->(order_id) { joins(:order).where(orders: { id: order_id }) }
+  scope :not_cancellable, -> () { where("orders_packages.state = 'dispatched' OR dispatched_quantity > 0") }
+  scope :cancellable, -> () { where("orders_packages.state = 'designated' AND dispatched_quantity = 0") }
 
   scope :with_eager_load, ->{
     includes([
@@ -70,6 +72,9 @@ class OrdersPackage < ActiveRecord::Base
     end
 
     before_transition on: :cancel do |orders_package, _transition|
+      if orders_package.designated? && orders_package.dispatched_quantity.positive?
+        raise Goodcity::InvalidStateError.new(I18n.t('orders_package.cancel_requires_undispatch'))
+      end
       orders_package.quantity   = 0
       orders_package.updated_by = User.current_user
     end

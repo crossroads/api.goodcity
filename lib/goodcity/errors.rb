@@ -1,25 +1,28 @@
 module Goodcity
   class BaseError < StandardError; end
 
+  class InvalidStateError < BaseError; end
+
   class OperationsError < BaseError; end
 
-  class UnprocessedError < OperationsError
-    def initialize
-      super(I18n.t('operations.dispatch.unprocessed_order'))
+  class InventoryError < BaseError; end
+
+  def factory(base, translation_key)
+    Class.new(base) do
+      define_method(:initialize) { super(I18n.t(translation_key)) }
     end
   end
 
-  class AlreadyDispatchedError < OperationsError
-    def initialize
-      super(I18n.t('orders_package.already_dispatched'))
-    end
-  end
+  module_function :factory
 
-  class MissingQuantityError < OperationsError
-    def initialize
-      super(I18n.t('operations.move.not_enough_at_source'))
-    end
-  end
+  UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
+  AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')
+  MissingQuantityError            = factory(OperationsError, 'operations.move.not_enough_at_source')
+  NotInventorizedError            = factory(OperationsError, 'operations.generic.not_inventorized')
+  AlreadyInventorizedError        = factory(OperationsError, 'operations.generic.already_inventorized')
+  UninventoryError                = factory(OperationsError, 'operations.generic.uninventorize_error')
+  MissingQuantityforDispatchError = factory(OperationsError, 'operations.dispatch.missing_quantity_for_dispatch')
+  BadUndispatchQuantity           = factory(OperationsError, 'operations.undispatch.missing_dispatched_quantity')
 
   class QuantityDesignatedError < OperationsError
     def initialize(orders)
@@ -46,15 +49,16 @@ module Goodcity
     end
   end
 
-  class NotInventorizedError < OperationsError
-    def initialize()
-      super(I18n.t('operations.generic.not_inventorized'))
+  class MissingQuantityRequiredError < OperationsError
+    def initialize(orders)
+      order_text = orders.count == 1 ? orders.first.code : "#{orders.count}x"
+      super(I18n.t('operations.mark_lost.required_for_orders', orders: order_text))
     end
   end
 
-  class MissingQuantityforDispatchError < OperationsError
+  class ActionNotAllowedError < OperationsError
     def initialize
-      super(I18n.t('operations.dispatch.missing_quantity_for_dispatch'))
+      super(I18n.t("operations.generic.action_not_allowed"))
     end
   end
 end

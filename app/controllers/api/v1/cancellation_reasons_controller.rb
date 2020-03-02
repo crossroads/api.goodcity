@@ -4,12 +4,8 @@ module Api
       load_and_authorize_resource :cancellation_reason, parent: false
 
       def index
-        if params["ids"].present?
-          @cancellation_reasons = @cancellation_reasons.where(id: params["ids"].split(",").flatten)
-        else
-          @cancellation_reasons = @cancellation_reasons.visible
-        end
-        render json: @cancellation_reasons, each_serializer: serializer
+        reasons = @cancellation_reasons.cancellation_reasons_for(params['for'])
+        render json: reasons, each_serializer: serializer
       end
 
       def show
