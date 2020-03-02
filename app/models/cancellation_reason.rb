@@ -21,7 +21,7 @@ class CancellationReason < ActiveRecord::Base
   end
 
   def self.cancellation_reasons_for(type)
-    return where unless CANCELLATION_REASONS_TYPE.include?(type)
+    return where(nil) unless CANCELLATION_REASONS_TYPE.include?(type)
     send("visible_to_#{type}")
   end
 end
