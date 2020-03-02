@@ -246,7 +246,7 @@ module Api
       end
 
       def contained_packages
-        entity = Package.find(params[:id])
+        entity = Package.find_by(id: params[:id])
         return unless entity.present?
 
         contained_pkgs = entity.associated_packages&.page(page)&.per(per_page)
@@ -257,7 +257,7 @@ module Api
 
       def fetch_added_quantity
         entity_id = params[:entity_id]
-        package = Package.find(params[:id])
+        package = Package.find_by(id: params[:id])
         render json: { added_quantity: package.quantity_in_a_box(entity_id) }, status: 200
       end
 
