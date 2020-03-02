@@ -258,7 +258,7 @@ module Api
       def fetch_added_quantity
         entity_id = params[:entity_id]
         package = Package.find_by(id: params[:id])
-        render json: { added_quantity: package.quantity_in_a_box(entity_id) }, status: 200
+        render json: { added_quantity: package&.quantity_in_a_box(entity_id) }, status: 200
       end
 
       private
