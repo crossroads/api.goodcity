@@ -279,8 +279,8 @@ module Api
 
       def enqueue_donor_call(r)
         task = { "selected_language" => "en", "user_id" => user.id }.to_json
-        r.enqueue workflowSid: twilio_creds["workflow_sid"], waitUrl: api_v1_twilio_inbound_hold_donor_path, waitUrlMethod: "post" do |t|
-          t.taskAttributes task
+        r.enqueue(workflow_sid: twilio_creds["workflow_sid"], wait_url: api_v1_twilio_inbound_hold_donor_path, wait_url_method: "post") do |t|
+          t.task task
         end
       end
 
