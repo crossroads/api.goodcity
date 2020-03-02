@@ -1,15 +1,18 @@
 class PackagesInventory < ActiveRecord::Base
   module Actions
     INVENTORY   = 'inventory'.freeze
+    UNINVENTORY = "uninventory".freeze
     LOSS        = 'loss'.freeze
     GAIN        = 'gain'.freeze
     DISPATCH    = 'dispatch'.freeze
     UNDISPATCH  = 'undispatch'.freeze
     MOVE        = 'move'.freeze
+    PACK        = "pack".freeze
+    UNPACK      = "unpack".freeze
   end
 
-  INCREMENTAL_ACTIONS = [Actions::INVENTORY, Actions::UNDISPATCH, Actions::GAIN].freeze
-  DECREMENTAL_ACTIONS = [Actions::LOSS, Actions::DISPATCH].freeze
+  INCREMENTAL_ACTIONS = [Actions::INVENTORY, Actions::UNDISPATCH, Actions::GAIN, Actions::UNPACK].freeze
+  DECREMENTAL_ACTIONS = [Actions::UNINVENTORY, Actions::LOSS, Actions::DISPATCH, Actions::PACK].freeze
   UNRESTRICTED_ACTIONS = [Actions::MOVE].freeze
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
 
@@ -27,7 +30,42 @@ class PackagesInventory < ActiveRecord::Base
 
   after_create { PackagesInventory.emit(self.action, self) }
 
-  # --- Helpers
+  # --------------------
+  # Undo feature
+  # --------------------
+
+  REVERSIBLE_ACTIONS = {
+    Actions::INVENTORY    => Actions::UNINVENTORY,
+    Actions::DISPATCH     => Actions::UNDISPATCH,
+    Actions::GAIN         => Actions::LOSS,
+    Actions::UNINVENTORY  => Actions::INVENTORY,
+    Actions::PACK         => Actions::UNPACK,
+    Actions::UNPACK       => Actions::PACK,
+    Actions::UNDISPATCH   => Actions::DISPATCH,
+    Actions::LOSS         => Actions::GAIN
+  }
+
+  def undo
+    raise Goodcity::InventoryError.new(I18n.t('packages_inventory.cannot_undo')) unless REVERSIBLE_ACTIONS.key?(action)
+
+    PackagesInventory.create!({
+      action:   REVERSIBLE_ACTIONS[action],
+      user:     User.current_user || User.system_user,
+      package:  package,
+      source:   source,
+      location: location,
+      quantity: quantity * -1
+    })
+  end
+
+  # --------------------
+  # Helpers
+  # --------------------
+
+  def inventorized?(package)
+    last = PackagesInventory.order('id DESC').where(package: package).limit(1).first
+    last.present? && !last.uninventory?
+  end
 
   def incremental?
     return quantity.positive? if UNRESTRICTED_ACTIONS.include?(action)
@@ -54,7 +92,10 @@ class PackagesInventory < ActiveRecord::Base
     end
   end
 
-  # --- Validations
+  # --------------------
+  # Validations
+  # --------------------
+
   validate :validate_fields, on: [:create]
 
   def validate_action

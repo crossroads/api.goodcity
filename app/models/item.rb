@@ -130,11 +130,4 @@ class Item < ActiveRecord::Base
       package.designate_to_stockit_order(params[:order_id])
     end
   end
-
-  def move_set_to_location(location_id)
-    inventory_packages.set_items.each do |package|
-      package.move_stockit_item(location_id)
-      package.valid? && package.save
-    end
-  end
 end

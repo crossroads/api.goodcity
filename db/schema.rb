@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191211032725) do
+ActiveRecord::Schema.define(version: 20200219121920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -96,9 +96,10 @@ ActiveRecord::Schema.define(version: 20191211032725) do
   create_table "cancellation_reasons", force: :cascade do |t|
     t.string   "name_en"
     t.string   "name_zh_tw"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.boolean  "visible_to_admin", default: true
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.boolean  "visible_to_offer", default: true
+    t.boolean  "visible_to_order", default: false
   end
 
   create_table "companies", force: :cascade do |t|
@@ -418,6 +419,11 @@ ActiveRecord::Schema.define(version: 20191211032725) do
   add_index "offers", ["reviewed_by_id"], name: "index_offers_on_reviewed_by_id", using: :btree
   add_index "offers", ["state"], name: "index_offers_on_state", using: :btree
 
+  create_table "offers_packages", force: :cascade do |t|
+    t.integer "package_id"
+    t.integer "offer_id"
+  end
+
   create_table "order_transports", force: :cascade do |t|
     t.datetime "scheduled_at"
     t.string   "timeslot"
@@ -442,7 +448,6 @@ ActiveRecord::Schema.define(version: 20191211032725) do
   add_index "order_transports", ["scheduled_at"], name: "index_order_transports_on_scheduled_at", using: :btree
 
   create_table "orders", force: :cascade do |t|
-    t.string   "status"
     t.string   "code"
     t.string   "detail_type"
     t.integer  "detail_id"
@@ -450,7 +455,7 @@ ActiveRecord::Schema.define(version: 20191211032725) do
     t.integer  "stockit_organisation_id"
     t.integer  "stockit_id"
     t.datetime "created_at"
-    t.datetime "updated_at",                           null: false
+    t.datetime "updated_at",                              null: false
     t.text     "description"
     t.integer  "stockit_activity_id"
     t.integer  "country_id"
@@ -474,9 +479,12 @@ ActiveRecord::Schema.define(version: 20191211032725) do
     t.integer  "beneficiary_id"
     t.integer  "address_id"
     t.integer  "district_id"
-    t.text     "cancellation_reason"
+    t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.boolean  "continuous",              default: false
+    t.date     "shipment_date"
+    t.integer  "cancellation_reason_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -492,6 +500,7 @@ ActiveRecord::Schema.define(version: 20191211032725) do
   add_index "orders", ["organisation_id"], name: "index_orders_on_organisation_id", using: :btree
   add_index "orders", ["process_completed_by_id"], name: "index_orders_on_process_completed_by_id", using: :btree
   add_index "orders", ["processed_by_id"], name: "index_orders_on_processed_by_id", using: :btree
+  add_index "orders", ["shipment_date"], name: "index_orders_on_shipment_date", using: :btree
   add_index "orders", ["state"], name: "index_orders_on_state", using: :btree
   add_index "orders", ["stockit_activity_id"], name: "index_orders_on_stockit_activity_id", using: :btree
   add_index "orders", ["stockit_contact_id"], name: "index_orders_on_stockit_contact_id", using: :btree
@@ -504,9 +513,10 @@ ActiveRecord::Schema.define(version: 20191211032725) do
     t.string   "state"
     t.integer  "quantity"
     t.integer  "updated_by_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
     t.datetime "sent_on"
+    t.integer  "dispatched_quantity", default: 0
   end
 
   add_index "orders_packages", ["order_id", "package_id"], name: "index_orders_packages_on_order_id_and_package_id", using: :btree
@@ -605,9 +615,9 @@ ActiveRecord::Schema.define(version: 20191211032725) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
-    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_pieces",       default: false
     t.string   "subform"
+    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_box",          default: false
     t.boolean  "allow_pallet",       default: false
   end
@@ -669,6 +679,7 @@ ActiveRecord::Schema.define(version: 20191211032725) do
   add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
   add_index "packages", ["detail_type", "detail_id"], name: "index_packages_on_detail_type_and_detail_id", using: :btree
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
+  add_index "packages", ["inventory_number"], name: "index_packages_on_inventory_number", using: :btree
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
   add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
   add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
@@ -962,6 +973,8 @@ ActiveRecord::Schema.define(version: 20191211032725) do
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
   add_foreign_key "messages", "orders"
+  add_foreign_key "offers_packages", "offers"
+  add_foreign_key "offers_packages", "packages"
   add_foreign_key "orders_process_checklists", "orders"
   add_foreign_key "orders_process_checklists", "process_checklists"
   add_foreign_key "organisations", "countries"

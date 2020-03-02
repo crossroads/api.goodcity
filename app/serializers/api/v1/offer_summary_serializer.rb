@@ -82,6 +82,5 @@ module Api::V1
     def goodcity_user?
       User.current_user.present?
     end
-
   end
 end

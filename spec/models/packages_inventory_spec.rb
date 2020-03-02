@@ -70,6 +70,63 @@ RSpec.describe PackagesInventory, type: :model do
     end
   end
 
+  describe 'Undo feature' do
+    let(:package) { create :package }
+    let(:source) { create :orders_package, package: package }
+    let(:location) { create :location }
+
+    it 'allows undoing and redoing dispatch/undispatch actions' do
+      action = create(:packages_inventory, action: 'dispatch', quantity: -5, package: package, location: location, source: source)
+      undo_action = action.undo
+      expect(undo_action.action).to eq('undispatch')
+      expect(undo_action.quantity).to eq(5)
+      expect(undo_action.location).to eq(location)
+      expect(undo_action.source).to eq(source)
+
+      redo_action = undo_action.undo
+      expect(redo_action.action).to eq('dispatch')
+      expect(redo_action.quantity).to eq(-5)
+      expect(redo_action.location).to eq(location)
+      expect(redo_action.source).to eq(source)
+    end
+
+    it 'allows undoing and redoing gain/loss actions' do
+      action = create(:packages_inventory, action: 'gain', quantity: 5, package: package, location: location, source: source)
+      undo_action = action.undo
+      expect(undo_action.action).to eq('loss')
+      expect(undo_action.quantity).to eq(-5)
+      expect(undo_action.location).to eq(location)
+      expect(undo_action.source).to eq(source)
+
+      redo_action = undo_action.undo
+      expect(redo_action.action).to eq('gain')
+      expect(redo_action.quantity).to eq(5)
+      expect(redo_action.location).to eq(location)
+      expect(redo_action.source).to eq(source)
+    end
+
+    it 'allows undoing and redoing inventory/uninventory actions' do
+      action = create(:packages_inventory, action: 'inventory', quantity: 5, package: package, location: location, source: source)
+      undo_action = action.undo
+      expect(undo_action.action).to eq('uninventory')
+      expect(undo_action.quantity).to eq(-5)
+      expect(undo_action.location).to eq(location)
+      expect(undo_action.source).to eq(source)
+
+      redo_action = undo_action.undo
+      expect(redo_action.action).to eq('inventory')
+      expect(redo_action.quantity).to eq(5)
+      expect(redo_action.location).to eq(location)
+      expect(redo_action.source).to eq(source)
+    end
+
+    it 'prevents us from un-doing a move action' do
+      # Moves come in pairs, therefore it does not make sense to undo a single record
+      action = create(:packages_inventory, action: 'move', quantity: 5, package: package, location: location)
+      expect { action.undo }.to raise_error(Goodcity::InventoryError).with_message('Action cannot be undone')
+    end
+  end
+
   describe 'Computations' do
     let(:package1) { create :package }
     let(:package2) { create :package }

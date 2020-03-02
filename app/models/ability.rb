@@ -18,7 +18,7 @@ class Ability
     can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers
+    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -80,6 +80,7 @@ class Ability
     computer_accessory_abilities
     electrical_abilities
     printer_abilities
+    offers_package_abilities
   end
 
   def printer_abilities
@@ -225,6 +226,12 @@ class Ability
     end
   end
 
+  def offers_package_abilities
+    if can_remove_offers_packages?
+      can [:destroy], OffersPackage
+    end
+  end
+
   def order_abilities
     can :create, Order
     can %i[index show update destroy transition], Order, created_by_id: @user_id
@@ -237,6 +244,9 @@ class Ability
   def orders_package_abilities
     if can_manage_orders_packages? || @api_user
       can [:index, :search, :show, :destroy, :exec_action], OrdersPackage
+    else
+      can [:index, :search, :show, :destroy, :exec_action], OrdersPackage, order: { created_by_id: @user_id }
+      can [:index, :search, :show, :destroy, :exec_action], OrdersPackage, order: { submitted_by_id: @user_id }
     end
   end
 
@@ -278,7 +288,7 @@ class Ability
     if can_manage_packages?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :remove_from_set, :designate,
-        :move, :print_inventory_label, :stockit_item_details, :split_package], Package
+        :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item, :contained_packages, :fetch_added_quantity], Package
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }

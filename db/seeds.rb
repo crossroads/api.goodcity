@@ -117,6 +117,31 @@ purposes.each do |key, value|
   ).first_or_create
 end
 
+goodcity_settings = YAML.load_file("#{Rails.root}/db/goodcity_settings.yml")
+goodcity_settings.each do |record|
+  GoodcitySetting.find_or_create_by(record)
+end
+
+lookups = YAML.load_file("#{Rails.root}/db/lookups.yml")
+lookups.each do |record|
+  Lookup.find_or_create_by(record)
+end
+
+printers = YAML.load_file("#{Rails.root}/db/printers.yml")
+printers.each do |record|
+  Printer.find_or_create_by(record)
+end
+
+locations = YAML.load_file("#{Rails.root}/db/locations.yml")
+locations.each do |record|
+  Location.find_or_create_by(record)
+end
+
+storage_types = YAML.load_file("#{Rails.root}/db/storage_types.yml")
+storage_types.each do |storage_type|
+  StorageType.find_or_create_by(storage_type)
+end
+
 # Create PackageCategories
 PackageCategoryImporter.import
 

@@ -40,6 +40,7 @@ RSpec.describe Order, type: :model do
     it { is_expected.to belong_to :beneficiary }
     it { is_expected.to belong_to :address }
     it { is_expected.to belong_to :district }
+    it { is_expected.to belong_to :cancellation_reason }
     it { is_expected.to belong_to(:created_by).class_name('User') }
     it { is_expected.to belong_to(:processed_by).class_name('User') }
 
@@ -60,7 +61,7 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:code).of_type(:string)}
     it{ is_expected.to have_db_column(:detail_type).of_type(:string)}
     it{ is_expected.to have_db_column(:description).of_type(:text)}
-    it{ is_expected.to have_db_column(:cancellation_reason).of_type(:text)}
+    it{ is_expected.to have_db_column(:cancel_reason).of_type(:text)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:purpose_description).of_type(:text)}
     it{ is_expected.to have_db_column(:created_at).of_type(:datetime)}
