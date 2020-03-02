@@ -14,10 +14,10 @@ class OrdersPackage < ActiveRecord::Base
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :order, :quantity, presence: true
   after_initialize :set_initial_state
+  before_save :assert_availability!
   after_create -> { push_to_stockit("create") }
   after_update -> { push_to_stockit("update") }
   before_destroy -> { push_to_stockit("destroy") }
-  after_commit -> { package.update_carts }
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
@@ -119,6 +119,15 @@ class OrdersPackage < ActiveRecord::Base
   end
 
   private
+
+  def assert_availability!
+    return if cancelled?
+    requires_recompute = !persisted? || (state_changed? && state_was.eql?(States::CANCELLED))
+    if requires_recompute && PackagesInventory::Computer.available_quantity_of(package) < quantity
+      raise Goodcity::InsufficientQuantityError.new(quantity)
+    end
+  end
+
 
   def push_to_stockit(operation)
     return if state == "requested" || GoodcitySync.request_from_stockit
