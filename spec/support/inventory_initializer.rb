@@ -10,8 +10,6 @@ module InventoryInitializer
       pkg.orders_packages.dispatched.each do |orders_package|
         FactoryBot.create :packages_inventory, package: pkg, quantity: - orders_package.quantity, action: 'dispatch', location: dest_location, source: orders_package
       end
-
-      pkg.requested_packages.each(&:update_availability!)
     end
   end
 

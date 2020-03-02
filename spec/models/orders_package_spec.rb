@@ -23,9 +23,64 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe "Validations" do
-     it 'validates quantity' do
+    it 'validates quantity' do
       is_expected.to_not allow_value(-1).for(:quantity)
       is_expected.to allow_value(rand(4)).for(:quantity)
+
+      context 'based on availability' do
+        let(:pkg) { create :package, :with_inventory_record, received_quantity: 1 }
+        let(:dispatched_orders_package) { create :orders_package, :with_inventory_record, state: 'dispatched', package: pkg, quantity: 1 }
+
+        before do
+          expect { touch(dispatched_orders_package) }.to change {
+            pkg.reload.available_quantity
+          }.from(1).to(0)
+          expect(OrdersPackage.count).to eq(1)
+        end
+
+        it 'fails to create a designated orders_package without availability' do
+          expect {
+            create(:orders_package, :with_inventory_record, state: 'designated', package: pkg, quantity: 1)
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+          expect(OrdersPackage.count).to eq(1)
+        end
+
+        it 'fails to create a dispatched orders_package without availability' do
+          expect {
+            create(:orders_package, :with_inventory_record, state: 'dispatched', package: pkg, quantity: 1)
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+          expect(OrdersPackage.count).to eq(1)
+        end
+
+        it 'succeeds to create a cancelled orders_package without availability' do
+          expect {
+            create(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          }.not_to raise_error
+          expect(OrdersPackage.count).to eq(2)
+        end
+
+        it 'fails to update the state from cancelled to designated without availability' do
+          orders_package = create(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          expect(OrdersPackage.count).to eq(2)
+          expect {
+            orders_package.update(state: 'designated')
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+        end
+
+        it 'fails to update the state from cancelled to dispatched without availability' do
+          orders_package = create(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          expect(OrdersPackage.count).to eq(2)
+          expect {
+            orders_package.update(state: 'dispatched')
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+        end
+
+        it 'succeeds to update the state of an existing record' do
+          expect {
+            dispatched_orders_package.update(state: 'designated')
+          }.not_to raise_error
+        end
+      end
     end
   end
 

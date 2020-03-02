@@ -48,8 +48,6 @@ class Package < ActiveRecord::Base
   after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
-  after_save :update_carts
-  after_touch :update_carts # Temporary, will be removed once quantity fields are updated by the inventory
 
   # Live update rules
   after_save :push_changes
@@ -99,7 +97,6 @@ class Package < ActiveRecord::Base
   watch [PackagesInventory, OrdersPackage] do |record|
     PackagesInventory::Computer.update_package_quantities(record.package)
   end
-
 
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
@@ -405,10 +402,6 @@ class Package < ActiveRecord::Base
 
   def donor_condition_name
     donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
-  end
-
-  def update_carts
-    requested_packages.each(&:update_availability!)
   end
 
   def storage_type_name
