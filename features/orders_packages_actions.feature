@@ -23,12 +23,10 @@ Feature: Listing OrdersPackage available actions
     And Their OrdersPackages have the following stock properties
       | State        | Requested Quantity   | On-site Quantity    | Received Quantity |
       | designated 	 | 1                    | 1                   | 2                 |
-      | designated 	 | 1                    | 0                   | 1                 |
       | designated 	 | 2                    | 3                   | 3                 |
       | designated 	 | 2                    | 2                   | 2                 |
     Then They should respectively have the following action status
       | Action          | Enabled   |
-      | edit_quantity 	| false     |
       | edit_quantity 	| false     |
       | edit_quantity 	| true      |
       | edit_quantity 	| true      |

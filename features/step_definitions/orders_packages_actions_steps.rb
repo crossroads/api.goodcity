@@ -55,13 +55,13 @@ And(/^Their OrdersPackages have the following stock properties$/) do |qty_table|
       # Dispatch some quantity in order to reach the desired "Remaining Quantity"
       already_dispatched_qty = received_qty - remaining_qty
       if already_dispatched_qty.positive?
-        dispatched_op = create(:orders_package, state: 'designated', package: pkg, quantity: already_dispatched_qty)
-        PackagesInventory.append_dispatch(package: pkg, source: dispatched_op, quantity: -1 * already_dispatched_qty, location: location)
+        dispatched_op = create(:orders_package, :with_inventory_record, state: 'dispatched', package: pkg, quantity: already_dispatched_qty)
       end
 
       # Create the actual orders_package to test on
       orders_package = create(
         :orders_package,
+        :with_inventory_record,
         state: row['State'],
         quantity: requested_qty,
         order: create(:order, state: state),
