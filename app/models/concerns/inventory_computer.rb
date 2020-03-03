@@ -93,11 +93,13 @@ module InventoryComputer
       end
 
       def compute
-        as_of(Time.now)
+        as_of(nil)
       end
 
       def as_of(time)
-        relation.where("#{@model.table_name}.created_at <= (?)", time).sum(:quantity).abs
+        res = relation
+        res = res.where("#{@model.table_name}.created_at <= (?)", time) unless time.blank?
+        res.sum(:quantity).abs
       end
 
       def of(model)

@@ -1,15 +1,27 @@
 require "rails_helper"
 
 describe PackagesInventoriesImporter do
+  def create_orders_package(package, state, qty)
+    order_id = create(:order).id
+    ActiveRecord::Base.connection.execute <<-SQL
+      INSERT INTO orders_packages(package_id, order_id, quantity, state, created_at, updated_at)
+      VALUES (#{package.id}, #{order_id}, #{qty}, '#{state}', '#{Time.now.to_s(:db)}', '#{Time.now.to_s(:db)}')
+    SQL
+  end
+
   let(:quantities) { [1,2,3] }
   let(:on_hand_packages) {
-    quantities.map { |qty|  create(:package, :package_with_locations, :with_inventory_number, quantity: qty, received_quantity: qty) }
+    quantities.map { |qty|  create(:package, :package_with_locations, :with_inventory_number, received_quantity: qty) }
   }
   let(:dispatched_packages) {
-    quantities.map { |qty|  create(:package, :dispatched, :with_inventory_number, received_quantity: qty) }
+    quantities.map do |qty|
+      pkg = create(:package, :with_inventory_number, received_quantity: qty)
+      create_orders_package(pkg, 'dispatched', qty)
+      pkg.reload
+    end
   }
   let(:uninventorized_packages) {
-    quantities.map { |qty|  create(:package, :package_with_locations, quantity: qty, received_quantity: qty) }
+    quantities.map { |qty|  create(:package, :package_with_locations, received_quantity: qty) }
   }
 
   before(:each) do
@@ -71,7 +83,7 @@ describe PackagesInventoriesImporter do
 
       it "should compute the correct quantity in the inventory" do
         Package.inventorized.each do |p|
-          expect(PackagesInventory::Computer.package_quantity(p)).to eq(p.quantity)
+          expect(PackagesInventory::Computer.package_quantity(p)).to eq(p.received_quantity)
         end
       end
     end

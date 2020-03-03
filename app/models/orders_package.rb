@@ -1,6 +1,7 @@
 class OrdersPackage < ActiveRecord::Base
   include RollbarSpecification
   include OrdersPackageActions
+  include HookControls
 
   module States
     DESIGNATED = 'designated'.freeze
@@ -14,10 +15,10 @@ class OrdersPackage < ActiveRecord::Base
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :order, :quantity, presence: true
   after_initialize :set_initial_state
-  before_save :assert_availability!
   after_create -> { push_to_stockit("create") }
   after_update -> { push_to_stockit("update") }
   before_destroy -> { push_to_stockit("destroy") }
+  managed_hook :save, :before, :assert_availability!
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
   scope :get_designated_and_dispatched_packages, ->(package_id) { where("package_id = (?) and state IN (?)", package_id, ['designated', 'dispatched']) }
