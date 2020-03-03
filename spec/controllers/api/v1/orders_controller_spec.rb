@@ -1,20 +1,19 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
-  let!(:appointment_type) { create(:booking_type, :appointment) }
-  let!(:online_order_type) { create(:booking_type, :online_order) }
-  let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission}
-  let!(:order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: appointment_type }
-  let!(:dispatching_order) { create :order, :with_state_dispatching }
-  let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch }
-  let!(:processing_order) { create :order, :with_state_processing }
+  let(:booking_type) { create :booking_type, :appointment }
+  let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission }
+  let!(:order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: booking_type }
+  let!(:dispatching_order) { create :order, :with_state_dispatching, booking_type: booking_type }
+  let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch, booking_type: booking_type }
+  let!(:processing_order) { create :order, :with_state_processing, booking_type: booking_type }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
   let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder" }
   let(:user) {
     create(:user_with_token, :with_multiple_roles_and_permissions,
            roles_and_permissions: {"Supervisor" => ["can_manage_orders"]})
   }
-  let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type, created_by: user }
+  let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
   let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id) }
   let(:returned_orders) do
@@ -30,7 +29,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   def create_order_with_transport(state, opts = {})
     scheduled_at = opts[:scheduled_at] || moment + rand(1..100).day
     timeslot = opts[:scheduled_at] ? timeslot_of(scheduled_at) : "5:30PM"
-    o = create(:order, state: state)
+    o = create(:order, state: state, detail_type: opts[:detail_type])
+
     create :order_transport, order: o, scheduled_at: scheduled_at, timeslot: timeslot
     return o
   end
@@ -305,17 +305,31 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         context "by due dates" do
-          let(:moment) { Time.now.change(sec: 0).in_time_zone }
+          let(:moment) { Time.zone.now.beginning_of_day.change(sec: 0) }
 
           def epoch_ms(time)
             time.to_i * 1000
+          end
+
+          def day_epoch_ms(time)
+            time.beginning_of_day.to_i * 1000
+          end
+
+          def epoch_ms_by_type(order)
+            if order.detail_type === "GoodCity"
+              epoch_ms(order.order_transport.scheduled_at)
+            else
+              day_epoch_ms(order.shipment_date)
+            end
           end
 
           before do
             Order.delete_all
             (0..4).each do |i|
               state = i.even? ? :submitted : :processing
-              create_order_with_transport(state, :scheduled_at => moment + i.day)
+              detail_type = i.even? ? "GoodCity" : "Shipment"
+              i.even? ? create_order_with_transport(state, :scheduled_at => scheduled_at, :detail_type => detail_type, booking_type: booking_type) :
+              create(:order, state: state, detail_type: detail_type, shipment_date: scheduled_at)
             end
           end
 
@@ -348,7 +362,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             after = epoch_ms(moment + 1.day)
             get :index, before: before, after: after
             expect(response.status).to eq(200)
-            expect(returned_orders.count).to eq(3)
+            expect(returned_orders.count).to eq(2)
             returned_orders
               .map { |o| epoch_ms(o.order_transport.scheduled_at) }
               .each do |t|
@@ -371,11 +385,39 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
               expect(o.state).to eq("submitted")
             end
           end
+
+          it "can return shipment orders scheduled before a certain time if type: Shipment send in params" do
+            before = epoch_ms(moment + 3.day)
+            after = epoch_ms(moment + 1.day)
+            get :index, before: before, after: after, type: "shipment"
+            expect(response.status).to eq(200)
+            expect(returned_orders.count).to eq(1)
+            returned_orders
+              .map { |o| day_epoch_ms(o.shipment_date) }
+              .each do |t|
+                expect(t).to be <= before
+                expect(t).to be >= after
+              end
+          end
+
+          it "can return goodcity orders scheduled before a certain time if type: GoodCity send in params" do
+            before = epoch_ms(moment + 3.day)
+            after = epoch_ms(moment + 1.day)
+            get :index, before: before, after: after, type: "appointment"
+            expect(response.status).to eq(200)
+            expect(returned_orders.count).to eq(1)
+            returned_orders
+              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
+              .each do |t|
+                expect(t).to be <= before
+                expect(t).to be >= after
+              end
+          end
         end
 
         context "Search results sorting" do
           let(:timeslot) { "5:30PM" }
-          let(:moment) { Time.parse("2019-04-03 17:00:00 +0800") }
+          let(:moment) { Time.parse("2019-04-03 00:00:00 +0800") }
           let(:orders_fetched) { parsed_body["designations"].map { |o| Order.find(o["id"]) } }
 
           def create_order_with_transport(state)
@@ -419,7 +461,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       describe "When designating an item ( ?toDesignateItem=true )" do
         it "returns a non draft goodcity order with a submitted_at timestamp" do
-          record = create :order, :with_state_submitted, submitted_at: DateTime.now
+          record = create :order, :with_state_submitted, submitted_at: DateTime.now, booking_type: booking_type
           get :index, searchText: record.code, toDesignateItem: true, submitted_at: DateTime.now
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(1)
