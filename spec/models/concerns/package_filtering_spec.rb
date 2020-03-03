@@ -6,11 +6,11 @@ describe Package do
   # testing dispatched packages
   context 'in_stock packages' do
     before(:each) do
-      create(:package, :with_inventory_number, state: 'received', quantity: 1)
-      create(:package, :with_inventory_number, state: 'received', allow_web_publish: true, quantity: 1)
-      create(:package, :with_inventory_number, state: 'received', quantity: 0)
-      create(:package, :with_inventory_number, :with_images, state: 'received', quantity: 1)
-      create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      create(:package, :with_inventory_record, state: 'received', received_quantity: 1)
+      create(:package, :with_inventory_record, state: 'received', allow_web_publish: true, received_quantity: 1)
+      create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
+      create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
+      create(:package, :dispatched, :with_inventory_record, state: 'received', received_quantity: 1) # Dispatched
     end
 
     subject { Package.filter('state' => state).count }
@@ -60,10 +60,10 @@ describe Package do
   context 'designated packages' do
     before(:each) do
       GoodcitySync.request_from_stockit = true
-      package = create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
       order = create(:order)
-      create(:package, :with_inventory_number, :with_images, state: 'received', quantity: 1)
-      create(:orders_package, :with_state_designated, quantity: 1, order_id: order.id, package_id: package.id)
+      create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
+      create(:orders_package, :with_inventory_record, :with_state_designated, quantity: 1, order_id: order.id, package_id: package.id)
     end
 
     it 'filters out only designated packages' do
@@ -75,10 +75,10 @@ describe Package do
   context 'dispatched packages' do
     before(:each) do
       GoodcitySync.request_from_stockit = true
-      package = create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
+      package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
       order = create(:order)
-      create(:package, :with_inventory_number, :with_images, state: 'received', quantity: 1)
-      create(:orders_package, :with_state_dispatched, quantity: 1, order_id: order.id, package_id: package.id)
+      create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
+      create(:orders_package, :with_inventory_record, :with_state_dispatched, quantity: 1, order_id: order.id, package_id: package.id)
     end
 
     it 'filters out only dispatched packages' do
@@ -88,14 +88,23 @@ describe Package do
   end
 
   context 'filters based on location' do
-    before(:each) do
-      create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
-      create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', quantity: 1)
-    end
-    let(:package_with_location) { create(:package, :with_inventory_number, :package_with_locations, state: 'received', quantity: 1) }
+    let(:location_a) { create :location, area: 'area1' }
+    let(:location_b) { create :location, area: 'area2' }
 
+    before(:each) do
+      initialize_inventory(
+        create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1),
+        create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1),
+        location: location_a
+      )
+      initialize_inventory(
+        create(:package, :with_inventory_number, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1),
+        location: location_b
+      )
+    end
+  
     it 'filters out item based on location' do
-      pkg_location_name = package_with_location.locations.pluck(:building, :area).first.join('-')
+      pkg_location_name = "#{location_b.building}-#{location_b.area}"
       expect(Package.filter.count).to eq(3)
       expect(Package.filter('location' => pkg_location_name).count).to eq(1)
     end

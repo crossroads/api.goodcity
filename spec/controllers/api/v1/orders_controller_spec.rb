@@ -494,7 +494,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
     context 'should merge offline cart orders_packages on login with order' do
       it "if order is in draft state" do
-        package = create :package, quantity: 1, received_quantity: 1
+        package = create :package, received_quantity: 1
         package_ids = draft_order.orders_packages.pluck(:package_id)
         put :update, id: draft_order.id, order: { cart_package_ids: package_ids.push(package.id) }
         expect(response.status).to eq(200)

@@ -9,8 +9,8 @@ FactoryBot.define do
     state                 'expecting'
 
     received_quantity     5
-    on_hand_quantity      0
-    available_quantity    0
+    on_hand_quantity      5
+    available_quantity    5
     designated_quantity   0
     dispatched_quantity   0
 
@@ -30,8 +30,7 @@ FactoryBot.define do
     trait :with_inventory_record do
       inventory_number      { InventoryNumber.next_code }
       after(:create) do |package|
-        location = package.locations.first || create(:location)
-        create :packages_inventory, package: package, quantity: package.received_quantity, location: location, action: 'inventory'
+        InventoryInitializer.initialize_inventory(package)
       end
     end
 
@@ -48,9 +47,11 @@ FactoryBot.define do
 
     trait :dispatched do
       after(:create) do |package|
+        InventoryInitializer.initialize_inventory(package)
         package.orders_packages = [
           create(
             :orders_package,
+            :with_inventory_record,
             :with_state_dispatched,
             package_id: package.id,
             quantity: package.received_quantity
