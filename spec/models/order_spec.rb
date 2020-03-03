@@ -45,6 +45,7 @@ RSpec.describe Order, type: :model do
     it { is_expected.to belong_to(:created_by).class_name('User') }
     it { is_expected.to belong_to(:processed_by).class_name('User') }
 
+    it { is_expected.to have_many :packages }
     it { is_expected.to have_many :goodcity_requests }
     it { is_expected.to have_many :messages }
     it { is_expected.to have_many :subscriptions }
