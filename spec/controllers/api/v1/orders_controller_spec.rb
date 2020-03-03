@@ -326,6 +326,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           before do
             Order.delete_all
             (0..4).each do |i|
+              scheduled_at = moment + i.day
               state = i.even? ? :submitted : :processing
               detail_type = i.even? ? "GoodCity" : "Shipment"
               i.even? ? create_order_with_transport(state, :scheduled_at => scheduled_at, :detail_type => detail_type, booking_type: booking_type) :
@@ -339,7 +340,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
-              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
+              .map { |o| epoch_ms_by_type(o) }
               .each do |t|
               expect(t).to be >= after
             end
@@ -351,7 +352,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
-              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
+              .map { |o| epoch_ms_by_type(o) }
               .each do |t|
               expect(t).to be <= before
             end
@@ -364,7 +365,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(2)
             returned_orders
-              .map { |o| epoch_ms(o.order_transport.scheduled_at) }
+              .map { |o| epoch_ms_by_type(o) }
               .each do |t|
               expect(t).to be <= before
               expect(t).to be >= after
@@ -379,7 +380,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect(returned_orders.count).to eq(1)
             returned_orders
               .each do |o|
-              t = epoch_ms(o.order_transport.scheduled_at)
+              if o.detail_type === "GoodCity"
+                t = epoch_ms(o.order_transport.scheduled_at)
+              else
+                t = day_epoch_ms(o.shipment_date)
+              end
               expect(t).to be <= before
               expect(t).to be >= after
               expect(o.state).to eq("submitted")
