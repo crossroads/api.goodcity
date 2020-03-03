@@ -81,7 +81,7 @@ class Package < ActiveRecord::Base
   scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :undesignated, -> { where(order_id: nil) }
-  scope :not_multi_quantity, -> { where("on_hand_quantity <= 1") }
+  scope :not_multi_quantity, -> { where("received_quantity = 1") }
   scope :exclude_designated, ->(designation_id) {
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }

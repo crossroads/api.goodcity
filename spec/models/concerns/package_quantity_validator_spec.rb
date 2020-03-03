@@ -2,8 +2,9 @@ require 'rails_helper'
 
 describe Offer do
   before(:each) do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
     User.current_user = create :user
-    @package = create :package, :package_with_locations, quantity: 10, received_quantity: 10
+    @package = create :package, :with_inventory_record, received_quantity: 10
     @package_quantity_validator = PackageQuantityValidator.new
     @order = create :order
     @error_message = ["cannot be greater than package quantity"]
