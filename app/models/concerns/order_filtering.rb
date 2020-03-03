@@ -59,8 +59,8 @@ module OrderFiltering
       where("CASE WHEN orders.detail_type='GoodCity' THEN
                 order_transports.scheduled_at >= (?)
             ELSE
-                orders.shipment_date >= (?)
-            END", time, time).join_order_transports
+                shipment_date >= (?)
+            END", time, time.to_date).join_order_transports
     end
 
     def due_before(time)

@@ -21,6 +21,17 @@ FactoryBot.define do
       BookingType.first || association(:booking_type)
     end
 
+    trait :shipment do
+      detail_type "Shipment"
+    end
+
+    trait :carry_out do
+      detail_type  "CarryOut"
+    end
+
+    trait :stockit_local_order do
+      detail_type  "StockitLocalOrder"
+    end
 
     trait :with_orders_packages do
       after(:create) do |order|
