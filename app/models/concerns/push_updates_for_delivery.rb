@@ -44,12 +44,12 @@ module PushUpdatesForDelivery
   end
 
   def send_push_notification
-    PushService.new.send_notification(Channel::REVIEWER_CHANNEL, ADMIN_APP, {
-      category: "offer_delivery",
-      message: delivery_notify_message,
-      offer_id: offer.id,
-      author_id: offer.created_by_id,
-    })
+    PushService.new.send_notification(Channel::REVIEWER_CHANNEL, ADMIN_APP,
+        category: "offer_delivery",
+        message: delivery_notify_message,
+        offer_id: offer.id,
+        author_id: offer.created_by_id
+    )
   end
 
   def donor
