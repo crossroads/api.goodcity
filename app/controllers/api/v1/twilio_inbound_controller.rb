@@ -129,7 +129,7 @@ module Api
           response = Twilio::TwiML::VoiceResponse.new do |r|
             unless active_caller
               r.dial do |d|
-                d.number("+85222729348")
+                d.number(GOODCITY_NUMBER)
               end
             else
               enqueue_donor_call(r)
