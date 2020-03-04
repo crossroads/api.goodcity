@@ -47,10 +47,18 @@ module Goodcity
     end
 
     def create_detail_record
-      GoodcitySync.request_from_stockit = detail_present_on_stockit?
-      detail_type_class = detail_type.classify.constantize
-      detail_params = package_detail_attributes(PACKAGE_DETAIL_ATTRIBUTES["#{detail_type.underscore}".to_sym])
-      detail_type_class.where(stockit_id: stockit_detail_id).first_or_create(detail_params)
+      klass = detail_type.classify.constantize
+      # create detail record with data
+      if detail_present_on_stockit?
+        GoodcitySync.request_from_stockit = true
+        klass.where(stockit_id: stockit_detail_id).first_or_create(
+          package_detail_attributes(PACKAGE_DETAIL_ATTRIBUTES["#{detail_type.underscore}".to_sym])
+        )
+      else
+        # create empty detail record
+        GoodcitySync.request_from_stockit = false
+        klass.create({})
+      end
     end
 
     def package_detail_attributes(attributes)
