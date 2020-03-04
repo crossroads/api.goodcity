@@ -2,6 +2,7 @@ module Goodcity
   class DetailFactory
     PERMITTED_DETAIL_TYPES = %w[computer electrical computer_accessory].freeze
     FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
+    REJECT_ATTRIBUTES=%w[detail_type detail_id package_id]
     PACKAGE_DETAIL_ATTRIBUTES = {
       computer_accessory: %w[brand comp_voltage country_id interface
         model serial_num size].freeze,
@@ -16,13 +17,12 @@ module Goodcity
     attr_accessor :stockit_item_hash, :package, :stockit_detail_id
 
     def initialize(stockit_item_hash, package)
-      @stockit_item_hash = stockit_item_hash
+      @stockit_item_hash = ActiveSupport::HashWithIndifferentAccess.new(stockit_item_hash)
       @package = package
-      @stockit_detail_id = stockit_item_hash["detail_id"]
+      @stockit_detail_id = @stockit_item_hash["detail_id"]
     end
 
     def run
-      debugger
       create_detail_and_update_package
     end
 
@@ -30,8 +30,7 @@ module Goodcity
 
     def create_detail_and_update_package
       return false if package.detail.present? # check if records is present on GC
-      debugger
-      package && package.update_columns(detail_id: create_detail, detail_type: detail_type)
+      package && package.update_columns(detail_id: detail_id, detail_type: detail_type)
     end
 
     def detail_present_on_stockit?
@@ -39,11 +38,10 @@ module Goodcity
     end
 
     def detail_type
-      stockit_item_hash["detail_type"] || package.package_type.subform&.titleize
+      stockit_item_hash["detail_type"]&.classify || package.package_type.subform&.classify
     end
 
-    def create_detail
-      debugger
+    def detail_id
       return unless PERMITTED_DETAIL_TYPES.include?(detail_type.underscore)
       create_detail_record.id
     end
@@ -51,17 +49,17 @@ module Goodcity
     def create_detail_record
       GoodcitySync.request_from_stockit = detail_present_on_stockit?
       detail_type_class = detail_type.classify.constantize
-      detail_params = package_detail_attributes(PACKAGE_ATTRIBUTES["#{detail_type.underscore}".to_sym])
+      detail_params = package_detail_attributes(PACKAGE_DETAIL_ATTRIBUTES["#{detail_type.underscore}".to_sym])
       detail_type_class.where(stockit_id: stockit_detail_id).first_or_create(detail_params)
     end
 
     def package_detail_attributes(attributes)
-      attr_hash = {}
-      attributes.each do |attr|
-        attr_hash.merge({ "#{attr}": item[attr.to_s] })
-      end
+      attr_hash = attributes.each_with_object({}) do |attr, hash|
+                    hash["#{attr}"] = stockit_item_hash[attr.to_s]
+                  end
       attr_hash["stockit_id"] = stockit_detail_id
       attr_hash.merge(lookup_hash)
+      attr_hash.except(*REJECT_ATTRIBUTES)
     end
 
     def lookup_hash
