@@ -6,6 +6,11 @@ describe "OrdersPackage abilities" do
   let(:all_actions) { [:index, :search, :show, :destroy, :exec_action] }
   let(:orders_package) { create :orders_package }
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
+
   context "when Administrator" do
     let(:user) { create(:user, :administrator) }
     it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, orders_package) } }
