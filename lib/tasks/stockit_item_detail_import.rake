@@ -24,11 +24,7 @@ namespace :stockit do
             rescue StandardError => exception
               log.error("package: #{package.id}, stockit_item: #{stockit_item_id} #{exception.message}")
             end
-
-            if package_updated
-              count += 1
-              print "."
-            end
+            count += 1 and print "." if package_updated
           end
         end
       end
