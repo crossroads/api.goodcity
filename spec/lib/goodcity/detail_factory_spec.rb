@@ -8,6 +8,7 @@ describe Goodcity::DetailFactory do
       "brand": "asus",
       "cpu": "1GhZ",
       "detail_id": "1234",
+      "id": "1234",
       "model": "GCW123SAD123",
       "sound": "Dolby Digital",
       "usb": "test123",
@@ -17,6 +18,7 @@ describe Goodcity::DetailFactory do
       "stockit_id": "1230",
       "brand": "havells",
       "detail_id": "1239",
+      "id": "1239",
       "model": "GCW123SAD1234",
       "serial_number": "serialNumber",
       "power": "power",
@@ -26,6 +28,7 @@ describe Goodcity::DetailFactory do
       "brand": "dell",
       "model": "GCW123SAD1235",
       "detail_id": "12431",
+      "id": "12431",
       "serial_num": "serialNumber"
     }
   }
@@ -96,6 +99,50 @@ describe Goodcity::DetailFactory do
         expect(package.detail.model).to eq(nil)
         expect(package.detail.serial_num).to eq(nil)
         expect(package.detail.brand).to eq(nil)
+      end
+    end
+
+    describe 'creates empty record on gc if not present on stockit' do
+      it "with computer" do
+        package_type = create(:package_type, subform: "computer")
+        package = create(:package, :with_inventory_number, stockit_id: 2221, package_type: package_type)
+        detail_factory = described_class.new({detail_type: "computer"}, package)
+        detail_factory.run
+        expect(package.detail.present?).to eq(true)
+        expect(package.detail.model).to eq(nil)
+        expect(package.detail.brand).to eq(nil)
+        expect(package.detail.serial_num).to eq(nil)
+      end
+
+      it "with electrical" do
+        package_type = create(:package_type, subform: "electrical")
+        package = create(:package, :with_inventory_number, stockit_id: 2220, package_type: package_type)
+        detail_factory = described_class.new({}, package)
+        detail_factory.run
+        expect(package.detail.present?).to eq(true)
+        expect(package.detail.model).to eq(nil)
+        expect(package.detail.serial_number).to eq(nil)
+        expect(package.detail.brand).to eq(nil)
+      end
+
+      it "with computer_accessory" do
+        package_type = create(:package_type, subform: "computer_accessory")
+        package = create(:package, :with_inventory_number, stockit_id: 2222, package_type: package_type)
+        detail_factory = described_class.new({}, package)
+        detail_factory.run
+        expect(package.detail.present?).to eq(true)
+        expect(package.detail.model).to eq(nil)
+        expect(package.detail.serial_num).to eq(nil)
+        expect(package.detail.brand).to eq(nil)
+      end
+    end
+
+    describe "doesnot create detail if subform comes as medical" do
+      it "with computer" do
+        package = create(:package, :with_inventory_number, stockit_id: 2221)
+        detail_factory = described_class.new({detail_type: "medical"}, package)
+        detail_factory.run
+        expect(package.detail.present?).to eq(false)
       end
     end
   end
