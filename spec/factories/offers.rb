@@ -2,15 +2,15 @@
 
 FactoryBot.define do
   factory :offer do
-    language "en"
-    state "draft"
-    origin "web"
-    stairs { [false, true].sample }
-    parking { [false, true].sample }
-    estimated_size { [1, 2, 3, 4].sample.to_s }
-    notes { FFaker::Lorem.paragraph }
-    saleable true
-    association :created_by, factory: :user
+    language       "en"
+    state          "draft"
+    origin         "web"
+    stairs         { [false, true].sample }
+    parking        { [false, true].sample }
+    estimated_size { [1,2,3,4].sample.to_s }
+    notes          { FFaker::Lorem.paragraph }
+    saleable       true
+    association    :created_by, factory: :user
 
     trait :admin_offer do
       scheduled
@@ -20,13 +20,13 @@ FactoryBot.define do
 
     trait :submitted do
       submitted_at { Time.now }
-      state "submitted"
+      state        'submitted'
     end
 
     trait :under_review do
       submitted
       reviewed_at { Time.now }
-      state "under_review"
+      state       'under_review'
       association :reviewed_by, :reviewer, factory: :user
     end
 
@@ -34,13 +34,13 @@ FactoryBot.define do
       under_review
       review_completed_at { Time.now }
       with_transport
-      state "reviewed"
+      state       'reviewed'
     end
 
     trait :scheduled do
       reviewed
       with_delivery
-      state "scheduled"
+      state 'scheduled'
     end
 
     trait :receiving do
@@ -78,7 +78,7 @@ FactoryBot.define do
 
     trait :with_items do
       transient do
-        items_count { rand(3) + 1 }
+        items_count { rand(3)+1 }
       end
       after(:create) do |offer, evaluator|
         evaluator.items_count.times { create :item, :with_packages, :with_images, offer: offer }
@@ -87,7 +87,7 @@ FactoryBot.define do
 
     trait :with_demo_items do
       transient do
-        items_count { rand(3) + 1 }
+        items_count { rand(3)+1 }
       end
       after(:create) do |offer, evaluator|
         evaluator.items_count.times { create :demo_item, offer: offer }
@@ -113,13 +113,14 @@ FactoryBot.define do
     end
 
     trait :paranoid do
-      state "submitted"
-      items { [create(:item)] }
+      state      "submitted"
+      items      { [create(:item)] }
     end
 
     trait :with_transport do
-      association :gogovan_transport
-      association :crossroads_transport
+      association    :gogovan_transport
+      association    :crossroads_transport
     end
   end
+
 end
