@@ -23,9 +23,9 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe "Validations" do
-    it 'validates quantity' do
-      is_expected.to_not allow_value(-1).for(:quantity)
-      is_expected.to allow_value(rand(4)).for(:quantity)
+    context 'validates quantity' do
+      it { is_expected.to_not allow_value(-1).for(:quantity) }
+      it { is_expected.to allow_value(rand(4)).for(:quantity) }
 
       context 'based on availability' do
         let(:pkg) { create :package, :with_inventory_record, received_quantity: 1 }
