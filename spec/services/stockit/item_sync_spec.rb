@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe Stockit::ItemSync do
-  let(:package)  { create(:package, :stockit_package, :with_item , quantity:1, received_quantity: 1) }
+  let(:package)  { create(:package, :stockit_package, :with_item, received_quantity: 1) }
   let(:inventory_number) { package.inventory_number }
   let(:stockit_inventory_number) { "X#{inventory_number}" }
   let(:stockit)  { described_class.new(package) }
@@ -118,6 +118,7 @@ describe Stockit::ItemSync do
         end
       end
       context "when orders_package state is dispatched" do
+        before { expect(Stockit::OrdersPackageSync).to receive(:create).once }
         let(:package)  { create(:orders_package, :with_state_dispatched).package }
         it "should return dispatched_location" do
           expect(stockit.send(:stockit_location_id)).to eql(dispatched_location.stockit_id)
@@ -125,7 +126,7 @@ describe Stockit::ItemSync do
       end
     end
     context "in-stock package" do
-      let(:package)  { create(:package, :package_with_locations, :with_item , quantity: 1, received_quantity: 1) }
+      let(:package)  { create(:package, :package_with_locations, :with_item, received_quantity: 1) }
       it "should return the package location" do
         expect(stockit.send(:stockit_location_id)).to eql(package.locations.first.stockit_id)
       end
