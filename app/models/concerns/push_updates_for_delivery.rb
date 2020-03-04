@@ -9,8 +9,8 @@ module PushUpdatesForDelivery
   #  - data updates admin staff (since this will be an active offer)
   def send_updates(operation = nil)
     records.each do |record|
-      operation ||= (record.class == "Delivery" ? "update" : "create")
-      data = {item: serialized_object(record), sender: serialized_sender, operation: operation}
+      operation ||= (record.class == 'Delivery' ? "update" : "create")
+      data = { item: serialized_object(record), sender: serialized_sender, operation: operation }
       push_updates(data)
     end
     return true
@@ -58,14 +58,14 @@ module PushUpdatesForDelivery
 
   def serialized_object(record)
     associations = record.class.reflections.keys.map(&:to_sym)
-    "Api::V1::#{record.class}Serializer".constantize.new(record, {exclude: associations})
+    "Api::V1::#{record.class}Serializer".constantize.new(record, { exclude: associations })
   end
 
   def delivery_notify_message
     formatted_date = schedule.scheduled_at.strftime("%a #{schedule.scheduled_at.day.ordinalize} %b %Y")
-    I18n.t("delivery.#{delivery_type.downcase.tr(" ", "_")}_message",
-           name: donor.full_name,
-           time: schedule.slot_name,
-           date: formatted_date)
+    I18n.t("delivery.#{delivery_type.downcase.tr(' ', '_')}_message",
+      name: donor.full_name,
+      time: schedule.slot_name,
+      date: formatted_date)
   end
 end
