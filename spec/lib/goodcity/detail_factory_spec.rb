@@ -18,7 +18,7 @@ describe Goodcity::DetailFactory do
       "brand": "havells",
       "detail_id": "1239",
       "model": "GCW123SAD1234",
-      "serial_num": "serialNumber",
+      "serial_number": "serialNumber",
       "power": "power",
     },
     computer_accessory: {
@@ -43,6 +43,7 @@ describe Goodcity::DetailFactory do
         expect(package.detail.present?).to eq(true)
         expect(package.detail.model).to eq("GCW123SAD123")
         expect(package.detail.brand).to eq("asus")
+        expect(package.detail.serial_num).to eq("serialNumber")
       end
 
       it "creates electrical" do
@@ -52,6 +53,7 @@ describe Goodcity::DetailFactory do
         expect(package.detail.present?).to eq(true)
         expect(package.detail.model).to eq("GCW123SAD1234")
         expect(package.detail.brand).to eq("havells")
+        expect(package.detail.serial_number).to eq("serialNumber")
       end
 
       it "creates computer_accessory" do
@@ -61,6 +63,7 @@ describe Goodcity::DetailFactory do
         expect(package.detail.present?).to eq(true)
         expect(package.detail.model).to eq("GCW123SAD1235")
         expect(package.detail.brand).to eq("dell")
+        expect(package.detail.serial_num).to eq("serialNumber")
       end
     end
 
@@ -72,6 +75,7 @@ describe Goodcity::DetailFactory do
         expect(package.detail.present?).to eq(true)
         expect(package.detail.model).to eq(nil)
         expect(package.detail.brand).to eq(nil)
+        expect(package.detail.serial_num).to eq(nil)
       end
 
       it "with electrical" do
@@ -80,6 +84,7 @@ describe Goodcity::DetailFactory do
         detail_factory.run
         expect(package.detail.present?).to eq(true)
         expect(package.detail.model).to eq(nil)
+        expect(package.detail.serial_number).to eq(nil)
         expect(package.detail.brand).to eq(nil)
       end
 
@@ -89,6 +94,7 @@ describe Goodcity::DetailFactory do
         detail_factory.run
         expect(package.detail.present?).to eq(true)
         expect(package.detail.model).to eq(nil)
+        expect(package.detail.serial_num).to eq(nil)
         expect(package.detail.brand).to eq(nil)
       end
     end

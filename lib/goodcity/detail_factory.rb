@@ -2,7 +2,7 @@ module Goodcity
   class DetailFactory
     PERMITTED_DETAIL_TYPES = %w[computer electrical computer_accessory].freeze
     FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
-    REJECT_ATTRIBUTES=%w[detail_type detail_id package_id]
+    REJECT_ATTRIBUTES= %w[detail_type detail_id package_id].freeze
     PACKAGE_DETAIL_ATTRIBUTES = {
       computer_accessory: %w[brand comp_voltage country_id interface
         model serial_num size].freeze,
@@ -64,7 +64,7 @@ module Goodcity
 
     def lookup_hash
       FIXED_DETAIL_ATTRIBUTES.each_with_object({}) do |attr, hash|
-        if key = stockit_item_hash[attr].presence
+        if (key = stockit_item_hash[attr].presence)
           name = "electrical_#{attr}" unless (attr == "comp_test_status")
           hash["#{attr}_id"] = Lookup.find_by(name: name, key: key)&.id
         end
