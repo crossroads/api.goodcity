@@ -9,8 +9,8 @@ FactoryBot.define do
     state                 'expecting'
 
     received_quantity     5
-    on_hand_quantity      5
-    available_quantity    5
+    on_hand_quantity      { received_quantity }
+    available_quantity    { received_quantity }
     designated_quantity   0
     dispatched_quantity   0
 
