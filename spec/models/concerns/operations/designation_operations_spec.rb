@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 context DesignationOperations do
-  let(:package) { create(:package, :with_inventory_number) }
+  let(:package) { create(:package, :with_inventory_record, received_quantity: 5) }
   let(:uninventorized_package) { create(:package) }
   let(:other_order) { create(:order, :with_state_processing) }
   let(:order) { create(:order, :with_state_processing) }
@@ -12,7 +12,6 @@ context DesignationOperations do
   }
 
   before(:each) do
-    create(:packages_inventory, package: package, quantity: 5, action: 'inventory')
     expect(PackagesInventory::Computer.package_quantity(package)).to eq(5)
     expect(PackagesInventory.count).to eq(1)
   end
