@@ -3,7 +3,7 @@ require "rails_helper"
 describe Stockit::OrdersPackageSync do
   let(:package) { create :package, :stockit_package }
   let(:package_without_inventory) { create :package }
-  let(:orders_package) { create :orders_package }
+  let(:orders_package) { create :orders_package, :with_state_requested }
   let(:stockit)  { described_class.new(package, orders_package) }
   let(:stockit_without_inventory) { described_class.new(package_without_inventory, orders_package) }
   let(:endpoint) { "http://www.example.com" }
