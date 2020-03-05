@@ -3,24 +3,31 @@ require 'rails_helper'
 context DesignationOperations do
   let(:package) { create(:package, :with_inventory_record, received_quantity: 5) }
   let(:uninventorized_package) { create(:package) }
-  let(:other_order) { create(:order, :with_state_processing) }
   let(:order) { create(:order, :with_state_processing) }
+  let(:other_order) { create(:order, :with_state_processing) }
+  let(:third_order) { create(:order, :with_state_processing) }
+  let(:closed_order) { create(:order, :with_state_closed)}
   let(:dispatching_order) { create(:order, :with_state_dispatching) }
   let(:inactive_order) { create(:order, :with_state_draft) }
   let(:subject) {
     Class.new { include DesignationOperations }
   }
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
+
   before(:each) do
     expect(PackagesInventory::Computer.package_quantity(package)).to eq(5)
     expect(PackagesInventory.count).to eq(1)
   end
 
-  describe 'Designation operation' do
+  def designate(quantity, pkg: package, to_order: order)
+    subject::Operations.designate(pkg, quantity: quantity, to_order: to_order)
+  end
 
-    def designate(quantity, pkg: package, to_order: order)
-      subject::Operations.designate(pkg, quantity: quantity, to_order: to_order)
-    end
+  describe 'Designation operation' do
 
     it 'designates the entire quantity successfully' do
       expect(Stockit::OrdersPackageSync).to receive(:create).once
@@ -120,6 +127,69 @@ context DesignationOperations do
 
       it 'fails to designate an uninventorized package' do
         expect { designate(5, pkg: uninventorized_package) }.to raise_error(Goodcity::NotInventorizedError).with_message("Cannot operate on uninventorized packages")
+      end
+    end
+  end
+
+  describe 'Redesignation operation' do
+    let(:orders_package) { OrdersPackage.first }
+
+    before do
+      designate(5);
+      expect(OrdersPackage.count).to eq(1)
+      touch(orders_package)
+    end
+
+    context 'of an active orders_package' do
+      it 'fails to redesignate a non-cancelled orders_package' do
+        expect {
+          subject::Operations.redesignate(orders_package, to_order: other_order)
+        }.to raise_error(Goodcity::ExpectedStateError).with_message('The following action can only be done on a cancelled OrdersPackage')
+      end
+    end
+
+    context 'of a cancelled orders_package' do
+      before { orders_package.update(state: 'cancelled') }
+
+      it 'redesignates sucessfully to another order' do
+        expect {
+          subject::Operations.redesignate(orders_package, to_order: other_order)
+        }.not_to raise_error
+
+        expect(orders_package.reload.order).to eq(other_order)
+        expect(orders_package.reload.state).to eq('designated')
+      end
+
+      context 'with 0 quantity' do
+        before { orders_package.update(quantity: 0) }
+
+        it 'fails' do
+          expect {
+            subject::Operations.redesignate(orders_package, to_order: other_order)
+          }.to raise_error(Goodcity::InvalidQuantityError)
+        end
+      end
+
+      it 'fails if the package is already designated by some other Orders package' do
+        designate(5, to_order: other_order)
+        expect {
+          subject::Operations.redesignate(orders_package, to_order: other_order)
+        }.to raise_error(Goodcity::AlreadyDesignatedError)
+      end
+
+      it 'fails if the package doesnt have sufficient available quantity' do
+        designate(5, to_order: third_order)
+        expect(PackagesInventory::Computer.available_quantity_of(package.id)).to eq(0)
+        expect {
+          subject::Operations.redesignate(orders_package, to_order: other_order)
+        }.to raise_error(Goodcity::InsufficientQuantityError).with_message('The selected quantity (5) is unavailable')
+      end
+
+      it 'fails if the order is not active (cancelled/closed)' do
+        other_order.cancel
+        expect {
+          subject::Operations.redesignate(orders_package, to_order: other_order)
+        }.to raise_error(Goodcity::InactiveOrderError)
       end
     end
   end

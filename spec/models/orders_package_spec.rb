@@ -112,17 +112,6 @@ RSpec.describe OrdersPackage, type: :model do
     end
   end
 
-  describe '#update_designation' do
-    let!(:orders_package) { create :orders_package }
-    let!(:order) { create :order }
-
-    it 'updates orders_package to provided order_id' do
-      expect{
-        orders_package.update_designation(order.id)
-      }.to change(orders_package, :order_id).to(order.id)
-    end
-  end
-
   describe "#for_order" do
     it "return orders_package according to order_id" do
       order = create :order
@@ -283,8 +272,8 @@ RSpec.describe OrdersPackage, type: :model do
       let(:order) { create :order, :with_cancelled_orders_packages, :with_state_dispatching }
       let(:orders_package) { order.orders_packages.first }
 
-      it "calls :update_designation when the 'redesignate' action is trigerred" do
-        expect(orders_package).to receive(:update_designation)
+      it "calls Operations::redesignate when the 'redesignate' action is trigerred" do
+        expect(OrdersPackage::Operations).to receive(:redesignate)
         orders_package.exec_action 'redesignate'
       end
 
