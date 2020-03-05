@@ -16,17 +16,19 @@ module StockOperations
     # @param [Location|String] the location to place the package in
     #
     def inventorize(package, location)
-      last = PackagesInventory.order('id DESC').where(package: package).limit(1).first
+      assert_can_inventorize!(package, location)
 
-      raise Goodcity::AlreadyInventorizedError if last.present? && !last.uninventory?
-      raise Goodcity::BadOrMissingRecord.new(Location) unless Utils.record_exists?(location, Location)
-      raise Goodcity::BadOrMissingField.new(:inventory_number) unless package.inventory_number.present?
-      
       PackagesInventory.append_inventory(
         package_id:   package.id,
         quantity:     package.received_quantity,
         location_id:  Utils.to_id(location)
       )
+    end
+
+    def assert_can_inventorize!(package, location)
+      raise Goodcity::AlreadyInventorizedError if PackagesInventory.inventorized?(package)
+      raise Goodcity::BadOrMissingRecord.new(Location) unless Utils.record_exists?(location, Location)
+      raise Goodcity::BadOrMissingField.new(:inventory_number) unless package.inventory_number.present?
     end
 
     ##
@@ -54,7 +56,7 @@ module StockOperations
     def register_loss(package, quantity:, location_id: nil, action: 'loss', description: nil)
       available_count = PackagesInventory::Computer.available_quantity_of(package)
 
-      if (quantity.abs > available_count)
+      if quantity.abs > available_count
         designated_count = PackagesInventory::Computer.designated_quantity_of(package)
         if designated_count.positive?
           orders = package.orders_packages.designated.map(&:order).uniq
@@ -98,7 +100,7 @@ module StockOperations
     #
     def register_quantity_change(package, delta:, location:)
       return if delta.zero?
-      return delta.positive? ?
+      delta.positive? ?
         register_gain(package, quantity: delta, to_location: location) :
         register_loss(package, quantity: delta, from_location: location)
     end

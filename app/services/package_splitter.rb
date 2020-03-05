@@ -31,7 +31,7 @@ class PackageSplitter
   end
 
   class InvalidSplitLocationError < SplitError
-    def initialize(qty)
+    def initialize
       super(I18n.t('package.split_location_error'))
     end
   end
@@ -39,10 +39,18 @@ class PackageSplitter
   private
 
   def assert_splittable!
-    raise Goodcity::DisabledFeatureError.new({ feature: 'split' }) unless STOCKIT_ENABLED
-    raise Goodcity::NotInventorizedError.new unless PackagesInventory.inventorized?(@package) && @package.inventory_number.present?
-    raise InvalidSplitQuantityError.new(@package.available_quantity) if @qty_to_split.negative? || @qty_to_split >= @package.available_quantity
-    raise InvalidSplitLocationError.new if @package.locations.count > 1
+    raise Goodcity::DisabledFeatureError.new(feature: 'split') unless STOCKIT_ENABLED
+    raise Goodcity::NotInventorizedError unless inventorized?
+    raise InvalidSplitQuantityError.new(@package.available_quantity) unless splittable?
+    raise InvalidSplitLocationError if @package.locations.count > 1
+  end
+
+  def inventorized?
+    PackagesInventory.inventorized?(@package) && @package.inventory_number.present?
+  end
+
+  def splittable?
+    @qty_to_split.positive? && @qty_to_split < @package.available_quantity
   end
 
   def source_location
