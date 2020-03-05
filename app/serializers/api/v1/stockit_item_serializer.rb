@@ -10,6 +10,7 @@ module Api::V1
     has_many :images, serializer: StockitImageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :offers_packages, serializer: OffersPackageSerializer
+    has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
 
     attributes :id, :quantity, :length, :width, :height, :weight, :pieces, :notes,
