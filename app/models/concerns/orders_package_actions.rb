@@ -1,5 +1,6 @@
 module OrdersPackageActions
   include OrderFulfilmentOperations
+  include DesignationOperations
 
 
   #
@@ -22,7 +23,7 @@ module OrdersPackageActions
     CANCEL          = Action.new('cancel') { |op| op.cancel }
     DISPATCH        = Action.new('dispatch') { |op, opts| Operations.dispatch(op, from_location: opts[:location_id], quantity: opts[:quantity]) }
     UNDISPATCH      = Action.new('undispatch') { |op, opts| Operations.undispatch_dispatched_quantity(op, to_location: opts[:location_id]) }
-    REDESIGNATE     = Action.new('redesignate') { |op, opts| op.redesignate(opts[:order_id]) }
+    REDESIGNATE     = Action.new('redesignate') { |op, opts| Operations.redesignate(op, to_order: opts[:order_id]) }
     EDIT_QUANTITY   = Action.new('edit_quantity') { |op, opts| Package::Operations.designate(op.package, quantity: opts[:quantity], to_order: op.order) }
 
     ALL_ACTIONS = [CANCEL, DISPATCH, UNDISPATCH, REDESIGNATE, EDIT_QUANTITY]

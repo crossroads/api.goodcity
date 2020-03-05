@@ -9,6 +9,7 @@ en:
     bad_request: Bad Request
     bad_or_missing_record: Invalid or missing %{klass}
     bad_or_missing_field: Invalid or empty field '%{field}'
+    expected_state: The following action can only be done on a %{state} %{subject}
   warden:
     token_invalid: Invalid token
     token_expired: Expired token
@@ -104,6 +105,7 @@ en:
     cannot_delete_inventorized: "Inventorized packages cannot be deleted"
   orders_package:
     quantity_already_dispatched: "Some has been already dispatched, please undispatch and try again."
+    already_designated: "Package already designated to this order"
     order_status_error: "You need to complete processing Order first before dispatching."
     action_disabled: "Action %{name} is not possible at the moment"
     qty_not_available: "We do not currently have the requested quantity in stock"

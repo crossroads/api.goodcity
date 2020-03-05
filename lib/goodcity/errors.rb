@@ -44,6 +44,7 @@ module Goodcity
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')
+  AlreadyDesignatedError          = factory(OperationsError, 'orders_package.already_designated')
   MissingQuantityError            = factory(OperationsError, 'operations.move.not_enough_at_source')
   NotInventorizedError            = factory(OperationsError, 'operations.generic.not_inventorized')
   AlreadyInventorizedError        = factory(OperationsError, 'operations.generic.already_inventorized')
@@ -55,6 +56,12 @@ module Goodcity
   # ----------------------------
   # Custom errors (unique params)
   # ----------------------------
+
+  class ExpectedStateError < InvalidStateError
+    def initialize(subject, state)
+      super(I18n.t('errors.expected_state', subject: subject.class.to_s, state: state))
+    end
+  end
 
   class QuantityDesignatedError < OperationsError
     def initialize(orders)
