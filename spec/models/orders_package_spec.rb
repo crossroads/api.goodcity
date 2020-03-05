@@ -179,9 +179,9 @@ RSpec.describe OrdersPackage, type: :model do
 
   describe 'Computing quantities' do
     context 'when dispatching' do
+      let(:package) { create :package, :with_inventory_record, received_quantity: 5 }
       let(:order) { create :order, :with_designated_orders_packages, :with_state_dispatching }
-      let(:orders_package) { order.orders_packages.first }
-      let(:package) { orders_package.package }
+      let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package }
       let(:location) { package.locations.first }
 
       before { initialize_inventory(package) }
@@ -195,9 +195,9 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     context 'when undispatching' do
+      let(:package) { create :package, :with_inventory_record, received_quantity: 5 }
       let(:order) { create :order, :with_designated_orders_packages, :with_state_dispatching }
-      let(:orders_package) { order.orders_packages.first }
-      let(:package) { orders_package.package }
+      let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package }
       let(:location) { package.locations.first }
 
       before do
