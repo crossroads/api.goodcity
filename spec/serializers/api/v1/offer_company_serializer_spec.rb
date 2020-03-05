@@ -12,6 +12,7 @@ context Api::V1::OfferCompanySerializer do
     expect(subject['offer']['id']).to eq(offer.id)
     expect(subject['offer']['company_id']).to eq(offer.company.id)
     expect(subject['offer']['created_by_id']).to eq(offer.created_by.id)
+    expect(subject['offer']['received_at']).to eq(offer.received_at)
   end
 
   it "should only have the user and companies associations" do
