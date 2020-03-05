@@ -179,10 +179,6 @@ class Package < ActiveRecord::Base
     box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
   end
 
-  def total_quantity_in_box
-    box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
-  end
-
   def dispatch_from_stockit?
     stockit_sent_on_changed? && GoodcitySync.request_from_stockit
   end

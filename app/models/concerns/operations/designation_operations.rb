@@ -14,6 +14,7 @@ module DesignationOperations
 
   compose_module :Operations do
     module_function
+
     ##
     # Undispatch an orders_package
     # Partial undispatch is not currently supported
@@ -38,7 +39,7 @@ module DesignationOperations
         Utils.to_model(to_order, Order)
       );
 
-      assert_can_designate(orders_package, quantity);
+      assert_can_designate!(orders_package, quantity);
 
       orders_package.quantity = quantity
       orders_package.updated_by = User.current_user
@@ -60,7 +61,7 @@ module DesignationOperations
 
     # --- HELPERS
 
-    def assert_can_designate(orders_package, quantity)
+    def assert_can_designate!(orders_package, quantity)
       raise Goodcity::NotInventorizedError.new unless orders_package.package.inventory_number.present?
       raise Goodcity::InvalidQuantityError.new(quantity) unless quantity.positive?
       raise Goodcity::InsufficientQuantityError.new(quantity) unless assignable_quantity(orders_package) >= quantity

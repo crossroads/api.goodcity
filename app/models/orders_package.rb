@@ -129,7 +129,6 @@ class OrdersPackage < ActiveRecord::Base
     end
   end
 
-
   def push_to_stockit(operation)
     return if state == "requested" || GoodcitySync.request_from_stockit
     StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.singleton_package?
