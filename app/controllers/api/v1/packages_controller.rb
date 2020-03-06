@@ -221,14 +221,6 @@ module Api
         send_stock_item_response
       end
 
-      # api :PUT, "/v1/packages/1/undo_action/:packages_inventory_id", "Executes an action on a package"
-      # param_group :operations
-
-      # def undo_action
-      #   Package::Operations.uninventorize(@package, params[:packages_inventory_id])
-      #   send_stock_item_response
-      # end
-
       def remove_from_set
         @package.remove_from_set
         render json: @package, serializer: stock_serializer, root: "item",

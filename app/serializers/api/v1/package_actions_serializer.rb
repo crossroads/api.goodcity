@@ -5,5 +5,9 @@ module Api::V1
       :location_id, :user_id, :quantity, :action, :item_id, :package_id
 
     alias_method :item_id, :package_id
+
+    def item_id__sql
+      "package_id"
+    end
   end
 end
