@@ -33,10 +33,11 @@ module StockOperations
     #
     # @raise [Goodcity::UninventoryError] thrown if actions were taken since the initial inventory action
     #
+    # @param [Package|String] the package to inventorize or its id
     # @param [Location|String] the location to place the package in
     #
-    def uninventorize(package_inventory_id)
-      last_action = PackagesInventory.find(package_inventory_id)
+    def uninventorize(package)
+      last_action = PackagesInventory.order('id DESC').where(package: package).limit(1).first
       raise Goodcity::UninventoryError if last_action.blank? || !last_action.inventory?
       last_action.undo
     end

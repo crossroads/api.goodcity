@@ -19,7 +19,7 @@ context StockOperations do
     end
 
     def uninventorize
-      subject::Operations::uninventorize(PackagesInventory.where(package: package).last&.id);
+      subject::Operations::uninventorize(package);
     end
 
     def package_quantity

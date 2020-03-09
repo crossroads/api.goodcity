@@ -48,6 +48,6 @@ class PackagesLocation < ActiveRecord::Base
   end
 
   def self.available_quantity_at_location(location_id, package_id)
-    where(location_id: location_id, package_id: package_id).first&.quantity
+    find_by(location_id: location_id, package_id: package_id)&.quantity
   end
 end
