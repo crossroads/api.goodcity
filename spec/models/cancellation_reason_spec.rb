@@ -30,4 +30,29 @@ RSpec.describe CancellationReason, type: :model do
     end
   end
 
+  describe "#cancellation_reasons_for" do
+    let!(:offer_cancellation_reason) { create :cancellation_reason, :visible_to_offer }
+    let!(:order_cancellation_reason) { create :cancellation_reason, :visible_to_order }
+
+    it "returns order reasons if 'order' type is passed" do
+      reasons = described_class.cancellation_reasons_for("order")
+      expect(reasons.size).to eq(1)
+      expect(reasons.pluck(:id)).to_not include(offer_cancellation_reason.id)
+      expect(reasons.pluck(:id)).to include(order_cancellation_reason.id)
+    end
+
+    it "returns order reasons if 'offer' type is passed" do
+      reasons = described_class.cancellation_reasons_for("offer")
+      expect(reasons.size).to eq(1)
+      expect(reasons.pluck(:id)).to include(offer_cancellation_reason.id)
+      expect(reasons.pluck(:id)).to_not include(order_cancellation_reason.id)
+    end
+
+    it "returns all records if other type is passed" do
+      reasons = described_class.cancellation_reasons_for("all")
+      expect(reasons.size).to eq(2)
+      expect(reasons.pluck(:id)).to include(offer_cancellation_reason.id)
+      expect(reasons.pluck(:id)).to include(order_cancellation_reason.id)
+    end
+  end
 end

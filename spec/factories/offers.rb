@@ -1,7 +1,6 @@
 # Read about factories at https://github.com/thoughtbot/factory_bot
 
 FactoryBot.define do
-
   factory :offer do
     language       "en"
     state          "draft"
@@ -12,6 +11,12 @@ FactoryBot.define do
     notes          { FFaker::Lorem.paragraph }
     saleable       true
     association    :created_by, factory: :user
+
+    trait :admin_offer do
+      scheduled
+      reviewed_at { Time.now }
+      created_by { nil }
+    end
 
     trait :submitted do
       submitted_at { Time.now }

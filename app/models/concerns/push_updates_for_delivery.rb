@@ -3,7 +3,7 @@
 #
 module PushUpdatesForDelivery
   extend ActiveSupport::Concern
-  
+
   # When a delivery is created/updated, send:
   #  - data updates to the offer donor
   #  - data updates admin staff (since this will be an active offer)
@@ -19,12 +19,7 @@ module PushUpdatesForDelivery
   # In-app and mobile notification to reviewers
   #   that a delivery has been scheduled (new or existing)
   def notify_reviewers
-    PushService.new.send_notification(Channel::REVIEWER_CHANNEL, ADMIN_APP, {
-      category: 'offer_delivery',
-      message:   delivery_notify_message,
-      offer_id:  offer.id,
-      author_id: offer.created_by_id
-    })
+    donor && send_push_notification
   end
 
   private
@@ -48,6 +43,15 @@ module PushUpdatesForDelivery
     Api::V1::UserSerializer.new(user)
   end
 
+  def send_push_notification
+    PushService.new
+               .send_notification(Channel::REVIEWER_CHANNEL, ADMIN_APP,
+                                  category: 'offer_delivery',
+                                  message: delivery_notify_message,
+                                  offer_id: offer.id,
+                                  author_id: donor.id)
+  end
+
   def donor
     offer.created_by
   end
@@ -64,5 +68,4 @@ module PushUpdatesForDelivery
       time: schedule.slot_name,
       date: formatted_date)
   end
-  
 end
