@@ -53,8 +53,8 @@ class PackagesInventory < ActiveRecord::Base
     Actions::LOSS         => Actions::GAIN,
     Actions::TRASH        => Actions::UNTRASH,
     Actions::PROCESS      => Actions::UNPROCESS,
-    Actions::RECYCLE      => Actions::PRESERVE,
-  }
+    Actions::RECYCLE      => Actions::PRESERVE
+  }.freeze
 
   def undo
     raise Goodcity::InventoryError.new(I18n.t('packages_inventory.cannot_undo')) unless REVERSIBLE_ACTIONS.key?(action)

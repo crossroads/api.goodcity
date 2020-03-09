@@ -61,17 +61,18 @@ module StockOperations
         end
       end
 
-      PackagesInventory.public_send("append_#{action}" , {
+      PackagesInventory.public_send("append_#{action}", {
         package: package,
         quantity: quantity.abs * -1,
         location_id: location_id,
-        description: description,
+        description: description
       })
     end
 
     def perform_action(package, quantity:, location_id:, action: 'loss', description: nil)
       if PackagesInventory::DECREMENTAL_ACTIONS.include?(action)
-        register_loss(package,
+        register_loss(
+          package,
           quantity: quantity,
           location_id: location_id,
           action: action,
