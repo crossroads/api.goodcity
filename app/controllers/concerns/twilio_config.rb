@@ -36,8 +36,8 @@ module TwilioConfig
   end
 
   def task_router
-    @client ||= Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"], twilio_creds["workspace_sid"])
+    @client ||= Twilio::JWT::TaskRouterCapability::TaskRouterUtils.new(twilio_creds["account_sid"],
+      twilio_creds["auth_token"], twilio_creds["workspace_sid"], nil)
   end
 
   def twilio_client
