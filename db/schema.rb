@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200220061105) do
+ActiveRecord::Schema.define(version: 20200226111634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,8 @@ ActiveRecord::Schema.define(version: 20200220061105) do
     t.datetime "updated_at", null: false
     t.string   "identifier"
   end
+
+  add_index "booking_types", ["name_en", "name_zh_tw"], name: "index_booking_types_on_name_en_and_name_zh_tw", unique: true, using: :btree
 
   create_table "boxes", force: :cascade do |t|
     t.string   "box_number"
@@ -672,13 +674,20 @@ ActiveRecord::Schema.define(version: 20200220061105) do
     t.integer  "detail_id"
     t.string   "detail_type"
     t.integer  "storage_type_id"
+    t.integer  "available_quantity",       default: 0
+    t.integer  "on_hand_quantity",         default: 0
+    t.integer  "designated_quantity",      default: 0
+    t.integer  "dispatched_quantity",      default: 0
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
+  add_index "packages", ["available_quantity"], name: "index_packages_on_available_quantity", using: :btree
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
   add_index "packages", ["case_number"], name: "index_packages_on_case_number", using: :gin
+  add_index "packages", ["designated_quantity"], name: "index_packages_on_designated_quantity", using: :btree
   add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
   add_index "packages", ["detail_type", "detail_id"], name: "index_packages_on_detail_type_and_detail_id", using: :btree
+  add_index "packages", ["dispatched_quantity"], name: "index_packages_on_dispatched_quantity", using: :btree
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
   add_index "packages", ["inventory_number"], name: "index_packages_on_inventory_number", using: :btree
   add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
@@ -686,6 +695,7 @@ ActiveRecord::Schema.define(version: 20200220061105) do
   add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
   add_index "packages", ["notes"], name: "index_packages_on_notes", using: :gin
   add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
+  add_index "packages", ["on_hand_quantity"], name: "index_packages_on_on_hand_quantity", using: :btree
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
