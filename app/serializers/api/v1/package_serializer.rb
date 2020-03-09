@@ -14,7 +14,15 @@ module Api::V1
                :created_at, :updated_at, :package_type_id, :designation_id, :sent_on,
                :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
                :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
-               :designated_quantity, :dispatched_quantity
+               :designated_quantity, :dispatched_quantity, :quantity
+
+    def quantity
+      object.available_quantity
+    end
+
+    def quantity__sql
+      "available_quantity"
+    end
 
     def designation_id
       object.order_id

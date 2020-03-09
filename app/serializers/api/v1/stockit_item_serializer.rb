@@ -18,7 +18,17 @@ module Api::V1
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
       :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id,
-      :on_hand_quantity, :available_quantity, :designated_quantity, :dispatched_quantity
+      :on_hand_quantity, :available_quantity, :designated_quantity, :dispatched_quantity,
+      :quantity
+
+    # note: Quantity is a deprecated field, used only for backwards compatibility
+    def quantity
+      object.available_quantity
+    end
+
+    def quantity__sql
+      "available_quantity"
+    end
 
     def include_images?
       @options[:include_images]

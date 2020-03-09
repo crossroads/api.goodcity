@@ -14,6 +14,7 @@ describe Api::V1::PackageSerializer do
     expect(json['package']['pieces']).to eql(package.pieces)
     expect(json['package']['received_quantity']).to eql(package.received_quantity)
     expect(json['package']['on_hand_quantity']).to eql(package.on_hand_quantity)
+    expect(json['package']['quantity']).to eql(package.available_quantity)
     expect(json['package']['available_quantity']).to eql(package.available_quantity)
     expect(json['package']['dispatched_quantity']).to eql(package.dispatched_quantity)
     expect(json['package']['designated_quantity']).to eql(package.designated_quantity)
