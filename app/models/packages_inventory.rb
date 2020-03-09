@@ -21,6 +21,7 @@ class PackagesInventory < ActiveRecord::Base
     Actions::UNTRASH, Actions::UNPROCESS, Actions::PRESERVE].freeze
   DECREMENTAL_ACTIONS = [Actions::UNINVENTORY, Actions::LOSS, Actions::DISPATCH, Actions::PACK,
     Actions::TRASH, Actions::PROCESS, Actions::RECYCLE].freeze
+  QUANTITY_LOSS_ACTIONS = [Actions::LOSS, Actions::TRASH, Actions::PROCESS, Actions::RECYCLE].freeze
   UNRESTRICTED_ACTIONS = [Actions::MOVE].freeze
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
 

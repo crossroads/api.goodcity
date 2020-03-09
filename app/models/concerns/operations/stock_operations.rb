@@ -71,7 +71,7 @@ module StockOperations
     end
 
     def perform_action(package, quantity:, location_id:, action: 'loss', description: nil)
-      if PackagesInventory::DECREMENTAL_ACTIONS.include?(action)
+      if PackagesInventory::QUANTITY_LOSS_ACTIONS.include?(action)
         register_loss(
           package,
           quantity: quantity,
