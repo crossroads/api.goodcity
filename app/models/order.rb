@@ -9,7 +9,7 @@ class Order < ActiveRecord::Base
   push_targets do |record|
     [
       Channel.private_channels_for(record.created_by, BROWSE_APP),
-      Channel::ORDER_FULFILMENT_CHANNEL,
+      Channel::ORDER_FULFILMENT_CHANNEL
     ]
   end
 
@@ -74,7 +74,7 @@ class Order < ActiveRecord::Base
     "Sent" => "closed",
     "Loaded" => "dispatching",
     "Cancelled" => "cancelled",
-    "Upcoming" => "awaiting_dispatch",
+    "Upcoming" => "awaiting_dispatch"
   }.freeze
 
   # Stockit LocalOrder Status => GoodCity State
@@ -90,7 +90,7 @@ class Order < ActiveRecord::Base
 
   scope :with_eager_load, -> {
           includes([:subscriptions, :order_transport,
-                    {packages: [:locations, :package_type]}])
+                    { packages: [:locations, :package_type] }])
         }
 
   scope :descending, -> { order("orders.id desc") }
@@ -178,8 +178,8 @@ class Order < ActiveRecord::Base
     end
 
     event :restart_process do
-      transition awaiting_dispatch: :submitted, :if => lambda {|order| order.goodcity_order?}
-      transition awaiting_dispatch: :processing, :if => lambda {|order| !order.goodcity_order?}
+      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.goodcity_order? }
+      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.goodcity_order? }
     end
 
     event :resubmit do
@@ -334,13 +334,14 @@ class Order < ActiveRecord::Base
   end
 
   def send_new_order_notification
-    PushService.new.send_notification(Channel::ORDER_FULFILMENT_CHANNEL, STOCK_APP, {
+    PushService.new.send_notification(Channel::ORDER_FULFILMENT_CHANNEL, STOCK_APP,
+    {
       category: "new_order",
       message: I18n.t("twilio.order_submitted_sms_to_order_fulfilment_users",
                       code: code, submitter_name: created_by.full_name,
                       organisation_name: organisation.try(:name_en)),
       order_id: id,
-      author_id: created_by_id,
+      author_id: created_by_id
     })
   end
 
@@ -469,7 +470,7 @@ class Order < ActiveRecord::Base
         name: beneficiary.first_name + " " + beneficiary.last_name,
         phone: beneficiary.phone_number,
         id_type: beneficiary.identity_type.name_en,
-        id_no: beneficiary.identity_number,
+        id_no: beneficiary.identity_number
       }
     end
     props["requests"] = goodcity_requests.map do |gc|
@@ -477,14 +478,14 @@ class Order < ActiveRecord::Base
         quantity: gc.quantity,
         type_en: gc.package_type.name_en,
         type_zh_tw: gc.package_type.name_zh_tw,
-        description: gc.description,
+        description: gc.description
       }
     end
     props["goods"] = orders_packages.select(&:designated?).map do |op|
       {
         quantity: op.quantity,
         type_en: op.package.package_type.name_en,
-        type_zh_tw: op.package.package_type.name_zh_tw,
+        type_zh_tw: op.package.package_type.name_zh_tw
       }
     end
     props
