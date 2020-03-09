@@ -16,6 +16,7 @@ module Api::V1
                :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
                :designated_quantity, :dispatched_quantity, :quantity
 
+    # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity
     end
