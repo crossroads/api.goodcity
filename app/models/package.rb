@@ -72,7 +72,6 @@ class Package < ActiveRecord::Base
   scope :received, -> { where(state: 'received') }
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
-  scope :not_zero_quantity, -> { where.not(on_hand_quantity: 0) }
   scope :published, -> { where(allow_web_publish: true) }
   scope :non_set_items, -> { where(set_item_id: nil) }
   scope :set_items, -> { where("set_item_id = item_id") }
@@ -367,14 +366,10 @@ class Package < ActiveRecord::Base
 
     query = <<-SQL
       packages.inventory_number IS NOT NULL
-      OR (
-        packages.state = 'expecting'
-        AND pkg_items.state IN (:allowed_items)
-        AND pkg_offers.state NOT IN (:excluded_offers)
-      )
+      packages.available_quantity > 0
     SQL
 
-    joins(join).not_zero_quantity.published.where(query,
+    joins(join).published.where(query,
       allowed_items: BROWSE_ITEM_STATES,
       excluded_offers: BROWSE_OFFER_EXCLUDE_STATE
     )
