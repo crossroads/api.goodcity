@@ -475,7 +475,7 @@ module Api
       end
 
       def received_quantity
-        params[:package][:quantity].to_i
+        (params[:package][:received_quantity] || params[:package][:quantity]).to_i
       end
 
       def location_id
