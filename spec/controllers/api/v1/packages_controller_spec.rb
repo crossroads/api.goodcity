@@ -157,6 +157,44 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
+  describe "Marking a package as missing (PUT /:id/mark_missing)" do
+    let(:order) { create :order, :with_state_submitted }
+    let(:package) { create :package, :with_inventory_record, received_quantity: 5, state: "received" }
+    let(:location) { package.locations.first }
+
+    before do
+      generate_and_set_token(user)
+      allow(Stockit::ItemSync).to receive(:delete)
+    end
+
+    it 'adds an uninventory action to the packages_inventory' do
+      expect {
+        put :mark_missing, format: :json, id: package.id
+      }.to change { PackagesInventory.inventorized?(package) }.from(true).to(false)
+
+      expect(response.status).to eq(200)
+    end
+
+    it 'sets the state to missing' do
+      expect {
+        put :mark_missing, format: :json, id: package.id
+      }.to change { package.reload.state }.from('received').to('missing')
+
+      expect(response.status).to eq(200)
+    end
+
+    it 'fails if the inventory has been modified' do
+      Package::Operations.register_loss(package, quantity: 1, from_location: location)
+
+      expect {
+        put :mark_missing, format: :json, id: package.id
+      }.not_to change { package.reload.state }
+
+      expect(response.status).to eq(422)
+      expect(parsed_body).to eq({"error"=>"Package cannot be uninventorized"})
+    end
+  end
+
   describe "Designating the package (PUT /:id/designate)" do
     let(:location) { create :location }
     let(:order) { create :order, :with_state_submitted }

@@ -156,6 +156,15 @@ module Api
         raise Goodcity::InventorizedPackageError
       end
 
+      api :PUT, "/v1/packages/1", "Mark a package as missing"
+      def mark_missing
+        ActiveRecord::Base.transaction do
+          Package::Operations.uninventorize(@package) if PackagesInventory.inventorized?(@package)
+          @package.mark_missing
+        end
+        render json: serializer.new(@package).as_json
+      end
+
       api :POST, "/v1/packages/print_barcode", "Print barcode"
 
       def print_barcode

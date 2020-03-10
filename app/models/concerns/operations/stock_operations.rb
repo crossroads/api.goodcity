@@ -78,7 +78,7 @@ module StockOperations
     ##
     # Registers the gain of some package
     #
-    # @param [Package] package the package that went missing
+    # @param [Package] package the package to increase the quantity of
     # @param [Integer] quantity the quantity that was lost
     # @param [Location|Id] to_location the location to add the quantity to (or its id)
     #
@@ -94,7 +94,7 @@ module StockOperations
     ##
     # Registers either a gain or a loss action depending on the change value
     #
-    # @param [Package] package the package that went missing
+    # @param [Package] package the package that had a quantity change
     # @param [Integer] quantity the quantity that was lost
     # @param [Location|Id] location the location to add the quantity to (or its id)
     #
