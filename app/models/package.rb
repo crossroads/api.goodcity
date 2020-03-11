@@ -365,7 +365,7 @@ class Package < ActiveRecord::Base
     SQL
 
     query = <<-SQL
-      packages.inventory_number IS NOT NULL
+      packages.inventory_number IS NOT NULL AND
       packages.available_quantity > 0
     SQL
 

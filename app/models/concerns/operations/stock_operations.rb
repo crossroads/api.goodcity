@@ -16,13 +16,16 @@ module StockOperations
     # @param [Location|String] the location to place the package in
     #
     def inventorize(package, location)
-      assert_can_inventorize!(package, location)
+      PackagesInventory.secured_transaction do
+        assert_can_inventorize!(package, location)
 
-      PackagesInventory.append_inventory(
-        package_id:   package.id,
-        quantity:     package.received_quantity,
-        location_id:  Utils.to_id(location)
-      )
+        PackagesInventory.append_inventory(
+          package_id:   package.id,
+          quantity:     package.received_quantity,
+          location_id:  Utils.to_id(location)
+        )
+      end
+      package.reload
     end
 
     def assert_can_inventorize!(package, location)
@@ -41,9 +44,12 @@ module StockOperations
     # @param [Location|String] the location to place the package in
     #
     def uninventorize(package)
-      last_action = PackagesInventory.order('id DESC').where(package: package).limit(1).first
-      raise Goodcity::UninventoryError if last_action.blank? || !last_action.inventory?
-      last_action.undo
+      PackagesInventory.secured_transaction do
+        last_action = PackagesInventory.order('id DESC').where(package: package).limit(1).first
+        raise Goodcity::UninventoryError if last_action.blank? || !last_action.inventory?
+        last_action.undo
+      end
+      package.reload
     end
 
     ##
@@ -72,6 +78,8 @@ module StockOperations
         location_id: location_id,
         description: description
       })
+
+      package.reload
     end
 
 
@@ -89,6 +97,7 @@ module StockOperations
         quantity: quantity,
         location: Utils.to_model(to_location, Location)
       )
+      package.reload
     end
 
     ##
