@@ -10,6 +10,7 @@ module Api::V1
     has_many :images, serializer: StockitImageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :offers_packages, serializer: OffersPackageSerializer
+    has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
 
     attributes :id, :quantity, :length, :width, :height, :weight, :pieces, :notes,
@@ -42,7 +43,7 @@ module Api::V1
     end
 
     def on_hand_quantity__sql
-      "select sum(quantity) from packages_inventories where package_id = #{object.id}"
+      "select sum(quantity) from packages_inventories where packages_inventories.package_id = packages.id"
     end
 
     def designation_id
