@@ -58,6 +58,8 @@ describe Api::V1::OfferSerializer do
       expect(
         donor_json['user']['last_disconnected'].to_date
       ).to eql(donor.last_disconnected.to_date)
+      expect(
+        donor_json['user']['printers']).to eql(donor.printer)
     end
   end
 
