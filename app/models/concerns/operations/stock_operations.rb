@@ -49,7 +49,7 @@ module StockOperations
     # @param [Integer] quantity the quantity that was lost
     # @param [Location|Id] from the location to negate the quantity from(or its id)
     #
-    def register_loss(package, quantity:, from_location:)
+    def register_loss(package, quantity:, location_id: nil, action: 'loss', description: nil)
       available_count = PackagesInventory::Computer.available_quantity_of(package)
 
       if (quantity > available_count)
@@ -62,11 +62,25 @@ module StockOperations
         end
       end
 
-      PackagesInventory.append_loss(
+      PackagesInventory.public_send("append_#{action}", {
         package: package,
         quantity: quantity.abs * -1,
-        location: from_location
-      )
+        location_id: location_id,
+        description: description
+      })
+    end
+
+    def perform_action(package, quantity:, location_id:, action: 'loss', description: nil)
+      if PackagesInventory::QUANTITY_LOSS_ACTIONS.include?(action)
+        register_loss(
+          package,
+          quantity: quantity,
+          location_id: location_id,
+          action: action,
+          description: description)
+      else
+        raise Goodcity::ActionNotAllowedError.new
+      end
     end
 
     def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )
@@ -155,5 +169,6 @@ module StockOperations
         @package.box? && @cause.box?
       end
     end
+
   end
 end
