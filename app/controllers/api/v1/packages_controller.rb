@@ -162,7 +162,7 @@ module Api
           Package::Operations.uninventorize(@package) if PackagesInventory.inventorized?(@package)
           @package.mark_missing
         end
-        render json: serializer.new(@package).as_json
+        render json: serializer.new(Package.find(@package.id)).as_json
       end
 
       api :POST, "/v1/packages/print_barcode", "Print barcode"
