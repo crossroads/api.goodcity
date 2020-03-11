@@ -183,6 +183,24 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    it 'zeroes the on_hand_quantity' do
+      expect {
+        put :mark_missing, format: :json, id: package.id
+      }.to change { package.reload.on_hand_quantity }.from(5).to(0)
+
+      expect(response.status).to eq(200)
+      expect(parsed_body["package"]["on_hand_quantity"]).to eq(0)
+    end
+
+    it 'zeroes the available_quantity' do
+      expect {
+        put :mark_missing, format: :json, id: package.id
+      }.to change { package.reload.available_quantity }.from(5).to(0)
+
+      expect(response.status).to eq(200)
+      expect(parsed_body["package"]["available_quantity"]).to eq(0)
+    end
+
     it 'fails if the inventory has been modified' do
       Package::Operations.register_loss(package, quantity: 1, from_location: location)
 
