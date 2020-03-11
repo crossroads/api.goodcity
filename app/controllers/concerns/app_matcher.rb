@@ -19,7 +19,7 @@ module AppMatcher
     app_name == STOCKIT_APP
   end
 
-  def is_donor_app?
+  def donor_app?
     app_name == DONOR_APP
   end
 
