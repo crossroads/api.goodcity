@@ -158,7 +158,10 @@ module Api
 
       def current_user_profile
         authorize!(:current_user_profile, User)
-        render json: current_user, serializer: Api::V1::UserProfileSerializer
+        # include printers, only if its not donor or browse app
+        render json: current_user,
+               serializer: Api::V1::UserProfileSerializer,
+               include_printers: !(is_donor_app? || is_browse_app?)
       end
 
       api :POST, "/v1/auth/register_device", "Register a mobile device to receive notifications"
