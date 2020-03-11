@@ -786,7 +786,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         let(:package_params){
           stockit_item_params.merge({
             quantity: 100,
-            received_quantity: package.received_quantity,
             package_type_id:package.package_type_id,
             state: package.state,
             stockit_id: package.stockit_id,
