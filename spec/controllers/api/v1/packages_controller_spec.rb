@@ -1225,7 +1225,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
-  describe 'PUT exec_action' do
+  describe 'PUT register_quantity_change' do
     before do
       generate_and_set_token(user)
       @package = create :package
@@ -1237,7 +1237,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it 'performs loss action on package' do
       expect(@package.packages_locations.first.quantity).to eq(20)
 
-      put :exec_action, {
+      put :register_quantity_change, {
                           id: @package.id,
                           quantity: 2,
                           from: @location.id,
@@ -1252,7 +1252,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "throws error for unsupported action" do
-      put :exec_action, {
+      put :register_quantity_change, {
                           id: @package.id,
                           quantity: 2,
                           from: @location.id,
@@ -1265,7 +1265,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it "throws error for invalid quantity" do
-      put :exec_action, {
+      put :register_quantity_change, {
                           id: @package.id,
                           quantity: 25,
                           from: @location.id,
