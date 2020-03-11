@@ -78,7 +78,6 @@ module StockOperations
         location_id: location_id,
         description: description
       })
-
       package.reload
     end
 
