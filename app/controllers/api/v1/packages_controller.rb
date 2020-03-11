@@ -211,7 +211,7 @@ module Api
       api :PUT, "/v1/packages/1/actions/:action_name", "Executes an action on a package"
       param_group :operations
 
-      def exec_action
+      def register_quantity_change
         Package::Operations.perform_action(@package,
           quantity: params[:quantity].to_i,
           location_id: params[:from],
