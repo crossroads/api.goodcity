@@ -202,7 +202,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'fails if the inventory has been modified' do
-      Package::Operations.register_loss(package, quantity: 1, from_location: location)
+      Package::Operations.register_loss(package, quantity: 1, location: location)
 
       expect {
         put :mark_missing, format: :json, id: package.id
@@ -1469,7 +1469,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       generate_and_set_token(user)
       @package = create :package
       @location = create :location
-      @package = create(:package, :with_inventory_number, quantity: 20, received_quantity: 20)
+      @package = create(:package, :with_inventory_number, received_quantity: 20)
       create(:packages_location, package: @package, location: @location, quantity: 20)
     end
 

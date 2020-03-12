@@ -20,7 +20,7 @@ context StockOperations do
     end
 
     def register_loss
-      subject::Operations::register_loss(package, quantity: -1, location_id: location1.id, description: "Package Loss Action")
+      subject::Operations::register_loss(package, quantity: -1, location: location1.id, description: "Package Loss Action")
     end
 
     def uninventorize
@@ -28,7 +28,7 @@ context StockOperations do
     end
 
     def package_quantity
-      package.total_in_hand_quantity
+      PackagesInventory::Computer.package_quantity(package)
     end
 
     it 'appends an inventory action' do
@@ -123,7 +123,7 @@ context StockOperations do
     def register_loss(quantity, location_id)
       subject::Operations::register_loss(package,
         quantity: quantity,
-        location_id: location_id)
+        location: location_id)
     end
 
     context 'for a partial quantity of one location' do

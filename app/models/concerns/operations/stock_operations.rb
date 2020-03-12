@@ -75,7 +75,7 @@ module StockOperations
       PackagesInventory.public_send("append_#{action}", {
         package: package,
         quantity: quantity.abs * -1,
-        location_id: Utils.to_model(location, Location),
+        location: Utils.to_model(location, Location),
         description: description
       })
       package.reload
@@ -110,7 +110,7 @@ module StockOperations
       return if delta.zero?
       delta.positive? ?
         register_gain(package, quantity: delta, to_location: location) :
-        register_loss(package, quantity: delta, from_location: location)
+        register_loss(package, quantity: delta, location: location)
     end
 
     def perform_action(package, quantity:, location_id:, action: 'loss', description: nil)
