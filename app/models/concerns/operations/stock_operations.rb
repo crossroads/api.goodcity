@@ -59,7 +59,7 @@ module StockOperations
     # @param [Integer] quantity the quantity that was lost
     # @param [Location|Id] from_location the location to negate the quantity from(or its id)
     #
-    def register_loss(package, quantity:, location_id: nil, action: 'loss', description: nil)
+    def register_loss(package, quantity:, location: nil, action: 'loss', description: nil)
       available_count = PackagesInventory::Computer.available_quantity_of(package)
 
       if quantity.abs > available_count
@@ -75,7 +75,7 @@ module StockOperations
       PackagesInventory.public_send("append_#{action}", {
         package: package,
         quantity: quantity.abs * -1,
-        location_id: location_id,
+        location_id: Utils.to_model(location, Location),
         description: description
       })
       package.reload
@@ -118,7 +118,7 @@ module StockOperations
         register_loss(
           package,
           quantity: quantity,
-          location_id: location_id,
+          location: location_id,
           action: action,
           description: description)
       else
