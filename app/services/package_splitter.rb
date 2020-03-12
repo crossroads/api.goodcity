@@ -58,7 +58,7 @@ class PackageSplitter
   end
 
   def deduct_quantity!
-    Package::Operations.register_loss(@package, quantity: @qty_to_split, from_location: source_location)
+    Package::Operations.register_loss(@package, quantity: @qty_to_split, location: source_location)
     @package.update!(received_quantity: @package.received_quantity - @qty_to_split)
   end
 
