@@ -26,6 +26,10 @@ module Api::V1
         user_id = users.id), '{}'::int[])"
     end
 
+    def include_printer?
+      @options[:include_printers]
+    end
+
     def include_attribute?
       return !@options[:user_summary] unless @options[:user_summary].nil?
       (User.current_user.try(:staff?) || User.current_user.try(:id) == id)
