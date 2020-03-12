@@ -1251,6 +1251,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(@package.package_actions.last.quantity).to eq(-2)
     end
 
+    it "performs gain action on package" do
+      expect(@package.packages_locations.first.quantity).to eq(20)
+
+      put :register_quantity_change, {
+            id: @package.id,
+            quantity: 10,
+            from: @location.id,
+            action_name: "gain",
+            description: "gain action on Package",
+          }
+
+      expect(response.status).to eq(200)
+      expect(@package.packages_locations.first.quantity).to eq(30)
+      expect(@package.package_actions.last.action).to eq("gain")
+      expect(@package.package_actions.last.quantity).to eq(10)
+    end
+
     it "throws error for unsupported action" do
       put :register_quantity_change, {
                           id: @package.id,
