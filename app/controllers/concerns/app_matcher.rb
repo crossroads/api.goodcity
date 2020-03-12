@@ -18,7 +18,11 @@ module AppMatcher
   def is_stockit_request?
     app_name == STOCKIT_APP
   end
-  
+
+  def donor_app?
+    app_name == DONOR_APP
+  end
+
   # return sanitized app name from request header
   # return 'app', 'admin', 'stock', 'browse', 'stockit'
 

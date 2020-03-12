@@ -205,6 +205,53 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       get :current_user_profile
       expect(response.status).to eq(200)
     end
+
+    context 'donor app' do
+      before do
+        set_donor_app_header
+      end
+
+      it 'printers node should not be present in the response' do
+        get :current_user_profile
+        expect(JSON.parse(response.body).keys).not_to include('printers')
+      end
+    end
+
+    context 'donor app with supervisor logged in' do
+      before do
+        generate_and_set_token(supervisor)
+        set_donor_app_header
+      end
+
+      it 'printers node should not be present in the response' do
+        get :current_user_profile
+        expect(JSON.parse(response.body).keys).not_to include('printers')
+      end
+    end
+
+    context 'admin app' do
+      before do
+        generate_and_set_token(supervisor)
+        set_admin_app_header
+      end
+
+      it 'printers node should be present in the response' do
+        get :current_user_profile
+        expect(JSON.parse(response.body).keys).to include('printers')
+      end
+    end
+
+    context 'stock app' do
+      before do
+        generate_and_set_token(supervisor)
+        set_stock_app_header
+      end
+
+      it 'printers node should be present in the response' do
+        get :current_user_profile
+        expect(JSON.parse(response.body).keys).to include("printers")
+      end
+    end
   end
 
   # High level smoke tests to ensure correct channels are returned
