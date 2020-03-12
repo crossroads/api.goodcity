@@ -179,6 +179,46 @@ context StockOperations do
     end
   end
 
+  describe 'Marking packages as gain' do
+    let(:package) { create(:package) }
+
+    before do
+      create(:packages_inventory, :inventory, quantity: 30, package: package, location: location1)
+      create(:packages_inventory, :inventory, quantity: 3, package: package, location: location2)
+      create(:packages_inventory, :gain, quantity: 3, package: package, location: location1)
+    end
+
+    def register_gain(quantity, location_id)
+      subject::Operations::register_gain(package,
+        quantity: quantity,
+        location_id: location_id)
+    end
+
+    context 'for a partial quantity of one location' do
+      it 'adds the amount from the inventory' do
+        expect { register_gain(10, location1.id) }.to change {
+          PackagesInventory::Computer.quantity_where(location: location1.id, package: package)
+        }.from(33).to(43)
+      end
+
+      it 'adds a single row the packages_inventory' do
+        expect { register_gain(10, location1.id) }.to change(PackagesInventory, :count).by(1)
+      end
+
+      it 'updates the packages_location record' do
+        expect { register_gain(10, location1.id) }.to change {
+          PackagesLocation.find_by(package: package, location: location1.id).quantity
+        }.from(33).to(43)
+      end
+
+      it 'doesnt affect other locations' do
+        expect { register_gain(10, location1.id) }.not_to change {
+          PackagesInventory::Computer.quantity_where(location: location2, package: package)
+        }
+      end
+    end
+  end
+
   describe 'Adding/removing items from box and pallets' do
     let(:box_storage_type) { create(:storage_type, :with_box) }
     let(:pallet_storage_type) { create(:storage_type, :with_box) }
