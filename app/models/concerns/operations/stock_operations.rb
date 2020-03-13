@@ -43,6 +43,22 @@ module StockOperations
     end
 
     ##
+    # Registers the gain of package
+    #
+    # @param [Package] package to be gained
+    # @param [Integer] quantity that is added
+    # @param [Location|Id] to the location to add the quantity (or its id)
+    #
+    def register_gain(package, quantity:, location_id: nil, action: "gain", description: nil)
+      PackagesInventory.public_send("append_#{action}", {
+        package: package,
+        quantity: quantity.abs,
+        location_id: location_id,
+        description: description,
+      })
+    end
+
+    ##
     # Registers the loss of some package
     #
     # @param [Package] package the package that went missing
@@ -78,6 +94,14 @@ module StockOperations
           location_id: location_id,
           action: action,
           description: description)
+      elsif PackagesInventory::QUANTITY_GAIN_ACTIONS.include?(action)
+        register_gain(
+          package,
+          quantity: quantity,
+          location_id: location_id,
+          action: action,
+          description: description,
+        )
       else
         raise Goodcity::ActionNotAllowedError.new
       end
