@@ -5,3 +5,4 @@ class AddContinuousAndShipmentDateInOrders < ActiveRecord::Migration
     add_index :orders, :shipment_date
   end
 end
+
