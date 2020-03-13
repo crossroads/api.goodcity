@@ -1,0 +1,50 @@
+---
+  -  donor_condition_name_en: "New"
+     grade: "A"
+     multiplier: 0.90
+  -  donor_condition_name_en: "Lightly Used"
+     grade: "A"
+     multiplier: 0.85
+  -  donor_condition_name_en: "Heavily Used"
+     grade: "A"
+     multiplier: 0.80
+  -  donor_condition_name_en: "Broken"
+     grade: "A"
+     multiplier: 0.01
+  -  donor_condition_name_en: "New"
+     grade: "B"
+     multiplier: 0.80
+  -  donor_condition_name_en: "Lightly Used"
+     grade: "B"
+     multiplier: 0.75
+  -  donor_condition_name_en: "Heavily Used"
+     grade: "B"
+     multiplier: 0.70
+  -  donor_condition_name_en: "Broken"
+     grade: "B"
+     multiplier: 0.01
+  -  donor_condition_name_en: "New"
+     grade: "C"
+     multiplier: 0.50
+  -  donor_condition_name_en: "Lightly Used"
+     grade: "C"
+     multiplier: 0.40
+  -  donor_condition_name_en: "Heavily Used"
+     grade: "C"
+     multiplier: 0.30
+  -  donor_condition_name_en: "Broken"
+     grade: "C"
+     multiplier: 0.01
+  -  donor_condition_name_en: "New"
+     grade: "D"
+     multiplier: 0.10
+  -  donor_condition_name_en: "Lightly Used"
+     grade: "D"
+     multiplier: 0.075
+  -  donor_condition_name_en: "Heavily Used"
+     grade: "D"
+     multiplier: 0.05
+  -  donor_condition_name_en: "Broken"
+     grade: "D"
+     multiplier: 0.01
+  
