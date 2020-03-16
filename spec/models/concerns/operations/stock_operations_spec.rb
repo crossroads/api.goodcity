@@ -97,7 +97,7 @@ context StockOperations do
     def register_gain(pkg, quantity, to_location)
       subject::Operations::register_gain(pkg,
         quantity: quantity,
-        to_location: to_location)
+        location: to_location)
     end
 
     it 'succeeds for inventorized packages' do
@@ -233,7 +233,7 @@ context StockOperations do
     def register_gain(quantity, location_id)
       subject::Operations::register_gain(package,
         quantity: quantity,
-        to_location: location_id)
+        location: location_id)
     end
 
     context 'for a partial quantity of one location' do
