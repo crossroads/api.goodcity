@@ -5,7 +5,7 @@ context Goodcity::PackageSafeDelete do
 
   subject { described_class.new(inventory_number) }
   let(:inventory_number) { "123245" }
-  let(:package) { create(:package, :package_with_locations, :with_images, :in_user_cart, inventory_number: inventory_number) }
+  let(:package) { create(:package, :with_inventory_record, :with_images, :in_user_cart, inventory_number: inventory_number) }
 
   context "initialization" do
     it { expect(subject.instance_variable_get('@inventory_numbers')).to eql([inventory_number]) }
@@ -57,6 +57,7 @@ context Goodcity::PackageSafeDelete do
       package.orders_packages.each do |orders_package|
         expect(orders_package).to receive(:delete)
       end
+      expect(package).to receive(:destroy)
       subject.send(:destroy_package, package)
     end
     it "should destroy related requested_packages records" do

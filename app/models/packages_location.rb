@@ -30,24 +30,4 @@ class PackagesLocation < ActiveRecord::Base
     chans << Channel::STAFF_CHANNEL if record.package.item_id # The item_id indicates it was donated via the admin app
     chans
   end
-
-  def update_quantity(received_quantity)
-    update(quantity: received_quantity)
-  end
-
-  def update_referenced_orders_package(orders_package_id)
-    update_column(:reference_to_orders_package, orders_package_id)
-  end
-
-  def update_location_quantity_and_reference(location_id, quantity, reference_to_orders_package)
-    update(
-      location_id: location_id,
-      quantity: quantity,
-      reference_to_orders_package: reference_to_orders_package
-    )
-  end
-
-  def self.available_quantity_at_location(location_id, package_id)
-    find_by(location_id: location_id, package_id: package_id)&.quantity
-  end
 end

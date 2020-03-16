@@ -9,6 +9,11 @@ RSpec.describe Order, type: :model do
   let!(:appointment_type) { create(:booking_type, :appointment) }
   let!(:online_type) { create(:booking_type, :online_order) }
 
+  before(:all) {
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  }
+
   context "create an order" do
     let(:order) { Order.new }
     it "state should not be blank" do
@@ -233,7 +238,7 @@ RSpec.describe Order, type: :model do
 
     let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-    let(:package1) { create(:package)}
+    let(:package1) { create(:package, :with_inventory_record)}
     let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
     let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
 
@@ -668,12 +673,6 @@ RSpec.describe Order, type: :model do
 
     it "Assigns GC Code" do
       expect(order.code).to include("GC-")
-    end
-
-    it "Updates orders_packages quantity" do
-      order.orders_packages.each do |orders_package|
-        expect(orders_package.reload.quantity).to eq(orders_package.package.quantity)
-      end
     end
   end
 

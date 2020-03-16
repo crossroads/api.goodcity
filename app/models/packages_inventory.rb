@@ -75,7 +75,7 @@ class PackagesInventory < ActiveRecord::Base
   # Helpers
   # --------------------
 
-  def inventorized?(package)
+  def self.inventorized?(package)
     last = PackagesInventory.order('id DESC').where(package: package).limit(1).first
     last.present? && !last.uninventory?
   end

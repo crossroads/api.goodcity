@@ -36,4 +36,9 @@ module Utils
     return  model_or_id.id if model_or_id.is_a?(ActiveRecord::Base)
     model_or_id
   end
+
+  def record_exists?(model_or_id, klass)
+    id = model_or_id.is_a?(klass) ? model_or_id.id : model_or_id
+    klass.find_by(id: id).present?
+  end
 end

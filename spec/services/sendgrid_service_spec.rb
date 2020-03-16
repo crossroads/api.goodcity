@@ -4,6 +4,11 @@ describe SendgridService do
   let(:user) { build :user }
   let(:sendgrid) { SendgridService.new(user) }
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
+
   context "initialize" do
     it do
       expect(sendgrid.user).to equal(user)

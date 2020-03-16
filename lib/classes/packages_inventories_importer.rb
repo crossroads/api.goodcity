@@ -145,7 +145,6 @@ class PackagesInventoriesImporter
   # --- Sanity checks
   def verify_package(package)
     on_error(package, MULTIPLE_LOCATIONS_ERR % [package.id]) if package.locations.length > 1
-    on_error(package, INVALID_QUANTITY % [package.id, package.quantity]) if package.quantity.negative?
     on_error(package, UNINVENTORIZED_WITH_LOCATION % [package.id]) if package.inventory_number.blank? && package.locations.count.positive?
     if is_dispatched?(package)
       on_error(package, MISSING_ORDERS_PACKAGE % [package.id]) if package.orders_packages.count.zero?
@@ -156,13 +155,12 @@ class PackagesInventoriesImporter
   end
 
   def error_headers
-    ['package_id', 'quantity', 'locations', 'error']
+    ['package_id', 'locations', 'error']
   end
 
   def on_error(package, msg)
     @errors.push([
       package.id.to_s,
-      package.quantity.to_s,
       package.packages_locations
         .map { |pl| "#{pl&.location&.display_name}(#{pl.quantity})" }.join(" "),
       msg

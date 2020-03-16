@@ -43,8 +43,8 @@ module OrderFulfilmentOperations
 
         if ord_pkg.dispatched?
           ord_pkg.update!(state: "designated", sent_on: nil)
-          ord_pkg.package.undispatch_stockit_item if STOCKIT_ENABLED
-          ord_pkg.package.save
+          ord_pkg.package.undispatch_stockit_item if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
+          ord_pkg.package.save!
         end
       end
     end
@@ -87,20 +87,10 @@ module OrderFulfilmentOperations
 
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch
-          ord_pkg.package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED
+          ord_pkg.package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
           ord_pkg.package.save
         end
       end
-    end
-
-    ##
-    # Dispatches the full quantity of an orders_package.
-    # Assumes we live in a stockit world where everything is a singleton
-    #
-    # @todo remove this from our lives
-    #
-    def dispatch_full_qty(ord_pkg)
-      dispatch(ord_pkg, quantity: ord_pkg.quantity, from_location: ord_pkg.package.locations.first)
     end
 
     # --- HELPERS
@@ -110,13 +100,13 @@ module OrderFulfilmentOperations
     end
 
     def assert_can_dispatch(ord_pkg, quantity, from_location)
-      raise Goodcity::AlredyDispatchedError.new if ord_pkg.dispatched?
+      raise Goodcity::AlreadyDispatchedError.new if ord_pkg.dispatched?
       raise Goodcity::UnprocessedError.new if order_unprocessed?(ord_pkg.order)
       raise Goodcity::MissingQuantityforDispatchError.new if quantity > on_hand(ord_pkg.package, from_location)
     end
 
     def assert_can_undispatch(ord_pkg, quantity)
-      raise Goodcity::BadUndispatchQuantity.new if dispatched_count(ord_pkg) < quantity
+      raise Goodcity::BadUndispatchQuantityError.new if dispatched_count(ord_pkg) < quantity
     end
 
     def dispatched_count(ord_pkg)

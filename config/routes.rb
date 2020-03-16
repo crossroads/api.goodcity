@@ -67,6 +67,7 @@ Rails.application.routes.draw do
         get :contained_packages, on: :member
         get :fetch_added_quantity, on: :member
         put :move, on: :member
+        put :mark_missing, on: :member
         put :designate, on: :member
         put :add_remove_item, on: :member
       end

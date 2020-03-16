@@ -3,12 +3,11 @@ require "rails_helper"
 describe Stockit::OrdersPackageSync do
   let(:package) { create :package, :stockit_package }
   let(:package_without_inventory) { create :package }
-  let(:orders_package) { create :orders_package }
+  let(:orders_package) { create :orders_package, :with_state_requested }
   let(:stockit)  { described_class.new(package, orders_package) }
   let(:stockit_without_inventory) { described_class.new(package_without_inventory, orders_package) }
   let(:endpoint) { "http://www.example.com" }
   let(:options)  { stockit.send(:default_options) }
-  let(:mock_response)       { double( as_json: success_response ) }
   let(:success_response)    { { "status" => 201 } }
 
   describe 'initialize' do
@@ -27,7 +26,7 @@ describe Stockit::OrdersPackageSync do
 
     it "sends create request and get success_response" do
       stockit_params_for_inventory_number_presence = stockit_params.merge({generate_q_inventory_number: true})
-      expect( Nestful ).to receive(:post).with( url, stockit_params_for_inventory_number_presence, options ).and_return( mock_response )
+      expect( Nestful ).to receive(:post).with( url, stockit_params_for_inventory_number_presence, options ).and_return({ "status" => 201 })
       expect(stockit.create).to eql( success_response )
     end
 
@@ -54,7 +53,7 @@ describe Stockit::OrdersPackageSync do
     it "sends update request and get success_response" do
       stockit_param_for_inventory = stockit_params.merge({update_gc_orders_package: true,
         orders_package_id: orders_package.id, orders_package_state: orders_package.state})
-      expect( Nestful ).to receive(:put).with( url, stockit_param_for_inventory, options ).and_return( mock_response )
+      expect( Nestful ).to receive(:put).with( url, stockit_param_for_inventory, options ).and_return({ "status" => 201 })
       expect(stockit.update).to eql( success_response )
     end
 
