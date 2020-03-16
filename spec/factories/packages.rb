@@ -8,7 +8,7 @@ FactoryBot.define do
     notes                 { FFaker::Lorem.paragraph }
     state                 'expecting'
 
-    received_quantity     5
+    received_quantity     { storage_type&.singleton? ? 1 : 5 }
     on_hand_quantity      { received_quantity }
     available_quantity    { received_quantity }
     designated_quantity   0

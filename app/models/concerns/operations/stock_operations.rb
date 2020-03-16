@@ -148,6 +148,7 @@ module StockOperations
         @user_id = user_id
       end
 
+      # @TODO Raise Goodcity errors instead of returning json
       def pack
         return error(I18n.t("box_pallet.errors.adding_box_to_box")) if adding_box_to_a_box?
         return error(I18n.t("box_pallet.errors.disable_addition")) unless addition_allowed?
@@ -171,7 +172,7 @@ module StockOperations
       end
 
       def pack_or_unpack(task)
-        return unless @quantity.positive?
+        raise Goodcity::InvalidQuantityError.new(@quantity) unless @quantity.positive?
         PackagesInventory.new(
           package: @package,
           source: @cause,

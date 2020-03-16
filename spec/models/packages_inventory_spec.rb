@@ -49,6 +49,52 @@ RSpec.describe PackagesInventory, type: :model do
         }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Errors Positive values are not allowed for #{act} actions")
       end
     end
+
+    context 'per storage types' do
+      before { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+
+      let(:pallet_storage) { create(:storage_type, :with_pallet) }
+      let(:box_storage) { create(:storage_type, :with_box) }
+      let(:box) { create(:package, storage_type: box_storage) }
+      let(:pallet) { create(:package, storage_type: pallet_storage) }
+      let(:location) { create(:location) }
+
+      it "should prevent increasing the quantity of a box" do
+        initialize_inventory(box)
+
+        pi = build(:packages_inventory, package: box, action: 'gain', quantity: 1, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["Inventory action gain is not permitted on Box types"]})
+      end
+
+      it "should prevent increasing the quantity of a pallet" do
+        initialize_inventory(pallet)
+
+        pi = build(:packages_inventory, package: pallet, action: 'gain', quantity: 1, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["Inventory action gain is not permitted on Pallet types"]})
+      end
+
+      it "should prevent inventorizing a box with a quantity > 1" do
+        pi = build(:packages_inventory, package: box, action: 'inventory', quantity: 2, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["A Box is limited to a quantity of 1"]})
+      end
+
+      it "should prevent inventorizing a box with a quantity > 1" do
+        pi = build(:packages_inventory, package: pallet, action: 'inventory', quantity: 2, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["A Pallet is limited to a quantity of 1"]})
+      end
+    end
   end
 
   describe 'Immutability' do
