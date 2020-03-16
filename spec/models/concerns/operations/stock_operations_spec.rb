@@ -303,6 +303,22 @@ context StockOperations do
         expect(response[:packages_inventory].source).to eq(box)
       end
 
+      it "raises an exception if quantity is invalid" do
+        package = packages.sample
+        Package::Operations.inventorize(package, location)
+        Package::Operations.inventorize(box, location)
+        params = {
+          item_id: package.id,
+          location_id: location.id,
+          quantity: -1,
+          task: "pack",
+          id: box.id
+        }
+        expect { pack_or_unpack(params) }.to raise_error(Goodcity::InvalidQuantityError).with_message(
+          "Invalid quantity (-1)"
+        )
+      end
+
       it "raises an exception if action is not allowed" do
         package = packages.sample
         Package::Operations.inventorize(package, location)
