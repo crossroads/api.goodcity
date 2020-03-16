@@ -42,9 +42,9 @@ module InventoryComputer
       end
 
       def designated_quantity_of(package, to_order: nil)
-        query = OrdersPackage.designated.where(package: package)
+        query = OrdersPackage.where(package: package).where.not(state: OrdersPackage::States::CANCELLED)
         query = query.where(order: to_order) if to_order.present?
-        query.reduce(0) { |sum, op| sum + op.quantity - op.dispatched_quantity }
+        query.reduce(0) { |sum, op| sum + op.quantity - dispatched_quantity(orders_package: op) }
       end
 
       def dispatched_quantity(package: nil, orders_package: nil)
@@ -72,6 +72,14 @@ module InventoryComputer
       def total_quantity
         historical_quantity.as_of_now
       end
+
+      def update_package_quantities(package)
+        package.on_hand_quantity = package_quantity(package)
+        package.available_quantity = available_quantity_of(package)
+        package.dispatched_quantity = dispatched_quantity(package: package)
+        package.designated_quantity = designated_quantity_of(package)
+        package.save!
+      end
     end
 
     #
@@ -85,11 +93,13 @@ module InventoryComputer
       end
 
       def compute
-        as_of(Time.now)
+        as_of(nil)
       end
 
       def as_of(time)
-        relation.where("#{@model.table_name}.created_at <= (?)", time).sum(:quantity).abs
+        res = relation
+        res = res.where("#{@model.table_name}.created_at <= (?)", time) unless time.blank?
+        res.sum(:quantity).abs
       end
 
       def of(model)

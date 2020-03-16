@@ -46,8 +46,6 @@ class Order < ActiveRecord::Base
   has_many :orders_process_checklists, inverse_of: :order
 
   after_initialize :set_initial_state
-  after_create :update_orders_packages_quantity, if: :draft_goodcity_order?
-  after_update :update_orders_packages_quantity, if: :draft_goodcity_order?
   before_create :assign_code
 
   after_destroy :delete_orders_packages
@@ -136,12 +134,6 @@ class Order < ActiveRecord::Base
   def designate_orders_packages
     orders_packages.each do |orders_package|
       orders_package.update_state_to_designated
-    end
-  end
-
-  def update_orders_packages_quantity
-    orders_packages.each do |orders_package|
-      orders_package.update_quantity
     end
   end
 
@@ -449,10 +441,6 @@ class Order < ActiveRecord::Base
 
   def draft_goodcity_order?
     state == "draft" && goodcity_order?
-  end
-
-  def delete_if_no_orders_packages
-    self.destroy if draft_goodcity_order? and !orders_packages.exists?
   end
 
   def email_properties

@@ -3,7 +3,10 @@ require "rspec/mocks/standalone"
 
 RSpec.describe Package, type: :model do
 
-  before { User.current_user = create(:user) }
+  before do
+    User.current_user = create(:user)
+    create(:location, :dispatched)
+  end
 
   before(:all) do
     allow_any_instance_of(Package).to receive(:update_client_store)
@@ -21,7 +24,6 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:length).of_type(:integer)}
     it{ is_expected.to have_db_column(:width).of_type(:integer)}
     it{ is_expected.to have_db_column(:height).of_type(:integer)}
-    it{ is_expected.to have_db_column(:quantity).of_type(:integer)}
     it{ is_expected.to have_db_column(:weight).of_type(:integer)}
     it{ is_expected.to have_db_column(:pieces).of_type(:integer)}
     it{ is_expected.to have_db_column(:notes).of_type(:text)}
@@ -33,11 +35,20 @@ RSpec.describe Package, type: :model do
     it{ is_expected.to have_db_column(:donor_condition_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:saleable).of_type(:boolean)}
     it{ is_expected.to have_db_column(:received_quantity).of_type(:integer)}
+    it{ is_expected.to have_db_column(:available_quantity).of_type(:integer)}
+    it{ is_expected.to have_db_column(:on_hand_quantity).of_type(:integer)}
+    it{ is_expected.to have_db_column(:designated_quantity).of_type(:integer)}
+    it{ is_expected.to have_db_column(:dispatched_quantity).of_type(:integer)}
+
+    it{ is_expected.not_to have_db_column(:quantity).of_type(:integer)}
   end
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:package_type_id) }
-    it { is_expected.to_not allow_value(-1).for(:quantity) }
+    it { is_expected.to_not allow_value(-1).for(:on_hand_quantity) }
+    it { is_expected.to_not allow_value(-1).for(:available_quantity) }
+    it { is_expected.to_not allow_value(-1).for(:designated_quantity) }
+    it { is_expected.to_not allow_value(-1).for(:dispatched_quantity) }
     it { is_expected.to_not allow_value(-1).for(:received_quantity) }
     it { is_expected.to_not allow_value(0).for(:received_quantity) }
     it { is_expected.to_not allow_value(0).for(:weight) }
@@ -166,9 +177,9 @@ RSpec.describe Package, type: :model do
   end
 
   describe "#not_multi_quantity" do
-    let!(:single_with_inventory_package) { create :package, quantity: 1, inventory_number: "000635" }
-    let!(:multiquantity_without_inventory_package) { create :package, quantity: 5, inventory_number: "000636" }
-    let!(:singlequantity_without_inventory_package) { create :package, quantity: 0, inventory_number: "000637" }
+    let!(:single_with_inventory_package) { create :package, :with_inventory_record, received_quantity: 1, inventory_number: "000635" }
+    let!(:multiquantity_without_inventory_package) { create :package, :with_inventory_record, received_quantity: 5, inventory_number: "000636" }
+    let!(:singlequantity_without_inventory_package) { create :package, received_quantity: 1, inventory_number: "000637" }
 
     it "do not returns multi quantity packages" do
       expect(Package.not_multi_quantity.count).to eq(2)
@@ -192,24 +203,6 @@ RSpec.describe Package, type: :model do
       }.to change(package, :donor_condition).from(nil).to(item.donor_condition)
       expect(package.grade).to eq("B")
       expect(package.saleable).to eq(item.offer.saleable)
-    end
-  end
-
-  describe "after_update" do
-    it "#update_packages_location_quantity" do
-      package = create(:package, :received, :package_with_locations)
-      new_quantity = 4
-      packages_location = package.packages_locations.first
-      expect {
-        package.update(received_quantity: new_quantity)
-        packages_location.reload
-      }.to change(packages_location, :quantity).from(package.received_quantity).to(new_quantity)
-    end
-
-    it "#received_quantity_changed_and_locations_exists?" do
-      new_quantity = rand(4)+2
-      package.update(received_quantity: new_quantity)
-      expect(package.received_quantity_changed_and_locations_exists?).to eq(false)
     end
   end
 
@@ -253,6 +246,8 @@ RSpec.describe Package, type: :model do
     end
   end
 
+  # @TODO: remove
+  #
   describe 'dispatch_stockit_item' do
     let(:package) { create :package, :with_set_item }
     let(:location) { create :location, :dispatched }
@@ -274,130 +269,6 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe '#update_or_create_qty_moved_to_location' do
-    let!(:package) { create :package }
-    let!(:location) { create :location }
-
-    it 'creates associated packages_location record if we do not have packages_location record with provided location_id' do
-      expect{
-        package.update_or_create_qty_moved_to_location(location.id, 4)
-      }.to change(PackagesLocation, :count).by(1)
-    end
-
-    it 'creates associated packages_location record with quantity to move' do
-      package.update_or_create_qty_moved_to_location(location.id, 4)
-      expect(package.packages_locations.first.quantity).to eq 4
-    end
-
-    it 'do not creates packages_location record if packages_location record with provided location id already exist' do
-      packages_location = create :packages_location, quantity: 4, location: location, package: package
-      expect{
-        package.update_or_create_qty_moved_to_location(location.id, 4)
-      }.to change(PackagesLocation, :count).by(0)
-    end
-
-    it 'updates existing packages_location quantity to with new quantity which is addition of qty to move and packages_location quantity' do
-      packages_location = create :packages_location, quantity: 2, location: location, package: package
-      package.update_or_create_qty_moved_to_location(location.id, 2)
-      expect(packages_location.reload.quantity).to eq 4
-    end
-  end
-
-  describe '#update_existing_package_location_qty' do
-    let!(:package) { create :package, received_quantity: 10, quantity: 10 }
-    let!(:packages_location) { create :packages_location, quantity: package.received_quantity, package: package }
-
-    it 'subtracts quantity to move from existing packages location record if record exist' do
-      quantity_to_move = 8
-      new_quantity     = packages_location.quantity - quantity_to_move
-      package.update_existing_package_location_qty(packages_location.id, quantity_to_move)
-      expect(packages_location.reload.quantity).to eq new_quantity
-    end
-
-    it 'destroys packages_location record if remaining quantity for packages_location is zero' do
-      quantity_to_move = package.received_quantity
-      new_quantity     = packages_location.quantity - quantity_to_move
-      expect{
-        package.update_existing_package_location_qty(packages_location.id, quantity_to_move)
-      }.to change(PackagesLocation, :count).by(-1)
-    end
-  end
-
-  describe '#update_designation' do
-    let(:package) { create :package }
-    let(:order) { create :order, state: 'submitted' }
-
-    it 'adds order id to package' do
-      package.update_designation(order.id)
-      expect(package.reload.order_id).to eq order.id
-    end
-  end
-
-  describe '#remove_designation' do
-    let(:package) { create :package, order_id: 1 }
-
-    it 'removes order_id from package record' do
-      package.remove_designation
-      expect(package.reload.order_id).to eq nil
-    end
-  end
-
-  describe '#update_in_stock_quantity' do
-    let(:package) { create :package, received_quantity: 10 }
-    let(:orders_package) { create :orders_package, quantity: 3, package: package, state: 'designated' }
-
-    it 'subtracts assigned qty from received_quantity to calculate in hand quantity and updates package quantity with it' do
-      in_hand_quantity = package.received_quantity - orders_package.quantity
-      package.reload.update_in_stock_quantity
-      expect(package.reload.quantity).to eq in_hand_quantity
-    end
-
-    it 'do not change received_quantity' do
-      in_hand_quantity  = package.received_quantity - orders_package.quantity
-      received_quantity = package.received_quantity
-      package.update_in_stock_quantity
-      expect(package.reload.received_quantity).to eq received_quantity
-    end
-  end
-
-  describe '#create_associated_packages_location' do
-    let(:package) { create :package }
-    let(:location) { create :location }
-
-    it 'creates associated package location record for package' do
-      expect{
-        package.create_associated_packages_location(location.id, 2)
-      }.to change(PackagesLocation, :count).by(1)
-    end
-  end
-
-  describe '#create_or_update_orders_package_for_nested_designation_ and_dispatch_from_Stockit' do
-    let(:order) { create :order }
-    it 'creates new orders_package record for the package and recalculates quantity' do
-      package = create :package, order: order, quantity: 100, received_quantity: 100
-      expect{
-        package.designate_and_undesignate_from_stockit
-      }.to change(OrdersPackage, :count).by(1)
-      expect(package.quantity).to eq 0
-      orders_package = package.reload.orders_packages.first
-      expect(orders_package.quantity).to eq(package.received_quantity)
-    end
-  end
-
-  describe '#find_packages_location_with_location_id' do
-    let(:package) { create :package }
-    let(:location) { create :location }
-
-    it 'returns packages_location record if found with particular location_id' do
-      packages_location = create :packages_location, package: package, location: location
-      expect(package.find_packages_location_with_location_id(location.id)).to eq packages_location
-    end
-
-    it 'returns nil if packages_location record is not available with particular location_id' do
-      expect(package.find_packages_location_with_location_id(location.id)).to eq nil
-    end
-  end
-
   describe '#donor_condition_name' do
     let(:package){ create :package, :with_lightly_used_donor_condition}
     it 'returns name of package donor condition' do
@@ -405,30 +276,10 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe "#cancel_designation" do
-    let(:package) { create :package }
-    let!(:orders_package) { create :orders_package, package: package, state: 'designated', quantity: 1 }
-
-    it 'changes state of first orders_package having state as designated to cancelled' do
-      expect{
-        package.cancel_designation
-      }.to change{orders_package.reload.state}.from('designated').to('cancelled')
-    end
-  end
-
-  describe "#singleton_and_has_designation?" do
-    let(:package) { create :package, received_quantity: 1, quantity: 0 }
-    let!(:orders_package) { create :orders_package, package: package, state: 'designated', quantity: 1 }
-
-    it 'check package has designation and received quantity is one or not' do
-      expect(package.singleton_and_has_designation?).to be_truthy
-    end
-  end
-
   describe "Live updates" do
     let(:push_service) { PushService.new }
-    let!(:package) { create :package, received_quantity: 1, quantity: 0 }
-    let!(:package_with_item) { create :package, received_quantity: 1, quantity: 0, item_id: 1 }
+    let!(:package) { create :package, received_quantity: 1 }
+    let!(:package_with_item) { create :package, received_quantity: 1, item_id: 1 }
 
     before(:each) do
       allow(PushService).to receive(:new).and_return(push_service)
@@ -436,7 +287,7 @@ RSpec.describe Package, type: :model do
 
     it "should call push_changes upon change" do
       expect(package).to receive(:push_changes)
-      package.quantity = 2
+      package.notes = "a note"
       package.save
     end
 
@@ -445,7 +296,7 @@ RSpec.describe Package, type: :model do
         expect(channels.length).to eq(1)
         expect(channels).to eq([ Channel::STOCK_CHANNEL ])
       end
-      package.quantity = 2
+      package.notes = "a note"
       package.save
     end
 
@@ -454,18 +305,18 @@ RSpec.describe Package, type: :model do
         expect(channels.length).to eq(2)
         expect(channels).to eq([ Channel::STOCK_CHANNEL, Channel::STAFF_CHANNEL ])
       end
-      package_with_item.quantity = 2
+      package_with_item.notes = "a note"
       package_with_item.save
     end
 
     describe 'for an UNPUBLISHED package' do
-      let!(:package_unpublished) { create :package, :unpublished, received_quantity: 1, quantity: 0 }
+      let!(:package_unpublished) { create :package, :unpublished, received_quantity: 1  }
 
       it "should not be sent to the browse app" do
         expect(push_service).to receive(:send_update_store) do |channels, data|
           expect(channels).not_to include(Channel::BROWSE_CHANNEL)
         end
-        package_unpublished.quantity = 2
+        package_unpublished.notes = "a note"
         package_unpublished.save
       end
 
@@ -479,7 +330,7 @@ RSpec.describe Package, type: :model do
     end
 
     describe 'for a PUBLISHED package' do
-      let!(:package_published) { create :package, :published, received_quantity: 1, quantity: 0 }
+      let!(:package_published) { create :package, :published, received_quantity: 1 }
 
       it "should be sent to the browse app" do
         expect(push_service).to receive(:send_update_store) do |channels, data|
@@ -504,10 +355,10 @@ RSpec.describe Package, type: :model do
     let(:box_storage) { create(:storage_type, :with_box) }
     let(:pallet_storage) { create(:storage_type, :with_pallet) }
     let(:package_storage) { create(:storage_type, :with_pkg) }
-    let(:box) { create(:package, :with_inventory_number, :package_with_locations, storage_type: box_storage) }
-    let(:pallet) { create(:package, :with_inventory_number, :package_with_locations, storage_type: pallet_storage) }
-    let(:package1) { create(:package, quantity: 50, received_quantity: 50, storage_type: package_storage)}
-    let(:package2) { create(:package, quantity: 40, received_quantity: 40, storage_type: package_storage)}
+    let(:box) { create(:package, :with_inventory_record, :package_with_locations, storage_type: box_storage) }
+    let(:pallet) { create(:package, :with_inventory_record, :package_with_locations, storage_type: pallet_storage) }
+    let(:package1) { create(:package, :with_inventory_record, :package_with_locations, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, :with_inventory_record, :package_with_locations, received_quantity: 40, storage_type: package_storage)}
     let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
@@ -524,9 +375,6 @@ RSpec.describe Package, type: :model do
     end
 
     before(:each) do
-      Package::Operations.inventorize(package1, location)
-      Package::Operations.inventorize(package2, location)
-
       @params1 = {
         id: box.id,
         item_id: package1.id,
@@ -546,14 +394,6 @@ RSpec.describe Package, type: :model do
         pack_or_unpack(@params1)
         pack_or_unpack(@params2)
         expect(box.associated_packages.length).to eq(2)
-      end
-    end
-
-    describe "#total_in_hand_quantity" do
-      it "returns the total in hand quantity for a package" do
-        pack_or_unpack(@params1)
-        pack_or_unpack(@params2)
-        expect(package1.total_in_hand_quantity).to eq(45)
       end
     end
 
@@ -578,8 +418,206 @@ RSpec.describe Package, type: :model do
         expect(box.box?).to eq(true)
       end
 
-      it "returns false if is box" do
+      it "returns false if it is not a box" do
         expect(pallet.box?).to eq(false)
+      end
+    end
+  end
+
+  describe 'Computing quantities' do
+    context 'when designating' do
+      let(:package) { create :package, :with_inventory_number, received_quantity: 10 }
+      let(:order_1) { create :order, :with_state_dispatching }
+      let(:order_2) { create :order, :with_state_dispatching }
+      let(:location) { create :location }
+
+      before do
+        allow(Stockit::OrdersPackageSync).to receive(:create)
+        allow(Stockit::OrdersPackageSync).to receive(:update)
+        initialize_inventory(package, location: location)
+      end
+
+      it 'updates the designated_quantity column' do
+        expect {
+          create :orders_package, order: order_1, package: package, quantity: 4, state: 'designated'
+        }.to change { package.reload.designated_quantity }.from(0).to(4)
+
+        expect {
+          create :orders_package, order: order_2, package: package, quantity: 2, state: 'designated'
+        }.to change { package.reload.designated_quantity }.from(4).to(6)
+      end
+
+      it 'updates the available_quantity column' do
+        expect {
+          create :orders_package, order: order_1, package: package, quantity: 4, state: 'designated'
+        }.to change { package.reload.available_quantity }.from(10).to(6)
+
+        expect {
+          create :orders_package, order: order_2, package: package, quantity: 2, state: 'designated'
+        }.to change { package.reload.available_quantity }.from(6).to(4)
+      end
+
+      it 'doesnt change the dispatched_quantity column' do
+        expect {
+          create :orders_package, order: order_1, package: package, quantity: 4, state: 'designated'
+        }.not_to change { package.reload.dispatched_quantity }
+      end
+
+      it 'doesnt change the on_hand_quantity column' do
+        expect {
+          create :orders_package, order: order_1, package: package, quantity: 4, state: 'designated'
+        }.not_to change { package.reload.on_hand_quantity }
+      end
+    end
+
+
+    context 'when dispatching' do
+      let(:package) { create :package, :with_inventory_number, received_quantity: 10 }
+      let(:order_1) { create :order, :with_state_dispatching }
+      let(:order_2) { create :order, :with_state_dispatching }
+      let(:orders_package_1) { create :orders_package, order: order_1, package: package, quantity: 4, state: 'designated' }
+      let(:orders_package_2) { create :orders_package, order: order_2, package: package, quantity: 4, state: 'designated' }
+      let(:location) { create :location }
+
+      before do
+        allow(Stockit::OrdersPackageSync).to receive(:create)
+        allow(Stockit::OrdersPackageSync).to receive(:update)
+        initialize_inventory(package, location: location)
+        touch(orders_package_1, orders_package_2)
+      end
+
+      it 'updates the dispatched_quantity column' do
+        expect(package.on_hand_quantity).to eq(10)
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package_1, quantity: 2, from_location: location)
+        }.to change { package.reload.dispatched_quantity }.from(0).to(2)
+
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package_2, quantity: 2, from_location: location)
+        }.to change { package.reload.dispatched_quantity }.from(2).to(4)
+      end
+
+      it 'updates the on_hand_quantity column' do
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package_1, quantity: 2, from_location: location)
+        }.to change { package.reload.on_hand_quantity }.from(10).to(8)
+
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package_2, quantity: 2, from_location: location)
+        }.to change { package.reload.on_hand_quantity }.from(8).to(6)
+      end
+
+      it 'updates the designated_quantity column' do
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package_1, quantity: 4, from_location: location)
+        }.to change { package.reload.designated_quantity }.from(8).to(4)
+
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package_2, quantity: 2, from_location: location)
+        }.to change { package.reload.designated_quantity }.from(4).to(2)
+      end
+
+      it 'does not change the available_quantity column' do
+        expect {
+          OrdersPackage::Operations.dispatch(orders_package_1, quantity: 4, from_location: location)
+        }.not_to change { package.reload.available_quantity }
+      end
+    end
+
+    context 'when undispatching' do
+      let(:package) { create :package, :with_inventory_record, :with_inventory_number, received_quantity: 10 }
+      let(:order_1) { create :order, :with_state_dispatching }
+      let(:order_2) { create :order, :with_state_dispatching }
+      let(:orders_package_1) { create :orders_package, :with_inventory_record, order: order_1, package: package, quantity: 4, state: 'dispatched' }
+      let(:orders_package_2) { create :orders_package, :with_inventory_record, order: order_2, package: package, quantity: 4, state: 'dispatched' }
+      let(:location) { create :location }
+
+      before do
+        allow(Stockit::OrdersPackageSync).to receive(:create)
+        allow(Stockit::OrdersPackageSync).to receive(:update)
+        touch(orders_package_1, orders_package_2)
+      end
+
+      it 'updates the dispatched_quantity column' do
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package_1, quantity: 4, to_location: location)
+        }.to change { package.reload.dispatched_quantity }.from(8).to(4)
+
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package_2, quantity: 2, to_location: location)
+        }.to change { package.reload.dispatched_quantity }.from(4).to(2)
+      end
+
+      it 'updates the on_hand_quantity column' do
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package_1, quantity: 4, to_location: location)
+        }.to change { package.reload.on_hand_quantity }.from(2).to(6)
+
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package_2, quantity: 2, to_location: location)
+        }.to change { package.reload.on_hand_quantity }.from(6).to(8)
+      end
+
+      it 'updates the designated_quantity column' do
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package_1, quantity: 4, to_location: location)
+        }.to change { package.reload.designated_quantity }.from(0).to(4)
+
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package_2, quantity: 2, to_location: location)
+        }.to change { package.reload.designated_quantity }.from(4).to(6)
+      end
+
+      it 'does not change the available_quantity column' do
+        expect {
+          OrdersPackage::Operations.undispatch(orders_package_1, quantity: 4, to_location: location)
+        }.not_to change { package.reload.available_quantity }
+      end
+    end
+
+    context 'when applying generic inventory quantity changes' do
+      let(:original_qty) { 10 }
+      let(:package) { create :package, :with_inventory_record, :with_inventory_number, received_quantity: original_qty }
+      let(:order_1) { create :order, :with_state_dispatching }
+      let(:order_2) { create :order, :with_state_dispatching }
+      let(:location) { create :location }
+
+      [
+        [ :gain,    3],
+        [ :unpack,  3],
+        [ :move,    3],
+        [ :loss,    -3],
+        [ :pack,    -3],
+        [ :move,    -3]
+      ].each do |test_case|
+        action, quantity_change = test_case
+
+        describe "by doing a #{action} action of #{quantity_change}" do
+
+          it 'updates the on_hand_quantity column by #{quantity_change}' do
+            expect {
+              create :packages_inventory, package: package, action: action, quantity: quantity_change, location: location
+            }.to change { package.reload.on_hand_quantity }.from(original_qty).to(original_qty + quantity_change)
+          end
+
+          it 'updates the available_quantity column by #{quantity_change}' do
+            expect {
+              create :packages_inventory, package: package, action: action, quantity: quantity_change, location: location
+            }.to change { package.reload.available_quantity }.from(original_qty).to(original_qty + quantity_change)
+          end
+
+          it 'doesnt update the dispatched_quantity column' do
+            expect {
+              create :packages_inventory, package: package, action: action, quantity: quantity_change, location: location
+            }.not_to change { package.reload.dispatched_quantity }
+          end
+
+          it 'doesnt update the designated_quantity column' do
+            expect {
+              create :packages_inventory, package: package, action: action, quantity: quantity_change, location: location
+            }.not_to change { package.reload.designated_quantity }
+          end
+        end
       end
     end
   end

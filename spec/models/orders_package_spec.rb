@@ -1,7 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe OrdersPackage, type: :model do
-  before { User.current_user = create(:user) }
+  before do
+    User.current_user = create(:user)
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
 
   describe "Associations" do
     it { is_expected.to belong_to :order }
@@ -19,25 +23,72 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe "Validations" do
-     it 'validates quantity' do
-      is_expected.to_not allow_value(-1).for(:quantity)
-      is_expected.to allow_value(rand(4)).for(:quantity)
+    context 'validates quantity' do
+      it { is_expected.to_not allow_value(-1).for(:quantity) }
+      it { is_expected.to allow_value(rand(4)).for(:quantity) }
+
+      context 'based on availability' do
+        let(:pkg) { create :package, :with_inventory_record, received_quantity: 1 }
+        let(:dispatched_orders_package) { create :orders_package, :with_inventory_record, state: 'dispatched', package: pkg, quantity: 1 }
+
+        before do
+          expect { touch(dispatched_orders_package) }.to change {
+            pkg.reload.available_quantity
+          }.from(1).to(0)
+          expect(OrdersPackage.count).to eq(1)
+        end
+
+        it 'fails to create a designated orders_package without availability' do
+          expect {
+            create(:orders_package, :with_inventory_record, state: 'designated', package: pkg, quantity: 1)
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+          expect(OrdersPackage.count).to eq(1)
+        end
+
+        it 'fails to create a dispatched orders_package without availability' do
+          expect {
+            create(:orders_package, :with_inventory_record, state: 'dispatched', package: pkg, quantity: 1)
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+          expect(OrdersPackage.count).to eq(1)
+        end
+
+        it 'succeeds to create a cancelled orders_package without availability' do
+          expect {
+            create(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          }.not_to raise_error
+          expect(OrdersPackage.count).to eq(2)
+        end
+
+        it 'fails to update the state from cancelled to designated without availability' do
+          orders_package = create(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          expect(OrdersPackage.count).to eq(2)
+          expect {
+            orders_package.update(state: 'designated')
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+        end
+
+        it 'fails to update the state from cancelled to dispatched without availability' do
+          orders_package = create(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          expect(OrdersPackage.count).to eq(2)
+          expect {
+            orders_package.update(state: 'dispatched')
+          }.to raise_error(Goodcity::InsufficientQuantityError)
+        end
+
+        it 'succeeds to update the state of an existing record' do
+          expect {
+            dispatched_orders_package.update(state: 'designated')
+          }.not_to raise_error
+        end
+      end
     end
   end
 
   describe "update_state_to_designated" do
     it "set state='designated'"do
-      @orders_package = create :orders_package, :with_state_requested
+      @orders_package = create :orders_package, :with_inventory_record, :with_state_requested
       @orders_package.update_state_to_designated
       expect(@orders_package.state).to match("designated")
-    end
-  end
-
-  describe "update_quantity" do
-    it "Updates orders_packages quantity" do
-      @orders_package = create :orders_package, :with_state_requested
-      @orders_package.update_quantity
-      expect(@orders_package.quantity).to match(@orders_package.package.quantity)
     end
   end
 
@@ -58,59 +109,6 @@ RSpec.describe OrdersPackage, type: :model do
           orders_package.designate
         }.to change(orders_package, :state).to('designated')
       end
-    end
-  end
-
-  describe '#update_designation' do
-    let!(:orders_package) { create :orders_package }
-    let!(:order) { create :order }
-
-    it 'updates orders_package to provided order_id' do
-      expect{
-        orders_package.update_designation(order.id)
-      }.to change(orders_package, :order_id).to(order.id)
-    end
-  end
-
-  describe '#update_partially_designated_item' do
-    let!(:package) { create :package, quantity: 10 }
-    let!(:dispatched_location) { create :location,  building: "Dispatched" }
-
-    it 'adds package quantity to orders_package quantity' do
-      orders_package = build :orders_package, state: 'designated'
-      total_qty = orders_package.quantity + package.quantity
-      expect{
-        orders_package.update_partially_designated_item(package)
-      }.to change(orders_package, :quantity).to(total_qty)
-    end
-
-    it "updates state of orders_package to designated if state is 'cancelled'" do
-      orders_package = build :orders_package, state: 'cancelled'
-      expect{
-        orders_package.update_partially_designated_item(package)
-      }.to change(orders_package, :state).to('designated')
-    end
-
-    it 'do not update state of orders_package if state is designated' do
-      orders_package = create :orders_package, state: 'designated', package: package
-      existing_state = orders_package.state
-      orders_package.update_partially_designated_item(package)
-      expect(orders_package.reload.state).to eq existing_state
-    end
-
-    it 'do not update state of orders_package if state is received' do
-      orders_package = create :orders_package, state: 'received'
-      existing_state = orders_package.state
-      orders_package.update_partially_designated_item(package)
-      expect(orders_package.reload.state).to eq existing_state
-    end
-
-    it 'do not update state of orders_package if state is dispatched' do
-      orders_package = create :orders_package, state: 'dispatched', package: package
-      packages_location = create :packages_location, quantity: 2, location: dispatched_location, package: package
-      existing_state = orders_package.state
-      orders_package.reload.update_partially_designated_item(package)
-      expect(orders_package.reload.state).to eq existing_state
     end
   end
 
@@ -139,58 +137,6 @@ RSpec.describe OrdersPackage, type: :model do
       expect{
         orders_package.dispatch_orders_package
         }.to change(orders_package, :state).to eq 'dispatched'
-    end
-
-  end
-
-  describe '.update_orders_package_state' do
-    let!(:orders_package) { create :orders_package, state: 'designated', quantity: 3 }
-
-    context 'when total_qty is zero' do
-      total_qty = 0
-
-      it 'updates quantity with total_qty' do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :quantity).to(0)
-      end
-
-      it "updates state to 'cancelled'" do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :state).to('cancelled')
-      end
-    end
-
-    context 'when total_qty is not zero' do
-      total_qty = 12
-
-      it 'updates quantity with total_qty' do
-        expect{
-          orders_package.update_orders_package_state(total_qty)
-        }.to change(orders_package, :quantity).to(total_qty)
-      end
-
-      it "updates state to 'designated'" do
-        orders_package.update_orders_package_state(total_qty)
-        expect(orders_package.reload.state).to eq 'designated'
-      end
-    end
-  end
-
-  describe '.add_partially_designated_item' do
-    let!(:order) { create :order }
-    let!(:package) { create :package, quantity: 20, received_quantity: 20 }
-
-    it 'creates orders package with provided order_id, package_id, quantity' do
-      package_params = { order_id: order.id, package_id: package.id, quantity: 10 }
-
-      expect{
-        OrdersPackage.add_partially_designated_item(package_params)
-      }.to change(OrdersPackage, :count).by(1)
-      expect(OrdersPackage.last.order_id).to eq(package_params[:order_id])
-      expect(OrdersPackage.last.package_id).to eq(package_params[:package_id])
-      expect(OrdersPackage.last.quantity).to eq(package_params[:quantity])
     end
   end
 
@@ -231,126 +177,11 @@ RSpec.describe OrdersPackage, type: :model do
     end
   end
 
-  describe '#undesignate_partially_designated_item' do
-    let!(:package) { create :package, quantity: 4, received_quantity: 10}
-    let!(:order) { create :order }
-    let!(:orders_package) { create :orders_package, order_id: order.id,
-      package_id: package.id, quantity: 6, state: 'designated' }
-
-    context 'when quantity to undesignate is not same as quantity of designation(orders_package)' do
-      let!(:undesignate_package_params) {
-        {
-          "0" => { "orders_package_id" => "#{orders_package.id}",
-            "package_id" => "#{package.id}",
-            "quantity" => "3" }
-        }
-      }
-
-      it 'reduces quantity to undesignate from its designation(orders_package) record' do
-        new_quantity = orders_package.quantity - undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.quantity).to eq new_quantity
-      end
-
-      it "updates state to 'designated' " do
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.state).to eq 'designated'
-      end
-
-      it 'adds undesignated quantity to its associated package' do
-        new_quantity = package.quantity + undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(package.reload.quantity).to eq new_quantity
-      end
-    end
-
-    context 'when undesignate total quantity of designation(orders_package) and remaining quantity of designation is zero' do
-      let!(:undesignate_package_params) {
-        {
-          "0" => { "orders_package_id" => "#{orders_package.id}",
-            "package_id" => "#{package.id}",
-            "quantity" => "#{orders_package.quantity}" }
-        }
-      }
-
-      it 'reduces quantity to undesignate from its designation(orders_package) record' do
-        new_quantity = orders_package.quantity - undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.quantity).to eq new_quantity
-      end
-
-      it "updates state to 'cancelled' " do
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(orders_package.reload.state).to eq 'cancelled'
-      end
-
-      it 'adds undesignated quantity to its associated package' do
-        new_quantity = package.quantity + undesignate_package_params["0"]["quantity"].to_i
-        OrdersPackage.undesignate_partially_designated_item(undesignate_package_params)
-        expect(package.reload.quantity).to eq new_quantity
-      end
-    end
-  end
-
-  describe 'Editing the quantity' do
-    context 'of a dispatched orders_package' do
-      let(:pkg) { create :package, received_quantity: 10  }
-      let(:order) { create :order, :with_state_dispatching }
-      let!(:orders_package) {
-        create(:orders_package, :with_state_dispatched, order_id: order.id, package_id: pkg.id, quantity: 2)
-      }
-
-      it 'should fail to update the quantity' do
-        expect(pkg.reload.in_hand_quantity).to eq(8)
-        expect {
-          orders_package.edit_quantity(1)
-        }.to raise_error(StandardError).with_message('Quantity of already dispatched/cancelled items cannot be modified')
-      end
-    end
-
-    context 'of a cancelled orders_package' do
-      let(:pkg) { create :package, received_quantity: 10  }
-      let(:order) { create :order, :with_state_dispatching }
-      let!(:orders_package) {
-        create(:orders_package, :with_state_cancelled, order_id: order.id, package_id: pkg.id, quantity: 2)
-      }
-
-      it 'should fail to update the quantity' do
-        expect(pkg.reload.in_hand_quantity).to eq(10)
-        expect {
-          orders_package.edit_quantity(1)
-        }.to raise_error(StandardError).with_message('Quantity of already dispatched/cancelled items cannot be modified')
-      end
-    end
-
-    context 'of a designated orders_package' do
-      let(:pkg) { create :package, received_quantity: 10  }
-      let(:order) { create :order, :with_state_dispatching }
-      let!(:orders_package) {
-        create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
-      }
-
-      it 'updates it properly' do
-        expect(pkg.reload.in_hand_quantity).to eq(8)
-        orders_package.edit_quantity(6)
-        expect(orders_package.reload.quantity).to eq(6)
-        expect(pkg.reload.in_hand_quantity).to eq(4)
-      end
-
-      it 'fails if it is requesting too much' do
-        expect(pkg.reload.in_hand_quantity).to eq(8)
-        expect {
-          orders_package.edit_quantity(11)
-        }.to raise_error(ArgumentError).with_message('We do not currently have the requested quantity in stock')
-      end
-    end
-  end
-
   describe 'Computing quantities' do
     context 'when dispatching' do
+      let(:package) { create :package, :with_inventory_record, received_quantity: 5 }
       let(:order) { create :order, :with_designated_orders_packages, :with_state_dispatching }
-      let(:orders_package) { order.orders_packages.first }
-      let(:package) { orders_package.package }
+      let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package }
       let(:location) { package.locations.first }
 
       before { initialize_inventory(package) }
@@ -364,9 +195,9 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     context 'when undispatching' do
+      let(:package) { create :package, :with_inventory_record, received_quantity: 5 }
       let(:order) { create :order, :with_designated_orders_packages, :with_state_dispatching }
-      let(:orders_package) { order.orders_packages.first }
-      let(:package) { orders_package.package }
+      let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package }
       let(:location) { package.locations.first }
 
       before do
@@ -441,8 +272,8 @@ RSpec.describe OrdersPackage, type: :model do
       let(:order) { create :order, :with_cancelled_orders_packages, :with_state_dispatching }
       let(:orders_package) { order.orders_packages.first }
 
-      it "calls :update_designation when the 'redesignate' action is trigerred" do
-        expect(orders_package).to receive(:update_designation)
+      it "calls Operations::redesignate when the 'redesignate' action is trigerred" do
+        expect(OrdersPackage::Operations).to receive(:redesignate)
         orders_package.exec_action 'redesignate'
       end
 

@@ -13,12 +13,22 @@ module Api::V1
     has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
 
-    attributes :id, :quantity, :length, :width, :height, :weight, :pieces, :notes,
+    attributes :id, :length, :width, :height, :weight, :pieces, :notes,
       :inventory_number, :created_at, :updated_at, :item_id, :is_set, :grade,
       :designation_name, :designation_id, :sent_on, :code_id, :image_id,
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
       :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id,
-      :on_hand_quantity, :offer_id
+      :on_hand_quantity, :available_quantity, :designated_quantity, :dispatched_quantity,
+      :quantity
+
+    # note: Quantity is a deprecated field, used only for backwards compatibility
+    def quantity
+      object.available_quantity
+    end
+
+    def quantity__sql
+      "available_quantity"
+    end
 
     def include_images?
       @options[:include_images]
@@ -33,18 +43,6 @@ module Api::V1
     end
 
     alias_method :include_designation_id?, :include_order?
-
-    def include_on_hand_quantity?
-      @options[:include_on_hand_quantity]
-    end
-
-    def on_hand_quantity
-      object.total_in_hand_quantity
-    end
-
-    def on_hand_quantity__sql
-      "select sum(quantity) from packages_inventories where packages_inventories.package_id = packages.id"
-    end
 
     def designation_id
       object.order_id

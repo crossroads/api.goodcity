@@ -1,3 +1,5 @@
+require 'goodcity/package_setup'
+
 namespace :goodcity do
 
   # rake goodcity:update_packages_grade_condition
@@ -81,5 +83,11 @@ namespace :goodcity do
         end
       end
     end
+  end
+
+  # rake goodcity:compute_quantities
+  desc "Compute the quantity fields of all packages"
+  task compute_quantities: :environment do
+    Goodcity::PackageSetup.compute_quantities
   end
 end

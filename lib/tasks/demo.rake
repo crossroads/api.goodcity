@@ -80,7 +80,7 @@ namespace :demo do
         item.packages.each do |package|
           location_id = Location.pluck(:id).sample
           package.update(inventory_number: InventoryNumber.next_code, allow_web_publish: true, location_id: location_id)
-          package.build_or_create_packages_location(location_id, 'create')
+          Package::Operations.inventorize(package, location_id)
           package.mark_received
         end
       end
@@ -98,12 +98,13 @@ namespace :demo do
       offer.reload.items.each do |item|
         item.packages.each do |pkg|
           pkg.designate_to_stockit_order(order.id)
-          params = {
+          orders_package = OrdersPackage.create({
             order_id: order.id,
             package_id: pkg.id,
-            quantity: pkg.quantity
-          }
-          orders_package = OrdersPackage.add_partially_designated_item(params)
+            quantity: 1,
+            updated_by: User.current_user,
+            state: 'designated'
+          })
           orders_packages_ids << orders_package.id
         end
       end

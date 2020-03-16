@@ -71,9 +71,11 @@ RSpec.describe PackagesInventory, type: :model do
   end
 
   describe 'Undo feature' do
-    let(:package) { create :package }
-    let(:source) { create :orders_package, package: package }
+    let(:package) { create :package, received_quantity: 5 }
+    let(:source) { create :orders_package, package: package, quantity: 5 }
     let(:location) { create :location }
+
+    before { initialize_inventory(package) }
 
     it 'allows undoing and redoing dispatch/undispatch actions' do
       action = create(:packages_inventory, action: 'dispatch', quantity: -5, package: package, location: location, source: source)
@@ -147,7 +149,7 @@ RSpec.describe PackagesInventory, type: :model do
           { action: 'gain', quantity: 2, created_at: 1.week.ago, package: package1, location: location1 },
           { action: 'gain', quantity: 43, created_at: 1.week.ago, package: package2, location: location3 }
         ].each do |params|
-          build(:packages_inventory, params).sneaky(:save)
+          create(:packages_inventory, params)
         end
       end
     end
@@ -223,7 +225,7 @@ RSpec.describe PackagesInventory, type: :model do
 
     context 'Designated quantity' do
       before do
-        create(:orders_package, :with_state_dispatched, quantity: 1, package: package1)
+        create(:orders_package, :with_inventory_record, :with_state_dispatched, quantity: 1, package: package1)
         create(:orders_package, :with_state_designated, quantity: 2, package: package1)
         create(:orders_package, :with_state_designated, quantity: 1, package: package1)
       end
@@ -237,9 +239,9 @@ RSpec.describe PackagesInventory, type: :model do
 
       before do
         touch(orders_package_1, orders_package_2)
-        build(:packages_inventory, action: 'dispatch', source: orders_package_1, quantity: -2, package: package2, location: location1).sneaky(:save)
-        build(:packages_inventory, action: 'dispatch', source: orders_package_2, quantity: -2, package: package2, location: location1).sneaky(:save)
-        build(:packages_inventory, action: 'undispatch', source: orders_package_2, quantity: 1, package: package2, location: location1).sneaky(:save)
+        create(:packages_inventory, action: 'dispatch', source: orders_package_1, quantity: -2, package: package2, location: location1)
+        create(:packages_inventory, action: 'dispatch', source: orders_package_2, quantity: -2, package: package2, location: location1)
+        create(:packages_inventory, action: 'undispatch', source: orders_package_2, quantity: 1, package: package2, location: location1)
       end
 
       it { expect(cpu.dispatched_quantity(package: package2)).to eq(3) }
@@ -249,7 +251,6 @@ RSpec.describe PackagesInventory, type: :model do
 
     context 'Available quantity' do
       before do
-        create(:orders_package, :with_state_dispatched, quantity: 1, package: package1)
         create(:orders_package, :with_state_designated, quantity: 2, package: package1)
         create(:orders_package, :with_state_designated, quantity: 1, package: package1)
       end

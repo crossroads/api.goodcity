@@ -9,6 +9,12 @@ describe StockitSyncOrdersPackageJob, :type => :job do
 
   subject { StockitSyncOrdersPackageJob.new }
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    create(:location, :dispatched)
+    expect(STOCKIT_ENABLED).to eq(true)
+  end
+
   it 'creates orders_package in stockit if create operation' do
     expect(Stockit::OrdersPackageSync).to receive(:create).with(package, orders_package)
     subject.perform(package.id, orders_package.id, "create")
