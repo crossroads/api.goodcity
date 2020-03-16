@@ -233,7 +233,7 @@ context StockOperations do
     def register_gain(quantity, location_id)
       subject::Operations::register_gain(package,
         quantity: quantity,
-        location_id: location_id)
+        to_location: location_id)
     end
 
     context 'for a partial quantity of one location' do
