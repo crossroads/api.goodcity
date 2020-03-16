@@ -59,13 +59,15 @@ module StockOperations
     # @param [Integer] quantity that is added
     # @param [Location|Id] to the location to add the quantity (or its id)
     #
-    def register_gain(package, quantity:, location_id: nil, action: "gain", description: nil)
+    def register_gain(package, quantity:, location: nil, action: "gain", description: nil)
+      raise Goodcity::NotInventorizedError unless PackagesInventory.inventorized?(package)
       PackagesInventory.public_send("append_#{action}", {
         package: package,
         quantity: quantity.abs,
-        location_id: location_id,
+        location: Utils.to_model(location, Location),
         description: description,
       })
+      package.reload
     end
 
     ##
@@ -97,24 +99,6 @@ module StockOperations
       package.reload
     end
 
-
-    ##
-    # Registers the gain of some package
-    #
-    # @param [Package] package the package to increase the quantity of
-    # @param [Integer] quantity the quantity that was lost
-    # @param [Location|Id] to_location the location to add the quantity to (or its id)
-    #
-    def register_gain(package, quantity:, to_location:)
-      raise Goodcity::NotInventorizedError unless PackagesInventory.inventorized?(package)
-      PackagesInventory.append_gain(
-        package: package,
-        quantity: quantity,
-        location: Utils.to_model(to_location, Location)
-      )
-      package.reload
-    end
-
     ##
     # Registers either a gain or a loss action depending on the change value
     #
@@ -125,7 +109,7 @@ module StockOperations
     def register_quantity_change(package, delta:, location:)
       return if delta.zero?
       delta.positive? ?
-        register_gain(package, quantity: delta, to_location: location) :
+        register_gain(package, quantity: delta, location: location) :
         register_loss(package, quantity: delta, location: location)
     end
 
@@ -141,7 +125,7 @@ module StockOperations
         register_gain(
           package,
           quantity: quantity,
-          location_id: location_id,
+          location: location_id,
           action: action,
           description: description,
         )
