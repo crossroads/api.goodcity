@@ -435,7 +435,7 @@ module Api
       #
       def apply_stockit_quantity_change(pkg, current:, previous:)
         OrdersPackage.where(package: pkg).where('quantity > 0').each { |ord_pkg| ord_pkg.update(quantity: current) }
-        Package::Operations.register_quantity_change(pkg, delta: current - previous, location: pkg.locations.first)
+        Package::Operations.register_quantity_change(pkg, quantity: current - previous, location: pkg.locations.first)
       end
 
       # @TODO: remove
