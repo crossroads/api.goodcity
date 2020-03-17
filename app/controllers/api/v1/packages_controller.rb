@@ -241,9 +241,9 @@ module Api
       param_group :operations
 
       def register_quantity_change
-        Package::Operations.perform_action(@package,
+        Package::Operations.register_quantity_change(@package,
           quantity: params[:quantity].to_i,
-          location_id: params[:from],
+          location: params[:from],
           action: params[:action_name],
           description: params[:description])
 

@@ -103,35 +103,31 @@ module StockOperations
     # Registers either a gain or a loss action depending on the change value
     #
     # @param [Package] package the package that had a quantity change
-    # @param [Integer] quantity the quantity that was lost
-    # @param [Location|Id] location the location to add the quantity to (or its id)
+    # @param [Integer] quantity: the quantity that was lost
+    # @param [Location|Id] location: the location to add the quantity to (or its id)
+    # @param [String] action: the inventory action (optional)
+    # @param [String] description: notes to detail the action
     #
-    def register_quantity_change(package, delta:, location:)
-      return if delta.zero?
-      delta.positive? ?
-        register_gain(package, quantity: delta, location: location) :
-        register_loss(package, quantity: delta, location: location)
-    end
+    def register_quantity_change(package, quantity:, location:, action: nil, description: nil)
+      return package if quantity.zero?
 
-    def perform_action(package, quantity:, location_id:, action: 'loss', description: nil)
+      action ||= quantity.positive? ? PackagesInventory::Actions::GAIN : PackagesInventory::Actions::LOSS
+
+      params = {
+        quantity: quantity,
+        location: Utils.to_model(location, Location),
+        action: action,
+        description: description
+      }
+
       if PackagesInventory::QUANTITY_LOSS_ACTIONS.include?(action)
-        register_loss(
-          package,
-          quantity: quantity,
-          location: location_id,
-          action: action,
-          description: description)
+        register_loss(package, params)
       elsif PackagesInventory::QUANTITY_GAIN_ACTIONS.include?(action)
-        register_gain(
-          package,
-          quantity: quantity,
-          location: location_id,
-          action: action,
-          description: description,
-        )
+        register_gain(package, params)
       else
         raise Goodcity::ActionNotAllowedError.new
       end
+      package.reload
     end
 
     def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )
