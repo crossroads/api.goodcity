@@ -108,10 +108,8 @@ module StockOperations
     # @param [String] action: the inventory action (optional)
     # @param [String] description: notes to detail the action
     #
-    def register_quantity_change(package, quantity:, location:, action: nil, description: nil)
+    def register_quantity_change(package, quantity:, location:, action:, description: nil)
       return package if quantity.zero?
-
-      action ||= quantity.positive? ? PackagesInventory::Actions::GAIN : PackagesInventory::Actions::LOSS
 
       params = {
         quantity: quantity,
