@@ -18,7 +18,7 @@ module Goodcity
           package.update_columns(quantities)
           count += 1
         elsif valid?(quantities)
-          errors.add_object({ package: package.id, error: package.errors.first.to_s }.merge(quantities))
+          errors.add_object({ package: package.id }.merge(quantities))
         end
       end
 
