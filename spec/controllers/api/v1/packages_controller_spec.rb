@@ -496,6 +496,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         it "creates package with box storage type" do
           expect(GoodcitySetting.find_by(key: "stock.enable_box_pallet_creation").value).to eq(setting.value)
           package_params[:storage_type] = "Box"
+          package_params[:received_quantity] = 1
           post :create, format: :json, package: package_params
           expect(response.status).to eq(201)
           package = Package.last
@@ -506,6 +507,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       it "creates package with pallet storage type" do
         package_params[:storage_type] = "Pallet"
+        package_params[:received_quantity] = 1
         post :create, format: :json, package: package_params
         expect(response.status).to eq(201)
         package = Package.last

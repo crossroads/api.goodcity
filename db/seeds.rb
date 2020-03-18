@@ -139,7 +139,7 @@ end
 
 storage_types = YAML.load_file("#{Rails.root}/db/storage_types.yml")
 storage_types.each do |storage_type|
-  StorageType.find_or_create_by(storage_type)
+  StorageType.where(name: storage_type["name"]).first_or_create(storage_type)
 end
 
 # Create PackageCategories

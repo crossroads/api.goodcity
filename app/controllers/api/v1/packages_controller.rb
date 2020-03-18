@@ -241,9 +241,9 @@ module Api
       param_group :operations
 
       def register_quantity_change
-        Package::Operations.perform_action(@package,
+        Package::Operations.register_quantity_change(@package,
           quantity: params[:quantity].to_i,
-          location_id: params[:from],
+          location: params[:from],
           action: params[:action_name],
           description: params[:description])
 
@@ -435,7 +435,9 @@ module Api
       #
       def apply_stockit_quantity_change(pkg, current:, previous:)
         OrdersPackage.where(package: pkg).where('quantity > 0').each { |ord_pkg| ord_pkg.update(quantity: current) }
-        Package::Operations.register_quantity_change(pkg, delta: current - previous, location: pkg.locations.first)
+        delta = current - previous
+        action = delta.positive? ? PackagesInventory::Actions::GAIN : PackagesInventory::Actions::LOSS
+        Package::Operations.register_quantity_change(pkg, quantity: delta.abs, action: action, location: pkg.locations.first)
       end
 
       # @TODO: remove
