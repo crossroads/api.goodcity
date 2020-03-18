@@ -85,9 +85,14 @@ namespace :goodcity do
     end
   end
 
-  # rake goodcity:compute_quantities
+  # Base usage:
+  #   > rake goodcity:compute_quantities
+  #
+  # Rehearsal
+  #   > rake goodcity:compute_quantities[rehearse]
+  #
   desc "Compute the quantity fields of all packages"
-  task compute_quantities: :environment do
-    Goodcity::PackageSetup.compute_quantities
+  task :compute_quantities, [:param] => [:environment] do |_, args|
+    Goodcity::PackageSetup.compute_quantities(rehearse: args[:param].eql?('rehearse'))
   end
 end
