@@ -5,16 +5,19 @@ module Goodcity
 
     module_function
 
+    def valid?(quantities)
+      quantities.values.map.select { |q| q < 0 }.empty?
+    end
+
     def compute_quantities(rehearse: false)
       errors = CsvWriter.new
       count = 0
       iterate do |package|
         quantities = PackagesInventory::Computer.package_quantity_summary(package)
-        package.assign_attributes(quantities)
-        if package.valid? && !rehearse
+        if valid?(quantities) && !rehearse
           package.update_columns(quantities)
           count += 1
-        elsif !package.valid?
+        elsif valid?(quantities)
           errors.add_object({ package: package.id, error: package.errors.first.to_s }.merge(quantities))
         end
       end
