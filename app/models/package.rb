@@ -94,7 +94,7 @@ class Package < ActiveRecord::Base
   # ---------------------
 
   watch [PackagesInventory, OrdersPackage] do |record|
-    PackagesInventory::Computer.update_package_quantities(record.package)
+    PackagesInventory::Computer.update_package_quantities!(record.package)
   end
 
   # Workaround to set initial state for the state_machine
