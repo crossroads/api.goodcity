@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200305035646) do
+ActiveRecord::Schema.define(version: 20200312083123) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -878,8 +878,9 @@ ActiveRecord::Schema.define(version: 20200305035646) do
 
   create_table "storage_types", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.integer  "max_unit_quantity"
   end
 
   create_table "subpackage_types", force: :cascade do |t|
