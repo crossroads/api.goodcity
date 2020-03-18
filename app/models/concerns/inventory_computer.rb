@@ -73,11 +73,17 @@ module InventoryComputer
         historical_quantity.as_of_now
       end
 
-      def update_package_quantities(package)
-        package.on_hand_quantity = package_quantity(package)
-        package.available_quantity = available_quantity_of(package)
-        package.dispatched_quantity = dispatched_quantity(package: package)
-        package.designated_quantity = designated_quantity_of(package)
+      def package_quantity_summary(package)
+        {
+          on_hand_quantity: package_quantity(package),
+          available_quantity: available_quantity_of(package),
+          dispatched_quantity: dispatched_quantity(package: package),
+          designated_quantity: designated_quantity_of(package)
+        }
+      end
+
+      def update_package_quantities!(package)
+        package.assign_attributes package_quantity_summary(package)
         package.save!
       end
     end
