@@ -16,6 +16,15 @@ module Api::V1
       !@options[:include_images]
     end
 
+    # note: Quantity is a deprecated field, used only for backwards compatibility
+    def quantity
+      object.available_quantity
+    end
+
+    def quantity__sql
+      "available_quantity"
+    end
+
     def designation_id
       object.order_id
     end
