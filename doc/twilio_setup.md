@@ -44,25 +44,25 @@
 
 #### Setup TaskQueue
   * Link: `https://www.twilio.com/user/account/taskrouter/workspaces/#{ENV['TWILIO_WORKSPACE_SID']}/taskqueues`
-  * Currently we have created one taskqueue for workspace. 
+  * Currently we have created one taskqueue for workspace.
 (TaskQueue can be created with `Friendly name`, `Reservation Activity` as `offline`, `Assignment Activity` as `offline` and `Target Workers` as sql expression for ex:  `languages HAS "en"`)
 
 #### Setup Workflow
   * link: `https://www.twilio.com/user/account/taskrouter/workspaces/#{ENV['TWILIO_WORKSPACE_SID']}/workflows`
-  * Currently we have created one workflow for workspace. 
+  * Currently we have created one workflow for workspace.
 (Workflow can be created with `Friendly name`, `Assignment Callback Url` and `Timeout` values)
 
   * **Assignment Callback URL** is the HTTP endpoint that TaskRouter uses to notify your application of a reservation. See the assignment instructions documentation for more information.
     - Example: https://api-staging.goodcity.hk/api/v1/twilio_inbound/assignment
-  
+
   * For Routing Configuration of workflow, we can add a filter, example: we have created filter with expression `selected_language == "en"`
 
 #### Setup Worker
   * Link: `https://www.twilio.com/user/account/taskrouter/workspaces/#{ENV['TWILIO_WORKSPACE_SID']}/workers`
   * We have created one worker for given workspace. (Worker can be created with `Friendly Name` and `Attributes` for ex: `{"languages":["en"],"user_id":""}`)
-  
+
 #### Important Things:
-* Worker has following activities: 
+* Worker has following activities:
   - offline
   - idle
   - busy
@@ -80,6 +80,7 @@
 * For Taskrouter: update `Assignment Callback URL` of workflow
 
 #### Reference Links:
+* API docs: https://www.twilio.com/docs/taskrouter/api/worker
 * https://www.twilio.com/taskrouter
 * https://www.twilio.com/blog/2014/02/twilio-on-rails-integrating-twilio-with-your-rails-4-app.html
 * http://blog.bigbinary.com/2014/09/29/twilio-rails-calling-from-browser-to-a-phone.html
