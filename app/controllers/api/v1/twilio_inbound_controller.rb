@@ -171,7 +171,7 @@ module Api
       param :msg, String
       def accept_callback
         if params["Digits"] == "1"
-          TwilioInboundCallManager.new(user_id: user.try(:id)).send_donor_call_response
+          TwilioInboundCallManager.new(mobile: params["From"]).send_donor_call_response
           response = Twilio::TwiML::VoiceResponse.new do |r|
             r.say(message:"Thank you, our staff will call you as soon as possible. Goodbye.")
             r.hangup
@@ -267,14 +267,14 @@ module Api
       def ask_callback(r)
         # ask Donor to leave message on voicemail
         r.gather numDigits: "1", timeout: 3,  action: api_v1_twilio_inbound_accept_callback_path do |g|
-          g.say "Unfortunately none of our staff are able to take your call at the moment."
-          g.say "You can request a call-back without leaving a message by pressing 1."
-          g.say "Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you."
+          g.say(message: "Unfortunately none of our staff are able to take your call at the moment." )
+          g.say(message: "You can request a call-back without leaving a message by pressing 1." )
+          g.say(message: "Otherwise, leave a message after the tone and our staff will get back to you as soon as possible. Thank you.")
         end
       end
 
       def accept_voicemail(r)
-        r.Record maxLength: "60", playBeep: true, action: api_v1_twilio_inbound_send_voicemail_path
+        r.record maxLength: "60", playBeep: true, action: api_v1_twilio_inbound_send_voicemail_path
       end
 
       def enqueue_donor_call(r)
