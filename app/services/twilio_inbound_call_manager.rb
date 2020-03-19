@@ -145,7 +145,11 @@ class TwilioInboundCallManager
   end
 
   def user
-    @user ||= User.find_by(id: @user_id)
+    if @user_id.presence
+      @user = User.find_by(id: @user_id)
+    else
+      @user = caller
+    end
   end
 
   def offer
