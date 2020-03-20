@@ -48,6 +48,7 @@ class Package < ActiveRecord::Base
   after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
+  after_save :set_favourite_image_id
 
   # Live update rules
   after_save :push_changes
@@ -139,6 +140,10 @@ class Package < ActiveRecord::Base
     else
       self.stockit_designated_by = nil
     end
+  end
+
+  def set_favourite_image_id
+    self.update_column(:favourite_image_id, self.images.find_by(favourite: true)&.id)
   end
 
   def assign_stockit_sent_by_and_designated_by
@@ -376,9 +381,21 @@ class Package < ActiveRecord::Base
   end
 
   def update_favourite_image(image_id)
-    image = images.find_by(id: image_id)
-    image.update(favourite: true)
-    image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+    current_image = images.find_by(id: image_id)
+
+    if !current_image
+      item_image = item.images.find_by(id: image_id)
+
+      if item_image
+        current_image = images.create(item_image.attributes.slice("cloudinary_id", "angle"))
+      end
+    end
+
+    if current_image
+      images.where.not(id: image_id).update_all(favourite: false)
+      current_image.update(favourite: true)
+      self.update_column(:favourite_image_id, current_image.id)
+    end
   end
 
   def singleton_package?
