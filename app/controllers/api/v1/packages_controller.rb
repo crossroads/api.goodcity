@@ -365,7 +365,7 @@ module Api
 
       def set_favourite_image
         if (image_id = params["package"]["favourite_image_id"]).present?
-          if @package.images.pluck(:id).include?(image_id)
+          if @package.images.pluck(:id).include?(image_id) or @package.item.images.pluck(:id).include?(image_id)
             @package.update_favourite_image(image_id)
           end
           params["package"].delete("favourite_image_id")
