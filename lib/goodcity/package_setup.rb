@@ -17,7 +17,7 @@ module Goodcity
         if valid?(quantities) && !rehearse
           package.update_columns(quantities)
           count += 1
-        elsif valid?(quantities)
+        elsif !valid?(quantities)
           errors.add_object({ package: package.id }.merge(quantities))
         end
       end
