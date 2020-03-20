@@ -213,7 +213,6 @@ module Api
       end
 
       def split_package
-        qty_to_split = package_params[:quantity].to_i
         package_splitter = PackageSplitter.new(@package, qty_to_split)
         package_splitter.split!
         send_stock_item_response
@@ -335,6 +334,10 @@ module Api
         ]
 
         params.require(:package).permit(attributes)
+      end
+
+      def qty_to_split
+        (params["package"] && params["package"]["quantity"] || 0).to_i
       end
 
       # comp_test_status, frequency, test_status, voltage kept for stockit sync
