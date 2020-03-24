@@ -137,7 +137,7 @@ class Offer < ActiveRecord::Base
 
     before_transition on: :submit do |offer, _transition|
       offer.submitted_at = Time.now
-      offer.created_by.update_attribute(:sms_reminder_sent_at, Time.now + 1.minute) # start the SMS reminder clock from here
+      offer.created_by && offer.created_by.update_attribute(:sms_reminder_sent_at, Time.now + 1.minute) # start the SMS reminder clock from here
     end
 
     before_transition on: :start_review do |offer, _transition|
@@ -178,8 +178,10 @@ class Offer < ActiveRecord::Base
     end
 
     after_transition on: :submit do |offer, _transition|
-      offer.send_thank_you_message
-      offer.send_new_offer_notification
+      if offer.created_by
+        offer.send_thank_you_message
+        offer.send_new_offer_notification
+      end
     end
 
     after_transition on: [:mark_unwanted, :re_review, :cancel] do |offer, _transition|
