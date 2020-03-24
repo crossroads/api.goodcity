@@ -138,7 +138,7 @@ workflows:
       - deploy:
           requires:
             - test
-            - audit
+            # - audit
           filters:
             branches:
               only: /^(master|live|preview)$/
