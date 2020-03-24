@@ -99,13 +99,13 @@ jobs:
             ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 4 -o tmp/codeclimate.total.json
             ./tmp/cc-test-reporter upload-coverage -i tmp/codeclimate.total.json
 
-  audit:
-    <<: *defaults
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: gem install bundler-audit
-      - run: bundle-audit -v --update
+  # audit:
+  #   <<: *defaults
+  #   steps:
+  #     - restore_cache:
+  #         key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+  #     - run: gem install bundler-audit
+  #     - run: bundle-audit -v --update
 
   deploy:
     <<: *defaults
@@ -129,9 +129,9 @@ workflows:
       - test:
           requires:
             - bundle_dependencies
-      - audit:
-          requires:
-            - checkout_code
+      # - audit:
+      #     requires:
+      #       - checkout_code
       - upload-coverage:
           requires:
             - test
