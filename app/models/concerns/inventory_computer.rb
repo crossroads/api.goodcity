@@ -83,8 +83,10 @@ module InventoryComputer
       end
 
       def update_package_quantities!(package)
-        package.assign_attributes package_quantity_summary(package)
-        package.save!
+        package.secured_transaction do
+          package.assign_attributes package_quantity_summary(package)
+          package.save!
+        end
       end
     end
 
