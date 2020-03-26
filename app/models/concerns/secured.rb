@@ -16,4 +16,10 @@ module Secured
       end
     end
   end
+
+  def secured_transaction
+    with_advisory_lock("#{self.class.name}:#{self.id}") do
+      ActiveRecord::Base.transaction { yield }
+    end
+  end
 end
