@@ -38,10 +38,12 @@ class CartCheckout
       -> { add_requested_packages_to_order(order) }
     ]
 
-    ActiveRecord::Base.transaction do
-      steps.each do |step|
-        step.call()
-        raise ActiveRecord::Rollback if errors.any?
+    Order.with_advisory_lock('cart:checkout') do
+      ActiveRecord::Base.transaction do
+        steps.each do |step|
+          step.call()
+          raise ActiveRecord::Rollback if errors.any?
+        end
       end
     end
     errors

@@ -959,6 +959,45 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
+  describe "PUT package/1/split_package" do
+    let(:package) { create :package, :with_inventory_record, received_quantity: 5 }
+
+    before do
+      allow(Stockit::ItemSync).to receive(:create)
+      allow(Stockit::ItemSync).to receive(:update)
+      generate_and_set_token(user)
+      touch(package)
+    end
+
+    it "creates a new package with the split quantity" do
+      expect {
+        put :split_package, format: :json, id: package.id, package: { quantity: 2 }
+      }.to change(Package, :count).from(1).to(2)
+
+      expect(response.status).to eq(200)
+
+      new_package = Package.last
+      expect(PackagesInventory::Computer.package_quantity(new_package)).to eq(2)
+      expect(new_package.inventory_number).to eq(package.inventory_number + "Q1")
+    end
+
+    it "reduces the quantity of the original package" do
+      expect {
+        put :split_package, format: :json, id: package.id, package: { quantity: 2 }
+      }.to change {
+        PackagesInventory::Computer.package_quantity(package)
+      }.from(5).to(3)
+    end
+
+    it "fails if the value is invalid" do
+      expect {
+        put :split_package, format: :json, id: package.id, package: { quantity: 10 }
+      }.not_to change(Package, :count)
+
+      expect(response.status).to eq(422)
+      expect(parsed_body).to eq({"error"=>"Quantity to split should be at least 1 and less than 5"})
+    end
+  end
 
   describe "PUT package/1" do
     let(:location) { create :location }

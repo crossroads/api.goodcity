@@ -9,6 +9,7 @@ class Package < ActiveRecord::Base
   include DesignationOperations
   include StockOperations
   include Watcher
+  include Secured
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
