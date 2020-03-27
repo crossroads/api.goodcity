@@ -621,7 +621,7 @@ RSpec.describe Package, type: :model do
       end
     end
 
-    describe '#update_favourite_image' do
+    describe '#set_favourite_image' do
       before do
         @item = create :item
         @image1 = create :image, favourite: true, imageable: @item
@@ -636,14 +636,17 @@ RSpec.describe Package, type: :model do
 
       it 'should set favourite image from its existing images' do
         expect {
-          @package.update_favourite_image(@pkg_image2.id)
+          @package.favourite_image_id = @pkg_image2.id
+          @package.save
         }.to change { @package.favourite_image_id }.to(@pkg_image2.id)
+        expect(@pkg_image1.reload.favourite).to eq(false)
       end
 
       it 'should set favourite image from its items images' do
-        @package.update_favourite_image(@image2.id)
+        @package.favourite_image_id = @image2.id
+        @package.save
 
-        favourite_image = Image.find(@package.favourite_image_id)
+        favourite_image = Image.find(@package.reload.favourite_image_id)
         expect(favourite_image.cloudinary_id).to eq(@pkg_image2.cloudinary_id)
         expect(@pkg_image1.reload.favourite).to eq(false)
       end
