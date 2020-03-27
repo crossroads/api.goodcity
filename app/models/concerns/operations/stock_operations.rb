@@ -129,8 +129,10 @@ module StockOperations
     end
 
     def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )
-      raise Goodcity::ActionNotAllowedError.new unless PackUnpack.action_allowed?(task)
-      PackUnpack.new(container, package, location_id, quantity, user_id).public_send(task)
+      PackagesInventory.secured_transaction(Utils.to_id(package)) do
+        raise Goodcity::ActionNotAllowedError.new unless PackUnpack.action_allowed?(task)
+        PackUnpack.new(container, package, location_id, quantity, user_id).public_send(task)
+      end
     end
 
     class PackUnpack
@@ -193,12 +195,16 @@ module StockOperations
 
       # checks if the package has available quantity to add inside a box.
       def addition_allowed?
-        @package.available_quantity.positive?
+        available_quantity.positive?
       end
 
       # checks if the addable quantity is greater than available quantity.
       def invalid_quantity?
-        @quantity > @package.available_quantity
+        @quantity > available_quantity
+      end
+
+      def available_quantity
+        @available_quantity ||= PackagesInventory::Computer.available_quantity_of(@package)
       end
 
       def response(pkg_inventory)
