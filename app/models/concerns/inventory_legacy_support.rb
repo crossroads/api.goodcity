@@ -30,7 +30,7 @@ module InventoryLegacySupport
       def sync_packages_locations
         PackagesLocation.secured_transaction('sync:packages_locations') do
           packages_location.sneaky do |record|
-            record.quantity += quantity
+            record.quantity = quantity + PackagesInventory::Computer.package_quantity(package, location: location)
             if record.quantity.positive?
               record.save
             elsif record.persisted?
