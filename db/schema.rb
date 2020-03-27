@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200312083123) do
+ActiveRecord::Schema.define(version: 20200327090245) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -314,7 +314,7 @@ ActiveRecord::Schema.define(version: 20200312083123) do
   add_index "images", ["imageable_id", "imageable_type"], name: "index_images_on_imageable_id_and_imageable_type", using: :btree
 
   create_table "inventory_numbers", force: :cascade do |t|
-    t.string "code"
+    t.integer "code"
   end
 
   create_table "items", force: :cascade do |t|
@@ -485,9 +485,9 @@ ActiveRecord::Schema.define(version: 20200312083123) do
     t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.integer  "cancellation_reason_id"
     t.boolean  "continuous",              default: false
     t.date     "shipment_date"
-    t.integer  "cancellation_reason_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -618,9 +618,9 @@ ActiveRecord::Schema.define(version: 20200312083123) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
-    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_pieces",       default: false
     t.string   "subform"
+    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_box",          default: false
     t.boolean  "allow_pallet",       default: false
   end
