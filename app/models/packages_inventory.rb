@@ -60,16 +60,14 @@ class PackagesInventory < ActiveRecord::Base
 
   def undo
     raise Goodcity::InventoryError.new(I18n.t('packages_inventory.cannot_undo')) unless REVERSIBLE_ACTIONS.key?(action)
-    PackagesInventory.secured_transaction(package.id) do
-      PackagesInventory.create!({
-        action:   REVERSIBLE_ACTIONS[action],
-        user:     User.current_user || User.system_user,
-        package:  package,
-        source:   source,
-        location: location,
-        quantity: quantity * -1
-      })
-    end
+    PackagesInventory.create!({
+      action:   REVERSIBLE_ACTIONS[action],
+      user:     User.current_user || User.system_user,
+      package:  package,
+      source:   source,
+      location: location,
+      quantity: quantity * -1
+    })
   end
 
   # --------------------
@@ -104,12 +102,10 @@ class PackagesInventory < ActiveRecord::Base
         params.with_indifferent_access[:package_id]
       )
 
-      PackagesInventory.secured_transaction(package_id) do
-        PackagesInventory.create!({
-          action: action_name,
-          user: User.current_user || User.system_user
-        }.merge(params))
-      end
+      PackagesInventory.create!({
+        action: action_name,
+        user: User.current_user || User.system_user
+      }.merge(params))
     end
   end
 
@@ -138,12 +134,16 @@ class PackagesInventory < ActiveRecord::Base
       errors.add(:errors, I18n.t('package_inventory.quantities.enforced_positive', action: action)) if quantity.negative?
       errors.add(:errors, I18n.t('package_inventory.storage_type_max', type: package.storage_type.name, quantity: maximum_qty )) if outcome_qty > maximum_qty
     else
+      qty_at_location = PackagesInventory::Computer.package_quantity(package, location: location)
       errors.add(:errors, I18n.t('package_inventory.quantities.enforced_negative', action: action)) if quantity.positive?
+      errors.add(:errors, I18n.t('package_inventory.quantities.invalid_negative_quantity')) if quantity.abs > qty_at_location
     end
     errors.count.zero?
   end
 
   def validate_fields
-    validate_action && validate_quantity
+    PackagesInventory.secured_transaction(package_id) do
+      validate_action && validate_quantity
+    end
   end
 end
