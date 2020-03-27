@@ -194,3 +194,11 @@ context DesignationOperations do
     end
   end
 end
+
+
+p.packages_locations.each do |pl|
+  pl.sneaky do
+    puts "#{pl.location.building} : #{PackagesInventory::Computer.package_quantity(p, location: pl.location)}"
+
+  end
+end
