@@ -9,15 +9,19 @@ module Goodcity
       quantities.values.map.select { |q| q < 0 }.empty?
     end
 
+    def clamped(quantities)
+      Hash[quantities.map{|k,v| [k, [0, v].max] } ]
+    end
+
     def compute_quantities(rehearse: false)
       errors = CsvWriter.new
       count = 0
       iterate do |package|
         quantities = PackagesInventory::Computer.package_quantity_summary(package)
-        if valid?(quantities) && !rehearse
-          package.update_columns(quantities)
+        if !rehearse
+          package.update_columns clamped(quantities)
           count += 1
-        elsif valid?(quantities)
+        elsif !valid?(quantities)
           errors.add_object({ package: package.id }.merge(quantities))
         end
       end
