@@ -18,11 +18,11 @@ class InventoryNumber < ActiveRecord::Base
        FROM generate_series(1,?) s(i)
        WHERE NOT EXISTS (
          SELECT 1 FROM (
-           SELECT inventory_number FROM packages WHERE inventory_number ~ '^\d+$' 
-           UNION 
+           SELECT cast(inventory_number as int) FROM packages WHERE inventory_number ~ '^\d+$'
+           UNION
            SELECT code as inventory_number from inventory_numbers ORDER BY inventory_number
          ) as inventory_number
-       WHERE CAST(inventory_number AS INTEGER) = s.i)
+       WHERE inventory_number = s.i)
        ORDER BY first_missing_code
        LIMIT 1", self.count])
 
