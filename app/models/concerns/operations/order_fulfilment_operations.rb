@@ -101,7 +101,7 @@ module OrderFulfilmentOperations
 
     def assert_can_dispatch(ord_pkg, quantity, from_location)
       raise Goodcity::AlreadyDispatchedError.new if ord_pkg.dispatched?
-      raise Goodcity::UnprocessedError.new if order_unprocessed?(ord_pkg.order) && !GoodcitySync.request_from_stockit
+      raise Goodcity::UnprocessedError.new if order_unprocessed?(ord_pkg.order) && !GoodcitySync.request_from_stockit # @TODO: remove stockit reference
       raise Goodcity::MissingQuantityforDispatchError.new if quantity > on_hand(ord_pkg.package, from_location)
     end
 
