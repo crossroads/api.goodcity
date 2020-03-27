@@ -377,7 +377,8 @@ class Package < ActiveRecord::Base
   end
 
   def valid_favourite_image_id?
-    image_ids = images.pluck(:id).concat(item.images.pluck(:id))
+    item_image_ids = self.item && self.item.images.pluck(:id) || []
+    image_ids = self.images.pluck(:id).concat(item_image_ids)
     favourite_image_id_changed? &&
       favourite_image_id.present? &&
       image_ids.include?(favourite_image_id)
