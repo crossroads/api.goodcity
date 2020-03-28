@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 ruby "2.5.1"
 
-gem 'rails', '~> 4.2.11.1'
-gem 'rails-api'
+gem 'rails', '~> 5.2.4.2'
+gem 'rails-api', '>= 0.4.1'
 gem 'pg'
 gem 'rake'
 
@@ -20,7 +20,7 @@ gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before
 gem 'cancancan'
 gem 'loofah', '>= 2.3.1'
 gem 'cloudinary'
-gem 'factory_bot_rails' # used in rake db:seed in production
+gem 'factory_bot_rails' , '>= 4.10.0' # used in rake db:seed in production
 gem 'ffaker'
 gem 'execjs'
 # shivani - changed from jwt 0.1.13 to 1.2.0
@@ -34,11 +34,11 @@ gem 'warden'
 gem 'rack-timeout'
 gem 'newrelic_rpm'
 gem 'traco'
-gem 'rails-i18n'
+gem 'rails-i18n', '>= 5.0.0'
 gem 'http_accept_language'
 gem 'oj'
 gem 'redis'
-gem 'redis-rails'
+gem 'redis-rails', '>= 5.0.2'
 gem 'rollbar'
 gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
 gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
@@ -48,13 +48,13 @@ gem "nokogiri", ">= 1.10.8"
 gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
-gem 'lograge'
+gem 'lograge', '>= 0.11.2'
 gem 'paper_trail', '~> 4.0.0.beta'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
 gem 'request_store'
 gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
 gem 'active_record_union'
-gem 'kaminari'
+gem 'kaminari', '>= 0.16.3'
 gem 'sidekiq-scheduler'
 gem 'rake-progressbar'
 gem 'slack-ruby-client'
@@ -77,7 +77,7 @@ end
 
 group :development, :test do
   gem 'byebug'
-  gem 'rspec-rails'
+  gem 'rspec-rails', '>= 3.5.0'
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
   gem 'capistrano-rvm'
@@ -91,6 +91,6 @@ group :test do
   gem "shoulda-callback-matchers"
   gem 'rspec_junit_formatter'
   gem 'timecop'
-  gem 'cucumber-rails', require: false
+  gem 'cucumber-rails', '>= 1.8.0', require: false
   gem 'database_cleaner'
 end
