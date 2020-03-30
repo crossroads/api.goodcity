@@ -8,7 +8,7 @@ class InventoryNumber < ActiveRecord::Base
   end
 
   def self.next_code
-    missing_code > 0 ? missing_code : (max_code + 1)
+    missing_code > 0 ? missing_code.to_s : (max_code + 1).to_s
   end
 
   def self.missing_code
