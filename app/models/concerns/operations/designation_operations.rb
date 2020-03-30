@@ -6,7 +6,7 @@
 #     include DesignationOperations
 #   end
 #
-#   MyClass::DesignationOperations.designate(package, quantity: 2, to_order: order)
+#   MyClass::Operations.designate(package, quantity: 2, to_order: order)
 #
 #
 module DesignationOperations
