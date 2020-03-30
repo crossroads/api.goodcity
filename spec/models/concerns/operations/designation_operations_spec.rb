@@ -68,9 +68,17 @@ context DesignationOperations do
         allow(Stockit::OrdersPackageSync).to receive(:update)
 
         ord_pkg = designate(4, to_order: dispatching_order)
+        expect(ord_pkg.quantity).to eq(4)
+        expect(ord_pkg.dispatched_quantity).to eq(0)
+
         OrdersPackage::Operations.dispatch(ord_pkg, quantity: 2, from_location: package.locations.first)
+
+        ord_pkg.reload
+        expect(ord_pkg.quantity).to eq(4)
+        expect(ord_pkg.dispatched_quantity).to eq(2)
+
         expect { OrdersPackage::Operations.dispatch(ord_pkg, quantity: 2, from_location: package.locations.first) }.to change {
-          OrdersPackage.find(ord_pkg.id).state
+          ord_pkg.reload.state
         }.from("designated").to("dispatched")
       end
 
