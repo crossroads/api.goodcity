@@ -147,7 +147,7 @@ en:
     bad_action_for_type: "Inventory action %{action} is not permitted on %{type} types"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
     quantities:
-      invalid_negative_quantity: Requested quantity not present at location
+      invalid_negative_quantity: Required quantity not present at location
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions

@@ -1339,11 +1339,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package_storage) { create(:storage_type, :with_pkg) }
     let(:box) { create(:package, :with_inventory_record, storage_type: box_storage) }
     let(:pallet) { create(:package, :with_inventory_record, storage_type: pallet_storage) }
-    let(:package1) { create(:package, :with_inventory_record, received_quantity: 50, storage_type: package_storage)}
-    let(:package2) { create(:package, :with_inventory_record, received_quantity: 40, storage_type: package_storage)}
+    let(:package1) { create(:package, :with_inventory_number, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, :with_inventory_number, received_quantity: 40, storage_type: package_storage)}
     let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+
+    before {
+      initialize_inventory(package1, package2, location: location)
+    }
 
     describe "fetch_contained_packages" do
       before :each do
