@@ -3,10 +3,12 @@ class InventoryNumber < ActiveRecord::Base
 
   validates :code, presence: true, uniqueness: true
 
+  def code
+    self[:code].to_s.rjust(6, "0")
+  end
+
   def self.create_with_next_code!
-    inventory_code = next_code
-    create!(code: inventory_code.to_i)
-    inventory_code
+    create!(code: next_code.to_i)
   end
 
   def self.next_code
