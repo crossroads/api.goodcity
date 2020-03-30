@@ -73,7 +73,7 @@ FactoryBot.define do
     end
 
     trait :received do
-      package_with_locations
+      with_inventory_record
       stockit_package
       state "received"
       received_at { Time.now }

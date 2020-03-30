@@ -73,14 +73,14 @@ RSpec.describe Package, type: :model do
     end
 
     describe "#mark_missing" do
-      let(:package) { create :package, :received, allow_web_publish: true }
+      let(:received_package) { create :package, :with_inventory_record, state: 'received', received_at: Time.now, allow_web_publish: true }
       it "should set received_at value" do
-        expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number)
+        expect(Stockit::ItemSync).to receive(:delete).with(received_package.inventory_number)
         expect{
-          package.mark_missing
-        }.to change(package, :received_at).to(nil)
-        expect(package.allow_web_publish).to eq(false)
-        expect(package.state).to eq("missing")
+          received_package.mark_missing
+        }.to change(received_package, :received_at).to(nil)
+        expect(received_package.allow_web_publish).to eq(false)
+        expect(received_package.state).to eq("missing")
       end
     end
   end
@@ -355,16 +355,18 @@ RSpec.describe Package, type: :model do
     let(:box_storage) { create(:storage_type, :with_box) }
     let(:pallet_storage) { create(:storage_type, :with_pallet) }
     let(:package_storage) { create(:storage_type, :with_pkg) }
-    let(:box) { create(:package, :with_inventory_record, :package_with_locations, storage_type: box_storage) }
-    let(:pallet) { create(:package, :with_inventory_record, :package_with_locations, storage_type: pallet_storage) }
-    let(:package1) { create(:package, :with_inventory_record, :package_with_locations, received_quantity: 50, storage_type: package_storage)}
-    let(:package2) { create(:package, :with_inventory_record, :package_with_locations, received_quantity: 40, storage_type: package_storage)}
+    let(:box) { create(:package, :with_inventory_record, storage_type: box_storage) }
+    let(:pallet) { create(:package, :with_inventory_record, storage_type: pallet_storage) }
+    let(:package1) { create(:package, received_quantity: 50, storage_type: package_storage)}
+    let(:package2) { create(:package, received_quantity: 40, storage_type: package_storage)}
     let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
+    before { initialize_inventory(package1, package2, location: location) }
+
     def pack_or_unpack(params)
-      Package::Operations.pack_or_unpack(
+      result = Package::Operations.pack_or_unpack(
         container: Package.find(params[:id]),
         package: Package.find(params[:item_id]),
         quantity: params[:quantity],
@@ -372,6 +374,7 @@ RSpec.describe Package, type: :model do
         user_id: user.id,
         task: params[:task]
       )
+      expect(result[:success]).to eq(true)
     end
 
     before(:each) do
@@ -577,10 +580,12 @@ RSpec.describe Package, type: :model do
 
     context 'when applying generic inventory quantity changes' do
       let(:original_qty) { 10 }
-      let(:package) { create :package, :with_inventory_record, :with_inventory_number, received_quantity: original_qty }
+      let(:package) { create :package, :with_inventory_number, received_quantity: original_qty }
       let(:order_1) { create :order, :with_state_dispatching }
       let(:order_2) { create :order, :with_state_dispatching }
       let(:location) { create :location }
+
+      before { initialize_inventory(package, location: location) }
 
       [
         [ :gain,    3],

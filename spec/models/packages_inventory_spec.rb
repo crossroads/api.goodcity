@@ -55,7 +55,7 @@ RSpec.describe PackagesInventory, type: :model do
       PackagesInventory::DECREMENTAL_ACTIONS.each do |act|
         expect {
           create(:packages_inventory, action: act, quantity: -6, package: pkg)
-        }.to raise_error(ActiveRecord::RecordInvalid, /Requested quantity not present at location/)
+        }.to raise_error(ActiveRecord::RecordInvalid, /Required quantity not present at location/)
       end
     end
 
