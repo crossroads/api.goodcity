@@ -8,8 +8,7 @@ class InventoryNumber < ActiveRecord::Base
   end
 
   def self.next_code
-    number = missing_code > 0 ? missing_code : (max_code + 1)
-    number.to_s.rjust(6, "0")
+    missing_code > 0 ? missing_code : (max_code + 1)
   end
 
   def self.missing_code
@@ -31,6 +30,6 @@ class InventoryNumber < ActiveRecord::Base
   end
 
   def self.max_code
-    InventoryNumber.maximum('code').to_i || 0
+    InventoryNumber.maximum('code') || 0
   end
 end
