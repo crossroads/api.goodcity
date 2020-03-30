@@ -49,6 +49,7 @@ class Package < ActiveRecord::Base
   after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
+  before_save :set_favourite_image, if: :valid_favourite_image_id?
 
   # Live update rules
   after_save :push_changes
@@ -376,10 +377,31 @@ class Package < ActiveRecord::Base
     )
   end
 
-  def update_favourite_image(image_id)
-    image = images.find_by(id: image_id)
-    image.update(favourite: true)
-    image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+  def valid_favourite_image_id?
+    item_image_ids = self.item && self.item.images.pluck(:id) || []
+    image_ids = self.images.pluck(:id).concat(item_image_ids)
+    favourite_image_id_changed? &&
+      favourite_image_id.present? &&
+      image_ids.include?(favourite_image_id)
+  end
+
+  def set_favourite_image
+    current_image = images.find_by(id: favourite_image_id)
+
+    if !current_image
+      item_image = item.images.find_by(id: favourite_image_id)
+
+      if item_image
+        current_image = Image.create(item_image.attributes.slice("cloudinary_id", "angle"))
+        self.images << current_image
+      end
+    end
+
+    if current_image
+      images.update_all(favourite: false)
+      current_image.update_column(:favourite, true)
+      self.favourite_image_id = current_image.id
+    end
   end
 
   def singleton_package?
