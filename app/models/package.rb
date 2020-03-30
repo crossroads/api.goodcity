@@ -392,7 +392,8 @@ class Package < ActiveRecord::Base
       item_image = item.images.find_by(id: favourite_image_id)
 
       if item_image
-        current_image = Image.create(item_image.attributes.slice("cloudinary_id", "angle"))
+        current_image = images.find_by(cloudinary_id: item_image.cloudinary_id) ||
+          Image.create(item_image.attributes.slice("cloudinary_id", "angle"))
         self.images << current_image
       end
     end
