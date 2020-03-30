@@ -92,9 +92,15 @@ context DesignationOperations do
         expect(Stockit::OrdersPackageSync).to receive(:create).once
         expect(Stockit::OrdersPackageSync).to receive(:update).once
 
-        designate(4, to_order: dispatching_order)
-        orders_package = dispatching_order.reload.orders_packages.first
+        orders_package = designate(4, to_order: dispatching_order)
+        expect(orders_package.quantity).to eq(4)
+        expect(orders_package.dispatched_quantity).to eq(0)
+
         OrdersPackage::Operations.dispatch(orders_package, quantity: 3, from_location: package.locations.first)
+
+        orders_package.reload
+        expect(orders_package.quantity).to eq(4)
+        expect(orders_package.dispatched_quantity).to eq(3)
         expect {
           designate(2, to_order: dispatching_order)
         }.to raise_error(Goodcity::AlreadyDispatchedError).with_message('Some has been already dispatched, please undispatch and try again.')
