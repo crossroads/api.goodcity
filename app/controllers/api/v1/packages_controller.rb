@@ -319,14 +319,13 @@ module Api
 
       def package_params
         get_package_type_id_value
-        set_favourite_image if @package && !@package.new_record?
         attributes = [
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
           :package_type_id, :pallet_id, :pieces, :received_at,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width,
+          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id,
           offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
@@ -366,22 +365,6 @@ module Api
         ]
       end
 
-      def set_favourite_image
-        if (image_id = params["package"]["favourite_image_id"]).present?
-          if @package.images.pluck(:id).include?(image_id)
-            @package.update_favourite_image(image_id)
-          end
-          params["package"].delete("favourite_image_id")
-        end
-      end
-
-      def add_favourite_image
-        image = Image.find_by(id: params["package"]["favourite_image_id"])
-        @package.images.build(favourite: true, angle: image.angle,
-                              cloudinary_id: image.cloudinary_id) if image
-        params["package"].delete("favourite_image_id")
-      end
-
       def get_package_type_id_value
         code_id = params["package"]["code_id"]
         if params["package"]["package_type_id"].blank? and code_id.present?
@@ -412,7 +395,6 @@ module Api
         @package.detail = assign_detail if params["package"]["detail_type"].present?
         @package.received_quantity ||= received_quantity
         @package.offer_id = offer_id
-        add_favourite_image if params["package"]["favourite_image_id"]
         @package
       end
 

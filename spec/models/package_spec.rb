@@ -620,5 +620,36 @@ RSpec.describe Package, type: :model do
         end
       end
     end
+
+    describe '#set_favourite_image' do
+      before do
+        @item = create :item
+        @image1 = create :image, favourite: true, imageable: @item
+        @image2 = create :image, favourite: false, imageable: @item
+
+        @package = create :package, item: @item
+        @pkg_image1 = create :image, favourite: true, imageable: @package,
+                            cloudinary_id: @image1.cloudinary_id
+        @pkg_image2 = create :image, favourite: false, imageable: @package,
+                            cloudinary_id: @image2.cloudinary_id
+      end
+
+      it 'should set favourite image from its existing images' do
+        expect {
+          @package.favourite_image_id = @pkg_image2.id
+          @package.save
+        }.to change { @package.favourite_image_id }.to(@pkg_image2.id)
+        expect(@pkg_image1.reload.favourite).to eq(false)
+      end
+
+      it 'should set favourite image from its items images' do
+        @package.favourite_image_id = @image2.id
+        @package.save
+
+        favourite_image = Image.find(@package.reload.favourite_image_id)
+        expect(favourite_image.cloudinary_id).to eq(@pkg_image2.cloudinary_id)
+        expect(@pkg_image1.reload.favourite).to eq(false)
+      end
+    end
   end
 end
