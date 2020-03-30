@@ -14,7 +14,7 @@ module Api
       api :POST, "/v1/inventory_numbers", "Create inventory_number"
       def create
         inventory_number = InventoryNumber.create_with_next_code!
-        render json: { inventory_number: inventory_number.code }
+        render json: { inventory_number: inventory_number.rjust(6, "0") }
       end
 
       api :PUT, "/v1/inventory_numbers", "Delete inventory_number"

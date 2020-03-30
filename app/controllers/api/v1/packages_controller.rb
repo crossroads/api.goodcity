@@ -80,7 +80,6 @@ module Api
         # - Goodcity for create
         # - StockIt for create+update+designate+dispatch
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-
         success = ActiveRecord::Base.transaction do
           initialize_package_record
           dispatch_from_stockit = is_stockit_request? && (@package.stockit_sent_on_changed? || @package.order_id_changed?)
