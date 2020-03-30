@@ -67,7 +67,6 @@ class Package < ActiveRecord::Base
   validates :received_quantity, numericality: { greater_than: 0 }
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
-  validates :inventory_number, uniqueness: true
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
