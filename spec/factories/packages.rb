@@ -24,7 +24,7 @@ FactoryBot.define do
     end
 
     trait :with_inventory_number do
-      inventory_number      { InventoryNumber.next_code }
+      inventory_number      { InventoryNumber.next_code.to_s.rjust(6, "0") }
     end
 
     trait :with_inventory_record do
