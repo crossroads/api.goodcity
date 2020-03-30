@@ -153,25 +153,25 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a user's first or last name" do
-        submitter = create :user, first_name: "Jane", last_name: "Doe"
+        submitter = create :user, first_name: "Harry", last_name: "Houdini"
         create :order, :with_state_submitted, submitted_by: submitter
-        get :index, searchText: "jan"
+        get :index, searchText: "rry"
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["submitted_by_id"]).to eq(submitter.id)
         expect(parsed_body["meta"]["total_pages"]).to eql(1)
-        expect(parsed_body["meta"]["search"]).to eql("jan")
+        expect(parsed_body["meta"]["search"]).to eql("rry")
       end
 
       it "can search orders from a user's full name" do
-        submitter = create :user, first_name: "John", last_name: "Smith"
+        submitter = create :user, first_name: "Jeff", last_name: "Goldblum"
         create :order, :with_state_submitted, submitted_by: submitter
-        get :index, searchText: "john smith"
+        get :index, searchText: "jeff goldblum"
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["submitted_by_id"]).to eq(submitter.id)
         expect(parsed_body["meta"]["total_pages"]).to eql(1)
-        expect(parsed_body["meta"]["search"]).to eql("john smith")
+        expect(parsed_body["meta"]["search"]).to eql("jeff goldblum")
       end
 
       it "can search orders from a beneficiary's first name" do
