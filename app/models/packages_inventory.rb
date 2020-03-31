@@ -141,7 +141,7 @@ class PackagesInventory < ActiveRecord::Base
     errors.count.zero?
   end
 
-  def validate_field
+  def validate_fields
     validate_action && validate_quantity
   end
 end
