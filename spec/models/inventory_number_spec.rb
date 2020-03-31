@@ -6,7 +6,7 @@ RSpec.describe InventoryNumber, type: :model do
 
   context "validations" do
     it { is_expected.to validate_presence_of(:code) }
-    it { is_expected.to validate_uniqueness_of(:code) }
+    it { is_expected.to validate_uniqueness_of(:code).case_insensitive }
   end
 
   context "create_with_next_code" do
@@ -20,7 +20,7 @@ RSpec.describe InventoryNumber, type: :model do
       InventoryNumber.create(code: 2)
       InventoryNumber.create(code: 3)
       InventoryNumber.create_with_next_code!
-      expect(InventoryNumber.last.code).to eql(4)
+      expect(InventoryNumber.last.code).to eql("000004")
     end
   end
 
@@ -44,7 +44,7 @@ RSpec.describe InventoryNumber, type: :model do
     end
     it "returns 0 if empty table" do
       expect(InventoryNumber.missing_code).to eql(0) # no missing code
-      expect(InventoryNumber.next_code).to eql("1")
+      expect(InventoryNumber.next_code).to eql(1)
     end
 
     it "missing in inventory numbers table but exists in the packages table" do
@@ -52,7 +52,7 @@ RSpec.describe InventoryNumber, type: :model do
       create(:package, inventory_number: "000001")
       create(:package, inventory_number: "000002")
       expect(InventoryNumber.missing_code).to eql(0) # no missing code
-      expect(InventoryNumber.next_code).to eql("3")
+      expect(InventoryNumber.next_code).to eql(3)
     end
 
   end

@@ -4,15 +4,15 @@ class InventoryNumber < ActiveRecord::Base
   validates :code, presence: true, uniqueness: true
 
   def code
-    self[:code].to_s.rjust(6, "0")
+    self[:code]&.to_s&.rjust(6, '0')
   end
 
   def self.create_with_next_code!
-    create!(code: next_code.to_i)
+    create!(code: next_code)
   end
 
   def self.next_code
-    missing_code.positive? ? missing_code.to_s : (max_code + 1).to_s
+    missing_code.positive? ? missing_code : (max_code + 1)
   end
 
   def self.missing_code
