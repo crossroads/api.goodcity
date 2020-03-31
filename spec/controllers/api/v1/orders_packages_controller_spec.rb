@@ -8,6 +8,13 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   let(:status) { response.status }
   subject { JSON.parse(response.body) }
 
+  before do
+    allow(Stockit::ItemSync).to receive(:create)
+    allow(Stockit::ItemSync).to receive(:update)
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
+
   describe "GET packages for Item" do
    before { generate_and_set_token(user) }
     it "returns 200" do
@@ -25,7 +32,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     it 'returns designated and dispatched orders_packages' do
       expect(Stockit::OrdersPackageSync).to receive(:create).exactly(3).times
       order = create :order
-      package = create :package, :with_inventory_number, quantity: 8, received_quantity: 8
+      package = create :package, :with_inventory_record, received_quantity: 8
       3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
       get :index, search_by_package_id: package.id
       expect( subject["orders_packages"].size ).to eq(3)
@@ -68,9 +75,9 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     end
 
     context 'if it is last orders_package in order' do
-      it "delete order" do
+      it "does not delete the order" do
         delete :destroy, id: orders_package.id
-        expect(Order.find_by_id(order.id)).to be_nil
+        expect(Order.find_by_id(order.id)).to eq(order)
       end
     end
   end
@@ -114,7 +121,15 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       describe 'Redesignating' do
         let(:order) { create :order, :with_state_submitted }
         let(:order2) { create :order, :with_state_submitted }
-        let(:orders_package) {create :orders_package, :with_state_cancelled, order_id: order.id}
+        let(:pkg) { create :package, :with_inventory_number, received_quantity: 10  }
+        let(:orders_package) {create :orders_package, :with_state_cancelled, order_id: order.id, package: pkg}
+
+        before do
+          allow(Stockit::OrdersPackageSync).to receive(:create)
+          allow(Stockit::OrdersPackageSync).to receive(:update)
+          initialize_inventory(pkg)
+          touch(orders_package)
+        end
 
         it 'redesignates the designation successfully' do
           expect(current_state).to eq('cancelled')
@@ -129,7 +144,7 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
       describe 'Editing Quantity' do
         context 'of a designated orders_package' do
-          let(:pkg) { create :package, :with_inventory_number, received_quantity: 10  }
+          let(:pkg) { create :package, :with_inventory_record, received_quantity: 10  }
           let(:order) { create :order, :with_state_dispatching }
           let(:orders_package) {
             create(:orders_package, :with_state_designated, order_id: order.id, package_id: pkg.id, quantity: 2)
@@ -138,20 +153,20 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
           before do
             expect(Stockit::OrdersPackageSync).to receive(:create)
             touch(orders_package)
-            create(:packages_inventory, action: 'inventory', package: pkg, location: create(:location), quantity: pkg.received_quantity)
+            initialize_inventory(pkg)
           end
 
           it 'updates correctly' do
             expect(Stockit::OrdersPackageSync).to receive(:update)
-            expect(pkg.reload.in_hand_quantity).to eq(8)
+            expect(pkg.reload.available_quantity).to eq(8)
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 9
             expect(status).to eq(200)
-            expect(pkg.reload.in_hand_quantity).to eq(1)
+            expect(pkg.reload.available_quantity).to eq(1)
             expect(orders_package.reload.quantity).to eq(9)
           end
 
           it 'fails if requesting too much' do
-            expect(pkg.reload.in_hand_quantity).to eq(8)
+            expect(pkg.reload.available_quantity).to eq(8)
             put :exec_action, id: orders_package.id, action_name: 'edit_quantity', quantity: 11
             expect(status).to eq(422)
             expect(error_text).to eq('The selected quantity (11) is unavailable')
@@ -168,11 +183,11 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       describe 'Dispatching' do
         context 'items of a processed order' do
           let(:order) { create :order, :with_state_dispatching }
-          let(:package) { create(:package, quantity: 10) }
-          let(:orders_package) { create :orders_package, :with_state_designated, order_id: order.id, package: package, quantity: package.quantity }
+          let(:package) { create(:package, received_quantity: 10) }
+          let(:orders_package) { create :orders_package, :with_state_designated, order_id: order.id, package: package, quantity: package.received_quantity }
 
           before do
-            create(:packages_location, package: package, quantity: package.quantity)
+            initialize_inventory(package)
           end
 
           it 'dispatches the packages successfully' do
@@ -189,12 +204,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
         context 'items of an unprocessed order' do
           let(:order) { create :order, :with_state_processing }
-          let(:package) { create(:package, quantity: 10) }
-          let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: package.quantity }
-
-          before do
-            create(:packages_location, package: package, quantity: package.quantity)
-          end
+          let(:package) { create(:package, :with_inventory_record, received_quantity: 10) }
+          let(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: package.received_quantity }
 
           it 'fails to dispatch the packages' do
             expect(current_state).to eq('designated')
@@ -212,14 +223,8 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
         let(:location) { create(:location) }
         let(:order) { create :order, :with_state_dispatching }
         let(:quantity) { 10 }
-        let(:package) { create(:package, quantity: 0) } # 0 quantity because it has been dispatched
-        let(:orders_package) { create :orders_package, :with_state_dispatched, order: order, package: package, quantity: quantity }
-
-        before do
-          # Mock history
-          build(:packages_inventory, action: 'inventory', package: package, quantity: quantity).sneaky(:save)
-          build(:packages_inventory, action: 'dispatch', package: package, source: orders_package, quantity: -1 * quantity).sneaky(:save)
-        end
+        let(:package) { create(:package, :with_inventory_record, received_quantity: quantity) } # 0 quantity because it has been dispatched
+        let(:orders_package) { create :orders_package, :with_inventory_record, :with_state_dispatched, order: order, package: package, quantity: quantity }
 
         it 'fails to undispatch the packages if no valid location is provided' do
           expect(current_state).to eq('dispatched')

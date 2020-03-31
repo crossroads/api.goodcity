@@ -5,13 +5,13 @@ module InventoryInitializer
 
       dest_location = location || pkg.locations.first || FactoryBot.create(:location)
 
-      create :packages_inventory, package: pkg, quantity: pkg.received_quantity, action: 'inventory', location: dest_location
+      FactoryBot.create :packages_inventory, package: pkg, quantity: pkg.received_quantity, location: dest_location, action: 'inventory'
 
       pkg.orders_packages.dispatched.each do |orders_package|
-        create :packages_inventory, package: pkg, quantity: - orders_package.quantity, action: 'dispatch', location: dest_location
+        FactoryBot.create :packages_inventory, package: pkg, quantity: - orders_package.quantity, action: 'dispatch', location: dest_location, source: orders_package
       end
-
-      pkg.requested_packages.each(&:update_availability!)
     end
   end
+
+  module_function :initialize_inventory
 end

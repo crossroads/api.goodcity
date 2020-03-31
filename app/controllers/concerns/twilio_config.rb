@@ -20,11 +20,19 @@ module TwilioConfig
   private
 
   def activity_sid(friendly_name)
-    task_router.activities.list(friendly_name: friendly_name).first.sid
+    twilio_client.taskrouter
+                 .workspaces(twilio_creds["workspace_sid"])
+                 .activities
+                 .list(friendly_name: friendly_name)
+                 .first.sid
   end
 
   def idle_worker
-    task_router.workers.list(activity_name: "Idle").first
+    twilio_client.taskrouter
+                 .workspaces(twilio_creds["workspace_sid"])
+                 .workers
+                 .list(activity_name: "Idle")
+                 .first
   end
 
   def mark_worker_offline
@@ -32,12 +40,11 @@ module TwilioConfig
   end
 
   def offline_worker
-    task_router.workers.list(activity_name: "Offline").first
-  end
-
-  def task_router
-    @client ||= Twilio::REST::TaskRouterClient.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"], twilio_creds["workspace_sid"])
+    twilio_client.taskrouter
+                 .workspaces(twilio_creds["workspace_sid"])
+                 .workers
+                 .list(activity_name: "Offline")
+                 .first
   end
 
   def twilio_client
@@ -80,7 +87,7 @@ module TwilioConfig
   end
 
   def user(mobile = nil)
-    @user ||= User.find_by_mobile(mobile || params["From"])
+    @user = User.find_by(mobile: mobile.presence || params["From"])
   end
 
   def voice_number

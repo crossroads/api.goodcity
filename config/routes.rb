@@ -67,6 +67,7 @@ Rails.application.routes.draw do
         get :contained_packages, on: :member
         get :fetch_added_quantity, on: :member
         put :move, on: :member
+        put :mark_missing, on: :member
         put :designate, on: :member
         put :add_remove_item, on: :member
       end
@@ -170,6 +171,7 @@ Rails.application.routes.draw do
       put "items/:id/remove_from_set", to: "packages#remove_from_set"
       get "stockit_items/:id", to: "packages#stockit_item_details"
       put "orders_packages/:id/actions/:action_name", to: "orders_packages#exec_action"
+      put "packages/:id/actions/:action_name", to: "packages#register_quantity_change"
     end
   end
 end

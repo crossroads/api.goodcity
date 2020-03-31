@@ -1,9 +1,8 @@
-require 'rails_helper'
+require "rails_helper"
 
 context PushUpdatesForDelivery do
-
   let!(:delivery) { create :drop_off_delivery }
-  let(:operation) { 'create' }
+  let(:operation) { "create" }
   let(:data) { {} }
   let(:donor) { delivery.offer.created_by }
   let(:push_service) { PushService.new }
@@ -22,7 +21,16 @@ context PushUpdatesForDelivery do
         expect(delivery).to receive(:push_updates).twice
         delivery.send_updates(operation)
       end
+
+      context "if offer is created in admin app" do
+        let!(:admin_offer_delivery) { create(:delivery, :admin_order) }
+        it "should not send push_updates" do
+          expect(admin_offer_delivery).not_to receive(:serialized_object).with(admin_offer_delivery)
+          expect(admin_offer_delivery).not_to receive(:serialized_object).with(admin_offer_delivery.schedule)
+        end
+      end
     end
+
     context "gogovan_delivery" do
       let!(:delivery) { create :gogovan_delivery }
       it "should call push_updates with delivery, schedule, contact and address records" do
@@ -36,7 +44,7 @@ context PushUpdatesForDelivery do
       end
     end
   end
-  
+
   context "push_updates" do
     it "to donor and admin" do
       expect(push_service).to receive(:send_update_store).with(Channel::STAFF_CHANNEL, data)
@@ -62,10 +70,9 @@ context PushUpdatesForDelivery do
       expect(push_service).to receive(:send_notification) do |channel, app_name, data|
         expect(channel).to eql(Channel::REVIEWER_CHANNEL)
         expect(app_name).to eql(ADMIN_APP)
-        expect(data[:category]).to eq('offer_delivery')
+        expect(data[:category]).to eq("offer_delivery")
       end
       delivery.notify_reviewers
     end
   end
-
 end

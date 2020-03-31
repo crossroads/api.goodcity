@@ -11,3 +11,7 @@
   key: "api.appointments.prevent_booking_until"
   value: "24-03-2020"
   description: "If a date value is set (DD-MM-YYYY), no appointment will be allowed before that date"
+-
+  key: "stock.allow_item_actions"
+  value: "false"
+  description: "Manages the settings for allowance of package (stock-item) actions."

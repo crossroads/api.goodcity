@@ -141,12 +141,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "Checkout process" do
 
-    before(:all) {
-      FactoryBot.generate(:booking_types).keys.each { |identifier|
-        FactoryBot.create :booking_type, identifier: identifier
-      }
-    }
-
     context "as a guest" do
       it "returns 401" do
         post :checkout
@@ -184,7 +178,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
           order = Order.find(draft_order.id)
           expect(order.state).to eq('submitted')
-          expect(order.packages.map(&:id)).to match_array(requested_packages.map(&:package_id))
+          expect(order.orders_packages.map(&:package_id)).to match_array(requested_packages.map(&:package_id))
           expect(order.orders_packages.length).to eq(requested_packages.length)
           order.orders_packages.each do |op|
             expect(op.state).to eq('designated')

@@ -7,15 +7,20 @@ context StockOperations do
     Class.new { include StockOperations }
   }
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+  end
+
   describe 'Inventorizing a package' do
-    let(:package) { create(:package, received_quantity: 21) }
+    let(:package) { create(:package, :with_inventory_number, received_quantity: 21) }
 
     def inventorize
       subject::Operations::inventorize(package, location1);
     end
 
     def register_loss
-      create(:packages_inventory, package: package, location: location1, quantity: -1, action: 'loss')
+      subject::Operations::register_loss(package, quantity: -1, location: location1.id, description: "Package Loss Action")
     end
 
     def uninventorize
@@ -67,10 +72,16 @@ context StockOperations do
 
       expect(package_quantity).to eq(21)
     end
+
+    it 'fails to inventorize a package without an inventory_number' do
+      package.inventory_number = nil
+      expect { inventorize }.to raise_error(Goodcity::BadOrMissingField).with_message("Invalid or empty field 'inventory_number'")
+    end
   end
 
-  describe 'Marking packages as lost/missing' do
-    let(:package) { create(:package) }
+  describe 'Gain' do
+    let(:package) { create(:package, :with_inventory_number) }
+    let(:uninventorized_package) { create(:package) }
 
     before do
       create(:packages_inventory, :inventory, quantity: 30, package: package, location: location1)
@@ -78,31 +89,62 @@ context StockOperations do
       create(:packages_inventory, :gain, quantity: 3, package: package, location: location1)
     end
 
-    def register_loss(quantity, from_location)
+    before(:each) do
+      expect(PackagesInventory.inventorized?(package)).to eq(true)
+      expect(PackagesInventory.inventorized?(uninventorized_package)).to eq(false)
+    end
+
+    def register_gain(pkg, quantity, to_location)
+      subject::Operations::register_gain(pkg,
+        quantity: quantity,
+        location: to_location)
+    end
+
+    it 'succeeds for inventorized packages' do
+      expect { register_gain(package, 10, location1) }.to change {
+        PackagesInventory::Computer.quantity_where(location: location1, package: package)
+      }.from(33).to(43)
+    end
+
+    it 'fails for uninventorized packages' do
+      expect { register_gain(uninventorized_package, 10, location1) }.to raise_error(Goodcity::NotInventorizedError).with_message('Cannot operate on uninventorized packages')
+    end
+  end
+
+  describe 'Marking packages as lost/missing' do
+    let(:package) { create(:package, :with_inventory_number) }
+
+    before do
+      create(:packages_inventory, :inventory, quantity: 30, package: package, location: location1)
+      create(:packages_inventory, :inventory, quantity: 3, package: package, location: location2)
+      create(:packages_inventory, :gain, quantity: 3, package: package, location: location1)
+    end
+
+    def register_loss(quantity, location_id)
       subject::Operations::register_loss(package,
         quantity: quantity,
-        from_location: from_location)
+        location: location_id)
     end
 
     context 'for a partial quantity of one location' do
       it 'negates the amount from the inventory' do
-        expect { register_loss(10, location1) }.to change {
-          PackagesInventory::Computer.quantity_where(location: location1, package: package)
+        expect { register_loss(10, location1.id) }.to change {
+          PackagesInventory::Computer.quantity_where(location: location1.id, package: package)
         }.from(33).to(23)
       end
 
       it 'adds a single row the packages_inventory' do
-        expect { register_loss(10, location1) }.to change(PackagesInventory, :count).by(1)
+        expect { register_loss(10, location1.id) }.to change(PackagesInventory, :count).by(1)
       end
 
       it 'updates the packages_location record' do
-        expect { register_loss(10, location1) }.to change {
-          PackagesLocation.find_by(package: package, location: location1).quantity
+        expect { register_loss(10, location1.id) }.to change {
+          PackagesLocation.find_by(package: package, location: location1.id).quantity
         }.from(33).to(23)
       end
 
       it 'doesnt affect other locations' do
-        expect { register_loss(10, location1) }.not_to change {
+        expect { register_loss(10, location1.id) }.not_to change {
           PackagesInventory::Computer.quantity_where(location: location2, package: package)
         }
       end
@@ -113,7 +155,7 @@ context StockOperations do
         # 26 designated
         # 10 available
         it 'succeeds' do
-          expect { register_loss(10, location1) }.to change {
+          expect { register_loss(10, location1.id) }.to change {
             PackagesInventory::Computer.quantity_where(location: location1, package: package)
           }.from(33).to(23)
         end
@@ -126,7 +168,7 @@ context StockOperations do
         # 27 designated
         # 9 available
         it 'fails' do
-          expect { register_loss(10, location1) }.to raise_error(StandardError).with_message(
+          expect { register_loss(10, location1.id) }.to raise_error(StandardError).with_message(
             "Will break the quantity required for orders (#{order_code}), please undesignate first"
           )
         end
@@ -135,23 +177,23 @@ context StockOperations do
 
     context 'for the entire quantity of one location' do
       it 'negates the amount from the inventory' do
-        expect { register_loss(33, location1) }.to change {
+        expect { register_loss(33, location1.id) }.to change {
           PackagesInventory::Computer.quantity_where(location: location1, package: package)
         }.from(33).to(0)
       end
 
       it 'adds a single row the packages_inventory' do
-        expect { register_loss(33, location1) }.to change(PackagesInventory, :count).by(1)
+        expect { register_loss(33, location1.id) }.to change(PackagesInventory, :count).by(1)
       end
 
       it 'destroys the packages_location record' do
-        expect { register_loss(33, location1) }.to change {
+        expect { register_loss(33, location1.id) }.to change {
           PackagesLocation.where(package: package, location: location1).count
         }.from(1).to(0)
       end
 
       it 'doesnt affect other locations' do
-        expect { register_loss(33, location1) }.not_to change {
+        expect { register_loss(33, location1.id) }.not_to change {
           PackagesInventory::Computer.quantity_where(location: location2, package: package)
         }
       end
@@ -160,7 +202,7 @@ context StockOperations do
         before { create(:orders_package, package: package, quantity: 3) } # Location 2 has enough to fulfill this order
 
         it 'suceeds' do
-          expect { register_loss(33, location1) }.to change {
+          expect { register_loss(33, location1.id) }.to change {
             PackagesInventory::Computer.quantity_where(location: location1, package: package)
           }.from(33).to(0)
         end
@@ -175,6 +217,46 @@ context StockOperations do
             "Will break the quantity required for orders (#{order_code}), please undesignate first"
           )
         end
+      end
+    end
+  end
+
+  describe 'Marking packages as gain' do
+    let(:package) { create(:package) }
+
+    before do
+      create(:packages_inventory, :inventory, quantity: 30, package: package, location: location1)
+      create(:packages_inventory, :inventory, quantity: 3, package: package, location: location2)
+      create(:packages_inventory, :gain, quantity: 3, package: package, location: location1)
+    end
+
+    def register_gain(quantity, location_id)
+      subject::Operations::register_gain(package,
+        quantity: quantity,
+        location: location_id)
+    end
+
+    context 'for a partial quantity of one location' do
+      it 'adds the amount from the inventory' do
+        expect { register_gain(10, location1.id) }.to change {
+          PackagesInventory::Computer.quantity_where(location: location1.id, package: package)
+        }.from(33).to(43)
+      end
+
+      it 'adds a single row the packages_inventory' do
+        expect { register_gain(10, location1.id) }.to change(PackagesInventory, :count).by(1)
+      end
+
+      it 'updates the packages_location record' do
+        expect { register_gain(10, location1.id) }.to change {
+          PackagesLocation.find_by(package: package, location: location1.id).quantity
+        }.from(33).to(43)
+      end
+
+      it 'doesnt affect other locations' do
+        expect { register_gain(10, location1.id) }.not_to change {
+          PackagesInventory::Computer.quantity_where(location: location2, package: package)
+        }
       end
     end
   end
@@ -212,13 +294,29 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "pack",
           id: box.id
         }
         response = pack_or_unpack(params)
         expect(response[:success]).to eq(true)
         expect(response[:packages_inventory].source).to eq(box)
+      end
+
+      it "raises an exception if quantity is invalid" do
+        package = packages.sample
+        Package::Operations.inventorize(package, location)
+        Package::Operations.inventorize(box, location)
+        params = {
+          item_id: package.id,
+          location_id: location.id,
+          quantity: -1,
+          task: "pack",
+          id: box.id
+        }
+        expect { pack_or_unpack(params) }.to raise_error(Goodcity::InvalidQuantityError).with_message(
+          "Invalid quantity (-1)"
+        )
       end
 
       it "raises an exception if action is not allowed" do
@@ -228,7 +326,7 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "not_allowed",
           id: box.id
         }
@@ -246,7 +344,7 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "unpack",
           id: pallet.id
         }
@@ -262,7 +360,7 @@ context StockOperations do
         params = {
           item_id: package.id,
           location_id: location.id,
-          quantity: package.quantity,
+          quantity: package.received_quantity,
           task: "not_allowed",
           id: box.id
         }

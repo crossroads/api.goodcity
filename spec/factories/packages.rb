@@ -1,7 +1,5 @@
 FactoryBot.define do
   factory :package do
-    # quantity              { rand(10) + 1 }
-    quantity              5
     length                { rand(199) + 1 }
     width                 { rand(199) + 1 }
     height                { rand(199) + 1 }
@@ -9,8 +7,12 @@ FactoryBot.define do
     pieces                { rand(199) + 1 }
     notes                 { FFaker::Lorem.paragraph }
     state                 'expecting'
-    # received_quantity     10
-    received_quantity     5
+
+    received_quantity     { storage_type&.singleton? ? 1 : 5 }
+    on_hand_quantity      { received_quantity }
+    available_quantity    { received_quantity }
+    designated_quantity   0
+    dispatched_quantity   0
 
     received_at nil
     rejected_at nil
@@ -23,6 +25,13 @@ FactoryBot.define do
 
     trait :with_inventory_number do
       inventory_number      { InventoryNumber.next_code }
+    end
+
+    trait :with_inventory_record do
+      inventory_number      { InventoryNumber.next_code }
+      after(:create) do |package|
+        InventoryInitializer.initialize_inventory(package)
+      end
     end
 
     trait :package_with_locations do
@@ -38,9 +47,11 @@ FactoryBot.define do
 
     trait :dispatched do
       after(:create) do |package|
+        InventoryInitializer.initialize_inventory(package)
         package.orders_packages = [
           create(
             :orders_package,
+            :with_inventory_record,
             :with_state_dispatched,
             package_id: package.id,
             quantity: package.received_quantity
@@ -62,7 +73,7 @@ FactoryBot.define do
     end
 
     trait :received do
-      package_with_locations
+      with_inventory_record
       stockit_package
       state "received"
       received_at { Time.now }

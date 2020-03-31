@@ -8,6 +8,8 @@ class Package < ActiveRecord::Base
   include LocationOperations
   include DesignationOperations
   include StockOperations
+  include Watcher
+  include Secured
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
@@ -36,21 +38,18 @@ class Package < ActiveRecord::Base
   has_many   :requested_packages, dependent: :destroy
   has_many   :offers_packages
   has_many   :offers, through: :offers_packages
+  has_many   :package_actions, -> { where action: %w[trash process recycle loss gain] },
+    class_name: "PackagesInventory"
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
-  after_update :update_packages_location_quantity, if: :received_quantity_changed_and_locations_exists?
-  after_update :update_orders_package_quantity, if: :received_quantity_changed_and_orders_packages_exists?
   after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  after_save :designate_and_undesignate_from_stockit, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
-  after_save :dispatch_orders_package, if: :dispatch_from_stockit?
-  after_save :update_carts
-  after_touch :update_carts # Temporary, will be removed once quantity fields are updated by the inventory
+  before_save :set_favourite_image, if: :valid_favourite_image_id?
 
   # Live update rules
   after_save :push_changes
@@ -62,8 +61,11 @@ class Package < ActiveRecord::Base
     chans
   end
 
-  validates :package_type_id, :quantity, presence: true
-  validates :quantity, numericality: { greater_than_or_equal_to: 0 }
+  validates :package_type_id, presence: true
+  validates :on_hand_quantity, numericality: { greater_than_or_equal_to: 0 }
+  validates :available_quantity, numericality: { greater_than_or_equal_to: 0 }
+  validates :designated_quantity, numericality: { greater_than_or_equal_to: 0 }
+  validates :dispatched_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity, numericality: { greater_than: 0 }
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
@@ -72,7 +74,6 @@ class Package < ActiveRecord::Base
   scope :received, -> { where(state: 'received') }
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
-  scope :not_zero_quantity, -> { where.not(quantity: 0) }
   scope :published, -> { where(allow_web_publish: true) }
   scope :non_set_items, -> { where(set_item_id: nil) }
   scope :set_items, -> { where("set_item_id = item_id") }
@@ -81,7 +82,7 @@ class Package < ActiveRecord::Base
   scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :undesignated, -> { where(order_id: nil) }
-  scope :not_multi_quantity, -> { where("quantity <= 1") }
+  scope :not_multi_quantity, -> { where("received_quantity = 1") }
   scope :exclude_designated, ->(designation_id) {
     where("order_id <> ? OR order_id IS NULL", designation_id)
   }
@@ -89,6 +90,26 @@ class Package < ActiveRecord::Base
   accepts_nested_attributes_for :packages_locations, :detail, allow_destroy: true, limit: 1
 
   attr_accessor :skip_set_relation_update, :request_from_admin, :detail_attributes
+
+  # ---------------------
+  # Computed properties
+  # ---------------------
+
+  watch [PackagesInventory, OrdersPackage] do |record|
+    PackagesInventory::Computer.update_package_quantities!(record.package)
+  end
+
+  # ---------------------
+  # Security
+  # ---------------------
+
+  def inventory_lock
+    PackagesInventory.secured_transaction(id) { yield }
+  end
+
+  # ---------------------
+  # States
+  # ---------------------
 
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
@@ -167,60 +188,12 @@ class Package < ActiveRecord::Base
     PackagesInventory::Computer.quantity_of_package_in_box(package: self, source: Package.find(entity_id))
   end
 
-  def total_in_hand_quantity
-    PackagesInventory::Computer.package_quantity(self)
-  end
-
-  def total_available_quantity
-    PackagesInventory::Computer.available_quantity_of(self)
-  end
-
   def total_quantity_in_box
     box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
   end
 
-  def create_associated_packages_location(location_id, quantity, reference_to_orders_package = nil)
-    packages_locations.create(
-      location_id: location_id,
-      quantity: quantity,
-      reference_to_orders_package: reference_to_orders_package
-    )
-  end
-
-  def received_quantity_changed_and_locations_exists?
-    received_quantity_changed? && locations.exists?
-  end
-
-  def update_packages_location_quantity
-    packages_locations.first.update_quantity(received_quantity)
-  end
-
-  def received_quantity_changed_and_orders_packages_exists?
-    received_quantity_changed? && orders_packages.exists?
-  end
-
-  def update_orders_package_quantity
-    if GoodcitySync.request_from_stockit
-      update_in_stock_quantity
-      orders_packages.first.update(quantity: received_quantity)
-    end
-  end
-
   def dispatch_from_stockit?
     stockit_sent_on_changed? && GoodcitySync.request_from_stockit
-  end
-
-  def build_or_create_packages_location(location_id, operation)
-    if GoodcitySync.request_from_stockit && packages_locations.exists?
-      packages_locations.first.update(location_id: location_id)
-    elsif (packages_location = packages_locations.find_by(location_id: location_id))
-      packages_location.update_quantity(received_quantity)
-    elsif !stockit_sent_on
-      packages_locations.send(operation, {
-        location_id: location_id,
-        quantity: received_quantity
-      })
-    end
   end
 
   def order_id_nil?
@@ -231,62 +204,12 @@ class Package < ActiveRecord::Base
     stockit_sent_on.present?
   end
 
-  def dispatch_orders_package
-    if designation && stockit_sent_on_present? && same_order_id_as_designation?
-      designation.dispatch
-    elsif designation && stockit_sent_on_present?
-      designation.update(order_id: order_id, state_event: "dispatch")
-    elsif stockit_sent_on.blank?
-      requested_undispatch_from_stockit
-    else
-      create_associated_dispatched_orders_package
-    end
-    update_in_stock_quantity
-  end
-
-  def requested_undispatch_from_stockit
-    if dispatched_orders_package
-      dispatched_orders_package.undispatch_orders_package
-    end
-  end
-
   def same_order_id_as_designation?
     designation.order_id == order_id
   end
 
-  def create_associated_dispatched_orders_package
-    orders_package = orders_packages.create(
-      order_id: order_id,
-      quantity: received_quantity,
-      sent_on: Time.now,
-      updated_by: User.current_user,
-      state: 'designated'
-    )
-    update_in_stock_quantity
-    orders_package.dispatch!
-  end
-
-  def designate_and_undesignate_from_stockit
-    if designation && order_id_nil?
-      designation.destroy
-    elsif designation && order_id
-      designation.update_designation(order_id)
-    else
-      OrdersPackage.add_partially_designated_item(
-        order_id: order_id,
-        package_id: id,
-        quantity: quantity
-      )
-    end
-    update_in_stock_quantity
-  end
-
   def designation
     orders_packages.designated.first
-  end
-
-  def cancel_designation
-    designation && designation.cancel!
   end
 
   def unless_dispatch_and_order_id_changed_with_request_from_stockit?
@@ -297,10 +220,6 @@ class Package < ActiveRecord::Base
     if (orders_package = orders_packages.get_records_associated_with_order_id(order_id).first)
       (orders_package != designation && orders_package.try(:state) != 'dispatched') && orders_package
     end
-  end
-
-  def singleton_and_has_designation?
-    designation && singleton_package?
   end
 
   def delete_associated_packages_locations
@@ -382,23 +301,16 @@ class Package < ActiveRecord::Base
     end
   end
 
+  # @TODO: remove
+  #
   def dispatch_stockit_item(_orders_package = nil, package_location_changes = nil, skip_set_relation_update = false)
     self.skip_set_relation_update = skip_set_relation_update
     self.stockit_sent_on = Date.today
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    deduct_dispatch_quantity(package_location_changes)
     response = Stockit::ItemSync.dispatch(self)
     add_errors(response)
-  end
-
-  def deduct_dispatch_quantity(package_qty_changes)
-    if package_qty_changes && !singleton_package?
-      package_qty_changes.each_pair do |_key, pckg_qty_param|
-        update_existing_package_location_qty(pckg_qty_param["packages_location_id"], pckg_qty_param["qty_to_deduct"])
-      end
-    end
   end
 
   def undispatch_stockit_item
@@ -407,46 +319,6 @@ class Package < ActiveRecord::Base
     self.pallet = nil
     self.box = nil
     response = Stockit::ItemSync.undispatch(self)
-    add_errors(response)
-  end
-
-  def update_referenced_or_first_package_location(referenced_package_location, orders_package, location_id)
-    if referenced_package_location
-      referenced_package_location.update_location_quantity_and_reference(location_id, orders_package.quantity, nil)
-    elsif (packages_location = packages_locations.first)
-      packages_location.update_location_quantity_and_reference(location_id, orders_package.quantity, orders_package.id)
-    end
-  end
-
-  def find_packages_location_with_location_id(location_id)
-    packages_locations.find_by(location_id: location_id)
-  end
-
-  def update_or_create_qty_moved_to_location(location_id, total_qty)
-    if (packages_location = find_packages_location_with_location_id(location_id))
-      packages_location.update(quantity: packages_location.quantity + total_qty.to_i)
-    else
-      create_associated_packages_location(location_id, total_qty)
-    end
-  end
-
-  def update_existing_package_location_qty(packages_location_id, quantity_to_move)
-    if (packages_location = packages_locations.find_by(id: packages_location_id))
-      new_qty = packages_location.quantity - quantity_to_move.to_i
-      new_qty.zero? ? packages_location.destroy : packages_location.update(quantity: new_qty)
-    end
-  end
-
-  def move_stockit_item(location_id)
-    response =
-      if box_id? || pallet_id?
-        has_box_or_pallet_error
-      else
-        build_or_create_packages_location(location_id, 'create')
-        self.stockit_moved_on = Date.today
-        self.stockit_moved_by = User.current_user
-        Stockit::ItemSync.move(self)
-      end
     add_errors(response)
   end
 
@@ -486,30 +358,6 @@ class Package < ActiveRecord::Base
     update_set_item_id(inventory_package_set.except_package(id))
   end
 
-  def update_designation(order_id)
-    update(order_id: order_id)
-  end
-
-  def remove_designation
-    update(order_id: nil)
-  end
-
-  def update_in_stock_quantity
-    if GoodcitySync.request_from_stockit
-      update_column(:quantity, in_hand_quantity)
-    else
-      update(quantity: in_hand_quantity)
-    end
-  end
-
-  def in_hand_quantity
-    if GoodcitySync.request_from_stockit && !received_quantity_was.nil?
-      received_quantity_was - total_assigned_quantity
-    else
-      received_quantity - total_assigned_quantity
-    end
-  end
-
   def total_assigned_quantity
     total_quantity = 0
     if (associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence)
@@ -531,36 +379,45 @@ class Package < ActiveRecord::Base
     SQL
 
     query = <<-SQL
-      packages.inventory_number IS NOT NULL
-      OR (
-        packages.state = 'expecting'
-        AND pkg_items.state IN (:allowed_items)
-        AND pkg_offers.state NOT IN (:excluded_offers)
-      )
+      packages.inventory_number IS NOT NULL AND
+      packages.available_quantity > 0
     SQL
 
-    joins(join).not_zero_quantity.published.where(query,
+    joins(join).published.where(query,
       allowed_items: BROWSE_ITEM_STATES,
       excluded_offers: BROWSE_OFFER_EXCLUDE_STATE
     )
   end
 
-  def update_favourite_image(image_id)
-    image = images.find_by(id: image_id)
-    image.update(favourite: true)
-    image.imageable.images.where.not(id: image_id).update_all(favourite: false)
+  def valid_favourite_image_id?
+    item_image_ids = self.item && self.item.images.pluck(:id) || []
+    image_ids = self.images.pluck(:id).concat(item_image_ids)
+    favourite_image_id_changed? &&
+      favourite_image_id.present? &&
+      image_ids.include?(favourite_image_id)
+  end
+
+  def set_favourite_image
+    current_image = images.find_by(id: favourite_image_id)
+
+    if !current_image
+      item_image = item.images.find_by(id: favourite_image_id)
+
+      if item_image
+        current_image = Image.create(item_image.attributes.slice("cloudinary_id", "angle"))
+        self.images << current_image
+      end
+    end
+
+    if current_image
+      images.update_all(favourite: false)
+      current_image.update_column(:favourite, true)
+      self.favourite_image_id = current_image.id
+    end
   end
 
   def singleton_package?
     received_quantity == 1
-  end
-
-  def update_location_quantity(total_quantity, location_id)
-    packages_locations.where(location_id: location_id).first.update(quantity: total_quantity)
-  end
-
-  def destroy_other_locations(location_id)
-    packages_locations.exclude_location(location_id).destroy_all
   end
 
   def stockit_order_id
@@ -569,16 +426,8 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def dispatched_orders_package
-    orders_packages.get_dispatched_records_with_order_id(order_id).first
-  end
-
   def donor_condition_name
     donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
-  end
-
-  def update_carts
-    requested_packages.each(&:update_availability!)
   end
 
   def storage_type_name

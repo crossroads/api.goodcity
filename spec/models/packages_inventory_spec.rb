@@ -46,7 +46,62 @@ RSpec.describe PackagesInventory, type: :model do
       PackagesInventory::DECREMENTAL_ACTIONS.each do |act|
         expect {
           create(:packages_inventory, action: act, quantity: 1)
-        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Errors Positive values are not allowed for #{act} actions")
+        }.to raise_error(ActiveRecord::RecordInvalid, /Positive values are not allowed for #{act} actions/)
+      end
+    end
+
+    it 'prevents removing less than is available at a location' do
+      pkg = create(:packages_inventory, action: 'inventory', quantity: 5).package
+      PackagesInventory::DECREMENTAL_ACTIONS.each do |act|
+        expect {
+          create(:packages_inventory, action: act, quantity: -6, package: pkg)
+        }.to raise_error(ActiveRecord::RecordInvalid, /Required quantity not present at location/)
+      end
+    end
+
+    context 'per storage types' do
+      before { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+
+      let(:pallet_storage) { create(:storage_type, :with_pallet) }
+      let(:box_storage) { create(:storage_type, :with_box) }
+      let(:box) { create(:package, storage_type: box_storage) }
+      let(:pallet) { create(:package, storage_type: pallet_storage) }
+      let(:location) { create(:location) }
+
+      it "should prevent increasing the quantity of a box" do
+        initialize_inventory(box)
+
+        pi = build(:packages_inventory, package: box, action: 'gain', quantity: 1, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["Inventory action gain is not permitted on Box types"]})
+      end
+
+      it "should prevent increasing the quantity of a pallet" do
+        initialize_inventory(pallet)
+
+        pi = build(:packages_inventory, package: pallet, action: 'gain', quantity: 1, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["Inventory action gain is not permitted on Pallet types"]})
+      end
+
+      it "should prevent inventorizing a box with a quantity > 1" do
+        pi = build(:packages_inventory, package: box, action: 'inventory', quantity: 2, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["A Box is limited to a quantity of 1"]})
+      end
+
+      it "should prevent inventorizing a box with a quantity > 1" do
+        pi = build(:packages_inventory, package: pallet, action: 'inventory', quantity: 2, location: location)
+        pi.save
+
+        expect(pi.persisted?).to eq(false)
+        expect(pi.errors.messages).to eq({:errors=>["A Pallet is limited to a quantity of 1"]})
       end
     end
   end
@@ -71,9 +126,11 @@ RSpec.describe PackagesInventory, type: :model do
   end
 
   describe 'Undo feature' do
-    let(:package) { create :package }
-    let(:source) { create :orders_package, package: package }
+    let(:package) { create :package, received_quantity: 5 }
+    let(:source) { create :orders_package, package: package, quantity: 5 }
     let(:location) { create :location }
+
+    before { initialize_inventory(package, location: location) }
 
     it 'allows undoing and redoing dispatch/undispatch actions' do
       action = create(:packages_inventory, action: 'dispatch', quantity: -5, package: package, location: location, source: source)
@@ -147,7 +204,7 @@ RSpec.describe PackagesInventory, type: :model do
           { action: 'gain', quantity: 2, created_at: 1.week.ago, package: package1, location: location1 },
           { action: 'gain', quantity: 43, created_at: 1.week.ago, package: package2, location: location3 }
         ].each do |params|
-          build(:packages_inventory, params).sneaky(:save)
+          create(:packages_inventory, params)
         end
       end
     end
@@ -223,7 +280,7 @@ RSpec.describe PackagesInventory, type: :model do
 
     context 'Designated quantity' do
       before do
-        create(:orders_package, :with_state_dispatched, quantity: 1, package: package1)
+        create(:orders_package, :with_inventory_record, :with_state_dispatched, quantity: 1, package: package1)
         create(:orders_package, :with_state_designated, quantity: 2, package: package1)
         create(:orders_package, :with_state_designated, quantity: 1, package: package1)
       end
@@ -237,9 +294,9 @@ RSpec.describe PackagesInventory, type: :model do
 
       before do
         touch(orders_package_1, orders_package_2)
-        build(:packages_inventory, action: 'dispatch', source: orders_package_1, quantity: -2, package: package2, location: location1).sneaky(:save)
-        build(:packages_inventory, action: 'dispatch', source: orders_package_2, quantity: -2, package: package2, location: location1).sneaky(:save)
-        build(:packages_inventory, action: 'undispatch', source: orders_package_2, quantity: 1, package: package2, location: location1).sneaky(:save)
+        create(:packages_inventory, action: 'dispatch', source: orders_package_1, quantity: -2, package: package2, location: location1)
+        create(:packages_inventory, action: 'dispatch', source: orders_package_2, quantity: -2, package: package2, location: location1)
+        create(:packages_inventory, action: 'undispatch', source: orders_package_2, quantity: 1, package: package2, location: location1)
       end
 
       it { expect(cpu.dispatched_quantity(package: package2)).to eq(3) }
@@ -249,7 +306,6 @@ RSpec.describe PackagesInventory, type: :model do
 
     context 'Available quantity' do
       before do
-        create(:orders_package, :with_state_dispatched, quantity: 1, package: package1)
         create(:orders_package, :with_state_designated, quantity: 2, package: package1)
         create(:orders_package, :with_state_designated, quantity: 1, package: package1)
       end

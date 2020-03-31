@@ -1,3 +1,5 @@
+require 'goodcity/package_setup'
+
 namespace :goodcity do
 
   # rake goodcity:update_packages_grade_condition
@@ -81,5 +83,18 @@ namespace :goodcity do
         end
       end
     end
+  end
+
+  # Base usage:
+  #   > rake goodcity:compute_quantities
+  #
+  # Rehearsal
+  #   > rake goodcity:compute_quantities[rehearse]
+  #
+  #   Rehearsal will not apply any changes to the packages
+  #
+  desc "Compute the quantity fields of all packages"
+  task :compute_quantities, [:param] => [:environment] do |_, args|
+    Goodcity::PackageSetup.compute_quantities(rehearse: args[:param].eql?('rehearse'))
   end
 end

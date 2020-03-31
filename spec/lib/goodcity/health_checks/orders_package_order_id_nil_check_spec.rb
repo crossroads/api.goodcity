@@ -3,10 +3,14 @@ require 'goodcity/health_checks'
 
 context Goodcity::HealthChecks::OrdersPackageOrderIdCheck do
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+    User.current_user = create(:user)
+  end
+
   subject { described_class.new }
   let!(:orders_package) { create(:orders_package) }
-
-  before { User.current_user = create(:user) }
 
   it { expect(subject.class.desc).to eql("OrdersPackages should contain an order_id reference.") }
 

@@ -4,32 +4,32 @@ describe PackageSplitter do
 
   let(:package_splitter) { PackageSplitter.new(package, qty_to_split) }
 
-  context "splittable" do
+  before { allow(Stockit::ItemSync).to receive(:create) }
 
-    context "should be false if qty < 2" do
+  context "exception handling" do
+    context "should fail if qty to split == qty" do
       let(:qty_to_split) { 1 }
-      let(:package) { build(:package, quantity: 1, inventory_number: "F00001") }
-      it { expect(package_splitter.send(:splittable?)).to eql(false) }
+      let(:package) { create(:package, :with_inventory_record, received_quantity: 1, inventory_number: "F00001") }
+      it { expect { package_splitter.split! }.to raise_error(PackageSplitter::InvalidSplitQuantityError) }
     end
 
-    context "should be false if qty to split > qty" do
+    context "should fail if qty to split > qty" do
       let(:qty_to_split) { 3 }
-      let(:package) { build(:package, quantity: 2, inventory_number: "F00001") }
-      it { expect(package_splitter.send(:splittable?)).to eql(false) }
+      let(:package) { create(:package, :with_inventory_record, received_quantity: 2, inventory_number: "F00001") }
+      it { expect { package_splitter.split! }.to raise_error(PackageSplitter::InvalidSplitQuantityError) }
     end
 
-    context "should be true if qty to split < qty" do
+    context "should succeed if qty to split < qty" do
       let(:qty_to_split) { 3 }
-      let(:package) { build(:package, quantity: 4, inventory_number: "F00001") }
-      it { expect(package_splitter.send(:splittable?)).to eql(true) }
+      let(:package) { create(:package, :with_inventory_record, received_quantity: 4, inventory_number: "F00001") }
+      it { expect { package_splitter.split! }.not_to raise_error }
     end
 
-    context "should be false if inventory_number is blank" do
-      let(:qty_to_split) { 1 }
-      let(:package) { build(:package, quantity: 2, inventory_number: "") }
-      it { expect(package_splitter.send(:splittable?)).to eql(false) }
+    context "should fail if the package is not inventorized" do
+      let(:qty_to_split) { 3 }
+      let(:package) { create(:package, received_quantity: 2, inventory_number: "") }
+      it { expect { package_splitter.split! }.to raise_error(Goodcity::NotInventorizedError) }
     end
-
   end
 
   context "split!" do
@@ -37,15 +37,15 @@ describe PackageSplitter do
     context "create 1 copies from qty 5 split (3,2)" do
       let(:inventory_number) { "F00001" }
       let(:inventory_number_q) { "#{inventory_number}Q" }
-      let(:package) { create(:package, quantity: 5, received_quantity: 5, inventory_number: inventory_number) }
+      let(:package) { create(:package, :with_inventory_record, received_quantity: 5, inventory_number: inventory_number) }
       it do
         expect(Stockit::ItemSync).to receive(:create).exactly(1).times
-        expect{ package_splitter.split! }.to change(package.reload, :quantity).from(5).to(3)
+        expect{ package_splitter.split! }.to change(package.reload, :on_hand_quantity).from(5).to(3)
           .and change {package.received_quantity}.from(5).to(3)
         packages = Package.where("inventory_number LIKE ?", "#{inventory_number_q}%").order(:created_at)
         expect(packages.count).to eql(1)
         pkg = packages.first
-        expect(pkg.quantity).to eql(2)
+        expect(pkg.on_hand_quantity).to eql(2)
         expect(pkg.received_quantity).to eql(2)
       end
     end

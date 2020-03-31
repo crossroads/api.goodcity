@@ -20,5 +20,10 @@ FactoryBot.define do
       association :schedule, factory: :drop_off_schedule
       delivery_type { "Drop Off" }
     end
+
+    trait :admin_order do
+      delivery_type { "Drop Off" }
+      association :offer, :admin_offer
+    end
   end
 end

@@ -4,6 +4,12 @@ require 'rails_helper'
 context Goodcity::Cleanup do
   let(:dispatch_location) { create(:location, :dispatched) }
 
+  before do
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
+    touch(dispatch_location)
+  end
+
   subject { described_class.new }
 
   describe "Cleaning up dispatched packages_locations" do
@@ -15,9 +21,9 @@ context Goodcity::Cleanup do
     end
 
     context "when the package has a dispatched orders_packages" do
-      let(:package) { create(:package) }
+      let(:package) { create(:package, :with_inventory_record) }
 
-      before { create(:orders_package, :with_state_dispatched, package: package) }
+      before { create(:orders_package, :with_inventory_record, :with_state_dispatched, package: package) }
 
       it "deletes the record" do
         expect { run_cleanup }.to change {
