@@ -130,6 +130,7 @@ module Api
         if order_params[:stockit_id]
           @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
           @order.assign_attributes(order_params)
+          @order.assign_state(params[:status])
           @order.stockit_activity = stockit_activity
           @order.stockit_contact = stockit_contact
           @order.stockit_organisation = stockit_organisation
