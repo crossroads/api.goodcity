@@ -16,18 +16,23 @@ class InventoryNumber < ActiveRecord::Base
   end
 
   def self.missing_code
-    sql_for_missing_code = sanitize_sql_array([
-      "SELECT s.i AS first_missing_code
-       FROM generate_series(1,?) s(i)
-       WHERE NOT EXISTS (
-         SELECT 1 FROM (
-           SELECT cast(inventory_number as int) FROM packages WHERE inventory_number ~ '^\d+$'
-           UNION
-           SELECT code as inventory_number from inventory_numbers ORDER BY inventory_number
-         ) as inventory_number
-       WHERE inventory_number = s.i)
-       ORDER BY first_missing_code
-       LIMIT 1", self.count])
+    sql_for_missing_code = sanitize_sql_array(
+      [
+        "SELECT s.i AS first_missing_code
+        FROM generate_series(1,?) s(i)
+        WHERE NOT EXISTS (
+          SELECT 1 FROM (
+            SELECT cast(inventory_number as int) FROM packages
+            WHERE inventory_number ~ '^\d+$'
+            UNION
+            SELECT code as inventory_number from inventory_numbers
+            ORDER BY inventory_number
+          ) as inventory_number
+        WHERE inventory_number = s.i)
+        ORDER BY first_missing_code
+        LIMIT 1", count
+      ]
+    )
 
     missing_number = ActiveRecord::Base.connection.exec_query(sql_for_missing_code).first || {}
     (missing_number["first_missing_code"] || 0).to_i
