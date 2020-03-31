@@ -11,8 +11,8 @@ class PackageSplitter
   end
 
   def split!
-    assert_splittable!
-    PackagesInventory.secured_transaction do
+    @package.inventory_lock do
+      assert_splittable!
       deduct_quantity!
       create_and_save_copy!
     end

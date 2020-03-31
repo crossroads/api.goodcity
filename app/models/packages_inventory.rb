@@ -91,21 +91,21 @@ class PackagesInventory < ActiveRecord::Base
 
   ALLOWED_ACTIONS.each do |action_name|
     # Generate dispatch?, gain?, loss?, etc
-    define_method "#{action_name}?"  do
-      action.eql?(action_name)
-    end
+    define_method("#{action_name}?") { action.eql?(action_name) }
 
     # Generate append_gain, append_dispatch, etc
-    define_singleton_method "append_#{action_name}"  do |params|
+    define_singleton_method("append_#{action_name}") do |params|
       package_id = Utils.to_id(
         params.with_indifferent_access[:package] ||
         params.with_indifferent_access[:package_id]
       )
 
-      PackagesInventory.create!({
-        action: action_name,
-        user: User.current_user || User.system_user
-      }.merge(params))
+      PackagesInventory.secured_transaction(package_id) do
+        PackagesInventory.create!({
+          action: action_name,
+          user: User.current_user || User.system_user
+        }.merge(params))
+      end
     end
   end
 
@@ -141,9 +141,7 @@ class PackagesInventory < ActiveRecord::Base
     errors.count.zero?
   end
 
-  def validate_fields
-    PackagesInventory.secured_transaction(package_id) do
-      validate_action && validate_quantity
-    end
+  def validate_field
+    validate_action && validate_quantity
   end
 end

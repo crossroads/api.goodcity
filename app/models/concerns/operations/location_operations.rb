@@ -36,7 +36,7 @@ module LocationOperations
       def perform
         return if @quantity.zero? || @from == @to
 
-        PackagesInventory.secured_transaction do
+        @package.inventory_lock do
           raise Goodcity::MissingQuantityError if qty_at_source < @quantity
           decrement_origin
           increment_destination
