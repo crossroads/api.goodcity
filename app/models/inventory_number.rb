@@ -8,11 +8,12 @@ class InventoryNumber < ActiveRecord::Base
   end
 
   def self.create_with_next_code!
-    create!(code: next_code)
+    create!(code: next_code.to_i)
   end
 
   def self.next_code
-    missing_code.positive? ? missing_code : (max_code + 1)
+    code = missing_code.positive? ? missing_code : (max_code + 1)
+    code.to_s.rjust(6, '0')
   end
 
   def self.missing_code

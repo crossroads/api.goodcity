@@ -174,7 +174,7 @@ module Api
           return render json: { errors: "Package not found with supplied package_id" }, status: 400
         end
         if @package.inventory_number.blank?
-          @package.inventory_number = InventoryNumber.next_code.rjust(6, "0")
+          @package.inventory_number = InventoryNumber.next_code
           @package.save
         end
         print_inventory_label

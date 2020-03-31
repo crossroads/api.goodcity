@@ -44,7 +44,7 @@ RSpec.describe InventoryNumber, type: :model do
     end
     it "returns 0 if empty table" do
       expect(InventoryNumber.missing_code).to eql(0) # no missing code
-      expect(InventoryNumber.next_code).to eql(1)
+      expect(InventoryNumber.next_code).to eql('000001')
     end
 
     it "missing in inventory numbers table but exists in the packages table" do
@@ -52,9 +52,7 @@ RSpec.describe InventoryNumber, type: :model do
       create(:package, inventory_number: "000001")
       create(:package, inventory_number: "000002")
       expect(InventoryNumber.missing_code).to eql(0) # no missing code
-      expect(InventoryNumber.next_code).to eql(3)
+      expect(InventoryNumber.next_code).to eql('000003')
     end
-
   end
-
 end
