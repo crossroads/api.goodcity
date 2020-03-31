@@ -21,8 +21,10 @@ module InventoryComputer
         historical_quantity.where(query).as_of_now
       end
 
-      def package_quantity(package)
-        quantity_where(package: package)
+      def package_quantity(package, location: nil)
+        res = historical_quantity.where(package: package)
+        res = res.where(location_id: Utils.to_id(location)) if location
+        res.as_of_now
       end
 
       def location_quantity(location)

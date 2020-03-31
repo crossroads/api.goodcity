@@ -60,7 +60,6 @@ class PackagesInventory < ActiveRecord::Base
 
   def undo
     raise Goodcity::InventoryError.new(I18n.t('packages_inventory.cannot_undo')) unless REVERSIBLE_ACTIONS.key?(action)
-
     PackagesInventory.create!({
       action:   REVERSIBLE_ACTIONS[action],
       user:     User.current_user || User.system_user,
@@ -92,16 +91,21 @@ class PackagesInventory < ActiveRecord::Base
 
   ALLOWED_ACTIONS.each do |action_name|
     # Generate dispatch?, gain?, loss?, etc
-    define_method "#{action_name}?"  do
-      action.eql?(action_name)
-    end
+    define_method("#{action_name}?") { action.eql?(action_name) }
 
     # Generate append_gain, append_dispatch, etc
-    define_singleton_method "append_#{action_name}"  do |params|
-      PackagesInventory.create!({
-        action: action_name,
-        user: User.current_user || User.system_user
-      }.merge(params))
+    define_singleton_method("append_#{action_name}") do |params|
+      package_id = Utils.to_id(
+        params.with_indifferent_access[:package] ||
+        params.with_indifferent_access[:package_id]
+      )
+
+      PackagesInventory.secured_transaction(package_id) do
+        PackagesInventory.create!({
+          action: action_name,
+          user: User.current_user || User.system_user
+        }.merge(params))
+      end
     end
   end
 
@@ -130,7 +134,9 @@ class PackagesInventory < ActiveRecord::Base
       errors.add(:errors, I18n.t('package_inventory.quantities.enforced_positive', action: action)) if quantity.negative?
       errors.add(:errors, I18n.t('package_inventory.storage_type_max', type: package.storage_type.name, quantity: maximum_qty )) if outcome_qty > maximum_qty
     else
+      qty_at_location = PackagesInventory::Computer.package_quantity(package, location: location)
       errors.add(:errors, I18n.t('package_inventory.quantities.enforced_negative', action: action)) if quantity.positive?
+      errors.add(:errors, I18n.t('package_inventory.quantities.invalid_negative_quantity')) if quantity.abs > qty_at_location
     end
     errors.count.zero?
   end

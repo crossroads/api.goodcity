@@ -3,6 +3,7 @@ class PackagesLocation < ActiveRecord::Base
   include LocationOperations
   include PushUpdatesMinimal
   include InventoryLegacySupport
+  include Secured
 
   belongs_to :location
   belongs_to :package

@@ -6,7 +6,7 @@
 #     include DesignationOperations
 #   end
 #
-#   MyClass::DesignationOperations.designate(package, quantity: 2, to_order: order)
+#   MyClass::Operations.designate(package, quantity: 2, to_order: order)
 #
 #
 module DesignationOperations
@@ -37,26 +37,28 @@ module DesignationOperations
       to_order        = Utils.to_model(to_order, Order)
       orders_package  = _orders_package || init_orders_package(package, to_order)
 
-      assert_can_designate!(package, to_order, orders_package, quantity);
+      package.inventory_lock do
+        assert_can_designate!(package, to_order, orders_package, quantity);
 
-      orders_package.package = package
-      orders_package.order = to_order
-      orders_package.quantity = quantity
-      orders_package.updated_by = User.current_user
+        orders_package.package = package
+        orders_package.order = to_order
+        orders_package.quantity = quantity
+        orders_package.updated_by = User.current_user
 
-      if orders_package.dispatched_quantity.eql?(quantity)
-        # Case: we reduced the quantity, enough quantity has been dispatched to change the state of the orders_package
-        orders_package.state = OrdersPackage::States::DISPATCHED
-        if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
-          # @TODO: Remove after destroying stockit
-          orders_package.package.dispatch_stockit_item(orders_package)
-          orders_package.package.save
+        if orders_package.dispatched_quantity.eql?(quantity)
+          # Case: we reduced the quantity, enough quantity has been dispatched to change the state of the orders_package
+          orders_package.state = OrdersPackage::States::DISPATCHED
+          if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
+            # @TODO: Remove after destroying stockit
+            orders_package.package.dispatch_stockit_item(orders_package)
+            orders_package.package.save
+          end
+        else
+          orders_package.state = OrdersPackage::States::DESIGNATED
         end
-      else
-        orders_package.state = OrdersPackage::States::DESIGNATED
+        orders_package.save!
+        orders_package
       end
-      orders_package.save!
-      orders_package
     end
 
     ##
@@ -74,15 +76,17 @@ module DesignationOperations
     #
     #
     def redesignate(orders_package, to_order:)
-      raise Goodcity::InvalidQuantityError.new(orders_package.quantity) if orders_package.quantity <= 0
-      raise Goodcity::AlreadyDesignatedError if already_designated?(orders_package.package, to_order)
-      raise Goodcity::ExpectedStateError.new(orders_package, :cancelled) unless orders_package.cancelled?
+      orders_package.package.inventory_lock do
+        raise Goodcity::InvalidQuantityError.new(orders_package.quantity) if orders_package.quantity <= 0
+        raise Goodcity::AlreadyDesignatedError if already_designated?(orders_package.package, to_order)
+        raise Goodcity::ExpectedStateError.new(orders_package, :cancelled) unless orders_package.cancelled?
 
-      designate(orders_package.package,
-        quantity: orders_package.quantity,
-        to_order: to_order,
-        _orders_package: orders_package
-      )
+        designate(orders_package.package,
+          quantity: orders_package.quantity,
+          to_order: to_order,
+          _orders_package: orders_package
+        )
+      end
     end
 
     # --- HELPERS

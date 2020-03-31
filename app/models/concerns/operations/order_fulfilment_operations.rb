@@ -32,10 +32,11 @@ module OrderFulfilmentOperations
     # @todo remove stockit references
     #
     def undispatch(ord_pkg, quantity:, to_location:)
-      PackagesInventory.secured_transaction do
+      package = ord_pkg.package
+      package.inventory_lock do
         assert_can_undispatch(ord_pkg, quantity)
         PackagesInventory.append_undispatch(
-          package: ord_pkg.package,
+          package: package,
           quantity: quantity,
           source: ord_pkg,
           location: Utils.to_model(to_location, Location)
@@ -43,8 +44,8 @@ module OrderFulfilmentOperations
 
         if ord_pkg.dispatched?
           ord_pkg.update!(state: "designated", sent_on: nil)
-          ord_pkg.package.undispatch_stockit_item if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
-          ord_pkg.package.save!
+          package.undispatch_stockit_item if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
+          package.save!
         end
       end
     end
@@ -71,13 +72,14 @@ module OrderFulfilmentOperations
     # @raise [ActiveRecord::RecordNotFound]
     #
     def dispatch(ord_pkg, quantity:, from_location:)
+      package = ord_pkg.package
       location = Utils.to_model(from_location, Location)
       quantity = quantity.to_i
 
-      PackagesInventory.secured_transaction do
+      package.inventory_lock do
         assert_can_dispatch(ord_pkg, quantity, location)
         PackagesInventory.append_dispatch(
-          package: ord_pkg.package,
+          package: package,
           quantity: -1 * quantity.abs,
           source: ord_pkg,
           location: location
@@ -87,8 +89,8 @@ module OrderFulfilmentOperations
 
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch
-          ord_pkg.package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
-          ord_pkg.package.save
+          package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
+          package.save
         end
       end
     end
