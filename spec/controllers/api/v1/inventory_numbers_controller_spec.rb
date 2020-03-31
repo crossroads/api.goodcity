@@ -13,7 +13,7 @@ RSpec.describe Api::V1::InventoryNumbersController, type: :controller do
         post :create
       }.to change(InventoryNumber, :count).by(1)
       expect(response.status).to eq(200)
-      expect(parsed_body['inventory_number']).to eql(InventoryNumber.last.code.to_s.rjust(6, "0"))
+      expect(parsed_body['inventory_number']).to eql(InventoryNumber.last.code)
     end
   end
 
