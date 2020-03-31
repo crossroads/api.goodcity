@@ -47,8 +47,7 @@ namespace :stockit do
             package.grade = value["grade"]
             package.stockit_sent_on = value["sent_on"]
             package.inventory_number = (value["inventory_number"] || "").gsub(/^x/i, '')
-            package.quantity = value["quantity"].to_i
-            package.received_quantity = package.quantity
+            package.received_quantity = value["quantity"].to_i
             package.length = value["length"].to_i.zero? ? "" : value["length"].to_i
             package.width = value["width"].to_i.zero? ? "" : value["width"].to_i
             package.height = value["height"].to_i.zero? ? "" : value["height"].to_i
@@ -104,7 +103,7 @@ namespace :stockit do
   end
 
   def packages_locations(package, stockit_location_id)
-    quantity = package.quantity
+    quantity = package.received_quantity
     location_id = lookup_location_id(stockit_location_id)
     return [] unless (location_id && quantity)
     record = lookup_packages_location(package.id, location_id)

@@ -6,11 +6,12 @@ RSpec.describe Order, type: :model do
   TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled", "draft"].freeze
 
   let(:user) { create :user }
+  let!(:appointment_type) { create(:booking_type, :appointment) }
+  let!(:online_type) { create(:booking_type, :online_order) }
 
   before(:all) {
-    FactoryBot.generate(:booking_types).keys.each { |identifier|
-      FactoryBot.create :booking_type, identifier: identifier
-    }
+    allow(Stockit::OrdersPackageSync).to receive(:create)
+    allow(Stockit::OrdersPackageSync).to receive(:update)
   }
 
   context "create an order" do
@@ -237,7 +238,7 @@ RSpec.describe Order, type: :model do
 
     let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
-    let(:package1) { create(:package)}
+    let(:package1) { create(:package, :with_inventory_record)}
     let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
     let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
 
@@ -305,17 +306,17 @@ RSpec.describe Order, type: :model do
 
   describe ".active_orders_count_as_per_priority_and_state" do
     before do
-      non_priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 25.hours
-      priority_submitted = create :order, state: "submitted", submitted_at: Time.zone.now - 23.hours
+      non_priority_submitted = create :order, booking_type: appointment_type, state: "submitted", submitted_at: Time.zone.now - 25.hours
+      priority_submitted = create :order, state: "submitted", booking_type: appointment_type, submitted_at: Time.zone.now - 23.hours
 
-      non_priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 25.hours
-      priority_processing = create :order, state: "processing", processed_at: Time.zone.now - 23.hours
+      non_priority_processing = create :order, booking_type: appointment_type, state: "processing", processed_at: Time.zone.now - 25.hours
+      priority_processing = create :order, state: "processing", booking_type: appointment_type, processed_at: Time.zone.now - 23.hours
     end
 
     context "for Non Priority Orders" do
       it "returns non priority orders hash with state as key and its corresponding count as value" do
         expect(Order.active_orders_count_as_per_priority_and_state(is_priority: false)).to eq(
-          {"submitted" => 2, "processing" => 2}
+          { "submitted" => 2, "processing" => 2 }
         )
       end
     end
@@ -673,12 +674,6 @@ RSpec.describe Order, type: :model do
     it "Assigns GC Code" do
       expect(order.code).to include("GC-")
     end
-
-    it "Updates orders_packages quantity" do
-      order.orders_packages.each do |orders_package|
-        expect(orders_package.reload.quantity).to eq(orders_package.package.quantity)
-      end
-    end
   end
 
   describe "Update OrdersPackages state" do
@@ -738,13 +733,11 @@ RSpec.describe Order, type: :model do
   end
 
   describe 'Processing checklist' do
-    let!(:booking_type) { create :booking_type, identifier: 'aaa' }
-    let!(:booking_type2) { create :booking_type, identifier: 'bbb' }
-    let!(:checklist_it1) { create :process_checklist, booking_type: booking_type }
-    let!(:checklist_it2) { create :process_checklist, booking_type: booking_type }
-    let!(:checklist_it3) { create :process_checklist, booking_type: booking_type }
-    let!(:checklist_unrequired) { create :process_checklist, booking_type: booking_type2 }
-    let!(:order) { create :order, booking_type: booking_type, state: "processing", description: "", process_checklists: [checklist_it1] }
+    let!(:checklist_it1) { create :process_checklist, booking_type: online_type }
+    let!(:checklist_it2) { create :process_checklist, booking_type: online_type }
+    let!(:checklist_it3) { create :process_checklist, booking_type: online_type }
+    let!(:checklist_unrequired) { create :process_checklist, booking_type: appointment_type }
+    let!(:order) { create :order, booking_type: online_type, state: "processing", description: "", process_checklists: [checklist_it1] }
 
 
     it 'Should be allowed to transition only if all checklist items have been added to the order' do
@@ -761,7 +754,7 @@ RSpec.describe Order, type: :model do
       expect(order.process_checklists.count).to eq(3)
       expect(order.can_transition).to eq(true) # 3/3, can transition
 
-      create :process_checklist, booking_type: booking_type
+      create :process_checklist, booking_type: online_type
       expect(order.can_transition).to eq(false) # 3/4
     end
   end
@@ -795,7 +788,8 @@ RSpec.describe Order, type: :model do
       let(:sendgrid) { SendgridService.new(user) }
       let(:order) do
         order_transport = transport_type ? create(:order_transport, transport_type: transport_type) : nil
-        create(:order, :with_state_draft, :with_created_by, order_transport: order_transport, booking_type: create(:booking_type, identifier: type))
+        create(:order, :with_state_draft, :with_created_by, order_transport: order_transport,
+               booking_type: type.eql?('online-order')?  online_type : appointment_type)
       end
 
       before(:each) do
@@ -858,9 +852,9 @@ RSpec.describe Order, type: :model do
 
   describe 'Submission Emails' do
     let(:sendgrid) { SendgridService.new(user) }
-    let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: BookingType.appointment )}
-    let(:online_order1) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
-    let(:online_order2) { create(:order, :with_created_by, booking_type: BookingType.online_order, state: "draft" )}
+    let(:appointment) { create(:order, :with_state_draft, :with_created_by, booking_type: appointment_type )}
+    let(:online_order1) { create(:order, :with_created_by, booking_type: online_type, state: "draft" )}
+    let(:online_order2) { create(:order, :with_created_by, booking_type: online_type, state: "draft" )}
     let(:order_transport1) { create(:order_transport, order: online_order1) }
     let(:order_transport2) { create(:order_transport, order: online_order2, transport_type: 'ggv') }
 

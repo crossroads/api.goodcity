@@ -54,32 +54,21 @@ describe RequestedPackage, :type => :model do
   end
 
   describe "Availability" do
-    let(:package1) { create(:package) }
-    let(:package2) { create(:package) }
     let(:user) { create(:user) }
     let!(:dispatch_location) { create(:location, :dispatched) }
     let(:order) { create(:order, :with_state_awaiting_dispatch) }
 
-    let(:undesignated_package_unpublished) { create(:package, :unpublished) }
-    let(:undesignated_package_published) { create(:package, :published) }
+    let(:undesignated_package_unpublished) { create(:package, :with_inventory_record, :unpublished) }
+    let(:undesignated_package_published) { create(:package, :with_inventory_record, :published) }
     let(:undesignated_package_published_qty_0) { create(:package, :published) }
     let(:designated_orders_package) {
-      create(:orders_package, :with_state_designated, quantity: 1, package: create(:package, :published, received_quantity: 1), order: order)
-    }
-    let(:undesignated_orders_package) {
-      create(:orders_package, :with_state_requested, quantity: 1, package: create(:package, :published, received_quantity: 1), order: order)
+      create(:orders_package, :with_inventory_record, :with_state_designated, quantity: 1, order: order,
+        package: create(:package, :with_inventory_record, :published, received_quantity: 1))
     }
     let(:dispatched_orders_package) {
-      create(:orders_package, :with_state_dispatched, quantity: 1, package: create(:package, :published, received_quantity: 1), order: order)
+      create(:orders_package, :with_inventory_record, :with_state_dispatched, quantity: 1, order: order,
+        package: create(:package, :with_inventory_record, :published, received_quantity: 1))
     }
-
-    before do
-      initialize_inventory(
-        undesignated_package_unpublished,
-        undesignated_package_published,
-        [designated_orders_package, undesignated_orders_package, dispatched_orders_package].map(&:package)
-      )
-    end
 
     it "marks cart item as available when the package is published" do
       requested_package = create(:requested_package, package: undesignated_package_unpublished)
@@ -121,10 +110,10 @@ describe RequestedPackage, :type => :model do
     end
 
     it "marks cart item as unavailable if the package gets designated" do
-      pkg = undesignated_orders_package.package
+      pkg = create(:package, :with_inventory_record, :published, received_quantity: 1)
       requested_package = create(:requested_package, package: pkg)
       expect(requested_package.is_available).to eq(true)
-      undesignated_orders_package.reload.designate!
+      create(:orders_package, :with_state_designated, quantity: 1, order: order, package_id: pkg.id)
       expect(requested_package.reload.is_available).to eq(false)
     end
 

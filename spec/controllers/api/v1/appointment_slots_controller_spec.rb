@@ -4,12 +4,8 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
   let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_settings )}
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
-
-  before(:all) {
-    FactoryBot.generate(:booking_types).keys.each { |identifier|
-      FactoryBot.create :booking_type, identifier: identifier
-    }
-  }
+  let!(:appointment_type) { create(:booking_type, :appointment) }
+  let!(:online_type) { create(:booking_type, :online_order) }
 
   def now
     DateTime.now.change(sec: 0, usec: 0)
@@ -75,7 +71,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
       end
 
       it 'specifies the number of remaining slots (/calendar)' do
-        appointment_order = FactoryBot.create(:order, booking_type: BookingType.appointment)
+        appointment_order = FactoryBot.create(:order, booking_type: appointment_type)
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('29th Oct 2018 10:30:00+08:00'), quota: 5 # Monday
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 10:30:00+08:00'), quota: 5 # Tuesday
         FactoryBot.create :appointment_slot, timestamp: DateTime.parse('30th Oct 2018 14:00:00+08:00'), quota: 5 # Tuesday
@@ -154,7 +150,6 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     end
 
     describe 'Special rules' do
-      let!(:appointment_booking_type) { create :booking_type, identifier: 'appointment' }
 
       before {
         (1..7).each { |i| FactoryBot.create :appointment_slot_preset, hours: 10, minutes: 30, day: i }
@@ -175,7 +170,7 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
           it 'locks all dates before the specified date' do
             create :goodcity_setting, key: 'api.appointments.prevent_booking_until', value: (Date.today + 10.days).strftime("%d-%m-%Y")
 
-            get :calendar, to: (Date.today + 20.days).to_s, booking_type_id: appointment_booking_type.id
+            get :calendar, to: (Date.today + 20.days).to_s, booking_type_id: appointment_type.id
             expect(calendar_dates.count).to eq(21)
             expect(calendar_dates.slice(0, 10).map { |day| day['isClosed'] }.uniq).to eq([true])
             expect(calendar_dates.slice(11, 20).map { |day| day['isClosed'] }.uniq).to eq([false])

@@ -1,47 +1,76 @@
 class PackageSplitter
 
-  # Given a package with quantity 5, if you split 3 packages
-  #   it will create 3 new packages each of qty 1 and the initial
+  # Given a package with quantity 5, if you split a quantity of 3
+  #   it will create 1 new package with a qty of 3 and the initial
   #   package will now have qty 2
-  # Also ensures images are copied and returns false if package is not splittable
+  # Also ensures images are copied and raises an error if package is not splittable
 
   def initialize(package, qty_to_split)
     @package = package
     @qty_to_split = qty_to_split.to_i
   end
 
-  def splittable?
-    @qty_to_split.positive? &&
-      (@qty_to_split < @package.quantity) &&
-      @package.inventory_number.present?
+  def split!
+    @package.inventory_lock do
+      assert_splittable!
+      deduct_quantity!
+      create_and_save_copy!
+    end
   end
 
-  def split!
-    return false unless splittable?
-    deduct_qty_and_make_copies
+  #
+  # Exceptions
+  #
+
+  class SplitError < Goodcity::BaseError; end
+
+  class InvalidSplitQuantityError < SplitError
+    def initialize(qty)
+      super(I18n.t('package.split_qty_error', qty: qty))
+    end
+  end
+
+  class InvalidSplitLocationError < SplitError
+    def initialize
+      super(I18n.t('package.split_location_error'))
+    end
   end
 
   private
 
-  def deduct_qty_and_make_copies
-    create_and_save_copy
-    @package.update(
-      quantity: @package.quantity - @qty_to_split,
-      received_quantity: @package.received_quantity - @qty_to_split
-    )
+  def assert_splittable!
+    raise Goodcity::DisabledFeatureError.new(feature: 'split') unless STOCKIT_ENABLED
+    raise Goodcity::NotInventorizedError unless inventorized?
+    raise InvalidSplitQuantityError.new(@package.available_quantity) unless splittable?
+    raise InvalidSplitLocationError if @package.locations.count > 1
   end
 
-  def create_and_save_copy
+  def inventorized?
+    PackagesInventory.inventorized?(@package) && @package.inventory_number.present?
+  end
+
+  def splittable?
+    @qty_to_split.positive? && @qty_to_split < @package.available_quantity
+  end
+
+  def source_location
+    @package.locations.first
+  end
+
+  def deduct_quantity!
+    Package::Operations.register_loss(@package, quantity: @qty_to_split, location: source_location)
+    @package.update!(received_quantity: @package.received_quantity - @qty_to_split)
+  end
+
+  def create_and_save_copy!
     copy = @package.dup
-    copy.quantity = @qty_to_split
     copy.received_quantity = @qty_to_split
     copy.inventory_number = generate_q_inventory_number
     copy.stockit_id = nil
     copy.add_to_stockit
-    if copy.save
-      copy_and_save_images(copy)
-      copy_and_save_packages_locations(copy)
-    end
+    copy.save!
+    copy_and_save_images(copy)
+    Package::Operations.inventorize(copy, source_location)
   end
 
   def generate_q_inventory_number
@@ -54,26 +83,14 @@ class PackageSplitter
     end
   end
 
-  def copy_and_save_packages_locations(copy)
-    copied_packages_locations = []
-    @package.packages_locations.each do |packages_location|
-      copied_packages_location = packages_location.dup
-      copied_packages_location.quantity = 1
-      copied_packages_location.reference_to_orders_package = nil
-      copied_packages_locations << copied_packages_location
-    end
-    copy.packages_locations << copied_packages_locations
-  end
-
   def copy_and_save_images(copy)
     copied_images = []
     @package.images.each do |image|
       copied_image = image.dup
       copied_image.imageable_id = copy.id
-      copied_image.save
+      copied_image.save!
       copied_images << copied_image
     end
     copy.images << copied_images
   end
-
 end

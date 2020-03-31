@@ -3,6 +3,7 @@ class PackagesLocation < ActiveRecord::Base
   include LocationOperations
   include PushUpdatesMinimal
   include InventoryLegacySupport
+  include Secured
 
   belongs_to :location
   belongs_to :package
@@ -29,21 +30,5 @@ class PackagesLocation < ActiveRecord::Base
     chans = [Channel::STOCK_CHANNEL]
     chans << Channel::STAFF_CHANNEL if record.package.item_id # The item_id indicates it was donated via the admin app
     chans
-  end
-
-  def update_quantity(received_quantity)
-    update(quantity: received_quantity)
-  end
-
-  def update_referenced_orders_package(orders_package_id)
-    update_column(:reference_to_orders_package, orders_package_id)
-  end
-
-  def update_location_quantity_and_reference(location_id, quantity, reference_to_orders_package)
-    update(
-      location_id: location_id,
-      quantity: quantity,
-      reference_to_orders_package: reference_to_orders_package
-    )
   end
 end

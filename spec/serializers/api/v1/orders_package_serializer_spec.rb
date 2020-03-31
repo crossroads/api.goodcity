@@ -2,6 +2,8 @@ require 'rails_helper'
 
 describe Api::V1::OrdersPackageSerializer do
 
+  before { allow(Stockit::OrdersPackageSync).to receive(:create) }
+
   let(:orders_package)  { create(:orders_package) }
   let(:opts) { {include_allowed_actions: true} }
   let(:serializer) { Api::V1::OrdersPackageSerializer.new(orders_package, opts).as_json }

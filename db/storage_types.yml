@@ -1,7 +1,10 @@
 ---
 -
   name: "Box"
+  max_unit_quantity: 1
 -
   name: "Pallet"
+  max_unit_quantity: 1
 -
   name: "Package"
+  max_unit_quantity: null

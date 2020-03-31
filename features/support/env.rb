@@ -44,6 +44,10 @@ Before('@supervisor') do
   User.current_user = FactoryBot.create(:user, :supervisor)
 end
 
+Before do
+  FactoryBot.create :location, :dispatched
+end
+
 
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
 # See the DatabaseCleaner documentation for details. Example:

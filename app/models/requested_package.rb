@@ -1,4 +1,6 @@
 class RequestedPackage < ActiveRecord::Base
+  include Watcher
+
   has_paper_trail class_name: 'Version'
 
   # --- Live Updates
@@ -24,6 +26,10 @@ class RequestedPackage < ActiveRecord::Base
   # --- Hooks
 
   before_save :update_availability
+
+  watch [Package] do |package|
+    package.requested_packages.each(&:update_availability!)
+  end
 
   def update_availability
     self.is_available = package.published? &&
