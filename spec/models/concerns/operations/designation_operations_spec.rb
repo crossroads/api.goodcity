@@ -68,9 +68,17 @@ context DesignationOperations do
         allow(Stockit::OrdersPackageSync).to receive(:update)
 
         ord_pkg = designate(4, to_order: dispatching_order)
+        expect(ord_pkg.quantity).to eq(4)
+        expect(ord_pkg.dispatched_quantity).to eq(0)
+
         OrdersPackage::Operations.dispatch(ord_pkg, quantity: 2, from_location: package.locations.first)
+
+        ord_pkg.reload
+        expect(ord_pkg.quantity).to eq(4)
+        expect(ord_pkg.dispatched_quantity).to eq(2)
+
         expect { OrdersPackage::Operations.dispatch(ord_pkg, quantity: 2, from_location: package.locations.first) }.to change {
-          OrdersPackage.find(ord_pkg.id).state
+          ord_pkg.reload.state
         }.from("designated").to("dispatched")
       end
 
@@ -92,9 +100,15 @@ context DesignationOperations do
         expect(Stockit::OrdersPackageSync).to receive(:create).once
         expect(Stockit::OrdersPackageSync).to receive(:update).once
 
-        designate(4, to_order: dispatching_order)
-        orders_package = dispatching_order.reload.orders_packages.first
+        orders_package = designate(4, to_order: dispatching_order)
+        expect(orders_package.quantity).to eq(4)
+        expect(orders_package.dispatched_quantity).to eq(0)
+
         OrdersPackage::Operations.dispatch(orders_package, quantity: 3, from_location: package.locations.first)
+
+        orders_package.reload
+        expect(orders_package.quantity).to eq(4)
+        expect(orders_package.dispatched_quantity).to eq(3)
         expect {
           designate(2, to_order: dispatching_order)
         }.to raise_error(Goodcity::AlreadyDispatchedError).with_message('Some has been already dispatched, please undispatch and try again.')

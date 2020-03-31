@@ -46,7 +46,16 @@ RSpec.describe PackagesInventory, type: :model do
       PackagesInventory::DECREMENTAL_ACTIONS.each do |act|
         expect {
           create(:packages_inventory, action: act, quantity: 1)
-        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Errors Positive values are not allowed for #{act} actions")
+        }.to raise_error(ActiveRecord::RecordInvalid, /Positive values are not allowed for #{act} actions/)
+      end
+    end
+
+    it 'prevents removing less than is available at a location' do
+      pkg = create(:packages_inventory, action: 'inventory', quantity: 5).package
+      PackagesInventory::DECREMENTAL_ACTIONS.each do |act|
+        expect {
+          create(:packages_inventory, action: act, quantity: -6, package: pkg)
+        }.to raise_error(ActiveRecord::RecordInvalid, /Required quantity not present at location/)
       end
     end
 
@@ -121,7 +130,7 @@ RSpec.describe PackagesInventory, type: :model do
     let(:source) { create :orders_package, package: package, quantity: 5 }
     let(:location) { create :location }
 
-    before { initialize_inventory(package) }
+    before { initialize_inventory(package, location: location) }
 
     it 'allows undoing and redoing dispatch/undispatch actions' do
       action = create(:packages_inventory, action: 'dispatch', quantity: -5, package: package, location: location, source: source)

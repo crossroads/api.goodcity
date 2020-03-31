@@ -99,6 +99,18 @@ class Package < ActiveRecord::Base
     PackagesInventory::Computer.update_package_quantities!(record.package)
   end
 
+  # ---------------------
+  # Security
+  # ---------------------
+
+  def inventory_lock
+    PackagesInventory.secured_transaction(id) { yield }
+  end
+
+  # ---------------------
+  # States
+  # ---------------------
+
   # Workaround to set initial state for the state_machine
   # StateMachine has Issue with rails 4.2, it does not set initial state by default
   # refer - https://github.com/pluginaweek/state_machine/issues/334

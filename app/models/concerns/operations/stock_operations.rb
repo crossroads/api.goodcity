@@ -12,11 +12,11 @@ module StockOperations
     #
     # @raise [Goodcity::AlreadyInventorizedError] thrown if trying to inventorize twice
     #
-    # @param [Package|String] the package to inventorize or its id
+    # @param [Package] the package to inventorize
     # @param [Location|String] the location to place the package in
     #
     def inventorize(package, location)
-      PackagesInventory.secured_transaction do
+      package.inventory_lock do
         assert_can_inventorize!(package, location)
 
         PackagesInventory.append_inventory(
@@ -40,11 +40,11 @@ module StockOperations
     #
     # @raise [Goodcity::UninventoryError] thrown if actions were taken since the initial inventory action
     #
-    # @param [Package|String] the package to inventorize or its id
+    # @param [Package] the package to inventorize
     # @param [Location|String] the location to place the package in
     #
     def uninventorize(package)
-      PackagesInventory.secured_transaction do
+      package.inventory_lock do
         last_action = PackagesInventory.order('id DESC').where(package: package).limit(1).first
         raise Goodcity::UninventoryError if last_action.blank? || !last_action.inventory?
         last_action.undo
@@ -60,14 +60,16 @@ module StockOperations
     # @param [Location|Id] to the location to add the quantity (or its id)
     #
     def register_gain(package, quantity:, location: nil, action: "gain", description: nil)
-      raise Goodcity::NotInventorizedError unless PackagesInventory.inventorized?(package)
-      PackagesInventory.public_send("append_#{action}", {
-        package: package,
-        quantity: quantity.abs,
-        location: Utils.to_model(location, Location),
-        description: description,
-      })
-      package.reload
+      package.inventory_lock do
+        raise Goodcity::NotInventorizedError unless PackagesInventory.inventorized?(package)
+        PackagesInventory.public_send("append_#{action}", {
+          package: package,
+          quantity: quantity.abs,
+          location: Utils.to_model(location, Location),
+          description: description,
+        })
+        package.reload
+      end
     end
 
     ##
@@ -78,25 +80,27 @@ module StockOperations
     # @param [Location|Id] from_location the location to negate the quantity from(or its id)
     #
     def register_loss(package, quantity:, location: nil, action: 'loss', description: nil)
-      available_count = PackagesInventory::Computer.available_quantity_of(package)
+      package.inventory_lock do
+        available_count = PackagesInventory::Computer.available_quantity_of(package)
 
-      if quantity.abs > available_count
-        designated_count = PackagesInventory::Computer.designated_quantity_of(package)
-        if designated_count.positive?
-          orders = package.orders_packages.designated.map(&:order).uniq
-          raise Goodcity::QuantityDesignatedError.new(orders)
-        else
-          raise Goodcity::InsufficientQuantityError.new(quantity)
+        if quantity.abs > available_count
+          designated_count = PackagesInventory::Computer.designated_quantity_of(package)
+          if designated_count.positive?
+            orders = package.orders_packages.designated.map(&:order).uniq
+            raise Goodcity::QuantityDesignatedError.new(orders)
+          else
+            raise Goodcity::InsufficientQuantityError.new(quantity)
+          end
         end
-      end
 
-      PackagesInventory.public_send("append_#{action}", {
-        package: package,
-        quantity: quantity.abs * -1,
-        location: Utils.to_model(location, Location),
-        description: description
-      })
-      package.reload
+        PackagesInventory.public_send("append_#{action}", {
+          package: package,
+          quantity: quantity.abs * -1,
+          location: Utils.to_model(location, Location),
+          description: description
+        })
+        package.reload
+      end
     end
 
     ##
@@ -129,8 +133,10 @@ module StockOperations
     end
 
     def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )
-      raise Goodcity::ActionNotAllowedError.new unless PackUnpack.action_allowed?(task)
-      PackUnpack.new(container, package, location_id, quantity, user_id).public_send(task)
+      package.inventory_lock do
+        raise Goodcity::ActionNotAllowedError.new unless PackUnpack.action_allowed?(task)
+        PackUnpack.new(container, package, location_id, quantity, user_id).public_send(task)
+      end
     end
 
     class PackUnpack
@@ -193,12 +199,16 @@ module StockOperations
 
       # checks if the package has available quantity to add inside a box.
       def addition_allowed?
-        @package.available_quantity.positive?
+        available_quantity.positive?
       end
 
       # checks if the addable quantity is greater than available quantity.
       def invalid_quantity?
-        @quantity > @package.available_quantity
+        @quantity > available_quantity
+      end
+
+      def available_quantity
+        @available_quantity ||= PackagesInventory::Computer.available_quantity_of(@package)
       end
 
       def response(pkg_inventory)
