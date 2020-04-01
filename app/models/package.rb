@@ -429,7 +429,7 @@ class Package < ActiveRecord::Base
     if gc_inventory_number
       InventoryNumber.where(code: inventory_number).first_or_create!
     end
-  rescue ActiveRecord::RecordInvalid
+  rescue RangeError
     errors.add(:base, I18n.t('inventory_number.error'))
     false
   end
