@@ -447,14 +447,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             expect(created_package.packages_locations.first.location_id).to eq(location.id)
             expect(created_package.packages_locations.first.quantity).to eq(package.received_quantity)
           end
-        end
 
-        context "with invalid inventory number" do
-          before { package_params[:inventory_number] = '1000000' }
-
-          it 'returns an error' do
-            post :create, format: :json, package: package_params
-            expect(response.body).to include(I18n.t('inventory_number.error'))
+          context "with invalid inventory number" do
+            it 'returns an error' do
+              package_params[:inventory_number] = '99999999999999'
+              post :create, format: :json, package: package_params
+              expect(response.body).to include(I18n.t('inventory_number.error'))
+            end
           end
         end
 
