@@ -112,7 +112,7 @@ class Order < ActiveRecord::Base
   scope :shipments, -> { where(detail_type: "Shipment") }
 
   def assign_state(status)
-    state = SHIPMENT_STATUS_MAP[status]
+    self.state = SHIPMENT_STATUS_MAP[status] || "processing"
   end
 
   def can_dispatch_item?
