@@ -13,6 +13,8 @@ class Order < ActiveRecord::Base
     ]
   end
 
+  validates :booking_type_id, presence: true
+
   belongs_to :cancellation_reason
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity

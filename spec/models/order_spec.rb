@@ -81,6 +81,10 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:staff_note).of_type(:string)}
   end
 
+  describe "Validations" do
+    it { should validate_presence_of(:booking_type_id) }
+  end
+
   describe '.counts_for' do
     let(:user) { create :user }
     let(:user1) { create :user }
