@@ -1,7 +1,8 @@
 class InventoryNumber < ActiveRecord::Base
   include RollbarSpecification
 
-  validates :code, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: true, numericality: { less_than_or_equal_to: 999999, only_integer: true }
+
 
   def code
     self[:code]&.to_s&.rjust(6, '0')

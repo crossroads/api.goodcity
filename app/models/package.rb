@@ -427,8 +427,11 @@ class Package < ActiveRecord::Base
 
   def save_inventory_number
     if gc_inventory_number
-      InventoryNumber.where(code: inventory_number).first_or_create
+      InventoryNumber.where(code: inventory_number).first_or_create!
     end
+  rescue ActiveRecord::RecordInvalid
+    errors.add(:base, I18n.t('inventory_number.error'))
+    false
   end
 
   def remove_inventory_number

@@ -150,5 +150,8 @@ en:
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
+  inventory_number:
+    error: "Inventory number is too long"
+
 
 

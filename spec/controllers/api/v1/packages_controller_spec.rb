@@ -449,6 +449,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           end
         end
 
+        context "with invalid inventory number" do
+          before { package_params[:inventory_number] = '1000000' }
+
+          it 'returns an error' do
+            post :create, format: :json, package: package_params
+            expect(response.body).to include(I18n.t('inventory_number.error'))
+          end
+        end
+
         context "but no location_id" do
           it "fails to create the package" do
             expect {
@@ -1116,7 +1125,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "DELETE package/1" do
     let(:uninventorized_package) { create :package, inventory_number: nil }
-  
+
     before { generate_and_set_token(user) }
 
     it "deletes an uninventorized package successfully", :show_in_doc do
