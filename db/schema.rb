@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200312083123) do
+ActiveRecord::Schema.define(version: 20200327024517) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -485,9 +485,9 @@ ActiveRecord::Schema.define(version: 20200312083123) do
     t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.integer  "cancellation_reason_id"
     t.boolean  "continuous",              default: false
     t.date     "shipment_date"
-    t.integer  "cancellation_reason_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
