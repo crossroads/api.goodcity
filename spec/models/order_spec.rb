@@ -565,6 +565,7 @@ RSpec.describe Order, type: :model do
             expect(sendgrid).to receive(:send_order_confirmation_delivery_email) do |o|
               expect(o).to eq(order)
             end
+            expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
             order.finish_processing
           end
         end
@@ -576,6 +577,7 @@ RSpec.describe Order, type: :model do
             expect(sendgrid).to receive(:send_appointment_confirmation_email) do |o|
               expect(o).to eq(order)
             end
+            expect(sendgrid).not_to receive(:send_order_confirmation_delivery_email)
             order.finish_processing
           end
         end
