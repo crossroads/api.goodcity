@@ -578,8 +578,7 @@ RSpec.describe Order, type: :model do
 
         context 'appointment order' do
           it 'sends appointment order confirmation email' do
-            order_transport = create(:order_transport, transport_type: nil)
-            order.update(booking_type: appointment_type, order_transport: order_transport)
+            order.update(booking_type: appointment_type, order_transport: nil)
             order.start_processing
             expect(sendgrid).to receive(:send_appointment_confirmation_email) do |o|
               expect(o).to eq(order)
