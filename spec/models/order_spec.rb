@@ -531,12 +531,7 @@ RSpec.describe Order, type: :model do
       before(:each) do
         User.current_user = user
         allow(SendgridService).to receive(:new).and_return(sendgrid)
-       [
-        :send_new_order_notification,
-      ].each do |f|
-          # mock calls that require external services
-          allow(order).to receive(f).and_return(true)
-        end
+        allow(order).to receive(:send_new_order_notification).and_return(true)
       end
 
       it 'sets process_completed_at time and process_completed_by_id as current user if order is in processing state' do
