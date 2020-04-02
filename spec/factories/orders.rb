@@ -127,10 +127,10 @@ FactoryBot.define do
   end
 
   factory :online_order, parent: :order do
-    booking_type {BookingType.find_or_initialize_by(identifier: "online-order" ,name_en: 'online order', name_zh_tw: 'online order')}
+    booking_type {BookingType.find_or_create_by(identifier: "online-order" ,name_en: 'online order', name_zh_tw: 'online order')}
   end
 
   factory :appointment, parent: :order do
-    booking_type { BookingType.find_or_initialize_by(identifier: "appointment", name_en: "appointment", name_zh_tw: "appointment") }
+    booking_type { BookingType.find_or_create_by(identifier: "appointment", name_en: "appointment", name_zh_tw: "appointment") }
   end
 end
