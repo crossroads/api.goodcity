@@ -81,10 +81,6 @@ RSpec.describe Order, type: :model do
     it{ is_expected.to have_db_column(:staff_note).of_type(:string)}
   end
 
-  describe "Validations" do
-    it { should validate_presence_of(:booking_type_id) }
-  end
-
   describe '.counts_for' do
     let(:user) { create :user }
     let(:user1) { create :user }
@@ -526,6 +522,25 @@ RSpec.describe Order, type: :model do
     end
 
     describe '#finish_processing' do
+      let(:sendgrid) { SendgridService.new(user) }
+      let(:order) do
+        order_transport = create(:order_transport, transport_type: "ggv")
+        create(:order, :with_state_submitted, :with_created_by, order_transport: order_transport
+        )
+      end
+      before(:each) do
+        User.current_user = user
+        allow(SendgridService).to receive(:new).and_return(sendgrid)
+       [
+        :send_new_order_notification,
+        :add_to_stockit,
+        :send_new_order_confirmed_sms_to_charity,
+      ].each do |f|
+          # mock calls that require external services
+          allow(order).to receive(f).and_return(true)
+        end
+      end
+
       it 'sets process_completed_at time and process_completed_by_id as current user if order is in processing state' do
         order = create :order, state: 'processing'
         order.finish_processing
@@ -538,6 +553,40 @@ RSpec.describe Order, type: :model do
         order.finish_processing
         expect(order.reload.process_completed_at).to eq(nil)
         expect(order.reload.process_completed_by_id).to eq(nil)
+      end
+
+      context 'if booking type is nil' do
+        it 'does not send any confirmation mail' do
+          order.start_processing
+          order.finish_processing
+          expect(sendgrid).not_to receive(:send_appointment_confirmation_email)
+          expect(sendgrid).not_to receive(:send_order_confirmation_delivery_email)
+        end
+      end
+
+      context 'if booking type is not nil' do
+        context 'online order' do
+          it 'sends online order confirmation email' do
+            order.start_processing
+            order.update(booking_type: online_type)
+            expect(sendgrid).to receive(:send_order_confirmation_delivery_email) do |o|
+              expect(o).to eq(order)
+            end
+            order.finish_processing
+          end
+        end
+
+        context 'appointment order' do
+          it 'sends appointment order confirmation email' do
+            order_transport = create(:order_transport, transport_type: nil)
+            order.update(booking_type: appointment_type, order_transport: order_transport)
+            order.start_processing
+            expect(sendgrid).to receive(:send_appointment_confirmation_email) do |o|
+              expect(o).to eq(order)
+            end
+            order.finish_processing
+          end
+        end
       end
     end
 
@@ -942,6 +991,5 @@ RSpec.describe Order, type: :model do
         existing_order.destroy
       end
     end
-
   end
 end
