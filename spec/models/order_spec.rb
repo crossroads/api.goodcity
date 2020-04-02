@@ -533,8 +533,6 @@ RSpec.describe Order, type: :model do
         allow(SendgridService).to receive(:new).and_return(sendgrid)
        [
         :send_new_order_notification,
-        :add_to_stockit,
-        :send_new_order_confirmed_sms_to_charity,
       ].each do |f|
           # mock calls that require external services
           allow(order).to receive(f).and_return(true)
