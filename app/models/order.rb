@@ -13,8 +13,6 @@ class Order < ActiveRecord::Base
     ]
   end
 
-  validates :booking_type_id, presence: true
-
   belongs_to :cancellation_reason
   belongs_to :detail, polymorphic: true, dependent: :destroy
   belongs_to :stockit_activity
@@ -310,8 +308,8 @@ class Order < ActiveRecord::Base
   end
 
   def send_confirmation_email
-    send_appointment_confirmation_email if booking_type.appointment?
-    send_online_order_confirmation_email if booking_type.online_order?
+    send_appointment_confirmation_email if booking_type&.appointment?
+    send_online_order_confirmation_email if booking_type&.online_order?
   end
 
   def send_appointment_confirmation_email

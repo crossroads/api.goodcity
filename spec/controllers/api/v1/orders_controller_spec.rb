@@ -628,7 +628,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "should create an order via POST method" do
         set_browse_app_header
-        order_params[:booking_type_id] = order_params[:booking_type].id
         post :create, order: order_params
         expect(response.status).to eq(201)
         expect(parsed_body["order"]["people_helped"]).to eq(order_params[:people_helped])
@@ -638,7 +637,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         set_browse_app_header
         beneficiary_count = Beneficiary.count
         order_params["beneficiary_attributes"] = FactoryBot.build(:beneficiary).attributes.except("id", "updated_at", "created_at", "created_by_id")
-        order_params[:booking_type_id] = order_params[:booking_type].id
         post :create, order: order_params
         expect(response.status).to eq(201)
         expect(Beneficiary.count).to eq(beneficiary_count + 1)
@@ -650,7 +648,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         address = FactoryBot.build(:address)
         set_browse_app_header
         order_params["address_attributes"] = address.attributes.except("id", "updated_at", "created_at")
-        order_params[:booking_type_id] = order_params[:booking_type].id
         expect { post :create, order: order_params }.to change(Address, :count).by(1)
         expect(response.status).to eq(201)
         saved_address = Address.find_by(id: parsed_body["order"]["address_id"])
