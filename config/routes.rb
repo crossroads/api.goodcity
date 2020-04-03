@@ -161,6 +161,7 @@ Rails.application.routes.draw do
       resources :inventory_numbers, only: [:create] do
         put :remove_number, on: :collection
       end
+      resources :orders_process_checklists, only: [:index]
 
       # routes used in stock app
       get "designations", to: "orders#index"

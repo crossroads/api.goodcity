@@ -61,6 +61,7 @@ class Ability
     message_abilities
     orders_package_abilities
     order_transport_abilities
+    orders_process_checklists_abilities
     organisations_abilities
     organisations_users_abilities
     requested_packages_abilities
@@ -259,6 +260,10 @@ class Ability
         transport.order.created_by_id == @user_id
       end
     end
+  end
+
+  def orders_process_checklists_abilities
+    can [:index], OrdersProcessChecklist
   end
 
   def organisations_abilities
