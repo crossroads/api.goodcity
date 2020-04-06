@@ -103,3 +103,4 @@ Order fulfilment: &order_fulfilment
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
+- can_read_or_modify_user
