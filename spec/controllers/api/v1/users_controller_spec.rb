@@ -187,6 +187,18 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(parsed_body['cancelled']).to eq(1)
       end
     end
+
+    context "get /recent_users" do
+      context "if user has order adminstrator or supervisor role" do
+        it "allows to fetch the recent users" do
+          [:order_administrator, :supervisor].map do |role|
+            user = create(:user, role, :with_can_read_or_modify_user_permission)
+            generate_and_set_token(user)
+            expect(response.status).to eq(200)
+          end
+        end
+      end
+    end
   end
 end
 
