@@ -30,7 +30,6 @@ RSpec.describe Order, type: :model do
     Timecop.return
   end
 
-
   describe "Associations" do
     it { is_expected.to belong_to :detail  }
     it { is_expected.to belong_to :stockit_activity }
@@ -59,7 +58,7 @@ RSpec.describe Order, type: :model do
   end
 
   describe "validations" do
-    it{is_expected.to validate_numericality_of(:people_benifit).is_greater_than_or_equal_to(1)}
+    it{is_expected.to validate_numericality_of(:people_helped).is_greater_than_or_equal_to(1)}
    end
 
 
