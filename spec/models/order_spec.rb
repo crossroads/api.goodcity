@@ -30,6 +30,7 @@ RSpec.describe Order, type: :model do
     Timecop.return
   end
 
+
   describe "Associations" do
     it { is_expected.to belong_to :detail  }
     it { is_expected.to belong_to :stockit_activity }
@@ -56,6 +57,11 @@ RSpec.describe Order, type: :model do
     it { is_expected.to have_many(:process_checklists).through(:orders_process_checklists) }
     it { is_expected.to have_one :order_transport }
   end
+
+  describe "validations" do
+    it{is_expected.to validate_numericality_of(:people_benifit).is_greater_than_or_equal_to(1)}
+   end
+
 
   describe 'Database columns' do
     it{ is_expected.to have_db_column(:status).of_type(:string)}
