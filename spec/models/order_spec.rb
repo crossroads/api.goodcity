@@ -58,9 +58,8 @@ RSpec.describe Order, type: :model do
   end
 
   describe "validations" do
-    it{is_expected.to validate_numericality_of(:people_helped).is_greater_than_or_equal_to(1)}
+    it{ is_expected.to validate_numericality_of(:people_helped).is_greater_than_or_equal_to(1) }
    end
-
 
   describe 'Database columns' do
     it{ is_expected.to have_db_column(:status).of_type(:string)}
