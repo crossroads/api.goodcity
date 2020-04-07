@@ -90,7 +90,7 @@ module OrderFulfilmentOperations
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch
           package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
-          package.save
+          package.save!
         end
       end
     end
