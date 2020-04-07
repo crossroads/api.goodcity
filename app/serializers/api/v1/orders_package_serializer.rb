@@ -4,6 +4,7 @@ module Api::V1
     attributes :id, :package_id, :order_id, :state, :quantity, :dispatched_quantity, :sent_on, :designation_id, :item_id, :created_at, :allowed_actions
 
     has_one :package, serializer: PackageSerializer
+    has_one :order, serializer: OrderShallowSerializer, root: 'designation'
 
     def designation_id
       object.order_id
@@ -31,6 +32,10 @@ module Api::V1
 
     def include_package?
       @options[:include_package]
+    end
+
+    def include_order?
+      @options[:include_order]
     end
   end
 end
