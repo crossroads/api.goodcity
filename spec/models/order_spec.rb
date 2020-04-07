@@ -57,6 +57,10 @@ RSpec.describe Order, type: :model do
     it { is_expected.to have_one :order_transport }
   end
 
+  describe "validations" do
+    it{ is_expected.to validate_numericality_of(:people_helped).is_greater_than_or_equal_to(1) }
+   end
+
   describe 'Database columns' do
     it{ is_expected.to have_db_column(:status).of_type(:string)}
     it{ is_expected.to have_db_column(:code).of_type(:string)}

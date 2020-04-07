@@ -74,6 +74,8 @@ module Api
         render json: @order, serializer: serializer
       end
 
+      api :PUT, '/v1/orders/1', "Update an order"
+      param_group :order
       def update
         root = is_browse_app? ? "order" : "designation"
         @order.assign_attributes(order_params)
