@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200312083123) do
+ActiveRecord::Schema.define(version: 20200407095552) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -314,7 +314,7 @@ ActiveRecord::Schema.define(version: 20200312083123) do
   add_index "images", ["imageable_id", "imageable_type"], name: "index_images_on_imageable_id_and_imageable_type", using: :btree
 
   create_table "inventory_numbers", force: :cascade do |t|
-    t.string "code"
+    t.integer "code"
   end
 
   create_table "items", force: :cascade do |t|
@@ -360,6 +360,18 @@ ActiveRecord::Schema.define(version: 20200312083123) do
   add_index "lookups", ["name", "label_en"], name: "index_lookups_on_name_and_label_en", using: :btree
   add_index "lookups", ["name", "label_zh_tw"], name: "index_lookups_on_name_and_label_zh_tw", using: :btree
   add_index "lookups", ["name"], name: "index_lookups_on_name", using: :btree
+
+  create_table "medicals", force: :cascade do |t|
+    t.string   "serial_number"
+    t.string   "model"
+    t.string   "brand"
+    t.integer  "country_id"
+    t.date     "expiry_date"
+    t.integer  "updated_by_id"
+    t.integer  "stockit_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
 
   create_table "messages", force: :cascade do |t|
     t.text     "body"
@@ -485,9 +497,9 @@ ActiveRecord::Schema.define(version: 20200312083123) do
     t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
+    t.integer  "cancellation_reason_id"
     t.boolean  "continuous",              default: false
     t.date     "shipment_date"
-    t.integer  "cancellation_reason_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -618,9 +630,9 @@ ActiveRecord::Schema.define(version: 20200312083123) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",     default: true
-    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_pieces",       default: false
     t.string   "subform"
+    t.boolean  "allow_stock",        default: false
     t.boolean  "allow_box",          default: false
     t.boolean  "allow_pallet",       default: false
   end
@@ -667,6 +679,7 @@ ActiveRecord::Schema.define(version: 20200312083123) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
     t.integer  "weight"
     t.integer  "pieces"
     t.integer  "detail_id"
@@ -970,7 +983,7 @@ ActiveRecord::Schema.define(version: 20200312083123) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree
