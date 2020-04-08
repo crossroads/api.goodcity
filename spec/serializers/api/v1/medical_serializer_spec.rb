@@ -23,8 +23,9 @@ context Api::V1::MedicalSerializer do
 
   context 'include_country is true' do
     let(:serializer) { Api::V1::MedicalSerializer.new(medical, include_country: true).as_json }
+    let(:json) { JSON.parse(serializer.to_json) }
     it 'includes country in the json' do
-      expect(json.keys).to include('country')
+      expect(json.keys).to include('countries')
     end
   end
 end
