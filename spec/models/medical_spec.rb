@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe Medical, type: :model do
   describe 'Associations' do
     it { is_expected.to belong_to :country }
+    it { is_expected.to have_one :package }
   end
 
   describe 'Database columns' do
