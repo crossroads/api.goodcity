@@ -79,6 +79,7 @@ class Ability
     computer_abilities
     computer_accessory_abilities
     electrical_abilities
+    medical_abilities
     printer_abilities
     offers_package_abilities
   end
@@ -122,6 +123,10 @@ class Ability
 
   def electrical_abilities
     can [:create, :index, :show, :update, :destroy], Electrical if can_manage_package_detail?
+  end
+
+  def medical_abilities
+    can [:create, :index, :show, :update, :destroy], Medical if can_manage_package_detail?
   end
 
   def goodcity_request_abilitites
