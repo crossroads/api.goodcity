@@ -49,4 +49,14 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
       expect(@medical.reload.brand).to eq(brand.downcase)
     end
   end
+
+  describe 'DESTROY medical' do
+    it 'deletes the record' do
+      expect{
+        delete :destroy, id: @medical.id
+      }.to change(Medical, :count).by(-1)
+      expect(response).to have_http_status(:success)
+      expect(response.body).to eq('{}')
+    end
+  end
 end
