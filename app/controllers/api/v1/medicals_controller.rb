@@ -28,7 +28,24 @@ module Api
         render json: @medicals, each_serializer: serializer
       end
 
+      def show
+        render json: @medical, serializer: serializer, include_country: true
+      end
+
+      param_group :medical
+      def update
+        @medical.assign_attributes(permitted_params)
+        update_and_render_object_with_errors(@medical)
+      end
+
       private
+
+      def permitted_params
+        attributes = %i[
+          brand country_id model serial_number expiry_date
+        ]
+        params.require(:medical).permit(attributes)
+      end
 
       def serializer
         Api::V1::MedicalSerializer

@@ -16,10 +16,37 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
     @parsed_without_country = JSON.parse(serielizer_without_country.to_json)
   end
 
-  describe 'GET electricals' do
+  describe 'GET medicals' do
     it 'returns 200' do
       get :index
       expect(response).to have_http_status(:success)
+    end
+  end
+
+  describe 'GET medical' do
+    it 'returns 200' do
+      get :show, id: @medical.id
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'includes country in the response' do
+      get :show, id: @medical.id
+      expect(@parsed_with_country).to eq(JSON.parse(response.body))
+    end
+  end
+
+  describe 'PUT medical' do
+    it 'returns 200' do
+      allow(Stockit::ItemDetailSync).to receive(:update).with(@medical).and_return('status' => 201)
+      put :update, id: @medical.id, medical: { brand: 'Apollo' }
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'updates the field' do
+      brand = 'Apollo'
+      allow(Stockit::ItemDetailSync).to receive(:update).with(@medical).and_return("status" => 201)
+      put :update, id: @medical.id, medical: { brand: "Apollo" }
+      expect(@medical.reload.brand).to eq(brand.downcase)
     end
   end
 end
