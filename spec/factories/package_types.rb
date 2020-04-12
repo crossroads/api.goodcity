@@ -5,9 +5,18 @@ FactoryBot.define do
     name_zh_tw         { generate(:package_types)[code][:name_zh_tw] }
     other_terms_en     { generate(:package_types)[code][:other_terms_en] }
     other_terms_zh_tw  { generate(:package_types)[code][:other_terms_zh_tw] }
+    allow_expiry_date  { generate(:package_types)[code][:package_types] }
     visible_in_selects { true }
     initialize_with    { PackageType.find_or_initialize_by(code: code) }
     association        :location
+
+    trait :allow_expiry_date do
+      allow_expiry_date true
+    end
+
+    trait :disallow_expiry_date do
+      allow_expiry_date false
+    end
   end
 
   factory :package_type, parent: :base_package_type do

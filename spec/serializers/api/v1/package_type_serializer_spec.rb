@@ -10,6 +10,7 @@ describe Api::V1::PackageTypeSerializer do
     expect(json['package_type']['id']).to eql(package_type.id)
     expect(json['package_type']['name']).to eql(package_type.name)
     expect(json['package_type']['code']).to eql(package_type.code)
+    expect(json['package_type']['allow_expiry_date']).to eql(package_type.allow_expiry_date)
   end
 
   it "translates JSON" do
