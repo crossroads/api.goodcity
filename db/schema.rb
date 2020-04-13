@@ -628,7 +628,6 @@ ActiveRecord::Schema.define(version: 20200407095552) do
     t.string   "subform"
     t.boolean  "allow_box",          default: false
     t.boolean  "allow_pallet",       default: false
-    t.boolean  "allow_expiry_date",  default: false
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
@@ -680,7 +679,6 @@ ActiveRecord::Schema.define(version: 20200407095552) do
     t.integer  "on_hand_quantity",                     default: 0
     t.integer  "designated_quantity",                  default: 0
     t.integer  "dispatched_quantity",                  default: 0
-    t.date     "expiry_date"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
