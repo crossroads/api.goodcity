@@ -7,7 +7,7 @@ module Api
       embed :ids, include: true
 
       attributes :id, :brand, :serial_number, :country_id,
-                 :expiry_date, :updated_by_id
+                 :expiry_date, :updated_by_id, :model
 
       has_one :country, serializer: CountrySerializer
 

@@ -14,6 +14,12 @@ context Api::V1::MedicalSerializer do
     end
   end
 
+  %i[id brand serial_number expiry_date updated_by_id model].map do |attr|
+    it "should have #{attr} in response" do
+      expect(json['medical'].keys).to include(attr.to_s)
+    end
+  end
+
   context 'include_country is false' do
     let(:serializer) { Api::V1::MedicalSerializer.new(medical, include_country: false).as_json }
     it 'does not have country in the json' do
