@@ -52,7 +52,7 @@ module Api
         if @beneficiary.update_attributes(beneficiary_params)
           render json: @beneficiary, serializer: serializer
         else
-          render json: @beneficiary.errors, status: 422
+          render json: { errors: @beneficiary.errors.full_messages }, status: 422
         end
       end
 
