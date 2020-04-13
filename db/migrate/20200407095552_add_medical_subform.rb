@@ -5,7 +5,6 @@ class AddMedicalSubform < ActiveRecord::Migration
       t.string :model
       t.string :brand
       t.integer :country_id
-      t.date :expiry_date
       t.integer :updated_by_id
       t.integer :stockit_id
       t.timestamps null: false

@@ -14,7 +14,7 @@ context Api::V1::MedicalSerializer do
     end
   end
 
-  %i[id brand serial_number expiry_date updated_by_id model].map do |attr|
+  %i[id brand serial_number updated_by_id model].map do |attr|
     it "should have #{attr} in response" do
       expect(json['medical'].keys).to include(attr.to_s)
     end

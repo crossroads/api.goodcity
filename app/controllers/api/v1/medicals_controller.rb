@@ -20,7 +20,6 @@ module Api
           param :brand, String, desc: 'Name of the brand'
           param :model, String, desc: 'Name of the model'
           param :serial_number, String, desc: 'Seriel number of the medical item'
-          param :expiry_date, String, desc: 'Expiry date of the medical item'
         end
       end
 
@@ -56,7 +55,7 @@ module Api
 
       def permitted_params
         attributes = %i[
-          brand country_id model serial_number expiry_date
+          brand country_id model serial_number
         ]
         params.require(:medical).permit(attributes)
       end
