@@ -366,7 +366,6 @@ ActiveRecord::Schema.define(version: 20200407095552) do
     t.string   "model"
     t.string   "brand"
     t.integer  "country_id"
-    t.date     "expiry_date"
     t.integer  "updated_by_id"
     t.integer  "stockit_id"
     t.datetime "created_at",    null: false

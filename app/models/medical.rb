@@ -5,8 +5,6 @@ class Medical < ActiveRecord::Base
   include SubformUtilities
   has_paper_trail class_name: 'Version'
 
-  validates :expiry_date, presence: true
-
   belongs_to :country, required: false
   has_one :package, as: :detail
 
