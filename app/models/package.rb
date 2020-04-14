@@ -448,7 +448,7 @@ class Package < ActiveRecord::Base
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.saleable = offer.try(:saleable) || false
+    self.saleable = saleable || offer.try(:saleable) || false
     true
   end
 
