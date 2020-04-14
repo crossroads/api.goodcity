@@ -402,6 +402,26 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(GoodcitySync.request_from_stockit).to eq(false)
       end
 
+      context 'if package is saleable' do
+        it 'creates package record with saleable set to true' do
+          package_params[:saleable] = true
+          package_params[:item_id] = nil
+          post :create, format: :json, package: package_params
+          expect(response).to have_http_status(:success)
+          expect(Package.last.saleable).to eq(true)
+        end
+      end
+
+      context 'if package is not saleable' do
+        it 'creates package record with saleable set to false' do
+          package_params[:saleable] = false
+          package_params[:item_id] = nil
+          post :create, format: :json, package: package_params
+          expect(response).to have_http_status(:success)
+          expect(Package.last.saleable).to eq(false)
+        end
+      end
+
       context "without an inventory_number" do
         context "but with a location" do
           before { package_params[:location_id] = location.id }
@@ -1116,7 +1136,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "DELETE package/1" do
     let(:uninventorized_package) { create :package, inventory_number: nil }
-  
+
     before { generate_and_set_token(user) }
 
     it "deletes an uninventorized package successfully", :show_in_doc do
