@@ -20,6 +20,8 @@ module Api
           param :brand, String, desc: 'Name of the brand'
           param :model, String, desc: 'Name of the model'
           param :serial_number, String, desc: 'Seriel number of the medical item'
+          param :country_id, Integer, desc: 'Country ID'
+          param :updated_by_id, Integer, desc: 'ID of user who updated the record'
         end
       end
 
