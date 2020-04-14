@@ -153,21 +153,23 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
         expect(parsed_body['beneficiary']['first_name']).to eq('elvis')
       end
 
-
       [:first_name, :last_name].map do |attr|
         it "returns validation error if #{attr} length is more than 50 characters" do
           new_beneficiary = FactoryBot.create(:beneficiary, created_by: charity_user)
-          put :update, id: new_beneficiary.id, beneficiary: { attr => 'rossroads foundation goodcity.hk api.goodcity stock' }
-          expect(response.status).to eq(422)
-          expect(parsed_body["error"]).to eq("[#{attr}.is too long (maximum is 50 characters)]")
+          expect {
+            put :update, id: new_beneficiary.id, beneficiary: { attr => 'rossroads foundation goodcity.hk api.goodcity stock' }
+            expect(response.status).to eq(422)
+          }.not_to change { new_beneficiary.reload[attr] }
+        end
+
+        it "does not return validation error if #{attr} length is less than 50 characters" do
+          new_beneficiary = FactoryBot.create(:beneficiary, created_by: charity_user)
+          expect {
+            put :update, id: new_beneficiary.id, beneficiary: { attr => 'api.goodcity stock' }
+            expect(response.status).to eq(200)
+          }.to change { new_beneficiary.reload[attr] }
         end
       end
-      # it "returns validation error if name length is more than 50 characters" do
-      #   new_beneficiary = FactoryBot.create(:beneficiary, created_by: charity_user)
-      #   put :update, id: new_beneficiary.id, beneficiary: { first_name: 'crossroads foundation goodcity.hk api.goodcity stock' }
-      #   expect(response.status).to eq(422)
-      #   expect(parsed_body["errors"]).to eq(["First name is too long (maximum is 50 characters)"])
-      # end
     end
 
   end
