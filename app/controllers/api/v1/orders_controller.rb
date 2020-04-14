@@ -118,6 +118,7 @@ module Api
           include_packages: true,
           include_order: false,
           include_images: true,
+          include_messages: params["include_messages"],
           exclude_stockit_set_item: true).as_json
       end
 
@@ -155,6 +156,7 @@ module Api
           states: array_param(:state),
           types: array_param(:type),
           priority: bool_param(:priority, false),
+          with_notifications: params["with_notifications"],
           before: time_epoch_param(:before),
           after: time_epoch_param(:after)
         )
