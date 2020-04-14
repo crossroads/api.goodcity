@@ -19,7 +19,7 @@ module Api::V1
       :donor_condition_id, :set_item_id, :has_box_pallet, :case_number,
       :allow_web_publish, :received_quantity, :detail_type, :detail_id, :storage_type_id,
       :on_hand_quantity, :available_quantity, :designated_quantity, :dispatched_quantity,
-      :quantity
+      :quantity, :saleable
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity

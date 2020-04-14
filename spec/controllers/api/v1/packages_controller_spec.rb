@@ -1598,4 +1598,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(parsed_body['error']).to eq("The selected quantity (25) is unavailable")
     end
   end
+
+  describe 'GET stockit_items' do
+    before do
+      generate_and_set_token(user)
+      @location = create :location
+      @package = create(:package, :with_inventory_number, received_quantity: 20)
+      create(:packages_location, package: @package, location: @location, quantity: 20)
+    end
+
+    it 'returns package details' do
+      get :stockit_item_details, { id: @package.id }
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'should have saleable node in the response' do
+      get :stockit_item_details, {id: @package.id}
+      expect(parsed_body['item'].keys).to include('saleable')
+    end
+  end
 end
