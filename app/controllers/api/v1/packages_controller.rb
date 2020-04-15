@@ -323,7 +323,7 @@ module Api
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
-          :package_type_id, :pallet_id, :pieces, :received_at,
+          :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
           :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id,
           offer_ids: [],
