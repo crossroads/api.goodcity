@@ -402,23 +402,47 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(GoodcitySync.request_from_stockit).to eq(false)
       end
 
-      context 'if package is saleable' do
-        it 'creates package record with saleable set to true' do
-          package_params[:saleable] = true
-          package_params[:item_id] = nil
-          post :create, format: :json, package: package_params
-          expect(response).to have_http_status(:success)
-          expect(Package.last.saleable).to eq(true)
+      context 'when saleable value is provided in package parameters' do
+        it 'creates package record with given saleable value' do
+          [true, false].map do |val|
+            package_params[:saleable] = val
+            package_params[:item_id] = nil
+            post :create, format: :json, package: package_params
+            expect(response).to have_http_status(:success)
+            package_id = parsed_body['package']['id']
+            package = Package.find(package_id)
+            expect(package.saleable).to eq(val)
+          end
         end
-      end
 
-      context 'if package is not saleable' do
-        it 'creates package record with saleable set to false' do
-          package_params[:saleable] = false
-          package_params[:item_id] = nil
-          post :create, format: :json, package: package_params
-          expect(response).to have_http_status(:success)
-          expect(Package.last.saleable).to eq(false)
+        context 'if package has an associated offer' do
+          context 'if offer is not saleable' do
+            [true, false].map do |val|
+              it "creates package with saleble value #{val}" do
+                item.offer.update(saleable: false)
+                package_params[:saleable] = val
+                post :create, format: :json, package: package_params
+                expect(response).to have_http_status(:success)
+                package_id = parsed_body["package"]["id"]
+                package = Package.find(package_id)
+                expect(package.saleable).to eq(val)
+              end
+            end
+          end
+
+          context 'if offer is saleable' do
+            [true, false].map do |val|
+              it 'creates package with saleable as true' do
+                item.offer.update(saleable: true)
+                package_params[:saleable] = val
+                post :create, format: :json, package: package_params
+                expect(response).to have_http_status(:success)
+                package_id = parsed_body["package"]["id"]
+                package = Package.find(package_id)
+                expect(package.saleable).to eq(true)
+              end
+            end
+          end
         end
       end
 
