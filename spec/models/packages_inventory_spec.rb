@@ -184,6 +184,85 @@ RSpec.describe PackagesInventory, type: :model do
     end
   end
 
+  describe 'Boxing methods' do
+    let(:user) { create :user }
+    let(:box_type) { create :storage_type, :with_box }
+    let(:location) { create :location }
+    let(:package1) { create :package, received_quantity: 5 }
+    let(:package2) { create :package, received_quantity: 5 }
+    let(:box1) { create :package, storage_type: box_type }
+    let(:box2) { create :package, storage_type: box_type }
+
+    before do
+      create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true")
+      create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true")
+      initialize_inventory(package1, package2, box1, box2, location: location)
+    end
+
+    before(:each) do
+      expect(PackagesInventory::Computer.package_quantity(package1)).to eq(5)
+      expect(PackagesInventory::Computer.package_quantity(package2)).to eq(5)
+      expect(PackagesInventory::Computer.package_quantity(box1)).to eq(1)
+    end
+
+    def pack(qty, package, into:)
+      Package::Operations.pack_or_unpack(container: into, package: package, location_id: location.id, quantity: qty, user_id: user.id, task: 'pack')
+    end
+
+    def unpack(qty, package, out_of:)
+      Package::Operations.pack_or_unpack(container: out_of, package: package, location_id: location.id, quantity: qty, user_id: user.id, task: 'unpack')
+    end
+
+    context 'getting the packages contained in a box' do
+
+      before do
+        pack(2, package1, into: box1)
+        pack(2, package2, into: box1)
+      end
+
+      it 'returns the packages in the box' do
+        expect(PackagesInventory::Computer.package_quantity(package1)).to eq(3)
+        expect(PackagesInventory::Computer.package_quantity(package2)).to eq(3)
+
+        expect(PackagesInventory.packages_contained_in(box1)).to eq([
+          package1,
+          package2
+        ])
+      end
+
+      it 'doesnt return the packages that have been taken out of the box' do
+        unpack(2, package1, out_of: box1);
+
+        expect(PackagesInventory::Computer.package_quantity(package1)).to eq(5)
+        expect(PackagesInventory::Computer.package_quantity(package2)).to eq(3)
+
+        expect(PackagesInventory.packages_contained_in(box1)).to eq([
+          package2
+        ])
+      end
+    end
+
+    context 'getting the containers of a  package' do
+
+      before do
+        pack(2, package1, into: box1)
+        pack(2, package1, into: box2)
+      end
+
+      it 'returns the boxes containing the package' do
+        expect(PackagesInventory::Computer.package_quantity(package1)).to eq(1)
+        expect(PackagesInventory.containers_of(package1)).to eq([ box1, box2 ])
+      end
+
+      it 'doesnt return the boxes that we took the package out of' do
+        unpack(2, package1, out_of: box1);
+
+        expect(PackagesInventory::Computer.package_quantity(package1)).to eq(3)
+        expect(PackagesInventory.containers_of(package1)).to eq([ box2 ])
+      end
+    end
+  end
+
   describe 'Computations' do
     let(:package1) { create :package }
     let(:package2) { create :package }

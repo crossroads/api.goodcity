@@ -1393,7 +1393,44 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       initialize_inventory(package1, package2, location: location)
     }
 
-    describe "fetch_contained_packages" do
+    def pack(qty, package, into:)
+      Package::Operations.pack_or_unpack(container: into, package: package, location_id: location.id, quantity: qty, user_id: user.id, task: 'pack')
+    end
+
+    def unpack(qty, package, out_of:)
+      Package::Operations.pack_or_unpack(container: out_of, package: package, location_id: location.id, quantity: qty, user_id: user.id, task: 'unpack')
+    end
+
+    describe "Get containers of a package (/package/:id/parent_containers)" do
+      let(:response_packages) { parsed_body['items'].map { |it| Package.find(it['id']) } }
+
+      before { generate_and_set_token(user) }
+
+      before(:each) do
+        pack(20, package1, into: box)
+        pack(10, package1, into: pallet)
+
+        expect(PackagesInventory::Computer.package_quantity(package1)).to eq(20)
+        expect(PackagesInventory::Computer.package_quantity(box)).to eq(1)
+        expect(PackagesInventory::Computer.package_quantity(pallet)).to eq(1)
+      end
+
+      it "fetches all the boxes/pallets that contain the package" do
+        get :parent_containers, id: package1.id
+        expect(response.status).to eq(200)
+        expect(response_packages).to match_array([box, pallet]);
+      end
+
+      it "does not return a box if the package has been taken out of it" do
+        unpack(20, package1, out_of: box)
+
+        get :parent_containers, id: package1.id
+        expect(response.status).to eq(200)
+        expect(response_packages).to match_array([pallet]);
+      end
+    end
+
+    describe "fetch contained_packages" do
       before :each do
         generate_and_set_token(user)
         current_user = user
