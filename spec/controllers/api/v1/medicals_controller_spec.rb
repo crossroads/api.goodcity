@@ -10,10 +10,10 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
     @medical = build(:medical)
     allow(Stockit::ItemDetailSync).to receive(:create).with(@medical).and_return( 'status' => :success)
     @medical.save
-    serielizer_with_country = Api::V1::MedicalSerializer.new(@medical, include_country: true).as_json
-    @parsed_with_country = JSON.parse(serielizer_with_country.to_json)
-    serielizer_without_country = Api::V1::MedicalSerializer.new(@medical, include_country: false).as_json
-    @parsed_without_country = JSON.parse(serielizer_without_country.to_json)
+    serializer_with_country = Api::V1::MedicalSerializer.new(@medical, include_country: true).as_json
+    @parsed_with_country = JSON.parse(serializer_with_country.to_json)
+    serializer_without_country = Api::V1::MedicalSerializer.new(@medical, include_country: false).as_json
+    @parsed_without_country = JSON.parse(serializer_without_country.to_json)
   end
 
   describe 'GET medicals' do

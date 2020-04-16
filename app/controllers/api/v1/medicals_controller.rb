@@ -19,7 +19,7 @@ module Api
         param :medical, Hash do
           param :brand, String, desc: 'Name of the brand'
           param :model, String, desc: 'Name of the model'
-          param :serial_number, String, desc: 'Seriel number of the medical item'
+          param :serial_number, String, desc: 'Serial number of the medical item'
           param :country_id, Integer, desc: 'Country ID'
           param :updated_by_id, Integer, desc: 'ID of user who updated the record'
         end
@@ -27,7 +27,7 @@ module Api
 
       api :GET, '/v1/medicals', 'Return all medical items'
       def index
-        @medicals = distinct_by_column
+        @medicals = @medicals.distinct_by_column(params["distinct"]) if params["distinct"]
         render json: @medicals, each_serializer: serializer
       end
 
@@ -50,10 +50,6 @@ module Api
       end
 
       private
-
-      def distinct_by_column
-        @medicals.distinct_by_column(params['distinct']) if params['distinct']
-      end
 
       def permitted_params
         attributes = %i[
