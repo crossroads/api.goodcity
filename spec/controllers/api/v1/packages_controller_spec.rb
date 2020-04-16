@@ -402,6 +402,50 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(GoodcitySync.request_from_stockit).to eq(false)
       end
 
+      context 'when saleable value is provided in package parameters' do
+        it 'creates package record with given saleable value' do
+          [true, false].map do |val|
+            package_params[:saleable] = val
+            package_params[:item_id] = nil
+            post :create, format: :json, package: package_params
+            expect(response).to have_http_status(:success)
+            package_id = parsed_body['package']['id']
+            package = Package.find(package_id)
+            expect(package.saleable).to eq(val)
+          end
+        end
+
+        context 'if package has an associated offer' do
+          context 'if offer is not saleable' do
+            [true, false].map do |val|
+              it "creates package with saleble value #{val}" do
+                item.offer.update(saleable: false)
+                package_params[:saleable] = val
+                post :create, format: :json, package: package_params
+                expect(response).to have_http_status(:success)
+                package_id = parsed_body["package"]["id"]
+                package = Package.find(package_id)
+                expect(package.saleable).to eq(val)
+              end
+            end
+          end
+
+          context 'if offer is saleable' do
+            [true, false].map do |val|
+              it 'creates package with saleable as true' do
+                item.offer.update(saleable: true)
+                package_params[:saleable] = val
+                post :create, format: :json, package: package_params
+                expect(response).to have_http_status(:success)
+                package_id = parsed_body["package"]["id"]
+                package = Package.find(package_id)
+                expect(package.saleable).to eq(true)
+              end
+            end
+          end
+        end
+      end
+
       context "without an inventory_number" do
         context "but with a location" do
           before { package_params[:location_id] = location.id }
@@ -1116,7 +1160,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "DELETE package/1" do
     let(:uninventorized_package) { create :package, inventory_number: nil }
-  
+
     before { generate_and_set_token(user) }
 
     it "deletes an uninventorized package successfully", :show_in_doc do
@@ -1576,6 +1620,25 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       expect(response.status).to eq(422)
       expect(parsed_body['error']).to eq("The selected quantity (25) is unavailable")
+    end
+  end
+
+  describe 'GET stockit_items' do
+    before do
+      generate_and_set_token(user)
+      @location = create :location
+      @package = create(:package, :with_inventory_number, received_quantity: 20)
+      create(:packages_location, package: @package, location: @location, quantity: 20)
+    end
+
+    it 'returns package details' do
+      get :stockit_item_details, { id: @package.id }
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'should have saleable node in the response' do
+      get :stockit_item_details, {id: @package.id}
+      expect(parsed_body['item'].keys).to include('saleable')
     end
   end
 end
