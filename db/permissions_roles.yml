@@ -102,7 +102,7 @@ Order fulfilment: &order_fulfilment
 - can_login_to_stock
 - can_access_printers
 - can_access_orders_process_checklists
-Order administrator:
-- *order_fulfilment
 - can_manage_settings
 - can_read_or_modify_user
+Order administrator:
+- *order_fulfilment
