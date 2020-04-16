@@ -20,7 +20,7 @@ module Api
           param :created_at, String
           param :people_helped, :number
           param :detail_id, String, allow_nil: true
-          param :stockit_id, String, desc: "stockit designation record id"
+          param :stockit_id, String, desc: "stockit designation record id", allow_nil: true
           param :beneficiary_id, String, allow_nil: true
           param :address_id, String
           param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)'

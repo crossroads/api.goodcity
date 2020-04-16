@@ -273,7 +273,7 @@ module Api
       def add_remove_item
         render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
         response = Package::Operations.pack_or_unpack(
-                    container: Package.find(params[:id]),
+                    container: @package,
                     package: Package.find(params[:item_id]),
                     quantity: params[:quantity].to_i, # quantity to pack or unpack
                     location_id: params[:location_id],
@@ -311,8 +311,7 @@ module Api
 
       def fetch_added_quantity
         entity_id = params[:entity_id]
-        package = Package.find_by(id: params[:id])
-        render json: { added_quantity: package&.quantity_contained_in(entity_id) }, status: 200
+        render json: { added_quantity: @package&.quantity_contained_in(entity_id) }, status: 200
       end
 
       private

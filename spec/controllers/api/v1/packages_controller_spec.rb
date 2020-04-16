@@ -1393,12 +1393,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       initialize_inventory(package1, package2, location: location)
     }
 
-    def pack(qty, package, into:)
-      Package::Operations.pack_or_unpack(container: into, package: package, location_id: location.id, quantity: qty, user_id: user.id, task: 'pack')
+    def pack(qty, pkg, into:)
+      Package::Operations.pack_or_unpack(container: into, package: pkg, location_id: location.id, quantity: qty, user_id: user.id, task: 'pack')
     end
 
-    def unpack(qty, package, out_of:)
-      Package::Operations.pack_or_unpack(container: out_of, package: package, location_id: location.id, quantity: qty, user_id: user.id, task: 'unpack')
+    def unpack(qty, pkg, out_of:)
+      Package::Operations.pack_or_unpack(container: out_of, package: pkg, location_id: location.id, quantity: qty, user_id: user.id, task: 'unpack')
     end
 
     describe "Get containers of a package (/package/:id/parent_containers)" do
@@ -1434,46 +1434,20 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       before :each do
         generate_and_set_token(user)
         current_user = user
-        params1 = {
-          id: box.id,
-          item_id: package1.id,
-          location_id: location.id,
-          task: 'pack',
-          quantity: 5
-        }
-        params2 = {
-          id: box.id,
-          item_id: package2.id,
-          location_id: location.id,
-          task: 'pack',
-          quantity: 2
-        }
-        params3 = {
-          id: pallet.id,
-          item_id: package2.id,
-          location_id: location.id,
-          task: 'pack',
-          quantity: 5
-        }
-        put :add_remove_item, params1
-        put :add_remove_item, params2
-        put :add_remove_item, params3
+        pack(5, package1, into: box)
+        pack(2, package2, into: box)
+        pack(5, package2, into: pallet)
       end
 
       it "fetches all the items that are present inside a box" do
-        params = {
-          id: box.id
-        }
-        get :contained_packages, params
+        get :contained_packages, id: box.id
         expect(response.status).to eq(200)
         expect(parsed_body["items"].length).to eq(2)
       end
 
       it "fetches all the items that are present inside a pallet" do
-        params = {
-          id: pallet.id
-        }
-        get :contained_packages, params
+        puts(pallet.id)
+        get :contained_packages, id: pallet
         expect(response.status).to eq(200)
         expect(parsed_body["items"].length).to eq(1)
       end
