@@ -14,12 +14,12 @@ module Api
 
       def_param_group :beneficiary do
         param :beneficiary, Hash, required: true do
-          param :identity_type_id, :number
-          param :identity_number, String
-          param :title, String
-          param :first_name, String
-          param :last_name, String
-          param :phone_number, String
+          param :identity_type_id, :number,required: true
+          param :identity_number, String,required: true
+          param :title, String,required: true
+          param :first_name, String,required: true
+          param :last_name, String,required: true
+          param :phone_number, String,required: true
         end
       end
 
