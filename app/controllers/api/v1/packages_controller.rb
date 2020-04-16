@@ -61,15 +61,15 @@ module Api
       api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
 
       def stockit_item_details
-        render json: stock_serializer.new(@package,
-          serializer: stock_serializer,
-          root: "item",
-          include_order: true,
-          include_orders_packages: true,
-          exclude_stockit_set_item: @package.set_item_id.blank?,
-          include_images: @package.set_item_id.blank?,
-          include_allowed_actions: true
-        ).as_json
+        render json: stock_serializer
+          .new(@package,
+               serializer: stock_serializer,
+               root: 'item',
+               include_order: true,
+               include_orders_packages: true,
+               exclude_stockit_set_item: @package.set_item_id.blank?,
+               include_images: @package.set_item_id.blank?,
+               include_allowed_actions: true).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -329,7 +329,7 @@ module Api
           offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
-                              computer_accessory_attributes].flatten.uniq
+                              computer_accessory_attributes, medical_attributes].flatten.uniq
         ]
 
         params.require(:package).permit(attributes)
@@ -363,6 +363,10 @@ module Api
           brand comp_test_status comp_test_status_id comp_voltage country_id
           interface model serial_num size updated_by_id
         ]
+      end
+
+      def medical_attributes
+        %i[brand country_id serial_number updated_by_id expiry_date]
       end
 
       def get_package_type_id_value
