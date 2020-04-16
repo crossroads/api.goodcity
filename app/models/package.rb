@@ -170,26 +170,8 @@ class Package < ActiveRecord::Base
     Location.dispatch_location
   end
 
-  def associated_packages
-    sql =
-      <<-SQL
-      select distinct pi.package_id
-      from packages_inventories pi
-      WHERE pi.source_type = 'Package' AND pi.source_id = #{id}
-      AND pi.action in ('pack', 'unpack')
-      group by pi.package_id
-      HAVING sum(pi.quantity) < 0
-      SQL
-    ids = PackagesInventory.connection.execute(sql).map{ |res| res['package_id'] }.uniq.compact
-    Package.where(id: ids)
-  end
-
-  def quantity_in_a_box(entity_id)
-    PackagesInventory::Computer.quantity_of_package_in_box(package: self, source: Package.find(entity_id))
-  end
-
-  def total_quantity_in_box
-    box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
+  def quantity_contained_in(container_id)
+    PackagesInventory::Computer.quantity_contained_in(package: self, container: Package.find(container_id))
   end
 
   def dispatch_from_stockit?
