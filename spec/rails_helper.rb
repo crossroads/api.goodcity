@@ -33,6 +33,7 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
+  Kernel.srand 852
 
   config.include Warden::Test::Helpers
   config.include Warden::Test::ControllerHelpers, type: :controller
