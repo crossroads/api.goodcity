@@ -392,27 +392,11 @@ RSpec.describe Package, type: :model do
       }
     end
 
-    describe "#associated_packages" do
-      it "fetches all the associated packages with a box" do
-        pack_or_unpack(@params1)
-        pack_or_unpack(@params2)
-        expect(box.associated_packages.length).to eq(2)
-      end
-    end
-
-    describe "#quantity_in_a_box" do
+    describe "#quantity_contained_in" do
       it "returns the quantity of an item in the box" do
         pack_or_unpack(@params1)
         pack_or_unpack(@params2)
-        expect(package1.quantity_in_a_box(box.id)).to eq(5)
-      end
-    end
-
-    describe "#total_quantity_in_box" do
-      it "returns the total quantity of items in the box" do
-        pack_or_unpack(@params1)
-        pack_or_unpack(@params2)
-        expect(box.total_quantity_in_box).to eq(7)
+        expect(package1.quantity_contained_in(box.id)).to eq(5)
       end
     end
 
