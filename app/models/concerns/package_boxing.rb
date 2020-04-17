@@ -11,19 +11,14 @@ module PackageBoxing
     #
     # @returns {Package[]}
     #
-    def packages_contained_in(package)
-      id = Utils.to_id(package)
-
-      sql = <<-SQL
-        SELECT DISTINCT pi.package_id
-        FROM packages_inventories pi
-        WHERE pi.source_type = 'Package' AND pi.source_id = #{id}
-        AND pi.action IN ('pack', 'unpack')
-        GROUP BY pi.package_id
-        HAVING sum(pi.quantity) < 0
-      SQL
-
-      ids = PackagesInventory.connection.execute(sql).map{ |res| res['package_id'] }.uniq.compact
+    def packages_contained_in(container)
+      cid = Utils.to_id(container)
+      ids = PackagesInventory.
+        where(source_type: 'Package', source_id: cid, action: ['pack', 'unpack']).
+        group('package_id').
+        having('SUM(quantity) < 0').
+        select('DISTINCT package_id').
+        pluck(:package_id)
       Package.where(id: ids)
     end
 
@@ -34,21 +29,13 @@ module PackageBoxing
     # @returns {Package[]}
     #
     def containers_of(package)
-      id = Utils.to_id(package)
-
-      sql = <<-SQL
-        SELECT DISTINCT pi.source_id
-        FROM packages_inventories pi
-        WHERE (
-          pi.source_type = 'Package' AND
-          pi.package_id = #{id} AND
-          pi.action IN ('pack', 'unpack')
-        )
-        GROUP BY pi.source_id
-        HAVING sum(pi.quantity) < 0
-      SQL
-
-      ids = PackagesInventory.connection.execute(sql).map{ |res| res['source_id'] }.uniq.compact
+      pid = Utils.to_id(package)
+      ids = PackagesInventory.
+        where(source_type: 'Package', package_id: pid, action: ['pack', 'unpack']).
+        group('source_id').
+        having('SUM(quantity) < 0').
+        select('DISTINCT source_id').
+        pluck(:source_id)
       Package.where(id: ids)
     end
   end
