@@ -2,7 +2,7 @@ class PackageDetailBuilder
   attr_reader :detail_type, :detail_params, :detail_class
 
   FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
-  PERMITTED_DETAIL_TYPES = %w[computer electrical computer_accessory].freeze
+  PERMITTED_DETAIL_TYPES = %w[computer electrical computer_accessory medical].freeze
   REJECT_ATTRIBUTES = %w[id comp_test_status test_status frequency voltage].freeze
 
   def initialize(params, request_from_stockit)

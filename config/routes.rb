@@ -56,6 +56,7 @@ Rails.application.routes.draw do
       resources :computers
       resources :computer_accessories
       resources :electricals
+      resources :medicals
       resources :lookups, only: :index
 
       resources :items, except: [:index] do
@@ -65,6 +66,7 @@ Rails.application.routes.draw do
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
         get :contained_packages, on: :member
+        get :parent_containers, on: :member
         get :fetch_added_quantity, on: :member
         put :move, on: :member
         put :mark_missing, on: :member
@@ -161,6 +163,7 @@ Rails.application.routes.draw do
       resources :inventory_numbers, only: [:create] do
         put :remove_number, on: :collection
       end
+      resources :orders_process_checklists, only: [:index]
 
       # routes used in stock app
       get "designations", to: "orders#index"

@@ -74,6 +74,7 @@ module Api
           render json: serializer.new(
             @orders_package,
             include_package: true,
+            include_order: true,
             include_allowed_actions: true,
             include_orders_packages: true
           )

@@ -170,26 +170,8 @@ class Package < ActiveRecord::Base
     Location.dispatch_location
   end
 
-  def associated_packages
-    sql =
-      <<-SQL
-      select distinct pi.package_id
-      from packages_inventories pi
-      WHERE pi.source_type = 'Package' AND pi.source_id = #{id}
-      AND pi.action in ('pack', 'unpack')
-      group by pi.package_id
-      HAVING sum(pi.quantity) < 0
-      SQL
-    ids = PackagesInventory.connection.execute(sql).map{ |res| res['package_id'] }.uniq.compact
-    Package.where(id: ids)
-  end
-
-  def quantity_in_a_box(entity_id)
-    PackagesInventory::Computer.quantity_of_package_in_box(package: self, source: Package.find(entity_id))
-  end
-
-  def total_quantity_in_box
-    box_or_pallet? ? PackagesInventory::Computer.total_quantity_in_box(self) : nil
+  def quantity_contained_in(container_id)
+    PackagesInventory::Computer.quantity_contained_in(package: self, container: Package.find(container_id))
   end
 
   def dispatch_from_stockit?
@@ -404,7 +386,8 @@ class Package < ActiveRecord::Base
       item_image = item.images.find_by(id: favourite_image_id)
 
       if item_image
-        current_image = Image.create(item_image.attributes.slice("cloudinary_id", "angle"))
+        current_image = images.find_by(cloudinary_id: item_image.cloudinary_id) ||
+          Image.create(item_image.attributes.slice("cloudinary_id", "angle"))
         self.images << current_image
       end
     end
@@ -447,7 +430,7 @@ class Package < ActiveRecord::Base
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.saleable = offer.try(:saleable) || false
+    self.saleable ||= offer.try(:saleable)
     true
   end
 

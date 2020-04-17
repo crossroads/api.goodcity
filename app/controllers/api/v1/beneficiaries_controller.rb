@@ -12,16 +12,19 @@ module Api
         error 500, "Internal Server Error"
       end
 
-      def_param_group :beneficiary do
+      def self.build_param_group(strict: true)
         param :beneficiary, Hash, required: true do
-          param :identity_type_id, :number
-          param :identity_number, String
-          param :title, String
-          param :first_name, String
-          param :last_name, String
-          param :phone_number, String
+          param :identity_type_id, :number, required: strict
+          param :identity_number, String, required: strict
+          param :title, String, required: strict
+          param :first_name, String, required: strict
+          param :last_name, String, required: strict
+          param :phone_number, String, required: strict
         end
       end
+
+      def_param_group(:beneficiary_strict) { build_param_group(strict: true) }
+      def_param_group(:beneficiary) { build_param_group(strict: false) }
 
       def beneficiary_params
         attributes = [:identity_type_id, :identity_number, :title, :first_name, :last_name, :phone_number]
@@ -39,7 +42,7 @@ module Api
       end
 
       api :POST, "/v1/beneficiaries", "Create a beneficiary"
-      param_group :beneficiary
+      param_group :beneficiary_strict
       def create
         @beneficiary.order = Order.find_by_id(params['order_id'])
         @beneficiary.created_by = current_user
@@ -52,7 +55,7 @@ module Api
         if @beneficiary.update_attributes(beneficiary_params)
           render json: @beneficiary, serializer: serializer
         else
-          render json: @beneficiary.errors, status: 422
+          render json: { errors: @beneficiary.errors.full_messages }, status: 422
         end
       end
 

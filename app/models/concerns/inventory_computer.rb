@@ -37,10 +37,10 @@ module InventoryComputer
           .as_of_now
       end
 
-      def quantity_of_package_in_box(package:, source:)
-        historical_quantity
-          .where(package: package, source: source, action: ['pack', 'unpack'])
-          .as_of_now
+      def quantity_contained_in(container:, package: nil)
+        res = historical_quantity.where(source: container, action: ['pack', 'unpack'])
+        res = res.where(package_id: Utils.to_id(package)) if package.present?
+        res.as_of_now
       end
 
       def designated_quantity_of(package, to_order: nil)

@@ -18,12 +18,10 @@ module Api
           param :status, String
           param :code, String
           param :created_at, String
-          param :stockit_contact_id, String
-          param :stockit_organisation_id, String
           param :people_helped, :number
-          param :detail_id, String
-          param :stockit_id, String, desc: "stockit designation record id"
-          param :beneficiary_id, String
+          param :detail_id, String, allow_nil: true
+          param :stockit_id, String, desc: "stockit designation record id", allow_nil: true
+          param :beneficiary_id, String, allow_nil: true
           param :address_id, String
           param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)'
           param :staff_note, String, desc: 'Notes for internal use'
@@ -74,6 +72,8 @@ module Api
         render json: @order, serializer: serializer
       end
 
+      api :PUT, '/v1/orders/1', "Update an order"
+      param_group :order
       def update
         root = is_browse_app? ? "order" : "designation"
         @order.assign_attributes(order_params)

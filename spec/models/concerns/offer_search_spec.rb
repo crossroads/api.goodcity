@@ -2,7 +2,7 @@ require 'rails_helper'
 
 context OfferSearch do
 
-  let!(:offer) { create :offer, :submitted } # exists to confirm we never find it.
+  let!(:offer) { create :offer, :submitted, created_by: nil } # exists to confirm we never find it.
 
   # integration tests are located in offers_controller_spec for "GET offers/search"
   context "searches for" do
@@ -79,8 +79,8 @@ context OfferSearch do
     end
 
     context "offer with offer.id" do
-      let!(:offer1) { create :offer }
-      let!(:offer2) { create :offer }
+      let!(:offer1) { create :offer, created_by: nil  }
+      let!(:offer2) { create :offer, created_by: nil  }
       it { expect(Offer.search({search_text: offer1.id, states:[]}).to_a).to match_array([offer1]) }
     end
 
