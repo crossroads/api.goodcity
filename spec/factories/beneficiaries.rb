@@ -5,7 +5,7 @@ FactoryBot.define do
     title "Mr"
     first_name "John"
     last_name "Doe"
-    phone_number "36453837"
+    phone_number "+85236453837"
     created_at "2018-09-28 11:10:17"
     updated_at "2018-09-28 11:10:17"
 
