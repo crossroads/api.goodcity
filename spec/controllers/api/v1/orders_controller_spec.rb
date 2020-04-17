@@ -154,11 +154,12 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "can search orders from a user's first or last name" do
         submitter = create :user, first_name: "Harry", last_name: "Houdini"
-        create :order, :with_state_submitted, submitted_by: submitter
+        submitted_order = create :order, :with_state_submitted, submitted_by_id: submitter.id
         get :index, searchText: "rry"
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["submitted_by_id"]).to eq(submitter.id)
+        expect(parsed_body["designations"][0]["id"]).to eq(submitted_order.id)
         expect(parsed_body["meta"]["total_pages"]).to eql(1)
         expect(parsed_body["meta"]["search"]).to eql("rry")
       end

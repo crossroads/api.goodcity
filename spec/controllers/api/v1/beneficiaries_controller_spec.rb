@@ -152,6 +152,16 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
         expect(parsed_body['beneficiary']['id']).to eq(new_beneficiary.id)
         expect(parsed_body['beneficiary']['first_name']).to eq('elvis')
       end
+
+      [:first_name, :last_name].map do |attr|
+        it "returns validation error if #{attr} length is more than 50 characters" do
+          new_beneficiary = create(:beneficiary, created_by: charity_user)
+          expect {
+            put :update, id: new_beneficiary.id, beneficiary: { attr => 'crossroads foundation goodcity.hk api.goodcity stock' }
+            expect(response.status).to eq(422)
+          }.not_to change { new_beneficiary.reload[attr] }
+        end
+      end
     end
 
   end

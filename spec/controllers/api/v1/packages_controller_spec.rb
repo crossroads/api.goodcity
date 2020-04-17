@@ -402,6 +402,50 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(GoodcitySync.request_from_stockit).to eq(false)
       end
 
+      context 'when saleable value is provided in package parameters' do
+        it 'creates package record with given saleable value' do
+          [true, false].map do |val|
+            package_params[:saleable] = val
+            package_params[:item_id] = nil
+            post :create, format: :json, package: package_params
+            expect(response).to have_http_status(:success)
+            package_id = parsed_body['package']['id']
+            package = Package.find(package_id)
+            expect(package.saleable).to eq(val)
+          end
+        end
+
+        context 'if package has an associated offer' do
+          context 'if offer is not saleable' do
+            [true, false].map do |val|
+              it "creates package with saleble value #{val}" do
+                item.offer.update(saleable: false)
+                package_params[:saleable] = val
+                post :create, format: :json, package: package_params
+                expect(response).to have_http_status(:success)
+                package_id = parsed_body["package"]["id"]
+                package = Package.find(package_id)
+                expect(package.saleable).to eq(val)
+              end
+            end
+          end
+
+          context 'if offer is saleable' do
+            [true, false].map do |val|
+              it 'creates package with saleable as true' do
+                item.offer.update(saleable: true)
+                package_params[:saleable] = val
+                post :create, format: :json, package: package_params
+                expect(response).to have_http_status(:success)
+                package_id = parsed_body["package"]["id"]
+                package = Package.find(package_id)
+                expect(package.saleable).to eq(true)
+              end
+            end
+          end
+        end
+      end
+
       context "without an inventory_number" do
         context "but with a location" do
           before { package_params[:location_id] = location.id }
@@ -1116,7 +1160,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
   describe "DELETE package/1" do
     let(:uninventorized_package) { create :package, inventory_number: nil }
-  
+
     before { generate_and_set_token(user) }
 
     it "deletes an uninventorized package successfully", :show_in_doc do
@@ -1349,50 +1393,61 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       initialize_inventory(package1, package2, location: location)
     }
 
-    describe "fetch_contained_packages" do
+    def pack(qty, pkg, into:)
+      Package::Operations.pack_or_unpack(container: into, package: pkg, location_id: location.id, quantity: qty, user_id: user.id, task: 'pack')
+    end
+
+    def unpack(qty, pkg, out_of:)
+      Package::Operations.pack_or_unpack(container: out_of, package: pkg, location_id: location.id, quantity: qty, user_id: user.id, task: 'unpack')
+    end
+
+    describe "Get containers of a package (/package/:id/parent_containers)" do
+      let(:response_packages) { parsed_body['items'].map { |it| Package.find(it['id']) } }
+
+      before { generate_and_set_token(user) }
+
+      before(:each) do
+        pack(20, package1, into: box)
+        pack(10, package1, into: pallet)
+
+        expect(PackagesInventory::Computer.package_quantity(package1)).to eq(20)
+        expect(PackagesInventory::Computer.package_quantity(box)).to eq(1)
+        expect(PackagesInventory::Computer.package_quantity(pallet)).to eq(1)
+      end
+
+      it "fetches all the boxes/pallets that contain the package" do
+        get :parent_containers, id: package1.id
+        expect(response.status).to eq(200)
+        expect(response_packages).to match_array([box, pallet]);
+      end
+
+      it "does not return a box if the package has been taken out of it" do
+        unpack(20, package1, out_of: box)
+
+        get :parent_containers, id: package1.id
+        expect(response.status).to eq(200)
+        expect(response_packages).to match_array([pallet]);
+      end
+    end
+
+    describe "fetch contained_packages" do
       before :each do
         generate_and_set_token(user)
         current_user = user
-        params1 = {
-          id: box.id,
-          item_id: package1.id,
-          location_id: location.id,
-          task: 'pack',
-          quantity: 5
-        }
-        params2 = {
-          id: box.id,
-          item_id: package2.id,
-          location_id: location.id,
-          task: 'pack',
-          quantity: 2
-        }
-        params3 = {
-          id: pallet.id,
-          item_id: package2.id,
-          location_id: location.id,
-          task: 'pack',
-          quantity: 5
-        }
-        put :add_remove_item, params1
-        put :add_remove_item, params2
-        put :add_remove_item, params3
+        pack(5, package1, into: box)
+        pack(2, package2, into: box)
+        pack(5, package2, into: pallet)
       end
 
       it "fetches all the items that are present inside a box" do
-        params = {
-          id: box.id
-        }
-        get :contained_packages, params
+        get :contained_packages, id: box.id
         expect(response.status).to eq(200)
         expect(parsed_body["items"].length).to eq(2)
       end
 
       it "fetches all the items that are present inside a pallet" do
-        params = {
-          id: pallet.id
-        }
-        get :contained_packages, params
+        puts(pallet.id)
+        get :contained_packages, id: pallet
         expect(response.status).to eq(200)
         expect(parsed_body["items"].length).to eq(1)
       end
@@ -1576,6 +1631,25 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       expect(response.status).to eq(422)
       expect(parsed_body['error']).to eq("The selected quantity (25) is unavailable")
+    end
+  end
+
+  describe 'GET stockit_items' do
+    before do
+      generate_and_set_token(user)
+      @location = create :location
+      @package = create(:package, :with_inventory_number, received_quantity: 20)
+      create(:packages_location, package: @package, location: @location, quantity: 20)
+    end
+
+    it 'returns package details' do
+      get :stockit_item_details, { id: @package.id }
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'should have saleable node in the response' do
+      get :stockit_item_details, {id: @package.id}
+      expect(parsed_body['item'].keys).to include('saleable')
     end
   end
 end

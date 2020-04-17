@@ -18,7 +18,7 @@ class Ability
     can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages
+    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages can_access_orders_process_checklists
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -61,6 +61,7 @@ class Ability
     message_abilities
     orders_package_abilities
     order_transport_abilities
+    orders_process_checklists_abilities
     organisations_abilities
     organisations_users_abilities
     requested_packages_abilities
@@ -79,6 +80,7 @@ class Ability
     computer_abilities
     computer_accessory_abilities
     electrical_abilities
+    medical_abilities
     printer_abilities
     offers_package_abilities
   end
@@ -122,6 +124,10 @@ class Ability
 
   def electrical_abilities
     can [:create, :index, :show, :update, :destroy], Electrical if can_manage_package_detail?
+  end
+
+  def medical_abilities
+    can [:create, :index, :show, :update, :destroy], Medical if can_manage_package_detail?
   end
 
   def goodcity_request_abilitites
@@ -261,6 +267,12 @@ class Ability
     end
   end
 
+  def orders_process_checklists_abilities
+    if can_access_orders_process_checklists?
+      can [:index], OrdersProcessChecklist
+    end
+  end
+
   def organisations_abilities
     if can_check_organisations? || @api_user
       can [:index, :search, :show], Organisation
@@ -288,7 +300,8 @@ class Ability
     if can_manage_packages?
       can [:index, :show, :create, :update, :destroy, :print_barcode,
         :search_stockit_items, :remove_from_set, :designate, :register_quantity_change, :mark_missing,
-        :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item, :contained_packages, :fetch_added_quantity], Package
+        :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item,
+        :contained_packages, :parent_containers, :fetch_added_quantity], Package
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }

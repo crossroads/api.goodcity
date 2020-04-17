@@ -45,6 +45,8 @@ class Order < ActiveRecord::Base
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
 
+  validates :people_helped, numericality: { greater_than_or_equal_to: 0 }
+
   after_initialize :set_initial_state
   before_create :assign_code
 
@@ -308,8 +310,8 @@ class Order < ActiveRecord::Base
   end
 
   def send_confirmation_email
-    send_appointment_confirmation_email if booking_type.appointment?
-    send_online_order_confirmation_email if booking_type.online_order?
+    send_appointment_confirmation_email if booking_type&.appointment?
+    send_online_order_confirmation_email if booking_type&.online_order?
   end
 
   def send_appointment_confirmation_email

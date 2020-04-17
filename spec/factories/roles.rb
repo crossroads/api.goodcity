@@ -176,6 +176,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_access_orders_process_checklists do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: "can_access_orders_process_checklists")
+      end
+    end
+
   end
 
 end

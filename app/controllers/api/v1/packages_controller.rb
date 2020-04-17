@@ -61,15 +61,15 @@ module Api
       api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
 
       def stockit_item_details
-        render json: stock_serializer.new(@package,
-          serializer: stock_serializer,
-          root: "item",
-          include_order: true,
-          include_orders_packages: true,
-          exclude_stockit_set_item: @package.set_item_id.blank?,
-          include_images: @package.set_item_id.blank?,
-          include_allowed_actions: true
-        ).as_json
+        render json: stock_serializer
+          .new(@package,
+               serializer: stock_serializer,
+               root: 'item',
+               include_order: true,
+               include_orders_packages: true,
+               exclude_stockit_set_item: @package.set_item_id.blank?,
+               include_images: @package.set_item_id.blank?,
+               include_allowed_actions: true).as_json
       end
 
       api :POST, "/v1/packages", "Create a package"
@@ -273,7 +273,7 @@ module Api
       def add_remove_item
         render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
         response = Package::Operations.pack_or_unpack(
-                    container: Package.find(params[:id]),
+                    container: @package,
                     package: Package.find(params[:item_id]),
                     quantity: params[:quantity].to_i, # quantity to pack or unpack
                     location_id: params[:location_id],
@@ -287,20 +287,31 @@ module Api
         end
       end
 
+      api :GET, "/v1/packages/1/contained_packages", "Returns the packages nested inside of current package"
       def contained_packages
-        entity = Package.find_by(id: params[:id])
-        return unless entity.present?
-
-        contained_pkgs = entity.associated_packages&.page(page)&.per(per_page)
+        container = @package
+        contained_pkgs = PackagesInventory.packages_contained_in(container).page(page)&.per(per_page)
         render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
           include_orders_packages: false, include_storage_type: false,
           include_donor_conditions: false, exclude_stockit_set_item: true, root: "items"
       end
 
+      api :GET, "/v1/packages/1/parent_containers", "Returns the packages which contain current package"
+      def parent_containers
+        containers = PackagesInventory.containers_of(@package).page(page)&.per(per_page)
+        render json: containers,
+          each_serializer: stock_serializer,
+          include_items: true,
+          include_orders_packages: false,
+          include_storage_type: false,
+          include_donor_conditions: false,
+          exclude_stockit_set_item: true,
+          root: "items"
+      end
+
       def fetch_added_quantity
         entity_id = params[:entity_id]
-        package = Package.find_by(id: params[:id])
-        render json: { added_quantity: package&.quantity_in_a_box(entity_id) }, status: 200
+        render json: { added_quantity: @package&.quantity_contained_in(entity_id) }, status: 200
       end
 
       private
@@ -323,13 +334,13 @@ module Api
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
-          :package_type_id, :pallet_id, :pieces, :received_at,
+          :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
           :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id,
           offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
-                              computer_accessory_attributes].flatten.uniq
+                              computer_accessory_attributes, medical_attributes].flatten.uniq
         ]
 
         params.require(:package).permit(attributes)
@@ -363,6 +374,10 @@ module Api
           brand comp_test_status comp_test_status_id comp_voltage country_id
           interface model serial_num size updated_by_id
         ]
+      end
+
+      def medical_attributes
+        %i[brand country_id serial_number updated_by_id expiry_date]
       end
 
       def get_package_type_id_value
