@@ -13,7 +13,7 @@ module Api
       end
 
       def index
-        @orders_process_checklists = OrdersProcessChecklist.by_order(params[:order_id])
+        @orders_process_checklists = @orders_process_checklists.by_order(params[:order_id])
         render json: @orders_process_checklists, each_serializer: serializer
       end
 
