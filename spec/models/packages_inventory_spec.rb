@@ -224,7 +224,7 @@ RSpec.describe PackagesInventory, type: :model do
         expect(PackagesInventory::Computer.package_quantity(package1)).to eq(3)
         expect(PackagesInventory::Computer.package_quantity(package2)).to eq(3)
 
-        expect(PackagesInventory.packages_contained_in(box1)).to eq([
+        expect(PackagesInventory.packages_contained_in(box1)).to match_array([
           package1,
           package2
         ])
@@ -236,7 +236,7 @@ RSpec.describe PackagesInventory, type: :model do
         expect(PackagesInventory::Computer.package_quantity(package1)).to eq(5)
         expect(PackagesInventory::Computer.package_quantity(package2)).to eq(3)
 
-        expect(PackagesInventory.packages_contained_in(box1)).to eq([
+        expect(PackagesInventory.packages_contained_in(box1)).to match_array([
           package2
         ])
       end
@@ -251,14 +251,14 @@ RSpec.describe PackagesInventory, type: :model do
 
       it 'returns the boxes containing the package' do
         expect(PackagesInventory::Computer.package_quantity(package1)).to eq(1)
-        expect(PackagesInventory.containers_of(package1)).to eq([ box1, box2 ])
+        expect(PackagesInventory.containers_of(package1)).to match_array([ box1, box2 ])
       end
 
       it 'doesnt return the boxes that we took the package out of' do
         unpack(2, package1, out_of: box1);
 
         expect(PackagesInventory::Computer.package_quantity(package1)).to eq(3)
-        expect(PackagesInventory.containers_of(package1)).to eq([ box2 ])
+        expect(PackagesInventory.containers_of(package1)).to match_array([ box2 ])
       end
     end
   end
