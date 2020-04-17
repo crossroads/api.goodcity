@@ -21,7 +21,6 @@ RSpec.describe Beneficiary, type: :model do
     it { is_expected.to validate_presence_of(:identity_type_id) }
     it { should validate_length_of(:first_name).is_at_most(50) }
     it { should validate_length_of(:last_name).is_at_most(50) }
-    it { should validate_length_of(:phone_number).is_equal_to(12) }
   end
 
   describe "Associations" do
