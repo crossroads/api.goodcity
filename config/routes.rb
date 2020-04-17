@@ -66,6 +66,7 @@ Rails.application.routes.draw do
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
         get :contained_packages, on: :member
+        get :parent_containers, on: :member
         get :fetch_added_quantity, on: :member
         put :move, on: :member
         put :mark_missing, on: :member

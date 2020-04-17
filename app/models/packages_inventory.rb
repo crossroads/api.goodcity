@@ -32,6 +32,7 @@ class PackagesInventory < ActiveRecord::Base
   include Secured
   include InventoryLegacySupport
   include InventoryComputer
+  include PackageBoxing
 
   belongs_to :package, touch: true
   belongs_to :location

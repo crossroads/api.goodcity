@@ -273,7 +273,7 @@ module Api
       def add_remove_item
         render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
         response = Package::Operations.pack_or_unpack(
-                    container: Package.find(params[:id]),
+                    container: @package,
                     package: Package.find(params[:item_id]),
                     quantity: params[:quantity].to_i, # quantity to pack or unpack
                     location_id: params[:location_id],
@@ -287,20 +287,31 @@ module Api
         end
       end
 
+      api :GET, "/v1/packages/1/contained_packages", "Returns the packages nested inside of current package"
       def contained_packages
-        entity = Package.find_by(id: params[:id])
-        return unless entity.present?
-
-        contained_pkgs = entity.associated_packages&.page(page)&.per(per_page)
+        container = @package
+        contained_pkgs = PackagesInventory.packages_contained_in(container).page(page)&.per(per_page)
         render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
           include_orders_packages: false, include_storage_type: false,
           include_donor_conditions: false, exclude_stockit_set_item: true, root: "items"
       end
 
+      api :GET, "/v1/packages/1/parent_containers", "Returns the packages which contain current package"
+      def parent_containers
+        containers = PackagesInventory.containers_of(@package).page(page)&.per(per_page)
+        render json: containers,
+          each_serializer: stock_serializer,
+          include_items: true,
+          include_orders_packages: false,
+          include_storage_type: false,
+          include_donor_conditions: false,
+          exclude_stockit_set_item: true,
+          root: "items"
+      end
+
       def fetch_added_quantity
         entity_id = params[:entity_id]
-        package = Package.find_by(id: params[:id])
-        render json: { added_quantity: package&.quantity_in_a_box(entity_id) }, status: 200
+        render json: { added_quantity: @package&.quantity_contained_in(entity_id) }, status: 200
       end
 
       private
