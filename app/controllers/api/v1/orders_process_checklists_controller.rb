@@ -1,7 +1,7 @@
 module Api
   module V1
     class OrdersProcessChecklistsController < Api::V1::ApiController
-      authorize_resource :orders_process_checklist, parent: false
+      load_and_authorize_resource :orders_process_checklist, parent: false
       load_resource :orders_process_checklist, only: [:show]
 
       resource_description do
