@@ -24,4 +24,8 @@ describe Api::V1::PackageSerializer do
     expect(json['package']['item_id']).to eql(package.item_id)
     expect(json['package']['package_type_id']).to eql(package.package_type_id)
   end
+
+  it 'should have saleable in the response' do
+    expect(json['package'].keys).to include('saleable')
+  end
 end
