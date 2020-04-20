@@ -55,7 +55,7 @@ module Api
       api :GET, "/v1/packages/1", "Details of a package"
 
       def show
-        render_package(@package)
+        render json: serializer.new(package, include_orders_packages: true).as_json
       end
 
       api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
@@ -101,7 +101,9 @@ module Api
         if success
           # @TODO: unify package under a single serializer
           if is_stock_app?
-            should_copy? ? render_package(@package.copy) : render_stock_item(@package)
+            pkg_object = should_copy? ? @package.copy : @package
+            render json: pkg_object, serializer: stock_serializer, root: 'item',
+                   include_order: false, include_orders_packages: true
           else
             render json: @package, serializer: serializer, status: 201
           end
@@ -113,10 +115,6 @@ module Api
       def render_stock_item(item)
         render json: item, serializer: stock_serializer, root: 'item',
                include_order: false, include_orders_packages: true
-      end
-
-      def render_package(package)
-        render json: serializer.new(package, include_orders_packages: true).as_json
       end
 
       api :PUT, "/v1/packages/1", "Update a package"
