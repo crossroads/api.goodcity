@@ -166,6 +166,18 @@ class Package < ActiveRecord::Base
     end
   end
 
+  def copy
+    pkg_copy = Package.new(attributes.select { |key, _| attrs_to_copy.include? key })
+    pkg_copy.inventory_number = InventoryNumber.next_code
+    pkg_copy.detail = copy_detail_type if detail_id
+    pkg_copy.detail = copy_detail_type
+    pkg_copy
+  end
+
+  def copy_detail_type
+    detail.copy
+  end
+
   def dispatched_location
     Location.dispatch_location
   end
@@ -426,6 +438,13 @@ class Package < ActiveRecord::Base
   end
 
   private
+
+  def attrs_to_copy
+    %w[length width height notes state received_at package_type_id
+       location_id donor_condition_id grade favourite_image_id saleable
+       case_number allow_web_publish weight pieces detail_id detail_type
+       storage_type_id expiry_date]
+  end
 
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)

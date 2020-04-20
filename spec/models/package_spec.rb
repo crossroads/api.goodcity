@@ -640,5 +640,34 @@ RSpec.describe Package, type: :model do
         expect(@pkg_image1.reload.favourite).to eq(false)
       end
     end
+
+    describe '#copy' do
+      let(:item) { create(:item) }
+      let(:computer) { create(:computer, os_serial_num: nil, mar_os_serial_num: "12345678901234") }
+      let(:package) { create(:package, item: item, detail: computer) }
+      it 'copies certain attributes' do
+        package_copied = package.copy
+        attributes = %i[length width height notes state received_at
+                        package_type_id location_id donor_condition_id grade
+                        favourite_image_id saleable case_number
+                        allow_web_publish weight pieces detail_id detail_type
+                        storage_type_id expiry_date]
+        attributes.map do |attr|
+          expect(package_copied[attr]).to eq(package[attr])
+        end
+      end
+
+      it 'automatically sets inventory number' do
+        package_copied = package.copy
+        expect(package_copied.inventory_number).not_to be_nil
+      end
+
+      context 'if package has subform' do
+        it 'copies the subform details' do
+          package_copied = package.copy
+          expect(package_copied.detail).not_to be_nil
+        end
+      end
+    end
   end
 end

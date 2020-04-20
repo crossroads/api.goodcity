@@ -23,6 +23,10 @@ module SubformUtilities
     add_stockit_id(response)
   end
 
+  def copy
+    self.class.new(attributes.select { |key, _| attr_to_copy.include? key })
+  end
+
   def update_on_stockit
     return if request_from_stockit?
 
@@ -61,5 +65,13 @@ module SubformUtilities
 
   def request_from_stockit?
     GoodcitySync.request_from_stockit
+  end
+
+  private
+
+  def attr_to_copy
+    %w[brand model country_id size cpu ram hdd optical video sound lan
+       wireless usb comp_voltage os size printer scanner interface
+       comp_voltage comp_test_status]
   end
 end
