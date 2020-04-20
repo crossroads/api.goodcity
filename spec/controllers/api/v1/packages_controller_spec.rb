@@ -446,6 +446,21 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
       end
 
+      context 'if copy package is selected' do
+        it 'creates a package and return copy of that package' do
+          set_stock_app_header
+          package_params['options'] = { 'copy': true }
+          post :create, format: :json, package: package_params
+          attributes = %w[length width height notes state received_at package_type_id
+            location_id donor_condition_id grade favourite_image_id saleable
+            case_number allow_web_publish weight pieces detail_id detail_type
+            storage_type_id expiry_date]
+            attributes.map do |attr|
+            expect(parsed_body['package'][attr]).to eq(Package.last.attributes[attr])
+          end
+        end
+      end
+
       context "without an inventory_number" do
         context "but with a location" do
           before { package_params[:location_id] = location.id }

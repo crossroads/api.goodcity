@@ -55,7 +55,7 @@ module Api
       api :GET, "/v1/packages/1", "Details of a package"
 
       def show
-        render json: serializer.new(@package, include_orders_packages: true).as_json
+        render_package(@package)
       end
 
       api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
@@ -80,7 +80,6 @@ module Api
         # - Goodcity for create
         # - StockIt for create+update+designate+dispatch
         @package.inventory_number = remove_stockit_prefix(@package.inventory_number)
-
         success = ActiveRecord::Base.transaction do
           initialize_package_record
           dispatch_from_stockit = is_stockit_request? && (@package.stockit_sent_on_changed? || @package.order_id_changed?)
@@ -102,14 +101,22 @@ module Api
         if success
           # @TODO: unify package under a single serializer
           if is_stock_app?
-            render json: @package, serializer: stock_serializer, root: "item",
-                    include_order: false, include_orders_packages: true
+            should_copy? ? render_package(@package.copy) : render_stock_item(@package)
           else
             render json: @package, serializer: serializer, status: 201
           end
         else
           render json: { errors: @package.errors.full_messages }, status: 422
         end
+      end
+
+      def render_stock_item(item)
+        render json: item, serializer: stock_serializer, root: 'item',
+               include_order: false, include_orders_packages: true
+      end
+
+      def render_package(package)
+        render json: serializer.new(package, include_orders_packages: true).as_json
       end
 
       api :PUT, "/v1/packages/1", "Update a package"
@@ -316,6 +323,10 @@ module Api
 
       private
 
+      def should_copy?
+        params['package']['options']['copy']
+      end
+
       def render_order_status_error
         render json: { errors: I18n.t("orders_package.order_status_error") }, status: 403
       end
@@ -334,13 +345,15 @@ module Api
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
-          :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
-          :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id,
+          :package_type_id, :pallet_id, :pieces, :received_at, :saleable, :copy,
+          :received_quantity, :rejected_at, :state, :state_event,
+          :stockit_designated_on, :stockit_id, :stockit_sent_on, :weight, :width,
+          :favourite_image_id,
           offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
-                              computer_accessory_attributes, medical_attributes].flatten.uniq
+                              computer_accessory_attributes,
+                              medical_attributes].flatten.uniq
         ]
 
         params.require(:package).permit(attributes)

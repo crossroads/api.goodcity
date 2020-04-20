@@ -668,6 +668,14 @@ RSpec.describe Package, type: :model do
           expect(package_copied.detail).not_to be_nil
         end
       end
+
+      context 'if there are no subform for package' do
+        it 'copies without subform details' do
+          package.detail = nil
+          package.save
+          expect(package_copied.detail).to be_nil
+        end
+      end
     end
   end
 end

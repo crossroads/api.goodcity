@@ -170,7 +170,6 @@ class Package < ActiveRecord::Base
     pkg_copy = Package.new(attributes.select { |key, _| attrs_to_copy.include? key })
     pkg_copy.inventory_number = InventoryNumber.next_code
     pkg_copy.detail = copy_detail_type if detail_id
-    pkg_copy.detail = copy_detail_type
     pkg_copy
   end
 
