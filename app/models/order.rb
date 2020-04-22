@@ -86,7 +86,7 @@ class Order < ActiveRecord::Base
     "Closed" => "closed"
   }.freeze
 
-  scope :non_draft_orders, -> { where.not("state = 'draft' AND detail_type = 'GoodCity'") }
+  scope :non_draft_orders, -> { where.not("orders.state = 'draft' AND detail_type = 'GoodCity'") }
 
   scope :with_eager_load, -> {
           includes([:subscriptions, :order_transport,
