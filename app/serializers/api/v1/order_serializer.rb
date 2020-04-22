@@ -13,6 +13,7 @@ module Api::V1
     has_many :orders_purposes, serializer: OrdersPurposeSerializer
     has_many :goodcity_requests, serializer: GoodcityRequestSerializer
     has_many :orders_process_checklists, serializer: OrderProcessChecklistSerializer
+    has_many :messages, serializer: MessageSerializer
     has_one  :closed_by, serializer: UserSerializer
     has_one  :processed_by, serializer: UserSerializer
     has_one  :cancelled_by, serializer: UserSerializer
@@ -48,6 +49,10 @@ module Api::V1
       @options[:include_orders_packages] || (
         !@options[:include_packages] && !@options[:include_order]
       )
+    end
+
+    def include_messages?
+      @options[:include_messages]
     end
 
     alias_method :include_stockit_contact?, :include_non_browse_details?

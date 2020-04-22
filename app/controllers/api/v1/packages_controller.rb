@@ -306,6 +306,7 @@ module Api
           include_storage_type: false,
           include_donor_conditions: false,
           exclude_stockit_set_item: true,
+          include_images: true,
           root: "items"
       end
 

@@ -31,6 +31,7 @@ module OrderFiltering
       types: [],
       priority: false,
       after: nil,
+      with_notifications: nil,
       before: nil)
       res = where(nil)
       res = res.where("state IN (?)", states) unless states.empty?
@@ -38,6 +39,8 @@ module OrderFiltering
       res = res.priority if priority.present?
       res = res.due_after(after) if after.present?
       res = res.due_before(before) if before.present?
+      res = res.with_notifications(with_notifications) if with_notifications.present?
+
       if (states & Order::ACTIVE_STATES).present?
         res = res.order_by_urgency
       else
@@ -77,6 +80,13 @@ module OrderFiltering
 
     def order_by_urgency
       order('order_transports.scheduled_at ASC, orders.id').select('orders.*, order_transports.scheduled_at').join_order_transports
+    end
+
+    def with_notifications(state)
+      res = joins("LEFT OUTER JOIN subscriptions ON orders.id = subscriptions.order_id")
+      res = res.where("subscriptions.user_id = (?)", User.current_user.id)
+      res = res.where("subscriptions.state = (?)", state) if %w[unread read].include?(state)
+      res
     end
 
     # TYPES
