@@ -12,6 +12,7 @@ RSpec.describe PackageType, type: :model do
     it { is_expected.to have_db_column(:allow_stock).of_type(:boolean) }
     it { is_expected.to have_db_column(:allow_box).of_type(:boolean) }
     it { is_expected.to have_db_column(:allow_pallet).of_type(:boolean) }
+    it { is_expected.to have_db_column(:allow_expiry_date).of_type(:boolean) }
   end
 
   describe 'Associations' do
