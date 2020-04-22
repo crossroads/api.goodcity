@@ -154,7 +154,7 @@ module Api
           states: array_param(:state),
           types: array_param(:type),
           priority: bool_param(:priority, false),
-          with_notifications: bool_param(:with_notifications, false),
+          with_notifications: params[:with_notifications],
           before: time_epoch_param(:before),
           after: time_epoch_param(:after)
         )
