@@ -41,7 +41,7 @@ gem 'redis'
 gem 'redis-rails'
 gem 'rollbar'
 gem 'apipie-rails' , git: "https://github.com/Apipie/apipie-rails.git", branch: 'master'
-# gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
+gem "go_go_van_api", git: "git@github.com:crossroads/go_go_van_api.git", branch: 'master'
 gem 'by_star', git: "https://github.com/radar/by_star.git"
 gem 'nestful', git: "https://github.com/maccman/nestful.git"
 gem "nokogiri", ">= 1.10.8"
