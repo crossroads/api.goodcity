@@ -13,6 +13,5 @@ namespace :goodcity do
         end
       end
     end
-
   end
 end
