@@ -8,12 +8,8 @@ class RolePermissionsMappings
 
   def apply!
     puts('Starting Role Permission mappings')
-    ActiveRecord::Base.transaction do
-      sync_roles_and_permissions
-    end
+    sync_roles_and_permissions
     puts('Finished successfully.')
-  rescue ActiveRecord::RecordInvalid
-    puts('Failed. There were errors while adding roles and permissions')
   end
 
   private
@@ -47,9 +43,13 @@ class RolePermissionsMappings
   def sync_roles_and_permissions
     role_permissions = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
     role_permissions.each_pair do |role_name, permission_names|
-      permission_names.flatten!
-      remove_additional_permissions_for_role(role_name, permission_names)
-      add_permission_to_role(role_name, permission_names)
+      ActiveRecord::Base.transaction do
+        permission_names.flatten!
+        remove_additional_permissions_for_role(role_name, permission_names)
+        add_permission_to_role(role_name, permission_names)
+      end
+    rescue ActiveRecord::RecordInvalid
+      puts("Encountered errors while adding #{permission_names} to #{role_name}")
     end
   end
 end
