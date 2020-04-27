@@ -22,7 +22,11 @@ class RolePermissionsMappings
     role = Role.where(name: role_name).first_or_create
     permission_names.each do |permission_name|
       permission = Permission.where(name: permission_name).first_or_create
-      RolePermission.where(role: role, permission: permission).first_or_create
+      record = RolePermission.find_by(role: role, permission: permission)
+      unless record
+        RolePermission.create(role: role, permission: permission)
+        puts("Added #{permission.name} for #{role_name}")
+      end
     end
   end
 
@@ -30,7 +34,9 @@ class RolePermissionsMappings
     YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
   end
 
-  def remove_missing_roles_and_permissions(role_name, permission_names)
+  def remove_additional_permissions_for_role(role_name, permission_names)
+    # Delete the role_permissions records that are not present in permissions_roles.yml
+    # for the respective roles
     role_permissions = RolePermission.joins(:role).joins(:permission)
                                      .where('roles.name' => role_name)
                                      .where
@@ -46,7 +52,7 @@ class RolePermissionsMappings
     role_permissions = load_permissions_roles
     role_permissions.each_pair do |role_name, permission_names|
       permission_names.flatten!
-      remove_missing_roles_and_permissions(role_name, permission_names)
+      remove_additional_permissions_for_role(role_name, permission_names)
       add_permission_to_role(role_name, permission_names)
     end
   end
