@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe RolePermissionsMappings do
-
   def permissions_roles
     YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
   end
@@ -15,12 +14,6 @@ describe RolePermissionsMappings do
         role = Role.find_by(name: role_name)
         permissions.flatten!
         expect(role.permissions.map(&:name)).to match_array(permissions)
-      end
-    end
-
-    context 'if new permissions are added to existing roles' do
-      it '' do
-
       end
     end
 
