@@ -7,7 +7,13 @@ class RolePermissionsMappings
   end
 
   def apply!
-    sync_roles_and_permissions
+    puts('Starting Role Permission mappings')
+    ActiveRecord::Base.transaction do
+      sync_roles_and_permissions
+    end
+    puts('Finished successfully.')
+  rescue ActiveRecord::RecordInvalid
+    puts('Failed. There were errors while adding roles and permissions')
   end
 
   private
@@ -25,10 +31,15 @@ class RolePermissionsMappings
   end
 
   def remove_missing_roles_and_permissions(role_name, permission_names)
-    RolePermission.joins(:role).joins(:permission)
-                  .where('roles.name' => role_name)
-                  .where.not('permissions.name' => permission_names)
-                  .delete_all
+    role_permissions = RolePermission.joins(:role).joins(:permission)
+                                     .where('roles.name' => role_name)
+                                     .where
+                                     .not('permissions.name' => permission_names)
+    permission_names = role_permissions.map { |p| p.permission.name }
+    return if role_permissions.empty?
+
+    role_permissions.delete_all
+    puts("Removed #{permission_names} from #{role_name}")
   end
 
   def sync_roles_and_permissions
