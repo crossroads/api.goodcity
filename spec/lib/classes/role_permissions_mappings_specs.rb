@@ -3,11 +3,9 @@
 require 'rails_helper'
 
 describe RolePermissionsMappings do
-  def permissions_roles
-    YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
-  end
-
   describe '.apply' do
+    let(:permissions_roles) { generate(:permissions_roles) }
+
     it 'adds missing roles and permissions' do
       RolePermissionsMappings.apply!
       permissions_roles.each_pair do |role_name, permissions|
