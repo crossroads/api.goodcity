@@ -1,6 +1,6 @@
 class AddValuationToPackage < ActiveRecord::Migration
   def change
-    add_column :packages, :valuation, :decimal, default: nil
-    add_column :packages, :valuation_override, :decimal, default: nil
+    add_column :packages, :value_hk_dollar, :decimal, default: nil
+    add_column :package_types, :default_value_hk_dollar, :decimal, default: nil
   end
 end
