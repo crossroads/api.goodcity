@@ -8,6 +8,7 @@ module Api::V1
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_one :storage_type, serializer: StorageTypeSerializer
+    has_one :package_set, serializer: PackageSetSerializer
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :item_id, :state, :received_at, :rejected_at, :inventory_number,
@@ -15,8 +16,8 @@ module Api::V1
                :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
                :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
                :designated_quantity, :dispatched_quantity, :quantity, :favourite_image_id,
-               :saleable, :value_hk_dollar
-
+               :saleable, :value_hk_dollar, :package_set_id
+  
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity

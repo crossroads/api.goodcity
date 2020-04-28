@@ -18,7 +18,7 @@ class Package < ActiveRecord::Base
 
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
-  belongs_to :set_item, class_name: 'Item'
+  belongs_to :package_set
   has_many :locations, through: :packages_locations
 
   belongs_to :detail, polymorphic: true, dependent: :destroy, required: false
@@ -31,7 +31,6 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_designated_by, class_name: 'User'
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
-
 
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
   has_many   :images, as: :imageable, dependent: :destroy
@@ -46,10 +45,10 @@ class Package < ActiveRecord::Base
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :update_set_relation, if: :stockit_sent_on_changed?
-  after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   before_save :set_favourite_image, if: :valid_favourite_image_id?
+  after_create :initialize_package_set
 
   # Live update rules
   after_save :push_changes
@@ -75,8 +74,6 @@ class Package < ActiveRecord::Base
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
   scope :published, -> { where(allow_web_publish: true) }
-  scope :non_set_items, -> { where(set_item_id: nil) }
-  scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
   scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
@@ -132,10 +129,6 @@ class Package < ActiveRecord::Base
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
       package.add_to_stockit if STOCKIT_ENABLED
-    end
-
-    after_transition on: [:mark_received, :mark_missing] do |package|
-      package.update_set_item_id
     end
 
     before_transition on: :mark_missing do |package|
@@ -239,7 +232,6 @@ class Package < ActiveRecord::Base
       else
         self.inventory_number = nil
         self.stockit_id = nil
-        self.set_item_id = nil
       end
     end
   end
@@ -274,13 +266,6 @@ class Package < ActiveRecord::Base
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
     add_errors(response)
-  end
-
-  def update_set_relation
-    if set_item_id.present? && stockit_sent_on.present? && !skip_set_relation_update
-      self.set_item_id = nil
-      update_set_item_id(inventory_package_set.except_package(id))
-    end
   end
 
   # @TODO: remove
@@ -324,22 +309,6 @@ class Package < ActiveRecord::Base
     end
   end
 
-  def update_set_item_id(all_packages = nil)
-    if item
-      all_packages ||= inventory_package_set
-      if all_packages.length == 1
-        all_packages.update_all(set_item_id: nil)
-      else
-        all_packages.non_set_items.update_all(set_item_id: item.id)
-      end
-    end
-  end
-
-  def remove_from_set
-    update(set_item_id: nil)
-    update_set_item_id(inventory_package_set.except_package(id))
-  end
-
   def total_assigned_quantity
     total_quantity = 0
     if (associated_orders_packages = orders_packages.get_designated_and_dispatched_packages(id).presence)
@@ -377,6 +346,26 @@ class Package < ActiveRecord::Base
     favourite_image_id_changed? &&
       favourite_image_id.present? &&
       image_ids.include?(favourite_image_id)
+  end
+
+  ##
+  #
+  # Upon creation of a package, it is added to a set IF:
+  #   * It belongs to an item
+  #   * It has sibling packages (via the item)
+  #   * It does not currently belong to a set
+  #
+  def initialize_package_set
+    siblings = [self, *item&.packages].uniq
+
+    return if package_set_id.present? || siblings.length < 2 || item.package_type.blank?
+
+    package_set = siblings.find { |p| p.package_set_id.present? }&.package_set
+    package_set ||= PackageSet.create(description: item.package_type.name_en, package_type_id: item.package_type_id)
+
+    siblings.select { |p| p.package_set_id.blank? }.each do |package|
+      package.update(package_set_id: package_set.id)
+    end
   end
 
   def set_favourite_image

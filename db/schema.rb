@@ -617,6 +617,15 @@ ActiveRecord::Schema.define(version: 20200413180405) do
   add_index "package_categories_package_types", ["package_category_id"], name: "index_package_categories_package_types_on_package_category_id", using: :btree
   add_index "package_categories_package_types", ["package_type_id"], name: "index_package_categories_package_types_on_package_type_id", using: :btree
 
+  create_table "package_sets", force: :cascade do |t|
+    t.integer  "package_type_id"
+    t.text     "description"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "package_sets", ["package_type_id"], name: "index_package_sets_on_package_type_id", using: :btree
+
   create_table "package_types", force: :cascade do |t|
     t.string   "code"
     t.string   "name_en"
@@ -691,6 +700,7 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.integer  "designated_quantity",      default: 0
     t.integer  "dispatched_quantity",      default: 0
     t.date     "expiry_date"
+    t.integer  "package_set_id"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -710,6 +720,7 @@ ActiveRecord::Schema.define(version: 20200413180405) do
   add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
   add_index "packages", ["on_hand_quantity"], name: "index_packages_on_on_hand_quantity", using: :btree
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
+  add_index "packages", ["package_set_id"], name: "index_packages_on_package_set_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
   add_index "packages", ["set_item_id"], name: "index_packages_on_set_item_id", using: :btree

@@ -6,22 +6,22 @@ module Api::V1
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_one :donor_condition, serializer: DonorConditionSerializer
     has_one :order, serializer: Api::V1::OrderShallowSerializer, root: :designation, include_items: false
-    has_one :set_item, serializer: Api::V1::StockitSetItemSerializer, include_items: false
     has_many :images, serializer: StockitImageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :offers_packages, serializer: OffersPackageSerializer
     has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
+    has_one :package_set, serializer: PackageSetSerializer
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :inventory_number, :created_at, :updated_at, :item_id, :is_set,
                :grade, :designation_name, :designation_id, :sent_on, :code_id,
-               :image_id, :donor_condition_id, :set_item_id, :has_box_pallet,
+               :image_id, :donor_condition_id, :package_set_id, :has_box_pallet,
                :case_number, :allow_web_publish, :received_quantity,
                :detail_type, :detail_id, :storage_type_id, :on_hand_quantity,
                :available_quantity, :designated_quantity, :dispatched_quantity,
                :quantity, :expiry_date, :saleable, :value_hk_dollar
-
+  
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity
@@ -33,10 +33,6 @@ module Api::V1
 
     def include_images?
       @options[:include_images]
-    end
-
-    def include_set_item?
-      !@options[:exclude_stockit_set_item]
     end
 
     def include_order?
@@ -78,22 +74,11 @@ module Api::V1
     end
 
     def is_set
-      object.set_item_id.present?
-    end
-
-    def has_box_pallet
-      object.box_id.present? || object.pallet_id.present?
+      object.package_set_id.present?
     end
 
     def is_set__sql
-      "(CASE WHEN set_item_id IS NOT NULL
-        THEN true
-        ELSE false
-        END)"
-    end
-
-    def has_box_pallet__sql
-      "(CASE WHEN box_id IS NOT NULL OR pallet_id IS NOT NULL
+      "(CASE WHEN package_set_id IS NOT NULL
         THEN true
         ELSE false
         END)"
