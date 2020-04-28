@@ -43,8 +43,3 @@ class PackageType < ActiveRecord::Base
     )
   end
 end
-
-
-def parents_of(package_type)
-
-end
