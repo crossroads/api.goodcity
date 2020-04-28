@@ -530,16 +530,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
 
-    context "should merge offline cart orders_packages on login with order" do
-      it "if order is in draft state" do
-        package = create :package, received_quantity: 1
-        package_ids = draft_order.orders_packages.pluck(:package_id)
-        put :update, id: draft_order.id, order: {cart_package_ids: package_ids.push(package.id)}
-        expect(response.status).to eq(200)
-        expect(draft_order.orders_packages.count).to eq(4)
-      end
-    end
-
     context "If logged in user is Supervisor in Browse app" do
       it "should add an address to an order" do
         set_browse_app_header
