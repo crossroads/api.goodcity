@@ -167,7 +167,7 @@ module Api
           :stockit_organisation_id, :stockit_activity_id,
           :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
           :address_id,:submitted_by_id, :staff_note,
-          purpose_ids: [], cart_package_ids: [],
+          purpose_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes,
           orders_process_checklists_attributes: orders_process_checklists_attributes
