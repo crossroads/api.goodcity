@@ -40,7 +40,6 @@ class Order < ActiveRecord::Base
   has_many :orders_purposes, dependent: :destroy
   has_many :messages, dependent: :destroy, inverse_of: :order
   has_many :subscriptions, dependent: :destroy, inverse_of: :order
-  has_and_belongs_to_many :cart_packages, class_name: "Package"
   has_one :order_transport, dependent: :destroy
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
