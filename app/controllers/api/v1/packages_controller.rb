@@ -3,8 +3,10 @@ module Api
     class PackagesController < Api::V1::ApiController
       include GoodcitySync
 
-      load_and_authorize_resource :package, parent: false
+      load_and_authorize_resource :package, parent: false, except: :package_valuation
       skip_before_action :validate_token, only: [:index, :show]
+      skip_authorization_check only: :package_valuation
+
 
       resource_description do
         short "Create, update and delete a package."
@@ -55,6 +57,7 @@ module Api
       api :GET, "/v1/packages/1", "Details of a package"
 
       def show
+        debugger
         render json: serializer.new(@package, include_orders_packages: true).as_json
       end
 
@@ -179,6 +182,15 @@ module Api
           @package.save
         end
         print_inventory_label
+      end
+
+      def package_valuation
+        package = Package.new(donor_condition: DonorCondition.find(params['donor_condition_id']),
+                              grade: params['grade'],
+                              package_type: PackageType.find(params['package_type_id']))
+
+        valuation = package.calculate_valuation
+        render json: { value_hk_dollar: valuation }, status: 200
       end
 
       def print_inventory_label
