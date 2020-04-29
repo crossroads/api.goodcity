@@ -1652,4 +1652,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       expect(parsed_body['item'].keys).to include('saleable')
     end
   end
+
+  describe 'GET package_valuation' do
+    let!(:location ) { create :location }
+    let!(:donor_condition) { create :donor_condition }
+    let!(:package_type) { create :package_type }
+    let!(:package) { build(:package, :with_inventory_number, received_quantity: 20, donor_condition: donor_condition, grade: "B", package_type: package_type) }
+    let!(:valuation_matrix) { create :valuation_matrix, donor_condition_id: donor_condition.id, grade: package.grade }
+
+    before do
+      generate_and_set_token(supervisor)
+    end
+
+    it 'returns valuation for the package' do
+      get :package_valuation, { package_type_id: package_type.id,  donor_condition_id: package.donor_condition_id, grade: package.grade }
+      debugger
+      expect(response).to have_http_status(:success)
+      expect(parsed_body['value_hk_dollar']).to eq(package.calculate_valuation.to_s)
+    end
+  end
 end
