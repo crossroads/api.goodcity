@@ -453,11 +453,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(package.value_hk_dollar).to eq(package_params[:value_hk_dollar])
       end
 
-      it 'returns error if value_hk_dollar is nil' do
-        package_params[:value_hk_dollar] = nil
-        post :create, format: :json, package: package_params
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(parsed_body['errors']).to include("Value hk dollar can't be blank")
+      context 'if value_hk_dollar is nil' do
+        it 'sets a default value' do
+          package_params[:value_hk_dollar] = nil
+          post :create, format: :json, package: package_params
+          package = Package.find(parsed_body["package"]["id"])
+          expect(package.value_hk_dollar).not_to be_nil
+        end
       end
 
       context "without an inventory_number" do

@@ -57,7 +57,6 @@ module Api
       api :GET, "/v1/packages/1", "Details of a package"
 
       def show
-        debugger
         render json: serializer.new(@package, include_orders_packages: true).as_json
       end
 
