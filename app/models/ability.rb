@@ -106,9 +106,9 @@ class Ability
 
   def beneficiary_abilities
     can :create, Beneficiary
-    can %i[index show update delete], Beneficiary, created_by_id: @user_id
-    can %i[show update delete], Beneficiary, order: { submitted_by_id: @user_id }
-    can %i[show update delete], Beneficiary, order: { created_by_id: @user_id }
+    can %i[index show update destroy], Beneficiary, created_by_id: @user_id
+    can %i[show update destroy], Beneficiary, order: { submitted_by_id: @user_id }
+    can %i[show update destroy], Beneficiary, order: { created_by_id: @user_id }
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :destroy], Beneficiary
     end
