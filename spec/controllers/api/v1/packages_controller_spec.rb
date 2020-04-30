@@ -446,6 +446,20 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
       end
 
+      it 'creates package record with value_hk_dollar' do
+        package_params[:value_hk_dollar] = 20
+        post :create, format: :json, package: package_params
+        package = Package.find(parsed_body['package']['id'])
+        expect(package.value_hk_dollar).to eq(package_params[:value_hk_dollar])
+      end
+
+      it 'returns error if value_hk_dollar is nil' do
+        package_params[:value_hk_dollar] = nil
+        post :create, format: :json, package: package_params
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(parsed_body['errors']).to include("Value hk dollar can't be blank")
+      end
+
       context "without an inventory_number" do
         context "but with a location" do
           before { package_params[:location_id] = location.id }
@@ -1666,7 +1680,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     it 'returns valuation for the package' do
       get :package_valuation, { package_type_id: package_type.id,  donor_condition_id: package.donor_condition_id, grade: package.grade }
-      debugger
       expect(response).to have_http_status(:success)
       expect(parsed_body['value_hk_dollar']).to eq(package.calculate_valuation.to_s)
     end
