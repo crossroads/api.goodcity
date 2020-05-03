@@ -38,8 +38,7 @@ class Package < ActiveRecord::Base
   has_many   :requested_packages, dependent: :destroy
   has_many   :offers_packages
   has_many   :offers, through: :offers_packages
-  has_many   :package_actions, -> { where action: %w[trash process recycle loss gain] },
-    class_name: "PackagesInventory"
+  has_many   :package_actions, -> { where action: PackagesInventory::DECREMENTAL_ACTIONS }, class_name: "PackagesInventory"
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
