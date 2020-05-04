@@ -4,6 +4,10 @@ module Api::V1
 
     attributes :id, :package_type_id, :description
 
-    has_many :packages, serializer: PackageSerializer
+    has_many :packages, serializer: PackageSerializer, include_package_set: false
+
+    class StockFormat < PackageSetSerializer
+      has_many :packages, serializer: StockitItemSerializer, include_images: true, include_package_set: false, root: :items
+    end
   end
 end

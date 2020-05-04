@@ -69,7 +69,8 @@ module Api
                root: 'item',
                include_order: true,
                include_orders_packages: true,
-               include_images: @package.package_set_id.blank?,
+               include_package_set: true,
+               include_images: true,
                include_allowed_actions: true).as_json
       end
 
