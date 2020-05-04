@@ -1672,15 +1672,15 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   describe 'GET package_valuation' do
     let!(:donor_condition) { create :donor_condition }
     let!(:package_type) { create :package_type }
-    let!(:valuation_matrix) { create :valuation_matrix, donor_condition_id: donor_condition.id, grade: package.grade }
+    let!(:valuation_matrix) { create :valuation_matrix, donor_condition_id: donor_condition.id, grade: 'A' }
 
     before do
       generate_and_set_token(supervisor)
     end
 
     it 'returns valuation for the package' do
-      package = Package.new(package_type_id: package_type.id, donor_condition_id: package.donor_condition_id, grade: package.grade)
-      get :package_valuation, { package_type_id: package_type.id,  donor_condition_id: package.donor_condition_id, grade: package.grade }
+      package = Package.new(package_type_id: package_type.id, donor_condition_id: donor_condition.id, grade: 'A')
+      get :package_valuation, { package_type_id: package_type.id,  donor_condition_id: donor_condition.id, grade: package.grade }
       expect(response).to have_http_status(:success)
       expect(parsed_body['value_hk_dollar']).to eq(package.calculate_valuation.to_s)
     end
