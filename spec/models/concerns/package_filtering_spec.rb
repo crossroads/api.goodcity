@@ -87,6 +87,110 @@ describe Package do
     end
   end
 
+  describe "loss actions on packages" do
+    context 'dispatched packages' do
+      before(:each) do
+        GoodcitySync.request_from_stockit = true
+        package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :dispatch, location: package.locations.first, package: package)
+        create(:packages_inventory, :dispatch, location: package.locations.first, package: package)
+        package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :dispatch, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :undispatch, location: package1.locations.first, package: package1)
+      end
+
+
+      it 'filters out only dispatched packages' do
+        expect(Package.filter('state' => 'dispatch').count).to eq(1)
+      end
+    end
+
+    context 'processed packages' do
+      before(:each) do
+        GoodcitySync.request_from_stockit = true
+        package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :process, location: package.locations.first, package: package)
+        create(:packages_inventory, :process, location: package.locations.first, package: package)
+        package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :process, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :unprocess, location: package1.locations.first, package: package1)
+      end
+
+
+      it 'filters out only processed packages' do
+        expect(Package.filter('state' => 'process').count).to eq(1)
+      end
+    end
+
+    context 'lost packages' do
+      before(:each) do
+        GoodcitySync.request_from_stockit = true
+        package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :loss, location: package.locations.first, package: package)
+        create(:packages_inventory, :loss, location: package.locations.first, package: package)
+        package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :loss, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :gain, location: package1.locations.first, package: package1)
+      end
+
+
+      it 'filters out only lost packages' do
+        expect(Package.filter('state' => 'loss').count).to eq(1)
+      end
+    end
+
+    context 'packed packages' do
+      before(:each) do
+        GoodcitySync.request_from_stockit = true
+        package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :pack, location: package.locations.first, package: package)
+        create(:packages_inventory, :pack, location: package.locations.first, package: package)
+        package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :pack, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :unpack, location: package1.locations.first, package: package1)
+      end
+
+
+      it 'filters out only packed packages' do
+        expect(Package.filter('state' => 'pack').count).to eq(1)
+      end
+    end
+
+    context 'trashed packages' do
+      before(:each) do
+        GoodcitySync.request_from_stockit = true
+        package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :trash, location: package.locations.first, package: package)
+        create(:packages_inventory, :trash, location: package.locations.first, package: package)
+        package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :trash, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :preserve, location: package1.locations.first, package: package1)
+      end
+
+
+      it 'filters out only trashed packages' do
+        expect(Package.filter('state' => 'untrash').count).to eq(1)
+      end
+    end
+
+    context 'recyled packages' do
+      before(:each) do
+        GoodcitySync.request_from_stockit = true
+        package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :preserve, location: package.locations.first, package: package)
+        create(:packages_inventory, :preserve, location: package.locations.first, package: package)
+        package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
+        create(:packages_inventory, :preserve, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :preserve, location: package1.locations.first, package: package1)
+      end
+
+
+      it 'filters out only recyled packages' do
+        expect(Package.filter('state' => 'preserve').count).to eq(1)
+      end
+    end
+  end
+
   context 'filters based on location' do
     let(:location_a) { create :location, area: 'area1' }
     let(:location_b) { create :location, area: 'area2' }
@@ -102,7 +206,7 @@ describe Package do
         location: location_b
       )
     end
-  
+
     it 'filters out item based on location' do
       pkg_location_name = "#{location_b.building}-#{location_b.area}"
       expect(Package.filter.count).to eq(3)
