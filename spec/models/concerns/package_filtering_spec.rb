@@ -164,7 +164,7 @@ describe Package do
         create(:packages_inventory, :trash, location: package.locations.first, package: package)
         package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
         create(:packages_inventory, :trash, location: package1.locations.first, package: package1)
-        create(:packages_inventory, :preserve, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :untrash, location: package1.locations.first, package: package1)
       end
 
 
@@ -173,7 +173,7 @@ describe Package do
       end
     end
 
-    context 'recyled packages' do
+    context 'recycled packages' do
       before(:each) do
         GoodcitySync.request_from_stockit = true
         package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
@@ -181,12 +181,12 @@ describe Package do
         create(:packages_inventory, :preserve, location: package.locations.first, package: package)
         package1 = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
         create(:packages_inventory, :preserve, location: package1.locations.first, package: package1)
-        create(:packages_inventory, :preserve, location: package1.locations.first, package: package1)
+        create(:packages_inventory, :recycle, location: package1.locations.first, package: package1)
       end
 
 
       it 'filters out only recyled packages' do
-        expect(Package.filter('state' => 'preserve').count).to eq(1)
+        expect(Package.filter('state' => 'recyle').count).to eq(1)
       end
     end
   end

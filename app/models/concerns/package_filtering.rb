@@ -42,7 +42,7 @@ module PackageFiltering
       storage_type_name = options['storage_type_name']
       query = where.not(inventory_number: nil)
       state_filters = states & %w[in_stock received designated ]
-      loss_state_filters = states & %w[dispatched processed lost packed thrashed recyled]
+      loss_state_filters = states & %w[dispatched processed lost packed thrashed preserve]
 
       query = query.where_states(state_filters) if state_filters.any?
       query = query.filter_by_loss_states(loss_state_filters) if loss_state_filters.any?
@@ -64,8 +64,21 @@ module PackageFiltering
     end
 
     def filter_by_loss_states(states)
-      states = states.join(",")
-      joins(:package_actions).where("packages_inventories.action in (#{states})")
+      new_states = []
+      states.each do |state|
+        new_states << state
+        new_states << PackagesInventory::REVERSIBLE_ACTIONS.key(state)
+      end
+      states = "'#{new_states.join("','")}'"
+      Package.find_by_sql([
+        "Select * from packages as pkg join (
+                  SELECT package_id, SUM(quantity)
+                  FROM packages_inventories
+                  WHERE packages_inventories.action in (#{states})
+                  GROUP BY package_id
+                  HAVING abs(SUM(quantity)) > 0 order by package_id
+                ) as pkg_inventories on pkg.id = pkg_inventories.package_id"
+      ])
     end
 
     def filter_by_publish_status(publish_filters)
