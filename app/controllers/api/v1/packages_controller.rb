@@ -183,6 +183,13 @@ module Api
         print_inventory_label
       end
 
+      api :GET, '/v1/packages/package_valuation',
+          'Get valuation of package based on its
+           condition, grade and package type'
+      param :donor_condition_id, [Integer, String], :required => true
+      param :grade, String, :required => true
+      param :package_type_id, [Integer, String], :required => true
+
       def package_valuation
         package = Package.new(donor_condition: DonorCondition.find(params['donor_condition_id']),
                               grade: params['grade'],
