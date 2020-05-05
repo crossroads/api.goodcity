@@ -47,13 +47,13 @@ FactoryBot.define do
       quantity  (5)
     end
 
-    trait :preserve do
-      action    "preserve"
+    trait :recycle do
+      action    "recycle"
       quantity  (-5)
     end
 
-    trait :recycle do
-      action    "recycle"
+    trait :preserve do
+      action    "preserve"
       quantity  (5)
     end
 
