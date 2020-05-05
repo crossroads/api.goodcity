@@ -8,7 +8,7 @@ module Api
       end
 
       def update
-        if @order_transport.order.state == 'cancelled'
+        if @order_transport.order.cancelled?
           return render json: { error: I18n.t('order.already_cancelled') },
                         status: :unprocessable_entity
         end
