@@ -76,9 +76,14 @@ module Api
       param_group :order
       def update
         root = is_browse_app? ? "order" : "designation"
+        if @order.state == 'cancelled'
+          return render json: { error: I18n.t('order.already_cancelled') },
+                        status: :unprocessable_entity
+        end
+
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
-        if @order.valid? and @order.save
+        if @order.valid? && @order.save
           render json: @order, root: root, serializer: serializer
         else
           render json: { errors: @order.errors.full_messages } , status: 422
