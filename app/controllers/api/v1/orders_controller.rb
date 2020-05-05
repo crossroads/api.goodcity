@@ -75,11 +75,8 @@ module Api
       api :PUT, '/v1/orders/1', "Update an order"
       param_group :order
       def update
-        root = is_browse_app? ? "order" : "designation"
-        if @order.state == 'cancelled'
-          return render json: { error: I18n.t('order.already_cancelled') },
-                        status: :unprocessable_entity
-        end
+        root = is_browse_app? ? 'order' : 'designation'
+        return render_error if @order.cancelled?
 
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
@@ -223,6 +220,11 @@ module Api
 
       def eager_load_designation
         @order = Order.accessible_by(current_ability).with_eager_load.find(params[:id])
+      end
+
+      def render_error
+        render json: { error: I18n.t('order.already_cancelled') },
+               status: :unprocessable_entity
       end
     end
   end
