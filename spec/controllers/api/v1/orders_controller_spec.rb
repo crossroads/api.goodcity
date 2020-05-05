@@ -621,6 +621,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
       end
     end
+
+    context 'if an update is made on cancelled order' do
+      it 'performs no update operation for that order' do
+        order = create(:order, :with_state_cancelled)
+        put :update, id: order.id, order: { people_helped: 20 }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
   end
 
   describe "POST orders" do
