@@ -31,7 +31,6 @@ module Api
       api :POST, "/v1/orders", "Create or Update a order"
       param_group :order
       def create
-        root = is_browse_app? ? "order" : "designation"
         if order_record.save
           render json: @order, serializer: serializer, root: root, status: 201
         else
@@ -52,7 +51,6 @@ module Api
 
       api :GET, '/v1/designations/1', "Get a order"
       def show
-        root = is_browse_app? ? "order" : "designation"
         render json: serializer.new(@order,
           root: root,
           exclude_code_details: true,
@@ -75,7 +73,6 @@ module Api
       api :PUT, '/v1/orders/1', "Update an order"
       param_group :order
       def update
-        root = is_browse_app? ? 'order' : 'designation'
         return render_error if @order.cancelled?
 
         @order.assign_attributes(order_params)
@@ -225,6 +222,10 @@ module Api
       def render_error
         render json: { error: I18n.t('order.already_cancelled') },
                status: :unprocessable_entity
+      end
+
+      def root
+        is_browse_app? ? 'order' : 'designation'
       end
     end
   end
