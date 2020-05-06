@@ -27,14 +27,22 @@ module Api
       api :POST, '/v1/package_sets', "Create a package set"
       param_group :package_set
       def create
-        save_and_render_object(@package_set)
+        if @package_set.save
+          render json: object, serializer: serializer, status: 201
+        else
+          render json: object.errors, status: 422
+        end
       end
 
       api :PUT, '/v1/package_sets/1', "Update an package_set_id"
       param_group :package_set
       def update
         @package_set.assign_attributes(package_set_params)
-        update_and_render_object_with_errors(@package_set)
+        if @package_set.valid? && @package_set.save
+          render json: @package_set, serializer: serializer
+        else
+          render_error(@package_set.errors.full_messages.join(". "))
+        end
       end
 
       api :DELETE, '/v1/package_sets/1', "Delete a package_set"
@@ -47,7 +55,7 @@ module Api
       private
 
       def serializer
-        Api::V1::PackageSetSerializer
+        is_stock_app? ? Api::V1::PackageSetSerializer::StockFormat : Api::V1::PackageSetSerializer
       end
 
       def package_set_params

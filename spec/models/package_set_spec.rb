@@ -16,12 +16,13 @@ RSpec.describe PackageSet, type: :model do
   end
 
   describe 'Lifecycle' do
-    let(:package_set) { create(:package_set, :with_packages, package_type: package_type) }
+    let(:package_set) { create(:package_set, package_type: package_type) }
     let(:empty_package_set) { create(:package_set, package_type: package_type) }
-    let(:packages) { package_set.packages }
+    let(:packages) { 3.times.map { create(:package, package_set_id: package_set.id) }}
 
     before(:each) do
       touch(package_set, packages)
+      expect(package_set.reload.packages).to match_array(packages)
       expect(packages.map(&:package_set_id).uniq).to eq([package_set.id])
     end
 
@@ -47,6 +48,20 @@ RSpec.describe PackageSet, type: :model do
             empty_package_set.reload.package_type.code
           }.from('AFO').to('BBC')
         end
+      end
+    end
+
+    describe 'auto destroys when the number of packages is less than 2' do
+      it 'if the packages get unassigned from the set' do
+        p1, p2 = packages
+        expect { p1.update(package_set_id: nil) }.not_to change(PackageSet, :count)
+        expect { p2.update(package_set_id: nil) }.to change(PackageSet, :count).by(-1)
+      end
+
+      it 'if the packages are destroyed' do
+        p1, p2 = packages
+        expect { p1.destroy }.not_to change(PackageSet, :count)
+        expect { p2.destroy }.to change(PackageSet, :count).by(-1)
       end
     end
   end
