@@ -241,12 +241,12 @@ class Ability
   def order_abilities
     can :create, Order
     can %i[index show transition], Order, created_by_id: @user_id
-
+    can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
     if can_manage_orders? || @api_user
       can %i[create index show transition summary], Order
+      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch]
       can :index, ProcessChecklist
     end
-    can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
   end
 
   def orders_package_abilities
@@ -262,12 +262,16 @@ class Ability
     can :create, OrderTransport
     if can_manage_order_transport?
       can %i[create index show], OrderTransport
+      can [:update], OrderTransport, order: { state: %w[draft submitted processing awaiting_dispatch] }
     else
       can [:index, :show], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
         transport.order.created_by_id == @user_id
       end
+
+      can :update, OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
+        (%w[draft submitted processing awaiting_dispatch].include? transport.order.state) && (transport.order.created_by_id == @user_id)
+      end
     end
-    can [:update], OrderTransport, order: { state: %w[draft submitted processing awaiting_dispatch] }
   end
 
   def orders_process_checklists_abilities
