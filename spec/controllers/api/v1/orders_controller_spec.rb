@@ -623,13 +623,12 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
 
     context 'if an update is made on cancelled order' do
-      it 'performs no update operation for that order' do
+      it 'does not allow to perform the operation' do
         order = create(:order, :with_state_cancelled, people_helped: 2)
         put :update, id: order.id, order: { people_helped: 20 }
         order.reload
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:forbidden)
         expect(order.people_helped).to eq(2)
-        expect(parsed_body['error']).to eq(I18n.t('order.already_cancelled'))
       end
     end
   end

@@ -151,7 +151,3 @@ en:
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
-  order:
-    already_cancelled: 'Order is already cancelled'
-
-
