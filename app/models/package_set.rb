@@ -12,13 +12,11 @@ class PackageSet < ActiveRecord::Base
   # Auto-destroy
   # ---------------------
 
-  watch [Package] do |package, event|
-    if [:update, :destroy].include?(event)
-      package_set_id = package.package_set_id_changed? ? package.package_set_id_was : package.package_set_id
+  watch [Package], on: [:update, :destroy] do |package, event|
+    package_set_id = package.package_set_id_changed? ? package.package_set_id_was : package.package_set_id
 
-      package_set = PackageSet.find_by(id: package_set_id)
-      package_set.destroy! if package_set.present? && package_set.packages.length < 2
-    end
+    package_set = PackageSet.find_by(id: package_set_id)
+    package_set.destroy! if package_set.present? && package_set.packages.length < 2
   end
 
   private
