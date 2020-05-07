@@ -35,10 +35,7 @@ module Api
       end
 
       def order_validity_check
-        if @order_transport.order.cancelled?
-          render json: { error: I18n.t('order.already_cancelled') },
-                 status: :unprocessable_entity
-        end
+        render json: { error: I18n.t('order.already_cancelled') }, status: 422 if @order_transport.order.cancelled?
       end
     end
   end
