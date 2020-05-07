@@ -17,6 +17,46 @@ FactoryBot.define do
       quantity  (5)
     end
 
+    trait :process do
+      action    "process"
+      quantity  (-5)
+    end
+
+    trait :unprocess do
+      action    "unprocess"
+      quantity  (5)
+    end
+
+    trait :pack do
+      action    "pack"
+      quantity  (-5)
+    end
+
+    trait :unpack do
+      action    "unpack"
+      quantity  (5)
+    end
+
+    trait :trash do
+      action    "trash"
+      quantity  (-5)
+    end
+
+    trait :untrash do
+      action    "untrash"
+      quantity  (5)
+    end
+
+    trait :recycle do
+      action    "recycle"
+      quantity  (-5)
+    end
+
+    trait :preserve do
+      action    "preserve"
+      quantity  (5)
+    end
+
     trait :move do
       action    "move"
       quantity  (5)
