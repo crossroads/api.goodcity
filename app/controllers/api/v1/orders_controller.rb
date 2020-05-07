@@ -3,6 +3,7 @@ module Api
     class OrdersController < Api::V1::ApiController
       load_and_authorize_resource :order, parent: false
       before_action :eager_load_designation, only: :show
+      before_action :order_validity_check, only: :update
 
       resource_description do
         short 'Retrieve a list of designations, information about stock items that have been designated to a group or person.'
@@ -73,8 +74,6 @@ module Api
       api :PUT, '/v1/orders/1', "Update an order"
       param_group :order
       def update
-        return render_error if @order.cancelled?
-
         @order.assign_attributes(order_params)
         # use valid? to ensure submit event errors get caught
         if @order.valid? && @order.save
@@ -219,9 +218,11 @@ module Api
         @order = Order.accessible_by(current_ability).with_eager_load.find(params[:id])
       end
 
-      def render_error
-        render json: { error: I18n.t('order.already_cancelled') },
-               status: :unprocessable_entity
+      def order_validity_check
+        if @order.cancelled?
+          render json: { error: I18n.t('order.already_cancelled') },
+                 status: :unprocessable_entity
+        end
       end
 
       def root
