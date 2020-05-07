@@ -3,7 +3,6 @@ module Api
     class OrdersController < Api::V1::ApiController
       load_and_authorize_resource :order, parent: false
       before_action :eager_load_designation, only: :show
-      before_action :order_validity_check, only: :update
 
       resource_description do
         short 'Retrieve a list of designations, information about stock items that have been designated to a group or person.'
@@ -216,10 +215,6 @@ module Api
 
       def eager_load_designation
         @order = Order.accessible_by(current_ability).with_eager_load.find(params[:id])
-      end
-
-      def order_validity_check
-        render json: { error: I18n.t('order.already_cancelled') }, status: 422 if @order.cancelled?
       end
 
       def root

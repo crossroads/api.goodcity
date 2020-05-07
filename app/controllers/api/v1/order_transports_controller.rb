@@ -2,7 +2,6 @@ module Api
   module V1
     class OrderTransportsController < Api::V1::ApiController
       load_and_authorize_resource :order_transport, parent: false
-      before_action :order_validity_check, only: [:update]
 
       def create
         save_and_render_object(@order_transport)
