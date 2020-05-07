@@ -64,8 +64,8 @@ module PackageFiltering
     end
 
     def filter_by_loss_states(states)
-      states = "'#{states.join("','")}'"
-      joins(:package_actions).where("packages_inventories.action in (#{states})")
+      states = states.join(",")
+      joins(:package_actions).where("packages_inventories.action IN (:terms)", terms: states)
     end
 
     def filter_by_publish_status(publish_filters)
