@@ -32,10 +32,6 @@ module Api
       def serializer
         Api::V1::OrderTransportSerializer
       end
-
-      def order_validity_check
-        render json: { error: I18n.t('order.already_cancelled') }, status: 422 if @order_transport.order.cancelled?
-      end
     end
   end
 end
