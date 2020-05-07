@@ -2,17 +2,13 @@ module Api
   module V1
     class OrderTransportsController < Api::V1::ApiController
       load_and_authorize_resource :order_transport, parent: false
+      before_action :order_validity_check, only: [:update]
 
       def create
         save_and_render_object(@order_transport)
       end
 
       def update
-        if @order_transport.order.cancelled?
-          return render json: { error: I18n.t('order.already_cancelled') },
-                        status: :unprocessable_entity
-        end
-
         @order_transport.assign_attributes(order_transport_params)
         save_and_render_object_with_errors(@order_transport)
       end
@@ -36,6 +32,13 @@ module Api
 
       def serializer
         Api::V1::OrderTransportSerializer
+      end
+
+      def order_validity_check
+        if @order_transport.order.cancelled?
+          render json: { error: I18n.t('order.already_cancelled') },
+                 status: :unprocessable_entity
+        end
       end
     end
   end
