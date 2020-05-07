@@ -28,9 +28,9 @@ module Api
       param_group :package_set
       def create
         if @package_set.save
-          render json: object, serializer: serializer, status: 201
+          render json: @package_set, serializer: serializer, status: 201
         else
-          render json: object.errors, status: 422
+          render json: @package_set.errors, status: 422
         end
       end
 
