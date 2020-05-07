@@ -26,11 +26,13 @@ RSpec.describe Api::V1::OrderTransportsController, type: :controller do
 
     context 'if an update is made on cancelled order' do
       it 'performs no update operation for that order' do
-        order_transport = create(:order_transport, order: cancelled_order)
+        order_transport = create(:order_transport, order: cancelled_order, timeslot: '2PM-3PM')
         put :update, id: order_transport.id,
-             order_transport: {scheduled_at: "2020-05-11T16:30:00+08:00",
-                               timeslot: "16:30", order_id: cancelled_order.id}
+                     order_transport: { timeslot: '16:30',
+                                        order_id: cancelled_order.id }
+        order_transport.reload
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(order_transport.timeslot).to eq('2PM-3PM')
         expect(parsed_body['error']).to eq(I18n.t('order.already_cancelled'))
       end
     end
