@@ -15,7 +15,7 @@ module Api::V1
                :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
                :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
                :designated_quantity, :dispatched_quantity, :quantity, :favourite_image_id,
-               :saleable
+               :saleable, :value_hk_dollar
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity

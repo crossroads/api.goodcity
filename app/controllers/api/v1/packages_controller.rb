@@ -3,8 +3,10 @@ module Api
     class PackagesController < Api::V1::ApiController
       include GoodcitySync
 
-      load_and_authorize_resource :package, parent: false
+      load_and_authorize_resource :package, parent: false, except: :package_valuation
       skip_before_action :validate_token, only: [:index, :show]
+      skip_authorization_check only: :package_valuation
+
 
       resource_description do
         short "Create, update and delete a package."
@@ -181,6 +183,22 @@ module Api
         print_inventory_label
       end
 
+      api :GET, '/v1/packages/package_valuation',
+          'Get valuation of package based on its
+           condition, grade and package type'
+      param :donor_condition_id, [Integer, String], :required => true
+      param :grade, String, :required => true
+      param :package_type_id, [Integer, String], :required => true
+
+      def package_valuation
+        package = Package.new(donor_condition: DonorCondition.find(params['donor_condition_id']),
+                              grade: params['grade'],
+                              package_type: PackageType.find(params['package_type_id']))
+
+        valuation = package.calculate_valuation
+        render json: { value_hk_dollar: valuation }, status: 200
+      end
+
       def print_inventory_label
         PrintLabelJob.perform_later(@package.id, User.current_user.id, "inventory_label", print_count)
         render json: {}, status: 204
@@ -337,8 +355,8 @@ module Api
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
           :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :expiry_date,
-          offer_ids: [],
+          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id,
+          :expiry_date, :value_hk_dollar, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
                               computer_accessory_attributes, medical_attributes].flatten.uniq
