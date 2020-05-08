@@ -446,6 +446,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
       end
 
+      it 'creates package record with value_hk_dollar' do
+        package_params[:value_hk_dollar] = 20
+        post :create, format: :json, package: package_params
+        package = Package.find(parsed_body['package']['id'])
+        expect(package.value_hk_dollar).to eq(package_params[:value_hk_dollar])
+      end
+
+      context 'if value_hk_dollar is nil' do
+        it 'sets a default value' do
+          package_params[:value_hk_dollar] = nil
+          post :create, format: :json, package: package_params
+          package = Package.find(parsed_body["package"]["id"])
+          expect(package.value_hk_dollar).not_to be_nil
+        end
+      end
+
       context "without an inventory_number" do
         context "but with a location" do
           before { package_params[:location_id] = location.id }
@@ -1650,6 +1666,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it 'should have saleable node in the response' do
       get :stockit_item_details, {id: @package.id}
       expect(parsed_body['item'].keys).to include('saleable')
+    end
+  end
+
+  describe 'GET package_valuation' do
+    let!(:donor_condition) { create :donor_condition }
+    let!(:package_type) { create :package_type }
+    let!(:valuation_matrix) { create :valuation_matrix, donor_condition_id: donor_condition.id, grade: 'A' }
+
+    before do
+      generate_and_set_token(supervisor)
+    end
+
+    it 'returns valuation for the package' do
+      package = Package.new(package_type_id: package_type.id, donor_condition_id: donor_condition.id, grade: 'A')
+      get :package_valuation, { package_type_id: package_type.id,  donor_condition_id: donor_condition.id, grade: package.grade }
+      expect(response).to have_http_status(:success)
+      expect(parsed_body['value_hk_dollar']).to eq(package.calculate_valuation.to_s)
     end
   end
 end

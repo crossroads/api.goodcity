@@ -3,7 +3,7 @@ require 'rails_helper'
 context "ValuationCalculator" do
 
   context "integration with Package#before_create" do
-  
+
     it "should apply a default value if value_hk_dollar is blank" do
       package = create(:package, value_hk_dollar: nil)
       expect(package.value_hk_dollar).to_not be_nil
@@ -27,7 +27,7 @@ context "ValuationCalculator" do
       let(:package_type) { create(:package_type, default_value_hk_dollar: nil) }
       it { expect(package.calculate_valuation).to eql(0.0) }
     end
-    
+
     context "returns 0 if no matching ValuationMatrix entry" do
       before { ValuationMatrix.delete_all }
       it { expect(package.calculate_valuation).to eql(0.0) }

@@ -72,6 +72,9 @@ Rails.application.routes.draw do
         put :mark_missing, on: :member
         put :designate, on: :member
         put :add_remove_item, on: :member
+        collection do
+          get :package_valuation
+        end
       end
 
       resources :requested_packages, only: [:index, :create, :destroy] do
