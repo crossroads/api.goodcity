@@ -621,6 +621,16 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
       end
     end
+
+    context 'if an update is made on cancelled order' do
+      it 'does not allow to perform the operation' do
+        order = create(:order, :with_state_cancelled, people_helped: 2)
+        put :update, id: order.id, order: { people_helped: 20 }
+        order.reload
+        expect(response).to have_http_status(:forbidden)
+        expect(order.people_helped).to eq(2)
+      end
+    end
   end
 
   describe "POST orders" do
