@@ -106,3 +106,4 @@ Order fulfilment: &order_fulfilment
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
+- can_manage_user_roles
