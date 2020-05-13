@@ -1,9 +1,16 @@
 --- !omap
 New:
   :name_zh_tw: 全新
+  :visible_to_package: false
 Lightly Used:
   :name_zh_tw: 接近全新
+  :visible_to_package: false
 Heavily Used:
   :name_zh_tw: 較為殘舊
+  :visible_to_package: false
 Broken:
   :name_zh_tw: 需要維修
+  :visible_to_package: false
+Mixed:
+  :name_zh_tw: 混合的
+  :visible_to_package: true

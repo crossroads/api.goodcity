@@ -213,10 +213,11 @@ ActiveRecord::Schema.define(version: 20200423034154) do
   add_index "districts", ["territory_id"], name: "index_districts_on_territory_id", using: :btree
 
   create_table "donor_conditions", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",            limit: 255
+    t.string   "name_zh_tw",         limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "visible_to_package",             default: false
   end
 
   create_table "electricals", force: :cascade do |t|
