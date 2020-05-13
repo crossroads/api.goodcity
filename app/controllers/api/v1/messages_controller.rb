@@ -53,6 +53,7 @@ module Api
       def create
         @message.order_id = order_id
         @message.sender_id = current_user.id
+        @message.messageable = messageable
         save_and_render_object(@message)
       end
 
@@ -77,6 +78,12 @@ module Api
       def apply_scope(records, scope)
         return records unless ALLOWED_SCOPES.include? scope
         records.where("messages.#{scope}_id IS NOT NULL")
+      end
+
+      def messageable
+        message_params['messageable_type']
+          .constantize
+          .find(message_params['messageable_id'])
       end
 
       def paginate_and_render(records)
@@ -110,7 +117,8 @@ module Api
       def message_params
         params.require(:message).permit(
           :body, :is_private,
-          :offer_id, :item_id, :order_id
+          :offer_id, :item_id, :order_id,
+          :messageable_type, :messageable_id
         )
       end
     end

@@ -5,7 +5,7 @@ module MessageSubscription
 
   # Who gets subscribed to a new message (i.e. who can see each message)
   def subscribe_users_to_message
-    obj = self.related_object
+    obj = messageable
     klass = obj.class.name.underscore
     user_ids = []
 
@@ -15,7 +15,7 @@ module MessageSubscription
     #   - Anyone who has previously replied to offer/order
     #   - Admin users processing the offer/order
     user_ids << obj.try(:created_by_id)
-    user_ids << self.sender_id
+    user_ids << sender_id
     user_ids += public_subscribers_to(klass, obj.id)
     user_ids += private_subscribers_to(klass, obj.id)
     admin_user_fields.each{|field| user_ids << obj.try(field)}
@@ -25,7 +25,7 @@ module MessageSubscription
     #   - donor/charity user if the message is private (supervisor channel) or offer/order is cancelled
     user_ids = user_ids.flatten.uniq
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
-    user_ids -= [obj.try(:created_by_id)] if self.is_private or obj.try('cancelled?')
+    user_ids -= [obj.try(:created_by_id)] if is_private || obj.try('cancelled?')
 
     # Cases where we subscribe every staff member
     #  - For private messages, subscribe all supervisors ONLY for the first message
@@ -34,13 +34,12 @@ module MessageSubscription
       if is_private
         is_first_message_for(klass, obj.id)
       else
-        obj&.created_by_id.present? && (user_ids == [self.sender_id])
+        obj&.created_by_id.present? && (user_ids == [sender_id])
       end
 
     user_ids += User.staff.pluck(:id) if subscribe_all_staff
-
     user_ids.flatten.compact.uniq.each do |user_id|
-      state = (user_id == self.sender_id) ? "read" : "unread" # mark as read for sender
+      state = user_id == self.sender_id ? 'read' : 'unread' # mark as read for sender
       add_subscription(state, user_id)
     end
   end
@@ -49,7 +48,7 @@ module MessageSubscription
 
   # A public subscriber is defined as :
   #   > Anyone who has a subscription to that record
-  def public_subscribers_to(klass, id)
+  def public_subscribers_to(klass, obj_id)
     Subscription
       .joins(:message)
       .where("#{klass}_id": id, messages: { is_private: false })
@@ -62,7 +61,7 @@ module MessageSubscription
     User.staff
         .joins(messages: [:subscriptions])
         .where(messages: { is_private: true })
-        .where(subscriptions: { "#{klass}_id": id })
+        .where(subscriptions: { subscribable_id: id })
         .pluck(:id)
   end
 
@@ -78,10 +77,8 @@ module MessageSubscription
   def add_subscription(state, user_id)
     subscriptions.create(
       state: state,
-      message_id: self.id,
-      offer_id: self.offer_id,
-      order_id: self.order_id,
+      message_id: id,
+      subscribable: messageable,
       user_id: user_id)
   end
-
 end

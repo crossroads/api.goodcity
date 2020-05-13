@@ -1,14 +1,14 @@
 # For each new message, send a push update to the
 # - sender
 # - creator (unless is_private or offer/order cancelled)
-# - reviewers/supervisors/order_fulfillers individually so we can 
+# - reviewers/supervisors/order_fulfillers individually so we can
 #     include message state: 'read', 'unread', 'never-subscribed'
 module PushUpdatesForMessage
   extend ActiveSupport::Concern
 
   def update_client_store
     user_ids = []
-    obj = self.related_object
+    obj = messageable
 
     # Send update to creator (donor or charity)
     user_ids << obj.try(:created_by_id)
@@ -33,7 +33,7 @@ module PushUpdatesForMessage
       state_groups[state] = ((state_groups[state] || []) + channel)
     end
 
-    # For each message state (read/unread/never-subscribed) send 
+    # For each message state (read/unread/never-subscribed) send
     #   push updates to all the channels
     state_groups.each do |state, channels|
       send_update(state, channels.flatten)
@@ -61,7 +61,7 @@ module PushUpdatesForMessage
     PushService.new.send_update_store(channels, data)
   end
 
-  # Need to inject subscription.state into message data 
+  # Need to inject subscription.state into message data
   #   because read/unread state is per subscription not per message
   def serialized_message(state)
     message = self.tap{|m| m.state_value = state}
