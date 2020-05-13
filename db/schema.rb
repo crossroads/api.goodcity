@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200413180405) do
+ActiveRecord::Schema.define(version: 20200513033844) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -314,7 +314,7 @@ ActiveRecord::Schema.define(version: 20200413180405) do
   add_index "images", ["imageable_id", "imageable_type"], name: "index_images_on_imageable_id_and_imageable_type", using: :btree
 
   create_table "inventory_numbers", force: :cascade do |t|
-    t.string "code"
+    t.integer "code"
   end
 
   create_table "items", force: :cascade do |t|
@@ -375,13 +375,15 @@ ActiveRecord::Schema.define(version: 20200413180405) do
   create_table "messages", force: :cascade do |t|
     t.text     "body"
     t.integer  "sender_id"
-    t.boolean  "is_private", default: false
+    t.boolean  "is_private",       default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "offer_id"
     t.integer  "item_id"
     t.integer  "order_id"
+    t.string   "messageable_type"
+    t.integer  "messageable_id"
   end
 
   add_index "messages", ["body"], name: "messages_body_search_idx", using: :gin
@@ -629,13 +631,13 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",          default: true
-    t.boolean  "allow_stock",             default: false
     t.boolean  "allow_pieces",            default: false
     t.string   "subform"
+    t.boolean  "allow_stock",             default: false
     t.boolean  "allow_box",               default: false
     t.boolean  "allow_pallet",            default: false
-    t.decimal  "default_value_hk_dollar"
     t.boolean  "allow_expiry_date",       default: false
+    t.decimal  "default_value_hk_dollar"
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
@@ -680,17 +682,18 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
+    t.boolean  "last_allow_web_published"
     t.integer  "weight"
     t.integer  "pieces"
     t.integer  "detail_id"
     t.string   "detail_type"
     t.integer  "storage_type_id"
-    t.decimal  "value_hk_dollar"
     t.integer  "available_quantity",       default: 0
     t.integer  "on_hand_quantity",         default: 0
     t.integer  "designated_quantity",      default: 0
     t.integer  "dispatched_quantity",      default: 0
-    t.date     "expiry_date"
+    t.datetime "expiry_date"
+    t.decimal  "value_hk_dollar"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -916,6 +919,8 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.integer "message_id"
     t.string  "state"
     t.integer "order_id"
+    t.string  "subscribable_type"
+    t.integer "subscribable_id"
   end
 
   add_index "subscriptions", ["message_id"], name: "index_subscriptions_on_message_id", using: :btree

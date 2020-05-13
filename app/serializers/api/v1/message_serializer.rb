@@ -3,7 +3,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :offer_id, :item_id, :designation_id, :order_id
+      :updated_at, :messageable_type, :item_id, :messageable_id
 
     has_one :sender, serializer: UserSerializer, root: :user
 
