@@ -7,20 +7,10 @@ module PushUpdatesForSubscription
   def send_new_message_notification
     message = self.message
     # Don't notify the message sender themselves
-    return if message.sender_id == self.user_id
+    return if message.sender_id == user_id
 
-    data = {
-      category:   'message',
-      message:    message.body.truncate(150, separator: ' '),
-      is_private: message.is_private,
-      offer_id:   message.messageable.id,
-      # order_id:   message.messageable.order_id,
-      item_id:    message.item_id,
-      author_id:  message.sender_id,
-      message_id: message.id
-    }
-    channel = Channel.private_channels_for(self.user_id, app_name)
-    PushService.new.send_notification(channel, app_name, data)
+    channel = Channel.private_channels_for(user_id, app_name)
+    PushService.new.send_notification(channel, app_name, data_to_send)
   end
 
   private
@@ -40,4 +30,19 @@ module PushUpdatesForSubscription
     end
   end
 
+  def data_to_send
+    messageable_obj = message.messageable
+    data = { category: 'message',
+             message: message.body.truncate(150, separator: ' '),
+             is_private: message.is_private,
+             item_id: message.item_id,
+             author_id: message.sender_id,
+             message_id: message.id }
+    data[identity] = messageable_obj.id
+    data
+  end
+
+  def identity
+    "#{message.messageable.class.name.underscore}_id".to_sym
+  end
 end
