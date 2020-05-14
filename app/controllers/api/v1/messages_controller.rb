@@ -36,8 +36,8 @@ module Api
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
-        @messages = @messages.where(offer_id: params[:offer_id].split(",")) if params[:offer_id].present?
-        @messages = @messages.where(order_id: params[:order_id].split(",")) if params[:order_id].present?
+        @messages = @messages.where(messageable_id: params[:offer_id].split(","), messageable_type: 'Offer') if params[:offer_id].present?
+        @messages = @messages.where(messageable_id: params[:order_id].split(","), messageable_type: 'Order') if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
         @messages = @messages.with_state_for_user(User.current_user, params[:state]) if params[:state].present?
         paginate_and_render(@messages)
@@ -81,9 +81,8 @@ module Api
       end
 
       def messageable
-        message_params['messageable_type']
-          .constantize
-          .find(message_params['messageable_id'])
+        return Order.find(order_id) if order_id.present?
+        return Offer.find(offer_id) if offer_id.present?
       end
 
       def paginate_and_render(records)
@@ -103,6 +102,10 @@ module Api
         params[:message][:designation_id].presence || params[:message][:order_id].presence
       end
 
+      def offer_id
+        message_params[:offer_id]
+      end
+
       def serializer
         Api::V1::MessageSerializer
       end
@@ -118,7 +121,6 @@ module Api
         params.require(:message).permit(
           :body, :is_private,
           :offer_id, :item_id, :order_id,
-          :messageable_type, :messageable_id
         )
       end
     end

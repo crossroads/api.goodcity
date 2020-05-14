@@ -8,7 +8,6 @@ module MessageSubscription
     obj = messageable
     klass = obj.class.name.underscore
     user_ids = []
-
     # Add the following users
     #   - Donor / Charity user
     #   - Message sender
@@ -16,17 +15,15 @@ module MessageSubscription
     #   - Admin users processing the offer/order
     user_ids << obj.try(:created_by_id)
     user_ids << sender_id
-    user_ids += public_subscribers_to(klass, obj.id)
+    user_ids += public_subscribers_to(obj)
     user_ids += private_subscribers_to(klass, obj.id)
     admin_user_fields.each{|field| user_ids << obj.try(field)}
-
     # Remove the following users
     #   - SystemUser and StockitUser
     #   - donor/charity user if the message is private (supervisor channel) or offer/order is cancelled
     user_ids = user_ids.flatten.uniq
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
     user_ids -= [obj.try(:created_by_id)] if is_private || obj.try('cancelled?')
-
     # Cases where we subscribe every staff member
     #  - For private messages, subscribe all supervisors ONLY for the first message
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
@@ -48,10 +45,10 @@ module MessageSubscription
 
   # A public subscriber is defined as :
   #   > Anyone who has a subscription to that record
-  def public_subscribers_to(klass, obj_id)
+  def public_subscribers_to(obj)
     Subscription
       .joins(:message)
-      .where("#{klass}_id": id, messages: { is_private: false })
+      .where(subscribable: obj, messages: { is_private: false} )
       .pluck(:user_id)
   end
 
