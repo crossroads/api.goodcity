@@ -3,12 +3,16 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :messageable_type, :item_id, :messageable_id
+      :updated_at, :offer_id, :order_id, :item_id, :designation_id
 
     has_one :sender, serializer: UserSerializer, root: :user
 
     def designation_id
-      object.order_id
+      object.messageable_type == 'Order' ? object.messageable_id : nil
+    end
+
+    def offer_id
+      object.messageable_type == 'Offer' ? object.messageable_id : nil
     end
 
     def designation_id__sql
@@ -43,5 +47,7 @@ module Api::V1
          END"
       end
     end
+
+    alias order_id designation_id
   end
 end

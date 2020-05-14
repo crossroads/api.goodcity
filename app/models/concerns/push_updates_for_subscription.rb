@@ -8,7 +8,6 @@ module PushUpdatesForSubscription
     message = self.message
     # Don't notify the message sender themselves
     return if message.sender_id == user_id
-
     channel = Channel.private_channels_for(user_id, app_name)
     PushService.new.send_notification(channel, app_name, data_to_send)
   end
