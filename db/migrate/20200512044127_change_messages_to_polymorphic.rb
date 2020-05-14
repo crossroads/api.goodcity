@@ -22,13 +22,13 @@ class ChangeMessagesToPolymorphic < ActiveRecord::Migration
     # add_column :messages, :offer_id, :int
     # add_column :messages, :order_id, :int
 
-    # Message.all.map do |message|
-    #   if message.messageable_type == 'Order'
-    #     message.order_id = message.messageable_id
-    #   elsif message.messageable_type == "Offer"
-    #     message.offer_id = message.messageable_id
-    #   end
-    # end
+    Message.all.map do |message|
+      if message.messageable_type == 'Order'
+        message.order_id = message.messageable_id
+      elsif message.messageable_type == "Offer"
+        message.offer_id = message.messageable_id
+      end
+    end
     remove_column :messages, :messageable_type
     remove_column :messages, :messageable_id
   end
