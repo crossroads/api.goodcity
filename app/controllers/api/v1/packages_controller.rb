@@ -3,10 +3,8 @@ module Api
     class PackagesController < Api::V1::ApiController
       include GoodcitySync
 
-      load_and_authorize_resource :package, parent: false, except: :package_valuation
+      load_and_authorize_resource :package, parent: false
       skip_before_action :validate_token, only: [:index, :show]
-      skip_authorization_check only: :package_valuation
-
 
       resource_description do
         short "Create, update and delete a package."
@@ -191,11 +189,10 @@ module Api
       param :package_type_id, [Integer, String], :required => true
 
       def package_valuation
-        package = Package.new(donor_condition: DonorCondition.find(params['donor_condition_id']),
-                              grade: params['grade'],
-                              package_type: PackageType.find(params['package_type_id']))
-
-        valuation = package.calculate_valuation
+        valuation = ValuationCalculationHelper.new(params['donor_condition_id'],
+                                                   params['grade'],
+                                                   params['package_type_id'])
+                                              .calculate
         render json: { value_hk_dollar: valuation }, status: 200
       end
 
