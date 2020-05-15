@@ -21,14 +21,14 @@ module Api
 
       api :GET, '/v1/package_sets', "Get a package set"
       def show
-        render json: @package_set, serializer: serializer
+        render json: @package_set, serializer: serializer, root: :package_set
       end
 
       api :POST, '/v1/package_sets', "Create a package set"
       param_group :package_set
       def create
         if @package_set.save
-          render json: @package_set, serializer: serializer, status: 201
+          render json: @package_set, serializer: serializer, root: :package_set, status: 201
         else
           render json: @package_set.errors, status: 422
         end
@@ -39,7 +39,7 @@ module Api
       def update
         @package_set.assign_attributes(package_set_params)
         if @package_set.valid? && @package_set.save
-          render json: @package_set, serializer: serializer
+          render json: @package_set, serializer: serializer, root: :package_set
         else
           render_error(@package_set.errors.full_messages.join(". "))
         end
