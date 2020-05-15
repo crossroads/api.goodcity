@@ -305,7 +305,7 @@ class Ability
 
   def package_abilities
     if can_manage_packages?
-      can [:index, :show, :create, :update, :destroy, :print_barcode,
+      can [:index, :show, :create, :update, :destroy, :print_barcode, :package_valuation,
         :search_stockit_items, :remove_from_set, :designate, :register_quantity_change, :mark_missing,
         :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item,
         :contained_packages, :parent_containers, :fetch_added_quantity], Package
