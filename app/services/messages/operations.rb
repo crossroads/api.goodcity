@@ -1,6 +1,6 @@
 # frozen_string_literal
 
-module MessageService
+module Messages
   class Operations < Base
     def initialize
     end
