@@ -7,10 +7,14 @@ module ValuationCalculator
   included do
     before_create do
       if value_hk_dollar.blank?
-        self.value_hk_dollar = ValuationCalculationHelper
-                               .new(donor_condition_id,
-                                    grade, package_type_id)
+        self.value_hk_dollar = calculate_valuation
       end
     end
+  end
+
+  def calculate_valuation
+    ValuationCalculationHelper.new(donor_condition_id,
+                                   grade, package_type_id)
+                              .calculate
   end
 end

@@ -9,7 +9,6 @@ FactoryBot.define do
     visible_in_selects { true }
     initialize_with    { PackageType.find_or_initialize_by(code: code) }
     association        :location
-    default_value_hk_dollar { 30 }
 
     trait :allow_expiry_date do
       allow_expiry_date true
