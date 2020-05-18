@@ -60,6 +60,13 @@ module Api
         render json: Order.counts_for(params[:id])
       end
 
+      def mentionable_users
+        MessageService::Channel.new(app_name: app_name,
+                                    messageable: Offer.find(params[:offer],
+                                    is_private: params[:is_private]))
+                               .related_users
+      end
+
       private
 
       def serializer
