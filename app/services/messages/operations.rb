@@ -24,16 +24,51 @@ module Messages
       #   - Message sender
       #   - Anyone who has previously replied to offer/order
       #   - Admin users processing the offer/order
-      add_related_users(obj)
+      add_related_users(klass, obj)
       ids = ids.flatten.uniq
+      remove_unwanted_users(obj)
+      add_subscription_for_message
     end
 
     private
 
-    def add_related_users(obj)
+    def add_subscription_for_message
+      ids.flatten.compact.uniq.each do |user_id|
+        state = user_id == message.sender_id ? 'read' : 'unread' # mark as read for sender
+        add_subscription(user_id, state)
+      end
+    end
+
+    # Cases where we subscribe every staff member
+    #  - For private messages, subscribe all supervisors ONLY for the first message
+    #  - If donor sends a message but no one else is listening, subscribe all reviewers.
+    def subscribe_all_staff_for?(klass, obj)
+      if is_private
+        first_message_to?(klass, obj.id)
+      else
+        obj&.created_by_id.present? && (ids == [message.sender_id])
+      end
+    end
+
+    def first_message_to?(klass, id)
+      Message.where(is_private: is_private, "#{klass}_id": id).count.eql? 1
+    end
+
+    def remove_unwanted_users(obj)
+      ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
+      ids -= [obj.try(:created_by_id)] if message.is_private || obj.try('cancelled?')
+      ids
+    end
+
+    def add_related_users(klass, obj)
       add_sender_creator
       add_public_private_subscibers_to(obj)
       add_admin_user_fields_to(obj)
+      add_all_subscribed_staff(klass, obj)
+    end
+
+    def add_all_subscribed_staff(klass, obj)
+      ids << User.staff.pluck(:id) if subscribe_all_staff_for?(klass, obj)
     end
 
     def add_sender_creator
@@ -75,8 +110,8 @@ module Messages
       replace_ids_with_names
     end
 
-    def add_subscriber(user_id)
-      message.subscriptions.create(state: 'unread',
+    def add_subscriber(user_id, state = 'unread')
+      message.subscriptions.create(state: state,
                                    message_id: message.id,
                                    subscribable: message.messageable,
                                    user_id: user_id)
