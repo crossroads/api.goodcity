@@ -5,6 +5,9 @@ module MessageSubscription
 
   # Who gets subscribed to a new message (i.e. who can see each message)
   def subscribe_users_to_message
+    Messages::Operations.new(message: self).subscribe_users_to_message
+
+
     obj = messageable
     klass = obj.class.name.underscore
     user_ids = []

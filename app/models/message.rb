@@ -31,11 +31,16 @@ class Message < ActiveRecord::Base
   attr_accessor :state_value, :is_call_log
 
   after_create do
+    handle_mentioned_users
     subscribe_users_to_message # MessageSubscription
     update_client_store # PushUpdatesForMessage (must come after subscribe_users_to_message)
   end
 
   after_destroy :notify_deletion_to_subscribers
+
+  def handle_mentioned_users
+    Messages::Operaion.new(message: self).handle_mentioned_users
+  end
 
   # Marks all messages as read for a user
   # Some refactoring required here. Doesn't understand that an admin may
