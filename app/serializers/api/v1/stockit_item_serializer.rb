@@ -77,15 +77,18 @@ module Api::V1
       "packages.favourite_image_id"
     end
 
+    # deprecated
+    # Kept for backwards compatibility
+    # refer to package_set_id from now on
     def is_set
-      object.package_set_id.present?
+      false
     end
 
+    # deprecated
+    # Kept for backwards compatibility
+    # refer to package_set_id from now on
     def is_set__sql
-      "(CASE WHEN package_set_id IS NOT NULL
-        THEN true
-        ELSE false
-        END)"
+      "false"
     end
   end
 end
