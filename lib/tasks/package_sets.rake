@@ -26,7 +26,7 @@ namespace :goodcity do
 
       packages  = item.packages
 
-      next unless item.package_type.present? || packages.length < 2
+      next unless item.package_type.present? && packages.length > 1
 
       package_set = PackageSet.create(description: item.package_type.name_en, package_type_id: item.package_type.id)
 
