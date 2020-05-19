@@ -20,7 +20,10 @@ namespace :goodcity do
     bar = RakeProgressbar.new(item_ids.length) 
 
     item_ids.each do |id|
-      item      = Item.find(id)
+      item      = Item.find_by(id: id)
+
+      return unless item.present?
+
       packages  = item.packages
 
       next unless item.package_type.present? || packages.length < 2
@@ -35,6 +38,6 @@ namespace :goodcity do
       bar.inc
     end
 
-    @bar.finished
+    bar.finished
   end
 end
