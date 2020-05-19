@@ -61,8 +61,7 @@ module Api
           include_territory: true,
           include_images: true,
           include_allowed_actions: true,
-          include_orders_packages: bool_param(:include_orders_packages, true),
-          exclude_stockit_set_item: true
+          include_orders_packages: bool_param(:include_orders_packages, true)
         )
       end
 
@@ -116,8 +115,7 @@ module Api
           include_packages: true,
           include_order: false,
           include_images: true,
-          include_messages: bool_param(:include_messages, false),
-          exclude_stockit_set_item: true).as_json
+          include_messages: bool_param(:include_messages, false)).as_json
       end
 
       def cancel_params
@@ -169,7 +167,7 @@ module Api
           :stockit_organisation_id, :stockit_activity_id,
           :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
           :address_id,:submitted_by_id, :staff_note,
-          purpose_ids: [], cart_package_ids: [],
+          purpose_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes,
           orders_process_checklists_attributes: orders_process_checklists_attributes

@@ -50,7 +50,6 @@ RSpec.describe Order, type: :model do
     it { is_expected.to have_many :messages }
     it { is_expected.to have_many :subscriptions }
     it { is_expected.to have_many(:purposes).through(:orders_purposes) }
-    it { is_expected.to have_and_belong_to_many(:cart_packages).class_name('Package')}
     it { is_expected.to have_many :orders_packages }
     it { is_expected.to have_many :orders_purposes }
     it { is_expected.to have_many(:process_checklists).through(:orders_process_checklists) }
