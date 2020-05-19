@@ -26,6 +26,6 @@ class PackageSet < ActiveRecord::Base
   end
 
   def ensure_type_integrity
-    errors.add(:errors, I18n.t('package_sets.cannot_change_type')) if package_type_id_changed? && packages.length.positive?
+    errors.add(:errors, I18n.t('package_sets.cannot_change_type')) if package_type_id_changed? && packages.size.positive?
   end
 end
