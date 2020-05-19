@@ -10,10 +10,5 @@ module Messages
       @messageable = params[:messageable]
       @current_user = params[:current_user]
     end
-
-    def parse_user
-      # This guy will parse the message
-    end
-
   end
 end
