@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200413180405) do
+ActiveRecord::Schema.define(version: 20200423034154) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -617,6 +617,15 @@ ActiveRecord::Schema.define(version: 20200413180405) do
   add_index "package_categories_package_types", ["package_category_id"], name: "index_package_categories_package_types_on_package_category_id", using: :btree
   add_index "package_categories_package_types", ["package_type_id"], name: "index_package_categories_package_types_on_package_type_id", using: :btree
 
+  create_table "package_sets", force: :cascade do |t|
+    t.integer  "package_type_id"
+    t.text     "description"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "package_sets", ["package_type_id"], name: "index_package_sets_on_package_type_id", using: :btree
+
   create_table "package_types", force: :cascade do |t|
     t.string   "code"
     t.string   "name_en"
@@ -634,8 +643,8 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.string   "subform"
     t.boolean  "allow_box",               default: false
     t.boolean  "allow_pallet",            default: false
-    t.decimal  "default_value_hk_dollar"
     t.boolean  "allow_expiry_date",       default: false
+    t.decimal  "default_value_hk_dollar"
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
@@ -676,7 +685,6 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.date     "stockit_moved_on"
     t.integer  "stockit_moved_by_id"
     t.boolean  "saleable",                 default: false
-    t.integer  "set_item_id"
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
@@ -685,12 +693,13 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.integer  "detail_id"
     t.string   "detail_type"
     t.integer  "storage_type_id"
-    t.decimal  "value_hk_dollar"
     t.integer  "available_quantity",       default: 0
     t.integer  "on_hand_quantity",         default: 0
     t.integer  "designated_quantity",      default: 0
     t.integer  "dispatched_quantity",      default: 0
     t.date     "expiry_date"
+    t.decimal  "value_hk_dollar"
+    t.integer  "package_set_id"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -710,9 +719,9 @@ ActiveRecord::Schema.define(version: 20200413180405) do
   add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
   add_index "packages", ["on_hand_quantity"], name: "index_packages_on_on_hand_quantity", using: :btree
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
+  add_index "packages", ["package_set_id"], name: "index_packages_on_package_set_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
-  add_index "packages", ["set_item_id"], name: "index_packages_on_set_item_id", using: :btree
   add_index "packages", ["state"], name: "index_packages_on_state", using: :gin
   add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree
   add_index "packages", ["stockit_id"], name: "index_packages_on_stockit_id", using: :btree
@@ -993,7 +1002,7 @@ ActiveRecord::Schema.define(version: 20200413180405) do
     t.datetime "created_at"
   end
 
-  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY ((ARRAY['create'::character varying, 'update'::character varying])::text[])) AND (object_changes ? 'location_id'::text))", using: :btree
+  add_index "versions", ["created_at", "whodunnit"], name: "partial_index_recent_locations", where: "(((event)::text = ANY (ARRAY[('create'::character varying)::text, ('update'::character varying)::text])) AND (object_changes ? 'location_id'::text))", using: :btree
   add_index "versions", ["created_at"], name: "index_versions_on_created_at", using: :btree
   add_index "versions", ["event"], name: "index_versions_on_event", using: :btree
   add_index "versions", ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id", using: :btree

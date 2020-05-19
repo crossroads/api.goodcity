@@ -27,7 +27,7 @@ module LocationOperations
     class Move
       def initialize(quantity, package, from:, to:, cause: nil)
         @quantity = positive_integer(quantity)
-        @package = package
+        @package = Utils.to_model(package, Package)
         @from = Utils.to_model(from, Location)
         @to = Utils.to_model(to, Location)
         @cause = cause
