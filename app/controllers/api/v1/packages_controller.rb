@@ -397,7 +397,7 @@ module Api
       end
 
       def medical_attributes
-        %i[brand country_id serial_number updated_by_id expiry_date]
+        %i[brand country_id serial_number updated_by_id]
       end
 
       def get_package_type_id_value
