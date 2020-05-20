@@ -39,7 +39,7 @@ class Message < ActiveRecord::Base
   after_destroy :notify_deletion_to_subscribers
 
   def handle_mentioned_users
-    Messages::Operaion.new(message: self).handle_mentioned_users
+    Messages::Operations.new(message: self).handle_mentioned_users
   end
 
   # Marks all messages as read for a user
