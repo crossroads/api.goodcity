@@ -2,11 +2,10 @@
 
 module Messages
   class Operations < Base
-    attr_accessor :message, :subscription, :ids
+    attr_accessor :message, :ids
 
     def initialize(params)
       @message = params[:message]
-      @subscription = params[:subscription]
       @ids = []
       super(params)
     end
@@ -25,7 +24,7 @@ module Messages
       #   - Anyone who has previously replied to offer/order
       #   - Admin users processing the offer/order
       add_related_users(klass, obj)
-      ids = ids.flatten.uniq
+      @ids = ids.flatten.uniq
       remove_unwanted_users(obj)
       add_subscription_for_message
     end
@@ -55,15 +54,14 @@ module Messages
     end
 
     def remove_unwanted_users(obj)
-      ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
-      ids -= [obj.try(:created_by_id)] if message.is_private || obj.try('cancelled?')
-      ids
+      @ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
+      @ids -= [obj.try(:created_by_id)] if message.is_private || obj.try('cancelled?')
     end
 
     def add_related_users(klass, obj)
       add_sender_creator
-      add_public_private_subscibers_to(obj)
-      add_admin_user_fields_to(obj)
+      add_public_private_subscibers_for(obj)
+      add_admin_user_fields_for(obj)
       add_all_subscribed_staff(klass, obj)
     end
 
@@ -76,11 +74,11 @@ module Messages
       ids << obj&.sender_id
     end
 
-    def add_admin_user_fields_to(obj)
+    def add_admin_user_fields_for(obj)
       admin_user_fields.each { |field| user_ids << obj.try(field) }
     end
 
-    def add_public_private_subscibers_to(obj)
+    def add_public_private_subscibers_for(obj)
       ids << public_subscribers_to(obj)
       ids << private_subscribers_to(obj)
     end
