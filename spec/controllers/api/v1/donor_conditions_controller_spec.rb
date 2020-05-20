@@ -29,15 +29,8 @@ RSpec.describe Api::V1::DonorConditionsController, type: :controller do
         create(:donor_condition, name_en: name_en)
       end
     end
-    it "returns donor_conditions not visible for package create/update if `for:package` is not provided in params", :show_in_doc do
+    it "return serialized donor_conditions", :show_in_doc do
       get :index
-      expect(response.status).to eq(200)
-      donor_condition = DonorCondition.where('visible_to_package': false)
-      expect( parsed_body['donor_conditions'].length ).to eq(donor_condition.count)
-    end
-
-    it "returns all donor_conditions if `for:package` is provided in params", :show_in_doc do
-      get :index, for: 'package'
       expect(response.status).to eq(200)
       expect( parsed_body['donor_conditions'].length ).to eq(DonorCondition.count)
     end
