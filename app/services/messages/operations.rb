@@ -12,7 +12,7 @@ module Messages
 
     def handle_mentioned_users
       format_message_body
-      notify_users
+      notify_users unless ids.empty?
     end
 
     def subscribe_users_to_message
@@ -34,7 +34,7 @@ module Messages
     def add_subscription_for_message
       ids.flatten.compact.uniq.each do |user_id|
         state = user_id == message.sender_id ? 'read' : 'unread' # mark as read for sender
-        add_subscription(user_id, state)
+        add_subscriber(user_id, state)
       end
     end
 
@@ -42,7 +42,7 @@ module Messages
     #  - For private messages, subscribe all supervisors ONLY for the first message
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
     def subscribe_all_staff_for?(klass, obj)
-      if is_private
+      if message.is_private
         first_message_to?(klass, obj.id)
       else
         obj&.created_by_id.present? && (ids == [message.sender_id])
@@ -50,7 +50,7 @@ module Messages
     end
 
     def first_message_to?(klass, id)
-      Message.where(is_private: is_private, "#{klass}_id": id).count.eql? 1
+      Message.where(is_private: message.is_private, "#{klass}_id": id).count.eql? 1
     end
 
     def remove_unwanted_users(obj)
@@ -59,7 +59,7 @@ module Messages
     end
 
     def add_related_users(klass, obj)
-      add_sender_creator
+      add_sender_creator(obj)
       add_public_private_subscibers_for(obj)
       add_admin_user_fields_for(obj)
       add_all_subscribed_staff(klass, obj)
@@ -69,13 +69,13 @@ module Messages
       ids << User.staff.pluck(:id) if subscribe_all_staff_for?(klass, obj)
     end
 
-    def add_sender_creator
+    def add_sender_creator(obj)
       ids << obj&.created_by_id
-      ids << obj&.sender_id
+      ids << message.sender_id
     end
 
     def add_admin_user_fields_for(obj)
-      admin_user_fields.each { |field| user_ids << obj.try(field) }
+      admin_user_fields.each { |field| ids << obj.try(field) }
     end
 
     def add_public_private_subscibers_for(obj)
@@ -104,8 +104,10 @@ module Messages
 
     def format_message_body
       user_ids = fetch_mentioned_user_ids
+      return if user_ids.empty?
+
       sanitize(user_ids)
-      replace_ids_with_names
+      add_lookup
     end
 
     def add_subscriber(user_id, state = 'unread')
@@ -132,14 +134,14 @@ module Messages
 
     def sanitize(ids)
       @ids = ids.map { |id| id.match(/\d+/).to_s }
-      @ids
     end
 
-    def replace_ids_with_names
-      message.body.gsub(/\[:\d+\]/) do |id|
-        User.find(id.match(/\d+/)).full_name
+    def add_lookup
+      lookup = []
+      ids.map do |id|
+        lookup << { type: 'User', id: id, display_name: User.find(id).full_name }
       end
-      message.save
+      message.update(lookup: lookup)
     end
   end
 end
