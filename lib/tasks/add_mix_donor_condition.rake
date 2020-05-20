@@ -8,7 +8,7 @@ namespace :goodcity do
       DonorCondition.where(name_en: name).first_or_create do |donor_condition|
         donor_condition.name_en = name
         donor_condition.name_zh_tw = value[:name_zh_tw]
-        donor_condition.visible_to_package = value[:visible_to_package]
+        donor_condition.visible_to_donor = value[:visible_to_donor]
       end
     end
   end
