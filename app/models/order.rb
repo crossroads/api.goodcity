@@ -44,7 +44,7 @@ class Order < ActiveRecord::Base
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
 
-  validates :people_helped, numericality: { greater_than_or_equal_to: 0 }
+  validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
 
   after_initialize :set_initial_state
   before_create :assign_code
