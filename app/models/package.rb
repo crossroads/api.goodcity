@@ -67,6 +67,7 @@ class Package < ActiveRecord::Base
   validates :received_quantity, numericality: { greater_than: 0 }
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
+  validate  :validate_set_id, on: [:create, :update]
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
@@ -156,10 +157,6 @@ class Package < ActiveRecord::Base
     else
       self.stockit_sent_by = nil
     end
-  end
-
-  def dispatched_location
-    Location.dispatch_location
   end
 
   def quantity_contained_in(container_id)
@@ -414,6 +411,13 @@ class Package < ActiveRecord::Base
   end
 
   private
+
+  #
+  # Ensure boxes and pallets are not part of a set
+  #
+  def validate_set_id
+    errors.add(:errors, I18n.t('package_sets.no_box_in_set')) if package_set_id.present? && box_or_pallet?
+  end
 
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
