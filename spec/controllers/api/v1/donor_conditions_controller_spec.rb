@@ -34,6 +34,12 @@ RSpec.describe Api::V1::DonorConditionsController, type: :controller do
       expect(response.status).to eq(200)
       expect( parsed_body['donor_conditions'].length ).to eq(DonorCondition.count)
     end
+
+    it "returns 'visible_to_donor' in serialized response" do
+      get :index
+      expect(response.status).to eq(200)
+      expect( parsed_body['donor_conditions'].map { |condition| condition['visible_to_donor']} ).to eq(DonorCondition.pluck(:visible_to_donor))
+    end
   end
 
 end
