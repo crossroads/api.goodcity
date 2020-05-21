@@ -60,6 +60,31 @@ RSpec.describe Package, type: :model do
         is_expected.to allow_value(nil).for(attribute)
       end
     end
+
+    describe "allowing sets" do
+      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+      let(:package_set) { create(:package_set) }
+      let(:package_storage) { create(:storage_type, :with_pkg) }
+      let(:box_storage) { create(:storage_type, :with_box) }
+      let(:pallet_storage) { create(:storage_type, :with_pallet) }
+
+      it "boxes cannot be in sets" do
+        package = build(:package, storage_type: box_storage, package_set: package_set)
+        expect(package.save).to eq(false)
+        expect(package.errors.full_messages.first).to match(/Boxes and pallets are not allowed in sets/)
+      end
+
+      it "pallets cannot be in sets" do
+        package = build(:package, storage_type: pallet_storage, package_set: package_set)
+        expect(package.save).to eq(false)
+        expect(package.errors.full_messages.first).to match(/Boxes and pallets are not allowed in sets/)
+      end
+
+      it "packages can be in sets" do
+        package = build(:package, storage_type: package_storage, package_set: package_set)
+        expect(package.save).to eq(true)
+      end
+    end
   end
 
   describe "Package Set initialization on create" do
