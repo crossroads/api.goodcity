@@ -677,7 +677,7 @@ ActiveRecord::Schema.define(version: 20200520074024) do
     t.integer  "favourite_image_id"
     t.date     "stockit_moved_on"
     t.integer  "stockit_moved_by_id"
-    t.boolean  "saleable",                 default: false
+    t.boolean  "saleable",                             default: false
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
@@ -690,7 +690,7 @@ ActiveRecord::Schema.define(version: 20200520074024) do
     t.integer  "on_hand_quantity",                     default: 0
     t.integer  "designated_quantity",                  default: 0
     t.integer  "dispatched_quantity",                  default: 0
-    t.datetime "expiry_date"
+    t.date     "expiry_date"
     t.decimal  "value_hk_dollar"
     t.integer  "package_set_id"
   end
