@@ -6,7 +6,7 @@ FactoryBot.define do
     body        { generate(:message_body) }
     sender      { |m| m.association(:user) }
     is_private  false
-    offer
+    association :messageable, factory: :offer
 
     trait :reviewer_message do
       sender   { |m| m.association(:user, :reviewer) }
@@ -35,7 +35,7 @@ FactoryBot.define do
 
     trait :with_order do
       offer nil
-      order
+      association :messageable, factory: :order
     end
   end
 
