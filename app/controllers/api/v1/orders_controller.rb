@@ -68,7 +68,7 @@ module Api
       def transition
         event = params['transition'].to_sym
         @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
-        render json: @order, serializer: serializer
+        render json: serializer.new(@order, include_allowed_actions: true)
       end
 
       api :PUT, '/v1/orders/1', "Update an order"
