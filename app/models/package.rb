@@ -416,7 +416,7 @@ class Package < ActiveRecord::Base
   # Ensure boxes and pallets are not part of a set
   #
   def validate_set_id
-    errors.add(:errors, I18n.t('package_sets.no_box_in_set')) if package_set_id.present? && box_or_pallet?
+    errors.add(:errors, I18n.t('package_sets.no_box_in_set')) if package_set_id.present? && storage_type&.aggregate?
   end
 
   def set_default_values
