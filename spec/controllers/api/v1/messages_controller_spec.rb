@@ -11,12 +11,12 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:item2) { create(:item, offer: offer) }
   let(:order) { create(:order) }
   let(:order2) { create(:order) }
-  let(:message) { create :message, sender: user, offer: offer, item: item }
+  let(:message) { create :message, sender: user, messageable: offer, item: item }
   let(:subscription) { message.subscriptions.where(user_id: user.id).first }
   let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
   let(:serialized_message_json) { JSON.parse(serialized_message.to_json) }
   let(:message_params) do
-    FactoryBot.attributes_for(:message, sender: user.id, offer_id: offer.id )
+    FactoryBot.attributes_for(:message, sender: user.id, messageable_id: offer.id, messageable_type: 'Offer' )
   end
 
   subject { JSON.parse(response.body) }
@@ -58,42 +58,42 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one offer" do
-        3.times { create :message, offer: offer }
+        3.times { create :message, messageable: offer }
         get :index, offer_id: offer.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple offers" do
-        3.times { create :message, offer: offer }
-        3.times { create :message, offer: offer2 }
+        3.times { create :message, messageable: offer }
+        3.times { create :message, messageable: offer2 }
         get :index, offer_id: "#{offer.id},#{offer2.id}"
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for one order" do
-        3.times { create :message, order: order }
+        3.times { create :message, messageable: order }
         get :index, order_id: order.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :message, order: order }
-        3.times { create :message, order: order2 }
+        3.times { create :message, messageable: order }
+        3.times { create :message, messageable: order2 }
         get :index, order_id: "#{order.id},#{order2.id}"
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for a certain state" do
-        3.times { create :message, offer: offer }
-        3.times { create :message, offer: offer, sender_id: user.id }
-        3.times { create :message, offer: offer2 }
+        3.times { create :message, messageable: offer }
+        3.times { create :message, messageable: offer, sender_id: user.id }
+        3.times { create :message, messageable: offer2 }
         get :index, offer_id: "#{offer.id},#{offer2.id}", state: 'unread'
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for a certain type of associated record" do
-        1.times { create :message, offer: offer }
-        1.times { create :message, order: order }
+        1.times { create :message, messageable: offer }
+        1.times { create :message, messageable: order }
         4.times { create :message, item: item }
 
         get :index, scope: 'item'
@@ -120,7 +120,6 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     it "returns 201", :show_in_doc do
-      current_user = user
       post :create, message: message_params
       expect(response.status).to eq(201)
     end
@@ -150,7 +149,6 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   describe "PUT messages/:id/mark_read" do
     before { generate_and_set_token(user) }
     it "donor will read a message and automatically marked Read" do
-      current_user = user
       put :mark_read, id: subscription.message_id
       expect(response.status).to eq(200)
       expect(subject['message']['body']).to eql(message.body)
