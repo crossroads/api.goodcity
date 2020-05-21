@@ -211,7 +211,7 @@ class Ability
       can [:index, :show, :create], Message
     else
       can [:index, :show, :create], Message, Message.donor_messages(@user_id) do |message|
-        message.messageable.created_by_id == @user_id && !message.is_private
+        message.messageable&.created_by_id == @user_id && !message.is_private
       end
     end
     can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)

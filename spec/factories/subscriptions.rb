@@ -2,16 +2,20 @@
 
 FactoryBot.define do
   factory :subscription, aliases: [:offer_subscription] do
-    offer_id    { create(:offer).id }
     user_id     { create(:user).id }
     message_id  { create(:message).id }
     state 'unread'
+    trait :with_offer do
+      association :subscribable, factory: :offer
+    end
   end
 
   factory :order_subscription, class: :Subscription do
-    order    { message.order }
     user     { create(:user) }
     message  { create(:message, :with_order) }
     state 'unread'
+    trait :with_order do
+      association :subscribable, factory: :order
+    end
   end
 end

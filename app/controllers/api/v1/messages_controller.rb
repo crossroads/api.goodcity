@@ -77,8 +77,19 @@ module Api
 
       def apply_scope(records, scope)
         return records unless ALLOWED_SCOPES.include? scope
-        records.where("messages.#{scope}_id IS NOT NULL")
+
+        filter = ''
+        if scope == 'item'
+          filter = 'messages.item_id IS NOT NULL'
+        elsif scope == 'offer'
+          filter = "messages.messageable_type = 'Offer'"
+        elsif scope == 'order'
+          filter = "messages.messageable_type = 'Order'"
+        end
+
+        records.where(filter)
       end
+
 
       def messageable
         return Order.find(order_id) if order_id.present?
@@ -120,6 +131,8 @@ module Api
       def message_params
         params.require(:message).permit(
           :body, :is_private,
+          :messageable_type,
+          :messageable_id,
           :offer_id, :item_id, :order_id,
         )
       end
