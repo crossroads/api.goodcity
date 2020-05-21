@@ -34,9 +34,11 @@ context OfferSearch do
     end
 
     context "offer messages content" do
-      let(:message) { create(:message, body: 'Test message body') }
+      let(:message) { create(:message, body: 'Test message body', messageable: nil) }
       let!(:offer1) { create :offer, :submitted, messages: [message] }
-      it { expect(Offer.search({search_text: 'Test message body', states:[]}).to_a).to match_array([offer1]) }
+      it do
+        expect(Offer.search({search_text: 'Test message body', states:[]}).to_a).to match_array([offer1])
+      end
     end
 
     context "offer item messages content" do
