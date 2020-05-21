@@ -10,12 +10,12 @@ describe Message, type: :model do
   let(:item)  { create :item, offer_id: offer.id }
 
   def create_message(options = {})
-    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
+    options = { sender_id: donor.id, messageable: offer }.merge(options)
     create :message, options
   end
 
   def build_message(options = {})
-    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
+    options = { sender_id: donor.id, messageable: offer }.merge(options)
     build :message, options
   end
 

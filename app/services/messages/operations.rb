@@ -45,7 +45,7 @@ module Messages
       if message.is_private
         first_message_to?(klass, obj.id)
       else
-        obj&.created_by_id.present? && (ids == [message.sender_id])
+        obj&.created_by_id.present? && (ids.compact.uniq == [message.sender_id])
       end
     end
 
@@ -66,7 +66,7 @@ module Messages
     end
 
     def add_all_subscribed_staff(klass, obj)
-      ids << User.staff.pluck(:id) if subscribe_all_staff_for?(klass, obj)
+      @ids += User.staff.pluck(:id) if subscribe_all_staff_for?(klass, obj)
     end
 
     def add_sender_creator(obj)
@@ -79,8 +79,8 @@ module Messages
     end
 
     def add_public_private_subscibers_for(obj)
-      ids << public_subscribers_to(obj)
-      ids << private_subscribers_to(obj)
+      @ids += public_subscribers_to(obj)
+      @ids += private_subscribers_to(obj)
     end
 
     # A public subscriber is defined as :
