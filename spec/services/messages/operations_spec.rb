@@ -6,7 +6,16 @@ module Messages
   describe Operations do
     let(:message) { create :message, messageable: create(:offer) }
     let(:operation) { Messages::Operations.new(message: message) }
+    let!(:supervisor) { create :user, :supervisor }
     let(:reviewer) { create(:user, :reviewer) }
+
+    let(:offer1) { create :offer }
+    let(:offer2) { create :offer }
+    let(:message1) { create :message, is_private: true, sender: reviewer, messageable: offer1 }
+    let(:message2) { create :message, is_private: true, sender: reviewer, messageable: offer2 }
+    let(:user_id) { offer1.created_by_id }
+    let(:op1) { Messages::Operations.new(message: message1) }
+    let(:op2) { Messages::Operations.new(message: message2) }
 
     describe '#initialize' do
       it 'creates instance variables for message and ids' do
@@ -88,19 +97,98 @@ module Messages
       end
 
       context 'if private messages' do
-        let(:offer) { create :offer }
-        let(:message) { build :message, is_private: true, sender: reviewer, messageable: offer }
-        let(:message2) { build :message, is_private: true, sender: reviewer, messageable: offer }
-        let(:user_id) { offer.created_by_id }
+        before { User.current_user = supervisor }
 
-        it 'should not subscribe donor' do
-          expect(operation).not_to receive(:add_subscriber).with(user_id, anything)
-          operation.subscribe_users_to_message
+        before(:each) do
+          allow(op1).to receive(:add_subscriber)
+          allow(op2).to receive(:add_subscriber)
         end
 
-        # context 'if first message in thread' do
-        #   let!(:supervisor) { create :user, :supervisor }
-        # end
+        it 'should not subscribe donor' do
+          expect(op1).not_to receive(:add_subscriber).with(user_id, anything)
+          op1.subscribe_users_to_message
+        end
+
+        context 'if first message in thread' do
+          it 'should subscribe all supervisors' do
+            expect(op1).to receive(:add_subscriber).with(reviewer.id, 'read')
+            expect(op1).to receive(:add_subscriber).with(supervisor.id, 'unread')
+            op1.subscribe_users_to_message
+          end
+        end
+
+        it 'should not subscribe other supervisors for subsequent messages' do
+          other_reviewer = create :user, :reviewer
+
+          # The unrelated supervisor receives the first message of the thread
+          expect(op1).to receive(:add_subscriber).with(reviewer.id, 'read')
+          expect(op1).to receive(:add_subscriber).with(supervisor.id, 'unread')
+          expect(op1).to receive(:add_subscriber).with(other_reviewer.id, 'unread')
+          op1.subscribe_users_to_message
+
+          create :message, is_private: true, sender: reviewer, messageable: offer2
+          # The unrelated supervisor doesn't receive subsequent message of the thread
+          expect(op2).to receive(:add_subscriber).with(reviewer.id, 'read')
+          expect(op2).not_to receive(:add_subscriber).with(other_reviewer.id, 'unread')
+          expect(op2).not_to receive(:add_subscriber).with(supervisor.id, 'unread')
+          op2.subscribe_users_to_message
+        end
+
+        context 'message is posted something in the private thread' do
+          let!(:supervisor) { create :user, :supervisor }
+          before { User.current_user = supervisor }
+
+          it 'should subscribe a supervisor for subsequent messages' do
+            # The unrelated supervisor receives the first message of the thread
+            expect(op1).to receive(:add_subscriber).with(reviewer.id, 'read')
+            expect(op1).to receive(:add_subscriber).with(supervisor.id, 'unread')
+            op1.subscribe_users_to_message
+
+            # The supervisor answers on the the private thread
+            create :message, sender: supervisor, offer: message.offer, is_private: true
+
+            # The supervisor receives subsequent message of the thread
+            expect(op2).to receive(:add_subscriber).with(reviewer.id, 'read')
+            expect(op2).to receive(:add_subscriber).with(supervisor.id, 'unread')
+            op2.subscribe_users_to_message
+          end
+
+          it 'should subscribe a reviewer for subsequent messages' do
+            other_reviewer = create(:user, :reviewer)
+            User.current_user = other_reviewer
+            # The unrelated supervisor receives the first message of the thread
+            expect(op1).to receive(:add_subscriber).with(reviewer.id,'read')
+            expect(op1).to receive(:add_subscriber).with(other_reviewer.id, 'unread')
+            op1.subscribe_users_to_message
+
+            # The supervisor answers on the the private thread
+            create :message, sender: other_reviewer, offer: message.offer, is_private: true
+
+            # The supervisor receives subsequent message of the thread
+            expect(op2).to receive(:add_subscriber).with(reviewer.id, 'read') # sender
+            expect(op2).to receive(:add_subscriber).with(other_reviewer.id, 'unread')
+            op2.subscribe_users_to_message
+          end
+        end
+      end
+
+      context 'public thread' do
+        let!(:supervisor) { create :user, :supervisor }
+        before { User.current_user = supervisor }
+        it 'should subscribe a supervisor for subsequent messages' do
+          # The unrelated supervisor receives the first message of the thread
+          expect(op1).to receive(:add_subscriber).with(reviewer.id, 'read')
+          expect(op1).to receive(:add_subscriber).with(supervisor.id, 'unread')
+          op1.subscribe_users_to_message
+
+          # The supervisor answers on the the private thread
+          create :message, sender: supervisor, offer: message.offer, is_private: false
+
+          # The supervisor receives subsequent message of the thread
+          expect(op2).to receive(:add_subscriber).with(reviewer.id, 'read')
+          expect(op2).to receive(:add_subscriber).with(supervisor.id, 'unread')
+          op2.subscribe_users_to_message
+        end
       end
     end
   end

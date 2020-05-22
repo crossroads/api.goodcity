@@ -26,6 +26,7 @@ module Messages
       add_related_users(klass, obj)
       @ids = ids.flatten.uniq
       remove_unwanted_users(obj)
+      add_all_subscribed_staff(klass, obj)
       add_subscription_for_message
     end
 
@@ -43,14 +44,14 @@ module Messages
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
     def subscribe_all_staff_for?(klass, obj)
       if message.is_private
-        first_message_to?(klass, obj.id)
+        first_message_to?(klass, obj)
       else
         obj&.created_by_id.present? && (ids.compact.uniq == [message.sender_id])
       end
     end
 
-    def first_message_to?(klass, id)
-      Message.where(is_private: message.is_private, "#{klass}_id": id).count.eql? 1
+    def first_message_to?(klass, obj)
+      Message.where(is_private: message.is_private, messageable: obj).count.eql? 1
     end
 
     def remove_unwanted_users(obj)
@@ -62,7 +63,6 @@ module Messages
       add_sender_creator(obj)
       add_public_private_subscibers_for(obj)
       add_admin_user_fields_for(obj)
-      add_all_subscribed_staff(klass, obj)
     end
 
     def add_all_subscribed_staff(klass, obj)
