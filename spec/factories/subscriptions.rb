@@ -5,6 +5,7 @@ FactoryBot.define do
     user_id     { create(:user).id }
     message_id  { create(:message).id }
     state 'unread'
+    association :subscribable
     trait :with_offer do
       association :subscribable, factory: :offer
     end
