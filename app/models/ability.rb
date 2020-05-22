@@ -373,6 +373,7 @@ class Ability
     can [:index, :show], Permission
     can [:index, :show], UserRole
     can [:index, :show], CancellationReason
+    can [:index], Restriction
     can [:names], Organisation
     can [:create, :show], OrganisationsUser
 
