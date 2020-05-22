@@ -9,7 +9,6 @@ module PushUpdatesForMessage
   def update_client_store
     user_ids = []
     obj = messageable
-
     # Send update to creator (donor or charity)
     user_ids << obj.try(:created_by_id)
     user_ids << self.sender_id

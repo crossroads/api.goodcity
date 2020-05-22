@@ -4,7 +4,7 @@ context PushUpdatesForMessage do
 
   # Base case: reviewer1 sends message to donor
   let!(:message) { create :message, sender: reviewer1 }
-  let(:donor) { message.offer.created_by }
+  let(:donor) { message.messageable.created_by }
   let(:donor_channel) { "user_#{donor.id}" }
   let(:reviewer1) { create :user, :reviewer }
   let(:reviewer1_channel) { "user_#{reviewer1.id}_admin" }
@@ -31,7 +31,7 @@ context PushUpdatesForMessage do
     end
 
     context "should not send a push update to" do
-      it "a system user" do 
+      it "a system user" do
         system_user # create this user and subscribe them just to really be sure
         expect(message).to receive(:send_update).with('unread', [donor_channel])
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
@@ -44,7 +44,7 @@ context PushUpdatesForMessage do
         message.update_client_store
       end
       it "a donor when offer is cancelled" do
-        message.offer.cancel!
+        message.messageable.cancel!
         expect(message).to_not receive(:send_update).with('unread', [donor_channel])
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
         message.update_client_store
@@ -90,7 +90,7 @@ context PushUpdatesForMessage do
     context "when Order" do
       let(:message) { create :message, :with_order }
       context "creator" do
-        let(:user_id) { message.order.created_by_id }
+        let(:user_id) { message.messageable.created_by_id }
         it { expect(subject).to eql(BROWSE_APP) }
       end
       context "but not creator" do
@@ -100,7 +100,7 @@ context PushUpdatesForMessage do
     end
     context "when Offer" do
       context "creator" do
-        let(:user_id) { message.offer.created_by_id }
+        let(:user_id) { message.messageable.created_by_id }
         it { expect(subject).to eql(DONOR_APP) }
       end
       context "but not creator" do
