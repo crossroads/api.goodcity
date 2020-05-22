@@ -56,6 +56,6 @@ class Message < ActiveRecord::Base
 
   # To make up for the lack of polymorphism between offer/item/order. Cached
   def related_object
-    @_obj ||= (offer || order || item)
+    @_obj ||= (item || messageable)
   end
 end
