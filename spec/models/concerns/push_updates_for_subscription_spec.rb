@@ -3,7 +3,7 @@ require 'rails_helper'
 context PushUpdatesForSubscription do
 
   let(:push_service) { PushService.new }
-  
+
   before(:each) do
     allow(PushService).to receive(:new).and_return(push_service)
   end
@@ -14,12 +14,12 @@ context PushUpdatesForSubscription do
       let!(:subscription) { create :offer_subscription, user: reviewer }
       let(:reviewer) { create :user, :reviewer }
       let(:reviewer_channel) { ["user_#{reviewer.id}_admin"] }
-  
+
       before(:each) do
         allow(Channel).to receive(:private_channels_for).and_return(reviewer_channel)
         allow(subscription).to receive(:app_name).and_return(ADMIN_APP)
       end
-      
+
       it do
         expect(push_service).to receive(:send_notification) do |channel, app_name, data|
           expect(channel).to eql(reviewer_channel)
@@ -32,8 +32,8 @@ context PushUpdatesForSubscription do
     end
 
     context "doesn't send notification if message sender is recipient" do
-      let!(:subscription) { create :offer_subscription }
-      let(:donor) { subscription.offer.created_by }
+      let!(:subscription) { create(:subscription, :with_offer) }
+      let(:donor) { subscription.subscribable.created_by }
       let(:donor_channel) { "user_#{donor.id}" }
       it do
         expect(push_service).to_not receive(:send_notification).with(donor_channel, DONOR_APP, anything)
@@ -46,11 +46,11 @@ context PushUpdatesForSubscription do
 
   context "app_name" do
     context "with offer subscription" do
-      let(:subscription) { create :offer_subscription }
+      let(:subscription) { create(:subscription, :with_offer) }
       subject { subscription.send(:app_name) }
       context "donor app" do
         it do
-          subscription.user_id = subscription.message.offer.created_by_id
+          subscription.user_id = subscription.message.messageable.created_by_id
           expect(subject).to eql(DONOR_APP)
         end
       end
@@ -66,7 +66,7 @@ context PushUpdatesForSubscription do
       subject { subscription.send(:app_name) }
       context "browse app" do
         it do
-          subscription.user_id = subscription.message.order.created_by_id
+          subscription.user_id = subscription.message.messageable.created_by_id
           expect(subject).to eql(BROWSE_APP)
         end
       end
