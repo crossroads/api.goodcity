@@ -11,7 +11,7 @@ context PushUpdatesForSubscription do
   context "send_new_message_notification" do
 
     context "calls Push Service with notification data" do
-      let!(:subscription) { create :offer_subscription, user: reviewer }
+      let!(:subscription) { create :offer_subscription, :with_offer, user: reviewer }
       let(:reviewer) { create :user, :reviewer }
       let(:reviewer_channel) { ["user_#{reviewer.id}_admin"] }
 

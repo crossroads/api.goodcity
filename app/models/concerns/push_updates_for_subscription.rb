@@ -19,7 +19,7 @@ module PushUpdatesForSubscription
   # then send to Donor/Browse otherwise user is an admin so send to Admin/Stock.
   # This should work for admins logged in to donor app who send messages on their own offers.
   def app_name
-    related_object = message.messageable
+    related_object = message.related_object
     klass_name = related_object.class.name
     created_by_id = related_object.created_by_id
     if klass_name == 'Order'
@@ -30,7 +30,7 @@ module PushUpdatesForSubscription
   end
 
   def data_to_send
-    messageable_obj = message.messageable
+    messageable_obj = message.related_object
     data = { category: 'message',
              message: message.body.truncate(150, separator: ' '),
              is_private: message.is_private,
@@ -42,6 +42,6 @@ module PushUpdatesForSubscription
   end
 
   def identity
-    "#{message.messageable.class.name.underscore}_id".to_sym
+    "#{message.related_object.class.name.underscore}_id".to_sym
   end
 end

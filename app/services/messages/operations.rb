@@ -17,16 +17,15 @@ module Messages
 
     def subscribe_users_to_message
       obj = message.messageable
-      klass = obj.class.name.underscore
       # Add the following users
       #   - Donor / Charity user
       #   - Message sender
       #   - Anyone who has previously replied to offer/order
       #   - Admin users processing the offer/order
-      add_related_users(klass, obj)
+      add_related_users(obj)
       @ids = ids.flatten.uniq
       remove_unwanted_users(obj)
-      add_all_subscribed_staff(klass, obj)
+      add_all_subscribed_staff(obj)
       add_subscription_for_message
     end
 
@@ -42,15 +41,20 @@ module Messages
     # Cases where we subscribe every staff member
     #  - For private messages, subscribe all supervisors ONLY for the first message
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
-    def subscribe_all_staff_for?(klass, obj)
+    def subscribe_all_staff_for?(obj)
+      obj = message.messageable
+      if obj.instance_of?(Item)
+        obj = obj.offer
+      end
+
       if message.is_private
-        first_message_to?(klass, obj)
+        first_message_to?(obj)
       else
         obj&.created_by_id.present? && (ids.compact.uniq == [message.sender_id])
       end
     end
 
-    def first_message_to?(klass, obj)
+    def first_message_to?(obj)
       Message.where(is_private: message.is_private, messageable: obj).count.eql? 1
     end
 
@@ -59,17 +63,20 @@ module Messages
       @ids -= [obj.try(:created_by_id)] if message.is_private || obj.try('cancelled?')
     end
 
-    def add_related_users(klass, obj)
+    def add_related_users(obj)
       add_sender_creator(obj)
       add_public_private_subscibers_for(obj)
       add_admin_user_fields_for(obj)
     end
 
-    def add_all_subscribed_staff(klass, obj)
-      @ids += User.staff.pluck(:id) if subscribe_all_staff_for?(klass, obj)
+    def add_all_subscribed_staff(obj)
+      @ids += User.staff.pluck(:id) if subscribe_all_staff_for?(obj)
     end
 
     def add_sender_creator(obj)
+      if obj.instance_of?(Item)
+        obj = obj.offer
+      end
       ids << obj&.created_by_id
       ids << message.sender_id
     end
@@ -111,9 +118,13 @@ module Messages
     end
 
     def add_subscriber(user_id, state = 'unread')
+      obj = message.messageable
+      if obj.instance_of?(Item)
+        obj = obj.offer
+      end
       message.subscriptions.create(state: state,
                                    message_id: message.id,
-                                   subscribable: message.messageable,
+                                   subscribable: obj,
                                    user_id: user_id)
     end
 

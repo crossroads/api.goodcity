@@ -543,8 +543,8 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         User.current_user = reviewer
 
         # Create notifications for offers
-        3.times { create(:subscription, offer_id: receiving_offer.id, user_id: reviewer.id, state: 'unread') }
-        3.times { create(:subscription, offer_id: reviewing_offer.id, user_id: reviewer.id, state: 'read') }
+        3.times { create(:subscription, :with_offer, user_id: reviewer.id, state: 'unread') }
+        3.times { create(:subscription, :with_offer, user_id: reviewer.id, state: 'read') }
       }
 
       it "returns offers created by logged in user if selfReview is present in params" do

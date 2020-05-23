@@ -8,7 +8,7 @@ module PushUpdatesForMessage
 
   def update_client_store
     user_ids = []
-    obj = messageable
+    obj = self.related_object
     # Send update to creator (donor or charity)
     user_ids << obj.try(:created_by_id)
     user_ids << self.sender_id
@@ -102,5 +102,4 @@ module PushUpdatesForMessage
   def subscribed_user_ids
     @subscribed_user_ids ||= self.subscriptions.pluck(:user_id)
   end
-
 end
