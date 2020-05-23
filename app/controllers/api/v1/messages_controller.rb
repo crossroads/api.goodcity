@@ -38,6 +38,7 @@ module Api
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
         @messages = @messages.where(messageable_id: params[:offer_id].split(","), messageable_type: 'Offer') if params[:offer_id].present?
         @messages = @messages.where(messageable_id: params[:order_id].split(","), messageable_type: 'Order') if params[:order_id].present?
+        @messages = @messages.where(messageable_id: params[:item_id].split(","), messageable_type: 'Item') if params[:item_id].present?
         @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
         @messages = @messages.with_state_for_user(User.current_user, params[:state]) if params[:state].present?
         paginate_and_render(@messages)
@@ -53,7 +54,6 @@ module Api
       def create
         @message.order_id = order_id
         @message.sender_id = current_user.id
-        @message.messageable = messageable
         save_and_render_object(@message)
       end
 
@@ -90,10 +90,10 @@ module Api
         records.where(filter)
       end
 
-
       def messageable
         return Order.find(order_id) if order_id.present?
         return Offer.find(offer_id) if offer_id.present?
+        return Item.find(item_id) if item_id.present?
       end
 
       def paginate_and_render(records)
@@ -107,6 +107,10 @@ module Api
         end
         output = message_response(records)
         render json: { meta: meta }.merge(output)
+      end
+
+      def item_id
+        message_params[:item_id]
       end
 
       def order_id

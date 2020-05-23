@@ -4,7 +4,11 @@ class ChangeMessagesToPolymorphic < ActiveRecord::Migration
     add_column :messages, :messageable_id, :int
     ActiveRecord::Base.transaction do
       Message.all.map do |message|
-        if message.offer_id
+        if message.item_id
+          item = message.item
+          message.messageable_type = item.class.name
+          message.messageable_id = item.id
+        elsif message.offer_id
           offer = message.offer
           message.messageable_type = offer.class.name
           message.messageable_id = offer.id

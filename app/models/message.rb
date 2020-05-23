@@ -6,11 +6,10 @@ class Message < ActiveRecord::Base
   include PushUpdatesForMessage
 
   belongs_to :sender, class_name: 'User', inverse_of: :messages
-  belongs_to :offer, inverse_of: :messages
-  belongs_to :item, inverse_of: :messages
-  belongs_to :order, inverse_of: :messages
   belongs_to :messageable, polymorphic: true
-
+  belongs_to :offer
+  belongs_to :item
+  belongs_to :order
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: 'Offer', through: :subscriptions
 
@@ -25,7 +24,7 @@ class Message < ActiveRecord::Base
   scope :with_eager_load, -> { includes([:sender]) }
   scope :non_private, -> { where(is_private: false) }
   scope :offer, -> { joins("INNER JOIN offers ON messages.messageable_id = offers.id and messages.messageable_type = 'Offer'") }
-  scope :donor_messages, ->(donor_id) { offer.where(offers: { created_by_id: donor_id }, is_private: false) }
+  scope :donor_messages, -> (donor_id) { offer.where(offers: {created_by_id: donor_id}, is_private: false) }
   scope :with_state_for_user, ->(user, state) { joins(:subscriptions).where("subscriptions.user_id = ? and subscriptions.state = ?", user.id, state) }
 
   # used to override the state value during serialization
@@ -56,6 +55,6 @@ class Message < ActiveRecord::Base
 
   # To make up for the lack of polymorphism between offer/item/order. Cached
   def related_object
-    @_obj ||= (item || messageable)
+    @_obj ||= messageable.instance_of?(Item) ? messageable.offer : messageable
   end
 end
