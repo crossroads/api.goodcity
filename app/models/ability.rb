@@ -211,7 +211,7 @@ class Ability
       can [:index, :show, :create], Message
     else
       can [:index, :show, :create], Message, Message.donor_messages(@user_id) do |message|
-        message_obj = message.messageable.send(:offer) ? message.messageable.offer : message.messageable
+        message_obj = message.instance_of?(Item) ? message.messageable.offer : message.messageable
         message_obj&.created_by_id == @user_id && !message.is_private
       end
     end
