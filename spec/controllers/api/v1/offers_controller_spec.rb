@@ -531,20 +531,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(subject['offers'].size).to eq(2)
         expect(subject['offers'].first["id"]).to eq(submitted_offer2.id)
       end
-
     end
 
     context "Reviewer Filter" do
+      let!(:offer) { create :offer }
       before(:each) {
         receiving_offer
         reviewing_offer
         receiving_offer
         scheduled_offer
         User.current_user = reviewer
-
+        Subscription.delete_all
         # Create notifications for offers
-        3.times { create(:subscription, :with_offer, user_id: reviewer.id, state: 'unread') }
-        3.times { create(:subscription, :with_offer, user_id: reviewer.id, state: 'read') }
+        3.times { create(:subscription, subscribable: receiving_offer, user_id: reviewer.id, state: 'unread') }
+        3.times { create(:subscription, subscribable: reviewing_offer, user_id: reviewer.id, state: 'read') }
       }
 
       it "returns offers created by logged in user if selfReview is present in params" do
