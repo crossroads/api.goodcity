@@ -12,9 +12,9 @@ module Messages
     def related_users
       case app_name
       when DONOR_APP, ADMIN_APP
-        admin_donor_mentions
+        Hash[admin_donor_mentions]
       when STOCK_APP, BROWSE_APP
-        stock_browse_mentions
+        Hash[stock_browse_mentions]
       end
     end
 
@@ -28,13 +28,13 @@ module Messages
 
     def admin_donor_channel_users
       users = supervisors_and_reviewers.uniq
-      users << messageable.created_by unless messageable.created_by_id == current_user.id
+      users << [messageable.created_by_id, messageable.created_by.full_name] unless owner?
       users
     end
 
     def stock_browse_mentions
       users = stock_users
-      users << messageable.created_by unless messageable.created_by_id == current_user.id
+      users << [messageable.created_by_id, messageable.created_by.full_name] unless owner?
       users
     end
 
@@ -44,28 +44,26 @@ module Messages
       is_private && app_name == ADMIN_APP
     end
 
-    def admin_supervisor_users
-      User.joins(:user_roles)
+    def user_roles
+      User.where.not(users: { id: current_user.id, disabled: true })
+          .joins(:user_roles)
           .joins(:roles)
-          .where(roles: { name: ['Supervisor'] })
-          .where.not(users: { id: current_user.id, disabled: true })
-          .map { |user| [user.id, user.full_name] }
+    end
+
+    def admin_supervisor_users
+      user_roles.where(roles: { name: ['Supervisor'] })
+                .map { |user| [user.id, user.full_name] }
     end
 
     def supervisors_and_reviewers
-      User.joins(:user_roles)
-          .joins(:roles)
-          .where(roles: {name: ['Supervisor', 'Reviewer']})
-          .where.not(users: { id: current_user.id, disabled: true })
-          .map { |user| [user.id, user.full_name] }
+      user_roles.where(roles: { name: %w[Supervisor Reviewer] })
+                .map { |user| [user.id, user.full_name] }
     end
 
     def stock_users
-      User.joins(:user_roles)
-          .joins(:roles)
-          .where(roles: { name: ['Order fulfilment', 'Order administrator'] })
-          .where.not(users: { id: current_user.id, disabled: true })
-          .map { |user| [user.id, user.full_name] }
+      user_roles
+        .where(roles: { name: ['Order fulfilment', 'Order administrator'] })
+        .map { |user| [user.id, user.full_name] }
     end
   end
 end
