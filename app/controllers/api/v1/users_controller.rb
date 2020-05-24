@@ -61,10 +61,12 @@ module Api
       end
 
       def mentionable_users
-        @users = Messages::Channel.new(app_name: app_name,
-                                       messageable: Offer.find(params[:offer],
-                                       is_private: params[:is_private]))
-                                  .related_users
+        @users = Messages::Channels
+                 .new(app_name: app_name,
+                      messageable: Offer.find(params[:offer],
+                                              is_private: params[:is_private]),
+                      current_user: current_user)
+                 .related_users
         render json: @users
       end
 

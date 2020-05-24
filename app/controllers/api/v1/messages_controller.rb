@@ -138,7 +138,7 @@ module Api
           :body, :is_private,
           :messageable_type,
           :messageable_id,
-          :offer_id, :item_id, :order_id,
+          :offer_id, :item_id, :order_id
         )
       end
     end

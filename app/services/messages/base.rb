@@ -10,5 +10,9 @@ module Messages
       @messageable = params[:messageable]
       @current_user = params[:current_user]
     end
+
+    def owner?
+      messageable.created_by_id == current_user.id
+    end
   end
 end
