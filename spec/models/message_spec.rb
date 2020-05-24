@@ -8,6 +8,7 @@ describe Message, type: :model do
   let!(:reviewer) { create :user, :reviewer }
   let(:offer) { create :offer, created_by_id: donor.id }
   let(:item)  { create :item, offer_id: offer.id }
+  let(:order) { create :order }
 
   def create_message(options = {})
     options = { sender_id: donor.id, messageable: offer }.merge(options)
@@ -88,5 +89,58 @@ describe Message, type: :model do
 
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
+  end
+
+  describe '.filter_by_ids' do
+    before do
+      create_list(:message, 5, messageable: create(:offer))
+    end
+    it 'filters messages by id' do
+      messages = Message.all.sample(3)
+      ids = messages.map(&:id)
+      expect(Message.filter_by_ids(ids).map(&:id)).to match_array(ids)
+    end
+  end
+
+  describe '.filter_by_offer' do
+    before do
+      create_list(:message, 5, messageable: offer)
+      create_list(:message, 3, messageable: order)
+    end
+
+    it 'filters messages by offer' do
+      messages = Message.where(messageable_type: 'Offer').sample(6)
+      ids = messages.map(&:id)
+      offer_ids = messages.map(&:messageable_id)
+      expect(Message.filter_by_offer(offer_ids).map(&:id)).to match_array(ids)
+    end
+  end
+
+  describe '.filter_by_order' do
+    before do
+      create_list(:message, 5, messageable: offer)
+      create_list(:message, 3, messageable: order)
+    end
+
+    it 'filters messages by offer' do
+      messages = Message.where(messageable_type: 'Order').sample(6)
+      ids = messages.map(&:id)
+      order_ids = messages.map(&:messageable_id)
+      expect(Message.filter_by_order(order_ids).map(&:id)).to match_array(ids)
+    end
+  end
+
+  describe '.filter_by_item' do
+    before do
+      create_list(:message, 5, messageable: item)
+      create_list(:message, 3, messageable: order)
+    end
+
+    it 'filters messages by offer' do
+      messages = Message.where(messageable_type: 'Item').sample(6)
+      ids = messages.map(&:id)
+      item_ids = messages.map(&:messageable_id)
+      expect(Message.filter_by_item(item_ids).map(&:id)).to match_array(ids)
+    end
   end
 end

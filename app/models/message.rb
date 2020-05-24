@@ -24,8 +24,12 @@ class Message < ActiveRecord::Base
   scope :with_eager_load, -> { includes([:sender]) }
   scope :non_private, -> { where(is_private: false) }
   scope :offer, -> { joins("INNER JOIN offers ON messages.messageable_id = offers.id and messages.messageable_type = 'Offer'") }
-  scope :donor_messages, -> (donor_id) { offer.where(offers: {created_by_id: donor_id}, is_private: false) }
-  scope :with_state_for_user, ->(user, state) { joins(:subscriptions).where("subscriptions.user_id = ? and subscriptions.state = ?", user.id, state) }
+  scope :donor_messages, ->(donor_id) { offer.where(offers: {created_by_id: donor_id}, is_private: false) }
+  scope :with_state_for_user, ->(user, state) { joins(:subscriptions).where('subscriptions.user_id = ? and subscriptions.state = ?', user.id, state) }
+  scope :filter_by_ids, ->(ids) { where(id: ids) }
+  scope :filter_by_offer, ->(offer_id) { where(messageable_id: offer_id, messageable_type: 'Offer') }
+  scope :filter_by_order, ->(order_id) { where(messageable_id: order_id, messageable_type: 'Order') }
+  scope :filter_by_item, ->(item_id) { where(messageable_id: item_id, messageable_type: 'Item') }
 
   # used to override the state value during serialization
   attr_accessor :state_value, :is_call_log
