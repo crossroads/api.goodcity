@@ -45,14 +45,14 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       before { 2.times { create :message } }
 
       it "for one item" do
-        3.times { create :message, item: item }
+        3.times { create :message, messageable: item }
         get :index, item_id: item.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple items" do
-        3.times { create :message, item: item }
-        3.times { create :message, item: item2 }
+        3.times { create :message, messageable: item }
+        3.times { create :message, messageable: item2 }
         get :index, item_id: "#{item.id},#{item2.id}"
         expect(subject['messages'].length).to eq(6)
       end

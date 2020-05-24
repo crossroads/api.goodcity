@@ -35,12 +35,7 @@ module Api
       param :scope, String, desc: "The type of record associated to the messages (order/offer/item)"
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
-        @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
-        @messages = @messages.where(messageable_id: params[:offer_id].split(","), messageable_type: 'Offer') if params[:offer_id].present?
-        @messages = @messages.where(messageable_id: params[:order_id].split(","), messageable_type: 'Order') if params[:order_id].present?
-        @messages = @messages.where(messageable_id: params[:item_id].split(","), messageable_type: 'Item') if params[:item_id].present?
-        @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
-        @messages = @messages.with_state_for_user(User.current_user, params[:state]) if params[:state].present?
+        apply_filters
         paginate_and_render(@messages)
       end
 
@@ -75,19 +70,25 @@ module Api
 
       private
 
+      def apply_filters
+        @messages = @messages.filter_by_ids(params[:ids].split(',')) if params[:ids].present?
+        @messages = @messages.filter_by_offer(params[:offer_id].split(',')) if params[:offer_id].present?
+        @messages = @messages.filter_by_order(params[:order_id].split(',')) if params[:order_id].present?
+        @messages = @messages.filter_by_item(params[:item_id].split(',')) if params[:item_id].present?
+        @messages = @messages.with_state_for_user(current_user, params[:state].split(',')) if params[:state].present?
+      end
+
       def apply_scope(records, scope)
         return records unless ALLOWED_SCOPES.include? scope
 
-        filter = ''
-        if scope == 'item'
-          filter = 'messages.item_id IS NOT NULL'
-        elsif scope == 'offer'
-          filter = "messages.messageable_type = 'Offer'"
-        elsif scope == 'order'
-          filter = "messages.messageable_type = 'Order'"
+        case scope
+        when 'item'
+          records.where('messages.item_id IS NOT NULL')
+        when 'offer'
+          records.where("messages.messageable_type = 'Offer'")
+        when 'order'
+          records.where("messages.messageable_type = 'Order'")
         end
-
-        records.where(filter)
       end
 
       def messageable
