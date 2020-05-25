@@ -24,7 +24,7 @@ class SubscriptionsReminder
   def user_candidates_for_reminder
     offer_states = Offer::SUBSCRIPTIONS_REMINDER_STATES # NOT Draft offers
     User.joins(subscriptions: [:message])
-        .joins( "INNER JOIN offers on offers.id = messages.messageable_id and messages.messageable_type = 'Offer'")
+        .joins("INNER JOIN offers on offers.id = messages.messageable_id and messages.messageable_type = 'Offer'")
         .where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601)
         .where('subscriptions.state': 'unread')
         .where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)")
