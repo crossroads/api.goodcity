@@ -14,5 +14,12 @@ module Messages
     def owner?
       messageable.created_by_id == current_user.id
     end
+
+    def add_subscriber(user_id, state)
+      message.subscriptions.create(state: state,
+                                   message_id: message.id,
+                                   subscribable: messageable,
+                                   user_id: user_id)
+    end
   end
 end
