@@ -25,15 +25,11 @@ module OfferSearch
         .joins('LEFT OUTER JOIN companies ON offers.company_id = companies.id')
         .joins('LEFT OUTER JOIN users ON offers.created_by_id = users.id')
         .joins('LEFT OUTER JOIN items ON offers.id = items.offer_id')
-        .joins("LEFT OUTER JOIN messages ON offers.id = messages.messageable_id
-                and messages.messageable_type = 'Offer'")
+        .joins("LEFT OUTER JOIN messages ON offers.id = messages.messageable_id and messages.messageable_type = 'Offer'")
         .joins('LEFT OUTER JOIN packages ON packages.item_id = items.id')
-        .joins('LEFT OUTER JOIN package_types ON
-                package_types.id = packages.package_type_id')
-        .joins('LEFT OUTER JOIN deliveries ON
-                offers.id = deliveries.offer_id')
-        .joins('LEFT OUTER JOIN gogovan_orders ON
-                gogovan_orders.id = deliveries.gogovan_order_id')
+        .joins('LEFT OUTER JOIN package_types ON package_types.id = packages.package_type_id')
+        .joins('LEFT OUTER JOIN deliveries ON offers.id = deliveries.offer_id')
+        .joins('LEFT OUTER JOIN gogovan_orders ON gogovan_orders.id = deliveries.gogovan_order_id')
         .distinct
     }
   end
