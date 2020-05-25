@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Messages
+  # Message operations
   class Operations < Base
     attr_accessor :message, :ids
 
@@ -50,7 +51,7 @@ module Messages
     end
 
     def first_message?
-      Message.where(is_private: message.is_private, messageable: message.messageable).count.eql? 1
+      Message.where(is_private: message.is_private, messageable: messageable).count.eql? 1
     end
 
     def remove_unwanted_users(obj)
@@ -107,13 +108,6 @@ module Messages
 
       sanitize(user_ids)
       add_lookup
-    end
-
-    def add_subscriber(user_id, state)
-      message.subscriptions.create(state: state,
-                                   message_id: message.id,
-                                   subscribable: messageable,
-                                   user_id: user_id)
     end
 
     def admin_user_fields
