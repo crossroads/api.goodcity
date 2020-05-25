@@ -97,12 +97,12 @@ describe Message, type: :model do
     end
     it 'filters messages by id' do
       messages = Message.all.sample(3)
-      ids = messages.map(&:id)
+      ids = messages.map(&:id).join(',')
       expect(Message.filter_by_ids(ids).map(&:id)).to match_array(ids)
     end
   end
 
-  describe '.filter_by_offer' do
+  describe '.filter_by_offer_id' do
     before do
       create_list(:message, 5, messageable: offer)
       create_list(:message, 3, messageable: order)
@@ -111,26 +111,26 @@ describe Message, type: :model do
     it 'filters messages by offer' do
       messages = Message.where(messageable_type: 'Offer').sample(6)
       ids = messages.map(&:id)
-      offer_ids = messages.map(&:messageable_id)
-      expect(Message.filter_by_offer(offer_ids).map(&:id)).to match_array(ids)
+      offer_ids = messages.map(&:messageable_id).join(',')
+      expect(Message.filter_by_offer_id(offer_ids).map(&:id)).to match_array(ids)
     end
   end
 
-  describe '.filter_by_order' do
+  describe '.filter_by_order_id' do
     before do
       create_list(:message, 5, messageable: offer)
       create_list(:message, 3, messageable: order)
     end
 
-    it 'filters messages by offer' do
+    it 'filters messages by order' do
       messages = Message.where(messageable_type: 'Order').sample(6)
       ids = messages.map(&:id)
-      order_ids = messages.map(&:messageable_id)
-      expect(Message.filter_by_order(order_ids).map(&:id)).to match_array(ids)
+      order_ids = messages.map(&:messageable_id).join(',')
+      expect(Message.filter_by_order_id(order_ids).map(&:id)).to match_array(ids)
     end
   end
 
-  describe '.filter_by_item' do
+  describe '.filter_by_item_id' do
     before do
       create_list(:message, 5, messageable: item)
       create_list(:message, 3, messageable: order)
@@ -139,8 +139,8 @@ describe Message, type: :model do
     it 'filters messages by offer' do
       messages = Message.where(messageable_type: 'Item').sample(6)
       ids = messages.map(&:id)
-      item_ids = messages.map(&:messageable_id)
-      expect(Message.filter_by_item(item_ids).map(&:id)).to match_array(ids)
+      item_ids = messages.map(&:messageable_id).join(',')
+      expect(Message.filter_by_item_id(item_ids).map(&:id)).to match_array(ids)
     end
   end
 end

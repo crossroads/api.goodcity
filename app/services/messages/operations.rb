@@ -7,7 +7,7 @@ module Messages
     def initialize(params)
       @message = params[:message]
       @ids = []
-      super(params)
+      super(params.merge(messageable: @message.messageable))
     end
 
     def handle_mentioned_users
@@ -16,7 +16,7 @@ module Messages
     end
 
     def subscribe_users_to_message
-      obj = message.messageable
+      obj = message.related_object
       # Add the following users
       #   - Donor / Charity user
       #   - Message sender
@@ -42,11 +42,6 @@ module Messages
     #  - For private messages, subscribe all supervisors ONLY for the first message
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
     def subscribe_all_staff_for?(obj)
-      obj = message.messageable
-      if obj.instance_of?(Item)
-        obj = obj.offer
-      end
-
       if message.is_private
         first_message_to?(obj)
       else
@@ -55,7 +50,7 @@ module Messages
     end
 
     def first_message_to?(obj)
-      Message.where(is_private: message.is_private, messageable: obj).count.eql? 1
+      Message.where(is_private: message.is_private, messageable: message.messageable).count.eql? 1
     end
 
     def remove_unwanted_users(obj)
@@ -74,9 +69,6 @@ module Messages
     end
 
     def add_sender_creator(obj)
-      if obj.instance_of?(Item)
-        obj = obj.offer
-      end
       ids << obj&.created_by_id
       ids << message.sender_id
     end
@@ -95,7 +87,7 @@ module Messages
     def public_subscribers_to(obj)
       Subscription
         .joins(:message)
-        .where(subscribable: obj, messages: { is_private: false} )
+        .where(subscribable: obj, messages: { is_private: false })
         .pluck(:user_id)
     end
 
@@ -118,13 +110,9 @@ module Messages
     end
 
     def add_subscriber(user_id, state)
-      obj = message.messageable
-      if obj.instance_of?(Item)
-        obj = obj.offer
-      end
       message.subscriptions.create(state: state,
                                    message_id: message.id,
-                                   subscribable: obj,
+                                   subscribable: messageable,
                                    user_id: user_id)
     end
 

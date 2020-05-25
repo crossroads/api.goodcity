@@ -71,10 +71,9 @@ module Api
       private
 
       def apply_filters
-        @messages = @messages.filter_by_ids(params[:ids].split(',')) if params[:ids].present?
-        @messages = @messages.filter_by_offer(params[:offer_id].split(',')) if params[:offer_id].present?
-        @messages = @messages.filter_by_order(params[:order_id].split(',')) if params[:order_id].present?
-        @messages = @messages.filter_by_item(params[:item_id].split(',')) if params[:item_id].present?
+        %i[ids offer_id order_id item_id].map do |f|
+          @messages = @messages.send("filter_by_#{f}", params[f]) if params[f]
+        end
         @messages = @messages.with_state_for_user(current_user, params[:state].split(',')) if params[:state].present?
       end
 
