@@ -191,5 +191,48 @@ module Messages
         end
       end
     end
+
+    describe '#handle_mentioned_users' do
+      let!(:user1) { create(:user) }
+      let!(:user2) { create(:user) }
+      let(:message) { build(:message, body: "Hello [:#{user1.id}]. I need help from you and [:#{user2.id}]") }
+      let(:operation) { Messages::Operations.new(message: message) }
+
+      before(:each) do
+        allow(operation).to receive(:add_subscriber)
+      end
+
+      it 'creates a message lookup if any user is mentioned' do
+        operation.handle_mentioned_users
+        expect(message.reload.lookup).to include({ 'type' => 'User', 'id' => user1.id.to_s, 'display_name' => user1.full_name }, {'type' => "User", 'id' => user2.id.to_s, 'display_name' => user2.full_name })
+      end
+
+      it 'adds message subscription to mentioned users' do
+        expect(operation).to receive(:add_subscriber).with(user1.id.to_s, 'unread')
+        expect(operation).to receive(:add_subscriber).with(user2.id.to_s, 'unread')
+
+        operation.handle_mentioned_users
+      end
+
+      context 'when no user is mentioned' do
+        let!(:message) { create(:message, body: 'Hi. I need to place an order') }
+        let(:operation) { Messages::Operations.new(message: message) }
+
+        before(:each) do
+          allow(operation).to receive(:add_subscriber)
+        end
+
+        it 'does not create a message lookup' do
+          operation.handle_mentioned_users
+          expect(message.reload.lookup).to be_nil
+        end
+
+        it 'does not add any subscribers' do
+          expect(operation).not_to receive(:add_subscriber).with(anything, anything)
+
+          operation.handle_mentioned_users
+        end
+      end
+    end
   end
 end
