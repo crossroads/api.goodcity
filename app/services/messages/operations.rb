@@ -43,13 +43,13 @@ module Messages
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
     def subscribe_all_staff_for?(obj)
       if message.is_private
-        first_message_to?(obj)
+        first_message?
       else
         obj&.created_by_id.present? && (ids.compact.uniq == [message.sender_id])
       end
     end
 
-    def first_message_to?(obj)
+    def first_message?
       Message.where(is_private: message.is_private, messageable: message.messageable).count.eql? 1
     end
 

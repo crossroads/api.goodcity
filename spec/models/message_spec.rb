@@ -97,7 +97,7 @@ describe Message, type: :model do
     end
     it 'filters messages by id' do
       messages = Message.all.sample(3)
-      ids = messages.map(&:id).join(',')
+      ids = messages.map(&:id)
       expect(Message.filter_by_ids(ids).map(&:id)).to match_array(ids)
     end
   end
