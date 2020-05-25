@@ -117,7 +117,7 @@ module Messages
       add_lookup
     end
 
-    def add_subscriber(user_id, state = 'unread')
+    def add_subscriber(user_id, state)
       obj = message.messageable
       if obj.instance_of?(Item)
         obj = obj.offer
@@ -135,7 +135,7 @@ module Messages
 
     def notify_users
       ids.map do |id|
-        add_subscriber(id)
+        add_subscriber(id, 'unread')
       end
     end
 
