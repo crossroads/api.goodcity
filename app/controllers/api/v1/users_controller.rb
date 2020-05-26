@@ -29,13 +29,22 @@ module Api
 
       api :POST, '/v1/users', "Create user"
       def create
-        save_and_render_object_with_errors(@user)
+        @user.assign_attributes(user_params)
+
+        if @user.save
+          if params["user"]["user_role_ids"] && User.current_user.can_manage_users?
+            @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
+          end
+          render json: @user, serializer: serializer, include_user_roles: true, status: 201
+        else
+          render_error(@user.errors.full_messages.join(". "))
+        end
       end
 
       api :GET, '/v1/users/1', "List a user"
       description "Returns information about a user. Note image may be empty if user is not a reviewer."
       def show
-        render json: @user, serializer: Api::V1::UserProfileSerializer
+        render json: @user, serializer: serializer
       end
 
       api :PUT, '/v1/users/1', "Update user"
@@ -46,7 +55,7 @@ module Api
 
       def update
         @user.update_attributes(user_params)
-        if params["user"]["user_role_ids"]
+        if params["user"]["user_role_ids"] && User.current_user.can_manage_users?
           @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
         end
         render json: @user, serializer: serializer
@@ -71,14 +80,16 @@ module Api
         records = @users.search({
                     search_text: params['searchText'],
                     role_name: params['role_name']}).limit(25)
-        data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "users").as_json
+        data = ActiveModel::ArraySerializer.new(records,
+          each_serializer: serializer,
+          include_user_roles: true,
+          root: "users").as_json
         render json: { "meta": {"search": params["searchText"] } }.merge(data)
       end
 
       def user_params
-        attributes = %i[last_connected last_disconnected
+        attributes = %i[last_connected last_disconnected disabled image_id
         first_name last_name email receive_email other_phone title mobile printer_id]
-        attributes.concat([:user_role_ids]) if User.current_user.supervisor?
         params.require(:user).permit(attributes)
       end
 
