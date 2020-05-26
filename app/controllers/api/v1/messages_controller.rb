@@ -82,11 +82,6 @@ module Api
         records.where("messages.messageable_type = '#{scope.camelize}'")
       end
 
-      def order
-        id = params[:message][:designation_id] || params[:message][:order_id]
-        Order.find(id)
-      end
-
       def paginate_and_render(records)
         meta = {}
         if params[:page].present?
@@ -116,7 +111,6 @@ module Api
           :body, :is_private,
           :messageable_type,
           :messageable_id,
-          :offer_id, :item_id, :order_id
         )
       end
     end

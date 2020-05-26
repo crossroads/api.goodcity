@@ -78,7 +78,7 @@ class Item < ActiveRecord::Base
       messages.create(
         is_private: false,
         body: rejection_comments,
-        offer: offer,
+        messageable: offer,
         sender: User.current_user
       )
     end
