@@ -20,7 +20,7 @@ class Offer < ActiveRecord::Base
   belongs_to :crossroads_transport
   belongs_to :cancellation_reason
   belongs_to :company
-  has_many :messages, as: :messageable
+  has_many :messages, as: :messageable, primary_key: :id
   has_many :subscriptions, as: :subscribable
 
   has_many :items, inverse_of: :offer, dependent: :destroy
@@ -32,7 +32,7 @@ class Offer < ActiveRecord::Base
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
   has_many :images, through: :items
   has_one  :delivery, dependent: :destroy
-  has_many :users, through: :subscriptions
+  has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offers_packages
   has_many :packages, through: :offers_packages
 

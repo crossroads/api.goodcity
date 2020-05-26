@@ -4,7 +4,8 @@ require 'rails_helper'
 
 module Messages
   describe Operations do
-    let(:message) { create :message, messageable: create(:offer) }
+    let(:offer) { create :offer }
+    let(:message) { create :message, messageable: offer }
     let(:operation) { Messages::Operations.new(message: message) }
     let!(:supervisor) { create :user, :supervisor }
     let(:reviewer) { create(:user, :reviewer) }
@@ -145,7 +146,7 @@ module Messages
             op1.subscribe_users_to_message
 
             # The supervisor answers on the the private thread
-            create :message, sender: supervisor, offer: message.offer, is_private: true
+            create :message, sender: supervisor, messageable: offer, is_private: true
 
             # The supervisor receives subsequent message of the thread
             expect(op2).to receive(:add_subscriber).with(reviewer.id, 'read')
@@ -162,7 +163,7 @@ module Messages
             op1.subscribe_users_to_message
 
             # The supervisor answers on the the private thread
-            create :message, sender: other_reviewer, offer: message.offer, is_private: true
+            create :message, sender: other_reviewer, messageable: offer, is_private: true
 
             # The supervisor receives subsequent message of the thread
             expect(op2).to receive(:add_subscriber).with(reviewer.id, 'read') # sender
@@ -182,7 +183,7 @@ module Messages
           op1.subscribe_users_to_message
 
           # The supervisor answers on the the private thread
-          create :message, sender: supervisor, offer: message.offer, is_private: false
+          create :message, sender: supervisor, messageable: message.offer, is_private: false
 
           # The supervisor receives subsequent message of the thread
           expect(op2).to receive(:add_subscriber).with(reviewer.id, 'read')

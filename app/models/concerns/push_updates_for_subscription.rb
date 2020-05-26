@@ -33,7 +33,7 @@ module PushUpdatesForSubscription
     data = { category: 'message',
              message: message_body,
              is_private: message.is_private,
-             item_id: message.item_id,
+             item_id: item_id,
              author_id: message.sender_id,
              message_id: message.id }
     data[identity] = message.related_object.id
@@ -42,6 +42,10 @@ module PushUpdatesForSubscription
 
   def message_body
     message.body.truncate(150, separator: ' ')
+  end
+
+  def item_id
+    message.messageable.instance_of?(Item) && message.messageable_id
   end
 
   def identity

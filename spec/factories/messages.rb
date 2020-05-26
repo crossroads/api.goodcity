@@ -1,7 +1,6 @@
 # Read about factories at https://github.com/thoughtbot/factory_bot
 
 FactoryBot.define do
-
   factory :message do
     body        { generate(:message_body) }
     sender      { |m| m.association(:user) }
@@ -26,7 +25,7 @@ FactoryBot.define do
     end
 
     trait :with_item do
-      association :item
+      association :messageable, factory: :item
     end
 
     trait :private do
@@ -34,7 +33,6 @@ FactoryBot.define do
     end
 
     trait :with_order do
-      offer nil
       association :messageable, factory: :order
     end
   end

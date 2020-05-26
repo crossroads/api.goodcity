@@ -3,7 +3,7 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :offer_id, :order_id, :item_id, :designation_id
+      :updated_at, :messageable_type, :messageable_id
 
     has_one :sender, serializer: UserSerializer, root: :user
 
@@ -13,6 +13,10 @@ module Api::V1
 
     def offer_id
       object.messageable_type == 'Offer' ? object.messageable_id : nil
+    end
+
+    def item_id
+      object.messageable_type == 'Item' ? object.messageable_id : nil
     end
 
     def designation_id__sql
