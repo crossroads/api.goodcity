@@ -172,7 +172,7 @@ class TwilioInboundCallManager
     reviewer_channel = Channel.private_channels_for(offer.reviewed_by_id, ADMIN_APP)
     subscribed_staff = Message.unscoped.joins(:subscriptions)
       .select("distinct subscriptions.user_id as user_id")
-      .where(is_private: true, offer_id: offer.id)
+      .where(is_private: true, messageable: offer)
       .map(&:user_id)
     channel_names = Channel.private_channels_for(subscribed_staff, ADMIN_APP)
     if (channel_names - reviewer_channel).blank?
