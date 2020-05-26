@@ -153,6 +153,10 @@ class User < ActiveRecord::Base
     user_role_names.include?("Order fulfilment")
   end
 
+  def can_manage_users?
+    user_permissions_names.include?("can_read_or_modify_user")
+  end
+
   def admin?
     administrator?
   end
