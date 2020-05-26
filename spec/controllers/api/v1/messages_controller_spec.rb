@@ -11,7 +11,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:item2) { create(:item, offer: offer) }
   let(:order) { create(:order) }
   let(:order2) { create(:order) }
-  let(:message) { create :message, sender: user, messageable: offer, item: item }
+  let(:message) { create :message, sender: user, messageable: item }
   let(:subscription) { message.subscriptions.where(user_id: user.id).first }
   let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
   let(:serialized_message_json) { JSON.parse(serialized_message.to_json) }
@@ -26,14 +26,14 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     before { generate_and_set_token(user) }
 
     it "return serialized messages", :show_in_doc do
-      2.times { create :message, item: item }
+      2.times { create :message, messageable: item }
       get :index
       expect(response.status).to eq(200)
       expect(subject['messages'].length).to eq(2)
     end
 
     it "supports pagination", :show_in_doc do
-      8.times { create :message, item: item }
+      8.times { create :message, messageable: item }
       get :index, page: 1, per_page: 6
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eq(2)
@@ -94,12 +94,13 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       it "for a certain type of associated record" do
         1.times { create :message, messageable: offer }
         1.times { create :message, messageable: order }
-        4.times { create :message, item: item }
+        4.times { create :message, messageable: item }
 
         get :index, scope: 'item'
         expect(subject['messages'].length).to eq(4)
         subject['messages'].each do |m|
-          expect(m['item_id']).not_to be_nil
+          expect(m['messageable_type']).to eq('Item')
+          expect(m['messageable_id']).not_to be_nil
         end
       end
     end

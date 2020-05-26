@@ -6,10 +6,10 @@ class Message < ActiveRecord::Base
   include PushUpdatesForMessage
 
   belongs_to :sender, class_name: 'User', inverse_of: :messages
-  belongs_to :messageable, polymorphic: true
   belongs_to :offer
-  belongs_to :item
   belongs_to :order
+  belongs_to :item
+  belongs_to :messageable, polymorphic: true
   has_many :subscriptions, dependent: :destroy
   has_many :offers_subscription, class_name: 'Offer', through: :subscriptions
 

@@ -375,18 +375,12 @@ ActiveRecord::Schema.define(version: 20200520092221) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.integer  "offer_id"
-    t.integer  "item_id"
-    t.integer  "order_id"
     t.string   "messageable_type"
     t.integer  "messageable_id"
     t.jsonb    "lookup"
   end
 
-  add_index "messages", ["item_id"], name: "index_messages_on_item_id", using: :btree
   add_index "messages", ["lookup"], name: "index_messages_on_lookup", using: :gin
-  add_index "messages", ["offer_id"], name: "index_messages_on_offer_id", using: :btree
-  add_index "messages", ["order_id"], name: "index_messages_on_order_id", using: :btree
   add_index "messages", ["sender_id"], name: "index_messages_on_sender_id", using: :btree
 
   create_table "offers", force: :cascade do |t|
@@ -990,7 +984,6 @@ ActiveRecord::Schema.define(version: 20200520092221) do
   add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
-  add_foreign_key "messages", "orders"
   add_foreign_key "offers_packages", "offers"
   add_foreign_key "offers_packages", "packages"
   add_foreign_key "orders_process_checklists", "orders"

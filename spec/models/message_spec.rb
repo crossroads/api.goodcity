@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe Message, type: :model do
-
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
   let!(:donor) { create :user }
@@ -24,11 +23,17 @@ describe Message, type: :model do
     it { is_expected.to validate_presence_of(:body) }
   end
 
-  describe "Associations" do
+  describe 'Database columns' do
+    it { is_expected.to have_db_column(:body).of_type(:text) }
+    it { is_expected.to have_db_column(:messageable_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:messageable_type).of_type(:string) }
+    it { is_expected.to have_db_column(:sender_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:lookup).of_type(:jsonb) }
+  end
+
+  describe 'Associations' do
     it { is_expected.to belong_to :sender }
-    it { is_expected.to belong_to :offer }
-    it { is_expected.to belong_to :item }
-    it { is_expected.to belong_to :order }
+    it { is_expected.to belong_to :messageable }
     it { is_expected.to have_many :subscriptions }
     it { is_expected.to have_many :offers_subscription }
   end
@@ -98,7 +103,7 @@ describe Message, type: :model do
     it 'filters messages by id' do
       messages = Message.all.sample(3)
       ids = messages.map(&:id)
-      expect(Message.filter_by_ids(ids).map(&:id)).to match_array(ids)
+      expect(Message.filter_by_ids(ids.join(',')).map(&:id)).to match_array(ids)
     end
   end
 

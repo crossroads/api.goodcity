@@ -47,7 +47,6 @@ module Api
       api :POST, "/v1/messages", "Create an message"
       param_group :message
       def create
-        @message.order_id = order_id
         @message.sender_id = current_user.id
         save_and_render_object(@message)
       end
@@ -80,20 +79,12 @@ module Api
       def apply_scope(records, scope)
         return records unless ALLOWED_SCOPES.include? scope
 
-        case scope
-        when 'item'
-          records.where('messages.item_id IS NOT NULL')
-        when 'offer'
-          records.where("messages.messageable_type = 'Offer'")
-        when 'order'
-          records.where("messages.messageable_type = 'Order'")
-        end
+        records.where("messages.messageable_type = '#{scope.camelize}'")
       end
 
-      def messageable
-        return Order.find(order_id) if order_id.present?
-        return Offer.find(offer_id) if offer_id.present?
-        return Item.find(item_id) if item_id.present?
+      def order
+        id = params[:message][:designation_id] || params[:message][:order_id]
+        Order.find(id)
       end
 
       def paginate_and_render(records)
@@ -107,18 +98,6 @@ module Api
         end
         output = message_response(records)
         render json: { meta: meta }.merge(output)
-      end
-
-      def item_id
-        message_params[:item_id]
-      end
-
-      def order_id
-        params[:message][:designation_id].presence || params[:message][:order_id].presence
-      end
-
-      def offer_id
-        message_params[:offer_id]
       end
 
       def serializer
