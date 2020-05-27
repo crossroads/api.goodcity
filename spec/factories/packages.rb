@@ -7,6 +7,7 @@ FactoryBot.define do
     pieces                { rand(199) + 1 }
     notes                 { FFaker::Lorem.paragraph }
     state                 'expecting'
+    value_hk_dollar       { [10, 20, 30].sample }
 
     received_quantity     { storage_type&.singleton? ? 1 : 5 }
     on_hand_quantity      { received_quantity }
@@ -64,12 +65,6 @@ FactoryBot.define do
       with_inventory_number
       stockit_id { rand(1000) + 1 }
       # sequence(:stockit_id) { |n| n }
-    end
-
-    trait :with_set_item do
-      stockit_package
-      item
-      set_item_id { item.id }
     end
 
     trait :received do

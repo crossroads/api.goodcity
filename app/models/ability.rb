@@ -106,9 +106,9 @@ class Ability
 
   def beneficiary_abilities
     can :create, Beneficiary
-    can [:index, :show, :update], Beneficiary, created_by_id: @user_id
-    can [:show, :update], Beneficiary, order: { submitted_by_id: @user_id }
-    can [:show, :update], Beneficiary, order: { created_by_id: @user_id }
+    can %i[index show update destroy], Beneficiary, created_by_id: @user_id
+    can %i[show update destroy], Beneficiary, order: { submitted_by_id: @user_id }
+    can %i[show update destroy], Beneficiary, order: { created_by_id: @user_id }
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :destroy], Beneficiary
     end
@@ -240,9 +240,11 @@ class Ability
 
   def order_abilities
     can :create, Order
-    can %i[index show update destroy transition], Order, created_by_id: @user_id
+    can %i[index show transition], Order, created_by_id: @user_id
+    can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
     if can_manage_orders? || @api_user
-      can [:create, :index, :show, :update, :transition, :destroy, :summary], Order
+      can %i[create index show transition summary], Order
+      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch]
       can :index, ProcessChecklist
     end
   end
@@ -259,10 +261,15 @@ class Ability
   def order_transport_abilities
     can :create, OrderTransport
     if can_manage_order_transport?
-      can [:create, :index, :show, :update], OrderTransport
+      can %i[create index show], OrderTransport
+      can [:update], OrderTransport, order: { state: %w[draft submitted processing awaiting_dispatch] }
     else
-      can [:index, :show, :update], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
+      can [:index, :show], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
         transport.order.created_by_id == @user_id
+      end
+
+      can :update, OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
+        (%w[draft submitted processing awaiting_dispatch].include? transport.order.state) && (transport.order.created_by_id == @user_id)
       end
     end
   end
@@ -302,6 +309,7 @@ class Ability
         :search_stockit_items, :remove_from_set, :designate, :register_quantity_change, :mark_missing,
         :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item,
         :contained_packages, :parent_containers, :fetch_added_quantity], Package
+      can [:show, :create, :update, :destroy], PackageSet
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }

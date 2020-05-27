@@ -26,5 +26,21 @@ RSpec.describe Printer, type: :model do
       expect(active_printers).to_not include(inactive_printer)
     end
   end
+
+  describe "Lifecycle" do
+    describe "on destroy" do
+      let!(:printer) { create(:printer) }
+      let!(:other_printer) { create(:printer) }
+      let!(:user) { create(:user, printer: printer) }
+
+      it "updates user's printers to another valid printer" do
+        expect {
+          printer.destroy
+        }.to change { user.reload.printer_id }
+          .from(printer.id)
+          .to(other_printer.id)
+      end
+    end
+  end
 end
 
