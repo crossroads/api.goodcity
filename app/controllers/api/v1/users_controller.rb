@@ -20,7 +20,7 @@ module Api
         For a donor, this will be just themselves. For administrators, this will be all users.
       EOS
       def index
-        @users = @users.stock_users if bool_param(:stockUsers, false)
+        @users = @users.by_roles(params[:roles]) if params[:roles].present?
         return search_user_and_render_json if params[:searchText].present?
         @users = @users.except_stockit_user
         @users = @users.where(id: ids_param) if ids_param.present?
