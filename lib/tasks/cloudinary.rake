@@ -45,7 +45,7 @@ namespace :cloudinary do
   MAX_SIZE_MB = 1
   MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
   MAX_SIZE = 1920
-  OPTIMIZE_PAGE_SIZE = 500
+  OPTIMIZE_PAGE_SIZE = 1000
 
   desc "Optimize image sizes"
   task optimize: :environment do

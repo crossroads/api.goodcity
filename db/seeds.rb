@@ -160,6 +160,14 @@ permissions_roles.each_pair do |role_name, permission_names|
   end
 end
 
+# Valuation matrix
+valuation_matrix = YAML.load_file("#{Rails.root}/db/valuation_matrix.yml")
+valuation_matrix.each do |valuation|
+  donor_condition_id = DonorCondition.where(name_en: valuation['donor_condition_name_en']).first.id
+  ValuationMatrix.find_or_create_by(donor_condition_id: donor_condition_id,
+    grade: valuation['grade'], multiplier: valuation['multiplier'])
+end
+
 # Identity types
 id_types = YAML.load_file("#{Rails.root}/db/identity_types.yml")
 id_types.each_value do |record|

@@ -141,6 +141,9 @@ en:
       insufficient_quantity: The selected quantity (%{quantity}) is unavailable
       bad_quantity_param: Invalid quantity (%{quantity})
       action_not_allowed: Action you are trying to perform is not allowed
+  package_sets:
+    cannot_change_type: Changing the set's type is not allowed
+    no_box_in_set: Boxes and pallets are not allowed in sets
   package_inventory:
     storage_type_max: "A %{type} is limited to a quantity of %{quantity}"
     bad_action: "Inventory action %{action} is not permitted"
@@ -151,5 +154,3 @@ en:
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
-
-

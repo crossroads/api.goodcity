@@ -57,7 +57,7 @@ module Api
 
       def search
         @orders_packages = @orders_packages.get_records_associated_with_order_id(params["search_by_order_id"])
-        render json: @orders_packages, each_serializer: serializer
+        render json: ActiveModel::ArraySerializer.new(@orders_packages, each_serializer: serializer).as_json
       end
 
       def show

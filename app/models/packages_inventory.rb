@@ -25,6 +25,7 @@ class PackagesInventory < ActiveRecord::Base
   QUANTITY_GAIN_ACTIONS = [Actions::GAIN].freeze
   UNRESTRICTED_ACTIONS = [Actions::MOVE].freeze
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
+  INVENTORY_ACTIONS = (DECREMENTAL_ACTIONS + QUANTITY_GAIN_ACTIONS).freeze
 
   include EventEmitter
   include AppendOnly

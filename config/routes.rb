@@ -63,6 +63,7 @@ Rails.application.routes.draw do
         get :messages, on: :member
       end
 
+      resources :package_sets, only: [:show, :update, :create, :destroy]
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
         get :contained_packages, on: :member
@@ -72,6 +73,9 @@ Rails.application.routes.draw do
         put :mark_missing, on: :member
         put :designate, on: :member
         put :add_remove_item, on: :member
+        collection do
+          get :package_valuation
+        end
       end
 
       resources :requested_packages, only: [:index, :create, :destroy] do
