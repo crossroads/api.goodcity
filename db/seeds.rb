@@ -16,11 +16,8 @@ rejection_reasons.each do |name_en, value|
 end
 
 cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
-cancellation_reasons.each do |name_en, value|
-  FactoryBot.create(:cancellation_reason,
-    name_en: name_en,
-    name_zh_tw: value[:name_zh_tw],
-    visible_to_admin: value[:visible_to_admin] )
+cancellation_reasons.each do |name_en, attrs|
+  CancellationReason.create!(name_en: name_en, **attrs)
 end
 
 booking_types = YAML.load_file("#{Rails.root}/db/booking_types.yml")
@@ -81,7 +78,8 @@ package_types.each do |code, value|
     name_zh_tw: value[:name_zh_tw],
     other_terms_en: value[:other_terms_en],
     other_terms_zh_tw: value[:other_terms_zh_tw],
-    allow_stock: true )
+    allow_stock: true,
+    default_value_hk_dollar: value[:default_value_hk_dollar] )
 end
 
 package_types.each do |code, value|
