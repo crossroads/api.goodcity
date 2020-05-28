@@ -110,7 +110,7 @@ module Api
         params.require(:message).permit(
           :body, :is_private,
           :messageable_type,
-          :messageable_id,
+          :messageable_id
         )
       end
     end
