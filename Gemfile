@@ -9,7 +9,7 @@ gem 'rake'
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
 gem 'postgres_ext', '~> 2.4.0.beta.1'
-gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git', ref: 'ccfc47bdeba657c079049ba5bea4304d789176cd'
+gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git', ref: '530a6f7426bff9bd69b3f2773cced146ba89e65c'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
 gem 'paranoia', '~> 2.1.0'
