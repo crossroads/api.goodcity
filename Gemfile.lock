@@ -15,21 +15,21 @@ GIT
       json
 
 GIT
-  remote: https://github.com/DockYard/postgres_ext-serializers.git
-  revision: 0c2d483806becd1ef7f8c9336286158cfdda1cc3
-  ref: 0c2d483806becd1ef7f8c9336286158cfdda1cc3
-  specs:
-    postgres_ext-serializers (0.0.3)
-      active_model_serializers (~> 0.8.0)
-      postgres_ext (>= 2.1, < 4)
-
-GIT
   remote: https://github.com/crossroads/easyzpl.git
   revision: e8a7e680950335a0818ac91342dba3d76858c512
   specs:
     easyzpl (0.5.2)
       barby (>= 0.6.1)
       prawn (>= 1.0.0)
+
+GIT
+  remote: https://github.com/crossroads/postgres_ext-serializers.git
+  revision: 530a6f7426bff9bd69b3f2773cced146ba89e65c
+  ref: 530a6f7426bff9bd69b3f2773cced146ba89e65c
+  specs:
+    postgres_ext-serializers (0.0.3)
+      active_model_serializers (~> 0.8.0)
+      postgres_ext (>= 2.1, < 4)
 
 GIT
   remote: https://github.com/maccman/nestful.git
