@@ -32,6 +32,10 @@ module Api
         @user.assign_attributes(user_params)
 
         if @user.save
+          if params["user"]["organisations_users_ids"].present?
+            @user.organisations << Organisation.find_by(id: params["user"]["organisations_users_ids"])
+          end
+
           if params["user"]["user_role_ids"] && User.current_user.can_manage_users?
             @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
           end
