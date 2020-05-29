@@ -2,6 +2,8 @@ class Subscription < ActiveRecord::Base
   include PushUpdatesForSubscription
   belongs_to :user
   belongs_to :message
+  belongs_to :offer
+  belongs_to :order
   belongs_to :subscribable, polymorphic: true
 
   after_create :send_new_message_notification # PushUpdatesForSubscription
