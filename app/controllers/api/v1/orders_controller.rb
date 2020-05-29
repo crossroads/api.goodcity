@@ -2,7 +2,7 @@ module Api
   module V1
     class OrdersController < Api::V1::ApiController
       load_and_authorize_resource :order, parent: false
-      # before_action :eager_load_designation, only: :show
+      before_action :eager_load_designation, only: :show
 
       resource_description do
         short 'Retrieve a list of designations, information about stock items that have been designated to a group or person.'
