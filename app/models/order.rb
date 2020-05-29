@@ -40,12 +40,11 @@ class Order < ActiveRecord::Base
   has_many :orders_purposes, dependent: :destroy
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :subscriptions, as: :subscribable, dependent: :destroy
-  has_and_belongs_to_many :cart_packages, class_name: "Package"
   has_one :order_transport, dependent: :destroy
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
 
-  validates :people_helped, numericality: { greater_than_or_equal_to: 0 }
+  validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
 
   after_initialize :set_initial_state
   before_create :assign_code

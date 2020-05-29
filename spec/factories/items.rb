@@ -20,7 +20,7 @@ FactoryBot.define do
 
     trait :with_inventory_packages do
       after(:create) do |item|
-        create_list(:package, rand(3)+1, :with_set_item, :package_with_locations, item: item)
+        create_list(:package, rand(3)+1, :package_with_locations, item: item)
       end
     end
 

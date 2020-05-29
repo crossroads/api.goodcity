@@ -11,6 +11,9 @@
   -  donor_condition_name_en: "Broken"
      grade: "A"
      multiplier: 0.01
+  -  donor_condition_name_en: "Mixed"
+     grade: "A"
+     multiplier: 0.85  
   -  donor_condition_name_en: "New"
      grade: "B"
      multiplier: 0.80
@@ -23,6 +26,9 @@
   -  donor_condition_name_en: "Broken"
      grade: "B"
      multiplier: 0.01
+  -  donor_condition_name_en: "Mixed"
+     grade: "B"
+     multiplier: 0.75
   -  donor_condition_name_en: "New"
      grade: "C"
      multiplier: 0.50
@@ -35,6 +41,9 @@
   -  donor_condition_name_en: "Broken"
      grade: "C"
      multiplier: 0.01
+  -  donor_condition_name_en: "Mixed"
+     grade: "C"
+     multiplier: 0.4
   -  donor_condition_name_en: "New"
      grade: "D"
      multiplier: 0.10
@@ -47,4 +56,6 @@
   -  donor_condition_name_en: "Broken"
      grade: "D"
      multiplier: 0.01
-  
+  -  donor_condition_name_en: "Mixed"
+     grade: "D"
+     multiplier: 0.075
