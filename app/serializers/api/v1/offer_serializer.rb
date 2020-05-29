@@ -10,7 +10,7 @@ module Api::V1
       :company_id, :start_receiving_at, :cancellation_reason_id, :cancel_reason
 
     has_many :items, serializer: ItemSerializer
-    has_many :messages, serializer: MessageSerializer
+    has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_one  :closed_by, serializer: UserSerializer, root: :user
     has_one  :created_by, serializer: UserSerializer, root: :user
     has_one  :reviewed_by, serializer: UserSerializer, root: :user
