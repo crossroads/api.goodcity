@@ -14,7 +14,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   describe "GET item/1" do
     before { generate_and_set_token(user) }
-  
+
     it "returns the item" do
       get :show, id: item.id
       expect(response.status).to eq(200)
@@ -24,6 +24,10 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     describe "known bugs" do
       describe "polymorphic serialization" do
         let(:package)  { create :package, id: item.id }
+        let(:item) { create(:item, offer: offer) }
+        let!(:item_message) { create(:message, messageable: item) }
+        let!(:offer_message) { create(:message, messageable: offer) }
+        let!(:order_message) { create(:message, :with_order, sender: user) }
 
         before do
           create(:image, imageable: item)
@@ -38,6 +42,14 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
           get :show, id: item.id
           expect(response.status).to eq(200)
           expect(parsed_body['item']['image_ids']).to eq([item.images.first.id])
+        end
+
+        it 'expects to include messages related only to item' do
+          get :show, id: item.id
+          expect(parsed_body['messages'].count).to eq(1)
+          expect(parsed_body['messages'][0]['id']).to eq(item_message.id)
+          expect(parsed_body['messages'][0]['messageable_id']).to eq(item_message.messageable_id)
+          expect(parsed_body['messages'][0]['messageable_type']).to eq('Item')
         end
       end
     end

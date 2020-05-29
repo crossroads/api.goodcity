@@ -161,6 +161,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       get :show, id: offer.id
       expect(response.status).to eq(200)
     end
+
+    context 'polymorphic associations' do
+      let(:item) { create(:item, offer: offer) }
+      let!(:item_message) { create(:message, messageable: item) }
+      let!(:offer_message) { create(:message, messageable: offer) }
+      let!(:order_message) { create(:message, :with_order, sender: user) }
+
+      it 'expects to include messages related only to item' do
+        get :show, id: offer.id
+        expect(parsed_body['messages'].count).to eq(2)
+        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer', 'Item')
+        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include(item.id, offer.id)
+      end
+    end
   end
 
   describe "POST /offers" do

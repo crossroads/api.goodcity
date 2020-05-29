@@ -35,6 +35,10 @@ FactoryBot.define do
     trait :with_order do
       association :messageable, factory: :order
     end
+
+    trait :with_offer do
+      association :messageable, factory: :offer
+    end
   end
 
   sequence :message_body do |n|
