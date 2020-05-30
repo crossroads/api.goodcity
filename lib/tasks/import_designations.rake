@@ -11,6 +11,9 @@ namespace :stockit do
       bar.inc
       order = Order.where(stockit_id: value["id"]).first_or_initialize
 
+      # Don't sync GoodCity orders here
+      next unless %w(Shipment LocalOrder CarryOut).include?(value["detail_type"])
+
       if (value["detail_type"] === "LocalOrder") && value["detail_id"].present?
         order.detail_id = StockitLocalOrder.find_by(stockit_id: value["detail_id"]).try(:id)
       end
@@ -48,7 +51,7 @@ namespace :stockit do
       order.continuous = value["continuous"]
       order.shipment_date = value["sent_on"]
       order.staff_note = value["comments"]
-      order.purpose_description = value["description"]
+      #order.purpose_description = value["description"]
       order.save
     end
     Order.record_timestamps = true
