@@ -3,7 +3,7 @@ module Api::V1
     embed :ids, include: true
 
     has_one :package_type, serializer: PackageTypeSerializer
-    has_many :images, serializer: ImageSerializer
+    has_many :images, serializer: ImageSerializer, polymorphic: true
     has_one :item, serializer: BrowseItemSerializer
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
