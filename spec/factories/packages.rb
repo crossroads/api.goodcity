@@ -67,12 +67,6 @@ FactoryBot.define do
       # sequence(:stockit_id) { |n| n }
     end
 
-    trait :with_set_item do
-      stockit_package
-      item
-      set_item_id { item.id }
-    end
-
     trait :received do
       with_inventory_record
       stockit_package

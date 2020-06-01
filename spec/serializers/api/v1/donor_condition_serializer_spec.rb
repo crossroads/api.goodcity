@@ -11,6 +11,7 @@ describe Api::V1::DonorConditionSerializer do
   it "creates JSON" do
     expect(json['donor_condition']['id']).to eql(donor_condition.id)
     expect(json['donor_condition']['name']).to eql(donor_condition.name)
+    expect(json['donor_condition']['visible_to_donor']).to eql(donor_condition.visible_to_donor)
   end
 
   it "translates JSON" do
