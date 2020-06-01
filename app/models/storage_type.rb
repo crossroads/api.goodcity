@@ -9,6 +9,14 @@ class StorageType < ActiveRecord::Base
     max_unit_quantity.present? && max_unit_quantity.positive?
   end
 
+  def unit?
+    name.eql?('Package')
+  end
+
+  def aggregate?
+    !unit?
+  end
+
   def self.storage_type_ids(name)
     package_storage_type_id = find_by(name: "Package").id
     if name == "Pallet"

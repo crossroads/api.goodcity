@@ -3,7 +3,8 @@ class PackageConditionMapper
     "New" => 'N',
     "Lightly Used" => 'M',
     "Heavily Used" => 'U',
-    "Broken" => 'B'
+    "Broken" => 'B',
+    "Mixed" => 'M'
   }
 
   def self.to_stockit(condition)

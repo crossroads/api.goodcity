@@ -9,8 +9,8 @@ RSpec.describe CancellationReason, type: :model do
   it { is_expected.to validate_presence_of(:name_en) }
 
   describe "scope: visible_to_offer" do
-    let!(:offer_cancellation_reason) { create :cancellation_reason, :visible_to_offer }
-    let!(:order_cancellation_reason) { create :cancellation_reason, :visible_to_order }
+    let!(:offer_cancellation_reason) { create :cancellation_reason, visible_to_offer: true, visible_to_order: false }
+    let!(:order_cancellation_reason) { create :cancellation_reason, visible_to_offer: false, visible_to_order: true }
 
     it "return records having visible_to_offer as true" do
       visible_scope_ids = described_class.visible_to_offer.pluck(:id)
@@ -20,8 +20,8 @@ RSpec.describe CancellationReason, type: :model do
   end
 
   describe "scope: visible_to_order" do
-    let!(:offer_cancellation_reason) { create :cancellation_reason, :visible_to_offer }
-    let!(:order_cancellation_reason) { create :cancellation_reason, :visible_to_order }
+    let!(:offer_cancellation_reason) { create :cancellation_reason, visible_to_offer: true, visible_to_order: false }
+    let!(:order_cancellation_reason) { create :cancellation_reason, visible_to_offer: false, visible_to_order: true }
 
     it "return records having visible_to_order as true" do
       visible_scope_ids = described_class.visible_to_order.pluck(:id)
@@ -31,8 +31,8 @@ RSpec.describe CancellationReason, type: :model do
   end
 
   describe "#cancellation_reasons_for" do
-    let!(:offer_cancellation_reason) { create :cancellation_reason, :visible_to_offer }
-    let!(:order_cancellation_reason) { create :cancellation_reason, :visible_to_order }
+    let!(:offer_cancellation_reason) { create :cancellation_reason, visible_to_offer: true, visible_to_order: false }
+    let!(:order_cancellation_reason) { create :cancellation_reason, visible_to_offer: false, visible_to_order: true }
 
     it "returns order reasons if 'order' type is passed" do
       reasons = described_class.cancellation_reasons_for("order")

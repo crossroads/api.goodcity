@@ -6,22 +6,22 @@ module Api::V1
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_one :donor_condition, serializer: DonorConditionSerializer
     has_one :order, serializer: Api::V1::OrderShallowSerializer, root: :designation, include_items: false
-    has_one :set_item, serializer: Api::V1::StockitSetItemSerializer, include_items: false
-    has_many :images, serializer: StockitImageSerializer
+    has_many :images, serializer: StockitImageSerializer, polymorphic: true
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :offers_packages, serializer: OffersPackageSerializer
     has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
+    has_one :package_set, serializer: PackageSetSerializer::StockFormat
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :inventory_number, :created_at, :updated_at, :item_id, :is_set,
                :grade, :designation_name, :designation_id, :sent_on, :code_id,
-               :image_id, :donor_condition_id, :set_item_id, :has_box_pallet,
+               :image_id, :donor_condition_id, :package_set_id,
                :case_number, :allow_web_publish, :received_quantity,
                :detail_type, :detail_id, :storage_type_id, :on_hand_quantity,
                :available_quantity, :designated_quantity, :dispatched_quantity,
                :quantity, :expiry_date, :saleable, :value_hk_dollar
-
+  
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity
@@ -31,12 +31,12 @@ module Api::V1
       "available_quantity"
     end
 
-    def include_images?
-      @options[:include_images]
+    def include_package_set?
+      @options[:include_package_set]
     end
 
-    def include_set_item?
-      !@options[:exclude_stockit_set_item]
+    def include_images?
+      @options[:include_images]
     end
 
     def include_order?
@@ -77,26 +77,18 @@ module Api::V1
       "packages.favourite_image_id"
     end
 
+    # deprecated
+    # Kept for backwards compatibility
+    # refer to package_set_id from now on
     def is_set
-      object.set_item_id.present?
+      false
     end
 
-    def has_box_pallet
-      object.box_id.present? || object.pallet_id.present?
-    end
-
+    # deprecated
+    # Kept for backwards compatibility
+    # refer to package_set_id from now on
     def is_set__sql
-      "(CASE WHEN set_item_id IS NOT NULL
-        THEN true
-        ELSE false
-        END)"
-    end
-
-    def has_box_pallet__sql
-      "(CASE WHEN box_id IS NOT NULL OR pallet_id IS NOT NULL
-        THEN true
-        ELSE false
-        END)"
+      "false"
     end
   end
 end
