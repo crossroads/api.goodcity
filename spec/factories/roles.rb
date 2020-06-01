@@ -116,6 +116,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_create_user_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_create_donor')
+      end
+    end
+
     trait :with_can_manage_orders_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_orders')

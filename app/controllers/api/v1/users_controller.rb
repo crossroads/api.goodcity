@@ -59,7 +59,7 @@ module Api
 
       def update
         @user.update_attributes(user_params)
-        if params["user"]["user_role_ids"] && User.current_user.can_manage_users?
+        if can_update_other_user? && params["user"]["user_role_ids"]
           @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
         end
         render json: @user, serializer: serializer
@@ -91,9 +91,16 @@ module Api
         render json: { "meta": {"search": params["searchText"] } }.merge(data)
       end
 
+      def can_update_other_user?
+        User.current_user.can_manage_users? &&
+        User.current_user.id != params["id"].to_i
+      end
+
       def user_params
-        attributes = %i[last_connected last_disconnected disabled image_id
-        first_name last_name email receive_email other_phone title mobile printer_id]
+        attributes = %i[image_id first_name last_name email receive_email
+          other_phone title mobile printer_id]
+        attributes.concat([:disabled]) if can_update_other_user?
+        attributes.concat([:last_connected, :last_disconnected]) if User.current_user.id == params["id"]&.to_i
         params.require(:user).permit(attributes)
       end
 

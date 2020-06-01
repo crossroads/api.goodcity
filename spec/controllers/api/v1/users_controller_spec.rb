@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::UsersController, type: :controller do
   TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
   let(:user) { create(:user_with_token, :with_can_read_or_modify_user_permission,  role_name: 'Supervisor') }
-  let(:reviewer_user) { create(:user_with_token, role_name: "Reviewer") }
+  let(:reviewer_user) { create(:user_with_token, :reviewer, :with_can_create_user_permission) }
   let(:serialized_user) { Api::V1::UserSerializer.new(user) }
   let(:serialized_user_json) { JSON.parse( serialized_user.to_json ) }
 
@@ -81,21 +81,38 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:role) { create(:role, name: "Supervisor") }
     let(:existing_user) { create(:user) }
     before do
-      @user_params = {"first_name": "Test", "last_name": "Name", "mobile": "+85278945778"}
+      @user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [role.id] }
       @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
       @user_params3 = {"first_name": "Test", "last_name": "Name", "mobile": "3812912"}
     end
 
-    context "Reviewer user creation" do
+    context "Supervisor" do
       before { generate_and_set_token(user) }
-      it "creates user and returns 201", :show_in_doc do
+      it "creates user with role and returns 201", :show_in_doc do
         expect {
           post :create, user: @user_params
           }.to change(User, :count).by(1)
+
         expect(response.status).to eq(201)
         expect(parsed_body['user']['first_name']).to eql(@user_params[:first_name])
         expect(parsed_body['user']['last_name']).to eql(@user_params[:last_name])
         expect(parsed_body['user']['mobile']).to eql(@user_params[:mobile])
+        expect(parsed_body['user_roles'][0]['role_id']).to eql(role.id)
+      end
+    end
+
+    context "Reviewer" do
+      before { generate_and_set_token(reviewer_user) }
+      it "creates user without role and returns 201", :show_in_doc do
+        expect {
+          post :create, user: @user_params
+        }.to change(User, :count).by(1)
+
+        expect(response.status).to eq(201)
+        expect(parsed_body['user']['first_name']).to eql(@user_params[:first_name])
+        expect(parsed_body['user']['last_name']).to eql(@user_params[:last_name])
+        expect(parsed_body['user']['mobile']).to eql(@user_params[:mobile])
+        expect(parsed_body["user_roles"]).to eql([])
       end
     end
 
@@ -127,16 +144,16 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       before { generate_and_set_token(reviewer_user) }
 
-      it "update user last_connected time", :show_in_doc do
-        put :update, id: reviewer_user.id, user: { last_connected: 5.days.ago.to_s }
-        expect(response.status).to eq(200)
-        expect(reviewer_user.reload.last_connected.to_date).to eq(5.days.ago.to_date)
-      end
+      context "as a user when I edit my own details" do
+        it "update last_connected and last_disconnected time", :show_in_doc do
+          put :update,
+            id: reviewer_user.id,
+            user: { last_connected: 5.days.ago.to_s, last_disconnected: 3.days.ago.to_s }
 
-      it "update user last_disconnected time", :show_in_doc do
-        put :update, id: reviewer_user.id, user: { last_disconnected: 3.days.ago.to_s }
-        expect(response.status).to eq(200)
-        expect(reviewer_user.reload.last_disconnected.to_date).to eq(3.days.ago.to_date)
+          expect(response.status).to eq(200)
+          expect(reviewer_user.reload.last_connected.to_date).to eq(5.days.ago.to_date)
+          expect(reviewer_user.reload.last_disconnected.to_date).to eq(3.days.ago.to_date)
+        end
       end
 
       it "not have permission to add new roles and remove old roles as per params", :show_in_doc do
@@ -144,6 +161,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         put :update, id: reviewer.id, user: { user_role_ids: [role.id] }
         expect(reviewer.reload.roles.pluck(:id)).not_to include(role.id)
         expect(reviewer.reload.roles).to match_array(existing_user_roles)
+      end
+
+      it "can not update user's disabled value", :show_in_doc do
+        put :update, id: reviewer_user.id, user: { disabled: true }
+        expect(response.status).to eq(200)
+        expect(reviewer_user.reload.disabled).to eq(false)
       end
     end
 
@@ -153,11 +176,34 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       before { generate_and_set_token(user) }
 
-      it "not have permission to add new roles and remove old roles as per params", :show_in_doc do
-        existing_user_roles = supervisor.roles
-        put :update, id: supervisor.id, user: { user_role_ids: [role.id] }
-        expect(supervisor.reload.roles.pluck(:id)).to include(role.id)
-        expect(supervisor.reload.roles).to_not match_array(existing_user_roles)
+      context "as a user when I edit my own details" do
+        it "not have permission to add new roles and remove old roles as per params" do
+          existing_user_roles = supervisor.roles
+          put :update, id: user.id, user: { user_role_ids: [role.id] }
+          expect(user.reload.roles.pluck(:id)).not_to include(role.id)
+          expect(user.reload.roles).to match_array(existing_user_roles)
+        end
+
+        it "can not update user's disabled value", :show_in_doc do
+          put :update, id: user.id, user: {disabled: true}
+          expect(response.status).to eq(200)
+          expect(user.reload.disabled).to eq(false)
+        end
+      end
+
+      context "as a user when I edit other user details" do
+        it "have permission to add new roles and remove old roles as per params", :show_in_doc do
+          existing_user_roles = supervisor.roles
+          put :update, id: supervisor.id, user: { user_role_ids: [role.id] }
+          expect(supervisor.reload.roles.pluck(:id)).to include(role.id)
+          expect(supervisor.reload.roles).to_not match_array(existing_user_roles)
+        end
+
+        it "can update user's disabled value", :show_in_doc do
+          put :update, id: reviewer_user.id, user: { disabled: true }
+          expect(response.status).to eq(200)
+          expect(reviewer_user.reload.disabled).to eq(true)
+        end
       end
     end
 
