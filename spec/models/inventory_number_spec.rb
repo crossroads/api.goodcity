@@ -10,12 +10,15 @@ RSpec.describe InventoryNumber, type: :model do
   end
 
   context "create_with_next_code" do
-    it "assigns next inventory code during create" do
+    it "assigns first inventory code during create" do
+      expect(InventoryNumber.count).to eql(0)
+      expect(Package.count).to eql(0)
       InventoryNumber.create_with_next_code!
-      expect(InventoryNumber.first.code).to_not be_nil
+      expect(InventoryNumber.count).to eql(1)
+      expect(InventoryNumber.first.code).to eql("000001")
     end
 
-    it "assigns count of inventory code during create" do
+    it "assigns next available code during create", shared_connection: true do
       InventoryNumber.create(code: "000001")
       InventoryNumber.create(code: "000002")
       InventoryNumber.create(code: "000003")
@@ -24,34 +27,58 @@ RSpec.describe InventoryNumber, type: :model do
     end
   end
 
-  context "max_code" do
-    it "returns highest code in table" do
-      InventoryNumber.create_with_next_code!
-      InventoryNumber.first.update_column(:code, "123")
-      expect(InventoryNumber.max_code).to eql(123)
-    end
-    it "returns 0 when table is empty" do
-      expect(InventoryNumber.max_code).to eql(0)
-    end
-  end
-
-  context "missing_code" do
-    it "locates missing entry" do
+  context "next_code" do
+    it "picks missing entry in inventory_numbers table" do
       InventoryNumber.create(code: "000001")
       InventoryNumber.create(code: "000003")
-      expect(InventoryNumber.missing_code).to eql(2)
+      Package.delete_all
+      expect(InventoryNumber.next_code).to eql("000002")
     end
+
+    it "picks missing entry in packages table" do
+      create(:package, inventory_number: "000001")
+      create(:package, inventory_number: "F00002") # should be ignored
+      create(:package, inventory_number: "000003")
+      InventoryNumber.delete_all
+      expect(InventoryNumber.next_code).to eql("000002")
+    end
+
     it "returns 0 if empty table" do
-      expect(InventoryNumber.missing_code).to eql(0) # no missing code
+      InventoryNumber.delete_all
+      Package.delete_all
       expect(InventoryNumber.next_code).to eql("000001")
     end
 
-    it "missing in inventory numbers table but exists in the packages table" do
-      InventoryNumber.create(code: "000001")
+    it "no missing entries, picks next one" do
       create(:package, inventory_number: "000001")
       create(:package, inventory_number: "000002")
-      expect(InventoryNumber.missing_code).to eql(0) # no missing code
-      expect(InventoryNumber.next_code).to eql("000003")
+      create(:package, inventory_number: "000003")
+      expect(InventoryNumber.pluck(:code)).to match_array (["000001", "000002", "000003"])
+      expect(Package.pluck(:inventory_number)).to match_array(["000001", "000002", "000003"])
+      expect(InventoryNumber.next_code).to eql("000004")
+    end
+
+  end
+
+  context "max_code" do
+    it "returns 0 if no entries" do
+      expect(InventoryNumber.count).to eql(0)
+      expect(Package.count).to eql(0)
+      expect(InventoryNumber.max_code).to eql(0)
+    end
+
+    it "returns highest entry from inventory_numbers table" do
+      create(:package, inventory_number: "000001")
+      create(:package, inventory_number: "000002")
+      create(:inventory_number, code: "000003")
+      expect(InventoryNumber.max_code).to eql(3)
+    end
+
+    it "returns highest number from Packages table" do
+      create(:package, inventory_number: "000001")
+      create(:package, inventory_number: "000004")
+      create(:inventory_number, code: "000003")
+      expect(InventoryNumber.max_code).to eql(4)
     end
 
   end
