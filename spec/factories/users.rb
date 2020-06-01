@@ -141,6 +141,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_create_user_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_create_user_permission, name: evaluator.role_name)
+      end
+    end
+
     trait :with_can_manage_package_detail_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_manage_package_detail_permission, name: evaluator.role_name)
