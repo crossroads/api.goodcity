@@ -7,18 +7,6 @@ module Api::V1
 
     has_one :sender, serializer: UserSerializer, root: :user
 
-    def designation_id
-      object.messageable_type == 'Order' ? object.messageable_id : nil
-    end
-
-    def offer_id
-      object.messageable_type == 'Offer' ? object.messageable_id : nil
-    end
-
-    def item_id
-      object.messageable_type == 'Item' ? object.messageable_id : nil
-    end
-
     def designation_id__sql
       'messages.order_id'
     end
@@ -51,7 +39,5 @@ module Api::V1
          END"
       end
     end
-
-    alias order_id designation_id
   end
 end

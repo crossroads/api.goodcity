@@ -2,22 +2,10 @@ class ChangeMessagesToPolymorphic < ActiveRecord::Migration
   def up
     add_column :messages, :messageable_type, :string
     add_column :messages, :messageable_id, :int
-    Message.all.map do |message|
-      if message.item_id
-        item = message.item
-        message.messageable_type = item.class.name
-        message.messageable_id = item.id
-      elsif message.offer_id
-        offer = message.offer
-        message.messageable_type = offer.class.name
-        message.messageable_id = offer.id
-      elsif message.order_id
-        order = message.order
-        message.messageable_type = order.class.name
-        message.messageable_id = order.id
-      end
-      message.save!(validate: false)
-    end
+
+    execute("UPDATE messages SET messageable_type = 'Item', messageable_id = item_id where item_id is NOT NULL")
+    execute("UPDATE messages SET messageable_type = 'Offer', messageable_id = offer_id where offer_id is NOT NULL")
+    execute("UPDATE messages SET messageable_type = 'Order', messageable_id = order_id where order_id is NOT NULL")
 
     remove_column :messages, :offer_id
     remove_column :messages, :order_id
@@ -30,7 +18,7 @@ class ChangeMessagesToPolymorphic < ActiveRecord::Migration
     add_column :messages, :item_id, :int
 
     Message.all.map do |message|
-      case message.messageable_id
+      case message.messageable_type
       when 'Order'
         message.order_id = message.messageable_id
       when 'Offer'
