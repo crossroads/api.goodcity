@@ -21,5 +21,13 @@ module Messages
                                    subscribable: messageable,
                                    user_id: user_id)
     end
+
+    def parse_id_from_mention_text
+      message.body.scan(/\[:\d+\]/)
+    end
+
+    def parse_id_from_decorated_ids(ids)
+      ids.map { |id| id.match(/\d+/).to_s }
+    end
   end
 end

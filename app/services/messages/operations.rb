@@ -103,10 +103,9 @@ module Messages
     end
 
     def format_message_body
-      user_ids = fetch_mentioned_user_ids
-      return if user_ids.empty?
+      sanitize_and_set_mentioned_ids
+      return if ids.empty?
 
-      sanitize(user_ids)
       add_lookup
     end
 
@@ -121,18 +120,25 @@ module Messages
       end
     end
 
-    def fetch_mentioned_user_ids
-      message.body.scan(/\[:\d+\]/)
+    def sanitize_and_set_mentioned_ids
+      ids = parse_id_from_mention_text
+      ref_count = 0
+      sanitize_user_ids(ids)
+      message.body = message.body.gsub(/\[:\d+\]/) do
+        ref_count += 1
+        "[:#{ref_count}]"
+      end
     end
 
-    def sanitize(ids)
-      @ids = ids.map { |id| id.match(/\d+/).to_s }
+    def sanitize_user_ids(ids)
+      @ids = parse_id_from_decorated_ids(ids)
     end
 
     def add_lookup
-      lookup = []
-      ids.map do |id|
-        lookup << { type: 'User', id: id, display_name: User.find(id).full_name }
+      lookup = {}
+      lookup_ids = parse_id_from_decorated_ids(parse_id_from_mention_text)
+      lookup_ids.map.with_index do |lookup_id, idx|
+        lookup[lookup_id] = { type: 'User', id: ids[idx], display_name: User.find(ids[idx]).full_name }
       end
       message.update(lookup: lookup)
     end
