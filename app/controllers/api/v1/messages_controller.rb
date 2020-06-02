@@ -35,7 +35,7 @@ module Api
       param :scope, String, desc: "The type of record associated to the messages (order/offer/item)"
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
-        apply_filters
+        @messages = apply_filters(@messages, params)
         paginate_and_render(@messages)
       end
 
@@ -69,11 +69,12 @@ module Api
 
       private
 
-      def apply_filters
+      def apply_filters(messages, options)
         %i[ids offer_id order_id item_id].map do |f|
-          @messages = @messages.send("filter_by_#{f}", params[f]) if params[f]
+          messages = messages.send("filter_by_#{f}", options[f]) if options[f]
         end
-        @messages = @messages.with_state_for_user(current_user, params[:state].split(',')) if params[:state].present?
+        messages = messages.with_state_for_user(current_user, options[:state].split(',')) if options[:state].present?
+        messages
       end
 
       def apply_scope(records, scope)

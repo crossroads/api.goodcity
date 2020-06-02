@@ -24,7 +24,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     describe "known bugs" do
       describe "polymorphic serialization" do
         let(:package)  { create :package, id: item.id }
-        let(:item) { create(:item, offer: offer) }
+        let!(:item) { create(:item, offer: offer) }
         let!(:item_message) { create(:message, messageable: item) }
         let!(:offer_message) { create(:message, messageable: offer) }
         let!(:order_message) { create(:message, :with_order, sender: user) }
