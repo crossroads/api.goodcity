@@ -199,13 +199,14 @@ module Messages
       let(:message) { build(:message, body: "Hello [:#{user1.id}]. I need help from you and [:#{user2.id}]") }
       let(:operation) { Messages::Operations.new(message: message) }
 
-      before(:each) do
+      before do
         allow(operation).to receive(:add_subscriber)
+        allow(operation).to receive(:add_lookup)
       end
 
       it 'creates a message lookup if any user is mentioned' do
-        operation.handle_mentioned_users
-        expect(message.reload.lookup).to include({ 'type' => 'User', 'id' => user1.id.to_s, 'display_name' => user1.full_name }, {'type' => "User", 'id' => user2.id.to_s, 'display_name' => user2.full_name })
+        message.save
+        expect(message.reload.lookup).to include('1' => { 'type' => 'User', 'id' => user1.id.to_s, 'display_name' => user1.full_name }, '2' => {'type' => "User", 'id' => user2.id.to_s, 'display_name' => user2.full_name })
       end
 
       it 'adds message subscription to mentioned users' do
