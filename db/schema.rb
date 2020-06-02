@@ -376,23 +376,15 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   create_table "messages", force: :cascade do |t|
     t.text     "body"
     t.integer  "sender_id"
-    t.boolean  "is_private", default: false
+    t.boolean  "is_private",       default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.integer  "offer_id"
-    t.integer  "item_id"
-    t.integer  "order_id"
     t.string   "messageable_type"
     t.integer  "messageable_id"
     t.jsonb    "lookup"
-
   end
 
-  add_index "messages", ["body"], name: "messages_body_search_idx", using: :gin
-  add_index "messages", ["item_id"], name: "index_messages_on_item_id", using: :btree
-  add_index "messages", ["offer_id"], name: "index_messages_on_offer_id", using: :btree
-  add_index "messages", ["order_id"], name: "index_messages_on_order_id", using: :btree
   add_index "messages", ["lookup"], name: "index_messages_on_lookup", using: :gin
   add_index "messages", ["sender_id"], name: "index_messages_on_sender_id", using: :btree
 
@@ -926,19 +918,14 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "subpackage_types", ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id", using: :btree
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer "offer_id"
     t.integer "user_id"
     t.integer "message_id"
-    t.string  "state"
-    t.integer "order_id"
+    t.string  "state",             limit: 255
     t.string  "subscribable_type"
     t.integer "subscribable_id"
   end
 
   add_index "subscriptions", ["message_id"], name: "index_subscriptions_on_message_id", using: :btree
-  add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
-  add_index "subscriptions", ["offer_id"], name: "index_subscriptions_on_offer_id", using: :btree
-  add_index "subscriptions", ["order_id"], name: "index_subscriptions_on_order_id", using: :btree
   add_index "subscriptions", ["state"], name: "index_subscriptions_on_state", using: :btree
   add_index "subscriptions", ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
 
