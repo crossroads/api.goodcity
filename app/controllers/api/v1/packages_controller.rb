@@ -225,6 +225,7 @@ module Api
                                                     include_order: false,
                                                     include_packages: false,
                                                     include_orders_packages: true,
+                                                    include_package_set: bool_param(:include_package_set, true),
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
