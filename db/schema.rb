@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200522105202) do
+ActiveRecord::Schema.define(version: 20200522105137) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -694,7 +694,6 @@ ActiveRecord::Schema.define(version: 20200522105202) do
     t.decimal  "value_hk_dollar"
     t.integer  "package_set_id"
     t.integer  "restriction_id"
-    t.text     "comment"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree

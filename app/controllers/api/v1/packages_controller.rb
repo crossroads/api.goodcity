@@ -354,7 +354,7 @@ module Api
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
           :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,:comment,
+          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
           :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,

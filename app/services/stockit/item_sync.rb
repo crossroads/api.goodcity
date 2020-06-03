@@ -134,8 +134,7 @@ module Stockit
         # designation_id: package.singleton_package? ? package.stockit_order_id : nil,
         # designated_on: package.singleton_package? ? package.stockit_designated_on : nil
         designation_id: package.stockit_order_id,
-        designated_on: package.stockit_designated_on,
-        comments: package.comment
+        designated_on: package.stockit_designated_on
       }
     end
 
