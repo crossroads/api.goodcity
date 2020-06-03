@@ -23,7 +23,6 @@ describe Api::V1::PackageSerializer do
     expect(json['package']['received_at']).to eql(package.received_at)
     expect(json['package']['item_id']).to eql(package.item_id)
     expect(json['package']['package_type_id']).to eql(package.package_type_id)
-    expect(json['package']['comment']).to eql(package.comment)
     expect(json['package']['restriction_id']).to eql(package.restriction_id)
   end
 
