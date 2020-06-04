@@ -116,6 +116,7 @@ module Api
           include_packages: true,
           include_order: false,
           include_images: true,
+          exclude_message_sender: bool_param(:exclude_message_sender, false),
           include_messages: bool_param(:include_messages, false)).as_json
       end
 
@@ -168,6 +169,7 @@ module Api
           :stockit_organisation_id, :stockit_activity_id,
           :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
           :address_id,:submitted_by_id, :staff_note,
+          :exclude_message_sender, :include_messages,
           purpose_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes,

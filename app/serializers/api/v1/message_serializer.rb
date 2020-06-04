@@ -7,6 +7,10 @@ module Api::V1
 
     has_one :sender, serializer: UserSerializer, root: :user
 
+    def include_sender?
+      !@options[:exclude_message_sender]
+    end
+
     def designation_id
       object.order_id
     end
