@@ -37,7 +37,7 @@ module MessageSubscription
         obj&.created_by_id.present? && (user_ids == [self.sender_id])
       end
 
-    user_ids += User.staff.pluck(:id) if subscribe_all_staff
+    user_ids += first_message_subscribers(klass) if subscribe_all_staff
 
     user_ids.flatten.compact.uniq.each do |user_id|
       state = (user_id == self.sender_id) ? "read" : "unread" # mark as read for sender
@@ -46,6 +46,14 @@ module MessageSubscription
   end
 
   private
+
+  def first_message_subscribers(klass)
+    if klass === 'order'
+      User.by_roles(['Order fulfilment', 'Order administrator']).pluck(:id)
+    else
+      User.staff.pluck(:id)
+    end
+  end
 
   # A public subscriber is defined as :
   #   > Anyone who has a subscription to that record

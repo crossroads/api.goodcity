@@ -49,6 +49,7 @@ class User < ActiveRecord::Base
   scope :order_fulfilment, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
   scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
+  scope :by_roles, -> (role_names) { where(roles: {name: role_names}).joins(:roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
 
   # used when reviewer is logged into donor app
