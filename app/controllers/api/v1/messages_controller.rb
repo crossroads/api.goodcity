@@ -29,6 +29,7 @@ module Api
       api :GET, "/v1/messages", "List all messages"
       param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
       param :offer_id, String, desc: "Return messages for offer id."
+      param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       param :state, String, desc: "Message state (unread|read) to filter on"
@@ -36,6 +37,7 @@ module Api
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = @messages.where(id: params[:ids].split(",")) if params[:ids].present?
+        @messages = @messages.where(is_private: bool_param(:is_private, false),) if params[:is_private].present?
         @messages = @messages.where(offer_id: params[:offer_id].split(",")) if params[:offer_id].present?
         @messages = @messages.where(order_id: params[:order_id].split(",")) if params[:order_id].present?
         @messages = @messages.where(item_id: params[:item_id].split(",")) if params[:item_id].present?
