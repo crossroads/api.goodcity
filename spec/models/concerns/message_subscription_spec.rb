@@ -88,7 +88,7 @@ context MessageSubscription do
       end
     end
 
-    context "private messages" do
+    context "private messages on offer" do
       let(:offer) { create :offer }
       let(:message) { build :message, is_private: true, sender: reviewer, offer: offer }
       let(:message2) { build :message, is_private: true, sender: reviewer, offer: offer }
@@ -197,6 +197,34 @@ context MessageSubscription do
         end
       end
 
+    end
+
+    context "private messages on order" do
+      let(:order) { create :order }
+      let(:message) { build :message, is_private: true, sender: reviewer, order: order, offer: nil }
+
+      context "should not subscribe order-creator" do
+        let(:user_id) { message.order.created_by_id }
+
+        it do
+          expect(message).to_not receive(:add_subscription).with(anything, user_id)
+          message.save
+        end
+      end
+
+      context "should subscribe all order fulfilment and order administrator users if it's the first private message of the thread" do
+        let!(:order_fulfilment_user) { create :user, :order_fulfilment }
+        let!(:order_administrator_user) { create :user, :order_administrator }
+
+        before { User.current_user = order_fulfilment_user }
+
+        it do
+          expect(message).to receive(:add_subscription).with('read', reviewer.id) # sender
+          expect(message).to receive(:add_subscription).with('unread', order_fulfilment_user.id) # unsubscribed order_fulfilment_user
+          expect(message).to receive(:add_subscription).with("unread", order_administrator_user.id) # unsubscribed order_administrator_user
+          message.save
+        end
+      end
     end
 
   end
