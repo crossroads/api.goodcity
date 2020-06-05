@@ -56,7 +56,7 @@ module Api
         render json: serializer.new(@order,
           root: root,
           exclude_code_details: true,
-          include_messages: bool_param(:include_messages, true),
+          include_messages: bool_param(:include_messages, false),
           include_packages: bool_param(:include_packages, true),
           include_order: bool_param(:include_order, false),
           include_territory: true,

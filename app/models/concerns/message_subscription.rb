@@ -48,7 +48,7 @@ module MessageSubscription
   private
 
   def first_message_subscribers(klass)
-    if klass === 'order'
+    if klass == 'order'
       User.by_roles(['Order fulfilment', 'Order administrator']).pluck(:id)
     else
       User.staff.pluck(:id)
@@ -75,7 +75,7 @@ module MessageSubscription
   end
 
   def is_first_message_for(klass, id)
-    Message.where(is_private: is_private, "#{klass}_id": id).count.eql? 1
+    Message.unscoped.where(is_private: is_private, "#{klass}_id": id).count.eql? 1
   end
 
   def admin_user_fields
