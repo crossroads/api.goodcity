@@ -170,9 +170,9 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
       it 'expects to include messages related only to item' do
         get :show, id: offer.id
-        expect(parsed_body['messages'].count).to eq(2)
-        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer', 'Item')
-        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include(item.id, offer.id)
+        expect(parsed_body['messages'].count).to eq(1)
+        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer')
+        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include( offer.id)
       end
     end
   end

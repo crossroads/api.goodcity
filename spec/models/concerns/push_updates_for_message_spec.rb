@@ -3,7 +3,7 @@ require 'rails_helper'
 context PushUpdatesForMessage do
 
   # Base case: reviewer1 sends message to donor
-  let!(:message) { create :message, sender: reviewer1 }
+  let!(:message) { create :message, sender: reviewer1, messageable: create(:offer) }
   let(:donor) { message.messageable.created_by }
   let(:donor_channel) { "user_#{donor.id}" }
   let(:reviewer1) { create :user, :reviewer }

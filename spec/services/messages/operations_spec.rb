@@ -226,7 +226,7 @@ module Messages
 
         it 'does not create a message lookup' do
           operation.handle_mentioned_users
-          expect(message.reload.lookup).to be_nil
+          expect(message.reload.lookup).to be_empty
         end
 
         it 'does not add any subscribers' do
