@@ -128,9 +128,12 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   describe "PUT messages/mark_all_read" do
     before { generate_and_set_token(user) }
-
+    let!(:offer) { create(:offer) }
+    let!(:order) { create(:order) }
+    let!(:offer_message) { create(:message, messageable: offer) }
+    let!(:offer_message) { create(:message, messageable: order) }
     let!(:subscriptions) { create_list(:subscription, 2, :with_offer, state: 'unread', user_id: user.id) }
-    let!(:order_subscriptions) { create_list(:order_subscription, 3, state: 'unread', user_id: user.id) }
+    let!(:order_subscriptions) { create_list(:subscription, 3, :with_order, state: "unread", user_id: user.id) }
     let(:subscription_states) { subscriptions.map { |s| s.reload.state } }
     let(:order_subscription_states) { order_subscriptions.map { |s| s.reload.state } }
 
