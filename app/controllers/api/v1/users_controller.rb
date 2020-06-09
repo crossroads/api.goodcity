@@ -63,14 +63,19 @@ module Api
       def mentionable_users
         @users = Messages::Channels
                  .new(app_name: app_name,
-                      messageable: Offer.find(params[:offer],
-                                              is_private: params[:is_private]),
+                      messageable: messageable_obj,
+                      is_private: params[:is_private],
                       current_user: current_user)
                  .related_users
-        render json: @users
+        render json: { users: @users }
       end
 
       private
+
+      def messageable_obj
+        return Order.find(params[:order_id]) if params[:order_id].present?
+        return Offer.find(params[:offer_id]) if params[:offer_id].present?
+      end
 
       def serializer
         Api::V1::UserSerializer

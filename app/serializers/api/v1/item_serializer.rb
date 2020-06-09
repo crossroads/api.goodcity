@@ -7,7 +7,6 @@ module Api::V1
       :rejection_comments, :donor_condition_id, :rejection_reason_id
 
     has_many :packages, serializer: PackageSerializer
-    has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_many :images,   serializer: ImageSerializer, polymorphic: true
     has_one  :package_type, serializer: PackageTypeSerializer
     has_one  :rejection_reason, serializer: RejectionReasonSerializer

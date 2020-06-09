@@ -46,6 +46,14 @@ class Message < ActiveRecord::Base
     Messages::Operations.new(message: self).handle_mentioned_users
   end
 
+  def parsed_body
+    return body if lookup.empty?
+
+    parsed = body
+    lookup.keys.each { |k| parsed = parsed.gsub("[:#{k}]", lookup[k]['display_name']) }
+    parsed
+  end
+
   # Marks all messages as read for a user
   # Some refactoring required here. Doesn't understand that an admin may
   # be logged in to Stock and Admin apps and doesn't want all messages to be

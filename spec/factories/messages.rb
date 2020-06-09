@@ -5,7 +5,7 @@ FactoryBot.define do
     body        { generate(:message_body) }
     sender      { |m| m.association(:user) }
     is_private  false
-    association :messageable, factory: :offer
+    association :messageable, factory: :order
 
     trait :reviewer_message do
       sender   { |m| m.association(:user, :reviewer) }

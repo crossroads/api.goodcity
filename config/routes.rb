@@ -106,6 +106,7 @@ Rails.application.routes.draw do
       end
 
       get "recent_users", to: "users#recent_users"
+      get "mentionable_users", to: "users#mentionable_users"
 
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]

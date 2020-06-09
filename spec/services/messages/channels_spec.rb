@@ -35,30 +35,33 @@ module Messages
         context 'in DONOR channel from DONOR app' do
           it 'fetches users with REVIEWER or SUPERVISOR role' do
             result = Messages::Channels.new(current_user: donor, is_private: false, app_name: DONOR_APP, messageable: offer).related_users
-
-            expected = [supervisor.id, supervisor.full_name], [reviewer.id, reviewer.full_name], [supervisor2.id, supervisor2.full_name]
-            expect(result).to include(Hash[expected])
+            expected = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten].flatten.map { |id| { :id => id, :name => User.find(id).full_name} }
+            expect(result).to match_array(expected)
           end
 
           it 'does not fetch the current user' do
             result = Messages::Channels.new(current_user: donor, is_private: false, app_name: DONOR_APP, messageable: offer).related_users
-
-            expected = [donor.id, donor.full_name]
-            expect(result).not_to include(Hash[*expected])
+            expected = { :id => donor.id, :name => donor.full_name }
+            expect(result).not_to include(expected)
           end
 
           it 'does not fetch any stock or browse related users' do
             result = Messages::Channels.new(current_user: donor, is_private: false, app_name: DONOR_APP, messageable: offer).related_users
 
-            expected = User.joins(:user_roles).joins(:roles).where(roles: {name: ["Order fulfilment", "Order administrator", 'Charity']}).map { |u| [u.id, u.full_name]}
-            expect(result).not_to include(Hash[expected])
+            expected = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten].flatten.map { |id| {:id => id, :name => User.find(id).full_name} }
+
+            expected.each do |e|
+              expect(result).not_to include(e)
+            end
           end
 
           it 'does not fetch any disabled users' do
             result = Messages::Channels.new(current_user: donor, is_private: false, app_name: DONOR_APP, messageable: offer).related_users
 
-            expected = User.where(disabled: true).map { |u| [u.id, u.full_name]}
-            expect(result).not_to include(Hash[expected])
+            expected = User.where(disabled: true).map { |u| { :id => u.id, :name => u.full_name } }
+            expected.each do |e|
+              expect(result).not_to include(e)
+            end
           end
         end
 
@@ -66,22 +69,28 @@ module Messages
           it 'fetches users with REVIEWER and SUPERVISOR role along with donor' do
             result = Messages::Channels.new(current_user: reviewer, is_private: false, app_name: ADMIN_APP, messageable: offer).related_users
 
-            expected = [supervisor.id, supervisor.full_name], [donor.id, donor.full_name], [supervisor2.id, supervisor2.full_name]
-            expect(result).to include(Hash[expected])
+            expected = [[User.supervisors.map(&:id), User.reviewers.map(&:id), donor.id].flatten - [reviewer.id]].flatten.map { |id| {:id => id, :name => User.find(id).full_name} }
+
+            expect(result).to match_array(expected)
           end
 
           it 'does not fetch any stock or browse related users' do
             result = Messages::Channels.new(current_user: reviewer, is_private: false, app_name: ADMIN_APP, messageable: offer).related_users
 
-            expected = User.joins(:user_roles).joins(:roles).where(roles: {name: ["Order fulfilment", "Order administrator", "Charity"]}).map { |u| [u.id, u.full_name] }
-            expect(result).not_to include(Hash[expected])
+            expected = User.joins(:user_roles).joins(:roles).where(roles: {name: ["Order fulfilment", "Order administrator", "Charity"]}).map { |u| { :id => u.id, :name => u.full_name } }
+
+            expected.each do |e|
+              expect(result).not_to include(e)
+            end
           end
 
           it 'does not fetch any disabled users' do
             result = Messages::Channels.new(current_user: reviewer, is_private: false, app_name: ADMIN_APP, messageable: offer).related_users
 
-            expected = User.where(disabled: true).map { |u| [u.id, u.full_name] }
-            expect(result).not_to include(Hash[expected])
+            expected = User.where(disabled: true).map { |u| { :id => u.id, :name => u.full_name } }
+            expected.each do |e|
+              expect(result).not_to include(e)
+            end
           end
         end
 
@@ -89,29 +98,35 @@ module Messages
           it 'fetches users with REVIEWER or SUPERVISOR role' do
             result = Messages::Channels.new(current_user: reviewer, is_private: true, app_name: ADMIN_APP, messageable: offer).related_users
 
-            expected = [supervisor.id, supervisor.full_name], [supervisor2.id, supervisor2.full_name]
-            expect(result).to include(Hash[expected])
+            expected = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [reviewer.id]].flatten.map { |id| {:id => id, :name => User.find(id).full_name} }
+
+            expect(result).to match_array(expected)
           end
 
           it 'does not fetch donor who owns the offer' do
             result = Messages::Channels.new(current_user: reviewer, is_private: true, app_name: ADMIN_APP, messageable: offer).related_users
 
-            expected = [offer.created_by.id, offer.created_by.full_name]
-            expect(result).not_to include(Hash[*expected])
+            expected = { :id => donor.id, :name => donor.full_name }
+            expect(result).not_to include(expected)
           end
 
           it 'does not fetch any stock or browse related users' do
             result = Messages::Channels.new(current_user: reviewer, is_private: true, app_name: ADMIN_APP, messageable: offer).related_users
 
-            expected = User.joins(:user_roles).joins(:roles).where(roles: {name: ["Order fulfilment", "Order administrator", "Charity"]}).map { |u| [u.id, u.full_name] }
-            expect(result).not_to include(Hash[expected])
+            expected = User.joins(:user_roles).joins(:roles).where(roles: {name: ["Order fulfilment", "Order administrator", "Charity"]}).map { |u| { :id => u.id, :name => u.full_name } }
+
+            expected.each do |e|
+              expect(result).not_to include(e)
+            end
           end
 
           it 'does not fetch any disabled users' do
             result = Messages::Channels.new(current_user: reviewer, is_private: true, app_name: ADMIN_APP, messageable: offer).related_users
 
-            expected = User.where(disabled: true).map { |u| [u.id, u.full_name] }
-            expect(result).not_to include(Hash[expected])
+            expected = User.where(disabled: true).map { |u| { :id => u.id, :name => u.full_name } }
+            expected.each do |e|
+              expect(result).not_to include(e)
+            end
           end
         end
       end
@@ -128,26 +143,33 @@ module Messages
         end
 
         it 'fetches users with "order fulfilment" or "order administrator" role and charity user' do
-          result = Messages::Channels.new(current_user: order_fulfilment, is_private: true, app_name: STOCK_APP, messageable: order).related_users
+          result = Messages::Channels.new(current_user: order_fulfilment, is_private: false, app_name: STOCK_APP, messageable: order).related_users
 
-          expected = [charity.id, charity.full_name], [order_administrator.id, order_administrator.full_name]
-          expect(result).to include(Hash[expected])
+          expected = [[User.order_fulfilment.map(&:id), User.order_administrator.map(&:id), charity.id].flatten - [order_fulfilment.id]].flatten.map { |id| {:id => id, :name => User.find(id).full_name } }
 
-          result = Messages::Channels.new(current_user: charity, is_private: true, app_name: BROWSE_APP, messageable: order).related_users
-          expected = [order_fulfilment.id, order_fulfilment.full_name], [order_administrator.id, order_administrator.full_name]
-          expect(result).to include(Hash[expected])
+          expect(result).to match_array(expected)
+
+          result = Messages::Channels.new(current_user: charity, is_private: false, app_name: BROWSE_APP, messageable: order).related_users
+
+          expected = [User.order_fulfilment.map(&:id), User.order_administrator.map(&:id)].flatten.map { |id| { :id => id, :name => User.find(id).full_name } }
+
+          expect(result).to match_array(expected)
         end
 
         it 'does not fetch any admin or donor related users' do
           result = Messages::Channels.new(current_user: charity, is_private: true, app_name: BROWSE_APP, messageable: order).related_users
-          expected = User.joins(:user_roles).joins(:roles).where(roles: {name: ['Reviewer', 'Supervisor']}).map { |u| [u.id, u.full_name] }
-          expect(result).not_to include(Hash[expected])
+          expected = [User.reviewers.map(&:id), User.supervisors.map(&:id)].flatten.map { |id| {:id => id, :name => User.find(id).full_name} }
+          expected.each do |e|
+            expect(result).not_to include(e)
+          end
         end
 
         it 'does not fetch any disabled users' do
           result = Messages::Channels.new(current_user: charity, is_private: true, app_name: BROWSE_APP, messageable: order).related_users
-          expected = User.where(disabled: true).map { |u| [u.id, u.full_name] }
-          expect(result).not_to include(Hash[expected])
+          expected = User.where(disabled: true).map { |u| { :id => u.id, :name => u.full_name } }
+            expected.each do |e|
+              expect(result).not_to include(e)
+            end
         end
       end
     end

@@ -3,12 +3,16 @@ module Api::V1
     embed :ids, include: true
 
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :messageable_type, :messageable_id
+      :updated_at, :messageable_type, :messageable_id, :lookup
 
     has_one :sender, serializer: UserSerializer, root: :user
 
     def designation_id__sql
       'messages.order_id'
+    end
+
+    def lookup
+      object.lookup.to_json
     end
 
     def state

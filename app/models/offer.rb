@@ -20,7 +20,6 @@ class Offer < ActiveRecord::Base
   belongs_to :crossroads_transport
   belongs_to :cancellation_reason
   belongs_to :company
-  has_many :messages, as: :messageable, primary_key: :id
   has_many :subscriptions, as: :subscribable
 
   has_many :items, inverse_of: :offer, dependent: :destroy
@@ -35,6 +34,7 @@ class Offer < ActiveRecord::Base
   has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offers_packages
   has_many :packages, through: :offers_packages
+  has_many :messages, as: :messageable, dependent: :destroy
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
 

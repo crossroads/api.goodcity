@@ -12,9 +12,9 @@ module Messages
     def related_users
       case app_name
       when DONOR_APP, ADMIN_APP
-        Hash[admin_donor_mentions]
+        admin_donor_mentions.uniq
       when STOCK_APP, BROWSE_APP
-        Hash[stock_browse_mentions]
+        stock_browse_mentions.uniq
       end
     end
 
@@ -28,20 +28,20 @@ module Messages
 
     def admin_donor_channel_users
       users = supervisors_and_reviewers.uniq
-      users << [messageable.created_by_id, messageable.created_by.full_name] unless owner?
+      users << { id: messageable.created_by_id, name: messageable.created_by.full_name } unless owner?
       users
     end
 
     def stock_browse_mentions
       users = stock_users
-      users << [messageable.created_by_id, messageable.created_by.full_name] unless owner?
+      users << { id: messageable.created_by_id, name: messageable.created_by.full_name } unless owner?
       users
     end
 
     private
 
     def for_supervisors_only?
-      is_private && app_name == ADMIN_APP
+      is_private
     end
 
     def user_roles
@@ -51,19 +51,19 @@ module Messages
     end
 
     def admin_supervisor_users
-      user_roles.where(roles: { name: ['Supervisor'] })
-                .map { |user| [user.id, user.full_name] }
+      user_roles.where(roles: { name: ['Supervisor'] }).uniq
+                .map { |user| { id: user.id, name: user.full_name } }
     end
 
     def supervisors_and_reviewers
-      user_roles.where(roles: { name: %w[Supervisor Reviewer] })
-                .map { |user| [user.id, user.full_name] }
+      user_roles.where(roles: { name: %w[Supervisor Reviewer] }).uniq
+                .map { |user| { id: user.id, name: user.full_name } }
     end
 
     def stock_users
       user_roles
-        .where(roles: { name: ['Order fulfilment', 'Order administrator'] })
-        .map { |user| [user.id, user.full_name] }
+        .where(roles: { name: ['Order fulfilment', 'Order administrator'] }).uniq
+        .map { |user| { id: user.id, name: user.full_name } }
     end
   end
 end
