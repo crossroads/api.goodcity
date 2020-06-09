@@ -50,7 +50,7 @@ class Message < ActiveRecord::Base
     return body if lookup.empty?
 
     parsed = body
-    lookup.keys.each { |k| parsed = parsed.gsub("[:#{k}]", lookup[k]['display_name']) }
+    lookup.each_key { |k| parsed = parsed.gsub("[:#{k}]", lookup[k]['display_name']) }
     parsed
   end
 

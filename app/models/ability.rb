@@ -401,9 +401,9 @@ class Ability
 
   def user_abilities
     can [:current_user_profile], User
-    can [:show, :update, :orders_count, :mentionable_users], User, id: @user_id
-    can [:index, :show, :update, :recent_users, :create], User if can_read_or_modify_user?
-    can [:create, :show], User if can_create_donor?
+    can %i[show update orders_count mentionable_users], User, id: @user_id
+    can %i[index show update recent_users create], User if can_read_or_modify_user?
+    can %i[create show], User if can_create_donor?
   end
 
   def version_abilities
