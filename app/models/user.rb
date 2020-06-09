@@ -47,6 +47,7 @@ class User < ActiveRecord::Base
   scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
   scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
   scope :order_fulfilment, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
+  scope :order_administrator, -> { where(roles: { name: 'Order administrator' }).joins(:roles) }
   scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
@@ -149,7 +150,7 @@ class User < ActiveRecord::Base
   end
 
   def order_fulfilment?
-    user_role_names.include?("Order fulfilment")
+    user_role_names.include?('Order fulfilment')
   end
 
   def admin?

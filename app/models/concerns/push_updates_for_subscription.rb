@@ -41,7 +41,7 @@ module PushUpdatesForSubscription
   end
 
   def message_body
-    message.body.truncate(150, separator: ' ')
+    message.parsed_body.truncate(150, separator: ' ')
   end
 
   def item_id

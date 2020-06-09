@@ -11,21 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200522024354) do
+ActiveRecord::Schema.define(version: 20200608093722) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "btree_gin"
-  enable_extension "pg_trgm"
 
   create_table "addresses", force: :cascade do |t|
-    t.string   "flat"
-    t.string   "building"
-    t.string   "street"
+    t.string   "flat",             limit: 255
+    t.string   "building",         limit: 255
+    t.string   "street",           limit: 255
     t.integer  "district_id"
     t.integer  "addressable_id"
-    t.string   "addressable_type"
-    t.string   "address_type"
+    t.string   "addressable_type", limit: 255
+    t.string   "address_type",     limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -49,7 +47,7 @@ ActiveRecord::Schema.define(version: 20200522024354) do
 
   create_table "auth_tokens", force: :cascade do |t|
     t.datetime "otp_code_expiry"
-    t.string   "otp_secret_key"
+    t.string   "otp_secret_key",  limit: 255
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -81,7 +79,7 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.string   "identifier"
   end
 
-  add_index "booking_types", ["name_en", "name_zh_tw"], name: "index_booking_types_on_name_en_and_name_zh_tw", unique: true, using: :btree
+  add_index "booking_types", ["identifier"], name: "index_booking_types_on_identifier", using: :btree
 
   create_table "boxes", force: :cascade do |t|
     t.string   "box_number"
@@ -157,8 +155,8 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   end
 
   create_table "contacts", force: :cascade do |t|
-    t.string   "name"
-    t.string   "mobile"
+    t.string   "name",       limit: 255
+    t.string   "mobile",     limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -173,20 +171,20 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   end
 
   create_table "crossroads_transports", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",        limit: 255
+    t.string   "name_zh_tw",     limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "cost"
     t.float    "truck_size"
-    t.boolean  "is_van_allowed", default: true
+    t.boolean  "is_van_allowed",             default: true
   end
 
   create_table "deliveries", force: :cascade do |t|
     t.integer  "offer_id"
     t.integer  "contact_id"
     t.integer  "schedule_id"
-    t.string   "delivery_type"
+    t.string   "delivery_type",    limit: 255
     t.datetime "start"
     t.datetime "finish"
     t.datetime "created_at"
@@ -201,8 +199,8 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "deliveries", ["schedule_id"], name: "index_deliveries_on_schedule_id", using: :btree
 
   create_table "districts", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",      limit: 255
+    t.string   "name_zh_tw",   limit: 255
     t.integer  "territory_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -213,11 +211,11 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "districts", ["territory_id"], name: "index_districts_on_territory_id", using: :btree
 
   create_table "donor_conditions", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",          limit: 255
+    t.string   "name_zh_tw",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "visible_to_donor", default: true, null: false
+    t.boolean  "visible_to_donor",             default: true, null: false
   end
 
   create_table "electricals", force: :cascade do |t|
@@ -240,7 +238,7 @@ ActiveRecord::Schema.define(version: 20200522024354) do
 
   create_table "gogovan_orders", force: :cascade do |t|
     t.integer  "booking_id"
-    t.string   "status"
+    t.string   "status",         limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -255,11 +253,11 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "gogovan_orders", ["ggv_uuid"], name: "index_gogovan_orders_on_ggv_uuid", unique: true, using: :btree
 
   create_table "gogovan_transports", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",    limit: 255
+    t.string   "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "disabled",   default: false
+    t.boolean  "disabled",               default: false
   end
 
   create_table "goodcity_requests", force: :cascade do |t|
@@ -287,7 +285,7 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   create_table "holidays", force: :cascade do |t|
     t.datetime "holiday"
     t.integer  "year"
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -301,13 +299,13 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   end
 
   create_table "images", force: :cascade do |t|
-    t.string   "cloudinary_id"
-    t.boolean  "favourite",      default: false
+    t.string   "cloudinary_id",  limit: 255
+    t.boolean  "favourite",                  default: false
     t.integer  "item_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.integer  "angle",          default: 0
+    t.integer  "angle",                      default: 0
     t.integer  "imageable_id"
     t.string   "imageable_type"
   end
@@ -320,11 +318,11 @@ ActiveRecord::Schema.define(version: 20200522024354) do
 
   create_table "items", force: :cascade do |t|
     t.text     "donor_description"
-    t.string   "state"
-    t.integer  "offer_id",            null: false
+    t.string   "state",               limit: 255
+    t.integer  "offer_id",                        null: false
     t.integer  "package_type_id"
     t.integer  "rejection_reason_id"
-    t.string   "reject_reason"
+    t.string   "reject_reason",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "donor_condition_id"
@@ -345,8 +343,6 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.datetime "updated_at", null: false
   end
 
-  add_index "locations", ["area"], name: "index_locations_on_area", using: :gin
-  add_index "locations", ["building"], name: "index_locations_on_building", using: :gin
   add_index "locations", ["stockit_id"], name: "index_locations_on_stockit_id", using: :btree
 
   create_table "lookups", force: :cascade do |t|
@@ -382,19 +378,19 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.datetime "deleted_at"
     t.string   "messageable_type"
     t.integer  "messageable_id"
-    t.jsonb    "lookup"
+    t.jsonb    "lookup",           default: {}
   end
 
   add_index "messages", ["lookup"], name: "index_messages_on_lookup", using: :gin
   add_index "messages", ["sender_id"], name: "index_messages_on_sender_id", using: :btree
 
   create_table "offers", force: :cascade do |t|
-    t.string   "language"
-    t.string   "state"
-    t.string   "origin"
+    t.string   "language",                limit: 255
+    t.string   "state",                   limit: 255
+    t.string   "origin",                  limit: 255
     t.boolean  "stairs"
     t.boolean  "parking"
-    t.string   "estimated_size"
+    t.string   "estimated_size",          limit: 255
     t.text     "notes"
     t.integer  "created_by_id"
     t.datetime "created_at"
@@ -415,7 +411,7 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.integer  "cancellation_reason_id"
     t.string   "cancel_reason"
     t.datetime "inactive_at"
-    t.boolean  "saleable",                           default: false
+    t.boolean  "saleable",                            default: false
     t.integer  "company_id"
   end
 
@@ -425,7 +421,6 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "offers", ["created_by_id"], name: "index_offers_on_created_by_id", using: :btree
   add_index "offers", ["crossroads_transport_id"], name: "index_offers_on_crossroads_transport_id", using: :btree
   add_index "offers", ["gogovan_transport_id"], name: "index_offers_on_gogovan_transport_id", using: :btree
-  add_index "offers", ["notes"], name: "offers_notes_search_idx", using: :gin
   add_index "offers", ["received_by_id"], name: "index_offers_on_received_by_id", using: :btree
   add_index "offers", ["reviewed_by_id"], name: "index_offers_on_reviewed_by_id", using: :btree
   add_index "offers", ["state"], name: "index_offers_on_state", using: :btree
@@ -503,7 +498,6 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "orders", ["beneficiary_id"], name: "index_orders_on_beneficiary_id", using: :btree
   add_index "orders", ["cancelled_by_id"], name: "index_orders_on_cancelled_by_id", using: :btree
   add_index "orders", ["closed_by_id"], name: "index_orders_on_closed_by_id", using: :btree
-  add_index "orders", ["code"], name: "orders_code_idx", using: :gin
   add_index "orders", ["country_id"], name: "index_orders_on_country_id", using: :btree
   add_index "orders", ["created_by_id"], name: "index_orders_on_created_by_id", using: :btree
   add_index "orders", ["detail_id", "detail_type"], name: "index_orders_on_detail_id_and_detail_type", using: :btree
@@ -636,36 +630,35 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.integer  "stockit_id"
     t.integer  "location_id"
     t.boolean  "allow_requests",          default: true
-    t.boolean  "allow_stock",             default: false
     t.boolean  "allow_pieces",            default: false
+    t.boolean  "allow_stock",             default: false
     t.string   "subform"
     t.boolean  "allow_box",               default: false
     t.boolean  "allow_pallet",            default: false
-    t.boolean  "allow_expiry_date",       default: false
     t.decimal  "default_value_hk_dollar"
+    t.boolean  "allow_expiry_date",       default: false
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
   add_index "package_types", ["location_id"], name: "index_package_types_on_location_id", using: :btree
-  add_index "package_types", ["name_en"], name: "package_types_name_en_search_idx", using: :gin
-  add_index "package_types", ["name_zh_tw"], name: "package_types_name_zh_tw_search_idx", using: :gin
   add_index "package_types", ["stockit_id"], name: "index_package_types_on_stockit_id", using: :btree
   add_index "package_types", ["visible_in_selects"], name: "index_package_types_on_visible_in_selects", using: :btree
 
   create_table "packages", force: :cascade do |t|
+    t.integer  "quantity"
     t.integer  "length"
     t.integer  "width"
     t.integer  "height"
     t.text     "notes"
     t.integer  "item_id"
-    t.string   "state"
+    t.string   "state",                    limit: 255
     t.datetime "received_at"
     t.datetime "rejected_at"
     t.integer  "package_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.integer  "offer_id",                 default: 0
+    t.integer  "offer_id",                             default: 0
     t.string   "inventory_number"
     t.integer  "location_id"
     t.string   "designation_name"
@@ -682,7 +675,7 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.integer  "favourite_image_id"
     t.date     "stockit_moved_on"
     t.integer  "stockit_moved_by_id"
-    t.boolean  "saleable",                 default: false
+    t.boolean  "saleable",                             default: false
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
@@ -691,36 +684,32 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.integer  "detail_id"
     t.string   "detail_type"
     t.integer  "storage_type_id"
-    t.integer  "available_quantity",       default: 0
-    t.integer  "on_hand_quantity",         default: 0
-    t.integer  "designated_quantity",      default: 0
-    t.integer  "dispatched_quantity",      default: 0
-    t.date     "expiry_date"
     t.decimal  "value_hk_dollar"
+    t.integer  "available_quantity",                   default: 0
+    t.integer  "on_hand_quantity",                     default: 0
+    t.integer  "designated_quantity",                  default: 0
+    t.integer  "dispatched_quantity",                  default: 0
+    t.date     "expiry_date"
     t.integer  "package_set_id"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
   add_index "packages", ["available_quantity"], name: "index_packages_on_available_quantity", using: :btree
   add_index "packages", ["box_id"], name: "index_packages_on_box_id", using: :btree
-  add_index "packages", ["case_number"], name: "index_packages_on_case_number", using: :gin
   add_index "packages", ["designated_quantity"], name: "index_packages_on_designated_quantity", using: :btree
-  add_index "packages", ["designation_name"], name: "index_packages_on_designation_name", using: :gin
   add_index "packages", ["detail_type", "detail_id"], name: "index_packages_on_detail_type_and_detail_id", using: :btree
   add_index "packages", ["dispatched_quantity"], name: "index_packages_on_dispatched_quantity", using: :btree
   add_index "packages", ["donor_condition_id"], name: "index_packages_on_donor_condition_id", using: :btree
   add_index "packages", ["inventory_number"], name: "index_packages_on_inventory_number", using: :btree
-  add_index "packages", ["inventory_number"], name: "inventory_numbers_search_idx", using: :gin
   add_index "packages", ["item_id"], name: "index_packages_on_item_id", using: :btree
   add_index "packages", ["location_id"], name: "index_packages_on_location_id", using: :btree
-  add_index "packages", ["notes"], name: "index_packages_on_notes", using: :gin
   add_index "packages", ["offer_id"], name: "index_packages_on_offer_id", using: :btree
   add_index "packages", ["on_hand_quantity"], name: "index_packages_on_on_hand_quantity", using: :btree
   add_index "packages", ["order_id"], name: "index_packages_on_order_id", using: :btree
   add_index "packages", ["package_set_id"], name: "index_packages_on_package_set_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
-  add_index "packages", ["state"], name: "index_packages_on_state", using: :gin
+  add_index "packages", ["quantity"], name: "partial_index_quantity_greater_than_zero", where: "(quantity > 0)", using: :btree
   add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree
   add_index "packages", ["stockit_id"], name: "index_packages_on_stockit_id", using: :btree
   add_index "packages", ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id", using: :btree
@@ -777,7 +766,7 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   end
 
   create_table "permissions", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -811,10 +800,10 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   end
 
   create_table "rejection_reasons", force: :cascade do |t|
-    t.string   "name_en"
+    t.string   "name_en",    limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "name_zh_tw"
+    t.string   "name_zh_tw", limit: 255
   end
 
   create_table "requested_packages", force: :cascade do |t|
@@ -846,10 +835,10 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   end
 
   create_table "schedules", force: :cascade do |t|
-    t.string   "resource"
+    t.string   "resource",     limit: 255
     t.integer  "slot"
-    t.string   "slot_name"
-    t.string   "zone"
+    t.string   "slot_name",    limit: 255
+    t.string   "zone",         limit: 255
     t.datetime "scheduled_at"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -872,11 +861,6 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.datetime "updated_at",          null: false
   end
 
-  add_index "stockit_contacts", ["first_name"], name: "st_contacts_first_name_idx", using: :gin
-  add_index "stockit_contacts", ["last_name"], name: "st_contacts_last_name_idx", using: :gin
-  add_index "stockit_contacts", ["mobile_phone_number"], name: "st_contacts_mobile_phone_number_idx", using: :gin
-  add_index "stockit_contacts", ["phone_number"], name: "st_contacts_phone_number_idx", using: :gin
-
   create_table "stockit_local_orders", force: :cascade do |t|
     t.string   "client_name"
     t.string   "hkid_number"
@@ -887,16 +871,12 @@ ActiveRecord::Schema.define(version: 20200522024354) do
     t.text     "purpose_of_goods"
   end
 
-  add_index "stockit_local_orders", ["client_name"], name: "st_local_orders_client_name_idx", using: :gin
-
   create_table "stockit_organisations", force: :cascade do |t|
     t.string   "name"
     t.integer  "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
-
-  add_index "stockit_organisations", ["name"], name: "st_organisations_name_idx", using: :gin
 
   create_table "storage_types", force: :cascade do |t|
     t.string   "name"
@@ -930,15 +910,15 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "subscriptions", ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
 
   create_table "territories", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",    limit: 255
+    t.string   "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "timeslots", force: :cascade do |t|
-    t.string   "name_en"
-    t.string   "name_zh_tw"
+    t.string   "name_en",    limit: 255
+    t.string   "name_zh_tw", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -954,21 +934,21 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_index "user_roles", ["user_id"], name: "index_user_roles_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "mobile"
+    t.string   "first_name",           limit: 255
+    t.string   "last_name",            limit: 255
+    t.string   "mobile",               limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "image_id"
     t.datetime "last_connected"
     t.datetime "last_disconnected"
-    t.boolean  "disabled",             default: false
+    t.boolean  "disabled",                         default: false
     t.string   "email"
     t.string   "title"
     t.datetime "sms_reminder_sent_at"
-    t.boolean  "is_mobile_verified",   default: false
-    t.boolean  "is_email_verified",    default: false
-    t.boolean  "receive_email",        default: false
+    t.boolean  "is_mobile_verified",               default: false
+    t.boolean  "is_email_verified",                default: false
+    t.boolean  "receive_email",                    default: false
     t.string   "other_phone"
     t.integer  "printer_id"
   end
@@ -1009,7 +989,6 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
-  add_foreign_key "messages", "orders"
   add_foreign_key "offers_packages", "offers"
   add_foreign_key "offers_packages", "packages"
   add_foreign_key "orders_process_checklists", "orders"
@@ -1023,7 +1002,6 @@ ActiveRecord::Schema.define(version: 20200522024354) do
   add_foreign_key "packages_inventories", "packages"
   add_foreign_key "packages_inventories", "users"
   add_foreign_key "process_checklists", "booking_types"
-  add_foreign_key "subscriptions", "orders"
   add_foreign_key "users", "printers"
   add_foreign_key "valuation_matrices", "donor_conditions"
 end
