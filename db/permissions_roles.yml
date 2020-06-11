@@ -1,5 +1,11 @@
 ---
 System: []
+api-write: []
+System administrator:
+- can_disable_user
+- can_read_or_modify_user
+Stock fulfillment: []
+Stock administrator: []
 Reviewer:
 - can_manage_packages
 - can_manage_offers
@@ -66,7 +72,6 @@ Supervisor:
 - can_create_donor
 - can_access_printers
 - can_access_orders_process_checklists
-api-write: []
 Charity:
 - can_login_to_browse
 - can_search_browse_packages

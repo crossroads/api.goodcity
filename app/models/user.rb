@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
   include PushUpdates
   include RollbarSpecification
   include UserSearch
+  include ManageUserRoles
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
@@ -153,8 +154,9 @@ class User < ActiveRecord::Base
     user_role_names.include?("Order fulfilment")
   end
 
-  def can_manage_users?
-    user_permissions_names.include?("can_read_or_modify_user")
+  def can_disable_user?(id = nil)
+    user_permissions_names.include?("can_disable_user") &&
+    User.current_user.id != id&.to_i
   end
 
   def admin?
@@ -210,14 +212,6 @@ class User < ActiveRecord::Base
     Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
   end
 
-  def create_or_remove_user_roles(role_ids)
-    role_ids = role_ids || []
-    remove_user_roles(role_ids)
-    role_ids.each do |role_id|
-      user_roles.where(role_id: role_id).first_or_create
-    end
-  end
-
   def email_properties
     props = {}
     props["contact_name"] = "#{first_name} #{last_name}"
@@ -233,11 +227,6 @@ class User < ActiveRecord::Base
 
   def request_from_stock_without_mobile?
     request_from_stock && mobile.blank? || request_from_browse && mobile.blank?
-  end
-
-  def remove_user_roles(role_ids)
-    role_ids_to_remove = roles.pluck(:id) - role_ids
-    user_roles.where("role_id IN(?)", role_ids_to_remove).destroy_all
   end
 
   def generate_auth_token
