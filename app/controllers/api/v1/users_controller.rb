@@ -36,8 +36,8 @@ module Api
             @user.organisations << Organisation.find_by(id: params["user"]["organisations_users_ids"])
           end
 
-          if params["user"]["user_role_ids"] && User.current_user.can_manage_users?
-            @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
+          if params["user"]["user_role_ids"]
+            current_user.update_roles_for_user(@user, params["user"]["user_role_ids"])
           end
           render json: @user, serializer: serializer, include_user_roles: true, status: 201
         else
@@ -59,8 +59,8 @@ module Api
 
       def update
         @user.update_attributes(user_params)
-        if can_update_other_user? && params["user"]["user_role_ids"]
-          @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
+        if params["user"]["user_role_ids"]
+          current_user.update_roles_for_user(@user, params["user"]["user_role_ids"])
         end
         render json: @user, serializer: serializer
       end
@@ -91,15 +91,10 @@ module Api
         render json: { "meta": {"search": params["searchText"] } }.merge(data)
       end
 
-      def can_update_other_user?
-        User.current_user.can_manage_users? &&
-        User.current_user.id != params["id"].to_i
-      end
-
       def user_params
         attributes = %i[image_id first_name last_name email receive_email
           other_phone title mobile printer_id]
-        attributes.concat([:disabled]) if can_update_other_user?
+        attributes.concat([:disabled]) if current_user.can_disable_user?(params[:id])
         attributes.concat([:last_connected, :last_disconnected]) if User.current_user.id == params["id"]&.to_i
         params.require(:user).permit(attributes)
       end
@@ -110,6 +105,7 @@ module Api
         return ids.split(',') if ids.is_a?(String)
         ids.map(&:to_i)
       end
+
     end
   end
 end

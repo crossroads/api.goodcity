@@ -842,6 +842,7 @@ ActiveRecord::Schema.define(version: 20200610104052) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "level"
   end
 
   create_table "schedules", force: :cascade do |t|
