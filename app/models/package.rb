@@ -47,7 +47,6 @@ class Package < ActiveRecord::Base
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   before_save :set_favourite_image, if: :valid_favourite_image_id?
-  after_create :initialize_package_set
 
   # Live update rules
   after_save :push_changes
@@ -342,26 +341,6 @@ class Package < ActiveRecord::Base
     favourite_image_id_changed? &&
       favourite_image_id.present? &&
       image_ids.include?(favourite_image_id)
-  end
-
-  ##
-  #
-  # Upon creation of a package, it is added to a set IF:
-  #   * It belongs to an item
-  #   * It has sibling packages (via the item)
-  #   * It does not currently belong to a set
-  #
-  def initialize_package_set
-    siblings = [self, *item&.packages].uniq
-
-    return if package_set_id.present? || siblings.length < 2 || item.package_type.blank?
-
-    package_set = siblings.find { |p| p.package_set_id.present? }&.package_set
-    package_set ||= PackageSet.create(description: item.package_type.name_en, package_type_id: item.package_type_id)
-
-    siblings.select { |p| p.package_set_id.blank? }.each do |package|
-      package.update(package_set_id: package_set.id)
-    end
   end
 
   def set_favourite_image
