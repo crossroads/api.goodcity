@@ -80,7 +80,7 @@ module Api
       def apply_scope(records, scope)
         return records unless ALLOWED_SCOPES.include? scope
 
-        records.where("messages.messageable_type = '#{scope.camelize}'")
+        records.where("messages.messageable_type = (?)", scope.camelize)
       end
 
       def paginate_and_render(records)
