@@ -87,45 +87,6 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe "Package Set initialization on create" do
-    let(:package_set) { create(:package_set) }
-    let(:package) { create(:package) }
-    let(:item) { create(:item) }
-    let(:sibling_1) { create(:package, item: item) }
-    let(:sibling_2) { create(:package, item: item) }
-    let(:sibling_3) { create(:package, item: item) }
-    let(:sibling_4) { create(:package, item: item, package_set: package_set) }
-
-    before { touch(package_set) }
-
-    it 'is not assigned a package set if it doesnt have sibling packages' do
-      expect { touch(package) }.not_to change(PackageSet, :count)
-      expect(package.package_set_id).to be_nil
-    end
-
-    it 'is assigned a package set if it has sibling packages' do
-      expect { touch(sibling_1) }.not_to change(PackageSet, :count)
-      expect { touch(sibling_2) }.to change(PackageSet, :count).by(1)
-
-      expect(sibling_1.reload.package_set_id).to eq(sibling_2.reload.package_set_id)
-
-      expect { touch(sibling_3) }.not_to change(PackageSet, :count)
-      expect(sibling_3.reload.package_set_id).to eq(sibling_2.reload.package_set_id)
-    end
-
-    it 'is assigned a package set with a description equal to the package type' do
-      touch(sibling_1, sibling_2)
-      expect(sibling_1.reload.package_set.description).to eq(item.package_type.name_en)
-    end
-
-    it 'it can be created with an explicit set which is different from the siblings' do
-      expect([sibling_1, sibling_2, sibling_3].map(&:reload).map(&:package_set_id).uniq.length).to eq(1)
-
-      expect { touch(sibling_4) }.not_to change(PackageSet, :count)
-      expect(sibling_4.reload.package_set_id).not_to eq(sibling_1.reload.package_set_id)
-    end
-  end
-
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
