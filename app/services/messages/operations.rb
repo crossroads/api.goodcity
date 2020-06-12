@@ -3,7 +3,7 @@
 module Messages
   # Message operations
   class Operations < Base
-    attr_accessor :message, :ids
+    attr_accessor :message, :ids, :mentioned_ids
 
     def initialize(params)
       @message = params[:message]
@@ -11,9 +11,14 @@ module Messages
       super(params.merge(messageable: @message.messageable))
     end
 
-    def handle_mentioned_users
+    def self.handle_subscriptions(message)
+      new(message).handle_subscriptions
+    end
+
+    def handle_subscriptions
       format_message_body
-      notify_users unless ids.empty?
+      notify_users unless mentioned_ids.empty?
+      subscribe_users_to_message
     end
 
     def subscribe_users_to_message
@@ -57,6 +62,7 @@ module Messages
     def remove_unwanted_users(obj)
       @ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
       @ids -= [obj.try(:created_by_id)] if message.is_private || obj.try('cancelled?')
+      @ids -= mentioned_ids if mentioned_ids.present?
     end
 
     def add_related_users(obj)
@@ -104,7 +110,7 @@ module Messages
 
     def format_message_body
       sanitize_and_set_mentioned_ids
-      return if ids.empty?
+      return if mentioned_ids.empty?
 
       add_lookup
     end
@@ -115,7 +121,7 @@ module Messages
     end
 
     def notify_users
-      ids.map do |id|
+      mentioned_ids.map do |id|
         add_subscriber(id, 'unread')
       end
     end
@@ -131,14 +137,14 @@ module Messages
     end
 
     def sanitize_user_ids(ids)
-      @ids = parse_id_from_decorated_ids(ids)
+      @mentioned_ids = parse_id_from_decorated_ids(ids)
     end
 
     def add_lookup
       lookup = {}
       lookup_ids = parse_id_from_decorated_ids(parse_id_from_mention_text)
       lookup_ids.map.with_index do |lookup_id, idx|
-        lookup[lookup_id] = { type: 'User', id: ids[idx], display_name: User.find(ids[idx]).full_name }
+        lookup[lookup_id] = { type: 'User', id: mentioned_ids[idx], display_name: User.find(mentioned_ids[idx]).full_name }
       end
       message.update(lookup: lookup)
     end

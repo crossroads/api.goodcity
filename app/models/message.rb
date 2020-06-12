@@ -2,7 +2,6 @@ class Message < ActiveRecord::Base
   has_paper_trail class_name: 'Version', meta: { related: :offer }
   include Paranoid
   include StateMachineScope
-  include MessageSubscription
   include PushUpdatesForMessage
 
   belongs_to :sender, class_name: 'User', inverse_of: :messages
@@ -35,15 +34,14 @@ class Message < ActiveRecord::Base
   attr_accessor :state_value, :is_call_log
 
   after_create do
-    handle_mentioned_users
-    subscribe_users_to_message # MessageSubscription
+    handle_subscriptions # Handle mentions and subscriptions
     update_client_store # PushUpdatesForMessage (must come after subscribe_users_to_message)
   end
 
   after_destroy :notify_deletion_to_subscribers
 
-  def handle_mentioned_users
-    Messages::Operations.new(message: self).handle_mentioned_users
+  def handle_subscriptions
+    Messages::Operations.new(message: self).handle_subscriptions
   end
 
   def parsed_body
