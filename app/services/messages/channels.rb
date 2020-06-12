@@ -5,7 +5,7 @@ module Messages
     attr_accessor :is_private
 
     def initialize(params)
-      @is_private = params[:is_private]
+      @is_private = ActiveRecord::Type::Boolean.new.type_cast_from_database(params[:is_private])
       super(params)
     end
 
@@ -19,7 +19,7 @@ module Messages
     end
 
     def admin_donor_mentions
-      if for_supervisors_only?
+      if is_private
         admin_supervisor_users
       else
         admin_donor_channel_users
@@ -39,10 +39,6 @@ module Messages
     end
 
     private
-
-    def for_supervisors_only?
-      is_private
-    end
 
     def user_roles
       User.where.not(users: { id: current_user.id, disabled: true })
