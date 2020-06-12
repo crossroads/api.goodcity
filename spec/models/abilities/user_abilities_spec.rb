@@ -6,12 +6,6 @@ describe "User abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :current_user_profile] }
 
-  context "when Administrator" do
-    let(:user)   { create(:user, :administrator) }
-    let(:person) { create :user }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, person) } }
-  end
-
   context "when Supervisor" do
     let(:user)   { create(:user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor') }
     let(:person) { create :user }
