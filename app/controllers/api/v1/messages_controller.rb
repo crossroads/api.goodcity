@@ -107,7 +107,19 @@ module Api
         ).as_json
       end
 
+      def handle_backward_compatibility
+        %w[offer_id order_id item_id].map do |param|
+          if params['message'][param]
+            params['message']['messageable_type'] = param.split('_')[0].camelize
+            params['message']['messageable_id'] = params['message'][param]
+          end
+        end
+      end
+
       def message_params
+        # Manipulating the params for now to keep backward compatibility
+        # as abilities needs to be handled
+        handle_backward_compatibility
         params.require(:message).permit(
           :body, :is_private,
           :messageable_type,
