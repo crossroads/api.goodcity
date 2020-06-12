@@ -1,0 +1,26 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Forward release notes
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - live
+
+jobs:
+  release-notes:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - name: Generate and email notes
+      run: npx @goodcity/release-notes --email-to "prabier@crossroads.org.hk,swkenworthy@crossroads.org.hk,mdgow@crossroads.org.hk" --head ${{github.event.pull_request.head.sha}} --base ${{github.event.pull_request.base.sha}} --email-subject "🚀 API Release 🚀" --app-name "Goodcity API"
+      env:
+        JIRA_USERNAME: ${{secrets.jira_username}}
+        JIRA_PASSWORD: ${{secrets.jira_password}}
+        SENDGRID_API_KEY: ${{secrets.sendgrid_api_key}}
