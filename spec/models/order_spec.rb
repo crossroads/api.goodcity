@@ -248,6 +248,9 @@ RSpec.describe Order, type: :model do
     let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + 1.hour }
     let!(:version2) {order2.versions.first.update(whodunnit: order2.created_by_id)}
 
+    let!(:order3) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
+    let!(:version3) {order3.versions.first.update(whodunnit: order3.created_by_id)}
+
     before(:each) {
       User.current_user = user
     }
@@ -261,6 +264,10 @@ RSpec.describe Order, type: :model do
 
     it "will show top 5 updated orders" do
       expect(Order.recently_used(User.current_user.id).count).to eq(2)
+    end
+
+    it "should not show draft order in recent 5 updated orders" do
+      expect(Order.recently_used(User.current_user.id).map(&:state)).to_not include('draft')
     end
 
     it "will not show updated position of order if other user has updated the record" do
