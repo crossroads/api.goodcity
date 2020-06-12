@@ -193,7 +193,7 @@ module Messages
       end
     end
 
-    describe '#handle_mentioned_users' do
+    describe '#handle_subscriptions' do
       let!(:user1) { create(:user) }
       let!(:user2) { create(:user) }
       let(:message) { build(:message, body: "Hello [:#{user1.id}]. I need help from you and [:#{user2.id}]") }
@@ -213,7 +213,7 @@ module Messages
         expect(operation).to receive(:add_subscriber).with(user1.id.to_s, 'unread')
         expect(operation).to receive(:add_subscriber).with(user2.id.to_s, 'unread')
 
-        operation.handle_mentioned_users
+        operation.handle_subscriptions
       end
 
       context 'when no user is mentioned' do
@@ -225,14 +225,8 @@ module Messages
         end
 
         it 'does not create a message lookup' do
-          operation.handle_mentioned_users
+          operation.handle_subscriptions
           expect(message.reload.lookup).to be_empty
-        end
-
-        it 'does not add any subscribers' do
-          expect(operation).not_to receive(:add_subscriber).with(anything, anything)
-
-          operation.handle_mentioned_users
         end
       end
     end

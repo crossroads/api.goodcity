@@ -163,16 +163,16 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     end
 
     context 'polymorphic associations' do
-      let(:item) { create(:item, offer: offer) }
+      let(:item) { create(:item, id: offer.id, offer: offer) }
       let!(:item_message) { create(:message, messageable: item) }
       let!(:offer_message) { create(:message, messageable: offer) }
       let!(:order_message) { create(:message, :with_order, sender: user) }
 
       it 'expects to include messages related only to item' do
         get :show, id: offer.id
-        expect(parsed_body['messages'].count).to eq(1)
-        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer')
-        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include( offer.id)
+        expect(parsed_body['messages'].count).to eq(2)
+        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer', 'Item')
+        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include(offer.id, item.id)
       end
     end
   end

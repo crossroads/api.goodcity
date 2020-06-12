@@ -9,7 +9,6 @@ class Item < ActiveRecord::Base
   belongs_to :package_type, inverse_of: :items
   belongs_to :rejection_reason
   belongs_to :donor_condition
-  has_many   :messages, dependent: :destroy
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :messages, as: :messageable, dependent: :destroy
   has_many   :packages, dependent: :destroy

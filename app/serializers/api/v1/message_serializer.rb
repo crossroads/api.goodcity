@@ -15,6 +15,30 @@ module Api::V1
       object.lookup.to_json
     end
 
+    def item_id
+      object.messageable_type == 'Item' ? object.messageable_id : nil
+    end
+
+    def item_id__sql
+      "CASE WHEN messageable_type='Item' THEN messageable_id ELSE NULL END"
+    end
+
+    def order_id
+      object.messageable_type == 'Order' ? object.messageable_id : nil
+    end
+
+    def order_id__sql
+      "CASE WHEN messageable_type='Order' THEN messageable_id ELSE NULL END"
+    end
+
+    def offer_id
+      object.messageable_type == 'Offer' ? object.messageable_id : nil
+    end
+
+    def offer_id__sql
+      "CASE WHEN messageable_type='Offer' THEN messageable_id ELSE NULL END"
+    end
+
     def state
       if object.state_value.present?
         object.state_value

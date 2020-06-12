@@ -2,7 +2,7 @@ module PushUpdatesForSubscription
   extend ActiveSupport::Concern
 
   # Send in-app/mobile notifications to users who are subscribed to messages
-  #   (see MessageSubscription module for logic).
+  #   (see Messages::Operations service for logic).
   # E.g. after_create :send_new_message_notification
   def send_new_message_notification
     message = self.message
