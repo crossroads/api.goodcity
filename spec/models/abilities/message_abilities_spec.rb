@@ -13,17 +13,6 @@ describe "Message abilities" do
 
   #~ before { expect(Pusher).to receive(:trigger) }
 
-  context "when Administrator" do
-    let(:user) { create(:user, :administrator) }
-    context "and message is not is_private" do
-      it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, message) } }
-    end
-    context "and message is is_private" do
-      let(:is_private) { true }
-      it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, message) } }
-    end
-  end
-
   context "when Supervisor" do
     let(:user) { create(:user, :with_can_manage_messages_permission, role_name: 'Supervisor') }
     context "and message is not is_private" do

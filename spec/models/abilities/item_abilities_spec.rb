@@ -8,11 +8,6 @@ describe "Item abilities" do
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
 
-  context "when Administrator" do
-    let(:user) { create(:user, :administrator) }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, item) } }
-  end
-
   context "when Supervisor" do
     let(:user)  { create(:user, :with_can_manage_items_permission, role_name: 'Supervisor') }
     context "and item is draft" do
