@@ -216,6 +216,13 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(response).to have_http_status(:success)
       end
 
+      context 'if no messageable id is passed in params' do
+        it 'return empty array' do
+          get :mentionable_users, app_name: ADMIN_APP, offer_id: nil, is_private: false
+          expect(parsed_body['users']).to be_empty
+        end
+      end
+
       context 'if public' do
         context 'admin app' do
           it 'returns reviewers and donors' do

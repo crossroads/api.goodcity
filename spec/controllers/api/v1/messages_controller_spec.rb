@@ -127,12 +127,12 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
     context 'backward compatibility' do
       let(:offer) { create(:offer, :with_messages, created_by: user) }
-      let(:item) { create(:item, :with_messages, created_by: user) }
+      let(:item) { create(:item, :with_messages, offer: offer) }
       let(:outdated_params) do
         FactoryBot.attributes_for(:message, sender: user.id, offer_id: offer.id)
       end
       let(:outdated_item_params) do
-        FactoryBot.attributes_for(:message, sender: user.id, offer_id: item.id)
+        FactoryBot.attributes_for(:message, sender: user.id, item_id: item.id)
       end
 
       before do
@@ -146,12 +146,14 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       it 'creates new message for the offer' do
         expect{
           post :create, message: outdated_params
+          expect(subject['message']['offer_id']).to eq(offer.id)
         }.to change { Message.count }
       end
 
       it 'creates the new message for the item' do
         expect{
-          post :create, message: message_params
+          post :create, message: outdated_item_params
+          expect(subject['message']['item_id']).to eq(item.id)
         }.to change { Message.count }
       end
     end

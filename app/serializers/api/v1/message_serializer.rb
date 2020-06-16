@@ -1,20 +1,19 @@
 module Api::V1
   class MessageSerializer < ApplicationSerializer
     embed :ids, include: true
-
+    # Deprication: order_id, offer_id, item_id will be removed
     attributes :id, :body, :state, :is_private, :created_at,
-      :updated_at, :messageable_type, :messageable_id, :lookup
+               :updated_at, :messageable_type,
+               :messageable_id, :lookup, :offer_id,
+               :item_id, :designation_id, :order_id
 
     has_one :sender, serializer: UserSerializer, root: :user
-
-    def designation_id__sql
-      'messages.order_id'
-    end
 
     def lookup
       object.lookup.to_json
     end
 
+    # Deprication: This will be removed
     def item_id
       object.messageable_type == 'Item' ? object.messageable_id : nil
     end
@@ -23,14 +22,25 @@ module Api::V1
       "CASE WHEN messageable_type='Item' THEN messageable_id ELSE NULL END"
     end
 
+    # Deprication: This will be removed
     def order_id
       object.messageable_type == 'Order' ? object.messageable_id : nil
+    end
+
+    # Deprication: This will be removed
+    def designation_id
+      object.messageable_type == 'Order' ? object.messageable_id : nil
+    end
+
+    def designation_id__sql
+      "CASE WHEN messageable_type='Order' THEN messageable_id ELSE NULL END"
     end
 
     def order_id__sql
       "CASE WHEN messageable_type='Order' THEN messageable_id ELSE NULL END"
     end
 
+    # Deprication: This will be removed
     def offer_id
       object.messageable_type == 'Offer' ? object.messageable_id : nil
     end

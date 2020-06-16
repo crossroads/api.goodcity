@@ -30,12 +30,15 @@ module PushUpdatesForSubscription
   end
 
   def data_to_send
+    # Deprication: item_id and data[identity] will be removed
     data = { category: 'message',
              message: message_body,
              is_private: message.is_private,
              item_id: item_id,
              author_id: message.sender_id,
-             message_id: message.id }
+             message_id: message.id,
+             messageable_id: message.messageable_id,
+             messageable_type: message.messageable_type }
     data[identity] = message.related_object.id
     data
   end
@@ -44,10 +47,12 @@ module PushUpdatesForSubscription
     message.parsed_body.truncate(150, separator: ' ')
   end
 
+  # Deprication: This will be removed
   def item_id
     message.messageable.instance_of?(Item) && message.messageable_id
   end
 
+  # Deprication: This will be removed
   def identity
     "#{message.related_object.class.name.underscore}_id".to_sym
   end
