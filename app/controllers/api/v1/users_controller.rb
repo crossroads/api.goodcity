@@ -61,6 +61,9 @@ module Api
       end
 
       def mentionable_users
+        messageable = messageable_obj
+        return render json: { users: [] } if messageable.nil?
+
         @users = Messages::Channels
                  .new(app_name: app_name,
                       messageable: messageable_obj,
