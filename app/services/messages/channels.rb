@@ -20,20 +20,20 @@ module Messages
 
     def admin_donor_mentions
       if is_private
-        admin_supervisor_users
+        get_users_by_roles(['Supervisor'])
       else
         admin_donor_channel_users
       end
     end
 
     def admin_donor_channel_users
-      users = supervisors_and_reviewers.uniq
+      users = get_users_by_roles(%w[Supervisor Reviewer]).uniq
       users << { id: messageable.created_by_id, name: messageable.created_by.full_name } unless owner?
       users
     end
 
     def stock_browse_mentions
-      users = stock_users
+      users = get_users_by_roles(['Order fulfilment', 'Order administrator'])
       users << { id: messageable.created_by_id, name: messageable.created_by.full_name } unless owner?
       users
     end
@@ -46,20 +46,9 @@ module Messages
           .joins(:roles)
     end
 
-    def admin_supervisor_users
-      user_roles.where(roles: { name: ['Supervisor'] }).uniq
+    def get_users_by_roles(roles)
+      user_roles.where(roles: { name: roles }).uniq
                 .map { |user| { id: user.id, name: user.full_name } }
-    end
-
-    def supervisors_and_reviewers
-      user_roles.where(roles: { name: %w[Supervisor Reviewer] }).uniq
-                .map { |user| { id: user.id, name: user.full_name } }
-    end
-
-    def stock_users
-      user_roles
-        .where(roles: { name: ['Order fulfilment', 'Order administrator'] }).uniq
-        .map { |user| { id: user.id, name: user.full_name } }
     end
   end
 end

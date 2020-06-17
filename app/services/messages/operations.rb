@@ -17,7 +17,6 @@ module Messages
 
     def handle_subscriptions
       format_message_body
-      notify_users unless mentioned_ids.empty?
       subscribe_users_to_message
     end
 
@@ -31,6 +30,7 @@ module Messages
       add_related_users(obj)
       @ids = ids.flatten.uniq
       remove_unwanted_users(obj)
+      add_mentioned_users
       add_all_subscribed_staff(obj)
       add_subscription_for_message
     end
@@ -62,7 +62,10 @@ module Messages
     def remove_unwanted_users(obj)
       @ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
       @ids -= [obj.try(:created_by_id)] if message.is_private || obj.try('cancelled?')
-      @ids -= mentioned_ids if mentioned_ids.present?
+    end
+
+    def add_mentioned_users
+      @ids += mentioned_ids if mentioned_ids.present?
     end
 
     def add_related_users(obj)
@@ -118,12 +121,6 @@ module Messages
     def admin_user_fields
       %i[reviewed_by_id processed_by_id process_completed_by_id cancelled_by_id
          process_completed_by dispatch_started_by closed_by submitted_by]
-    end
-
-    def notify_users
-      mentioned_ids.map do |id|
-        add_subscriber(id, 'unread')
-      end
     end
 
     def sanitize_and_set_mentioned_ids
