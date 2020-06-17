@@ -845,6 +845,8 @@ ActiveRecord::Schema.define(version: 20200610104052) do
     t.integer  "level"
   end
 
+  add_index "roles", ["level"], name: "index_roles_on_level", using: :btree
+
   create_table "schedules", force: :cascade do |t|
     t.string   "resource",     limit: 255
     t.integer  "slot"

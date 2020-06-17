@@ -4,7 +4,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
 
-  let(:user) { create(:user_with_token, :with_can_read_or_modify_user_permission,  role_name: 'Supervisor') }
+  let(:supervisor_user) { create(:user_with_token, :with_can_read_or_modify_user_permission,  role_name: 'Supervisor') }
   let(:reviewer_user) { create(:user_with_token, :with_can_create_user_permission, role_name: "Reviewer") }
   let(:system_admin_user) {
     create :user,
@@ -29,16 +29,16 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET user" do
-    before { generate_and_set_token(user) }
+    before { generate_and_set_token(supervisor_user) }
 
     it "returns 200" do
-      get :show, id: user.id
+      get :show, id: supervisor_user.id
       expect(response.status).to eq(200)
     end
   end
 
   describe "GET users" do
-    before { generate_and_set_token(user) }
+    before { generate_and_set_token(supervisor_user) }
     it "returns 200", :show_in_doc do
       get :index
       expect(response.status).to eq(200)
@@ -52,7 +52,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   end
 
   describe "GET searched user" do
-    before { generate_and_set_token(user) }
+    before { generate_and_set_token(supervisor_user) }
 
     it "returns searched user according to params" do
       get :index, searchText: charity_users.first.first_name, role_name: "Charity"
@@ -101,7 +101,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     context "Supervisor" do
-      before { generate_and_set_token(user) }
+      before { generate_and_set_token(supervisor_user) }
       it "creates user with role and returns 201", :show_in_doc do
         expect {
           post :create, user: @user_params
@@ -147,7 +147,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     context "user creation error" do
-      before { generate_and_set_token(user) }
+      before { generate_and_set_token(supervisor_user) }
       it "returns 422 and doesn't create a user if error" do
         expect {
           post :create, user: @user_params2
@@ -204,25 +204,25 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       let(:supervisor) { create(:user_with_token, :supervisor) }
       let(:charity_role) { create(:role, name: "Charity") }
 
-      before { generate_and_set_token(user) }
+      before { generate_and_set_token(supervisor_user) }
 
       context "when I edit my own details" do
         it "I cannot edit my own roles" do
-          existing_user_roles = user.roles
-          put :update, id: user.id, user: { user_role_ids: [charity_role.id] }
-          expect(user.reload.roles.pluck(:id)).not_to include(charity_role.id)
-          expect(user.reload.roles).to match_array(existing_user_roles)
+          existing_user_roles = supervisor_user.roles
+          put :update, id: supervisor_user.id, user: { user_role_ids: [charity_role.id] }
+          expect(supervisor_user.reload.roles.pluck(:id)).not_to include(charity_role.id)
+          expect(supervisor_user.reload.roles).to match_array(existing_user_roles)
         end
 
         it "I cannot disable myself", :show_in_doc do
-          put :update, id: user.id, user: {disabled: true}
+          put :update, id: supervisor_user.id, user: {disabled: true}
           expect(response.status).to eq(200)
-          expect(user.reload.disabled).to eq(false)
+          expect(supervisor_user.reload.disabled).to eq(false)
         end
       end
 
       context "when I edit another user's details" do
-        before { generate_and_set_token(user) }
+        before { generate_and_set_token(supervisor_user) }
 
         it "I can change the roles of a Reviewer [lower level role] " do
           put :update, id: reviewer_user.id,
@@ -257,18 +257,18 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     describe 'Users Order Count ' do
-      before { generate_and_set_token(user) }
+      before { generate_and_set_token(supervisor_user) }
       TOTAL_REQUESTS_STATES.each do |state|
-        let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id }
+        let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: supervisor_user.id }
       end
 
       it "returns 200", :show_in_doc do
-        get :orders_count, id: user.id
+        get :orders_count, id: supervisor_user.id
         expect(response.status).to eq(200)
       end
 
       it 'returns each orders count for user' do
-        get :orders_count, id: user.id
+        get :orders_count, id: supervisor_user.id
         expect(response.status).to eq(200)
         expect(parsed_body['submitted']).to eq(1)
         expect(parsed_body['awaiting_dispatch']).to eq(1)
@@ -282,7 +282,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         it "allows to fetch the recent users" do
           [:order_administrator, :order_fulfilment, :supervisor].map do |role|
             user = create(:user, role, :with_can_read_or_modify_user_permission)
-            generate_and_set_token(user)
+            generate_and_set_token(supervisor_user)
             expect(response.status).to eq(200)
           end
         end
