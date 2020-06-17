@@ -18,7 +18,7 @@ class Ability
     can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages can_access_orders_process_checklists
+    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages can_access_orders_process_checklists can_login_to_browse
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -209,13 +209,17 @@ class Ability
       can [:index, :show, :create, :update, :destroy], Message
     elsif can_create_and_read_messages?
       can [:index, :show, :create], Message
+    elsif can_login_to_browse?
+      can [:index, :show, :create], Message, @user.orders.non_private_messages do |message|
+        message.related_object&.created_by_id == @user_id
+      end
     else
       can [:index, :show, :create], Message, Message.donor_messages(@user_id) do |message|
         message.related_object&.created_by_id == @user_id && !message.is_private
       end
     end
-    can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
-    can [:mark_all_read], Message
+    # can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
+    # can [:mark_all_read], Message
   end
 
   def offer_abilities

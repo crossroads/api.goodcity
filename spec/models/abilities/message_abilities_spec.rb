@@ -9,6 +9,7 @@ describe 'Message abilities' do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { %i[index show create update destroy manage] }
   let(:sender)      { create :user }
+  let(:charity) { create :user, :charity }
   let(:is_private) { false }
   let(:message) { create :message, is_private: is_private }
 
@@ -100,31 +101,81 @@ describe 'Message abilities' do
     end
   end
 
-  context 'when Owner' do
+  context 'when Donor' do
     let(:offer) { create :offer, created_by: sender}
     let(:message) { create :message, is_private: is_private, messageable: offer }
-    context 'is sender' do
-      let(:user)   { sender }
-      context 'and message is not is_private' do
-        @can = %i[index show create]
-        @cannot = %i[update destroy manage]
+    let(:user)   { sender }
 
-        @can.map do |action|
-          it "can do #{action}" do
-            is_expected.to be_able_to(action, message)
-          end
-        end
+    @can = %i[index show create]
+    @cannot = %i[update destroy manage]
 
-        @cannot.map do |action|
-          it "cannot do #{action}" do
-            is_expected.to_not be_able_to(action, message)
-          end
+    @can.map do |action|
+      it "is allowed to #{action} any non-private message that is on an offer created by them" do
+        is_expected.to be_able_to(action, message)
+      end
+    end
+
+    @cannot.map do |action|
+      it "is not allowed to #{action}" do
+        is_expected.to_not be_able_to(action, message)
+      end
+    end
+
+    context 'private_message' do
+      let(:is_private) { true }
+      [@can, @cannot].flatten do |action|
+        it "is not allowed to #{action}" do
+          is_expected.to_not be_able_to(action, message)
         end
       end
+    end
 
-      context 'and message is is_private' do
-        let(:is_private) { true }
-        it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, message) } }
+    context 'offer belonging to different user' do
+      let(:is_private) { false }
+      let(:message) { create :message, is_private: is_private, messageable: create(:offer, created_by: create(:user)) }
+      [@can, @cannot].flatten do |action|
+        it "is not allowed to #{action}" do
+          is_expected.to_not be_able_to(action, message)
+        end
+      end
+    end
+  end
+
+  context 'Charity user' do
+    let(:order) { create :order, created_by: charity }
+    let(:message) { create :message, is_private: is_private, messageable: order }
+    let(:user) { charity }
+
+    @can = %i[index show create]
+    @cannot = %i[update destroy manage]
+    @can.map do |action|
+      it "is allowed to #{action} any non-private message that is on an order created by them" do
+        is_expected.to be_able_to(action, message)
+      end
+    end
+
+    @cannot.map do |action|
+      it "is not allowed to #{action}" do
+        is_expected.to_not be_able_to(action, message)
+      end
+    end
+
+    context 'private_message' do
+      let(:is_private) { true }
+      [@can, @cannot].flatten do |action|
+        it "is not allowed to #{action}" do
+          is_expected.to_not be_able_to(action, message)
+        end
+      end
+    end
+
+    context 'order belonging to different user' do
+      let(:is_private) { false }
+      let(:message) { create :message, is_private: is_private, messageable: create(:order, created_by: create(:user)) }
+      [@can, @cannot].flatten do |action|
+        it "is not allowed to #{action}" do
+          is_expected.to_not be_able_to(action, message)
+        end
       end
     end
   end
