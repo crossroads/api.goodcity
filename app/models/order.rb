@@ -111,6 +111,7 @@ class Order < ActiveRecord::Base
 
   scope :goodcity_orders, -> { where(detail_type: "GoodCity") }
   scope :shipments, -> { where(detail_type: "Shipment") }
+  scope :non_private_messages, -> { joins("inner join messages on messages.messageable_id = orders.id and messages.messageable_type = 'Order'").where(messages: { is_private: false }) }
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
