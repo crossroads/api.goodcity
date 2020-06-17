@@ -175,7 +175,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       before { generate_and_set_token(reviewer_user) }
 
       context "as a user when I edit my own details" do
-        it "update last_connected and last_disconnected time", :show_in_doc do
+        it "I can update last_connected and last_disconnected time", :show_in_doc do
           put :update,
             id: reviewer_user.id,
             user: { last_connected: 5.days.ago.to_s, last_disconnected: 3.days.ago.to_s }
@@ -185,13 +185,13 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           expect(reviewer_user.reload.last_disconnected.to_date).to eq(3.days.ago.to_date)
         end
 
-        it "can not update user's disabled value", :show_in_doc do
+        it "I cannot disable myself", :show_in_doc do
           put :update, id: reviewer_user.id, user: {disabled: true}
           expect(response.status).to eq(200)
           expect(reviewer_user.reload.disabled).to eq(false)
         end
 
-        it "not have permission to add new roles and remove old roles" do
+        it "I cannot edit my own roles" do
           existing_user_roles = reviewer_user.roles
           put :update, id: reviewer_user.id, user: { user_role_ids: [role.id] }
           expect(reviewer_user.reload.roles.pluck(:id)).not_to include(role.id)
@@ -200,31 +200,31 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
     end
 
-    context "Supervisor" do
+    context "as a Supervisor" do
       let(:supervisor) { create(:user_with_token, :supervisor) }
       let(:charity_role) { create(:role, name: "Charity") }
 
       before { generate_and_set_token(user) }
 
-      context "as a user when I edit my own details" do
-        it "not have permission to add new roles and remove old roles as per params" do
+      context "when I edit my own details" do
+        it "I cannot edit my own roles" do
           existing_user_roles = user.roles
           put :update, id: user.id, user: { user_role_ids: [charity_role.id] }
           expect(user.reload.roles.pluck(:id)).not_to include(charity_role.id)
           expect(user.reload.roles).to match_array(existing_user_roles)
         end
 
-        it "can not update user's disabled value", :show_in_doc do
+        it "I cannot disable myself", :show_in_doc do
           put :update, id: user.id, user: {disabled: true}
           expect(response.status).to eq(200)
           expect(user.reload.disabled).to eq(false)
         end
       end
 
-      context "as a user when I edit other user details" do
+      context "when I edit another user's details" do
         before { generate_and_set_token(user) }
 
-        it "Update only allowed roles for Reviewer user [low level role] " do
+        it "I can change the roles of a Reviewer [lower level role] " do
           put :update, id: reviewer_user.id,
             user: {user_role_ids: [charity_role.id, system_admin_role.id]}
 
@@ -233,7 +233,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           expect(reviewer_user.roles.pluck(:id)).to_not include(system_admin_role.id)
         end
 
-        it "Does not update roles of user [high level role]" do
+        it "I cannot change the roles of a System Administrator [higher level role]" do
           put :update, id: system_admin_user.id,
              user: {user_role_ids: [charity_role.id]}
 
@@ -243,12 +243,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
     end
 
-    context "System administrator User" do
+    context "as a System Administrator user" do
       let(:supervisor) { create(:user_with_token, :supervisor) }
       before { generate_and_set_token(system_admin_user) }
 
-      context "as a user when I edit other user details" do
-        it "can update user's disabled value", :show_in_doc do
+      context "when I edit another user's details" do
+        it "I can disable the user", :show_in_doc do
           put :update, id: supervisor.id, user: { disabled: true }
           expect(response.status).to eq(200)
           expect(supervisor.reload.disabled).to eq(true)
@@ -290,4 +290,3 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 end
-
