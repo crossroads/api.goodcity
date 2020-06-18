@@ -202,12 +202,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     describe 'GET /mentionable_users' do
       let!(:reviewer) { create(:user, :reviewer) }
-      let!(:donor) { create(:user)}
+      let!(:donor) { create(:user) }
       let!(:supervisor) { create(:user, :supervisor) }
       let!(:order_administrator) { create(:user, :order_administrator) }
       let!(:charity) { create(:user, :charity) }
       let!(:order_fulfilment) { create(:user, :order_fulfilment) }
-      let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: user) }
+      let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: donor) }
       let!(:order) { create(:order, created_by: charity) }
       before { generate_and_set_token(user) }
 
@@ -223,70 +223,23 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
       end
 
-      context 'if public' do
-        context 'admin app' do
-          it 'returns reviewers and donors' do
-            generate_and_set_token(supervisor)
-            get :mentionable_users, app_name: ADMIN_APP, offer_id: offer.id, is_private: false
-            users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'name' => User.find(id).full_name } }
-            expect(parsed_body['users']).to match_array(users)
-          end
-
-          it 'returns donors and supervisors' do
-            generate_and_set_token(reviewer)
-            get :mentionable_users, app_name: ADMIN_APP, offer_id: offer.id, is_private: false
-            users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [reviewer.id]].flatten.map { |id| {'id' => id, 'name' => User.find(id).full_name} }
-            expect(parsed_body['users']).to match_array(users)
-          end
-        end
-
-        context 'donor app' do
-          it 'returns reviewers and supervisors' do
-            generate_and_set_token(donor)
-            get :mentionable_users, app_name: DONOR_APP, offer_id: offer.id, is_private: false
-            users = [User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten.map { |id| {'id' => id, 'name' => User.find(id).full_name} }
-            expect(parsed_body['users']).to match_array(users)
-          end
-        end
-
-        context 'stock app' do
-          before { request.headers["X-GOODCITY-APP-NAME"] = STOCK_APP }
-
-          it 'returns order_fulfulment and charity users' do
-            generate_and_set_token(order_administrator)
-            get :mentionable_users, app_name: STOCK_APP, order_id: order.id, is_private: false
-            users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id), charity.id].flatten - [order_administrator.id]].flatten.map { |id| {"id" => id, "name" => User.find(id).full_name} }
-            expect(parsed_body['users']).to match_array(users)
-          end
-
-          it 'returns order_administrator and charity users' do
-            generate_and_set_token(order_fulfilment)
-            get :mentionable_users, app_name: STOCK_APP, order_id: order.id, is_private: false
-            users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id), charity.id].flatten - [order_fulfilment.id]].flatten.map { |id| {"id" => id, "name" => User.find(id).full_name} }
-            expect(parsed_body["users"]).to match_array(users)
-          end
-        end
-
-        context 'browse app' do
-          before { request.headers["X-GOODCITY-APP-NAME"] = BROWSE_APP }
-
-          it 'returns order_administrator and order_fulfulment users' do
-            generate_and_set_token(charity)
-            get :mentionable_users, app_name: STOCK_APP, order_id: order.id, is_private: false
-            users = [User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten.map { |id| {"id" => id, "name" => User.find(id).full_name} }
-            expect(parsed_body["users"]).to match_array(users)
-          end
+      context 'admin app' do
+        it 'returns supervisors and rviewers' do
+          generate_and_set_token(supervisor)
+          get :mentionable_users, app_name: ADMIN_APP, offer_id: offer.id
+          users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name } }
+          expect(parsed_body['users']).to match_array(users)
         end
       end
 
-      context 'if private' do
-        context 'admin app' do
-          it 'returns supervisors and rviewers' do
-            generate_and_set_token(supervisor)
-            get :mentionable_users, app_name: ADMIN_APP, offer_id: offer.id, is_private: false
-            users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'name' => User.find(id).full_name } }
-            expect(parsed_body['users']).to match_array(users)
-          end
+      context 'stock app' do
+        before { request.headers['X-GOODCITY-APP-NAME'] = STOCK_APP }
+
+        it 'returns order_administrator and order_fulfulment users' do
+          generate_and_set_token(order_administrator)
+          get :mentionable_users, app_name: STOCK_APP, order_id: order.id, is_private: false
+          users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name } }
+          expect(parsed_body['users']).to match_array(users)
         end
       end
     end
