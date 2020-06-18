@@ -24,7 +24,7 @@ module ManageUserRoles
       allowed_role_ids = Role.allowed_roles(max_role_level)
                              .where(id: role_ids)
                              .pluck(:id)
-      user.create_or_remove_user_roles(allowed_role_ids)
+      self.create_or_remove_user_roles(user, allowed_role_ids)
     end
 
     def can_update_roles_for_user?(other_user)
@@ -36,20 +36,8 @@ module ManageUserRoles
       self.roles.maximum("level") || 0
     end
 
-    def create_or_remove_user_roles(role_ids)
-      role_ids = role_ids || []
-      remove_old_user_roles(role_ids)
-
-      role_ids.each do |role_id|
-        user_roles.where(role_id: role_id).first_or_create
-      end
-    end
-
-    private
-
-    def remove_old_user_roles(role_ids)
-      role_ids_to_remove = roles.pluck(:id) - role_ids
-      user_roles.where("role_id IN(?)", role_ids_to_remove).destroy_all
+    def create_or_remove_user_roles(user, role_ids)
+      user.roles = Role.where(id: role_ids)
     end
 
   end
