@@ -64,13 +64,9 @@ module Api
         messageable = messageable_obj
         return render json: { users: [] } if messageable.nil?
 
-        @users = Messages::Channels
-                 .new(app_name: app_name,
-                      messageable: messageable_obj,
-                      is_private: params[:is_private],
-                      current_user: current_user)
-                 .related_users
-        render json: { users: @users }
+        roles = mentionable_roles(app_name)
+        @users = User.active.exclude_current_user(current_user.id).with_roles(roles)
+        render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
 
       private
@@ -78,6 +74,15 @@ module Api
       def messageable_obj
         return Order.find(params[:order_id]) if params[:order_id].present?
         return Offer.find(params[:offer_id]) if params[:offer_id].present?
+      end
+
+      def mentionable_roles(app_name)
+        case app_name
+        when ADMIN_APP
+          %w[Supervisor Reviewer]
+        when STOCK_APP
+          ['Order fulfilment', 'Order administrator']
+        end
       end
 
       def serializer

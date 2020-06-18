@@ -3,6 +3,8 @@ class Message < ActiveRecord::Base
   include Paranoid
   include StateMachineScope
   include PushUpdatesForMessage
+  include MessageSubscriptions
+  include Mentionable
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
   belongs_to :offer
@@ -33,15 +35,12 @@ class Message < ActiveRecord::Base
   attr_accessor :state_value, :is_call_log
 
   after_create do
-    handle_subscriptions # Handle mentions and subscriptions
+    set_mentioned_users
+    subscribe_users_to_message # MessageSubscription
     update_client_store # PushUpdatesForMessage (must come after subscribe_users_to_message)
   end
 
   after_destroy :notify_deletion_to_subscribers
-
-  def handle_subscriptions
-    Messages::Operations.new(message: self).handle_subscriptions
-  end
 
   def parsed_body
     return body if lookup.empty?
@@ -49,6 +48,14 @@ class Message < ActiveRecord::Base
     parsed = body
     lookup.each_key { |k| parsed = parsed.gsub("[:#{k}]", lookup[k]["display_name"]) }
     parsed
+  end
+
+  def mentioned_ids
+    return [] if lookup.empty?
+
+    lookup.keys.map do |k|
+      lookup[k]['id'].to_i
+    end
   end
 
   # Marks all messages as read for a user
