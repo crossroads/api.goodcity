@@ -48,11 +48,15 @@ module MessageSubscription
   private
 
   def first_message_subscribers(klass)
-    if klass == 'order'
-      User.by_roles(['Order fulfilment', 'Order administrator']).pluck(:id)
+    roles = if klass == 'order'
+      ['Order fulfilment', 'Order administrator']
+    elsif  ['offer', 'item'].include?(klass)
+      ['Reviewer', 'Supervisor']
     else
-      User.staff.pluck(:id)
+      []
     end
+
+    User.by_roles(roles).pluck(:id)
   end
 
   # A public subscriber is defined as :
