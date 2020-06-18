@@ -10,6 +10,7 @@ module Api::V1
       :company_id, :start_receiving_at, :cancellation_reason_id, :cancel_reason
 
     has_many :items, serializer: ItemSerializer
+    # default scope will exclude { is_private = true } messages which is what we want
     has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_one  :closed_by, serializer: UserSerializer, root: :user
     has_one  :created_by, serializer: UserSerializer, root: :user
