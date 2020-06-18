@@ -31,14 +31,16 @@ module Goodcity
 
     # Given an array of packages, choose one to keep and merge the others into it
     # Fields:
-    #   - item_id (i.e. part of an offer)
+    #   - item_id (i.e. part of an offer) - keep the oldest one
     #   - orders_packages (i.e. has a designation)
-    #   - 
+    # 
     # Rules
     #   - prefer NON NULL data over NULL data
     #   - prefer newer data over older data
     def merge_packages(packages)
-      values = packages.dup.sort_by{ |v| v.updated_at }.reverse # newest first
+      packages_with_item_id = packages.dup.select{ |pkg| pkg.item_id.present? }.sort_by{ |v| v.updated_at }
+      values = packages.dup.sort_by{ |v| v.created_at } # oldest first
+      values = (packages_with_item_id + values).uniq
       [ values.shift, values ] # package_to_keep, packages_to_destroy
     end
 

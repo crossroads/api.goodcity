@@ -18,6 +18,15 @@ describe Goodcity::PackageDeduplicator do
     create(:orders_package, order: order, package: package_1, state: 'designated')
   end
 
+  it "keeps the one with the item_id" do
+    package_1.update_column(:item_id, 12)
+    expect {
+      Goodcity::PackageDeduplicator.dedup(['999999'])
+    }.to change(Package, :count).from(3).to(1)
+
+    expect(Package.last.id).to eq(package_1.id)
+  end
+  
   it "keeps the latest updated record" do
     expect {
       Goodcity::PackageDeduplicator.dedup(['999999'])

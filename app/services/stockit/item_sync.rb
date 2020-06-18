@@ -49,9 +49,12 @@ module Stockit
       end
     end
 
+    # use index('F123245') to get a specific inventory_number
     def index
       url = url_for("/api/v1/items")
-      get(url, { offset: offset, per_page: per_page })
+      options = { offset: offset, per_page: per_page }
+      options.merge!(inventory_number: package) if package.present?
+      get(url, options)
     end
 
     # temporary method, to be removed after data import
