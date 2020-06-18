@@ -3,6 +3,7 @@ module Api
     class ApiController < ApplicationController
       skip_before_action :validate_token, only: [:error]
 
+      rescue_from ActiveRecord::RecordInvalid, with: :invalid_params
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from CanCan::AccessDenied, with: :access_denied
       rescue_from Apipie::ParamInvalid, with: :invalid_params
