@@ -17,7 +17,7 @@ RSpec.describe Role, type: :model do
     let!(:reviewer_role) { create :reviewer_role }
     let!(:supervisor_role) { create :supervisor_role }
 
-    it "return records having level less than or equals given level value" do
+    it "return roles having level less than or equal to a given value" do
       allowed_roles = Role.allowed_roles(5)
       expect(allowed_roles).to include(charity_role)
       expect(allowed_roles).to include(reviewer_role)
