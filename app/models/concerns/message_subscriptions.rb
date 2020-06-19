@@ -28,12 +28,11 @@ module MessageSubscriptions
     # Cases where we subscribe every staff member
     #  - For private messages, subscribe all supervisors ONLY for the first message
     #  - If donor sends a message but no one else is listening, subscribe all reviewers.
-    subscribe_all_staff =
-    if is_private
-      first_message?
-    else
-      obj&.created_by_id.present? && (user_ids == [sender_id])
-    end
+    subscribe_all_staff = if is_private
+                            first_message?
+                          else
+                            obj&.created_by_id.present? && (user_ids == [sender_id])
+                          end
 
     user_ids += User.staff.pluck(:id) if subscribe_all_staff
     user_ids += mentioned_ids if mentioned_ids.present?
@@ -78,6 +77,7 @@ module MessageSubscriptions
     subscriptions.create(
       state: state,
       subscribable: messageable,
-      user_id: user_id)
+      user_id: user_id
+    )
   end
 end

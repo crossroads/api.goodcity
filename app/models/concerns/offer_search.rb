@@ -14,7 +14,7 @@ module OfferSearch
       search_query = ['offers.notes', 'offers.id', 'users.first_name',
                       'users.last_name', 'users.email', 'users.mobile',
                       'items.donor_description', 'messages_offer.body',
-                      'messages_item.body','companies.name',
+                      'messages_item.body', 'companies.name',
                       'packages.inventory_number', 'package_types.name_en',
                       'package_types.name_zh_tw',
                       'gogovan_orders.driver_name',
