@@ -14,7 +14,7 @@ module Messages
     describe '#set_mentioned_users' do
       it 'creates mention lookup' do
         message.set_mentioned_users
-        expect(message.reload.lookup).to include( '1' => {'id' => user1.id, 'type' => 'User', 'display_name' => user1.full_name }, '2' => {'id' => user2.id, 'type' => 'User', 'display_name' => user2.full_name})
+        expect(message.reload.lookup).to match( '1' => {'id' => user1.id, 'type' => 'User', 'display_name' => user1.full_name }, '2' => {'id' => user2.id, 'type' => 'User', 'display_name' => user2.full_name})
       end
 
       context 'if there are no mentions' do
