@@ -218,8 +218,7 @@ class Ability
         message.related_object&.created_by_id == @user_id && !message.is_private
       end
     end
-    # can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
-    # can [:mark_all_read], Message
+    can %i[mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
   end
 
   def offer_abilities
