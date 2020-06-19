@@ -21,7 +21,7 @@ class ChangeSubscriptionsToPolymorphic < ActiveRecord::Migration
       when 'Offer'
         subscription.offer_id = subscription.subscribable_id
       when 'Item'
-        subscription.order_id = subscription.subscribable.offer.id
+        subscription.offer_id = subscription.subscribable.offer.id
     end
 
     remove_column :subscriptions, :subscribable_type
