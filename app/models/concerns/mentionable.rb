@@ -13,7 +13,14 @@ module Mentionable
     lookup = {}
     lookup_ids = parse_id_from_decorated_ids(parse_id_from_mention_text)
     lookup_ids.map.with_index do |lookup_id, idx|
-      lookup[lookup_id] = { type: 'User', id: user_ids[idx], display_name: User.find(user_ids[idx]).full_name }
+      user = User.find_by_id(user_ids[idx])
+      # TODO: Create a more complex decorator (ex: [@#id#@] or convert mentioned username into a encoded hash value)
+      # Logic to handle if input has any decorator type text. Ex: [:12]
+      if user
+        lookup[lookup_id] = { type: 'User', id: user.id, display_name: user.full_name }
+      else
+        self.body = body.gsub("[:#{lookup_id}]", "[:#{user_ids[idx]}]")
+      end
     end
     update(lookup: lookup)
   end
@@ -21,7 +28,7 @@ module Mentionable
   def extract_user_ids_from_message_body
     ids = parse_id_from_mention_text
     ids = parse_id_from_decorated_ids(ids)
-    ids.map(&:to_i)
+    ids
   end
 
   def format_message_body
