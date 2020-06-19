@@ -33,3 +33,4 @@ APP_NAME_AND_LOGIN_PERMISSION_MAPPING = {
   SETTINGS_EDITOR_APP => 'can_manage_settings'
 }
 PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
+ALLOWED_MENTIONAblE_ROLES = ['Reviewer', 'Supervisor', 'Order administrator', 'Order fulfilment'].freeze

@@ -3,8 +3,8 @@ class ChangeMessagesToPolymorphic < ActiveRecord::Migration
     add_column :messages, :messageable_type, :string
     add_column :messages, :messageable_id, :int
 
-    execute("UPDATE messages SET messageable_type = 'Item', messageable_id = item_id where item_id is NOT NULL")
     execute("UPDATE messages SET messageable_type = 'Offer', messageable_id = offer_id where offer_id is NOT NULL")
+    execute("UPDATE messages SET messageable_type = 'Item', messageable_id = item_id where item_id is NOT NULL")
     execute("UPDATE messages SET messageable_type = 'Order', messageable_id = order_id where order_id is NOT NULL")
 
     remove_column :messages, :offer_id
