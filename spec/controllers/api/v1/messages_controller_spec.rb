@@ -128,24 +128,28 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     context 'backward compatibility' do
       let(:offer) { create(:offer, :with_messages, created_by: user) }
       let(:item) { create(:item, :with_messages, offer: offer) }
-      let(:outdated_params) do
+      let(:order) { create(:order, created_by: user) }
+      let(:outdated_offer_params) do
         FactoryBot.attributes_for(:message, sender: user.id, offer_id: offer.id)
       end
       let(:outdated_item_params) do
         FactoryBot.attributes_for(:message, sender: user.id, item_id: item.id)
+      end
+      let(:outdated_order_params) do
+        FactoryBot.attributes_for(:message, sender: user.id, designation_id: order.id)
       end
 
       before do
         generate_and_set_token(user)
       end
       it 'returns 201' do
-        post :create, message: outdated_params
+        post :create, message: outdated_offer_params
         expect(response).to have_http_status(:success)
       end
 
       it 'creates new message for the offer' do
         expect{
-          post :create, message: outdated_params
+          post :create, message: outdated_offer_params
           expect(subject['message']['offer_id']).to eq(offer.id)
         }.to change { Message.count }
       end
@@ -154,6 +158,13 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         expect{
           post :create, message: outdated_item_params
           expect(subject['message']['item_id']).to eq(item.id)
+        }.to change { Message.count }
+      end
+
+      it 'creates the new message for the order' do
+        expect{
+          post :create, message: outdated_order_params
+          expect(subject['message']['order_id']).to eq(order.id)
         }.to change { Message.count }
       end
     end

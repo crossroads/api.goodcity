@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
   scope :active, -> { where(disabled: false) }
-  scope :exclude_current_user, ->(id) { where.not(id: id) }
+  scope :exclude_user, ->(id) { where.not(id: id) }
   scope :with_roles, ->(role_names) { where(roles: { name: role_names}).joins(:roles) }
 
   # used when reviewer is logged into donor app

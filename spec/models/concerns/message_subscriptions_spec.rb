@@ -162,6 +162,32 @@ module Messages
             expect(message2).to receive(:add_subscription).with('unread', other_reviewer.id)
             message2.subscribe_users_to_message
           end
+
+          context 'message mentions' do
+            let!(:user1) { create(:user) }
+            let!(:user2) { create(:user) }
+            let(:message) { create(:message, body: "Hello [:#{user1.id}]. I need help from you and [:#{user2.id}]") }
+            let(:message2) { build(:message, body: "Hello [:#{user2.id}]. I will help") }
+
+            before(:each) do
+              allow(message).to receive(:add_subscription)
+              allow(message).to receive(:add_mentions_lookup)
+            end
+
+            it 'adds message subscription to mentioned users' do
+              expect(message).to receive(:add_subscription).with('unread', user1.id)
+              expect(message).to receive(:add_subscription).with('unread', user2.id)
+              expect(message).to receive(:add_subscription).with('read', message.sender_id)
+
+              message.subscribe_users_to_message
+            end
+
+            it 'adds lookup for the mentioned ids' do
+              expect(message2).to receive(:add_mentions_lookup).with([user2.id.to_s])
+
+              message2.set_mentioned_users
+            end
+          end
         end
       end
 
@@ -182,32 +208,6 @@ module Messages
           expect(message2).to receive(:add_subscription).with('unread', supervisor.id)
           message2.subscribe_users_to_message
         end
-      end
-    end
-
-    describe '#handle_subscriptions' do
-      let!(:user1) { create(:user) }
-      let!(:user2) { create(:user) }
-      let(:message) { create(:message, body: "Hello [:#{user1.id}]. I need help from you and [:#{user2.id}]") }
-      let(:message2) { build(:message, body: "Hello [:#{user2.id}]. I will help") }
-
-      before(:each) do
-        allow(message).to receive(:add_subscription)
-        allow(message).to receive(:add_mentions_lookup)
-      end
-
-      it 'adds message subscription to mentioned users' do
-        expect(message).to receive(:add_subscription).with('unread', user1.id)
-        expect(message).to receive(:add_subscription).with('unread', user2.id)
-        expect(message).to receive(:add_subscription).with('read', message.sender_id)
-
-        message.subscribe_users_to_message
-      end
-
-      it 'adds lookup for the mentioned ids' do
-        expect(message2).to receive(:add_mentions_lookup).with([user2.id])
-
-        message2.set_mentioned_users
       end
     end
   end

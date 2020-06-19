@@ -108,6 +108,7 @@ module Api
       end
 
       def handle_backward_compatibility
+        params['message']['order_id'] = params['message']['designation_id']
         %w[offer_id order_id item_id].map do |param|
           if params['message'][param]
             params['message']['messageable_type'] = param.split('_')[0].camelize

@@ -216,6 +216,16 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(response).to have_http_status(:success)
       end
 
+      context 'if donor or browse app' do
+        %w[donor charity].map do |app|
+          it "returns unauthorized for #{app}" do
+            generate_and_set_token(eval(app))
+            get :mentionable_users, offer_id: offer.id, is_private: false, roles: 'Reviewer'
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+      end
+
       context 'if no messageable id is passed in params' do
         it 'return empty array' do
           get :mentionable_users, offer_id: nil, is_private: false
