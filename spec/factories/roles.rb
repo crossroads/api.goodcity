@@ -27,7 +27,7 @@ FactoryBot.define do
     end
 
     trait :charity_role do
-      name { "Charity" }
+      name { 'Charity' }
       after(:create) do |role|
         %w[can_login_to_browse can_search_browse_packages can_create_goodcity_requests].map do |permission|
           role.permissions << (create :permission, name: permission)
