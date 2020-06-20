@@ -203,13 +203,13 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     describe 'GET /mentionable_users' do
       let!(:reviewer) { create(:user, :reviewer) }
       let!(:donor) { create(:user) }
-      let!(:supervisor) { create(:user, :supervisor) }
-      let!(:order_administrator) { create(:user, :order_administrator) }
+      let(:supervisor) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_mention_users']}) }
+      let!(:order_administrator) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_mention_users']}) }
       let!(:charity) { create(:user, :charity) }
       let!(:order_fulfilment) { create(:user, :order_fulfilment) }
       let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: donor) }
       let!(:order) { create(:order, created_by: charity) }
-      before { generate_and_set_token(user) }
+      before { generate_and_set_token(supervisor) }
 
       it 'returns 200' do
         get :mentionable_users, offer_id: offer.id, is_private: false, roles: 'Reviewer'
