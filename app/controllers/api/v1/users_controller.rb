@@ -60,10 +60,21 @@ module Api
         render json: Order.counts_for(params[:id])
       end
 
+      def mentionable_users
+        return render json: { users: [] } if params['roles'].nil?
+
+        @users = User.active.exclude_user(current_user.id).with_roles(mentionable_role)
+        render json: @users, each_serializer: Api::V1::UserMentionsSerializer
+      end
+
       private
 
       def serializer
         Api::V1::UserSerializer
+      end
+
+      def mentionable_role
+        (MENTIONABLE_ROLES & params['roles'].split(',').map(&:strip).uniq)
       end
 
       def search_user_and_render_json
