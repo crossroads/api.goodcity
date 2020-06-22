@@ -997,7 +997,6 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
-  add_foreign_key "messages", "orders"
   add_foreign_key "offers_packages", "offers"
   add_foreign_key "offers_packages", "packages"
   add_foreign_key "orders_process_checklists", "orders"
@@ -1011,7 +1010,6 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   add_foreign_key "packages_inventories", "packages"
   add_foreign_key "packages_inventories", "users"
   add_foreign_key "process_checklists", "booking_types"
-  add_foreign_key "subscriptions", "orders"
   add_foreign_key "users", "printers"
   add_foreign_key "valuation_matrices", "donor_conditions"
 end
