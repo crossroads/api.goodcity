@@ -14,7 +14,7 @@ module Api::V1
     has_one  :reviewed_by, serializer: UserSummarySerializer, root: :user
     has_one  :received_by, serializer: UserSummarySerializer, root: :user
     has_one  :delivery, serializer: DeliverySerializer, root: :delivery
-    has_many :messages, serializer: MessageSerializer
+    has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_one  :company, serializer: CompanySerializer
 
     def include_messages?

@@ -18,7 +18,7 @@ class Ability
     can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages can_access_orders_process_checklists
+    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages can_access_orders_process_checklists can_mention_users
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -211,7 +211,7 @@ class Ability
       can [:index, :show, :create], Message
     else
       can [:index, :show, :create], Message, Message.donor_messages(@user_id) do |message|
-        message.offer.created_by_id == @user_id && !message.is_private
+        message.related_object&.created_by_id == @user_id && !message.is_private
       end
     end
     can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
@@ -403,9 +403,10 @@ class Ability
 
   def user_abilities
     can [:current_user_profile], User
-    can [:show, :update, :orders_count], User, id: @user_id
-    can [:index, :show, :update, :recent_users, :create], User if can_read_or_modify_user?
-    can [:create, :show], User if can_create_donor?
+    can %i[show update orders_count], User, id: @user_id
+    can %i[index show update recent_users create], User if can_read_or_modify_user?
+    can %i[create show], User if can_create_donor?
+    can %i[mentionable_users], User if can_mention_users?
   end
 
   def version_abilities
