@@ -20,13 +20,14 @@ class ChangeMessagesToPolymorphic < ActiveRecord::Migration
     Message.all.map do |message|
       case message.messageable_type
       when 'Order'
-        message.order_id = message.messageable_id
+        message.update(order_id: message.messageable_id)
       when 'Offer'
-        message.offer_id = message.messageable_id
+        message.update(offer_id: message.messageable_id)
       when 'Item'
-        message.item_id = message.messageable_id
-        message.offer_id = message.messageable.offer.id
+        message.update(item_id: message.messageable_id)
+        message.update(offer_id: message.messageable.offer.id)
       end
+      message.save
     end
     remove_column :messages, :messageable_type
     remove_column :messages, :messageable_id

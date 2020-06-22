@@ -17,11 +17,11 @@ class ChangeSubscriptionsToPolymorphic < ActiveRecord::Migration
     Subscription.all.map do |subscription|
       case subscription.subscribable_type
       when 'Order'
-        subscription.order_id = subscription.subscribable_id
+        subscription.update(order_id: subscription.subscribable_id)
       when 'Offer'
-        subscription.offer_id = subscription.subscribable_id
+        subscription.update(offer_id: subscription.subscribable_id)
       when 'Item'
-        subscription.offer_id = subscription.subscribable.offer.id
+        subscription.update(offer_id: subscription.subscribable.offer.id)
       end
     end
 
