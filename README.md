@@ -77,6 +77,19 @@ Using capistrano, commit all changes to master branch and push to github. Then t
 
 This will deploy changes to [api.goodcity.hk](http://api.goodcity.hk) (make sure your ssh keys are loaded)
 
+### Resetting up the staging database
+
+This step might require kill additional db connections
+
+```bash
+systemctl stop nginx sidekiq
+rake db:drop RAILS_ENV=staging
+rake db:create RAILS_ENV=staging
+rake db:migrate RAILS_ENV=staging
+psql --host=<DB_HOST> --username=<DB_USER> -W goodcity_server_staging < /opt/rails/goodcity_server/shared/dump-goodcity_server_staging-202006041601.sql
+systemctl start nginx sidekiq
+```
+
 ## Documentation
 
 * API documentation is available online at http://api.goodcity.hk/api/docs
