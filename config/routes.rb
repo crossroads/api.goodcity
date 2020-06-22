@@ -169,6 +169,7 @@ Rails.application.routes.draw do
         put :remove_number, on: :collection
       end
       resources :orders_process_checklists, only: [:index]
+      resources :restrictions, only: [:index]
 
       # routes used in stock app
       get "designations", to: "orders#index"
