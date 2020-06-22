@@ -138,6 +138,9 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       let(:outdated_order_params) do
         FactoryBot.attributes_for(:message, sender: user.id, designation_id: order.id)
       end
+      let(:outdated_order_params_charity) do
+        FactoryBot.attributes_for(:message, sender: user.id, order_id: order.id)
+      end
 
       before do
         generate_and_set_token(user)
@@ -161,9 +164,16 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         }.to change { Message.count }
       end
 
-      it 'creates the new message for the order' do
+      it 'creates the new message for the order through stock app' do
         expect{
           post :create, message: outdated_order_params
+          expect(subject['message']['order_id']).to eq(order.id)
+        }.to change { Message.count }
+      end
+
+      it 'creates the new message for the order through browse app' do
+        expect{
+          post :create, message: outdated_order_params_charity
           expect(subject['message']['order_id']).to eq(order.id)
         }.to change { Message.count }
       end
