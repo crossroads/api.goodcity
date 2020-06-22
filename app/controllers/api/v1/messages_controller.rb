@@ -108,6 +108,7 @@ module Api
       end
 
       def handle_backward_compatibility
+        params['message']['order_id'] ||= params['message']['designation_id']
         if params['message']['designation_id']
           params['message']['order_id'] = params['message']['designation_id']
         end
