@@ -14,13 +14,13 @@ class Ability
     can_manage_holidays can_manage_orders_packages can_manage_images
     can_manage_messages can_add_package_types can_add_or_remove_inventory_number
     can_check_organisations can_access_packages_locations can_create_donor
-    can_destroy_image_for_imageable_states can_create_and_read_messages
-    can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
+    can_destroy_image_for_imageable_states can_destroy_contacts
+    can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
     can_manage_settings can_manage_companies can_manage_package_detail
     can_access_printers can_remove_offers_packages
-    can_access_orders_process_checklists can_mention_users can_login_to_browse
+    can_access_orders_process_checklists can_mention_users
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -207,31 +207,16 @@ class Ability
 
   def message_abilities
     if can_manage_messages?
-      # Supervisors can do any action
-      can %i[index show update destroy create], Message
-    elsif can_create_and_read_messages?
       # Supervisors and Reviewers can see all messages on all offers (and items belonging to an offer)
       # Order fulfillment and Order Administrators are allowed to see all messages on all orders.
       can %i[index show create], Message
-    elsif can_login_to_browse?
-      # A user is allowed to read any non-private message that is an order created by them
-      # Charity users are NOT allowed to view private messages
-      can %i[index show], Message, @user.orders.non_private_messages do |message|
-        message.related_object&.created_by_id == @user_id && !message.is_private
-      end
-
-      # A charity user is not allowed to create private message
-      can :create, Message do |message|
-        message.related_object&.created_by_id == @user_id && !message.is_private
-      end
     else
-      # A donor is allowed to read any non-private message that is on an offer created by them
-      # Donors are NOT allowed to view private messages
-      can [:index, :show], Message, Message.donor_messages(@user_id) do |message|
+      # A donor / charity user is allowed to read any non-private message
+      # that is on an offer / order created by them
+      can [:index, :show], Message, @user.messages do |message|
         message.related_object&.created_by_id == @user_id && !message.is_private
       end
-
-      # A donor cannot create a private message
+      # A donor / charity user cannot create a private message
       can :create, Message do |message|
         message.related_object&.created_by_id == @user_id && !message.is_private
       end

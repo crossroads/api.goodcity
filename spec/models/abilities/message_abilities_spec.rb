@@ -204,10 +204,18 @@ describe 'Message abilities' do
     let(:user) { create :user }
     let(:user2) { create :user }
     let(:offer) { create :offer, created_by: user }
+    let(:offer2) { create :offer, created_by: user2 }
     let(:message) { create :message, is_private: is_private, messageable: offer }
+    let(:message2) { create :message, is_private: is_private, messageable: offer2 }
     let!(:subscription) { create :subscription, subscribable: offer, message: message }
+    let!(:subscription_2) { create :subscription, subscribable: offer2, message: message2 }
+
     it 'is allowed to mark_read any subscription belonging to user' do
       is_expected.to be_able_to(:mark_read, message)
+    end
+
+    it 'is not allowed to mark_read subscriptions not belonging to user' do
+      is_expected.to_not be_able_to(:mark_read, message2)
     end
   end
 end
