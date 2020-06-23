@@ -108,7 +108,7 @@ FactoryBot.define do
         messages_count 1
       end
       after(:create) do |offer, evaluator|
-        create_list(:message, evaluator.messages_count, :reviewer_message, offer: offer)
+        create_list(:message, evaluator.messages_count, :reviewer_message, messageable: offer)
       end
     end
 

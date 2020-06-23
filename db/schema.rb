@@ -377,14 +377,12 @@ ActiveRecord::Schema.define(version: 20200610104052) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.integer  "offer_id"
-    t.integer  "item_id"
-    t.integer  "order_id"
+    t.string   "messageable_type"
+    t.integer  "messageable_id"
+    t.jsonb    "lookup",           default: {}
   end
 
-  add_index "messages", ["item_id"], name: "index_messages_on_item_id", using: :btree
-  add_index "messages", ["offer_id"], name: "index_messages_on_offer_id", using: :btree
-  add_index "messages", ["order_id"], name: "index_messages_on_order_id", using: :btree
+  add_index "messages", ["lookup"], name: "index_messages_on_lookup", using: :gin
   add_index "messages", ["sender_id"], name: "index_messages_on_sender_id", using: :btree
 
   create_table "offers", force: :cascade do |t|
@@ -908,17 +906,14 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   add_index "subpackage_types", ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id", using: :btree
 
   create_table "subscriptions", force: :cascade do |t|
-    t.integer "offer_id"
     t.integer "user_id"
     t.integer "message_id"
     t.string  "state",      limit: 255
-    t.integer "order_id"
+    t.string  "subscribable_type"
+    t.integer "subscribable_id"
   end
 
   add_index "subscriptions", ["message_id"], name: "index_subscriptions_on_message_id", using: :btree
-  add_index "subscriptions", ["offer_id", "user_id", "message_id"], name: "offer_user_message", unique: true, using: :btree
-  add_index "subscriptions", ["offer_id"], name: "index_subscriptions_on_offer_id", using: :btree
-  add_index "subscriptions", ["order_id"], name: "index_subscriptions_on_order_id", using: :btree
   add_index "subscriptions", ["state"], name: "index_subscriptions_on_state", using: :btree
   add_index "subscriptions", ["user_id"], name: "index_subscriptions_on_user_id", using: :btree
 
@@ -1002,7 +997,6 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   add_foreign_key "beneficiaries", "identity_types"
   add_foreign_key "goodcity_requests", "orders"
   add_foreign_key "goodcity_requests", "package_types"
-  add_foreign_key "messages", "orders"
   add_foreign_key "offers_packages", "offers"
   add_foreign_key "offers_packages", "packages"
   add_foreign_key "orders_process_checklists", "orders"
@@ -1016,7 +1010,6 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   add_foreign_key "packages_inventories", "packages"
   add_foreign_key "packages_inventories", "users"
   add_foreign_key "process_checklists", "booking_types"
-  add_foreign_key "subscriptions", "orders"
   add_foreign_key "users", "printers"
   add_foreign_key "valuation_matrices", "donor_conditions"
 end

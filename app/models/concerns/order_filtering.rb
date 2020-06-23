@@ -83,7 +83,7 @@ module OrderFiltering
     end
 
     def with_notifications(state)
-      res = joins("LEFT OUTER JOIN subscriptions ON orders.id = subscriptions.order_id")
+      res = joins("LEFT OUTER JOIN subscriptions ON orders.id = subscriptions.subscribable_id and subscriptions.subscribable_type = 'Order'")
       res = res.where("subscriptions.user_id = (?)", User.current_user.id)
       res = res.where("subscriptions.state = (?)", state) if %w[unread read].include?(state)
       res
