@@ -54,7 +54,7 @@ module MessageSubscriptions
       []
     end
 
-    User.by_roles(roles).pluck(:id)
+    User.with_roles(roles).pluck(:id)
   end
 
   # A public subscriber is defined as :
