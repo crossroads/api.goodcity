@@ -32,6 +32,7 @@ class Order < ActiveRecord::Base
   belongs_to :closed_by, class_name: "User"
   belongs_to :submitted_by, class_name: "User"
   belongs_to :stockit_local_order, -> { joins("inner join orders on orders.detail_id = stockit_local_orders.id and (orders.detail_type = 'LocalOrder' or orders.detail_type = 'StockitLocalOrder')") }, foreign_key: "detail_id"
+  belongs_to :created_by, class_name: 'User', inverse_of: :orders
 
   has_many :packages
   has_many :goodcity_requests, dependent: :destroy
@@ -43,6 +44,7 @@ class Order < ActiveRecord::Base
   has_one :order_transport, dependent: :destroy
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
+  belongs_to :created_by, class_name: 'User', inverse_of: :offers
 
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
 
@@ -111,7 +113,7 @@ class Order < ActiveRecord::Base
 
   scope :goodcity_orders, -> { where(detail_type: "GoodCity") }
   scope :shipments, -> { where(detail_type: "Shipment") }
-  scope :non_private_messages, -> { joins("inner join messages on messages.messageable_id = orders.id and messages.messageable_type = 'Order'").where(messages: { is_private: false }) }
+  scope :non_private_messages, -> { where(messages: { is_private: false }) }
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
