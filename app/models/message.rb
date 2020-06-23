@@ -23,7 +23,6 @@ class Message < ActiveRecord::Base
 
   scope :with_eager_load, -> { includes([:sender]) }
   scope :non_private, -> { where(is_private: false) }
-  scope :donor_messages, ->(donor_id) { joins("INNER JOIN offers on offers.id = messages.messageable_id and messages.messageable_type = 'Offer'").where(offers: { created_by_id: donor_id }, is_private: false) }
   scope :with_state_for_user, ->(user, state) { joins(:subscriptions).where("subscriptions.user_id = ? and subscriptions.state = ?", user.id, state) }
   scope :filter_by_ids, ->(ids) { where(id: ids.split(",")) }
   scope :filter_by_offer_id, ->(offer_id) { where(messageable_id: offer_id.split(","), messageable_type: "Offer") }

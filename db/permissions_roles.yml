@@ -11,7 +11,6 @@ Reviewer:
 - can_manage_packages_locations
 - can_manage_items
 - can_add_package_types
-- can_create_and_read_messages
 - can_manage_images
 - can_destroy_image_for_imageable_states
 - can_add_or_remove_inventory_number
@@ -43,7 +42,6 @@ Supervisor:
 - can_manage_order_transport
 - can_check_organisations
 - can_manage_packages_locations
-- can_create_and_read_messages
 - can_manage_items
 - can_add_package_types
 - can_manage_images
@@ -89,7 +87,6 @@ Order fulfilment: &order_fulfilment
 - can_manage_packages_locations
 - can_manage_items
 - can_add_package_types
-- can_create_and_read_messages
 - can_manage_images
 - can_destroy_image_for_imageable_states
 - can_add_or_remove_inventory_number
@@ -107,6 +104,7 @@ Order fulfilment: &order_fulfilment
 - can_access_orders_process_checklists
 - can_read_or_modify_user
 - can_mention_users
+- can_manage_messages
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
