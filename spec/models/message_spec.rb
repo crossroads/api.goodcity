@@ -1,21 +1,21 @@
 require "rails_helper"
 
 describe Message, type: :model do
-
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
   let!(:donor) { create :user }
   let!(:reviewer) { create :user, :reviewer }
   let(:offer) { create :offer, created_by_id: donor.id }
   let(:item)  { create :item, offer_id: offer.id }
+  let(:order) { create :order }
 
   def create_message(options = {})
-    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
+    options = { sender_id: donor.id, messageable: offer }.merge(options)
     create :message, options
   end
 
   def build_message(options = {})
-    options = { sender_id: donor.id, offer_id: offer.id }.merge(options)
+    options = { sender_id: donor.id, messageable: offer }.merge(options)
     build :message, options
   end
 
@@ -23,11 +23,17 @@ describe Message, type: :model do
     it { is_expected.to validate_presence_of(:body) }
   end
 
-  describe "Associations" do
+  describe 'Database columns' do
+    it { is_expected.to have_db_column(:body).of_type(:text) }
+    it { is_expected.to have_db_column(:messageable_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:messageable_type).of_type(:string) }
+    it { is_expected.to have_db_column(:sender_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:lookup).of_type(:jsonb) }
+  end
+
+  describe 'Associations' do
     it { is_expected.to belong_to :sender }
-    it { is_expected.to belong_to :offer }
-    it { is_expected.to belong_to :item }
-    it { is_expected.to belong_to :order }
+    it { is_expected.to belong_to :messageable }
     it { is_expected.to have_many :subscriptions }
     it { is_expected.to have_many :offers_subscription }
   end
@@ -88,5 +94,58 @@ describe Message, type: :model do
 
   context "has_paper_trail" do
     it { is_expected.to be_versioned }
+  end
+
+  describe '.filter_by_ids' do
+    before do
+      create_list(:message, 5, messageable: create(:offer))
+    end
+    it 'filters messages by id' do
+      messages = Message.all.sample(3)
+      ids = messages.map(&:id)
+      expect(Message.filter_by_ids(ids.join(',')).map(&:id)).to match_array(ids)
+    end
+  end
+
+  describe '.filter_by_offer_id' do
+    before do
+      create_list(:message, 5, messageable: offer)
+      create_list(:message, 3, messageable: order)
+    end
+
+    it 'filters messages by offer' do
+      messages = Message.where(messageable_type: 'Offer').sample(6)
+      ids = messages.map(&:id)
+      offer_ids = messages.map(&:messageable_id).join(',')
+      expect(Message.filter_by_offer_id(offer_ids).map(&:id)).to match_array(ids)
+    end
+  end
+
+  describe '.filter_by_order_id' do
+    before do
+      create_list(:message, 5, messageable: offer)
+      create_list(:message, 3, messageable: order)
+    end
+
+    it 'filters messages by order' do
+      messages = Message.where(messageable_type: 'Order').sample(6)
+      ids = messages.map(&:id)
+      order_ids = messages.map(&:messageable_id).join(',')
+      expect(Message.filter_by_order_id(order_ids).map(&:id)).to match_array(ids)
+    end
+  end
+
+  describe '.filter_by_item_id' do
+    before do
+      create_list(:message, 5, messageable: item)
+      create_list(:message, 3, messageable: order)
+    end
+
+    it 'filters messages by offer' do
+      messages = Message.where(messageable_type: 'Item').sample(6)
+      ids = messages.map(&:id)
+      item_ids = messages.map(&:messageable_id).join(',')
+      expect(Message.filter_by_item_id(item_ids).map(&:id)).to match_array(ids)
+    end
   end
 end
