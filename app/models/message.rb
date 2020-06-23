@@ -7,7 +7,6 @@ class Message < ActiveRecord::Base
   include Mentionable
 
   belongs_to :sender, class_name: "User", inverse_of: :messages
-  belongs_to :offer
 
   belongs_to :messageable, polymorphic: true
   has_many :subscriptions, dependent: :destroy
