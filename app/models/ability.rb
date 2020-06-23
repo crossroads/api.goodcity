@@ -312,6 +312,7 @@ class Ability
              fetch_added_quantity], Package
       can %i[show create update destroy], PackageSet
       can %i[index], Restriction
+      can %i[index], PackagesInventory
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }
