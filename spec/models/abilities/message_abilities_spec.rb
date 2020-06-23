@@ -11,7 +11,8 @@ describe 'Message abilities' do
   let(:sender)      { create :user }
   let(:charity) { create :user, :charity }
   let(:is_private) { false }
-  let(:message) { create :message, is_private: is_private }
+  let(:offer) { create(:offer, created_by: user) }
+  let(:message) { create :message, messageable: offer, is_private: is_private }
 
   context 'when Supervisor or Reviewer' do
     let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_manage_messages']}) }
