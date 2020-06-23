@@ -1,5 +1,5 @@
 class Message < ActiveRecord::Base
-  has_paper_trail class_name: "Version"
+  has_paper_trail class_name: 'Version', meta: { related: :messageable }
 
   include Paranoid
   include StateMachineScope
