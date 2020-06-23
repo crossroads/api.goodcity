@@ -22,7 +22,7 @@ namespace :goodcity do
     item_ids.each do |id|
       item      = Item.find_by(id: id)
 
-      return unless item.present?
+      next unless item.present?
 
       packages  = item.packages
 
