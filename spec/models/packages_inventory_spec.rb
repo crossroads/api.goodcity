@@ -68,24 +68,24 @@ RSpec.describe PackagesInventory, type: :model do
       let(:pallet) { create(:package, storage_type: pallet_storage) }
       let(:location) { create(:location) }
 
-      it "should prevent increasing the quantity of a box" do
+      it "should prevent increasing the quantity of a box above 1" do
         initialize_inventory(box)
 
         pi = build(:packages_inventory, package: box, action: 'gain', quantity: 1, location: location)
         pi.save
 
         expect(pi.persisted?).to eq(false)
-        expect(pi.errors.messages).to eq({:errors=>["Inventory action gain is not permitted on Box types"]})
+        expect(pi.errors.messages).to eq({:errors=>["A Box is limited to a quantity of 1"]})
       end
 
-      it "should prevent increasing the quantity of a pallet" do
+      it "should prevent increasing the quantity of a pallet above 1" do
         initialize_inventory(pallet)
 
         pi = build(:packages_inventory, package: pallet, action: 'gain', quantity: 1, location: location)
         pi.save
 
         expect(pi.persisted?).to eq(false)
-        expect(pi.errors.messages).to eq({:errors=>["Inventory action gain is not permitted on Pallet types"]})
+        expect(pi.errors.messages).to eq({:errors=>["A Pallet is limited to a quantity of 1"]})
       end
 
       it "should prevent inventorizing a box with a quantity > 1" do
@@ -102,6 +102,53 @@ RSpec.describe PackagesInventory, type: :model do
 
         expect(pi.persisted?).to eq(false)
         expect(pi.errors.messages).to eq({:errors=>["A Pallet is limited to a quantity of 1"]})
+      end
+
+      [
+        "trash",
+        "loss",
+        "recycle",
+        "process"
+      ].each do |negative_action|
+        context "if a box has been zero-ed by a #{negative_action} action" do
+          before do
+            initialize_inventory(box, location: location)
+            Package::Operations.register_loss(box, quantity: 1, location: location, action: negative_action)
+          end
+
+          it "should allow increasing the quantity of a box back to 1" do  
+            pi = build(:packages_inventory, package: box, action: 'gain', quantity: 1, location: location)
+            pi.save
+    
+            expect(pi.persisted?).to eq(true)
+          end
+
+          it "should prevent increasing the quantity of a box above 1" do
+            pi = build(:packages_inventory, package: box, action: 'gain', quantity: 2, location: location)
+            pi.save
+    
+            expect(pi.persisted?).to eq(false)
+            expect(pi.errors.messages).to eq({:errors=>["A Box is limited to a quantity of 1"]})
+          end
+        end
+      end
+
+      context "if a box has been dispatched" do
+        let(:order) { create(:order, :with_state_dispatching) }
+        let(:orders_package) { create(:orders_package, :with_state_designated, package: box, order: order, quantity: 1) }
+
+        before do
+          initialize_inventory(box, location: location)
+          OrdersPackage::Operations.dispatch(orders_package, quantity: 1, from_location: location)
+        end
+
+        it "should prevent increasing the quantity of a box back to 1" do  
+          pi = build(:packages_inventory, package: box, action: 'gain', quantity: 1, location: location)
+          pi.save
+  
+          expect(pi.persisted?).to eq(false)
+          expect(pi.errors.messages).to eq({:errors=>["Action not allowed on a dispatched package. Please undispatch and try again"]})
+        end
       end
     end
   end

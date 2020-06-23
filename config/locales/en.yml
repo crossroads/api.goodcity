@@ -148,6 +148,7 @@ en:
     storage_type_max: "A %{type} is limited to a quantity of %{quantity}"
     bad_action: "Inventory action %{action} is not permitted"
     bad_action_for_type: "Inventory action %{action} is not permitted on %{type} types"
+    action_requires_undispatch: "Action not allowed on a dispatched package. Please undispatch and try again"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
     quantities:
       invalid_negative_quantity: Required quantity not present at location
