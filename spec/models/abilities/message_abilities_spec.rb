@@ -13,12 +13,12 @@ describe 'Message abilities' do
   let(:is_private) { false }
   let(:message) { create :message, is_private: is_private }
 
-  context 'when Supervisor' do
+  context 'when Supervisor or Reviewer' do
     let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_manage_messages']}) }
 
     context 'and message is not is_private' do
-      @can = %i[index show create update destroy]
-      @cannot = %i[manage]
+      @can = %i[index show create]
+      @cannot = %i[manage update destroy]
 
       @can.map do |action|
         it "can do #{action}" do
@@ -35,46 +35,8 @@ describe 'Message abilities' do
 
     context 'and message is is_private' do
       let(:message) { create :message, is_private: true }
-      @can = %i[index show create update destroy]
-      @cannot = %i[manage]
-
-      @can.map do |action|
-        it "can do #{action}" do
-          is_expected.to be_able_to(action, message)
-        end
-      end
-
-      @cannot.map do |action|
-        it "cannot do #{action}" do
-          is_expected.to_not be_able_to(action, message)
-        end
-      end
-    end
-  end
-
-  context 'when Reviewer' do
-    let(:user) { create(:user, :with_can_create_and_read_messages_permission, role_name: 'Reviewer') }
-    context 'and message is not is_private' do
       @can = %i[index show create]
-      @cannot = %i[update destroy manage]
-
-      @can.map do |action|
-        it "can do #{action}" do
-          is_expected.to be_able_to(action, message)
-        end
-      end
-
-      @cannot.map do |action|
-        it "cannot do #{action}" do
-          is_expected.to_not be_able_to(action, message)
-        end
-      end
-    end
-
-    context 'and message is is_private' do
-      let(:is_private) { true }
-      @can = %i[index show create]
-      @cannot = %i[update destroy manage]
+      @cannot = %i[manage update destroy]
 
       @can.map do |action|
         it "can do #{action}" do
@@ -161,10 +123,10 @@ describe 'Message abilities' do
     end
   end
 
-  context 'Order Administrator' do
+  context 'Order Administrator/fulfilment' do
     let(:order) { create :order, created_by: charity }
     let(:message) { create :message, is_private: is_private, messageable: order }
-    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_create_and_read_messages']}) }
+    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_manage_messages']}) }
 
     @can = %i[index show create]
     @cannot = %i[update destroy manage]
@@ -217,5 +179,9 @@ describe 'Message abilities' do
     it 'is not allowed to mark_read subscriptions not belonging to user' do
       is_expected.to_not be_able_to(:mark_read, message2)
     end
+  end
+  context 'when Anonymous' do
+    let(:user) { nil }
+    it { all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, message) } }
   end
 end
