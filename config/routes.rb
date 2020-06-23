@@ -169,6 +169,7 @@ Rails.application.routes.draw do
       end
       resources :orders_process_checklists, only: [:index]
       resources :restrictions, only: [:index]
+      resources :packages_inventories, only: [:index]
 
       # routes used in stock app
       get "designations", to: "orders#index"
