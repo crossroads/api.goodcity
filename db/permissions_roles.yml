@@ -29,6 +29,8 @@ Reviewer:
 - can_create_donor
 - can_access_printers
 - can_mention_users
+- can_manage_messages
+
 Supervisor:
 - can_manage_packages
 - can_manage_package_detail
