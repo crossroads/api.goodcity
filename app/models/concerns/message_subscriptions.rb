@@ -31,7 +31,7 @@ module MessageSubscriptions
     subscribe_all_staff = if is_private
                             first_message?
                           else
-                            obj&.created_by_id.present? && (user_ids == [sender_id])
+                            obj&.created_by_id.present? && (user_ids.uniq.compact == [sender_id])
                           end
 
     user_ids += User.staff.pluck(:id) if subscribe_all_staff
