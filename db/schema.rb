@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200608093722) do
+ActiveRecord::Schema.define(version: 20200610104052) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,7 @@ ActiveRecord::Schema.define(version: 20200608093722) do
   end
 
   add_index "booking_types", ["identifier"], name: "index_booking_types_on_identifier", using: :btree
+  add_index "booking_types", ["name_en", "name_zh_tw"], name: "index_booking_types_on_name_en_and_name_zh_tw", unique: true, using: :btree
 
   create_table "boxes", force: :cascade do |t|
     t.string   "box_number"
@@ -372,7 +373,7 @@ ActiveRecord::Schema.define(version: 20200608093722) do
   create_table "messages", force: :cascade do |t|
     t.text     "body"
     t.integer  "sender_id"
-    t.boolean  "is_private",       default: false
+    t.boolean  "is_private", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -635,8 +636,8 @@ ActiveRecord::Schema.define(version: 20200608093722) do
     t.string   "subform"
     t.boolean  "allow_box",               default: false
     t.boolean  "allow_pallet",            default: false
-    t.decimal  "default_value_hk_dollar"
     t.boolean  "allow_expiry_date",       default: false
+    t.decimal  "default_value_hk_dollar"
   end
 
   add_index "package_types", ["allow_requests"], name: "index_package_types_on_allow_requests", using: :btree
@@ -645,7 +646,6 @@ ActiveRecord::Schema.define(version: 20200608093722) do
   add_index "package_types", ["visible_in_selects"], name: "index_package_types_on_visible_in_selects", using: :btree
 
   create_table "packages", force: :cascade do |t|
-    t.integer  "quantity"
     t.integer  "length"
     t.integer  "width"
     t.integer  "height"
@@ -675,7 +675,7 @@ ActiveRecord::Schema.define(version: 20200608093722) do
     t.integer  "favourite_image_id"
     t.date     "stockit_moved_on"
     t.integer  "stockit_moved_by_id"
-    t.boolean  "saleable",                             default: false
+    t.boolean  "saleable"
     t.string   "case_number"
     t.boolean  "allow_web_publish"
     t.integer  "received_quantity"
@@ -684,13 +684,15 @@ ActiveRecord::Schema.define(version: 20200608093722) do
     t.integer  "detail_id"
     t.string   "detail_type"
     t.integer  "storage_type_id"
-    t.decimal  "value_hk_dollar"
     t.integer  "available_quantity",                   default: 0
     t.integer  "on_hand_quantity",                     default: 0
     t.integer  "designated_quantity",                  default: 0
     t.integer  "dispatched_quantity",                  default: 0
-    t.date     "expiry_date"
+    t.datetime "expiry_date"
+    t.decimal  "value_hk_dollar"
     t.integer  "package_set_id"
+    t.integer  "restriction_id"
+    t.text     "comment"
   end
 
   add_index "packages", ["allow_web_publish"], name: "index_packages_on_allow_web_publish", using: :btree
@@ -709,7 +711,6 @@ ActiveRecord::Schema.define(version: 20200608093722) do
   add_index "packages", ["package_set_id"], name: "index_packages_on_package_set_id", using: :btree
   add_index "packages", ["package_type_id"], name: "index_packages_on_package_type_id", using: :btree
   add_index "packages", ["pallet_id"], name: "index_packages_on_pallet_id", using: :btree
-  add_index "packages", ["quantity"], name: "partial_index_quantity_greater_than_zero", where: "(quantity > 0)", using: :btree
   add_index "packages", ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id", using: :btree
   add_index "packages", ["stockit_id"], name: "index_packages_on_stockit_id", using: :btree
   add_index "packages", ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id", using: :btree
@@ -818,6 +819,13 @@ ActiveRecord::Schema.define(version: 20200608093722) do
   add_index "requested_packages", ["user_id", "package_id"], name: "index_requested_packages_on_user_id_and_package_id", unique: true, using: :btree
   add_index "requested_packages", ["user_id"], name: "index_requested_packages_on_user_id", using: :btree
 
+  create_table "restrictions", force: :cascade do |t|
+    t.string   "name_en"
+    t.string   "name_zh_tw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "role_permissions", force: :cascade do |t|
     t.integer  "role_id"
     t.integer  "permission_id"
@@ -900,7 +908,7 @@ ActiveRecord::Schema.define(version: 20200608093722) do
   create_table "subscriptions", force: :cascade do |t|
     t.integer "user_id"
     t.integer "message_id"
-    t.string  "state",             limit: 255
+    t.string  "state",      limit: 255
     t.string  "subscribable_type"
     t.integer "subscribable_id"
   end

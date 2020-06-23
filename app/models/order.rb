@@ -402,7 +402,7 @@ class Order < ActiveRecord::Base
           left join goodcity_requests on goodcity_requests.order_id = orders.id
           join versions on versions.item_type in ('Order', 'GoodcityRequest') AND (versions.item_id = orders.id OR versions.item_id = goodcity_requests.id)
           LEFT join orders_packages on orders_packages.order_id = orders.id AND orders_packages.updated_by_id = ?
-          where orders.detail_type='GoodCity' AND versions.whodunnit = ? AND (orders.state not in ('cancelled', 'closed', 'draft') OR orders.state not in ('closed', 'cancelled'))
+          where orders.detail_type='GoodCity' AND versions.whodunnit = ? AND (orders.state not in ('cancelled', 'closed', 'draft'))
           order by GREATEST(orders_packages.updated_at, versions.created_at) DESC", user_id, user_id.to_s]
     ).uniq.first(5)
   end

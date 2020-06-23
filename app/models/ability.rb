@@ -18,7 +18,9 @@ class Ability
     can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages can_access_orders_process_checklists can_login_to_browse
+    can_manage_settings can_manage_companies can_manage_package_detail
+    can_access_printers can_remove_offers_packages
+    can_access_orders_process_checklists can_mention_users can_login_to_browse
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -308,11 +310,13 @@ class Ability
 
   def package_abilities
     if can_manage_packages?
-      can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :remove_from_set, :designate, :register_quantity_change, :mark_missing,
-        :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item,
-        :contained_packages, :parent_containers, :fetch_added_quantity], Package
-      can [:show, :create, :update, :destroy], PackageSet
+      can %i[index show create update destroy print_barcode package_valuation
+             search_stockit_items remove_from_set designate register_quantity_change
+             mark_missing move print_inventory_label stockit_item_details
+             split_package add_remove_item contained_packages parent_containers
+             fetch_added_quantity], Package
+      can %i[show create update destroy], PackageSet
+      can %i[index], Restriction
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }
@@ -404,9 +408,10 @@ class Ability
 
   def user_abilities
     can [:current_user_profile], User
-    can %i[show update orders_count mentionable_users], User, id: @user_id
+    can %i[show update orders_count], User, id: @user_id
     can %i[index show update recent_users create], User if can_read_or_modify_user?
     can %i[create show], User if can_create_donor?
+    can %i[mentionable_users], User if can_mention_users?
   end
 
   def version_abilities

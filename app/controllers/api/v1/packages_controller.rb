@@ -3,10 +3,8 @@ module Api
     class PackagesController < Api::V1::ApiController
       include GoodcitySync
 
-      load_and_authorize_resource :package, parent: false, except: :package_valuation
+      load_and_authorize_resource :package, parent: false
       skip_before_action :validate_token, only: [:index, :show]
-      skip_authorization_check only: :package_valuation
-
 
       resource_description do
         short "Create, update and delete a package."
@@ -194,11 +192,10 @@ module Api
       param :package_type_id, [Integer, String], :required => true
 
       def package_valuation
-        package = Package.new(donor_condition: DonorCondition.find(params['donor_condition_id']),
-                              grade: params['grade'],
-                              package_type: PackageType.find(params['package_type_id']))
-
-        valuation = package.calculate_valuation
+        valuation = ValuationCalculationHelper.new(params['donor_condition_id'],
+                                                   params['grade'],
+                                                   params['package_type_id'])
+                                              .calculate
         render json: { value_hk_dollar: valuation }, status: 200
       end
 
@@ -228,6 +225,7 @@ module Api
                                                     include_order: false,
                                                     include_packages: false,
                                                     include_orders_packages: true,
+                                                    include_package_set: bool_param(:include_package_set, true),
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
@@ -356,8 +354,8 @@ module Api
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
           :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id,
-          :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
+          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
+          :comment, :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
                               computer_accessory_attributes, medical_attributes].flatten.uniq

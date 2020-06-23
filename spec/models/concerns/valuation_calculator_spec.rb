@@ -18,10 +18,10 @@ context "ValuationCalculator" do
 
   context "calculate_valuation" do
     let(:grade) { "B" }
-    let(:donor_condition) { create(:donor_condition) }
+    let!(:donor_condition) { create(:donor_condition) }
     let!(:vm) { create(:valuation_matrix, grade: grade, donor_condition_id: donor_condition.id) }
-    let(:package_type) { create(:package_type, default_value_hk_dollar: 543.21) }
-    let(:package) { create(:package, grade: grade, donor_condition_id: donor_condition.id , package_type: package_type) }
+    let!(:package_type) { create(:package_type, default_value_hk_dollar: 543.21) }
+    let!(:package) { create(:package, grade: grade, donor_condition_id: donor_condition.id , package_type: package_type) }
 
     context "returns 0 if package_type.default_value_hk_dollar is nil" do
       let(:package_type) { create(:package_type, default_value_hk_dollar: nil) }
@@ -34,7 +34,7 @@ context "ValuationCalculator" do
     end
 
     it "returns correct value" do
-      expect(package.calculate_valuation).to eql(543.21 * vm.multiplier)
+      expect(package.calculate_valuation).to eql(543.21 * vm.multiplier.to_f)
     end
   end
 end

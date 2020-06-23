@@ -28,6 +28,7 @@ Reviewer:
 - can_manage_companies
 - can_create_donor
 - can_access_printers
+- can_mention_users
 Supervisor:
 - can_manage_packages
 - can_manage_package_detail
@@ -66,6 +67,7 @@ Supervisor:
 - can_create_donor
 - can_access_printers
 - can_access_orders_process_checklists
+- can_mention_users
 api-write: []
 Charity:
 - can_login_to_browse
@@ -102,6 +104,7 @@ Order fulfilment: &order_fulfilment
 - can_access_printers
 - can_access_orders_process_checklists
 - can_read_or_modify_user
+- can_mention_users
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
