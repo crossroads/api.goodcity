@@ -288,5 +288,64 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         end
       end
     end
+
+    describe 'GET /mentionable_users' do
+      let!(:reviewer) { create(:user, :reviewer) }
+      let!(:donor) { create(:user) }
+      let(:supervisor) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_mention_users']}) }
+      let!(:order_administrator) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_mention_users']}) }
+      let!(:charity) { create(:user, :charity) }
+      let!(:order_fulfilment) { create(:user, :order_fulfilment) }
+      let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: donor) }
+      let!(:order) { create(:order, created_by: charity) }
+      before { generate_and_set_token(supervisor) }
+
+      it 'returns 200' do
+        get :mentionable_users, offer_id: offer.id, is_private: false, roles: 'Reviewer'
+        expect(response).to have_http_status(:success)
+      end
+
+      context 'if donor or browse app' do
+        %w[donor charity].map do |app|
+          it "returns unauthorized for #{app}" do
+            generate_and_set_token(eval(app))
+            get :mentionable_users, offer_id: offer.id, is_private: false, roles: 'Reviewer'
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+      end
+
+      context 'if no messageable id is passed in params' do
+        it 'return empty array' do
+          get :mentionable_users, offer_id: nil, is_private: false
+          expect(parsed_body['users']).to be_empty
+        end
+      end
+
+      context 'if no roles are provided in params' do
+        it 'returns empty array' do
+          get :mentionable_users, offer_id: offer.id, is_private: false
+          expect(parsed_body['users']).to be_empty
+        end
+      end
+
+      context 'admin app' do
+        it 'returns supervisors and reviewers' do
+          generate_and_set_token(supervisor)
+          get :mentionable_users, offer_id: offer.id, roles: 'Supervisor, Reviewer'
+          users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name } }
+          expect(parsed_body['users']).to match_array(users)
+        end
+      end
+
+      context 'stock app' do
+        it 'returns order_administrator and order_fulfulment users' do
+          generate_and_set_token(order_administrator)
+          get :mentionable_users, order_id: order.id, roles: 'Order administrator, Order fulfilment'
+          users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name } }
+          expect(parsed_body['users']).to match_array(users)
+        end
+      end
+    end
   end
 end

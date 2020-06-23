@@ -1,5 +1,4 @@
 class SubscriptionsReminder
-
   def generate
     user_candidates_for_reminder.each do |user|
       user.update(sms_reminder_sent_at: Time.now)
@@ -23,15 +22,14 @@ class SubscriptionsReminder
   #   to avoid alerting on the system 'thank you for submitting your offer' message
   def user_candidates_for_reminder
     offer_states = Offer::SUBSCRIPTIONS_REMINDER_STATES # NOT Draft offers
-    User.joins(subscriptions: [:message, :offer])
-        .where("COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)", delta.iso8601)
+    User.joins(subscriptions: [:message])
+        .joins("INNER JOIN offers on offers.id = messages.messageable_id and messages.messageable_type = 'Offer'")
+        .where('COALESCE(users.sms_reminder_sent_at, users.created_at) < (?)', delta.iso8601)
         .where('subscriptions.state': 'unread')
-        .where("messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)")
-        .where("(messages.offer_id IS NOT NULL OR messages.item_id IS NOT NULL) and messages.order_id IS NULL")
-        .where("offers.created_by_id = subscriptions.user_id")
-        .where("offers.state IN (?)", offer_states)
-        .where('messages.sender_id != offers.created_by_id')
-        .where("messages.created_at < (?)", head_start.iso8601)
+        .where('messages.created_at > COALESCE(users.sms_reminder_sent_at, users.created_at)')
+        .where("(messages.messageable_type = 'Offer' OR messages.messageable_type = 'Item')")
+        .where('offers.created_by_id = subscriptions.user_id and offers.state IN (?)', offer_states)
+        .where('messages.sender_id != offers.created_by_id and messages.created_at < (?)', head_start.iso8601)
         .distinct
   end
 
