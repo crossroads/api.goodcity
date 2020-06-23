@@ -201,7 +201,7 @@ module Messages
           message1.subscribe_users_to_message
 
           # The supervisor answers on the the private thread
-          create :message, sender: supervisor, messageable: message.offer, is_private: false
+          create :message, sender: supervisor, messageable: message.messageable, is_private: false
 
           # The supervisor receives subsequent message of the thread
           expect(message2).to receive(:add_subscription).with('read', reviewer.id)
