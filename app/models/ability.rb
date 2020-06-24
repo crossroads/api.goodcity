@@ -12,7 +12,7 @@ class Ability
     can_search_browse_packages can_manage_deliveries can_manage_delivery_address
     can_manage_delivery_address can_manage_orders can_manage_order_transport
     can_manage_holidays can_manage_orders_packages can_manage_images
-    can_manage_messages can_add_package_types can_add_or_remove_inventory_number
+    can_add_package_types can_add_or_remove_inventory_number
     can_check_organisations can_access_packages_locations can_create_donor
     can_destroy_image_for_imageable_states can_destroy_contacts
     can_read_or_modify_user can_handle_gogovan_order
@@ -21,6 +21,7 @@ class Ability
     can_manage_settings can_manage_companies can_manage_package_detail
     can_access_printers can_remove_offers_packages
     can_access_orders_process_checklists can_mention_users
+    can_manage_order_messages can_manage_offer_messages
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -206,22 +207,15 @@ class Ability
   end
 
   def message_abilities
-    if can_manage_messages?
-      # Supervisors and Reviewers can see all messages on all offers (and items belonging to an offer)
-      # Order fulfillment and Order Administrators are allowed to see all messages on all orders.
-      can %i[index show create], Message
-    else
-      # A donor / charity user is allowed to read any non-private message
-      # that is on an offer / order created by them
-      can [:index, :show], Message, @user.messages do |message|
-        message.related_object&.created_by_id == @user_id && !message.is_private
-      end
-      # A donor / charity user cannot create a private message
-      can :create, Message do |message|
-        message.related_object&.created_by_id == @user_id && !message.is_private
-      end
+    can [:index, :show, :create], Message, messageable_type: 'Offer'  if can_manage_offer_messages?
+    can [:index, :show, :create], Message, messageable_type: 'Item'  if can_manage_offer_messages?
+    can [:index, :show, :create], Message, messageable_type: 'Order'  if can_manage_order_messages?
+    can [:index, :show, :mark_read, :mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
+
+    # Normal users can create non private messages on objects they own
+    can :create, Message do |message|
+      message.related_object&.created_by_id == @user_id && !message.is_private
     end
-    can %i[mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
   end
 
   def offer_abilities
