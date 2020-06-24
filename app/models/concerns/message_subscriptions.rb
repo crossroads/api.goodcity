@@ -34,7 +34,7 @@ module MessageSubscriptions
                             obj&.created_by_id.present? && (user_ids.uniq.compact == [sender_id])
                           end
 
-    user_ids += User.staff.pluck(:id) if subscribe_all_staff
+    user_ids += first_message_subscribers(messageable_type) if subscribe_all_staff
     user_ids += mentioned_ids if mentioned_ids.present?
 
     user_ids.flatten.compact.uniq.each do |user_id|
@@ -44,6 +44,18 @@ module MessageSubscriptions
   end
 
   private
+
+  def first_message_subscribers(klass)
+    roles = if klass == 'Order'
+      ['Order fulfilment', 'Order administrator']
+    elsif  ['Offer', 'Item'].include?(klass)
+      ['Reviewer', 'Supervisor']
+    else
+      []
+    end
+
+    User.with_roles(roles).pluck(:id)
+  end
 
   # A public subscriber is defined as :
   #   > Anyone who has a subscription to that record
@@ -65,7 +77,7 @@ module MessageSubscriptions
   end
 
   def first_message?
-    Message.where(is_private: is_private, messageable: messageable).count.eql? 1
+    Message.unscoped.where(is_private: is_private, messageable: messageable).count.eql? 1
   end
 
   def admin_user_fields
