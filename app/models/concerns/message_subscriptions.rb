@@ -34,7 +34,7 @@ module MessageSubscriptions
                             obj&.created_by_id.present? && (user_ids == [sender_id])
                           end
 
-    user_ids += first_message_subscribers(obj.class.name.underscore) if subscribe_all_staff
+    user_ids += first_message_subscribers(messageable_type) if subscribe_all_staff
     user_ids += mentioned_ids if mentioned_ids.present?
 
     user_ids.flatten.compact.uniq.each do |user_id|
@@ -46,9 +46,9 @@ module MessageSubscriptions
   private
 
   def first_message_subscribers(klass)
-    roles = if klass == 'order'
+    roles = if klass == 'Order'
       ['Order fulfilment', 'Order administrator']
-    elsif  ['offer', 'item'].include?(klass)
+    elsif  ['Offer', 'Item'].include?(klass)
       ['Reviewer', 'Supervisor']
     else
       []
