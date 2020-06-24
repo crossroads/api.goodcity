@@ -192,6 +192,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_user_roles do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: "can_manage_user_roles")
+      end
+    end
+
   end
 
 end

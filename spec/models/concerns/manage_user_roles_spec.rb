@@ -10,38 +10,49 @@ describe ManageUserRoles do
     let!(:reviewer_role) { create(:role, name: "Reviewer", level: 5) }
     let!(:supervisor_role) { create(:role, name: "Supervisor", level: 10) }
 
-    let!(:supervisor_user) { create(:user, :supervisor) }
+    let!(:supervisor_user) { create(:user, :supervisor, :with_can_manage_user_roles) }
     let!(:reviewer_user) { create(:user, :reviewer) }
     let!(:order_fulfilment_user) { create :user, :order_fulfilment }
     let!(:charity_user) { create(:user, :charity) }
 
-    describe "#update_roles_for_user" do
+    describe "#manage_roles_for_user" do
       context "Reviewer" do
         before { User.current_user = reviewer_user }
 
-        it "can not update self roles" do
-          reviewer_user.update_roles_for_user(reviewer_user, [order_fulfilment_role.id])
+        it "can not update roles" do
+          reviewer_user.manage_roles_for_user(charity_user, [order_fulfilment_role.id])
 
-          expect(reviewer_user.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
-          expect(reviewer_user.roles.pluck(:id)).to include(reviewer_role.id)
+          expect(charity_user.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
+          expect(charity_user.roles.pluck(:id)).to include(charity_role.id)
+        end
+      end
+
+      context "Supervisor" do
+        before { User.current_user = supervisor_user }
+
+        it "can not update self roles" do
+          supervisor_user.manage_roles_for_user(supervisor_user, [order_fulfilment_role.id])
+
+          expect(supervisor_user.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
+          expect(supervisor_user.roles.pluck(:id)).to include(supervisor_role.id)
         end
 
         it "can update other user [low role level] roles" do
-          reviewer_user.update_roles_for_user(charity_user, [order_fulfilment_role.id])
+          supervisor_user.manage_roles_for_user(charity_user, [order_fulfilment_role.id])
 
           expect(charity_user.roles.pluck(:id)).to include(order_fulfilment_role.id)
           expect(charity_user.roles.pluck(:id)).not_to include(charity_role.id)
         end
 
         it "can update other user [same role level] roles" do
-          reviewer_user.update_roles_for_user(order_fulfilment_user, [reviewer_role.id])
+          supervisor_user.manage_roles_for_user(order_fulfilment_user, [reviewer_role.id])
 
           expect(order_fulfilment_user.roles.pluck(:id)).to include(reviewer_role.id)
           expect(order_fulfilment_user.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
         end
 
         it "can not update other user [high role level] roles" do
-          reviewer_user.update_roles_for_user(supervisor_user, [order_fulfilment_role.id])
+          supervisor_user.manage_roles_for_user(supervisor_user, [order_fulfilment_role.id])
 
           expect(supervisor_user.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
           expect(supervisor_user.roles.pluck(:id)).to include(supervisor_role.id)

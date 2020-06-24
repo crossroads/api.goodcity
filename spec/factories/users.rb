@@ -202,6 +202,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_user_roles do
+      after(:create) do |user, evaluator|
+        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_user_roles)
+      end
+    end
+
     trait :api_user do
       after(:create) do |user|
         user.roles << create(:api_write_role)

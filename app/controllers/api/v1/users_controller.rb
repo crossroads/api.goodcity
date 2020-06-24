@@ -37,7 +37,7 @@ module Api
           end
 
           if params["user"]["user_role_ids"]
-            current_user.update_roles_for_user(@user, params["user"]["user_role_ids"])
+            current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
           end
           render json: @user, serializer: serializer, include_user_roles: true, status: 201
         else
@@ -60,7 +60,7 @@ module Api
       def update
         @user.update_attributes(user_params)
         if params["user"]["user_role_ids"]
-          current_user.update_roles_for_user(@user, params["user"]["user_role_ids"])
+          current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
         end
         render json: @user, serializer: serializer
       end

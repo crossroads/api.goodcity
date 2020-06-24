@@ -4,7 +4,8 @@ api-write: []
 System administrator:
 - can_disable_user
 - can_read_or_modify_user
-Stock fulfillment: []
+- can_manage_user_roles
+Stock fulfilment: []
 Stock administrator: []
 Reviewer:
 - can_manage_packages
@@ -74,6 +75,7 @@ Supervisor:
 - can_access_printers
 - can_access_orders_process_checklists
 - can_mention_users
+- can_manage_user_roles
 Charity:
 - can_login_to_browse
 - can_search_browse_packages
@@ -114,3 +116,4 @@ Order fulfilment: &order_fulfilment
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
+- can_manage_user_roles
