@@ -15,7 +15,7 @@ describe 'Message abilities' do
   let(:message) { create :message, messageable: offer, is_private: is_private }
 
   context 'when Supervisor or Reviewer' do
-    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_manage_messages']}) }
+    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_manage_offer_messages']}) }
 
     context 'and message is not is_private' do
       @can = %i[index show create]
@@ -35,7 +35,7 @@ describe 'Message abilities' do
     end
 
     context 'and message is is_private' do
-      let(:message) { create :message, is_private: true }
+      let(:message) { create :message, is_private: true, messageable: offer }
       @can = %i[index show create]
       @cannot = %i[manage update destroy]
 
@@ -55,7 +55,7 @@ describe 'Message abilities' do
 
   context 'when Donor' do
     let(:offer) { create :offer, created_by: sender}
-    let(:message) { create :message, is_private: is_private, messageable: offer }
+    let!(:message) { create :message, is_private: is_private, messageable: offer }
     let(:user) { sender }
 
     @can = %i[index show create]
@@ -70,6 +70,19 @@ describe 'Message abilities' do
     @cannot.map do |action|
       it "is not allowed to #{action}" do
         is_expected.to_not be_able_to(action, message)
+      end
+    end
+
+    context 'when donor recieves a message from a reviewer' do
+      let(:reviewer) { create(:user, :reviewer) }
+      let(:message) { create :message, is_private: is_private, messageable: offer, sender: reviewer }
+      let!(:subscription) { create :subscription, subscribable: offer, message: message }
+      it 'should be able to read the message' do
+        is_expected.to be_able_to(:show, message)
+      end
+
+      it 'should be able to mark_read' do
+        is_expected.to be_able_to(:mark_read, message)
       end
     end
 
@@ -91,7 +104,7 @@ describe 'Message abilities' do
 
   context 'Charity user' do
     let(:order) { create :order, created_by: charity }
-    let(:message) { create :message, is_private: is_private, messageable: order }
+    let!(:message) { create :message, is_private: is_private, messageable: order }
     let(:user) { charity }
 
     @can = %i[index show create]
@@ -105,6 +118,19 @@ describe 'Message abilities' do
     @cannot.map do |action|
       it "is not allowed to #{action}" do
         is_expected.to_not be_able_to(action, message)
+      end
+    end
+
+    context 'when charity user recieves a message from a order admin' do
+      let(:order_administrator) { create(:user, :order_administrator) }
+      let(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
+      let!(:subscription) { create :subscription, subscribable: order, message: message }
+      it 'should be able to read the message' do
+        is_expected.to be_able_to(:show, message)
+      end
+
+      it 'should be able to mark_read' do
+        is_expected.to be_able_to(:mark_read, message)
       end
     end
 
@@ -127,7 +153,7 @@ describe 'Message abilities' do
   context 'Order Administrator/fulfilment' do
     let(:order) { create :order, created_by: charity }
     let(:message) { create :message, is_private: is_private, messageable: order }
-    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_manage_messages']}) }
+    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_manage_order_messages']}) }
 
     @can = %i[index show create]
     @cannot = %i[update destroy manage]
@@ -163,7 +189,7 @@ describe 'Message abilities' do
     end
   end
 
-  context 'mark_read' do
+  context 'mark messages' do
     let(:user) { create :user }
     let(:user2) { create :user }
     let(:offer) { create :offer, created_by: user }
@@ -172,15 +198,27 @@ describe 'Message abilities' do
     let(:message2) { create :message, is_private: is_private, messageable: offer2 }
     let!(:subscription) { create :subscription, subscribable: offer, message: message }
     let!(:subscription_2) { create :subscription, subscribable: offer2, message: message2 }
+    context 'mark_read' do
+      it 'is allowed to mark_read any subscription belonging to user' do
+        is_expected.to be_able_to(:mark_read, message)
+      end
 
-    it 'is allowed to mark_read any subscription belonging to user' do
-      is_expected.to be_able_to(:mark_read, message)
+      it 'is not allowed to mark_read subscriptions not belonging to user' do
+        is_expected.to_not be_able_to(:mark_read, message2)
+      end
     end
 
-    it 'is not allowed to mark_read subscriptions not belonging to user' do
-      is_expected.to_not be_able_to(:mark_read, message2)
+    context 'mark_all_read' do
+      it 'is allowed to mrk_all_read all subscriptions belonging to user' do
+        is_expected.to be_able_to(:mark_read, message)
+      end
+
+      it 'is not allowed to mark_read subscriptions not belonging to user' do
+        is_expected.to_not be_able_to(:mark_all_read, message2)
+      end
     end
   end
+
   context 'when Anonymous' do
     let(:user) { nil }
     it { all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, message) } }

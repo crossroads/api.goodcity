@@ -28,7 +28,7 @@ Reviewer:
 - can_create_donor
 - can_access_printers
 - can_mention_users
-- can_manage_messages
+- can_manage_offer_messages
 
 Supervisor:
 - can_manage_packages
@@ -59,7 +59,7 @@ Supervisor:
 - can_manage_organisations_users
 - can_read_or_modify_user
 - can_destroy_image
-- can_manage_messages
+- can_manage_offer_messages
 - can_login_to_stock
 - can_login_to_admin
 - can_manage_settings
@@ -104,7 +104,7 @@ Order fulfilment: &order_fulfilment
 - can_access_orders_process_checklists
 - can_read_or_modify_user
 - can_mention_users
-- can_manage_messages
+- can_manage_order_messages
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
