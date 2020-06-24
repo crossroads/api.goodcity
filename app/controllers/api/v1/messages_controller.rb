@@ -29,6 +29,7 @@ module Api
       api :GET, "/v1/messages", "List all messages"
       param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
       param :offer_id, String, desc: "Return messages for offer id."
+      param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       param :state, String, desc: "Message state (unread|read) to filter on"
@@ -73,6 +74,7 @@ module Api
         %i[ids offer_id order_id item_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f]
         end
+        messages = messages.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
         messages = messages.with_state_for_user(current_user, options[:state].split(',')) if options[:state].present?
         messages
       end
