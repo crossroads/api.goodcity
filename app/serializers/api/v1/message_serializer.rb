@@ -9,6 +9,10 @@ module Api::V1
 
     has_one :sender, serializer: UserSerializer, root: :user
 
+    def include_sender?
+      !@options[:exclude_message_sender]
+    end
+
     def lookup
       object.lookup.to_json
     end
