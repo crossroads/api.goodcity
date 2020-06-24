@@ -18,7 +18,7 @@ module ManageUserRoles
 
   included do
 
-    def update_roles_for_user(user, role_ids)
+    def manage_roles_for_user(user, role_ids)
       return unless self.can_update_roles_for_user?(user)
 
       allowed_role_ids = Role.allowed_roles(max_role_level)
@@ -29,7 +29,8 @@ module ManageUserRoles
 
     def can_update_roles_for_user?(other_user)
       self != other_user &&
-      self.max_role_level >= other_user.max_role_level
+      self.max_role_level >= other_user.max_role_level &&
+      can_manage_user_roles?
     end
 
     def max_role_level
@@ -38,6 +39,10 @@ module ManageUserRoles
 
     def update_roles_for_user(user, role_ids)
       user.roles = Role.where(id: role_ids)
+    end
+
+    def can_manage_user_roles?
+      user_permissions_names.include?("can_manage_user_roles")
     end
 
   end
