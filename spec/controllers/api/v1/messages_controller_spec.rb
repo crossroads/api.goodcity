@@ -42,8 +42,6 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     describe 'filtering messages' do
-      before { 2.times { create :message } }
-
       it "for one item" do
         3.times { create :message, messageable: item }
         get :index, item_id: item.id
@@ -72,6 +70,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
       it "for one order" do
         3.times { create :message, messageable: order }
+        3.times { create :message, messageable: order2 }
         get :index, order_id: order.id
         expect(subject['messages'].length).to eq(3)
       end
