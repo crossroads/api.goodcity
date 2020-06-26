@@ -6,12 +6,6 @@ describe "Delivery abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :confirm_delivery] }
 
-  context "when Administrator" do
-    let(:user)     { create(:user, :administrator) }
-    let(:delivery) { create :delivery }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, delivery) } }
-  end
-
   context "when Supervisor" do
     let(:user)     { create(:user, :with_can_manage_deliveries, role_name: 'Supervisor') }
     let(:delivery) { create :delivery }

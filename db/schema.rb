@@ -840,7 +840,10 @@ ActiveRecord::Schema.define(version: 20200610104052) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "level"
   end
+
+  add_index "roles", ["level"], name: "index_roles_on_level", using: :btree
 
   create_table "schedules", force: :cascade do |t|
     t.string   "resource",     limit: 255
