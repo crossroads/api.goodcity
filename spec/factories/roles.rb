@@ -2,20 +2,18 @@ FactoryBot.define do
 
   factory :role do
     name            { generate(:permissions_roles).keys.sample }
+    level           10
     initialize_with { Role.find_or_initialize_by(name: name) } # limits us to our sample of permissions
 
     transient do
       permissions { %w(can_manage_offers, can_manage_packages)}
     end
 
-    ["Administrator", "Charity", "Order_fulfilment", "Order_administrator", "Reviewer", "Supervisor", "System"].each do |role|
-      factory "#{role.downcase}_role".to_sym, parent: :role do
-        name role.humanize
+    YAML.load_file("#{Rails.root}/db/roles.yml").each do |role, attrs|
+      factory "#{role.parameterize.underscore}_role", parent: :role do
+        name role
+        level attrs[:level]
       end
-    end
-
-    factory :api_write_role, parent: :role do
-      name 'api-write'
     end
 
     trait :with_dynamic_permission do
@@ -125,6 +123,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_create_user_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_create_donor')
+      end
+    end
+
     trait :with_can_manage_orders_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_orders')
@@ -188,6 +192,18 @@ FactoryBot.define do
     trait :with_can_access_orders_process_checklists do
       after(:create) do |role|
         role.permissions << (create :permission, name: "can_access_orders_process_checklists")
+      end
+    end
+
+    trait :with_can_disable_user do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: "can_disable_user")
+      end
+    end
+
+    trait :with_can_manage_user_roles do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: "can_manage_user_roles")
       end
     end
 

@@ -14,6 +14,7 @@ describe 'Message abilities' do
   let(:offer) { create(:offer, created_by: user) }
   let(:message) { create :message, messageable: offer, is_private: is_private }
 
+
   context 'when Supervisor or Reviewer' do
     let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_manage_offer_messages']}) }
 

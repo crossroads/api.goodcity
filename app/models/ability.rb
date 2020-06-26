@@ -21,7 +21,7 @@ class Ability
     can_manage_settings can_manage_companies can_manage_package_detail
     can_access_printers can_remove_offers_packages
     can_access_orders_process_checklists can_mention_users
-    can_manage_order_messages can_manage_offer_messages
+    can_manage_order_messages can_manage_offer_messages can_disable_user
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
