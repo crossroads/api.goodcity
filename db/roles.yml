@@ -1,0 +1,33 @@
+---
+Donor:
+  :level: 1
+
+Charity:
+  :level: 1
+
+Reviewer:
+  :level: 5
+
+Supervisor:
+  :level: 10
+
+Order fulfilment:
+  :level: 5
+
+Order administrator:
+  :level: 10
+
+Stock fulfilment:
+  :level: 5
+
+Stock administrator:
+  :level: 10
+
+System administrator:
+  :level: 15
+
+System:
+  :level: 15
+
+api-write:
+  :level: 15
