@@ -4,7 +4,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
 
-  let(:supervisor_user) { create(:user_with_token, :with_can_read_or_modify_user_permission,  role_name: 'Supervisor') }
+  let(:supervisor_user) { create(:user_with_token, :with_can_read_or_modify_user_permission, :with_can_manage_user_roles, role_name: 'Supervisor') }
   let(:reviewer_user) { create(:user_with_token, :with_can_create_user_permission, role_name: "Reviewer") }
   let(:system_admin_user) {
     create :user,
@@ -91,10 +91,11 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   describe "POST users" do
     let(:reviewer) { create(:user_with_token, :reviewer) }
-    let(:role) { create(:role, name: "Supervisor" , level: 10) }
+    let(:role) { create(:role, name: "System administrator" , level: 15) }
     let(:existing_user) { create(:user) }
 
     before do
+      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [charity_role.id] }
       @user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [role.id] }
       @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
       @user_params3 = {"first_name": "Test", "last_name": "Name", "mobile": "3812912"}
@@ -104,19 +105,19 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       before { generate_and_set_token(supervisor_user) }
       it "creates user with role and returns 201", :show_in_doc do
         expect {
-          post :create, user: @user_params
+          post :create, user: @valid_user_params
           }.to change(User, :count).by(1)
 
         expect(response.status).to eq(201)
-        expect(parsed_body['user']['first_name']).to eql(@user_params[:first_name])
-        expect(parsed_body['user']['last_name']).to eql(@user_params[:last_name])
-        expect(parsed_body['user']['mobile']).to eql(@user_params[:mobile])
-        expect(parsed_body['user_roles'][0]['role_id']).to eql(role.id)
+        expect(parsed_body['user']['first_name']).to eql(@valid_user_params[:first_name])
+        expect(parsed_body['user']['last_name']).to eql(@valid_user_params[:last_name])
+        expect(parsed_body['user']['mobile']).to eql(@valid_user_params[:mobile])
+        expect(parsed_body['user_roles'][0]['role_id']).to eql(charity_role.id)
       end
     end
 
     context "Reviewer" do
-      before { generate_and_set_token(reviewer_user) }
+      before { generate_and_set_token(supervisor_user) }
 
       it "Does not assign higher level role to user", :show_in_doc do
         expect {
