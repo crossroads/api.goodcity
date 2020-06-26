@@ -124,7 +124,7 @@ describe 'Message abilities' do
     context 'when charity user recieves a message from a order admin' do
       let(:order_administrator) { create(:user, :order_administrator) }
       let(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
-      let!(:subscription) { create :subscription, subscribable: order, message: message }
+      let!(:subscription) { create :subscription, user: order_administrator, subscribable: order, message: message }
       it 'should be able to read the message' do
         is_expected.to be_able_to(:show, message)
       end
@@ -196,8 +196,8 @@ describe 'Message abilities' do
     let(:offer2) { create :offer, created_by: user2 }
     let(:message) { create :message, is_private: is_private, messageable: offer }
     let(:message2) { create :message, is_private: is_private, messageable: offer2 }
-    let!(:subscription) { create :subscription, subscribable: offer, message: message }
-    let!(:subscription_2) { create :subscription, subscribable: offer2, message: message2 }
+    let!(:subscription) { create :subscription, user: user, subscribable: offer, message: message }
+    let!(:subscription_2) { create :subscription, user: user2, subscribable: offer2, message: message2 }
     context 'mark_read' do
       it 'is allowed to mark_read any subscription belonging to user' do
         is_expected.to be_able_to(:mark_read, message)
@@ -209,7 +209,7 @@ describe 'Message abilities' do
     end
 
     context 'mark_all_read' do
-      it 'is allowed to mrk_all_read all subscriptions belonging to user' do
+      it 'is allowed to mark_all_read all subscriptions belonging to user' do
         is_expected.to be_able_to(:mark_read, message)
       end
 
