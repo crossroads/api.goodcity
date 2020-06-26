@@ -2,8 +2,9 @@ module Api
   module V1
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
+      before_action :can_chat_on_packages?, only: :create
 
-      ALLOWED_SCOPES = %w[offer item order].freeze
+      ALLOWED_SCOPES = %w[offer item order package].freeze
 
       resource_description do
         short "List, show, create and mark_read a message."
@@ -70,11 +71,17 @@ module Api
 
       private
 
-      def apply_filters(messages, options)
-        %i[ids offer_id order_id item_id].map do |f|
-          messages = messages.send("filter_by_#{f}", options[f]) if options[f]
+      def can_chat_on_packages?
+        if params["message"]["messageable_type"] == 'Package' && !current_user.can_chat_on_packages?
+          raise CanCan::AccessDenied.new("Not authorized!", :create, Message)
         end
-        messages = messages.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
+      end
+
+      def apply_filters(messages, options)
+        messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
+        %i[ids offer_id order_id item_id package_id].map do |f|
+          messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
+        end
         messages = messages.with_state_for_user(current_user, options[:state].split(',')) if options[:state].present?
         messages
       end
@@ -111,7 +118,7 @@ module Api
 
       def handle_backward_compatibility
         params['message']['order_id'] ||= params['message']['designation_id']
-        %w[offer_id order_id item_id].map do |param|
+        %w[offer_id order_id item_id package_id].map do |param|
           if params['message'][param]
             params['message']['messageable_type'] = param.split('_')[0].camelize
             params['message']['messageable_id'] = params['message'][param]

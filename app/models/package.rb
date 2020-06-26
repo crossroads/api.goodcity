@@ -36,6 +36,7 @@ class Package < ActiveRecord::Base
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy
+  has_many   :messages, as: :messageable, dependent: :destroy
   has_many   :offers_packages
   has_many   :offers, through: :offers_packages
   has_many   :package_actions, -> { where action: PackagesInventory::INVENTORY_ACTIONS }, class_name: "PackagesInventory"
