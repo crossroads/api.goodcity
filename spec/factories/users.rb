@@ -19,10 +19,10 @@ FactoryBot.define do
       roles_and_permissions { }
     end
 
-    [:reviewer, :order_fulfilment, :order_administrator, :supervisor, :administrator].each do |role|
-      trait role do
+    YAML.load_file("#{Rails.root}/db/roles.yml").each do |role, attrs|
+      trait role.parameterize.underscore.to_sym do
         after(:create) do |user|
-          user.roles << create("#{role}_role")
+          user.roles << create("#{role.parameterize.underscore}_role")
         end
       end
     end
@@ -147,6 +147,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_create_user_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym, :with_can_create_user_permission)
+      end
+    end
+
     trait :with_can_manage_package_detail_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_manage_package_detail_permission, name: evaluator.role_name)
@@ -193,6 +199,18 @@ FactoryBot.define do
     trait :with_can_access_orders_process_checklists do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_access_orders_process_checklists, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_disable_user do
+      after(:create) do |user, evaluator|
+        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_disable_user)
+      end
+    end
+
+    trait :with_can_manage_user_roles do
+      after(:create) do |user, evaluator|
+        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_user_roles)
       end
     end
 
@@ -249,4 +267,5 @@ FactoryBot.define do
       user.auth_tokens << create(:scenario_before_auth_token)
     end
   end
+
 end
