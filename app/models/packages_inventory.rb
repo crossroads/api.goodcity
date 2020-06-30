@@ -26,6 +26,7 @@ class PackagesInventory < ActiveRecord::Base
   UNRESTRICTED_ACTIONS = [Actions::MOVE].freeze
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
   INVENTORY_ACTIONS = (DECREMENTAL_ACTIONS + QUANTITY_GAIN_ACTIONS).freeze
+  ALL_INVENTORY_ACTIONS = (INVENTORY_ACTIONS + UNRESTRICTED_ACTIONS).freeze
 
   include EventEmitter
   include AppendOnly
@@ -41,7 +42,7 @@ class PackagesInventory < ActiveRecord::Base
   belongs_to :source, polymorphic: true, touch: true
 
   after_create { PackagesInventory.emit(self.action, self) }
-  scope :for_package, ->(package_id) { joins(:package).where(action: PackagesInventory::INVENTORY_ACTIONS).where(packages: { id: package_id }) }
+  scope :for_package, ->(package_id) { joins(:package).where(action: PackagesInventory::ALL_INVENTORY_ACTIONS).where(packages: { id: package_id }) }
 
   # --------------------
   # Undo feature
