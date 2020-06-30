@@ -46,13 +46,16 @@ module MessageSubscriptions
   private
 
   def first_message_subscribers(klass)
-    roles = if klass == 'Order'
-      ['Order fulfilment', 'Order administrator']
-    elsif  ['Offer', 'Item'].include?(klass)
-      ['Reviewer', 'Supervisor']
-    else
-      []
-    end
+    roles = case klass
+      when 'Order'
+        ['Order fulfilment', 'Order administrator']
+      when 'Package'
+        ["Supervisor", "Order administrator"]
+      when 'Offer', 'Item'
+        ['Reviewer', 'Supervisor']
+      else
+        []
+      end
 
     User.with_roles(roles).pluck(:id)
   end
