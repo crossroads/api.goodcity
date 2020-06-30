@@ -2,7 +2,9 @@ module Api
   module V1
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
+
       before_action :can_chat_on_packages?, only: :create
+      before_action :can_read_package_messages?, only: :index
 
       ALLOWED_SCOPES = %w[offer item order package].freeze
 
@@ -33,6 +35,7 @@ module Api
       param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
+      param :package_id, String, desc: "Return messages for package id"
       param :state, String, desc: "Message state (unread|read) to filter on"
       param :scope, String, desc: "The type of record associated to the messages (order/offer/item)"
       def index
@@ -73,6 +76,12 @@ module Api
 
       def can_chat_on_packages?
         if params["message"]["messageable_type"] == 'Package' && !current_user.can_chat_on_packages?
+          raise CanCan::AccessDenied.new("Not authorized!", :create, Message)
+        end
+      end
+
+      def can_read_package_messages?
+        if params["package_id"].present? && !current_user.can_chat_on_packages?
           raise CanCan::AccessDenied.new("Not authorized!", :create, Message)
         end
       end
