@@ -27,6 +27,12 @@ FactoryBot.define do
       end
     end
 
+    trait :charity do
+      after(:create) do |user|
+        user.roles << create(:role, :charity_role)
+      end
+    end
+
     trait :user_with_no_mobile do
       mobile { nil }
     end
