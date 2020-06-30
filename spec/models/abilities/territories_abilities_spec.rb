@@ -6,12 +6,6 @@ describe "Territory abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
-  context "when Administrator" do
-    let(:user)      { create(:user, :administrator) }
-    let(:territory) { create :territory }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, territory) } }
-  end
-
   context "when Supervisor" do
     let(:user)      { create(:user, :supervisor) }
     let(:territory) { create :territory }
