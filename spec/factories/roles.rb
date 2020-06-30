@@ -24,6 +24,15 @@ FactoryBot.define do
       end
     end
 
+    trait :charity_role do
+      name { 'Charity' }
+      after(:create) do |role|
+        %w[can_login_to_browse can_search_browse_packages can_create_goodcity_requests].map do |permission|
+          role.permissions << (create :permission, name: permission)
+        end
+      end
+    end
+
     trait :with_can_add_or_remove_inventory_number do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_add_or_remove_inventory_number')
