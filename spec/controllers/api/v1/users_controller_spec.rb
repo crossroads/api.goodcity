@@ -334,7 +334,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         it 'returns supervisors and reviewers' do
           generate_and_set_token(supervisor)
           get :mentionable_users, offer_id: offer.id, roles: 'Supervisor, Reviewer'
-          users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name } }
+          users = [[User.supervisors.map(&:id), User.reviewers.map(&:id)].flatten - [supervisor.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
         end
       end
@@ -343,7 +343,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         it 'returns order_administrator and order_fulfulment users' do
           generate_and_set_token(order_administrator)
           get :mentionable_users, order_id: order.id, roles: 'Order administrator, Order fulfilment'
-          users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name } }
+          users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
         end
       end
