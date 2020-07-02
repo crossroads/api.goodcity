@@ -59,7 +59,7 @@ module StockOperations
     # @param [Integer] quantity that is added
     # @param [Location|Id] to the location to add the quantity (or its id)
     #
-    def register_gain(package, quantity:, location: nil, action: "gain", description: nil)
+    def register_gain(package, quantity:, location: nil, action: "gain", description: nil, source: nil)
       package.inventory_lock do
         raise Goodcity::NotInventorizedError unless PackagesInventory.inventorized?(package)
         PackagesInventory.public_send("append_#{action}", {
@@ -67,6 +67,7 @@ module StockOperations
           quantity: quantity.abs,
           location: Utils.to_model(location, Location),
           description: description,
+          source: source
         })
         package.reload
       end
@@ -79,7 +80,7 @@ module StockOperations
     # @param [Integer] quantity the quantity that was lost
     # @param [Location|Id] from_location the location to negate the quantity from(or its id)
     #
-    def register_loss(package, quantity:, location: nil, action: 'loss', description: nil)
+    def register_loss(package, quantity:, location: nil, action: 'loss', description: nil, source: nil)
       package.inventory_lock do
         available_count = PackagesInventory::Computer.available_quantity_of(package)
 
@@ -97,7 +98,8 @@ module StockOperations
           package: package,
           quantity: quantity.abs * -1,
           location: Utils.to_model(location, Location),
-          description: description
+          description: description,
+          source: source
         })
         package.reload
       end
@@ -112,14 +114,15 @@ module StockOperations
     # @param [String] action: the inventory action (optional)
     # @param [String] description: notes to detail the action
     #
-    def register_quantity_change(package, quantity:, location:, action:, description: nil)
+    def register_quantity_change(package, quantity:, location:, action:, description: nil, source: nil)
       return package if quantity.zero?
 
       params = {
         quantity: quantity,
         location: Utils.to_model(location, Location),
         action: action,
-        description: description
+        description: description,
+        source: source
       }
 
       if PackagesInventory::QUANTITY_LOSS_ACTIONS.include?(action)

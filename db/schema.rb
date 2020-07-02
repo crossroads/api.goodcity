@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200610104052) do
+ActiveRecord::Schema.define(version: 20200630031605) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -373,7 +373,7 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   create_table "messages", force: :cascade do |t|
     t.text     "body"
     t.integer  "sender_id"
-    t.boolean  "is_private", default: false
+    t.boolean  "is_private",       default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -889,6 +889,35 @@ ActiveRecord::Schema.define(version: 20200610104052) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "stocktake_revisions", force: :cascade do |t|
+    t.integer  "stocktake_id",                      null: false
+    t.integer  "package_id",                        null: false
+    t.integer  "quantity",      default: 0
+    t.string   "state",         default: "pending"
+    t.string   "warning_en",                        null: false
+    t.string   "warning_zh_tw",                     null: false
+    t.boolean  "dirty",         default: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+  end
+
+  add_index "stocktake_revisions", ["package_id", "stocktake_id"], name: "index_stocktake_revisions_on_package_id_and_stocktake_id", unique: true, using: :btree
+  add_index "stocktake_revisions", ["package_id"], name: "index_stocktake_revisions_on_package_id", using: :btree
+  add_index "stocktake_revisions", ["stocktake_id", "package_id"], name: "index_stocktake_revisions_on_stocktake_id_and_package_id", unique: true, using: :btree
+  add_index "stocktake_revisions", ["stocktake_id"], name: "index_stocktake_revisions_on_stocktake_id", using: :btree
+
+  create_table "stocktakes", force: :cascade do |t|
+    t.string   "name",                           null: false
+    t.string   "state",         default: "open"
+    t.integer  "created_by_id"
+    t.integer  "location_id",                    null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  add_index "stocktakes", ["location_id"], name: "index_stocktakes_on_location_id", using: :btree
+  add_index "stocktakes", ["name"], name: "index_stocktakes_on_name", unique: true, using: :btree
+
   create_table "storage_types", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at",        null: false
@@ -911,7 +940,7 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   create_table "subscriptions", force: :cascade do |t|
     t.integer "user_id"
     t.integer "message_id"
-    t.string  "state",      limit: 255
+    t.string  "state",             limit: 255
     t.string  "subscribable_type"
     t.integer "subscribable_id"
   end
@@ -1013,6 +1042,9 @@ ActiveRecord::Schema.define(version: 20200610104052) do
   add_foreign_key "packages_inventories", "packages"
   add_foreign_key "packages_inventories", "users"
   add_foreign_key "process_checklists", "booking_types"
+  add_foreign_key "stocktake_revisions", "packages"
+  add_foreign_key "stocktake_revisions", "stocktakes"
+  add_foreign_key "stocktakes", "locations"
   add_foreign_key "users", "printers"
   add_foreign_key "valuation_matrices", "donor_conditions"
 end
