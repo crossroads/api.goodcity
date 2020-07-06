@@ -42,7 +42,7 @@ class PackagesInventory < ActiveRecord::Base
   belongs_to :source, polymorphic: true, touch: true
 
   after_create { PackagesInventory.emit(self.action, self) }
-  scope :for_package, ->(package_id) { joins(:package).where(action: PackagesInventory::ALL_INVENTORY_ACTIONS).where(packages: { id: package_id }) }
+  scope :for_package, ->(package_id) { where(action: PackagesInventory::ALL_INVENTORY_ACTIONS, package_id: package_id)}
 
   # --------------------
   # Undo feature
