@@ -1172,6 +1172,24 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
       end
     end
+
+    context 'package set' do
+      let(:package_type) { create(:package_type) }
+      let!(:package_set) { create(:package_set, package_type: package_type) }
+      it 'should not be able to change member of a set or a box/pallet to an invalid type' do
+        set = create_list(:package_set, 3, :with_packages).last
+        package_params[:package_set_id] = set.id
+        put :update, format: :json, id: uninventorized_package.id, package: package_params
+        expect(response.status).to eq(422)
+      end
+
+      it 'should be able to change member of a set ot a box/pallet to valid type' do
+        set = create_list(:package_set, 3, :with_packages).last
+        package_params[:package_set_id] = package_set.id
+        put :update, format: :json, id: uninventorized_package.id, package: package_params
+        expect(response.status).to eq(200)
+      end
+    end
   end
 
   describe "DELETE package/1" do

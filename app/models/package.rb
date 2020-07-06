@@ -67,6 +67,7 @@ class Package < ActiveRecord::Base
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
   validate  :validate_set_id, on: [:create, :update]
+  validate :validate_set_member, on: [:create, :update]
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
@@ -363,6 +364,8 @@ class Package < ActiveRecord::Base
     end
   end
 
+
+
   def singleton_package?
     received_quantity == 1
   end
@@ -396,6 +399,12 @@ class Package < ActiveRecord::Base
   #
   def validate_set_id
     errors.add(:errors, I18n.t('package_sets.no_box_in_set')) if package_set_id.present? && storage_type&.aggregate?
+  end
+
+  def validate_set_member
+    if package_set.presence && package_type != package_set.package_type
+      errors.add(:errors, "Invalid package set")
+    end
   end
 
   def set_default_values

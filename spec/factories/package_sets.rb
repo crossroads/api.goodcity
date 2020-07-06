@@ -4,7 +4,7 @@ FactoryBot.define do
     package_type { create(:package_type) }
 
     trait :with_packages do
-      packages { create_list(:package, rand(3)+1, package_set_id: id) }
+      packages { create_list(:package, rand(3)+1, package_set_id: id, package_type: package_type) }
     end
   end
 end
