@@ -9,7 +9,6 @@ module Api::V1
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_one :storage_type, serializer: StorageTypeSerializer
     has_one :package_set, serializer: PackageSetSerializer
-    has_many :versions, serializer: VersionSerializer
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :item_id, :state, :received_at, :rejected_at, :inventory_number,
