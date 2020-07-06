@@ -1174,20 +1174,36 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     context 'package set' do
+      let(:package) { create :package, inventory_number: nil }
       let(:package_type) { create(:package_type) }
       let!(:package_set) { create(:package_set, package_type: package_type) }
-      it 'should not be able to change member of a set or a box/pallet to an invalid type' do
+      it 'should not be able to change set to an invalid type' do
         set = create_list(:package_set, 3, :with_packages).last
         package_params[:package_set_id] = set.id
-        put :update, format: :json, id: uninventorized_package.id, package: package_params
+        put :update, format: :json, id: package.id, package: package_params
         expect(response.status).to eq(422)
       end
 
-      it 'should be able to change member of a set ot a box/pallet to valid type' do
-        set = create_list(:package_set, 3, :with_packages).last
+      it 'should be able to change set to a valid type' do
         package_params[:package_set_id] = package_set.id
-        put :update, format: :json, id: uninventorized_package.id, package: package_params
+        put :update, format: :json, id: package.id, package: package_params
         expect(response.status).to eq(200)
+      end
+
+      context 'changing type of package which is in the set' do
+        it 'should not be able to change member of set to an invalid type' do
+          package_params[:package_set_id] = package_set.id
+          package_params[:package_type_id] = create(:package_type).id
+          put :update, format: :json, id: package.id, package: package_params
+          expect(response.status).to eq(422)
+        end
+
+        it 'should be able to change member of set to a valid type' do
+          package_params[:package_set_id] = package_set.id
+          package_params[:package_type_id] = package_type.default_child_package_types.last.id
+          put :update, format: :json, id: package.id, package: package_params
+          expect(response.status).to eq(200)
+        end
       end
     end
   end

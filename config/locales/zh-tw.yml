@@ -99,6 +99,7 @@ zh-tw:
     split_qty_error: "Quantity to split should be at least 1 and less than %{qty}"
     split_location_error: "Items which are in multiple locations cannot be split"
     cannot_delete_inventorized: "Inventorized packages cannot be deleted"
+    invalid_package_type: "Invalid package type"
   orders_package:
     quantity_already_dispatched: "Some has been already dispatched, please undispatch and try again."
     already_designated: "Package already designated to this order"
