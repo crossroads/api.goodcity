@@ -13,9 +13,15 @@ module Api
 
       api :GET, '/v1/packages_inventories', "List all packages_inventories"
       def index
-        packages_inventories = @packages_inventories.for_package(params["package_id"])
-        @packages_inventories = packages_inventories.page(page).per(per_page).order('id')
-        render json: { meta: { total_pages: @packages_inventories.total_pages, packages_inventories_count: packages_inventories.size } }.merge(serialized_packages_inventories)
+        raise Goodcity::MissingParamError.new("package_id") unless params["package_id"]
+        packages_inventories = @packages_inventories.for_package(params["package_id"]).page(page).per(per_page).order('id')
+        meta = {
+          total_pages: packages_inventories.total_pages,
+          total_count: packages_inventories.size
+        }
+        render json: { meta: meta }.merge(
+            serialized_packages_inventories(packages_inventories)
+        )
       end
 
       private
@@ -24,9 +30,9 @@ module Api
         Api::V1::PackageActionsSerializer
       end
 
-      def serialized_packages_inventories
+      def serialized_packages_inventories(packages_inventories)
         ActiveModel::ArraySerializer.new(
-          @packages_inventories,
+          packages_inventories,
           each_serializer: serializer,
           root: "item_actions"
         ).as_json
