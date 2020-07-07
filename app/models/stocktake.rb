@@ -1,7 +1,7 @@
 class Stocktake < ActiveRecord::Base
   include StocktakeProcessor
 
-  has_many    :stocktake_revisions
+  has_many    :stocktake_revisions, dependent: :destroy
   belongs_to  :location
   belongs_to  :created_by, class_name: "User"
 

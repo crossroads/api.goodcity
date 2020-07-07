@@ -1,13 +1,14 @@
 class CreateStocktakeRevisions < ActiveRecord::Migration
   def change
     create_table :stocktake_revisions do |t|
-      t.references :stocktake, index: true, foreign_key: true, null: false
-      t.references :package, index: true, foreign_key: true, null: false
-      t.integer :quantity, default: 0
-      t.string :state, default: 'pending'
-      t.string :warning_en, null: false
-      t.string :warning_zh_tw, null: false
-      t.boolean :dirty, default: false
+      t.references  :stocktake, null: false, index: true, foreign_key: true
+      t.references  :package,   null: false, index: true, foreign_key: true
+      t.integer     :quantity,  null: false, default: 0
+      t.string      :state,     null: false, default: 'pending'
+      t.boolean     :dirty,     null: false, default: false
+      t.string      :warning,   null: true
+      t.integer     :created_by_id
+
       t.timestamps null: false
     end
 

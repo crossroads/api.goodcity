@@ -894,9 +894,9 @@ ActiveRecord::Schema.define(version: 20200630031605) do
     t.integer  "package_id",                        null: false
     t.integer  "quantity",      default: 0
     t.string   "state",         default: "pending"
-    t.string   "warning_en",                        null: false
-    t.string   "warning_zh_tw",                     null: false
+    t.string   "warning"
     t.boolean  "dirty",         default: false
+    t.integer  "created_by_id"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
   end

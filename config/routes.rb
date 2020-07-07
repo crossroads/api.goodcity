@@ -24,6 +24,11 @@ Rails.application.routes.draw do
       resources :pallets, only: [:create]
       resources :user_roles, only: [:show, :index]
 
+      resources :stocktake_revisions, only: [:create, :update, :destroy]
+      resources :stocktakes, only: [:show, :index, :destroy, :create] do
+        put :commit, on: :member
+      end
+
       resources :images, only: [:create, :update, :destroy, :show] do
         collection do
           get :generate_signature

@@ -11,6 +11,7 @@ en:
     bad_or_missing_field: Invalid or empty field '%{field}'
     expected_state: The following action can only be done on a %{state} %{subject}
     missing_params: Param '%{param}' is required
+    duplicate_error: A record already exists
   warden:
     token_invalid: Invalid token
     token_expired: Expired token

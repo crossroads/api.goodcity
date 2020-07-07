@@ -53,7 +53,7 @@ context StocktakeProcessor do
       expect(packages_inventory.description).to eq(stocktake.name)
     end
 
-    it 'doesnt record anything it the quantity is already correct' do
+    it 'doesnt record anything if the quantity is already correct' do
       errors = subject.process_stocktake(stocktake);
       
       expect(errors.length).to eq(0)
@@ -101,15 +101,15 @@ context StocktakeProcessor do
         expect {
           errors = subject.process_stocktake(stocktake);
           expect(errors.length).to eq(1)
-          expect(errors.first).to match(/please undesignate first/)
+          expect(errors.first[:message]).to match(/please undesignate first/)
         }.not_to change(PackagesInventory, :count)
       end
 
       it 'adds a warning to the revision record' do
         stocktake_revision = StocktakeRevision.find_by(package: package_2);
-        expect(stocktake_revision.reload.warning_en).to eq('');
+        expect(stocktake_revision.reload.warning).to eq('');
         subject.process_stocktake(stocktake);
-        expect(stocktake_revision.reload.warning_en).to match(/please undesignate first/);
+        expect(stocktake_revision.reload.warning).to match(/please undesignate first/);
       end
     end
   end

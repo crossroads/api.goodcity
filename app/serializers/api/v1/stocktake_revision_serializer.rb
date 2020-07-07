@@ -5,7 +5,7 @@ module Api
 
       has_one :package, serializer: PackageSerializer
       
-      attributes :id, :stocktake_id, :package_id, :warning_en, :warning_zh_tw, :state, :quantity
+      attributes :id, :stocktake_id, :package_id, :warning, :state, :quantity, :dirty
     end
   end
 end
