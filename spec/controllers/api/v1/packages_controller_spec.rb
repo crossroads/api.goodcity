@@ -1055,7 +1055,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }.not_to change(Package, :count)
 
       expect(response.status).to eq(422)
-      expect(parsed_body).to eq({"error"=>"Quantity to split should be at least 1 and less than 5"})
+      expect(parsed_body['error']).to eq("Quantity to split should be at least 1 and less than 5")
     end
   end
 
@@ -1192,7 +1192,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       delete :destroy, id: package.id
       expect(response.status).to eq(422)
-      expect(subject).to eq({"error" => "Inventorized packages cannot be deleted"})
+      expect(subject['error']).to eq("Inventorized packages cannot be deleted")
     end
   end
 
