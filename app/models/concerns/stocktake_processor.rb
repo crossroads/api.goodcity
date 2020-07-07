@@ -33,11 +33,20 @@ module StocktakeProcessor
         stocktake.close
       end
       
-      if errors.count.positive?
-        # save errors
-      end
+      persist_errors(errors) if errors.count.positive?
 
       errors
+    end
+
+    def persist_errors(errors)
+      return unless errors.count.positive?
+
+      ActiveRecord::Base.transaction do
+        errors.each do |err|
+          revision, message = err.values_at(:revision, :message)
+          revision.update(warning: message)
+        end
+      end
     end
 
     def apply_package_revision(stocktake_revision)
@@ -58,7 +67,7 @@ module StocktakeProcessor
           source:       stocktake
         )
       rescue Goodcity::BaseError => e
-        return { revision: stocktake_revision, error: e.message }
+        return { revision: stocktake_revision, message: e.message }
       end
 
       return nil

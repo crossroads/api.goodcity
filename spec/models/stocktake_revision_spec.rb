@@ -17,11 +17,14 @@ RSpec.describe StocktakeRevision, type: :model do
   describe 'Columns' do
     it { is_expected.to have_db_column(:stocktake_id).of_type(:integer) }
     it { is_expected.to have_db_column(:package_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:warning_en).of_type(:string) }
-    it { is_expected.to have_db_column(:warning_zh_tw).of_type(:string) }
+    it { is_expected.to have_db_column(:warning).of_type(:string) }
     it { is_expected.to have_db_column(:state).of_type(:string) }
     it { is_expected.to have_db_column(:quantity).of_type(:integer) }
     it { is_expected.to have_db_column(:dirty).of_type(:boolean) }
+  end
+
+  describe "Validations" do
+    it { is_expected.to_not allow_value(-1).for(:quantity) }
   end
 
   describe 'Lifecycle' do

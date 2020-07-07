@@ -7,13 +7,15 @@ class StocktakeRevision < ActiveRecord::Base
 
   after_save :unset_dirty
 
+  validates :quantity, numericality: { greater_than_or_equal_to: 0 }
+
   # ---------------------
   # Computed properties
   # ---------------------
 
   watch [PackagesInventory] do |packages_inventory|
     #
-    # The stocktake count is invalidated is someone performs a quantity action on the package
+    # The stocktake count is invalidated if someone performs a quantity action on the package
     #
     location = packages_inventory.location
     StocktakeRevision
