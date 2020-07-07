@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PackageSetsController, type: :controller do
-  let(:package_type) { create(:package_type, code: 'AFO') }
+  let(:package_type) { create(:package_type) }
   let(:other_package_type) { create(:package_type, code: 'BBC') }
-  let(:package_set) { create(:package_set, :with_packages, package_type_id: package_type.id) }
+  let(:package_set) { create(:package_set, :with_packages, package_type: package_type) }
   let(:empty_package_set) { create(:package_set, package_type_id: package_type.id) }
   let(:unauthorized_user) { create(:user) }
   let(:parsed_body) { JSON.parse(response.body) }
