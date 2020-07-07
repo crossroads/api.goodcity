@@ -364,8 +364,6 @@ class Package < ActiveRecord::Base
     end
   end
 
-
-
   def singleton_package?
     received_quantity == 1
   end
@@ -402,7 +400,7 @@ class Package < ActiveRecord::Base
   end
 
   def validate_set_member
-    return unless package_set_id.present?
+    return if package_set_id.blank?
 
     valid_package_ids = [package_set.package_type_id, package_set.package_type.child_package_types.map(&:id)].flatten
     errors.add(:errors, I18n.t('package.invalid_package_type')) unless valid_package_ids.include?(package_type_id)
