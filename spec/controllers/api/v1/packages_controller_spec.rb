@@ -209,7 +209,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }.not_to change { package.reload.state }
 
       expect(response.status).to eq(422)
-      expect(parsed_body).to eq({"error"=>"Package cannot be uninventorized"})
+      expect(parsed_body['error']).to eq("Package cannot be uninventorized")
     end
   end
 

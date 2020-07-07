@@ -94,7 +94,7 @@ context StocktakeProcessor do
     describe 'when an error occurs' do
       before do
         # This quantity designated, therefore cannot be reduced in the inventory
-        create(:orders_package, package: package_2, quantity: 10)
+        create(:orders_package, state: 'designated', package: package_2, quantity: 10)
       end
 
       it 'doesnt record any inventory change' do
