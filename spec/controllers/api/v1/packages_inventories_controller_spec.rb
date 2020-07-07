@@ -25,6 +25,12 @@ RSpec.describe Api::V1::PackagesInventoriesController, type: :controller do
         expect(parsed_body['item_actions'][0]['id']).to eq(packages_inventory.id)
         expect(parsed_body['item_actions'][1]['id']).to eq(packages_inventory2.id)
       end
+
+      it "passing no package_id raise error" do
+        get :index
+        expect(response.status).to eq(422)
+        expect(parsed_body["error"]).to eq("Param 'package_id' is required")
+      end
     end
 
     describe 'returns packages inventories for given package_id' do
