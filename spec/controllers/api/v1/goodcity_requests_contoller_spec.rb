@@ -83,7 +83,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
     it "Updates goodcity_request record", :show_in_doc do
       put :update, id: goodcity_request.id, goodcity_request: gc_request.attributes.except(:id)
-      expect(response.status).to eq(201)
+      expect(response.status).to eq(200)
       expect(goodcity_request.reload.quantity).to eq(goodcity_request.quantity)
     end
   end

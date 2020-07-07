@@ -14,8 +14,7 @@ module Api
         "Api::V1::#{object.class}Serializer".safe_constantize
       end
 
-      def save_and_render_object(object)
-        new_record = !object.persisted?
+      def save_and_render_object(object, new_record: !object.persisted?)
         if object.save
           render json: object, serializer: serializer_for(object), status: (new_record ? 201 : 200)
         else
@@ -23,8 +22,7 @@ module Api
         end
       end
 
-      def save_and_render_object_with_errors(object)
-        new_record = !object.persisted?
+      def save_and_render_object_with_errors(object, new_record: !object.persisted?)
         if object.save
           render json: object, serializer: serializer_for(object), status: (new_record ? 201 : 200)
         else
