@@ -42,6 +42,7 @@ class PackagesInventory < ActiveRecord::Base
   belongs_to :source, polymorphic: true, touch: true
 
   after_create { PackagesInventory.emit(self.action, self) }
+  scope :for_package, ->(package) { where(package_id: Utils.to_id(package))}
 
   # --------------------
   # Undo feature
