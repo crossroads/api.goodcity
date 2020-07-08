@@ -38,9 +38,10 @@ class Stocktake < ActiveRecord::Base
     ActiveRecord::Base.transaction do
       package_ids.map do |pid|
         StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
-          revision.quantity = 0
-          revision.dirty    = true
-          revision.state    = 'pending'
+          revision.quantity       = 0
+          revision.dirty          = true
+          revision.state          = 'pending'
+          revision.created_by_id  = User.current_user&.id || User.system_user.id
         end
       end
     end
