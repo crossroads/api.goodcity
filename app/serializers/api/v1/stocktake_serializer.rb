@@ -5,7 +5,7 @@ module Api
 
       has_many  :stocktake_revisions, serializer: StocktakeRevisionSerializer
       has_one   :location, serializer: LocationSerializer
-      has_one   :created_by, serializer: UserSerializer
+      has_one   :created_by, serializer: UserSerializer, root: :user
       
       attributes :id, :name, :location_id, :created_by_id, :state, :created_at, :updated_at
     end
