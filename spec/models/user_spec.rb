@@ -310,6 +310,16 @@ describe User, :type => :model do
     end
   end
 
+  describe '.downcase_email' do
+    it 'saves user with always downcasing email' do
+      email = 'TeST@Gmail.COM'
+      user = build(:user)
+      user.email = email
+      user.save
+      expect(user.reload.email).to eq(email.downcase)
+    end
+  end
+
   describe "#allowed_login?" do
     context "with stock login permission" do
       it "returns true if user has stock login permission and app is stock app" do
