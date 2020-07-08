@@ -22,4 +22,27 @@ class Stocktake < ActiveRecord::Base
       transition all - [:closed] => :cancelled
     end
   end
+
+  #
+  # Creates revisions for every package of the stocktake's location
+  #
+  # @return [Array<StocktakeRevision>] The newly created revisions
+  #
+  def populate_revisions!
+    package_ids = PackagesInventory
+      .where(location_id: location_id)
+      .group(:package_id)
+      .having('SUM(quantity) > 0')
+      .pluck(:package_id)
+
+    ActiveRecord::Base.transaction do
+      package_ids.each do |pid|
+        StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
+          revision.quantity = 0
+          revision.dirty    = true
+          revision.state    = 'pending'
+        end
+      end
+    end
+  end
 end
