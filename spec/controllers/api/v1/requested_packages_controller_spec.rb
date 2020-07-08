@@ -104,6 +104,38 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
     end
   end
 
+  describe "PUT /requested_package/:id" do
+    context "as a guest" do
+      it "returns 401" do
+        put :update, id: create(:requested_package).id
+        expect(response.status).to eq(401)
+      end
+    end
+
+    user_types.each do|user_type|
+      context "as a #{user_type}" do
+        let(:user) { create(:user, user_type) }
+        let(:package) { create(:package ,:published) }
+        let(:requested_package) { create(:requested_package, user_id: user.id , package_id: package.id)}
+        before {
+          initialize_inventory(package)
+          generate_and_set_token(user)
+        }
+
+        it "returns 200" do
+          put :update, id: requested_package.id, requested_package: { quantity:2 }
+          expect(response.status).to eq(200)
+        end
+
+        it "allows editing quantity of requested_package" do
+          put :update, id: requested_package.id, requested_package: { quantity:2 }
+          expect(response.status).to eq(200)
+          expect(parsed_body['requested_package']['quantity']).to eq(2)
+        end
+      end
+    end
+  end
+
   describe "DELETE /requested_package/:id" do
     context "as a guest" do
       it "returns 401" do
