@@ -28,6 +28,8 @@ class User < ActiveRecord::Base
   has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
 
+  after_create :downcase_email
+
   accepts_nested_attributes_for :address, allow_destroy: true
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
@@ -78,7 +80,8 @@ class User < ActiveRecord::Base
 
   def self.find_user_by_mobile_or_email(mobile, email)
     return find_by_mobile(mobile) if mobile
-    find_by_email(email) if email
+
+    find_by('LOWER(users.email) = ?', email.downcase) if email
   end
 
   def send_sms(app_name)
@@ -169,6 +172,10 @@ class User < ActiveRecord::Base
 
   def administrator?
     user_role_names.include?("Administrator") && @treat_user_as_donor != true
+  end
+
+  def downcase_email
+    update(email: email.downcase) if email.present?
   end
 
   def donor?
