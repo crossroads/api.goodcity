@@ -36,7 +36,7 @@ class Stocktake < ActiveRecord::Base
       .pluck(:package_id)
 
     ActiveRecord::Base.transaction do
-      package_ids.each do |pid|
+      package_ids.map do |pid|
         StocktakeRevision.find_or_create_by(package_id: pid, stocktake_id: id) do |revision|
           revision.quantity = 0
           revision.dirty    = true
