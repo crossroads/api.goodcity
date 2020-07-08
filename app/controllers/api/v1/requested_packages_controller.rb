@@ -17,7 +17,7 @@ module Api
           param :user_id, String
           param :package_id, String
           param :is_available, Boolean
-          param :quantity,Integer
+          param :quantity, Integer
         end
       end
 
@@ -37,15 +37,14 @@ module Api
       end
 
       api :PUT, '/v1/requested_packages', "Update a cart item"
-      param_group :requested_package
       def update
         @requested_package.update_attributes(requested_package_params)
-          if @requested_package.valid? && @requested_package.save
-            render json: @requested_package, serializer: serializer
-          else
-            render_error(@requested_package.errors.full_messages)
-          end
+        if @requested_package.valid? && @requested_package.save
+          render json: @requested_package, serializer: serializer
+        else
+          render_error(@requested_package.errors.full_messages.join(". "))
         end
+      end
 
       api :POST, '/v1/requested_packages/checkout', "Checkout and add all the packages to an order"
       param_group :checkout

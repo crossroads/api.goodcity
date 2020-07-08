@@ -300,7 +300,7 @@ class Ability
   end
 
   def requested_packages_abilities
-    can [:create, :destroy, :index, :checkout], RequestedPackage, user_id: @user_id
+    can [:create, :destroy, :update, :index, :checkout], RequestedPackage, user_id: @user_id
   end
 
   def package_abilities
@@ -309,11 +309,10 @@ class Ability
              search_stockit_items remove_from_set designate register_quantity_change
              mark_missing move print_inventory_label stockit_item_details
              split_package add_remove_item contained_packages parent_containers
-             fetch_added_quantity requested_packages], Package
+             fetch_added_quantity], Package
       can %i[show create update destroy], PackageSet
       can %i[index], Restriction
     end
-    can :requested_packages, Package
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }
     can :create, Package if @api_user
