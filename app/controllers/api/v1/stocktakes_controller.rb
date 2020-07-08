@@ -25,7 +25,18 @@ module Api
       api :POST, "/v1/stocktakes", "Create a stocktake"
       def create
         @stocktake.created_by = current_user
-        save_and_render_object_with_errors(@stocktake)
+
+        ActiveRecord::Base.transaction do
+          success = @stocktake.save
+
+          @stocktake.populate_revisions! if success
+
+          if success
+            render json: @stocktake, serializer: serializer, status: 201
+          else
+            render_error @stocktake.errors.full_messages.join(". ")
+          end
+        end
       end
 
       api :PUT, "/v1/stocktakes/:id/commit", "Processes a stocktake and tries to apply changes"

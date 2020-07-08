@@ -71,9 +71,14 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
   end
 
   describe "POST /stocktakes" do
+    let(:other_location) { create(:location) }
+    let(:other_packages) { (1..3).map { create(:package, received_quantity: 10) } }
+
     let(:payload) {
       { location_id: location.id, name: 'lorem stocktake', state: 'open' }
     }
+
+    before { initialize_inventory(other_packages, location: other_location) }
 
     context "as a user without the 'can_manage_stocktake' permission" do
       before { generate_and_set_token(other_user) }
@@ -106,6 +111,17 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
         payload[:state] = "closed" # should be ignored
         post :create, stocktake: payload
         expect(parsed_body["stocktake"]["state"]).to eq("open")
+      end
+
+      it "prepopulates the stocktake with revisions marked as dirty" do
+        expect {
+          post :create, stocktake: payload
+        }.to change(Stocktake, :count).by(1)
+
+        record = Stocktake.last
+        expect(record.revisions.length).to eq(other_packages.length)
+        expect(record.revisions.map(&:dirty).uniq).to eq([true])
+        expect(record.revisions.map(&:quantity).uniq).to eq([0])
       end
     end
   end
