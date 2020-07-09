@@ -19,17 +19,11 @@ FactoryBot.define do
       roles_and_permissions { }
     end
 
-    YAML.load_file("#{Rails.root}/db/roles.yml").each do |role, attrs|
-      trait role.parameterize.underscore.to_sym do
+    %i[reviewer order_fulfilment order_administrator supervisor system_administrator charity stock_administrator stock_fulfilment].each do |role|
+      trait role do
         after(:create) do |user|
-          user.roles << create("#{role.parameterize.underscore}_role")
+          user.roles << create("#{role}_role")
         end
-      end
-    end
-
-    trait :charity do
-      after(:create) do |user|
-        user.roles << create(:role, :charity_role)
       end
     end
 
