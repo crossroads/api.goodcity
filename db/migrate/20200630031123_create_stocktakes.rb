@@ -3,6 +3,7 @@ class CreateStocktakes < ActiveRecord::Migration
     create_table :stocktakes do |t|
       t.string :name, null: false
       t.string :state, default: 'open'
+      t.string :comment
       t.integer :created_by_id
       t.references :location, index: true, foreign_key: true, null: false
       t.timestamps null: false

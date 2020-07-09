@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :stocktake do
     sequence(:name) { |n| "Stocktake #{n}" }
     state { "open" }
+    comment { FFaker::Lorem.paragraph }
 
     association :location
     association :created_by, factory: :user, strategy: :build
