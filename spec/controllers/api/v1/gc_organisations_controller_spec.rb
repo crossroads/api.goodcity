@@ -88,4 +88,30 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       expect(parsed_body).to eq(serialized_gc_organisation)
     end
   end
+
+  describe "GET orders for GC organisation" do
+    let(:organisation) { create :organisation }
+    let(:organisation1) { create :organisation }
+    let!(:organisation_orders) { create_list(:order, 2, organisation_id: organisation.id) }
+    let!(:orders) { create_list(:order, 2) }
+
+    it "returns 200" do
+      get :organisation_orders, id: organisation.id
+      expect(response.status).to eq(200)
+    end
+
+    it "returns orders associated with organisation" do
+      get :organisation_orders, id: organisation.id
+      expect(parsed_body['designations'].size).to eq(organisation_orders.size)
+      expect(parsed_body["designations"].map { |order| order["id"] }).to eq(organisation_orders.map(&:id))
+    end
+
+    it "does not returns orders of different organisation" do
+      get :organisation_orders, id: organisation1.id
+      expect(parsed_body['designations']).to eq([])
+    end
+
+  end
+
+
 end

@@ -28,6 +28,18 @@ module Api::V1
       find_record_and_render_json(organisation_name_serializer)
     end
 
+    api :GET, '/v1/organisations/:id/organisation_orders', "List all orders associated with organisation"
+    def organisation_orders
+      orders = @organisation.orders.page(page).per(per_page).order('id')
+      meta = {
+        total_pages: orders.total_pages,
+        total_count: orders.size
+      }
+      render json: { meta: meta }.merge(
+          serialized_orders(orders)
+      )
+    end
+
     private
 
     def organisation_serializer
@@ -36,6 +48,18 @@ module Api::V1
 
     def organisation_name_serializer
       Api::V1::OrganisationNamesSerializer
+    end
+
+    def order_serializer
+      Api::V1::OrderShallowSerializer
+    end
+
+    def serialized_orders(orders)
+      ActiveModel::ArraySerializer.new(
+        orders,
+        each_serializer: order_serializer,
+        root: "designations"
+      ).as_json
     end
 
     def find_record_and_render_json(serializer)
