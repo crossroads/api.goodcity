@@ -75,8 +75,8 @@ describe 'Message abilities' do
 
     context 'when donor recieves a message from a reviewer' do
       let(:reviewer) { create(:user, :reviewer) }
-      let(:message) { create :message, is_private: is_private, messageable: offer, sender: reviewer }
-      let!(:subscription) { create :subscription, subscribable: offer, message: message }
+      let!(:message) { create :message, is_private: is_private, messageable: offer, sender: reviewer }
+
       it 'should be able to read the message' do
         is_expected.to be_able_to(:show, message)
       end
@@ -103,7 +103,7 @@ describe 'Message abilities' do
   end
 
   context 'Charity user' do
-    let!(:order) { create :order, created_by: charity }
+    let(:order) { create :order, created_by: charity}
     let!(:message) { create :message, is_private: is_private, messageable: order }
     let(:user) { charity }
 
@@ -123,8 +123,8 @@ describe 'Message abilities' do
 
     context 'when charity user recieves a message from a order admin' do
       let(:order_administrator) { create(:user, :order_administrator) }
-      let(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
-      let!(:subscription) { create :subscription, user: order_administrator, subscribable: order, message: message }
+      let!(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
+
       it 'should be able to read the message' do
         is_expected.to be_able_to(:show, message)
       end
