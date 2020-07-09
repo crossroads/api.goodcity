@@ -123,6 +123,17 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
         expect(record.revisions.map(&:dirty).uniq).to eq([true])
         expect(record.revisions.map(&:quantity).uniq).to eq([0])
       end
+
+      it "fails to create a stocktake with an existing name" do
+        create(:stocktake, name: payload[:name]);
+
+        expect {
+          post :create, stocktake: payload
+        }.to change(Stocktake, :count).by(0)
+
+        expect(response.status).to eq(409)
+        expect(parsed_body['error']).to eq('A record already exists')
+      end
     end
   end
 
