@@ -9,11 +9,10 @@ describe 'Message abilities' do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { %i[index show create update destroy manage] }
   let(:sender)      { create :user }
-  let(:charity) { create :user, :charity }
+  let(:charity) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Charity' => ['can_login_to_browse']}) }
   let(:is_private) { false }
   let(:offer) { create(:offer, created_by: user) }
   let(:message) { create :message, messageable: offer, is_private: is_private }
-
 
   context 'when Supervisor or Reviewer' do
     let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_manage_offer_messages']}) }
@@ -104,7 +103,7 @@ describe 'Message abilities' do
   end
 
   context 'Charity user' do
-    let(:order) { create :order, created_by: charity }
+    let!(:order) { create :order, created_by: charity }
     let!(:message) { create :message, is_private: is_private, messageable: order }
     let(:user) { charity }
 
