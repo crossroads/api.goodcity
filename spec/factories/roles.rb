@@ -206,7 +206,5 @@ FactoryBot.define do
         role.permissions << (create :permission, name: "can_manage_user_roles")
       end
     end
-
   end
-
 end
