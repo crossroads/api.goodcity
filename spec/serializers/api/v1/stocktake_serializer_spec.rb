@@ -14,6 +14,7 @@ describe Api::V1::StocktakeSerializer do
     expect(json['stocktake']['id']).to eql(record.id)
     expect(json['stocktake']['location_id']).to eql(record.location_id)
     expect(json['stocktake']['name']).to eql(record.name)
+    expect(json['stocktake']['comment']).to eql(record.comment)
   end
 
   it "Includes associations" do
