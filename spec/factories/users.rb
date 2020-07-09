@@ -19,7 +19,7 @@ FactoryBot.define do
       roles_and_permissions { }
     end
 
-    %i[reviewer order_fulfilment order_administrator supervisor administrator charity].each do |role|
+    %i[reviewer order_fulfilment order_administrator supervisor system_administrator charity].each do |role|
       trait role do
         after(:create) do |user|
           user.roles << create("#{role}_role")
