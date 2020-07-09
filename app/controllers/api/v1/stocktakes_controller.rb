@@ -24,8 +24,9 @@ module Api
 
       api :POST, "/v1/stocktakes", "Create a stocktake"
       def create
+        raise Goodcity::DuplicateRecordError if Stocktake.find_by(name: stocktake_params['name']).present?
+        
         @stocktake.created_by = current_user
-
         ActiveRecord::Base.transaction do
           success = @stocktake.save
 
