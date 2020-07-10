@@ -117,7 +117,7 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
       end
     end
 
-    context 'if valid stock user' do
+    context 'if valid user' do
       let(:user) { create(:user, :charity) }
       let(:package) { create(:package ,:published) }
       let(:requested_package) { create(:requested_package, user_id: user.id , package_id: package.id) }
