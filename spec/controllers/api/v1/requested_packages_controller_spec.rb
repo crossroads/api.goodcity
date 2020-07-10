@@ -112,7 +112,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
       end
       it "returns 403 for invalid login" do
         user = create(:user)
-        # generate_token(user)
         put :update, id: create(:requested_package).id
         expect(response.status).to eq(401)
       end
