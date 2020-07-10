@@ -300,7 +300,7 @@ class Ability
   end
 
   def requested_packages_abilities
-    can [:create, :destroy, :update, :index, :checkout], RequestedPackage, user_id: @user_id
+    can %i[create destroy update index checkout], RequestedPackage, user_id: @user_id
   end
 
   def package_abilities
