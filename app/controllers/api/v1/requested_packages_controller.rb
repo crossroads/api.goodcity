@@ -42,7 +42,7 @@ module Api
         if @requested_package.valid? && @requested_package.save
           render json: @requested_package, serializer: serializer
         else
-          render_error(@requested_package.errors.full_messages.join(". "))
+          render_error(@requested_package.errors.full_messages.join("."))
         end
       end
 
