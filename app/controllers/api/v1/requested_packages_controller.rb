@@ -38,7 +38,7 @@ module Api
 
       api :PUT, '/v1/requested_packages', "Update a cart item"
       def update
-        @requested_package.update_attributes(requested_package_params)
+        @requested_package.assign_attributes(requested_package_params)
         if @requested_package.valid? && @requested_package.save
           render json: @requested_package, serializer: serializer
         else
