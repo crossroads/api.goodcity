@@ -105,46 +105,46 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
   end
 
   describe "PUT /requested_package/:id" do
-    context "as a guest" do
+    context 'if invalid user' do
       it "returns 401" do
+        put :update, id: create(:requested_package).id
+        expect(response.status).to eq(401)
+      end
+      it "returns 403 for invalid login" do
+        user = create(:user)
+        # generate_token(user)
         put :update, id: create(:requested_package).id
         expect(response.status).to eq(401)
       end
     end
 
-    context "If quantity is valid" do
+    context 'if valid stock user' do
       let(:user) { create(:user, :charity) }
       let(:package) { create(:package ,:published) }
       let(:requested_package) { create(:requested_package, user_id: user.id , package_id: package.id) }
-      before {
+      before do
         initialize_inventory(package)
         generate_and_set_token(user)
-      }
-
-      it "returns 200" do
-        put :update, id: requested_package.id, requested_package: { quantity:2 }
-        expect(response.status).to eq(200)
       end
 
-      it "allows editing quantity of requested_package" do
-        put :update, id: requested_package.id, requested_package: { quantity:2 }
-        expect(response.status).to eq(200)
-        expect(parsed_body['requested_package']['quantity']).to eq(2)
+      context "If quantity is valid" do
+        it "returns 200" do
+          put :update, id: requested_package.id, requested_package: { quantity:2 }
+          expect(response.status).to eq(200)
+        end
+
+        it "allows editing quantity of requested_package" do
+          put :update, id: requested_package.id, requested_package: { quantity:2 }
+          expect(response.status).to eq(200)
+          expect(parsed_body['requested_package']['quantity']).to eq(2)
+        end
       end
-    end
 
-    context 'if quantity is invalid' do
-      let(:user) { create(:user, :charity) }
-      let(:package) { create(:package ,:published) }
-      let(:requested_package) { create(:requested_package, user_id: user.id , package_id: package.id) }
-      before {
-        initialize_inventory(package)
-        generate_and_set_token(user)
-      }
-
-      it 'returns an error' do
-        put :update, id: requested_package.id, requested_package: { quantity:0 }
-        expect(response.status).to eq(422)
+      context 'if quantity is invalid' do
+        it 'returns an error' do
+         put :update, id: requested_package.id, requested_package: { quantity:0 }
+          expect(response.status).to eq(422)
+        end
       end
     end
   end
