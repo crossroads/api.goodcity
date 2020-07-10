@@ -112,26 +112,39 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
       end
     end
 
-    user_types.each do|user_type|
-      context "as a #{user_type}" do
-        let(:user) { create(:user, user_type) }
-        let(:package) { create(:package ,:published) }
-        let(:requested_package) { create(:requested_package, user_id: user.id , package_id: package.id)}
-        before {
-          initialize_inventory(package)
-          generate_and_set_token(user)
-        }
+    context "If quantity is valid" do
+      let(:user) { create(:user, :charity) }
+      let(:package) { create(:package ,:published) }
+      let(:requested_package) { create(:requested_package, user_id: user.id , package_id: package.id) }
+      before {
+        initialize_inventory(package)
+        generate_and_set_token(user)
+      }
 
-        it "returns 200" do
-          put :update, id: requested_package.id, requested_package: { quantity:2 }
-          expect(response.status).to eq(200)
-        end
+      it "returns 200" do
+        put :update, id: requested_package.id, requested_package: { quantity:2 }
+        expect(response.status).to eq(200)
+      end
 
-        it "allows editing quantity of requested_package" do
-          put :update, id: requested_package.id, requested_package: { quantity:2 }
-          expect(response.status).to eq(200)
-          expect(parsed_body['requested_package']['quantity']).to eq(2)
-        end
+      it "allows editing quantity of requested_package" do
+        put :update, id: requested_package.id, requested_package: { quantity:2 }
+        expect(response.status).to eq(200)
+        expect(parsed_body['requested_package']['quantity']).to eq(2)
+      end
+    end
+
+    context 'if quantity is invalid' do
+      let(:user) { create(:user, :charity) }
+      let(:package) { create(:package ,:published) }
+      let(:requested_package) { create(:requested_package, user_id: user.id , package_id: package.id) }
+      before {
+        initialize_inventory(package)
+        generate_and_set_token(user)
+      }
+
+      it 'returns an error' do
+        put :update, id: requested_package.id, requested_package: { quantity:0 }
+        expect(response.status).to eq(422)
       end
     end
   end
