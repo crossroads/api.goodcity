@@ -9,21 +9,18 @@ describe ResyncDuplicateUsers do
     let!(:order) { create :order, created_by: user }
 
     it 'copies order to original_user' do
-      user.email = original_user.email.upcase
-      user.save(validate: false)
+      user.update_column(:email, original_user.email.upcase)
       ResyncDuplicateUsers.apply
       expect(order.reload.created_by_id).to eq(original_user.id)
     end
 
     it 'copies order to original_user for multiple duplicate users' do
       user_1 = create(:user, :charity)
-      user_1.email = 'Test@test.com'
-      user_1.save(validate: false)
+      user_1.update_column(:email, 'Test@test.com')
       create :order, created_by: user_1
 
       user_2 = create(:user, :charity)
-      user_2.email = 'tEst@test.com'
-      user_2.save(validate: false)
+      user_2.update_column(:email, 'tEst@test.com')
       create :order, created_by: user_2
 
       ResyncDuplicateUsers.apply
@@ -33,14 +30,12 @@ describe ResyncDuplicateUsers do
 
     it 'copies messages and subscriptions to the original user' do
       user_1 = create(:user, :charity)
-      user_1.email = 'Test@test.com'
-      user_1.save(validate: false)
+      user_1.update_column(:email, "Test@test.com")
       user_1_order = create :order, created_by: user_1
       create(:message, messageable: user_1_order, sender_id: user_1.id)
 
       user_2 = create(:user, :charity)
-      user_2.email = 'tEst@test.com'
-      user_2.save(validate: false)
+      user_2.update_column(:email, 'tEst@test.com')
       user_2_order = create :order, created_by: user_2
       create(:message, messageable: user_2_order, sender_id: user_2.id)
 
@@ -50,10 +45,10 @@ describe ResyncDuplicateUsers do
     end
 
     it 'does not effect other than charity users' do
-      user = create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_manage_order_messages']})
+      user = create(:user,:with_multiple_roles_and_permissions, email: 'test1@test.com', roles_and_permissions: {'Order administrator' => ['can_manage_order_messages']})
 
       user_2 = create(:user, :charity)
-      user_2.email = 'tEst@test.com'
+      user_2.update_column(:email, 'tEst1@test.com')
       create :order, created_by: user_2
 
       ResyncDuplicateUsers.apply
@@ -62,8 +57,7 @@ describe ResyncDuplicateUsers do
     end
 
     it 'deletes duplicate users' do
-      user.email = original_user.email.upcase
-      user.save(validate: false)
+      user.update_column(:email, 'TEST@TEST.COM')
 
       ResyncDuplicateUsers.apply
       expect(User.find_by(id: user.id)).to be_nil
