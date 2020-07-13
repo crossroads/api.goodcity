@@ -8,6 +8,8 @@ class Organisation < ActiveRecord::Base
   has_many :orders
   has_many :users, through: :organisations_users
 
+  scope :with_eager_load, -> { includes([:orders]) }
+
   configure_search props: [:name_en, :name_zh_tw], tolerance: 0.1
 
   def name_as_per_locale

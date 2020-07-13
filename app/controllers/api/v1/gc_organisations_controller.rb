@@ -30,7 +30,8 @@ module Api::V1
 
     api :GET, '/v1/organisations/:id/organisation_orders', "List all orders associated with organisation"
     def organisation_orders
-      orders = @organisation.orders.page(page).per(per_page).order('id')
+      organisation_orders = @organisation.orders
+      orders = organisation_orders.page(page).per(per_page).order('id')
       meta = {
         total_pages: orders.total_pages,
         total_count: orders.size
@@ -66,7 +67,7 @@ module Api::V1
       if params['ids'].present?
         records = @organisations.where(id: params['ids']).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       else
-        records = @organisations.search(params["searchText"]).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+        records = @organisations.with_eager_load.search(params["searchText"]).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       end
       data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
       render json: { "meta": { total_pages: records.total_pages, "search": params["searchText"] } }.merge(data)
