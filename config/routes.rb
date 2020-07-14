@@ -103,6 +103,9 @@ Rails.application.routes.draw do
       resources :organisations_users, only: [:create, :index, :update, :show]
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
+        member do
+          get :organisation_orders
+        end
       end
 
       get "recent_users", to: "users#recent_users"

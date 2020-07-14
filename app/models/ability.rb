@@ -282,7 +282,7 @@ class Ability
 
   def organisations_abilities
     if can_check_organisations? || @api_user
-      can [:index, :search, :show], Organisation
+      can [:index, :search, :show, :organisation_orders], Organisation
     end
   end
 
