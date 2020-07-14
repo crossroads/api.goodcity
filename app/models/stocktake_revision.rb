@@ -1,11 +1,24 @@
 class StocktakeRevision < ActiveRecord::Base
   include Watcher
+  include PushUpdatesMinimal
 
   belongs_to :stocktake
   belongs_to :package
   belongs_to :created_by, class_name: "User"
 
-  after_save :unset_dirty
+  before_save :unset_dirty_and_warning
+
+  # ---------------------
+  # Live updates
+  # ---------------------
+
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets [ Channel::STOCK_MANAGEMENT_CHANNEL ]
+
+  # ---------------------
+  # Validations
+  # ---------------------
 
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }
 
@@ -32,8 +45,9 @@ class StocktakeRevision < ActiveRecord::Base
   # Hook methods
   # ---------------------
 
-  def unset_dirty
+  def unset_dirty_and_warning
     self.dirty = false unless self.dirty_changed?
+    self.warning = '' unless self.warning_changed?
   end
 
   # ---------------------
