@@ -62,7 +62,8 @@ module Api
           include_territory: true,
           include_images: true,
           include_allowed_actions: true,
-          include_orders_packages: bool_param(:include_orders_packages, true)
+          include_orders_packages: bool_param(:include_orders_packages, true),
+          include_packages_locations: bool_param(:include_packages_locations, true)
         )
       end
 

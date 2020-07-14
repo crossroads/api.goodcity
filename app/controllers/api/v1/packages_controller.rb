@@ -51,6 +51,7 @@ module Api
           .page(page).per(per_page) if params["searchText"]
         render json: @packages, each_serializer: serializer,
           include_orders_packages: is_stock_app?,
+          include_packages_locations: is_stock_app?,
           is_browse_app: is_browse_app?,
           include_package_set: bool_param(:include_package_set, false)
       end
@@ -58,7 +59,10 @@ module Api
       api :GET, "/v1/packages/1", "Details of a package"
 
       def show
-        render json: serializer.new(@package, include_orders_packages: true).as_json
+        render json: serializer.new(@package,
+          include_orders_packages: true,
+          include_packages_locations: true
+        ).as_json
       end
 
       api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
@@ -70,6 +74,7 @@ module Api
                root: 'item',
                include_order: true,
                include_orders_packages: true,
+               include_packages_locations: true,
                include_package_set: true,
                include_images: true,
                include_allowed_actions: true).as_json
@@ -106,7 +111,9 @@ module Api
           # @TODO: unify package under a single serializer
           if is_stock_app?
             render json: @package, serializer: stock_serializer, root: "item",
-                    include_order: false, include_orders_packages: true
+                    include_order: false,
+                    include_orders_packages: true,
+                    include_packages_locations: true
           else
             render json: @package, serializer: serializer, status: 201
           end
@@ -138,7 +145,9 @@ module Api
           if is_stock_app?
             stockit_item_details
           else
-            render json: @package, serializer: serializer, include_orders_packages: true
+            render json: @package, serializer: serializer,
+              include_orders_packages: true,
+              include_packages_locations: true
           end
         else
           render json: { errors: @package.errors.full_messages }, status: 422
@@ -225,6 +234,7 @@ module Api
                                                     include_order: false,
                                                     include_packages: false,
                                                     include_orders_packages: true,
+                                                    include_packages_locations: true,
                                                     include_package_set: bool_param(:include_package_set, true),
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
@@ -310,8 +320,11 @@ module Api
         container = @package
         contained_pkgs = PackagesInventory.packages_contained_in(container).page(page)&.per(per_page)
         render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
-          include_orders_packages: false, include_storage_type: false,
-          include_donor_conditions: false, root: "items"
+          include_orders_packages: false,
+          include_packages_locations: true,
+          include_storage_type: false,
+          include_donor_conditions: false,
+          root: "items"
       end
 
       api :GET, "/v1/packages/1/parent_containers", "Returns the packages which contain current package"
@@ -321,6 +334,7 @@ module Api
           each_serializer: stock_serializer,
           include_items: true,
           include_orders_packages: false,
+          include_packages_locations: false,
           include_storage_type: false,
           include_donor_conditions: false,
           include_images: true,

@@ -14,12 +14,12 @@ module Api
 
       api :GET, "/v1/stocktakes", "List all stocktakes"
       def index
-        render json: @stocktakes, each_serializer: serializer
+        render json: @stocktakes, each_serializer: serializer, include_packages_locations: true
       end
 
       api :GET, "/v1/stocktakes/:id", "Get a stocktake by id"
       def show
-        render json: @stocktake, serializer: serializer
+        render json: @stocktake, serializer: serializer, include_packages_locations: true
       end
 
       api :POST, "/v1/stocktakes", "Create a stocktake"

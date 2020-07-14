@@ -43,5 +43,15 @@ RSpec.describe StocktakeRevision, type: :model do
         stocktake_revision.reload.dirty
       }
     end
+
+    it "unsets the dirty flag on save" do
+      stocktake_revision.update(dirty: true)
+
+      expect {
+        stocktake_revision.update(quantity: 888)
+      }.to change { 
+        stocktake_revision.reload.dirty
+      }.from(true).to(false)
+    end
   end
 end
