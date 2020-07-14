@@ -94,21 +94,35 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     let(:organisation1) { create :organisation }
     let!(:organisation_orders) { create_list(:order, 2, organisation_id: organisation.id) }
     let!(:orders) { create_list(:order, 2) }
+    let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission }
 
-    it "returns 200" do
-      get :organisation_orders, id: organisation.id
-      expect(response.status).to eq(200)
+    context "If logged in user is Supervisor" do
+      before { generate_and_set_token(supervisor) }
+
+      it "returns 200" do
+        get :organisation_orders, id: organisation.id
+        expect(response.status).to eq(200)
+      end
+
+      it "returns orders associated with organisation" do
+        get :organisation_orders, id: organisation.id
+        expect(parsed_body['designations'].size).to eq(organisation_orders.size)
+        expect(parsed_body["designations"].map { |order| order["id"] }).to eq(organisation_orders.map(&:id))
+      end
+
+      it "does not returns orders of different organisation" do
+        get :organisation_orders, id: organisation1.id
+        expect(parsed_body['designations']).to eq([])
+      end
     end
 
-    it "returns orders associated with organisation" do
-      get :organisation_orders, id: organisation.id
-      expect(parsed_body['designations'].size).to eq(organisation_orders.size)
-      expect(parsed_body["designations"].map { |order| order["id"] }).to eq(organisation_orders.map(&:id))
-    end
+    context "denies access to Charity User" do
+      before { generate_and_set_token(charity_user) }
 
-    it "does not returns orders of different organisation" do
-      get :organisation_orders, id: organisation1.id
-      expect(parsed_body['designations']).to eq([])
+      it "returns 403" do
+        get :organisation_orders, id: organisation.id
+        expect(response.status).to eq(403)
+      end
     end
 
   end
