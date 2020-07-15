@@ -92,10 +92,13 @@ module PushUpdatesForMessage
   def app_name_for_user(user_id)
     obj = self.related_object
     created_by_id = obj.try(:created_by_id) || obj.try(:offer).try(:created_by_id)
-    if ['Order', 'Package'].include?(object_class)
+
+    if object_class == "Order"
       (created_by_id == user_id) ? BROWSE_APP : STOCK_APP
-    else # Offer/Item
+    elsif ["Offer", "Item"].include?(object_class)
       (created_by_id == user_id) ? DONOR_APP : ADMIN_APP
+    elsif object_class == "Package"
+      STOCK_APP
     end
   end
 

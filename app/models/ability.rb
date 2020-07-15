@@ -216,7 +216,7 @@ class Ability
 
     # Normal users can create non private messages on objects they own
     can :create, Message do |message|
-      message.related_object&.created_by_id == @user_id && !message.is_private && @user_id != nil
+      @user_id != nil && !message.is_private && message.related_object&.created_by_id == @user_id
     end
   end
 

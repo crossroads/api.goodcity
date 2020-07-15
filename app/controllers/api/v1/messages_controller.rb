@@ -106,15 +106,9 @@ module Api
       end
 
       def apply_scope(records, scope)
-        if scope.is_a?(Array)
-          return unless scope.to_set.subset?(ALLOWED_SCOPES.to_set)
-          scope = scope.map(&:camelize)
-        else
-          return records unless ALLOWED_SCOPES.include? scope
-          scope = scope.camelize
-        end
-
-        records.unscoped.where("messages.messageable_type IN (?)", scope)
+        scope = [scope].flatten.compact.uniq
+        scope = (scope & ALLOWED_SCOPES).map(&:camelize)
+        records.where("messages.messageable_type IN (?)", scope)
       end
 
       def paginate_and_render(records)

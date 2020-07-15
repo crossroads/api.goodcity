@@ -76,7 +76,7 @@ Supervisor:
 - can_access_printers
 - can_access_orders_process_checklists
 - can_mention_users
-- can_manage_packages_chat
+- can_manage_package_messages
 - can_manage_user_roles
 Charity:
 - can_login_to_browse
@@ -117,5 +117,5 @@ Order fulfilment: &order_fulfilment
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
-- can_manage_packages_chat
+- can_manage_package_messages
 - can_manage_user_roles
