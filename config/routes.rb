@@ -103,6 +103,9 @@ Rails.application.routes.draw do
       resources :organisations_users, only: [:create, :index, :update, :show]
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
+        member do
+          get :organisation_orders
+        end
       end
 
       get "recent_users", to: "users#recent_users"
@@ -170,6 +173,7 @@ Rails.application.routes.draw do
       end
       resources :orders_process_checklists, only: [:index]
       resources :restrictions, only: [:index]
+      resources :packages_inventories, only: [:index]
 
       # routes used in stock app
       get "designations", to: "orders#index"

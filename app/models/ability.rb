@@ -12,15 +12,17 @@ class Ability
     can_search_browse_packages can_manage_deliveries can_manage_delivery_address
     can_manage_delivery_address can_manage_orders can_manage_order_transport
     can_manage_holidays can_manage_orders_packages can_manage_images
-    can_manage_messages can_add_package_types can_add_or_remove_inventory_number
+    can_add_package_types can_add_or_remove_inventory_number
     can_check_organisations can_access_packages_locations can_create_donor
-    can_destroy_image_for_imageable_states can_create_and_read_messages
-    can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
+    can_destroy_image_for_imageable_states can_destroy_contacts
+    can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers
-    can_remove_offers_packages can_access_orders_process_checklists can_mention_users
-    can_disable_user can_manage_packages_chat
+    can_manage_settings can_manage_companies can_manage_package_detail
+    can_access_printers can_remove_offers_packages
+    can_access_orders_process_checklists can_mention_users
+    can_manage_order_messages can_manage_offer_messages can_disable_user
+    can_manage_package_messages
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -206,19 +208,16 @@ class Ability
   end
 
   def message_abilities
-    # Message (sender and admins, not user if private is true)
-    if can_manage_messages?
-      can [:index, :show, :create, :update, :destroy], Message
-    elsif can_create_and_read_messages?
-      can [:index, :show, :create], Message
-    else
-      can [:index, :show, :create], Message, Message.donor_messages(@user_id) do |message|
-        message.related_object&.created_by_id == @user_id && !message.is_private
-      end
-    end
+    can %i[index show create], Message, messageable_type: 'Offer' if can_manage_offer_messages?
+    can %i[index show create], Message, messageable_type: 'Item' if can_manage_offer_messages?
+    can %i[index show create], Message, messageable_type: 'Order' if can_manage_order_messages?
+    can [:manage], Message, messageable_type: 'Package' if can_manage_package_messages?
+    can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id), is_private: false
 
-    can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
-    can [:mark_all_read], Message
+    # Normal users can create non private messages on objects they own
+    can :create, Message do |message|
+      message.related_object&.created_by_id == @user_id && !message.is_private && @user_id != nil
+    end
   end
 
   def offer_abilities
@@ -285,7 +284,7 @@ class Ability
 
   def organisations_abilities
     if can_check_organisations? || @api_user
-      can [:index, :search, :show], Organisation
+      can [:index, :search, :show, :organisation_orders], Organisation
     end
   end
 
@@ -315,6 +314,7 @@ class Ability
              fetch_added_quantity], Package
       can %i[show create update destroy], PackageSet
       can %i[index], Restriction
+      can %i[index], PackagesInventory
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }

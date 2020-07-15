@@ -3,8 +3,8 @@ module Api
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
 
-      before_action :can_chat_on_packages?, only: :create
-      before_action :can_read_package_messages?, only: :index
+      # before_action :can_chat_on_packages?, only: :create
+      # before_action :can_read_package_messages?, only: :index
 
       ALLOWED_SCOPES = %w[offer item order package].freeze
 
@@ -37,7 +37,6 @@ module Api
       param :order_id, String, desc: "Return messages for order id"
       param :package_id, String, desc: "Return messages for package id"
       param :state, String, desc: "Message state (unread|read) to filter on"
-      # param :scope, String, desc: "The type of record associated to the messages (order/offer/item)"
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)

@@ -10,7 +10,8 @@ describe ManageUserRoles do
     let!(:reviewer_role) { create(:role, name: "Reviewer", level: 5) }
     let!(:supervisor_role) { create(:role, name: "Supervisor", level: 10) }
 
-    let!(:supervisor_user) { create(:user, :supervisor, :with_can_manage_user_roles) }
+    let!(:supervisor_user) { create(:user, :with_can_manage_user_roles, role_name: 'Supervisor') }
+    let!(:system_administrator) { create(:user, :system_administrator) }
     let!(:reviewer_user) { create(:user, :reviewer) }
     let!(:order_fulfilment_user) { create :user, :order_fulfilment }
     let!(:charity_user) { create(:user, :charity) }
@@ -52,16 +53,17 @@ describe ManageUserRoles do
         end
 
         it "can not update other user [high role level] roles" do
-          supervisor_user.manage_roles_for_user(supervisor_user, [order_fulfilment_role.id])
+          supervisor_user.manage_roles_for_user(system_administrator, [order_fulfilment_role.id])
 
-          expect(supervisor_user.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
-          expect(supervisor_user.roles.pluck(:id)).to include(supervisor_role.id)
+          expect(system_administrator.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
+          expect(system_administrator.roles.pluck(:id)).to include(system_admin_role.id)
         end
       end
     end
 
     describe "#max_role_level" do
       it "should return max level of user roles" do
+        supervisor_user.update_roles_for_user(supervisor_user, [supervisor_role.id])
         expect(supervisor_user.max_role_level).to eq(10)
         supervisor_user.roles << system_admin_role
         expect(supervisor_user.max_role_level).to eq(15)

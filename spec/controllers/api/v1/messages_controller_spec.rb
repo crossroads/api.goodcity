@@ -9,8 +9,8 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:offer2) { create(:offer, created_by: user) }
   let(:item) { create(:item, offer: offer) }
   let(:item2) { create(:item, offer: offer) }
-  let(:order) { create(:order) }
-  let(:order2) { create(:order) }
+  let(:order) { create(:order, created_by: user) }
+  let(:order2) { create(:order, created_by: user) }
   let(:message) { create :message, sender: user, messageable: item }
   let(:subscription) { message.subscriptions.where(user_id: user.id).first }
   let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
@@ -42,8 +42,6 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     describe 'filtering messages' do
-      before { 2.times { create :message } }
-
       it "for one item" do
         3.times { create :message, messageable: item }
         get :index, item_id: item.id
@@ -72,6 +70,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
       it "for one order" do
         3.times { create :message, messageable: order }
+        3.times { create :message, messageable: order2 }
         get :index, order_id: order.id
         expect(subject['messages'].length).to eq(3)
       end
