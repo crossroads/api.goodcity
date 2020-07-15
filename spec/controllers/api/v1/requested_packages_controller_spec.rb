@@ -137,7 +137,13 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
           expect(response.status).to eq(200)
           expect(parsed_body['requested_package']['quantity']).to eq(2)
         end
+
+        it "rejects if there is no params" do
+          put :update, id: requested_package.id, requested_package: { quantity:nil }
+          expect(response.status).to eq(422)
+        end
       end
+
 
       context 'if quantity is invalid' do
         it 'returns an error' do
