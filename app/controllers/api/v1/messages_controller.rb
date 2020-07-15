@@ -37,7 +37,7 @@ module Api
       param :order_id, String, desc: "Return messages for order id"
       param :package_id, String, desc: "Return messages for package id"
       param :state, String, desc: "Message state (unread|read) to filter on"
-      param :scope, String, desc: "The type of record associated to the messages (order/offer/item)"
+      # param :scope, String, desc: "The type of record associated to the messages (order/offer/item)"
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)
@@ -91,14 +91,31 @@ module Api
         %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
         end
-        messages = messages.with_state_for_user(current_user, options[:state].split(',')) if options[:state].present?
+
+        if options[:state].present? && %w[unread read].include?(options[:state])
+          messages = messages.with_state_for_user(current_user, options[:state].split(','))
+        end
+
+        if bool_param(:only_notification, false)
+          notification_ids = messages
+            .select("max(messages.id) AS message_id")
+            .group("messageable_type, messageable_id, is_private")
+          messages = messages.where("messages.id IN (?)", notification_ids).order("messages.id DESC")
+        end
+
         messages
       end
 
       def apply_scope(records, scope)
-        return records unless ALLOWED_SCOPES.include? scope
+        if scope.is_a?(Array)
+          return unless scope.to_set.subset?(ALLOWED_SCOPES.to_set)
+          scope = scope.map(&:camelize)
+        else
+          return records unless ALLOWED_SCOPES.include? scope
+          scope = scope.camelize
+        end
 
-        records.where("messages.messageable_type = (?)", scope.camelize)
+        records.unscoped.where("messages.messageable_type IN (?)", scope)
       end
 
       def paginate_and_render(records)
