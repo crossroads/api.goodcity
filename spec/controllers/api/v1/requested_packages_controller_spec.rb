@@ -144,7 +144,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
       end
 
-
       context 'if quantity is invalid' do
         it 'returns an error' do
          put :update, id: requested_package.id, requested_package: { quantity:0 }
