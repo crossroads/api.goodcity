@@ -28,6 +28,19 @@ module Api::V1
       find_record_and_render_json(organisation_name_serializer)
     end
 
+    api :GET, '/v1/organisations/:id/organisation_orders', "List all orders associated with organisation"
+    def organisation_orders
+      organisation_orders = @organisation.orders
+      orders = organisation_orders.page(page).per(per_page).order('id')
+      meta = {
+        total_pages: orders.total_pages,
+        total_count: orders.size
+      }
+      render json: { meta: meta }.merge(
+          serialized_orders(orders)
+      )
+    end
+
     private
 
     def organisation_serializer
@@ -38,11 +51,23 @@ module Api::V1
       Api::V1::OrganisationNamesSerializer
     end
 
+    def order_serializer
+      Api::V1::OrderShallowSerializer
+    end
+
+    def serialized_orders(orders)
+      ActiveModel::ArraySerializer.new(
+        orders,
+        each_serializer: order_serializer,
+        root: "designations"
+      ).as_json
+    end
+
     def find_record_and_render_json(serializer)
       if params['ids'].present?
         records = @organisations.where(id: params['ids']).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       else
-        records = @organisations.search(params["searchText"]).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
+        records = @organisations.with_order.search(params["searchText"]).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       end
       data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
       render json: { "meta": { total_pages: records.total_pages, "search": params["searchText"] } }.merge(data)
