@@ -48,6 +48,10 @@ Before do
   FactoryBot.create :location, :dispatched
 end
 
+def parsed_body
+  JSON.parse(last_response.body)
+end
+
 
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
 # See the DatabaseCleaner documentation for details. Example:

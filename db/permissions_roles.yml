@@ -67,7 +67,6 @@ Supervisor:
 - can_read_or_modify_user
 - can_destroy_image
 - can_manage_offer_messages
-- can_login_to_stock
 - can_login_to_admin
 - can_manage_settings
 - can_manage_companies

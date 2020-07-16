@@ -16,25 +16,6 @@ module Warden
 
       private
 
-      def valid_login_permissions_for(user)
-        # 1. get the permissions of the user
-        role_permissions = user.roles.include(:permissions)
-        permissions = role_permissions.map { |role| role.permissions.map(&:name) }
-        # 2. get the app name
-        app_name = request.env['HTTP_X_GOODCITY_APP_NAME'].split('.')[0]
-        # 3. check if the user has permission to log into the respective app and return true / false
-        case app_name
-        when DONOR_APP
-          true
-        when ADMIN_APP
-          permissions.include? 'can_login_to_admin'
-        when STOCK_APP
-          permissions.include? 'can_login_to_stock'
-        when BROWSE_APP
-          permissions.include? 'can_login_to_browse'
-        end
-      end
-
       def valid_user(user)
         user.present? && !user.disabled
       end
