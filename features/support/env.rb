@@ -30,13 +30,6 @@ require 'cucumber/rails'
 #
 ActionController::Base.allow_rescue = false
 
-ENV['SECRET_KEY_BASE'] = '5b405f98de7d'
-ENV['JWT_SECRET_KEY'] = '2332dasdc'
-ENV['JWT_HMAC_SHA_ALGO'] = 'adsc12e23e'
-ENV['JWT_ISSUER'] = 'GoodCityHK'
-ENV['JWT_VALIDITY'] = 12000
-ENV['JWT_VALIDITY_FOR_API'] = 31536000
-
 # Remove/comment out the lines below if your app doesn't have a database.
 # For some databases (like MongoDB and CouchDB) you may need to use :truncation instead.
 begin
