@@ -22,6 +22,8 @@ Reviewer:
 - can_destroy_package_with_specific_states
 - can_read_schedule
 - can_read_versions
+- can_manage_locations
+- can_access_packages_locations
 - can_login_to_admin
 - can_manage_companies
 - can_create_donor
@@ -38,9 +40,11 @@ Supervisor:
 - can_add_or_remove_inventory_number
 - can_manage_delivery_address
 - can_destroy_contacts
+- can_manage_locations
 - can_handle_gogovan_order
 - can_manage_holidays
 - can_read_schedule
+- can_access_packages_locations
 - can_read_versions
 - can_manage_users
 - can_perform_message_crud
