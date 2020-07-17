@@ -11,14 +11,14 @@ Given(/^I am a ([order_administrator | order_fulfilment]+) logging into "([^"]*)
 end
 
 And('I enter the mobile number') do
-  request('api/v1/auth/send_pin', method: :post, params: { mobile: @user.mobile } )
+  request('api/v1/auth/send_pin', method: :post, params: { mobile: @user.mobile })
   @response = last_response
 end
 
 And('I enter the pin') do
   otp = @user.most_recent_token.otp_code
   otp_auth_key = parsed_body['otp_auth_key']
-  request('api/v1/auth/verify', method: :post, params: { otp_auth_key: otp_auth_key, pin: otp } )
+  request('api/v1/auth/verify', method: :post, params: { otp_auth_key: otp_auth_key, pin: otp })
   @response = last_response
 end
 
