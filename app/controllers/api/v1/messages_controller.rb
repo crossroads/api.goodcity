@@ -3,9 +3,6 @@ module Api
     class MessagesController < Api::V1::ApiController
       load_and_authorize_resource :message, parent: false
 
-      # before_action :can_chat_on_packages?, only: :create
-      # before_action :can_read_package_messages?, only: :index
-
       ALLOWED_SCOPES = %w[offer item order package].freeze
 
       resource_description do
@@ -73,20 +70,9 @@ module Api
 
       private
 
-      def can_chat_on_packages?
-        if params["message"]["messageable_type"] == 'Package' && !current_user.can_chat_on_packages?
-          raise CanCan::AccessDenied.new("Not authorized!", :create, Message)
-        end
-      end
-
-      def can_read_package_messages?
-        if params["package_id"].present? && !current_user.can_chat_on_packages?
-          raise CanCan::AccessDenied.new("Not authorized!", :create, Message)
-        end
-      end
-
       def apply_filters(messages, options)
         messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
+
         %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
         end
@@ -125,7 +111,11 @@ module Api
       end
 
       def serializer
-        Api::V1::MessageSerializer
+        if bool_param(:only_notification, false)
+          Api::V1::NotificationSerializer
+        else
+          Api::V1::MessageSerializer
+        end
       end
 
       def message_response(records)

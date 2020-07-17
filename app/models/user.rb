@@ -227,10 +227,6 @@ class User < ActiveRecord::Base
     props
   end
 
-  def can_chat_on_packages?
-    user_permissions_names.include?("can_manage_packages_chat")
-  end
-
   private
 
   def request_from_stock_without_mobile?
