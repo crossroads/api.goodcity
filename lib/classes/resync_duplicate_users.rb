@@ -3,18 +3,13 @@
 class ResyncDuplicateUsers
   def self.apply
     # 1. Fetch the users with duplicate email
-    sql = "SELECT id, email FROM users
-          WHERE email IS NOT NULL AND
-                email != '' AND
-                UPPER(email) IN (SELECT UPPER(email) FROM users GROUP BY UPPER(email) HAVING COUNT(*) > 1)
-          ORDER BY email, id"
-    duplicate_users = User.find_by_sql(sql)
+    duplicate_users = User.where("email IS NOT NULL AND email != '' AND UPPER(email) IN (SELECT UPPER(email) FROM users GROUP BY UPPER(email) HAVING COUNT(*) > 1)").order('email, id')
+
     # 2. Create a hash of user email as key and the ids as values
     # Do this only for charity user
     user_hash = {}
     duplicate_users.map do |user|
-      _user = User.find(user.id)
-      if _user.roles.map(&:name).uniq == ['Charity']
+      if user.roles.map(&:name).uniq == ['Charity']
         email = user.email.downcase
         if !user_hash[email]
           user_hash[email] = [user.id]
