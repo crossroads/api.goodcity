@@ -28,9 +28,25 @@ describe ResyncDuplicateUsers do
       expect(Order.where(created_by_id: original_user.id).count).to eq(2)
     end
 
+    context 'if email is nil' do
+      it 'does not copies order from that account' do
+        user_1 = create(:user, :charity)
+        user_1.update_column(:email, nil)
+        create :order, created_by: user_1
+
+        user_2 = create(:user, :charity)
+        user_2.update_column(:email, 'tEst@test.com')
+        create :order, created_by: user_2
+
+        ResyncDuplicateUsers.apply
+
+        expect(Order.where(created_by_id: original_user.id).count).to eq(1)
+      end
+    end
+
     it 'copies messages and subscriptions to the original user' do
       user_1 = create(:user, :charity)
-      user_1.update_column(:email, "Test@test.com")
+      user_1.update_column(:email, 'Test@test.com')
       user_1_order = create :order, created_by: user_1
       create(:message, messageable: user_1_order, sender_id: user_1.id)
 
