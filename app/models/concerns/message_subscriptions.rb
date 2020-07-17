@@ -50,7 +50,7 @@ module MessageSubscriptions
       when 'Order'
         ['Order fulfilment', 'Order administrator']
       when 'Package'
-        ["Supervisor", "Order administrator"]
+        ["Order administrator"]
       when 'Offer', 'Item'
         ['Reviewer', 'Supervisor']
       else
