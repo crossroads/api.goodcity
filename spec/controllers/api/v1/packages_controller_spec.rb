@@ -15,6 +15,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
   let(:parsed_body) { JSON.parse(response.body) }
+  let(:response_packages) { parsed_body['packages'].map { |p| Package.find(p['id'])} }
   let(:error_msg) do
     return parsed_body['error'] if parsed_body['error'].present?
     parsed_body['errors'][0]['message']
@@ -55,6 +56,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         get :index
         expect(response.status).to eq(200)
       end
+
       it "return serialized packages", :show_in_doc do
         3.times{ create :package, :with_inventory_record }
         get :index
@@ -69,6 +71,16 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         get :index, "searchText": "car"
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(3)
+      end
+
+      it "returns packages by inventory numbers" do
+        p1, p2, p3 = ['111111', '1111112', '111113'].map { |n| create(:package, :with_inventory_record, inventory_number: n) }
+        initialize_inventory(p1, p2, p3)
+
+        expect(Package.count).to eq(3)
+        get :index, "inventory_number": "111111,1111112"
+        expect(response.status).to eq(200)
+        expect( response_packages ).to match_array([p1,p2])
       end
 
       it "returns searched browseable_packages only" do

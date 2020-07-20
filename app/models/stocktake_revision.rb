@@ -12,13 +12,15 @@ class StocktakeRevision < ActiveRecord::Base
   # Live updates
   # ---------------------
 
-  after_save :push_changes
-  after_destroy :push_changes
+  after_commit :push_changes
   push_targets [ Channel::STOCK_MANAGEMENT_CHANNEL ]
 
   # ---------------------
   # Validations
   # ---------------------
+
+  attr_readonly :package_id
+  attr_readonly :stocktake_id
 
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }
 
@@ -29,7 +31,7 @@ class StocktakeRevision < ActiveRecord::Base
   watch [PackagesInventory] do |packages_inventory|
     #
     # The stocktake count is invalidated if someone performs a quantity action on the package
-    #
+    #  
     location = packages_inventory.location
     StocktakeRevision
       .joins(:stocktake)
@@ -37,7 +39,8 @@ class StocktakeRevision < ActiveRecord::Base
       .where(
         state: 'pending',
         package_id: packages_inventory.package_id
-      ).update_all(dirty: true)
+      )
+      .update_all(dirty: true)
   end
 
 
@@ -47,7 +50,8 @@ class StocktakeRevision < ActiveRecord::Base
 
   def unset_dirty_and_warning
     self.dirty = false unless self.dirty_changed?
-    self.warning = '' unless self.warning_changed?
+    self.warning = '' if self.quantity_changed? && !self.warning_changed?
+    true
   end
 
   # ---------------------
