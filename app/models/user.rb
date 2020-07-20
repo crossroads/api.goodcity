@@ -45,10 +45,10 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
-  scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
-  scope :order_fulfilment, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
-  scope :order_administrator, -> { where(roles: { name: 'Order administrator' }).joins(:roles) }
+  # scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
+  # scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
+  # scope :order_fulfilment, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
+  # scope :order_administrator, -> { where(roles: { name: 'Order administrator' }).joins(:roles) }
   scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
   scope :by_roles, -> (role_names) { where(roles: {name: role_names }).joins(:roles) }
@@ -62,6 +62,12 @@ class User < ActiveRecord::Base
 
   #added to allow sign_up without mobile number from stock app.
   attr_accessor :request_from_stock, :request_from_browse
+
+  Role.pluck(:name).map do |role|
+    define_singleton_method role.parameterize.underscore.pluralize do
+      where(roles: { name: role }).joins(:roles)
+    end
+  end
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
