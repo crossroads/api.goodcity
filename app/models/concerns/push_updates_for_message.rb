@@ -14,7 +14,7 @@ module PushUpdatesForMessage
     user_ids << self.sender_id
 
     # All reviewers/supervisors/order_fulfillers
-    roles.each do |role|
+    available_roles.each do |role|
       user_ids += User.try(role).pluck(:id)
     end
 
@@ -68,7 +68,7 @@ module PushUpdatesForMessage
     Api::V1::MessageSerializer.new(message, { exclude: associations })
   end
 
-  def roles
+  def available_roles
     %i[reviewers supervisors order_fulfilments order_administrators stock_fulfilments stock_administrators]
   end
 
