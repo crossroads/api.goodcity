@@ -46,6 +46,7 @@ module Api
 
       def index
         @packages = @packages.browse_public_packages if is_browse_app?
+        @packages = @packages.where(inventory_number: params[:inventory_number].split(",")) if params[:inventory_number].present?
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
         @packages = @packages.search({ search_text: params["searchText"] })
           .page(page).per(per_page) if params["searchText"]

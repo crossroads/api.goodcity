@@ -3,6 +3,7 @@ module StocktakeProcessor
 
   included do
     private_class_method :apply_package_revision
+    private_class_method :persist_errors
   end
 
   class_methods do
@@ -14,7 +15,7 @@ module StocktakeProcessor
     # @return [boolean]
     #
     def process_stocktake(stocktake)
-      errors = []
+      errors = {}
 
       raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.invalid_state')) unless stocktake.open?
       raise Goodcity::InvalidStateError.new(I18n.t('stocktakes.dirty_revisions')) if stocktake.revisions.where(dirty: true).count.positive?
@@ -24,7 +25,7 @@ module StocktakeProcessor
           next unless revision.pending?
 
           error = apply_package_revision(revision)
-          errors << error if error.present?
+          errors[revision.id] = error if error.present?
         end
 
         raise ActiveRecord::Rollback if errors.length.positive?
@@ -33,18 +34,16 @@ module StocktakeProcessor
         stocktake.close
       end
       
-      persist_errors(errors) if errors.count.positive?
+      persist_errors(stocktake, errors)
 
-      errors
+      errors.values
     end
 
-    def persist_errors(errors)
-      return unless errors.count.positive?
-
+    def persist_errors(stocktake, errors)
       ActiveRecord::Base.transaction do
-        errors.each do |err|
-          revision, message = err.values_at(:revision, :message)
-          revision.update(warning: message)
+        stocktake.revisions.each do |rev|
+          message = errors[rev.id].present? ? errors[rev.id][:message] : ''
+          rev.reload.update(warning: message)
         end
       end
     end

@@ -1,11 +1,23 @@
 class Stocktake < ActiveRecord::Base
   include StocktakeProcessor
+  include PushUpdatesMinimal
 
   has_many    :stocktake_revisions, dependent: :destroy
   belongs_to  :location
   belongs_to  :created_by, class_name: "User"
 
   alias_attribute :revisions, :stocktake_revisions
+
+  # ---------------------
+  # Live updates
+  # ---------------------
+
+  after_commit :push_changes
+  push_targets [ Channel::STOCK_MANAGEMENT_CHANNEL ]
+
+  # ---------------------
+  # States
+  # ---------------------
 
   state_machine :state, initial: :open do
     state :open, :closed, :cancelled
@@ -21,7 +33,15 @@ class Stocktake < ActiveRecord::Base
     event :cancel do
       transition all - [:closed] => :cancelled
     end
+
+    after_transition on: :cancel do |stocktake|
+      StocktakeRevision.where(stocktake: stocktake).update_all(state: 'cancelled')
+    end
   end
+
+  # ---------------------
+  # Methdos
+  # ---------------------
 
   #
   # Creates revisions for every package of the stocktake's location
