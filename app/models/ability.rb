@@ -307,7 +307,7 @@ class Ability
 
   def stocktake_abilities
     if can_manage_stocktakes?
-      can [:show, :index, :destroy, :create, :commit], Stocktake
+      can [:show, :index, :destroy, :create, :commit, :cancel], Stocktake
     end
     if can_manage_stocktake_revisions?
       can [:create, :destroy, :update], StocktakeRevision

@@ -210,4 +210,38 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
       end
     end
   end
+
+  describe 'PUT /stocktake/:id/cancel' do
+    context "as a  user without the 'can_manage_stocktake' permission" do
+      before { generate_and_set_token(other_user) }
+      
+      it "returns 403" do
+        put :cancel, id: stocktake.id
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "as a user with correct permissions" do
+      before { generate_and_set_token(entitled_user) }
+
+      it "returns 200" do
+        put :cancel, id: stocktake.id
+        expect(response.status).to eq(200)
+      end
+
+      it "cancels the stocktake" do
+        expect {
+          put :cancel, id: stocktake.id
+        }.to change {
+          stocktake.reload.state
+        }.from('open').to('cancelled')
+
+        expect(
+          stocktake.revisions.map(&:state).uniq
+        ).to eq(['cancelled'])
+
+        expect(parsed_body['stocktake']['state']).to eq('cancelled')
+      end
+    end
+  end
 end
