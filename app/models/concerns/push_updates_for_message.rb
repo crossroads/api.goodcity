@@ -14,11 +14,10 @@ module PushUpdatesForMessage
     user_ids << self.sender_id
 
     # All reviewers/supervisors/order_fulfillers
+    roles.each do |role|
+      user_ids += User.try(role).pluck(:id)
+    end
 
-    user_ids += User.reviewers.pluck(:id)
-    user_ids += User.supervisors.pluck(:id)
-    user_ids += User.order_fulfilment.pluck(:id)
-    user_ids += User.order_administrator.pluck(:id)
     # Don't send updates to system users
     # Don't send to donor/charity if is private message or offer/order is cancelled
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
@@ -67,6 +66,10 @@ module PushUpdatesForMessage
     message = self.tap{|m| m.state_value = state}
     associations = Message.reflections.keys.map(&:to_sym)
     Api::V1::MessageSerializer.new(message, { exclude: associations })
+  end
+
+  def roles
+    %i[reviewers supervisors order_fulfilments order_administrators stock_fulfilments stock_administrators]
   end
 
   def serialized_user(user)
