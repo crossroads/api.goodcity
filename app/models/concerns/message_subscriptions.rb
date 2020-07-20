@@ -47,10 +47,8 @@ module MessageSubscriptions
 
   def first_message_subscribers(klass)
     roles = case klass
-      when 'Order'
+      when 'Order', 'Package'
         ['Order fulfilment', 'Order administrator']
-      when 'Package'
-        ["Order administrator"]
       when 'Offer', 'Item'
         ['Reviewer', 'Supervisor']
       else

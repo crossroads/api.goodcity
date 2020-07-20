@@ -37,7 +37,7 @@ module Api
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)
-        paginate_and_render(@messages)
+        paginate_and_render(@messages, serializer)
       end
 
       api :GET, "/v1/messages/1", "Get a message"
@@ -68,10 +68,28 @@ module Api
         render json: {}
       end
 
+      api :GET, "/v1/messages/notifications", "List all notifications"
+      param :messageable_type, Array, desc: "Return messages for messageable_type"
+      param :messageable_id, String, desc: "Return messages for messageable_id."
+      param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
+      param :state, String, desc: "Message state (unread|read) to filter on"
+      def notifications
+        @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
+        @messages = apply_filters(@messages, params)
+
+        notification_ids = @messages
+          .select("max(@messages.id) AS message_id")
+          .group("messageable_type, messageable_id, is_private")
+        @messages = @messages.where("messages.id IN (?)", notification_ids).order("messages.id DESC")
+
+        paginate_and_render(@messages, notification_serializer)
+      end
+
       private
 
       def apply_filters(messages, options)
         messages = messages.unscoped.where(is_private: bool_param(:is_private, false)) if options[:is_private].present?
+        messages = messages.where(messageable_id: options[:messageable_id]) if options[:messageable_id].present?
 
         %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
@@ -79,13 +97,6 @@ module Api
 
         if options[:state].present? && %w[unread read].include?(options[:state])
           messages = messages.with_state_for_user(current_user, options[:state].split(','))
-        end
-
-        if bool_param(:only_notification, false)
-          notification_ids = messages
-            .select("max(messages.id) AS message_id")
-            .group("messageable_type, messageable_id, is_private")
-          messages = messages.where("messages.id IN (?)", notification_ids).order("messages.id DESC")
         end
 
         messages
@@ -97,7 +108,7 @@ module Api
         records.where("messages.messageable_type IN (?)", scope)
       end
 
-      def paginate_and_render(records)
+      def paginate_and_render(records, serializer)
         meta = {}
         if params[:page].present?
           records = records.page(page).per(per_page)
@@ -106,19 +117,19 @@ module Api
             total_count: records.total_count
           }
         end
-        output = message_response(records)
+        output = message_response(records, serializer)
         render json: { meta: meta }.merge(output)
       end
 
       def serializer
-        if bool_param(:only_notification, false)
-          Api::V1::NotificationSerializer
-        else
-          Api::V1::MessageSerializer
-        end
+        Api::V1::MessageSerializer
       end
 
-      def message_response(records)
+      def notification_serializer
+        Api::V1::NotificationSerializer
+      end
+
+      def message_response(records, serializer)
         ActiveModel::ArraySerializer.new(records,
           each_serializer: serializer,
           root: "messages"
