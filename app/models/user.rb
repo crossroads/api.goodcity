@@ -63,12 +63,6 @@ class User < ActiveRecord::Base
   #added to allow sign_up without mobile number from stock app.
   attr_accessor :request_from_stock, :request_from_browse
 
-  Role.pluck(:name).map do |role|
-    define_singleton_method role.parameterize.underscore.pluralize do
-      where(roles: { name: role }).joins(:roles)
-    end
-  end
-
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin
   def self.creation_with_auth(user_params, app_name)
@@ -246,5 +240,13 @@ class User < ActiveRecord::Base
   # required by PushUpdates module
   def offer
     nil
+  end
+end
+
+User.class_eval do
+  Role.pluck(:name).map do |role|
+    define_singleton_method role.parameterize.underscore.pluralize do
+      where(roles: { name: role }).joins(:roles)
+    end
   end
 end
