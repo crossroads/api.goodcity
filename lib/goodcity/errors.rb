@@ -16,7 +16,7 @@ module Goodcity
     end
 
     def as_json
-      { error: self.message, type: self.type, status: self.status }
+      { error: message, type: type, status: status }
     end
   end
 
