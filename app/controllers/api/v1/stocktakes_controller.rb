@@ -46,6 +46,12 @@ module Api
         render json: @stocktake, serializer: serializer, status: 200
       end
 
+      api :PUT, "/v1/stocktakes/:id/cancel", "Cancels a stocktake"
+      def cancel
+        @stocktake.cancel if @stocktake.open?
+        render json: @stocktake, serializer: serializer, status: 200
+      end
+
       api :DELETE, "/v1/stocktakes/:id", "Deletes a stocktake and all its revisions"
       def destroy
         @stocktake.destroy!

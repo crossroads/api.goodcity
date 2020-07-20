@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       resources :stocktake_revisions, only: [:create, :update, :destroy]
       resources :stocktakes, only: [:show, :index, :destroy, :create] do
         put :commit, on: :member
+        put :cancel, on: :member
       end
 
       resources :images, only: [:create, :update, :destroy, :show] do
