@@ -45,11 +45,11 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  # scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
-  # scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
-  # scope :order_fulfilment, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
-  # scope :order_administrator, -> { where(roles: { name: 'Order administrator' }).joins(:roles) }
-  scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
+  Role.pluck(:name).each do |role|
+    name = role.parameterize.underscore.pluralize
+    scope name.to_sym, -> { where(roles: { name: role }).joins(:roles) }
+  end
+  scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
   scope :by_roles, -> (role_names) { where(roles: {name: role_names }).joins(:roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
@@ -240,13 +240,5 @@ class User < ActiveRecord::Base
   # required by PushUpdates module
   def offer
     nil
-  end
-end
-
-User.class_eval do
-  Role.pluck(:name).map do |role|
-    define_singleton_method role.parameterize.underscore.pluralize do
-      where(roles: { name: role }).joins(:roles)
-    end
   end
 end
