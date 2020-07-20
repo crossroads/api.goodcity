@@ -76,6 +76,9 @@ Rails.application.routes.draw do
         collection do
           get :package_valuation
         end
+        member do
+          get :versions
+        end
       end
 
       resources :requested_packages, only: [:index, :create, :destroy] do
@@ -104,7 +107,7 @@ Rails.application.routes.draw do
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
         member do
-          get :organisation_orders
+          get :orders
         end
       end
 
