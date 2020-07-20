@@ -91,7 +91,7 @@ Stock fulfilment: &stock_fulfilment
 - can_mention_users
 - can_manage_order_messages
 Stock administrator:
-- *&stock_fulfilment
+- *stock_fulfilment
 Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
