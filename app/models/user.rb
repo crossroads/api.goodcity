@@ -45,9 +45,12 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  Role.pluck(:name).each do |role|
-    name = role.parameterize.underscore.pluralize
-    scope name.to_sym, -> { where(roles: { name: role }).joins(:roles) }
+  %w[reviewers supervisors
+     order_fulfilments order_administrators
+     stock_fulfilments stock_administrators].each do |role|
+    scope_name = role.parameterize.underscore.pluralize
+    role_name = scope_name.humanize.singularize
+    scope scope_name.to_sym, -> { where(roles: { name: role_name }).joins(:roles) }
   end
   scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
