@@ -244,7 +244,7 @@ class Ability
     can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
     if can_manage_orders? || @api_user
       can %i[create index show transition summary], Order
-      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch]
+      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch dispatching]
       can :index, ProcessChecklist
     end
   end
