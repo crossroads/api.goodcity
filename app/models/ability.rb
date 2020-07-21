@@ -210,7 +210,7 @@ class Ability
     can %i[index show create], Message, messageable_type: 'Offer' if can_manage_offer_messages?
     can %i[index show create], Message, messageable_type: 'Item' if can_manage_offer_messages?
     can %i[index show create], Message, messageable_type: 'Order' if can_manage_order_messages?
-    can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id), is_private: false
+    can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
     # Normal users can create non private messages on objects they own
     can :create, Message do |message|
