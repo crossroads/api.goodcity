@@ -332,6 +332,11 @@ module Api
         render json: { added_quantity: @package&.quantity_contained_in(entity_id) }, status: 200
       end
 
+      api :GET, '/v1/packages/:id/versions', "List all versions associated with package"
+      def versions
+        render json: @package.versions, each_serializer: version_serializer, root: "versions"
+      end
+
       private
 
       def render_order_status_error
@@ -340,6 +345,10 @@ module Api
 
       def stock_serializer
         Api::V1::StockitItemSerializer
+      end
+
+      def version_serializer
+        Api::V1::VersionSerializer
       end
 
       def remove_stockit_prefix(stockit_inventory_number)

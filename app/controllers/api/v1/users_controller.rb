@@ -20,15 +20,29 @@ module Api
         For a donor, this will be just themselves. For administrators, this will be all users.
       EOS
       def index
-        return search_user_and_render_json if params[:searchText].present?
         @users = @users.except_stockit_user
+        @users = @users.by_roles(params[:roles]) if params[:roles].present?
+        return search_user_and_render_json if params[:searchText].present?
         @users = @users.where(id: ids_param) if ids_param.present?
         render json: @users, each_serializer: serializer
       end
 
       api :POST, '/v1/users', "Create user"
       def create
-        save_and_render_object_with_errors(@user)
+        @user.assign_attributes(user_params)
+
+        if @user.save
+          if params["user"]["organisations_users_ids"].present?
+            @user.organisations << Organisation.find_by(id: params["user"]["organisations_users_ids"])
+          end
+
+          if params["user"]["user_role_ids"]
+            current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
+          end
+          render json: @user, serializer: serializer, include_user_roles: true, status: 201
+        else
+          render_error(@user.errors.full_messages.join(". "))
+        end
       end
 
       api :GET, '/v1/users/1', "List a user"
@@ -46,7 +60,7 @@ module Api
       def update
         @user.update_attributes(user_params)
         if params["user"]["user_role_ids"]
-          @user.create_or_remove_user_roles(params["user"]["user_role_ids"])
+          current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
         end
         render json: @user, serializer: serializer
       end
@@ -60,24 +74,39 @@ module Api
         render json: Order.counts_for(params[:id])
       end
 
+      def mentionable_users
+        return render json: { users: [] } if params['roles'].nil?
+
+        @users = User.active.exclude_user(current_user.id).with_roles(mentionable_role).uniq
+        render json: @users, each_serializer: Api::V1::UserMentionsSerializer
+      end
+
       private
 
       def serializer
         Api::V1::UserSerializer
       end
 
+      def mentionable_role
+        (MENTIONABLE_ROLES & params['roles'].split(',').map(&:strip).uniq)
+      end
+
       def search_user_and_render_json
         records = @users.search({
                     search_text: params['searchText'],
                     role_name: params['role_name']}).limit(25)
-        data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "users").as_json
+        data = ActiveModel::ArraySerializer.new(records,
+          each_serializer: serializer,
+          include_user_roles: true,
+          root: "users").as_json
         render json: { "meta": {"search": params["searchText"] } }.merge(data)
       end
 
       def user_params
-        attributes = %i[last_connected last_disconnected
-        first_name last_name email receive_email other_phone title mobile printer_id]
-        attributes.concat([:user_role_ids]) if User.current_user.supervisor?
+        attributes = %i[image_id first_name last_name email receive_email
+          other_phone title mobile printer_id]
+        attributes.concat([:disabled]) if current_user.can_disable_user?(params[:id])
+        attributes.concat([:last_connected, :last_disconnected]) if User.current_user.id == params["id"]&.to_i
         params.require(:user).permit(attributes)
       end
 
@@ -87,6 +116,7 @@ module Api
         return ids.split(',') if ids.is_a?(String)
         ids.map(&:to_i)
       end
+
     end
   end
 end
