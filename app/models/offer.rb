@@ -20,6 +20,7 @@ class Offer < ActiveRecord::Base
   belongs_to :crossroads_transport
   belongs_to :cancellation_reason
   belongs_to :company
+  has_many :subscriptions, as: :subscribable, dependent: :destroy
 
   has_many :items, inverse_of: :offer, dependent: :destroy
   has_many :submitted_items, -> { where(state: 'submitted') }, class_name: 'Item'
@@ -29,12 +30,11 @@ class Offer < ActiveRecord::Base
   has_many :missing_packages, class_name: 'Package', through: :items, source: :missing_packages
   has_many :received_packages, class_name: 'Package', through: :items, source: :received_packages
   has_many :images, through: :items
-  has_many :subscriptions, dependent: :destroy
-  has_many :messages, dependent: :destroy
   has_one  :delivery, dependent: :destroy
-  has_many :users, through: :subscriptions
+  has_many :users, through: :subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :offers_packages
   has_many :packages, through: :offers_packages
+  has_many :messages, as: :messageable, dependent: :destroy
 
   validates :language, inclusion: { in: Proc.new { I18n.available_locales.map(&:to_s) } }, allow_nil: true
 

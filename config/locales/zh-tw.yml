@@ -10,6 +10,7 @@ zh-tw:
     bad_or_missing_record: Invalid or missing %{klass}
     bad_or_missing_field: Invalid or empty field '%{field}'
     expected_state: The following action can only be done on a %{state} %{subject}
+    missing_params: Param '%{param}' is required
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -144,6 +145,7 @@ zh-tw:
     storage_type_max: "A %{type} is limited to a quantity of %{quantity}"
     bad_action: "Inventory action %{action} is not permitted"
     bad_action_for_type: "Inventory action %{action} is not permitted on %{type} types"
+    action_requires_undispatch: "Action not allowed on a dispatched package. Please undispatch and try again"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
     quantities:
       invalid_negative_quantity: Required quantity not present at location

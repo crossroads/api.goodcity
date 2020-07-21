@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
   include PushUpdates
   include RollbarSpecification
   include UserSearch
+  include ManageUserRoles
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
@@ -15,7 +16,7 @@ class User < ActiveRecord::Base
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions, source: "offer"
 
   has_many :unread_subscriptions, -> { where state: "unread" }, class_name: "Subscription"
-  has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
+  has_many :offers_with_unread_messages, class_name: 'Offer', through: :unread_subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
   has_many :user_roles
@@ -47,9 +48,14 @@ class User < ActiveRecord::Base
   scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
   scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
   scope :order_fulfilment, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
+  scope :order_administrator, -> { where(roles: { name: 'Order administrator' }).joins(:roles) }
   scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
+  scope :by_roles, -> (role_names) { where(roles: {name: role_names }).joins(:roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
+  scope :active, -> { where(disabled: false) }
+  scope :exclude_user, ->(id) { where.not(id: id) }
+  scope :with_roles, ->(role_names) { where(roles: { name: role_names}).joins(:roles) }
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
@@ -149,7 +155,12 @@ class User < ActiveRecord::Base
   end
 
   def order_fulfilment?
-    user_role_names.include?("Order fulfilment")
+    user_role_names.include?('Order fulfilment')
+  end
+
+  def can_disable_user?(id = nil)
+    user_permissions_names.include?("can_disable_user") &&
+    User.current_user.id != id&.to_i
   end
 
   def admin?
@@ -205,14 +216,6 @@ class User < ActiveRecord::Base
     Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
   end
 
-  def create_or_remove_user_roles(role_ids)
-    role_ids = role_ids || []
-    remove_user_roles(role_ids)
-    role_ids.each do |role_id|
-      user_roles.where(role_id: role_id).first_or_create
-    end
-  end
-
   def email_properties
     props = {}
     props["contact_name"] = "#{first_name} #{last_name}"
@@ -228,11 +231,6 @@ class User < ActiveRecord::Base
 
   def request_from_stock_without_mobile?
     request_from_stock && mobile.blank? || request_from_browse && mobile.blank?
-  end
-
-  def remove_user_roles(role_ids)
-    role_ids_to_remove = roles.pluck(:id) - role_ids
-    user_roles.where("role_id IN(?)", role_ids_to_remove).destroy_all
   end
 
   def generate_auth_token

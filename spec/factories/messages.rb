@@ -1,12 +1,11 @@
 # Read about factories at https://github.com/thoughtbot/factory_bot
 
 FactoryBot.define do
-
   factory :message do
     body        { generate(:message_body) }
     sender      { |m| m.association(:user) }
     is_private  false
-    offer
+    association :messageable, factory: :order
 
     trait :reviewer_message do
       sender   { |m| m.association(:user, :reviewer) }
@@ -26,7 +25,7 @@ FactoryBot.define do
     end
 
     trait :with_item do
-      association :item
+      association :messageable, factory: :item
     end
 
     trait :private do
@@ -34,8 +33,11 @@ FactoryBot.define do
     end
 
     trait :with_order do
-      offer nil
-      order
+      association :messageable, factory: :order
+    end
+
+    trait :with_offer do
+      association :messageable, factory: :offer
     end
   end
 

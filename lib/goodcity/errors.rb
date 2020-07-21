@@ -27,6 +27,12 @@ module Goodcity
     end
   end
 
+  class MissingParamError < BaseError
+    def initialize(param)
+      super(I18n.t('errors.missing_params', param: param))
+    end
+  end
+
   # ----------------------------
   # I18n based errors
   # ----------------------------

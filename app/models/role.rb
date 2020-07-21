@@ -8,4 +8,5 @@ class Role < ActiveRecord::Base
 
   scope :charity, ->{ where(name: 'Charity').first }
   scope :visible, ->{ where.not(name: 'api-write') }
+  scope :allowed_roles, ->(level) { where("level <= ?", level) }
 end

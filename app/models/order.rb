@@ -38,8 +38,8 @@ class Order < ActiveRecord::Base
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
-  has_many :messages, dependent: :destroy, inverse_of: :order
-  has_many :subscriptions, dependent: :destroy, inverse_of: :order
+  has_many :messages, as: :messageable, dependent: :destroy
+  has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order

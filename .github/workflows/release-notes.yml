@@ -12,6 +12,7 @@ on:
 jobs:
   release-notes:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 12.x
