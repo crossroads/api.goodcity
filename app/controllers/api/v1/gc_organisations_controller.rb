@@ -28,8 +28,8 @@ module Api::V1
       find_record_and_render_json(organisation_name_serializer)
     end
 
-    api :GET, '/v1/organisations/:id/organisation_orders', "List all orders associated with organisation"
-    def organisation_orders
+    api :GET, '/v1/organisations/:id/orders', "List all orders associated with organisation"
+    def orders
       organisation_orders = @organisation.orders
       orders = organisation_orders.page(page).per(per_page).order('id')
       meta = {

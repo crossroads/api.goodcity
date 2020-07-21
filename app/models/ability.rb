@@ -282,7 +282,7 @@ class Ability
 
   def organisations_abilities
     if can_check_organisations? || @api_user
-      can [:index, :search, :show, :organisation_orders], Organisation
+      can [:index, :search, :show, :orders], Organisation
     end
   end
 
@@ -309,7 +309,7 @@ class Ability
              search_stockit_items remove_from_set designate register_quantity_change
              mark_missing move print_inventory_label stockit_item_details
              split_package add_remove_item contained_packages parent_containers
-             fetch_added_quantity], Package
+             fetch_added_quantity versions], Package
       can %i[show create update destroy], PackageSet
       can %i[index], Restriction
       can %i[index], PackagesInventory
