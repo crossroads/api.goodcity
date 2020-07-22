@@ -63,6 +63,18 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_stocktakes_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_stocktakes')
+      end
+    end
+
+    trait :with_can_manage_stocktake_revisions_permission do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: 'can_manage_stocktake_revisions')
+      end
+    end
+
     trait :with_can_manage_holidays_permission do
       after(:create) do |role|
         role.permissions << (create :permission, name: 'can_manage_holidays')

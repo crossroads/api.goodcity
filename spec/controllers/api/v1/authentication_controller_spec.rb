@@ -41,6 +41,25 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(parsed_body["errors"]).to eq("Mobile is invalid. Mobile can't be blank")
     end
 
+    context 'email' do
+      before do
+        set_browse_app_header
+      end
+      context 'when email is case-sensitive duplicate' do
+        it 'does not create a new user' do
+          user = create(:user)
+          expect { post :signup, format: 'json', user_auth: { mobile: '', email: user.email, first_name: '', last_name: '', address_attributes: { district_id: '', address_type: '' } } }.not_to change{ User.count }
+        end
+      end
+
+      context 'when email is unique' do
+        it 'creates a new user' do
+          user = build(:user)
+
+          expect { post :signup, format: 'json', user_auth: { mobile: '', email: user.email, first_name: '', last_name: '', address_attributes: { district_id: '', address_type: '' } } }.to change{ User.count }.by(1)
+        end
+      end
+    end
   end
 
   context "verify" do

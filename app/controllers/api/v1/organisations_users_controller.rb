@@ -33,7 +33,7 @@ module Api
       def create
         builder = OrganisationsUserBuilder.new(params["organisations_user"].to_hash, app_name).build
         if builder["result"]
-          save_and_render_object_with_errors(builder["organisations_user"])
+          save_and_render_object_with_errors(builder["organisations_user"], new_record: true)
         else
           render_error(builder["errors"])
         end
