@@ -39,13 +39,14 @@ FactoryBot.define do
       end
     end
 
+    # Refactor those not marked as different
     trait :with_can_add_or_remove_inventory_number do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_add_or_remove_inventory_number, name: evaluator.role_name)
       end
     end
 
-    trait :with_can_destroy_contact_permission do
+    trait :with_can_destroy_contacts_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_destroy_contacts_permission, name: evaluator.role_name)
       end
@@ -141,6 +142,7 @@ FactoryBot.define do
       end
     end
 
+    # different
     trait :with_can_create_user_permission do
       after(:create) do |user, evaluator|
         user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym, :with_can_create_user_permission)
@@ -196,12 +198,14 @@ FactoryBot.define do
       end
     end
 
+    # different
     trait :with_can_disable_user do
       after(:create) do |user, evaluator|
         user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_disable_user)
       end
     end
 
+    # different
     trait :with_can_manage_user_roles do
       after(:create) do |user, evaluator|
         user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_user_roles)
