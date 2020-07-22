@@ -24,6 +24,12 @@ Rails.application.routes.draw do
       resources :pallets, only: [:create]
       resources :user_roles, only: [:show, :index]
 
+      resources :stocktake_revisions, only: [:create, :update, :destroy]
+      resources :stocktakes, only: [:show, :index, :destroy, :create] do
+        put :commit, on: :member
+        put :cancel, on: :member
+      end
+
       resources :images, only: [:create, :update, :destroy, :show] do
         collection do
           get :generate_signature
@@ -77,6 +83,9 @@ Rails.application.routes.draw do
         collection do
           get :package_valuation
         end
+        member do
+          get :versions
+        end
       end
 
       resources :requested_packages, only: [:index, :create, :destroy] do
@@ -105,7 +114,7 @@ Rails.application.routes.draw do
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
         member do
-          get :organisation_orders
+          get :orders
         end
       end
 
