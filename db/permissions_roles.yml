@@ -5,8 +5,11 @@ System administrator:
 - can_disable_user
 - can_read_or_modify_user
 - can_manage_user_roles
-Stock fulfilment: []
-Stock administrator: []
+Stock fulfilment: &stock_fulfilment
+- can_manage_stocktake_revisions
+Stock administrator:
+- *stock_fulfilment
+- can_manage_stocktakes
 Reviewer:
 - can_manage_packages
 - can_manage_offers

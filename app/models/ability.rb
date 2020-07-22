@@ -22,6 +22,7 @@ class Ability
     can_access_printers can_remove_offers_packages
     can_access_orders_process_checklists can_mention_users
     can_manage_order_messages can_manage_offer_messages can_disable_user
+    can_manage_stocktakes can_manage_stocktake_revisions
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -76,6 +77,7 @@ class Ability
     stockit_contact_abilities
     stockit_organisation_abilities
     stockit_local_order_abilities
+    stocktake_abilities
     taxonomies
     user_abilities
     version_abilities
@@ -301,6 +303,15 @@ class Ability
 
   def requested_packages_abilities
     can [:create, :destroy, :index, :checkout], RequestedPackage, user_id: @user_id
+  end
+
+  def stocktake_abilities
+    if can_manage_stocktakes?
+      can [:show, :index, :destroy, :create, :commit, :cancel], Stocktake
+    end
+    if can_manage_stocktake_revisions?
+      can [:create, :destroy, :update], StocktakeRevision
+    end
   end
 
   def package_abilities

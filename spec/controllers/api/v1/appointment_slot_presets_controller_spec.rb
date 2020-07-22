@@ -77,7 +77,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
         expect(AppointmentSlotPreset.count).to eq(1)
 
         post :create, appointment_slot_preset: { day: 1, hours: 14, minutes: 30, quota: 10 }
-        expect(response.status).to eq(201)
+        expect(response.status).to eq(200)
         expect(AppointmentSlotPreset.count).to eq(1)
         expect(AppointmentSlotPreset.first.day).to eq(1)
         expect(AppointmentSlotPreset.first.hours).to eq(14)

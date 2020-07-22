@@ -158,6 +158,14 @@ class User < ActiveRecord::Base
     user_role_names.include?('Order fulfilment')
   end
 
+  def stock_fulfilment?
+    user_role_names.include?('Stock fulfilment')
+  end
+
+  def stock_administrator?
+    user_role_names.include?('Stock administrator')
+  end
+
   def can_disable_user?(id = nil)
     user_permissions_names.include?("can_disable_user") &&
     User.current_user.id != id&.to_i

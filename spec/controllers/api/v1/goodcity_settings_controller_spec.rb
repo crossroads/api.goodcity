@@ -70,7 +70,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
         expect {
           put :update, id: goodcity_setting.id, goodcity_setting: { id: goodcity_setting.id, value: 'steve is happy' }
         }.to change(GoodcitySetting, :count).by(0)
-        expect(response.status).to eq(201)
+        expect(response.status).to eq(200)
         expect(GoodcitySetting.find(goodcity_setting.id).value).to eq('steve is happy');
       end
     end
