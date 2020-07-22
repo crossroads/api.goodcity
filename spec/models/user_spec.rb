@@ -409,4 +409,20 @@ describe User, :type => :model do
       end
     end
   end
+
+  context "find_user_by_mobile_or_email" do
+    let(:user) { create(:user) }
+
+    it "returns the user by mobile" do
+      expect(User.find_user_by_mobile_or_email(user.mobile, nil)).to eql(user)
+    end
+    it "returns the user by email" do
+      expect(User.find_user_by_mobile_or_email(nil, user.email)).to eql(user)
+    end
+    it "does not return a user when email is blank" do
+      user.update_column(:email, '')
+      expect(User.find_user_by_mobile_or_email(nil, '')).to eql(nil)
+    end
+
+  end
 end

@@ -79,9 +79,13 @@ class User < ActiveRecord::Base
   end
 
   def self.find_user_by_mobile_or_email(mobile, email)
-    return find_by_mobile(mobile) if mobile
-
-    find_by('LOWER(users.email) = ?', email.downcase) if email
+    if mobile.present?
+      return find_by_mobile(mobile)
+    elsif email.present?
+      find_by('LOWER(users.email) = ?', email.downcase)
+    else
+      nil
+    end
   end
 
   def send_sms(app_name)
