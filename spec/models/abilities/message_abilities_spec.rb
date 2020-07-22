@@ -123,7 +123,7 @@ describe 'Message abilities' do
       end
     end
 
-    context 'when charity user recieves a message from a order admin' do
+    context 'when charity user recieves a message from an order admin' do
       let(:order_administrator) { create(:user, :order_administrator) }
       let!(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
 
@@ -139,6 +139,7 @@ describe 'Message abilities' do
     context 'private_message' do
       let(:is_private) { true }
       let!(:message) { create :message, is_private: is_private, messageable: order }
+      let!(:subscription) { } # nil, Charity doesn't get subscribed to private messages
       it 'is not allowed do any action' do
         all_actions.map { |action| is_expected.to_not be_able_to(action, message) }
       end
