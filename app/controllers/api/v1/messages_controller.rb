@@ -37,6 +37,7 @@ module Api
       def index
         @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
         @messages = apply_filters(@messages, params)
+        @messages = @messages.with_state_for_user(current_user, params[:state].split(",")) if params[:state].present?
         paginate_and_render(@messages, serializer)
       end
 
@@ -74,15 +75,18 @@ module Api
       param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
       param :state, String, desc: "Message state (unread|read) to filter on"
       def notifications
-        @messages = apply_scope(@messages, params[:scope]) if params[:scope].present?
+        @messages = apply_scope(@messages, params[:messageable_type]) if params[:messageable_type].present?
         @messages = apply_filters(@messages, params)
+        @messages = @messages.joins(:subscriptions).where(subscriptions: {user_id: current_user.id})
+        @messages = @messages.where(subscriptions: {state: params[:state]}) if params[:state].present?
 
         notification_ids = @messages
           .select("max(@messages.id) AS message_id")
           .group("messageable_type, messageable_id, is_private")
+          .page(page).per(per_page)
         @messages = @messages.where("messages.id IN (?)", notification_ids).order("messages.id DESC")
 
-        paginate_and_render(@messages, notification_serializer)
+        render json: message_response(@messages, notification_serializer)
       end
 
       private
@@ -94,16 +98,11 @@ module Api
         %i[ids offer_id order_id item_id package_id].map do |f|
           messages = messages.send("filter_by_#{f}", options[f]) if options[f].present?
         end
-
-        if options[:state].present? && %w[unread read].include?(options[:state])
-          messages = messages.with_state_for_user(current_user, options[:state].split(','))
-        end
-
         messages
       end
 
       def apply_scope(records, scope)
-        scope = [scope].flatten.compact.uniq
+        scope = scope.split(',').flatten.compact.uniq
         scope = (scope & ALLOWED_SCOPES).map(&:camelize)
         records.where("messages.messageable_type IN (?)", scope)
       end
