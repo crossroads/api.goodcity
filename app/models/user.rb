@@ -45,13 +45,13 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  %w[reviewers supervisors system
-     order_fulfilments order_administrators
-     stock_fulfilments stock_administrators].each do |role|
-    scope_name = role.parameterize.underscore
-    role_name = scope_name.humanize.singularize
-    scope scope_name.to_sym, -> { where(roles: { name: role_name }).joins(:roles) }
-  end
+  scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
+  scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
+  scope :stock_fulfilments, -> { where(roles: {name: "Stock fulfilment"}).joins(:roles) }
+  scope :stock_administrators, -> { where(roles: { name: 'Stock administrator' }).joins(:roles) }
+  scope :order_fulfilments, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
+  scope :order_administrators, -> { where(roles: { name: 'Order administrator' }).joins(:roles) }
+  scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
 
   scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }

@@ -6,11 +6,8 @@ context PushUpdatesForMessage do
   let!(:message) { create :message, sender: reviewer1, messageable: create(:offer) }
   let(:donor) { message.messageable.created_by }
   let(:donor_channel) { "user_#{donor.id}" }
-  let(:reviewer1) { create :user, :reviewer }
+  let(:reviewer1) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' }
   let(:reviewer1_channel) { "user_#{reviewer1.id}_admin" }
-  let(:reviewer2) { create :user, :reviewer }
-  let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
-  let(:system_user) { create :user, :system }
   let(:push_service) { PushService.new }
 
   before(:each) do
@@ -19,10 +16,11 @@ context PushUpdatesForMessage do
 
   context "update_client_store" do
 
-    context "should send a push update to" do
-
-      it "donor, message sender / offer reviewer, other reviewers" do
-        reviewer2 # create this user but don't use it
+    context "when reviewer1 sends a message on an offer to user channel" do
+      let!(:message) { create :message, sender: reviewer1, messageable: create(:offer) }
+      let!(:reviewer2) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' } # create this user but don't use it
+      let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
+      it "should send a push update to donor, message sender / offer reviewer, other reviewers" do
         expect(message).to receive(:send_update).with('unread', [donor_channel])
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
         expect(message).to receive(:send_update).with('never-subscribed', [reviewer2_channel])
@@ -30,9 +28,26 @@ context PushUpdatesForMessage do
       end
     end
 
+    context "when order_fulfilment1 sends a message on an order to recipient channel" do
+      let(:recipient) { create :user, :charity }
+      let(:recipient_channel) { "user_#{recipient.id}_browse" }
+      let(:order) { create :order, created_by: recipient }
+      let(:order_fulfilment1) { create :user, :with_can_manage_order_messages, role_name: 'Order fulfilment' }
+      let(:order_fulfilment1_channel) { "user_#{order_fulfilment1.id}_stock" }
+      let!(:message) { create :message, sender: order_fulfilment1, messageable: order }
+      let!(:order_fulfilment2) { create :user, :with_can_manage_order_messages, role_name: 'Order fulfilment' } # create this user but don't use it
+      let(:order_fulfilment2_channel) { "user_#{order_fulfilment2.id}_stock" }
+      it "should send a push update to order recipient, order_fulfilment1 and order_fulfilment2" do
+        expect(message).to receive(:send_update).with('unread', [recipient_channel])
+        expect(message).to receive(:send_update).with('read', [order_fulfilment1_channel])
+        expect(message).to receive(:send_update).with('never-subscribed', [order_fulfilment2_channel])
+        message.update_client_store
+      end
+    end
+
     context "should not send a push update to" do
       it "a system user" do
-        system_user # create this user and subscribe them just to really be sure
+        create(:user, :system) # create this user and subscribe them just to really be sure
         expect(message).to receive(:send_update).with('unread', [donor_channel])
         expect(message).to receive(:send_update).with('read', [reviewer1_channel])
         message.update_client_store
@@ -70,6 +85,8 @@ context PushUpdatesForMessage do
 
   context "state_for_user" do
     subject { message.send(:state_for_user, user_id) }
+    let(:reviewer2) { create :user, :reviewer }
+    let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
     context "when user is message sender" do
       let(:user_id) { message.sender_id }
       it { expect(subject).to eql('read') }
@@ -87,6 +104,7 @@ context PushUpdatesForMessage do
 
   context "app_name_for_user" do
     subject { message.send(:app_name_for_user, user_id) }
+    
     context "when Order" do
       let(:message) { create :message, :with_order }
       context "creator" do
@@ -98,6 +116,7 @@ context PushUpdatesForMessage do
         it { expect(subject).to eql(STOCK_APP) }
       end
     end
+
     context "when Offer" do
       context "creator" do
         let(:user_id) { message.messageable.created_by_id }
@@ -129,6 +148,20 @@ context PushUpdatesForMessage do
     context "should send delete push update to order_fullfillers channel" do
       let(:channels) { [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL] }
       it { message.send(:notify_deletion_to_subscribers) }
+    end
+  end
+
+  context "relevant_staff_user_ids" do
+    let!(:reviewer1) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' }
+    let!(:order_fulfilment1) { create :user, :with_can_manage_order_messages, role_name: 'Order fulfilment' }
+
+    context "should search for 'can_manage_offer_messages' permission" do
+      let(:message) { create :message, messageable: create(:offer) }
+      it { expect(message.send(:relevant_staff_user_ids)).to eql([reviewer1.id]) }
+    end
+    context "should search for 'can_manage_order_messages' permission" do
+      let(:message) { create :message, messageable: create(:order) }
+      it { expect(message.send(:relevant_staff_user_ids)).to eql([order_fulfilment1.id]) }
     end
   end
 
