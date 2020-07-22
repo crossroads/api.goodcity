@@ -1,8 +1,10 @@
 # For each new message, send a push update to the
 # - sender
 # - creator (unless is_private or offer/order cancelled)
-# - reviewers/supervisors/order_fulfillers individually so we can
+# - staff apps: to admin app if message on offer / to stock app if message on order
+# - send to admin staff users individually so we can
 #     include message state: 'read', 'unread', 'never-subscribed'
+#
 module PushUpdatesForMessage
   extend ActiveSupport::Concern
 
@@ -13,11 +15,9 @@ module PushUpdatesForMessage
     user_ids << obj.try(:created_by_id)
     user_ids << self.sender_id
 
-    # All reviewers/supervisors/order_fulfillers
-    available_roles.each do |role|
-      user_ids += User.try(role).pluck(:id)
-    end
-
+    # All admin users with permission to view messages on that object
+    user_ids += relevant_staff_user_ids
+    
     # Don't send updates to system users
     # Don't send to donor/charity if is private message or offer/order is cancelled
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
@@ -68,10 +68,6 @@ module PushUpdatesForMessage
     Api::V1::MessageSerializer.new(message, { exclude: associations })
   end
 
-  def available_roles
-    %i[reviewers supervisors order_fulfilments order_administrators stock_fulfilments stock_administrators]
-  end
-
   def serialized_user(user)
     Api::V1::UserSerializer.new(user, user_summary: true)
   end
@@ -106,4 +102,19 @@ module PushUpdatesForMessage
   def subscribed_user_ids
     @subscribed_user_ids ||= self.subscriptions.pluck(:user_id)
   end
+
+  # All admin users with permission to view messages on that object
+  def relevant_staff_user_ids
+    if ['Offer', 'Item'].include?(object_class)
+      message_permissions = ['can_manage_offer_messages']
+    elsif object_class == 'Order'
+      message_permissions = ['can_manage_order_messages']
+    elsif object_class == 'Package'
+      message_permissions = ['can_manage_package_messages']
+    else
+      message_permissions = []
+    end
+    User.joins(roles: [:permissions]).where(permissions: { name: message_permissions } ).distinct.pluck(:id)
+  end
+
 end

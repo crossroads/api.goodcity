@@ -198,6 +198,18 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_offer_messages do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_offer_messages, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_order_messages do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_order_messages, name: evaluator.role_name)
+      end
+    end
+
     # different
     trait :with_can_disable_user do
       after(:create) do |user, evaluator|
