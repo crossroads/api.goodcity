@@ -59,7 +59,9 @@ module Api::V1
       @options[:include_package_set]
     end
 
-    alias_method :include_packages_locations?, :include_orders_packages?
+    def include_packages_locations?
+      @options[:include_packages_locations]
+    end
 
     %w[include_item? include_stockit_sent_on?
       include_order_id?].each do |method|
