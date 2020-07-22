@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: 12.x
     - name: Generate and email notes
-      run: npx @goodcity/release-notes --email-to "prabier@crossroads.org.hk,swkenworthy@crossroads.org.hk,mdgow@crossroads.org.hk" --head ${{github.event.pull_request.head.sha}} --base ${{github.event.pull_request.base.sha}} --email-subject "🚀 API Release 🚀" --app-name "Goodcity API"
+      run: npx @goodcity/release-notes --unshallow --email-to "prabier@crossroads.org.hk,swkenworthy@crossroads.org.hk,mdgow@crossroads.org.hk" --head ${{github.event.pull_request.head.sha}} --base ${{github.event.pull_request.base.sha}} --email-subject "🚀 API Release 🚀" --app-name "Goodcity API"
       env:
         JIRA_USERNAME: ${{secrets.jira_username}}
         JIRA_PASSWORD: ${{secrets.jira_password}}
