@@ -28,6 +28,8 @@ class User < ActiveRecord::Base
   has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
 
+  before_save :downcase_email
+
   accepts_nested_attributes_for :address, allow_destroy: true
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
@@ -81,8 +83,13 @@ class User < ActiveRecord::Base
   end
 
   def self.find_user_by_mobile_or_email(mobile, email)
-    return find_by_mobile(mobile) if mobile
-    find_by_email(email) if email
+    if mobile.present?
+      return find_by_mobile(mobile)
+    elsif email.present?
+      find_by('LOWER(users.email) = ?', email.downcase)
+    else
+      nil
+    end
   end
 
   def send_sms(app_name)
@@ -162,6 +169,14 @@ class User < ActiveRecord::Base
     user_role_names.include?('Order fulfilment')
   end
 
+  def stock_fulfilment?
+    user_role_names.include?('Stock fulfilment')
+  end
+
+  def stock_administrator?
+    user_role_names.include?('Stock administrator')
+  end
+
   def can_disable_user?(id = nil)
     user_permissions_names.include?("can_disable_user") &&
     User.current_user.id != id&.to_i
@@ -173,6 +188,10 @@ class User < ActiveRecord::Base
 
   def administrator?
     user_role_names.include?("Administrator") && @treat_user_as_donor != true
+  end
+
+  def downcase_email
+    email.downcase! if email.present?
   end
 
   def donor?

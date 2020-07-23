@@ -12,7 +12,6 @@ module Api::V1
     has_many :package_actions, serializer: PackageActionsSerializer, root: :item_actions
     has_one :storage_type, serializer: StorageTypeSerializer
     has_one :package_set, serializer: PackageSetSerializer::StockFormat
-    has_many :versions, serializer: VersionSerializer
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :inventory_number, :created_at, :updated_at, :item_id, :is_set,
