@@ -391,7 +391,9 @@ class Ability
   end
 
   def location_abilities
-    (can_manage_locations? || @api_user) && (can %i[index create destroy], Location)
+    if (can_manage_locations? || @api_user)
+      can %i[index create destroy], Location
+    end
   end
 
   def stockit_abilities
