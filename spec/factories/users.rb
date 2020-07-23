@@ -76,6 +76,18 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_stocktakes_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_stocktakes_permission, name: evaluator.role_name)
+      end
+    end
+
+    trait :with_can_manage_stocktake_revisions_permission do
+      after(:create) do |user, evaluator|
+        user.roles << (create :role, :with_can_manage_stocktake_revisions_permission, name: evaluator.role_name)
+      end
+    end
+
     trait :with_can_manage_organisations_users_permission do
       after(:create) do |user, evaluator|
         user.roles << (create :role, :with_can_manage_organisations_users_permission, name: evaluator.role_name)
