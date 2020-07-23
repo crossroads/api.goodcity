@@ -1,33 +1,35 @@
+# USAGE:
+#   create(:role)
+#   create(:reviewer_role)
+#   create(:order_fulfilment_role)
+#
 FactoryBot.define do
 
   factory :role do
     name            { generate(:permissions_roles).keys.sample }
     level           10
-    initialize_with { Role.find_or_initialize_by(name: name) } # limits us to our sample of permissions
+    initialize_with { Role.find_or_initialize_by(name: name) } # avoid duplicate roles
 
     transient do
       permissions { %w(can_manage_offers, can_manage_packages)}
     end
 
+    # Generate roles with associated permissions
     YAML.load_file("#{Rails.root}/db/roles.yml").each do |role, attrs|
       factory "#{role.parameterize.underscore}_role", parent: :role do
         name role
         level attrs[:level]
+        after(:create) do |role, evaluator|
+          generate(:permissions_roles)[role.name].each do |permission|
+            role.permissions << (create :permission, name: permission)
+          end
+        end
       end
     end
 
     trait :with_dynamic_permission do
       after(:create) do |role, evaluator|
         evaluator.permissions.each do |permission|
-          role.permissions << (create :permission, name: permission)
-        end
-      end
-    end
-
-    trait :charity_role do
-      name { 'Charity' }
-      after(:create) do |role|
-        %w[can_login_to_browse can_search_browse_packages can_create_goodcity_requests].map do |permission|
           role.permissions << (create :permission, name: permission)
         end
       end

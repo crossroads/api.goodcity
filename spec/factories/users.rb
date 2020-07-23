@@ -1,3 +1,8 @@
+# USAGE:
+#   create(:user)
+#   create(:user, :reviewer)
+#   create(:user, :order_administrator)
+#
 FactoryBot.define do
   factory :user, aliases: [:sender] do
     association :address
@@ -19,10 +24,11 @@ FactoryBot.define do
       roles_and_permissions { }
     end
 
-    %i[reviewer order_fulfilment order_administrator supervisor system_administrator charity stock_administrator stock_fulfilment].each do |role|
-      trait role do
+    # Role specific users. create(:user, :order_administrator)
+    FactoryBot.generate(:permissions_roles).keys.each do |role|
+      trait role.parameterize.underscore.to_sym do
         after(:create) do |user|
-          user.roles << create("#{role}_role")
+          user.roles << create("#{role.parameterize.underscore}_role")
         end
       end
     end

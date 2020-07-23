@@ -68,6 +68,10 @@ FactoryBot.define do
     @schedules ||= YAML.load_file("#{Rails.root}/db/schedules.yml")
   end
 
+  sequence :roles do |n|
+    @roles ||= YAML.load_file("#{Rails.root}/db/roles.yml")
+  end
+
   sequence :permissions_roles do |n|
     roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
     roles.each_pair { |key, value| value.flatten! }
