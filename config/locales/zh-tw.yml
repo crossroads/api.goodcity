@@ -11,6 +11,7 @@ zh-tw:
     bad_or_missing_field: Invalid or empty field '%{field}'
     expected_state: The following action can only be done on a %{state} %{subject}
     missing_params: Param '%{param}' is required
+    duplicate_error: A record already exists
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -109,6 +110,9 @@ zh-tw:
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
     cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
+  stocktakes:
+    invalid_state: Cannot process a closed or cancelled Stocktake
+    dirty_revisions: Some quantity revisions require a re-count
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"

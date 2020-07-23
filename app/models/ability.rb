@@ -22,6 +22,7 @@ class Ability
     can_access_printers can_remove_offers_packages
     can_access_orders_process_checklists can_mention_users
     can_manage_order_messages can_manage_offer_messages can_disable_user
+    can_manage_stocktakes can_manage_stocktake_revisions
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -77,6 +78,7 @@ class Ability
     stockit_contact_abilities
     stockit_organisation_abilities
     stockit_local_order_abilities
+    stocktake_abilities
     taxonomies
     user_abilities
     version_abilities
@@ -211,7 +213,7 @@ class Ability
     can %i[index show create], Message, messageable_type: 'Offer' if can_manage_offer_messages?
     can %i[index show create], Message, messageable_type: 'Item' if can_manage_offer_messages?
     can %i[index show create], Message, messageable_type: 'Order' if can_manage_order_messages?
-    can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id), is_private: false
+    can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
     # Normal users can create non private messages on objects they own
     can :create, Message do |message|
@@ -245,7 +247,7 @@ class Ability
     can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
     if can_manage_orders? || @api_user
       can %i[create index show transition summary], Order
-      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch]
+      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch dispatching]
       can :index, ProcessChecklist
     end
   end
@@ -283,7 +285,7 @@ class Ability
 
   def organisations_abilities
     if can_check_organisations? || @api_user
-      can [:index, :search, :show, :organisation_orders], Organisation
+      can [:index, :search, :show, :orders], Organisation
     end
   end
 
@@ -304,13 +306,22 @@ class Ability
     can [:create, :destroy, :index, :checkout], RequestedPackage, user_id: @user_id
   end
 
+  def stocktake_abilities
+    if can_manage_stocktakes?
+      can [:show, :index, :destroy, :create, :commit, :cancel], Stocktake
+    end
+    if can_manage_stocktake_revisions?
+      can [:create, :destroy, :update], StocktakeRevision
+    end
+  end
+
   def package_abilities
     if can_manage_packages?
       can %i[index show create update destroy print_barcode package_valuation
              search_stockit_items remove_from_set designate register_quantity_change
              mark_missing move print_inventory_label stockit_item_details
              split_package add_remove_item contained_packages parent_containers
-             fetch_added_quantity], Package
+             fetch_added_quantity versions], Package
       can %i[show create update destroy], PackageSet
       can %i[index], Restriction
       can %i[index], PackagesInventory
