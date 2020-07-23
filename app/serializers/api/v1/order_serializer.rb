@@ -8,12 +8,11 @@ module Api::V1
     has_one :order_transport, serializer: OrderTransportSerializer
     has_one :organisation, serializer: OrganisationSerializer
     has_many :packages, serializer: StockitItemSerializer, root: :items
-    has_many :cart_packages, serializer: PackageSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_many :orders_purposes, serializer: OrdersPurposeSerializer
     has_many :goodcity_requests, serializer: GoodcityRequestSerializer
     has_many :orders_process_checklists, serializer: OrderProcessChecklistSerializer
-    has_many :messages, serializer: MessageSerializer
+    has_many :messages, serializer: MessageSerializer, polymorphic: true
     has_one  :closed_by, serializer: UserSerializer
     has_one  :processed_by, serializer: UserSerializer
     has_one  :cancelled_by, serializer: UserSerializer
@@ -39,10 +38,6 @@ module Api::V1
 
     def include_non_browse_details?
       !@options[:browse_order]
-    end
-
-    def include_cart_packages?
-      !@options[:include_packages] && !@options[:include_order]
     end
 
     def include_orders_packages?

@@ -10,6 +10,7 @@ class Package < ActiveRecord::Base
   include StockOperations
   include Watcher
   include Secured
+  include ValuationCalculator
 
   BROWSE_ITEM_STATES = %w(accepted submitted)
   BROWSE_OFFER_EXCLUDE_STATE = %w(cancelled inactive closed draft)
@@ -17,7 +18,7 @@ class Package < ActiveRecord::Base
 
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
-  belongs_to :set_item, class_name: 'Item'
+  belongs_to :package_set
   has_many :locations, through: :packages_locations
 
   belongs_to :detail, polymorphic: true, dependent: :destroy, required: false
@@ -31,22 +32,18 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_sent_by, class_name: 'User'
   belongs_to :stockit_moved_by, class_name: 'User'
 
-
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy
   has_many   :offers_packages
   has_many   :offers, through: :offers_packages
-  has_many   :package_actions, -> { where action: %w[trash process recycle loss gain] },
-    class_name: "PackagesInventory"
+  has_many   :package_actions, -> { where action: PackagesInventory::INVENTORY_ACTIONS }, class_name: "PackagesInventory"
 
   before_destroy :delete_item_from_stockit, if: :inventory_number
   before_create :set_default_values
   after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
-  before_save :update_set_relation, if: :stockit_sent_on_changed?
-  after_commit :update_set_item_id, on: :destroy
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   before_save :set_favourite_image, if: :valid_favourite_image_id?
@@ -69,14 +66,13 @@ class Package < ActiveRecord::Base
   validates :received_quantity, numericality: { greater_than: 0 }
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
+  validate  :validate_set_id, on: [:create, :update]
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
   scope :expecting, -> { where(state: 'expecting') }
   scope :inventorized, -> { where.not(inventory_number: nil) }
   scope :published, -> { where(allow_web_publish: true) }
-  scope :non_set_items, -> { where(set_item_id: nil) }
-  scope :set_items, -> { where("set_item_id = item_id") }
   scope :latest, -> { order('id desc') }
   scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
@@ -134,10 +130,6 @@ class Package < ActiveRecord::Base
       package.add_to_stockit if STOCKIT_ENABLED
     end
 
-    after_transition on: [:mark_received, :mark_missing] do |package|
-      package.update_set_item_id
-    end
-
     before_transition on: :mark_missing do |package|
       package.delete_associated_packages_locations
       package.received_at = nil
@@ -164,10 +156,6 @@ class Package < ActiveRecord::Base
     else
       self.stockit_sent_by = nil
     end
-  end
-
-  def dispatched_location
-    Location.dispatch_location
   end
 
   def quantity_contained_in(container_id)
@@ -239,7 +227,6 @@ class Package < ActiveRecord::Base
       else
         self.inventory_number = nil
         self.stockit_id = nil
-        self.set_item_id = nil
       end
     end
   end
@@ -274,13 +261,6 @@ class Package < ActiveRecord::Base
     self.stockit_designated_by = nil
     response = Stockit::ItemSync.update(self)
     add_errors(response)
-  end
-
-  def update_set_relation
-    if set_item_id.present? && stockit_sent_on.present? && !skip_set_relation_update
-      self.set_item_id = nil
-      update_set_item_id(inventory_package_set.except_package(id))
-    end
   end
 
   # @TODO: remove
@@ -322,22 +302,6 @@ class Package < ActiveRecord::Base
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
     end
-  end
-
-  def update_set_item_id(all_packages = nil)
-    if item
-      all_packages ||= inventory_package_set
-      if all_packages.length == 1
-        all_packages.update_all(set_item_id: nil)
-      else
-        all_packages.non_set_items.update_all(set_item_id: item.id)
-      end
-    end
-  end
-
-  def remove_from_set
-    update(set_item_id: nil)
-    update_set_item_id(inventory_package_set.except_package(id))
   end
 
   def total_assigned_quantity
@@ -426,6 +390,13 @@ class Package < ActiveRecord::Base
   end
 
   private
+
+  #
+  # Ensure boxes and pallets are not part of a set
+  #
+  def validate_set_id
+    errors.add(:errors, I18n.t('package_sets.no_box_in_set')) if package_set_id.present? && storage_type&.aggregate?
+  end
 
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)

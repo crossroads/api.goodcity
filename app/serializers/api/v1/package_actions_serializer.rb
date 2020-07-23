@@ -4,6 +4,8 @@ module Api::V1
     attributes :id, :source_id, :source_type, :description, :created_at,
       :location_id, :user_id, :quantity, :action, :item_id, :package_id
 
+    has_one :user, serializer: UserSerializer
+
     alias_method :item_id, :package_id
 
     def item_id__sql

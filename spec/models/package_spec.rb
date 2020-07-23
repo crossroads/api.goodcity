@@ -17,6 +17,7 @@ RSpec.describe Package, type: :model do
   describe "Associations" do
     it { is_expected.to belong_to :item }
     it { is_expected.to belong_to :package_type }
+    it { is_expected.to belong_to :package_set }
     it { is_expected.to have_many :orders_packages }
   end
 
@@ -57,6 +58,31 @@ RSpec.describe Package, type: :model do
       [:width, :height, :length, :weight, :pieces].each do |attribute|
         is_expected.to_not allow_value(-1).for(attribute)
         is_expected.to allow_value(nil).for(attribute)
+      end
+    end
+
+    describe "allowing sets" do
+      let!(:setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
+      let(:package_set) { create(:package_set) }
+      let(:package_storage) { create(:storage_type, :with_pkg) }
+      let(:box_storage) { create(:storage_type, :with_box) }
+      let(:pallet_storage) { create(:storage_type, :with_pallet) }
+
+      it "boxes cannot be in sets" do
+        package = build(:package, storage_type: box_storage, package_set: package_set)
+        expect(package.save).to eq(false)
+        expect(package.errors.full_messages.first).to match(/Boxes and pallets are not allowed in sets/)
+      end
+
+      it "pallets cannot be in sets" do
+        package = build(:package, storage_type: pallet_storage, package_set: package_set)
+        expect(package.save).to eq(false)
+        expect(package.errors.full_messages.first).to match(/Boxes and pallets are not allowed in sets/)
+      end
+
+      it "packages can be in sets" do
+        package = build(:package, storage_type: package_storage, package_set: package_set)
+        expect(package.save).to eq(true)
       end
     end
   end
@@ -206,50 +232,10 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe 'set_item_id' do
-
-    let(:item) { create :item }
-
-    it 'update set_item_id value on receiving sibling package' do
-      package = create :package, :stockit_package, item: item
-      sibling_package = create :package, :stockit_package, item: item
-      expect(Stockit::ItemSync).to receive(:create).with(sibling_package)
-
-      expect {
-        sibling_package.mark_received
-        package.reload
-      }.to change(package, :set_item_id).from(nil).to(item.id)
-    end
-
-    describe 'removing set_item_id from package' do
-      let!(:package) { create :package, :with_set_item, item: item }
-      let!(:sibling_package) { create :package, :with_set_item, item: item }
-
-      it 'update set_item_id value on missing sibling package' do
-        expect(Stockit::ItemSync).to receive(:delete).with(sibling_package.inventory_number)
-
-        expect {
-          sibling_package.mark_missing
-          package.reload
-        }.to change(package, :set_item_id).from(item.id).to(nil)
-      end
-
-      describe 'remove_from_set' do
-        it 'removes package from set' do
-          expect {
-            sibling_package.remove_from_set
-            package.reload
-          }.to change(package, :set_item_id).from(item.id).to(nil)
-          expect(sibling_package.set_item_id).to be_nil
-        end
-      end
-    end
-  end
-
   # @TODO: remove
   #
   describe 'dispatch_stockit_item' do
-    let(:package) { create :package, :with_set_item }
+    let(:package) { create :package }
     let(:location) { create :location, :dispatched }
     let!(:packages_location) { create :packages_location, location: location, package: package }
     before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
@@ -258,14 +244,6 @@ RSpec.describe Package, type: :model do
       package.dispatch_stockit_item
       expect(package.locations.first).to eq(location)
       expect(package.stockit_sent_on).to_not be_nil
-    end
-
-    it 'update set relation on dispatching single package' do
-      sibling_package = create :package, :with_set_item, :package_with_locations, item: package.item
-      package.dispatch_stockit_item
-      package.save
-      expect(package.set_item_id).to be_nil
-      expect(sibling_package.reload.set_item_id).to be_nil
     end
   end
 

@@ -3,27 +3,28 @@ module Api
     class ApiController < ApplicationController
       skip_before_action :validate_token, only: [:error]
 
+      rescue_from ActiveRecord::RecordInvalid, with: :invalid_params
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from CanCan::AccessDenied, with: :access_denied
       rescue_from Apipie::ParamInvalid, with: :invalid_params
       rescue_from Apipie::ParamMissing, with: :invalid_params
-      rescue_from Goodcity::BaseError, with: :invalid_params
+      rescue_from Goodcity::BaseError, with: :goodcity_error
 
       def serializer_for(object)
         "Api::V1::#{object.class}Serializer".safe_constantize
       end
 
-      def save_and_render_object(object)
+      def save_and_render_object(object, new_record: !object.persisted?)
         if object.save
-          render json: object, serializer: serializer_for(object), status: 201
+          render json: object, serializer: serializer_for(object), status: (new_record ? 201 : 200)
         else
           render json: object.errors, status: 422
         end
       end
 
-      def save_and_render_object_with_errors(object)
+      def save_and_render_object_with_errors(object, new_record: !object.persisted?)
         if object.save
-          render json: object, serializer: serializer_for(object), status: 201
+          render json: object, serializer: serializer_for(object), status: (new_record ? 201 : 200)
         else
           render_error(object.errors.full_messages.join(". "))
         end
@@ -90,6 +91,10 @@ module Api
 
       def invalid_params(e)
         render json: { error: e.message }, status: 422
+      end
+
+      def goodcity_error(e)
+        render json: e.as_json, status: e.status
       end
 
       def not_found(e)

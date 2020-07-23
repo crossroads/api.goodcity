@@ -138,7 +138,7 @@ RSpec.describe Item, type: :model do
       User.current_user = offer.created_by
       item = create :item, :draft, offer: offer
       expect{ item.submit }.to change(offer, :state).to("under_review")
-      expect(message.offer_id).to eq(offer.id)
+      expect(message.messageable).to eq(offer)
     end
 
     it "on item addition for scheduled offer send message to admin" do
@@ -146,7 +146,7 @@ RSpec.describe Item, type: :model do
       User.current_user = offer.created_by
       item = create :item, :draft, offer: offer
       expect{ item.submit }.to_not change(offer, :state)
-      expect(message.offer_id).to eq(offer.id)
+      expect(message.messageable).to eq(offer)
     end
   end
 

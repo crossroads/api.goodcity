@@ -9,11 +9,6 @@ describe "Image abilities" do
   let(:item)        { create :item, state: state }
   let(:image)       { create :image, imageable: item }
 
-  context "when Administrator" do
-    let(:user)    { create(:user, :administrator) }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, image) } }
-  end
-
   context "when Supervisor" do
     let(:user) { create(:user, :with_can_manage_images_permission, role_name: 'Supervisor') }
     context "and image belongs to draft item" do

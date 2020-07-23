@@ -16,11 +16,8 @@ rejection_reasons.each do |name_en, value|
 end
 
 cancellation_reasons = YAML.load_file("#{Rails.root}/db/cancellation_reasons.yml")
-cancellation_reasons.each do |name_en, value|
-  FactoryBot.create(:cancellation_reason,
-    name_en: name_en,
-    name_zh_tw: value[:name_zh_tw],
-    visible_to_admin: value[:visible_to_admin] )
+cancellation_reasons.each do |name_en, attrs|
+  CancellationReason.create!(name_en: name_en, **attrs)
 end
 
 booking_types = YAML.load_file("#{Rails.root}/db/booking_types.yml")
@@ -81,7 +78,8 @@ package_types.each do |code, value|
     name_zh_tw: value[:name_zh_tw],
     other_terms_en: value[:other_terms_en],
     other_terms_zh_tw: value[:other_terms_zh_tw],
-    allow_stock: true )
+    allow_stock: true,
+    default_value_hk_dollar: value[:default_value_hk_dollar] )
 end
 
 package_types.each do |code, value|
@@ -148,6 +146,14 @@ PackageCategoryImporter.import
 # Create PackageCategoriesPackageType
 PackageCategoryImporter.import_package_relation
 
+roles = YAML.load_file("#{Rails.root}/db/roles.yml")
+roles.each do |role_name, attrs|
+  if (role = Role.where(name: role_name).first_or_initialize)
+    role.assign_attributes(**attrs)
+    role.save
+  end
+end
+
 # Permission and Role mappings
 permissions_roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
 permissions_roles.each_pair do |role_name, permission_names|
@@ -158,6 +164,14 @@ permissions_roles.each_pair do |role_name, permission_names|
       RolePermission.where(role: role, permission: permission).first_or_create
     end
   end
+end
+
+# Valuation matrix
+valuation_matrix = YAML.load_file("#{Rails.root}/db/valuation_matrix.yml")
+valuation_matrix.each do |valuation|
+  donor_condition_id = DonorCondition.where(name_en: valuation['donor_condition_name_en']).first.id
+  ValuationMatrix.find_or_create_by(donor_condition_id: donor_condition_id,
+    grade: valuation['grade'], multiplier: valuation['multiplier'])
 end
 
 # Identity types

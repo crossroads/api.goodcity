@@ -46,16 +46,24 @@ module Api
 
       def index
         @packages = @packages.browse_public_packages if is_browse_app?
+        @packages = @packages.where(inventory_number: params[:inventory_number].split(",")) if params[:inventory_number].present?
         @packages = @packages.find(params[:ids].split(",")) if params[:ids].present?
         @packages = @packages.search({ search_text: params["searchText"] })
           .page(page).per(per_page) if params["searchText"]
-        render json: @packages, each_serializer: serializer, include_orders_packages: is_stock_app?, is_browse_app: is_browse_app?
+        render json: @packages, each_serializer: serializer,
+          include_orders_packages: is_stock_app?,
+          include_packages_locations: is_stock_app?,
+          is_browse_app: is_browse_app?,
+          include_package_set: bool_param(:include_package_set, false)
       end
 
       api :GET, "/v1/packages/1", "Details of a package"
 
       def show
-        render json: serializer.new(@package, include_orders_packages: true).as_json
+        render json: serializer.new(@package,
+          include_orders_packages: true,
+          include_packages_locations: true
+        ).as_json
       end
 
       api :GET, "/v1/stockit_items/1", "Details of a stockit_item(package)"
@@ -67,8 +75,9 @@ module Api
                root: 'item',
                include_order: true,
                include_orders_packages: true,
-               exclude_stockit_set_item: @package.set_item_id.blank?,
-               include_images: @package.set_item_id.blank?,
+               include_packages_locations: true,
+               include_package_set: true,
+               include_images: true,
                include_allowed_actions: true).as_json
       end
 
@@ -103,7 +112,9 @@ module Api
           # @TODO: unify package under a single serializer
           if is_stock_app?
             render json: @package, serializer: stock_serializer, root: "item",
-                    include_order: false, include_orders_packages: true
+                    include_order: false,
+                    include_orders_packages: true,
+                    include_packages_locations: true
           else
             render json: @package, serializer: serializer, status: 201
           end
@@ -135,7 +146,9 @@ module Api
           if is_stock_app?
             stockit_item_details
           else
-            render json: @package, serializer: serializer, include_orders_packages: true
+            render json: @package, serializer: serializer,
+              include_orders_packages: true,
+              include_packages_locations: true
           end
         else
           render json: { errors: @package.errors.full_messages }, status: 422
@@ -181,6 +194,21 @@ module Api
         print_inventory_label
       end
 
+      api :GET, '/v1/packages/package_valuation',
+          'Get valuation of package based on its
+           condition, grade and package type'
+      param :donor_condition_id, [Integer, String], :required => true
+      param :grade, String, :required => true
+      param :package_type_id, [Integer, String], :required => true
+
+      def package_valuation
+        valuation = ValuationCalculationHelper.new(params['donor_condition_id'],
+                                                   params['grade'],
+                                                   params['package_type_id'])
+                                              .calculate
+        render json: { value_hk_dollar: valuation }, status: 200
+      end
+
       def print_inventory_label
         PrintLabelJob.perform_later(@package.id, User.current_user.id, "inventory_label", print_count)
         render json: {}, status: 204
@@ -207,7 +235,8 @@ module Api
                                                     include_order: false,
                                                     include_packages: false,
                                                     include_orders_packages: true,
-                                                    exclude_stockit_set_item: true,
+                                                    include_packages_locations: true,
+                                                    include_package_set: bool_param(:include_package_set, true),
                                                     include_images: true).as_json
         render json: { meta: { total_pages: records.total_pages, search: params["searchText"] } }.merge(packages)
       end
@@ -263,7 +292,7 @@ module Api
             include_order: true,
             include_packages: false,
             include_allowed_actions: true,
-            include_images: @package.set_item_id.blank?
+            include_images: @package.package_set_id.blank?
           )
         else
           render json: { errors: @package.errors.full_messages }, status: 422
@@ -292,8 +321,11 @@ module Api
         container = @package
         contained_pkgs = PackagesInventory.packages_contained_in(container).page(page)&.per(per_page)
         render json: contained_pkgs, each_serializer: stock_serializer, include_items: true,
-          include_orders_packages: false, include_storage_type: false,
-          include_donor_conditions: false, exclude_stockit_set_item: true, root: "items"
+          include_orders_packages: false,
+          include_packages_locations: true,
+          include_storage_type: false,
+          include_donor_conditions: false,
+          root: "items"
       end
 
       api :GET, "/v1/packages/1/parent_containers", "Returns the packages which contain current package"
@@ -303,9 +335,9 @@ module Api
           each_serializer: stock_serializer,
           include_items: true,
           include_orders_packages: false,
+          include_packages_locations: false,
           include_storage_type: false,
           include_donor_conditions: false,
-          exclude_stockit_set_item: true,
           include_images: true,
           root: "items"
       end
@@ -313,6 +345,11 @@ module Api
       def fetch_added_quantity
         entity_id = params[:entity_id]
         render json: { added_quantity: @package&.quantity_contained_in(entity_id) }, status: 200
+      end
+
+      api :GET, '/v1/packages/:id/versions', "List all versions associated with package"
+      def versions
+        render json: @package.versions, each_serializer: version_serializer, root: "versions"
       end
 
       private
@@ -323,6 +360,10 @@ module Api
 
       def stock_serializer
         Api::V1::StockitItemSerializer
+      end
+
+      def version_serializer
+        Api::V1::VersionSerializer
       end
 
       def remove_stockit_prefix(stockit_inventory_number)
@@ -337,8 +378,8 @@ module Api
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
           :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :expiry_date,
-          offer_ids: [],
+          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
+          :comment, :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
                               computer_accessory_attributes, medical_attributes].flatten.uniq
@@ -378,7 +419,7 @@ module Api
       end
 
       def medical_attributes
-        %i[brand country_id serial_number updated_by_id expiry_date]
+        %i[brand country_id serial_number updated_by_id]
       end
 
       def get_package_type_id_value

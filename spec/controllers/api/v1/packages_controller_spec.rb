@@ -15,6 +15,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
   let(:parsed_body) { JSON.parse(response.body) }
+  let(:response_packages) { parsed_body['packages'].map { |p| Package.find(p['id'])} }
   let(:error_msg) do
     return parsed_body['error'] if parsed_body['error'].present?
     parsed_body['errors'][0]['message']
@@ -55,6 +56,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         get :index
         expect(response.status).to eq(200)
       end
+
       it "return serialized packages", :show_in_doc do
         3.times{ create :package, :with_inventory_record }
         get :index
@@ -69,6 +71,16 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         get :index, "searchText": "car"
         expect(response.status).to eq(200)
         expect( subject["packages"].size ).to eq(3)
+      end
+
+      it "returns packages by inventory numbers" do
+        p1, p2, p3 = ['111111', '1111112', '111113'].map { |n| create(:package, :with_inventory_record, inventory_number: n) }
+        initialize_inventory(p1, p2, p3)
+
+        expect(Package.count).to eq(3)
+        get :index, "inventory_number": "111111,1111112"
+        expect(response.status).to eq(200)
+        expect( response_packages ).to match_array([p1,p2])
       end
 
       it "returns searched browseable_packages only" do
@@ -209,7 +221,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }.not_to change { package.reload.state }
 
       expect(response.status).to eq(422)
-      expect(parsed_body).to eq({"error"=>"Package cannot be uninventorized"})
+      expect(parsed_body['error']).to eq("Package cannot be uninventorized")
     end
   end
 
@@ -443,6 +455,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
               end
             end
           end
+        end
+      end
+
+      it 'creates package record with value_hk_dollar' do
+        package_params[:value_hk_dollar] = 20
+        post :create, format: :json, package: package_params
+        package = Package.find(parsed_body['package']['id'])
+        expect(package.value_hk_dollar).to eq(package_params[:value_hk_dollar])
+      end
+
+      context 'if value_hk_dollar is nil' do
+        it 'sets a default value' do
+          package_params[:value_hk_dollar] = nil
+          post :create, format: :json, package: package_params
+          package = Package.find(parsed_body["package"]["id"])
+          expect(package.value_hk_dollar).not_to be_nil
         end
       end
 
@@ -1039,7 +1067,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       }.not_to change(Package, :count)
 
       expect(response.status).to eq(422)
-      expect(parsed_body).to eq({"error"=>"Quantity to split should be at least 1 and less than 5"})
+      expect(parsed_body['error']).to eq("Quantity to split should be at least 1 and less than 5")
     end
   end
 
@@ -1176,7 +1204,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       delete :destroy, id: package.id
       expect(response.status).to eq(422)
-      expect(subject).to eq({"error" => "Inventorized packages cannot be deleted"})
+      expect(subject['error']).to eq("Inventorized packages cannot be deleted")
     end
   end
 
@@ -1650,6 +1678,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it 'should have saleable node in the response' do
       get :stockit_item_details, {id: @package.id}
       expect(parsed_body['item'].keys).to include('saleable')
+    end
+  end
+
+  describe 'GET package_valuation' do
+    let!(:donor_condition) { create :donor_condition }
+    let!(:package_type) { create :package_type }
+    let!(:valuation_matrix) { create :valuation_matrix, donor_condition_id: donor_condition.id, grade: 'A' }
+
+    before do
+      generate_and_set_token(supervisor)
+    end
+
+    it 'returns valuation for the package' do
+      package = Package.new(package_type_id: package_type.id, donor_condition_id: donor_condition.id, grade: 'A')
+      get :package_valuation, { package_type_id: package_type.id,  donor_condition_id: donor_condition.id, grade: package.grade }
+      expect(response).to have_http_status(:success)
+      expect(parsed_body['value_hk_dollar']).to eq(package.calculate_valuation)
     end
   end
 end

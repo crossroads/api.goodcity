@@ -56,20 +56,21 @@ module Api
         render json: serializer.new(@order,
           root: root,
           exclude_code_details: true,
+          include_messages: bool_param(:include_messages, false),
           include_packages: bool_param(:include_packages, true),
           include_order: bool_param(:include_order, false),
           include_territory: true,
           include_images: true,
           include_allowed_actions: true,
           include_orders_packages: bool_param(:include_orders_packages, true),
-          exclude_stockit_set_item: true
+          include_packages_locations: bool_param(:include_packages_locations, true)
         )
       end
 
       def transition
         event = params['transition'].to_sym
         @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
-        render json: @order, serializer: serializer
+        render json: serializer.new(@order, include_allowed_actions: true)
       end
 
       api :PUT, '/v1/orders/1', "Update an order"
@@ -116,8 +117,8 @@ module Api
           include_packages: true,
           include_order: false,
           include_images: true,
-          include_messages: bool_param(:include_messages, false),
-          exclude_stockit_set_item: true).as_json
+          exclude_message_sender: bool_param(:exclude_message_sender, false),
+          include_messages: bool_param(:include_messages, false)).as_json
       end
 
       def cancel_params
@@ -169,7 +170,8 @@ module Api
           :stockit_organisation_id, :stockit_activity_id,
           :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
           :address_id,:submitted_by_id, :staff_note,
-          purpose_ids: [], cart_package_ids: [],
+          :exclude_message_sender, :include_messages,
+          purpose_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes,
           orders_process_checklists_attributes: orders_process_checklists_attributes

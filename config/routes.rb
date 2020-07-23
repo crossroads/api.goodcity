@@ -24,6 +24,12 @@ Rails.application.routes.draw do
       resources :pallets, only: [:create]
       resources :user_roles, only: [:show, :index]
 
+      resources :stocktake_revisions, only: [:create, :update, :destroy]
+      resources :stocktakes, only: [:show, :index, :destroy, :create] do
+        put :commit, on: :member
+        put :cancel, on: :member
+      end
+
       resources :images, only: [:create, :update, :destroy, :show] do
         collection do
           get :generate_signature
@@ -63,6 +69,7 @@ Rails.application.routes.draw do
         get :messages, on: :member
       end
 
+      resources :package_sets, only: [:show, :update, :create, :destroy]
       resources :packages, only: [:index, :show, :create, :update, :destroy] do
         get :print_inventory_label, on: :member
         get :contained_packages, on: :member
@@ -72,6 +79,12 @@ Rails.application.routes.draw do
         put :mark_missing, on: :member
         put :designate, on: :member
         put :add_remove_item, on: :member
+        collection do
+          get :package_valuation
+        end
+        member do
+          get :versions
+        end
       end
 
       resources :requested_packages, only: [:index, :create, :destroy] do
@@ -99,9 +112,13 @@ Rails.application.routes.draw do
       resources :organisations_users, only: [:create, :index, :update, :show]
       resources :gc_organisations, only: [:index, :show] do
         get 'names', on: :collection
+        member do
+          get :orders
+        end
       end
 
       get "recent_users", to: "users#recent_users"
+      get "mentionable_users", to: "users#mentionable_users"
 
       get "appointment_slots/calendar", to: "appointment_slots#calendar"
       resources :appointment_slots, only: [:create, :destroy, :index, :update]
@@ -164,6 +181,8 @@ Rails.application.routes.draw do
         put :remove_number, on: :collection
       end
       resources :orders_process_checklists, only: [:index]
+      resources :restrictions, only: [:index]
+      resources :packages_inventories, only: [:index]
 
       # routes used in stock app
       get "designations", to: "orders#index"

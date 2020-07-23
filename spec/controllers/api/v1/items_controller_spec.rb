@@ -2,14 +2,50 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ItemsController, type: :controller do
 
-  let(:user)  { create :user_with_token }
+  let(:user)  { create :user_with_token, :with_can_manage_items_permission }
   let(:offer) { create :offer, created_by: user }
   let(:item)  { create(:item, offer: offer) }
   let(:serialized_item) { Api::V1::ItemSerializer.new(item).as_json }
   let(:serialized_item_json) { JSON.parse( serialized_item.to_json ) }
   let(:item_params) { item.attributes.except("id") }
+  let(:parsed_body) { JSON.parse(response.body) }
 
   subject { JSON.parse(response.body) }
+
+  describe "GET item/1" do
+    before { generate_and_set_token(user) }
+
+    it "returns the item" do
+      get :show, id: item.id
+      expect(response.status).to eq(200)
+      expect(parsed_body['item']['id']).to eq(item.id)
+    end
+
+    describe "known bugs" do
+      describe "polymorphic serialization" do
+        let(:package)  { create :package, id: item.id }
+        let!(:item) { create(:item, offer: offer) }
+        let!(:item_message) { create(:message, messageable: item) }
+        let!(:offer_message) { create(:message, messageable: offer) }
+        let!(:order_message) { create(:message, :with_order, sender: user) }
+
+        before do
+          create(:image, imageable: item)
+          create(:image, imageable: package)
+        end
+
+        it { expect(package.id).to eq(item.id) }
+        it { expect(package.reload.images.count).to eq(1) }
+        it { expect(item.reload.images.count).to eq(1) }
+
+        it "returns only the images of the item" do
+          get :show, id: item.id
+          expect(response.status).to eq(200)
+          expect(parsed_body['item']['image_ids']).to eq([item.images.first.id])
+        end
+      end
+    end
+  end
 
   describe "DELETE item/1" do
     before { generate_and_set_token(user) }

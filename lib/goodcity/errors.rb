@@ -3,7 +3,22 @@ module Goodcity
   # Bases
   # ----------------------------
 
-  class BaseError < StandardError; end
+  class BaseError < StandardError
+    attr_accessor :status
+
+    def initialize(message, status: 422)
+      super(message);
+      @status = status;
+    end
+
+    def type
+      self.class.name.split(':').last
+    end
+
+    def as_json
+      { error: message, type: type, status: status }
+    end
+  end
 
   class InvalidStateError < BaseError; end
 
@@ -27,13 +42,19 @@ module Goodcity
     end
   end
 
+  class MissingParamError < BaseError
+    def initialize(param)
+      super(I18n.t('errors.missing_params', param: param))
+    end
+  end
+
   # ----------------------------
   # I18n based errors
   # ----------------------------
 
-  def factory(base, translation_key)
+  def factory(base, translation_key, **opts)
     Class.new(base) do
-      define_method(:initialize) { |i18n_data = {}| super(I18n.t(translation_key, i18n_data)) }
+      define_method(:initialize) { |i18n_data = {}| super(I18n.t(translation_key, i18n_data), **opts) }
     end
   end
 
@@ -41,6 +62,7 @@ module Goodcity
 
   InventorizedPackageError        = factory(BaseError, 'package.cannot_delete_inventorized')
   DisabledFeatureError            = factory(BaseError, 'goodcity.disabled_feature')
+  DuplicateRecordError            = factory(BaseError, 'errors.duplicate_error', status: 409)
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')

@@ -23,8 +23,10 @@ class PackagesInventory < ActiveRecord::Base
     Actions::TRASH, Actions::PROCESS, Actions::RECYCLE].freeze
   QUANTITY_LOSS_ACTIONS = [Actions::LOSS, Actions::TRASH, Actions::PROCESS, Actions::RECYCLE].freeze
   QUANTITY_GAIN_ACTIONS = [Actions::GAIN].freeze
+  QUANTITY_ACTIONS = (QUANTITY_LOSS_ACTIONS + QUANTITY_GAIN_ACTIONS).freeze
   UNRESTRICTED_ACTIONS = [Actions::MOVE].freeze
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
+  INVENTORY_ACTIONS = (DECREMENTAL_ACTIONS + QUANTITY_GAIN_ACTIONS).freeze
 
   include EventEmitter
   include AppendOnly
@@ -40,6 +42,7 @@ class PackagesInventory < ActiveRecord::Base
   belongs_to :source, polymorphic: true, touch: true
 
   after_create { PackagesInventory.emit(self.action, self) }
+  scope :for_package, ->(package) { where(package_id: Utils.to_id(package))}
 
   # --------------------
   # Undo feature
@@ -120,9 +123,11 @@ class PackagesInventory < ActiveRecord::Base
     # Catch invalid actions
     errors.add(:errors, I18n.t('package_inventory.bad_action', action: action)) unless ALLOWED_ACTIONS.include?(action)
 
-    # Prevent GAIN of boxes and pallets
-    # We allow other incremental actions as they only follow up decremennts (e.g dispatch/undispatch)
-    errors.add(:errors, I18n.t('package_inventory.bad_action_for_type', type: package.storage_type.name, action: action)) if package.storage_type&.singleton? && action.eql?(Actions::GAIN)
+    # We prevent any quantity action on a dispatched box/pallet
+    if package.storage_type&.singleton? && QUANTITY_ACTIONS.include?(action) && package.dispatched_quantity.positive?
+      errors.add(:errors, I18n.t('package_inventory.action_requires_undispatch'))
+    end
+
     errors.count.zero?
   end
 

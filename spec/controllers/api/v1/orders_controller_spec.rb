@@ -153,15 +153,15 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "can search orders from a user's first or last name" do
-        submitter = create :user, first_name: "Harry", last_name: "Houdini"
+        submitter = create :user, first_name: "Harrrrrrry", last_name: "Houdini"
         submitted_order = create :order, :with_state_submitted, submitted_by_id: submitter.id
-        get :index, searchText: "rry"
+        get :index, searchText: "rrrrrry"
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["submitted_by_id"]).to eq(submitter.id)
         expect(parsed_body["designations"][0]["id"]).to eq(submitted_order.id)
         expect(parsed_body["meta"]["total_pages"]).to eql(1)
-        expect(parsed_body["meta"]["search"]).to eql("rry")
+        expect(parsed_body["meta"]["search"]).to eql("rrrrrry")
       end
 
       it "can search orders from a user's full name" do
@@ -530,16 +530,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   describe "PUT orders/1" do
     before { generate_and_set_token(charity_user) }
 
-    context "should merge offline cart orders_packages on login with order" do
-      it "if order is in draft state" do
-        package = create :package, received_quantity: 1
-        package_ids = draft_order.orders_packages.pluck(:package_id)
-        put :update, id: draft_order.id, order: {cart_package_ids: package_ids.push(package.id)}
-        expect(response.status).to eq(200)
-        expect(draft_order.orders_packages.count).to eq(4)
-      end
-    end
-
     context "If logged in user is Supervisor in Browse app" do
       it "should add an address to an order" do
         set_browse_app_header
@@ -619,6 +609,16 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect(order.reload.process_checklists.count).to eq(1)
           end
         end
+      end
+    end
+
+    context 'if an update is made on cancelled order' do
+      it 'does not allow to perform the operation' do
+        order = create(:order, :with_state_cancelled, people_helped: 2)
+        put :update, id: order.id, order: { people_helped: 20 }
+        order.reload
+        expect(response).to have_http_status(:forbidden)
+        expect(order.people_helped).to eq(2)
       end
     end
   end

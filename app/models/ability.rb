@@ -12,13 +12,17 @@ class Ability
     can_search_browse_packages can_manage_deliveries can_manage_delivery_address
     can_manage_delivery_address can_manage_orders can_manage_order_transport
     can_manage_holidays can_manage_orders_packages can_manage_images
-    can_manage_messages can_add_package_types can_add_or_remove_inventory_number
+    can_add_package_types can_add_or_remove_inventory_number
     can_check_organisations can_access_packages_locations can_create_donor
-    can_destroy_image_for_imageable_states can_create_and_read_messages
-    can_destroy_contacts can_read_or_modify_user can_handle_gogovan_order
+    can_destroy_image_for_imageable_states can_destroy_contacts
+    can_read_or_modify_user can_handle_gogovan_order
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
-    can_manage_settings can_manage_companies can_manage_package_detail can_access_printers can_remove_offers_packages can_access_orders_process_checklists
+    can_manage_settings can_manage_companies can_manage_package_detail
+    can_access_printers can_remove_offers_packages
+    can_access_orders_process_checklists can_mention_users
+    can_manage_order_messages can_manage_offer_messages can_disable_user
+    can_manage_stocktakes can_manage_stocktake_revisions
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -73,6 +77,7 @@ class Ability
     stockit_contact_abilities
     stockit_organisation_abilities
     stockit_local_order_abilities
+    stocktake_abilities
     taxonomies
     user_abilities
     version_abilities
@@ -106,9 +111,9 @@ class Ability
 
   def beneficiary_abilities
     can :create, Beneficiary
-    can %i[index show update delete], Beneficiary, created_by_id: @user_id
-    can [:show, :update], Beneficiary, order: { submitted_by_id: @user_id }
-    can [:show, :update], Beneficiary, order: { created_by_id: @user_id }
+    can %i[index show update destroy], Beneficiary, created_by_id: @user_id
+    can %i[show update destroy], Beneficiary, order: { submitted_by_id: @user_id }
+    can %i[show update destroy], Beneficiary, order: { created_by_id: @user_id }
     if can_manage_orders? || @api_user
       can [:create, :index, :show, :update, :destroy], Beneficiary
     end
@@ -204,18 +209,15 @@ class Ability
   end
 
   def message_abilities
-    # Message (sender and admins, not user if private is true)
-    if can_manage_messages?
-      can [:index, :show, :create, :update, :destroy], Message
-    elsif can_create_and_read_messages?
-      can [:index, :show, :create], Message
-    else
-      can [:index, :show, :create], Message, Message.donor_messages(@user_id) do |message|
-        message.offer.created_by_id == @user_id && !message.is_private
-      end
+    can %i[index show create], Message, messageable_type: 'Offer' if can_manage_offer_messages?
+    can %i[index show create], Message, messageable_type: 'Item' if can_manage_offer_messages?
+    can %i[index show create], Message, messageable_type: 'Order' if can_manage_order_messages?
+    can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
+
+    # Normal users can create non private messages on objects they own
+    can :create, Message do |message|
+      message.related_object&.created_by_id == @user_id && !message.is_private && @user_id != nil
     end
-    can [:mark_read], Message, id: @user.subscriptions.pluck(:message_id)
-    can [:mark_all_read], Message
   end
 
   def offer_abilities
@@ -240,9 +242,11 @@ class Ability
 
   def order_abilities
     can :create, Order
-    can %i[index show update destroy transition], Order, created_by_id: @user_id
+    can %i[index show transition], Order, created_by_id: @user_id
+    can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
     if can_manage_orders? || @api_user
-      can [:create, :index, :show, :update, :transition, :destroy, :summary], Order
+      can %i[create index show transition summary], Order
+      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch dispatching]
       can :index, ProcessChecklist
     end
   end
@@ -259,10 +263,15 @@ class Ability
   def order_transport_abilities
     can :create, OrderTransport
     if can_manage_order_transport?
-      can [:create, :index, :show, :update], OrderTransport
+      can %i[create index show], OrderTransport
+      can [:update], OrderTransport, order: { state: %w[draft submitted processing awaiting_dispatch] }
     else
-      can [:index, :show, :update], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
+      can [:index, :show], OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
         transport.order.created_by_id == @user_id
+      end
+
+      can :update, OrderTransport, OrderTransport.user_orders(@user_id) do |transport|
+        (%w[draft submitted processing awaiting_dispatch].include? transport.order.state) && (transport.order.created_by_id == @user_id)
       end
     end
   end
@@ -275,7 +284,7 @@ class Ability
 
   def organisations_abilities
     if can_check_organisations? || @api_user
-      can [:index, :search, :show], Organisation
+      can [:index, :search, :show, :orders], Organisation
     end
   end
 
@@ -296,12 +305,25 @@ class Ability
     can [:create, :destroy, :index, :checkout], RequestedPackage, user_id: @user_id
   end
 
+  def stocktake_abilities
+    if can_manage_stocktakes?
+      can [:show, :index, :destroy, :create, :commit, :cancel], Stocktake
+    end
+    if can_manage_stocktake_revisions?
+      can [:create, :destroy, :update], StocktakeRevision
+    end
+  end
+
   def package_abilities
     if can_manage_packages?
-      can [:index, :show, :create, :update, :destroy, :print_barcode,
-        :search_stockit_items, :remove_from_set, :designate, :register_quantity_change, :mark_missing,
-        :move, :print_inventory_label, :stockit_item_details, :split_package, :add_remove_item,
-        :contained_packages, :parent_containers, :fetch_added_quantity], Package
+      can %i[index show create update destroy print_barcode package_valuation
+             search_stockit_items remove_from_set designate register_quantity_change
+             mark_missing move print_inventory_label stockit_item_details
+             split_package add_remove_item contained_packages parent_containers
+             fetch_added_quantity versions], Package
+      can %i[show create update destroy], PackageSet
+      can %i[index], Restriction
+      can %i[index], PackagesInventory
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }
@@ -393,9 +415,10 @@ class Ability
 
   def user_abilities
     can [:current_user_profile], User
-    can [:show, :update, :orders_count], User, id: @user_id
-    can [:index, :show, :update, :recent_users, :create], User if can_read_or_modify_user?
-    can [:create, :show], User if can_create_donor?
+    can %i[show update orders_count], User, id: @user_id
+    can %i[index show update recent_users create], User if can_read_or_modify_user?
+    can %i[create show], User if can_create_donor?
+    can %i[mentionable_users], User if can_mention_users?
   end
 
   def version_abilities

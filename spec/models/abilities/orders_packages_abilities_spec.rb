@@ -11,11 +11,6 @@ describe "OrdersPackage abilities" do
     allow(Stockit::OrdersPackageSync).to receive(:update)
   end
 
-  context "when Administrator" do
-    let(:user) { create(:user, :administrator) }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, orders_package) } }
-  end
-
   context "when Supervisor" do
     let(:user)  { create(:user, :with_can_manage_orders_packages_permission, role_name: 'Supervisor') }
     it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, orders_package) } }

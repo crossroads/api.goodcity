@@ -161,6 +161,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       get :show, id: offer.id
       expect(response.status).to eq(200)
     end
+
+    context 'polymorphic associations' do
+      let(:item) { create(:item, id: offer.id, offer: offer) }
+      let!(:item_message) { create(:message, messageable: item) }
+      let!(:offer_message) { create(:message, messageable: offer) }
+      let!(:order_message) { create(:message, :with_order, sender: user) }
+
+      it 'expects to include messages related only to item' do
+        get :show, id: offer.id
+        expect(parsed_body['messages'].count).to eq(2)
+        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer', 'Item')
+        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include(offer.id, item.id)
+      end
+    end
   end
 
   describe "POST /offers" do
@@ -531,20 +545,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(subject['offers'].size).to eq(2)
         expect(subject['offers'].first["id"]).to eq(submitted_offer2.id)
       end
-
     end
 
     context "Reviewer Filter" do
+      let!(:offer) { create :offer }
       before(:each) {
         receiving_offer
         reviewing_offer
         receiving_offer
         scheduled_offer
         User.current_user = reviewer
-
+        Subscription.delete_all
         # Create notifications for offers
-        3.times { create(:subscription, offer_id: receiving_offer.id, user_id: reviewer.id, state: 'unread') }
-        3.times { create(:subscription, offer_id: reviewing_offer.id, user_id: reviewer.id, state: 'read') }
+        3.times { create(:subscription, subscribable: receiving_offer, user_id: reviewer.id, state: 'unread') }
+        3.times { create(:subscription, subscribable: reviewing_offer, user_id: reviewer.id, state: 'read') }
       }
 
       it "returns offers created by logged in user if selfReview is present in params" do

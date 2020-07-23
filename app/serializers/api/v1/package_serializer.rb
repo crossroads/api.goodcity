@@ -3,11 +3,12 @@ module Api::V1
     embed :ids, include: true
 
     has_one :package_type, serializer: PackageTypeSerializer
-    has_many :images, serializer: ImageSerializer
+    has_many :images, serializer: ImageSerializer, polymorphic: true
     has_one :item, serializer: BrowseItemSerializer
     has_many :packages_locations, serializer: PackagesLocationSerializer
     has_many :orders_packages, serializer: OrdersPackageSerializer
     has_one :storage_type, serializer: StorageTypeSerializer
+    has_one :package_set, serializer: PackageSetSerializer
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :item_id, :state, :received_at, :rejected_at, :inventory_number,
@@ -15,7 +16,7 @@ module Api::V1
                :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
                :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
                :designated_quantity, :dispatched_quantity, :quantity, :favourite_image_id,
-               :saleable
+               :saleable, :value_hk_dollar, :package_set_id
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
@@ -54,7 +55,13 @@ module Api::V1
       @options[:include_orders_packages]
     end
 
-    alias_method :include_packages_locations?, :include_orders_packages?
+    def include_package_set?
+      @options[:include_package_set]
+    end
+
+    def include_packages_locations?
+      @options[:include_packages_locations]
+    end
 
     %w[include_item? include_stockit_sent_on?
       include_order_id?].each do |method|

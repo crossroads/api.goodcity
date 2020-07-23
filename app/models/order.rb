@@ -38,14 +38,13 @@ class Order < ActiveRecord::Base
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
-  has_many :messages, dependent: :destroy, inverse_of: :order
-  has_many :subscriptions, dependent: :destroy, inverse_of: :order
-  has_and_belongs_to_many :cart_packages, class_name: "Package"
+  has_many :messages, as: :messageable, dependent: :destroy
+  has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
 
-  validates :people_helped, numericality: { greater_than_or_equal_to: 0 }
+  validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
 
   after_initialize :set_initial_state
   before_create :assign_code
@@ -402,7 +401,7 @@ class Order < ActiveRecord::Base
           left join goodcity_requests on goodcity_requests.order_id = orders.id
           join versions on versions.item_type in ('Order', 'GoodcityRequest') AND (versions.item_id = orders.id OR versions.item_id = goodcity_requests.id)
           LEFT join orders_packages on orders_packages.order_id = orders.id AND orders_packages.updated_by_id = ?
-          where orders.detail_type='GoodCity' AND versions.whodunnit = ? AND (orders.state not in ('cancelled', 'closed', 'draft') OR orders.state not in ('closed', 'cancelled'))
+          where orders.detail_type='GoodCity' AND versions.whodunnit = ? AND (orders.state not in ('cancelled', 'closed', 'draft'))
           order by GREATEST(orders_packages.updated_at, versions.created_at) DESC", user_id, user_id.to_s]
     ).uniq.first(5)
   end

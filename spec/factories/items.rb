@@ -20,7 +20,7 @@ FactoryBot.define do
 
     trait :with_inventory_packages do
       after(:create) do |item|
-        create_list(:package, rand(3)+1, :with_set_item, :package_with_locations, item: item)
+        create_list(:package, rand(3)+1, :package_with_locations, item: item)
       end
     end
 
@@ -43,9 +43,8 @@ FactoryBot.define do
       end
       after(:create) do |item, evaluator|
         create_list(:message, evaluator.messages_count,
-          sender: item.offer.created_by,
-          offer: item.offer,
-          item: item)
+                    sender: item.offer.created_by,
+                    messageable: item)
       end
     end
 

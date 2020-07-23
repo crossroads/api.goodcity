@@ -7,7 +7,7 @@ module UserSearch
   included do
     # user: first_name, last_name, email, mobile
     scope :search, ->(options = {}) {
-      search_text = options[:search_text] || ''
+      search_text = options[:search_text].downcase || ''
       role_name = options[:role_name].presence
       if search_text.present?
         search_query = SEARCH_ATTRIBUTES.map { |f| "#{f} ILIKE :search_text" }.join(" OR ")

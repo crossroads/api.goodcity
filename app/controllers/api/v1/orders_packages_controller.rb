@@ -57,7 +57,7 @@ module Api
 
       def search
         @orders_packages = @orders_packages.get_records_associated_with_order_id(params["search_by_order_id"])
-        render json: @orders_packages, each_serializer: serializer
+        render json: ActiveModel::ArraySerializer.new(@orders_packages, each_serializer: serializer).as_json
       end
 
       def show
@@ -76,7 +76,8 @@ module Api
             include_package: true,
             include_order: true,
             include_allowed_actions: true,
-            include_orders_packages: true
+            include_orders_packages: true,
+            include_packages_locations: true
           )
         end
       end
@@ -102,6 +103,7 @@ module Api
           root: "orders_packages",
           include_package: true,
           include_orders_packages: true,
+          include_packages_locations: true,
           include_allowed_actions: true
         ).as_json
       end

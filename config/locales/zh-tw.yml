@@ -10,6 +10,8 @@ zh-tw:
     bad_or_missing_record: Invalid or missing %{klass}
     bad_or_missing_field: Invalid or empty field '%{field}'
     expected_state: The following action can only be done on a %{state} %{subject}
+    missing_params: Param '%{param}' is required
+    duplicate_error: A record already exists
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -108,6 +110,9 @@ zh-tw:
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
     cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
+  stocktakes:
+    invalid_state: Cannot process a closed or cancelled Stocktake
+    dirty_revisions: Some quantity revisions require a re-count
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"
@@ -137,10 +142,14 @@ zh-tw:
       insufficient_quantity: The selected quantity (%{quantity}) is unavailable
       bad_quantity_param: Invalid quantity (%{quantity})
       action_not_allowed: Action you are trying to perform is not allowed
+  package_sets:
+    cannot_change_type: Changing the set's type is not allowed
+    no_box_in_set: Boxes and pallets are not allowed in sets
   package_inventory:
     storage_type_max: "A %{type} is limited to a quantity of %{quantity}"
     bad_action: "Inventory action %{action} is not permitted"
     bad_action_for_type: "Inventory action %{action} is not permitted on %{type} types"
+    action_requires_undispatch: "Action not allowed on a dispatched package. Please undispatch and try again"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
     quantities:
       invalid_negative_quantity: Required quantity not present at location
