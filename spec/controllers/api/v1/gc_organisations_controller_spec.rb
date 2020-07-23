@@ -100,18 +100,18 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       before { generate_and_set_token(supervisor) }
 
       it "returns 200" do
-        get :organisation_orders, id: organisation.id
+        get :orders, id: organisation.id
         expect(response.status).to eq(200)
       end
 
       it "returns orders associated with organisation" do
-        get :organisation_orders, id: organisation.id
+        get :orders, id: organisation.id
         expect(parsed_body['designations'].size).to eq(organisation_orders.size)
         expect(parsed_body["designations"].map { |order| order["id"] }).to eq(organisation_orders.map(&:id))
       end
 
       it "does not returns orders of different organisation" do
-        get :organisation_orders, id: organisation1.id
+        get :orders, id: organisation1.id
         expect(parsed_body['designations']).to eq([])
       end
     end
@@ -120,7 +120,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       before { generate_and_set_token(charity_user) }
 
       it "returns 403" do
-        get :organisation_orders, id: organisation.id
+        get :orders, id: organisation.id
         expect(response.status).to eq(403)
       end
     end
