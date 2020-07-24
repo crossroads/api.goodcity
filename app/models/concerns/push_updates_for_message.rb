@@ -42,9 +42,12 @@ module PushUpdatesForMessage
 
   # All reviewers/supervisors/order_fulfillers
   def notify_deletion_to_subscribers
-    if ["Order", "Package"].include?(object_class)
+    case object_class
+    when "Order"
       channels = [Channel::ORDER_FULFILMENT_CHANNEL]
-    else # Offer/Item
+    when "Package"
+      channels = [Channel::INVENTORY_CHANNEL]
+    else # Offer / Item
       channels = [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL]
     end
     send_update('read', channels, :delete)
