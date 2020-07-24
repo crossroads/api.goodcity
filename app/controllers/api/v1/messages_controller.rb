@@ -69,7 +69,7 @@ module Api
         render json: {}
       end
 
-      api :GET, "/v1/messages/notifications", "List all notifications"
+      api :GET, "/v1/messages/notifications", "List all notifications for current user"
       param :messageable_type, Array, desc: "Return messages for messageable_type"
       param :messageable_id, String, desc: "Return messages for messageable_id."
       param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
@@ -84,6 +84,8 @@ module Api
           .select("max(@messages.id) AS message_id")
           .group("messageable_type, messageable_id, is_private")
           .page(page).per(per_page)
+          .order('message_id DESC')
+
         @messages = @messages.where("messages.id IN (?)", notification_ids).order("messages.id DESC")
 
         render json: message_response(@messages, notification_serializer)
