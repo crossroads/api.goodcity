@@ -226,6 +226,18 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_offer_messages do
+      after(:create) do |user, evaluator|
+        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_offer_messages)
+      end
+    end
+
+    trait :with_can_manage_order_messages do
+      after(:create) do |user, evaluator|
+        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_order_messages)
+      end
+    end
+
     trait :api_user do
       after(:create) do |user|
         user.roles << create(:api_write_role)
