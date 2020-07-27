@@ -220,7 +220,8 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     it "return serialized message notifications", :show_in_doc do
       2.times do
         message = create :message, :private, messageable: package
-        create(:subscription, user: user, message: message)
+        message.subscriptions
+          .where(user: user, state: "unread", subscribable: package).first_or_create
       end
 
       get :notifications, messageable_type: ["package"], is_private: "true"
