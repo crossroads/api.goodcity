@@ -87,7 +87,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :requested_packages, only: [:index, :create, :destroy] do
+      resources :requested_packages, only: [:index, :create, :update, :destroy] do
         post :checkout, on: :collection
       end
 
