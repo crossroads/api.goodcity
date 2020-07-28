@@ -40,7 +40,7 @@ class OrganisationsUserBuilder
   end
 
   def build_user
-    @user = User.where("email = (?) OR mobile = (?)", @email, @mobile).first_or_initialize(@user_attributes)
+    @user = User.where("lower(email) = (?) OR mobile = (?)", @email.downcase, @mobile).first_or_initialize(@user_attributes)
     assign_user_app_acessor
     @user.save
     @user
