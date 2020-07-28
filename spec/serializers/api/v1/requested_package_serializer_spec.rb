@@ -18,6 +18,7 @@ describe Api::V1::RequestedPackageSerializer do
     expect(json['requested_package']['user_id']).to eql(requested_package.user.id)
     expect(json['requested_package']['package_id']).to eql(requested_package.package.id)
     expect(json['requested_package']['is_available']).to eql(requested_package.is_available)
+    expect(json['requested_package']['quantity']).to eql(requested_package.quantity)
   end
 
   it "includes associations" do
