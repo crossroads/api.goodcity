@@ -117,15 +117,12 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     end
 
     context "denies access to Charity User" do
-      before { generate_and_set_token(charity_user) }
-
       it "returns 403" do
+        charity = create(:user, :charity)
+        generate_and_set_token(charity)
         get :orders, id: organisation.id
         expect(response.status).to eq(403)
       end
     end
-
   end
-
-
 end
