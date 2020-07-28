@@ -69,18 +69,18 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one order" do
-        3.times { create :subscription, state: 'unread', subscribable: order, message: (create :message, messageable: order) }
+        3.times { create :subscription, state: 'unread', subscribable: order, message: (create :message, messageable: order, is_private: false) }
 
-        3.times { create :subscription, state: 'unread', subscribable: order2, message: (create :message, messageable: order2) }
+        3.times { create :subscription, state: 'unread', subscribable: order2, message: (create :message, messageable: order2, is_private: false) }
 
         get :index, order_id: order.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :subscription, state: 'unread', subscribable: order, message: (create :message, messageable: order) }
+        3.times { create :subscription, state: 'unread', subscribable: order, message: (create :message, messageable: order, is_private: false) }
 
-        3.times { create :subscription, state: 'unread', subscribable: order2, message: (create :message, messageable: order2) }
+        3.times { create :subscription, state: 'unread', subscribable: order2, message: (create :message, messageable: order2, is_private: false) }
 
         get :index, order_id: "#{order.id},#{order2.id}"
         expect(subject['messages'].length).to eq(6)
