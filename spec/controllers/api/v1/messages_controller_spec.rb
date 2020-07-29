@@ -56,28 +56,32 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one offer" do
-        3.times { create :message, messageable: offer }
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
+
         get :index, offer_id: offer.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple offers" do
-        3.times { create :message, messageable: offer }
-        3.times { create :message, messageable: offer2 }
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
+
+        3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2, is_private: false) }
         get :index, offer_id: "#{offer.id},#{offer2.id}"
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for one order" do
-        3.times { create :message, messageable: order }
-        3.times { create :message, messageable: order2 }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+
+        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
         get :index, order_id: order.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :message, messageable: order }
-        3.times { create :message, messageable: order2 }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+
+        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
         get :index, order_id: "#{order.id},#{order2.id}"
         expect(subject['messages'].length).to eq(6)
       end
