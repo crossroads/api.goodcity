@@ -16,7 +16,7 @@ module Api::V1
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :inventory_number, :created_at, :updated_at, :item_id, :is_set,
                :grade, :designation_name, :designation_id, :sent_on, :code_id,
-               :image_id, :donor_condition_id, :package_set_id,
+               :image_id, :donor_condition_id, :package_set_id, :state,
                :case_number, :allow_web_publish, :received_quantity,
                :detail_type, :detail_id, :storage_type_id, :on_hand_quantity,
                :available_quantity, :designated_quantity, :dispatched_quantity,
