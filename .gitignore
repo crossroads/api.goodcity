@@ -23,3 +23,5 @@ coverage
 .vscode
 
 **/*.sql
+
+config/database.yml
