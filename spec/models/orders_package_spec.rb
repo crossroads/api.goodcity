@@ -144,7 +144,7 @@ RSpec.describe OrdersPackage, type: :model do
     end
 
     after(:all) do
-      Timecop.freeze(Time.current)
+      Timecop.return
     end
   end
 
