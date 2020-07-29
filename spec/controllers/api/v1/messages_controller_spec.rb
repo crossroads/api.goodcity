@@ -215,4 +215,24 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       expect(subject['message']['body']).to eql(message.body)
     end
   end
+
+  describe "GET messages/notifications" do
+    let(:user) { create(:user_with_token, :with_can_manage_package_messages) }
+    let(:package) { create :package }
+    before { generate_and_set_token(user) }
+
+    it "return serialized message notifications", :show_in_doc do
+      2.times do
+        message = create :message, :private, messageable: package
+        message.subscriptions
+          .where(user: user, state: "unread", subscribable: package).first_or_create
+      end
+
+      get :notifications, messageable_type: ["package"], is_private: "true"
+
+      expect(response.status).to eq(200)
+      expect(subject['messages'].length).to eq(1)
+      expect(subject['messages'][0]["unread_count"]).to eq(2)
+    end
+  end
 end
