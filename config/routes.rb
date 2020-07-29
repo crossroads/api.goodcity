@@ -40,6 +40,7 @@ Rails.application.routes.draw do
       resources :messages, only: [:create, :update, :index, :show] do
         put :mark_read, on: :member
         put :mark_all_read, on: :collection
+        get :notifications, on: :collection
       end
 
       resources :offers, only: [:create, :update, :index, :show, :destroy] do

@@ -22,7 +22,7 @@ class Ability
     can_access_printers can_remove_offers_packages
     can_access_orders_process_checklists can_mention_users
     can_manage_order_messages can_manage_offer_messages can_disable_user
-    can_manage_stocktakes can_manage_stocktake_revisions
+    can_manage_stocktakes can_manage_stocktake_revisions can_manage_package_messages
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -209,14 +209,15 @@ class Ability
   end
 
   def message_abilities
-    can %i[index show create], Message, messageable_type: 'Offer' if can_manage_offer_messages?
-    can %i[index show create], Message, messageable_type: 'Item' if can_manage_offer_messages?
-    can %i[index show create], Message, messageable_type: 'Order' if can_manage_order_messages?
+    can %i[index show create notifications], Message, messageable_type: 'Offer' if can_manage_offer_messages?
+    can %i[index show create notifications], Message, messageable_type: 'Item' if can_manage_offer_messages?
+    can %i[index show create notifications], Message, messageable_type: 'Order' if can_manage_order_messages?
+    can %i[manage notifications], Message, messageable_type: 'Package' if can_manage_package_messages?
     can %i[index show mark_read mark_all_read], Message, id: @user.subscriptions.pluck(:message_id)
 
     # Normal users can create non private messages on objects they own
     can :create, Message do |message|
-      message.related_object&.created_by_id == @user_id && !message.is_private && @user_id != nil
+      @user_id != nil && !message.is_private && message.related_object&.created_by_id == @user_id
     end
   end
 
