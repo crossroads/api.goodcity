@@ -76,6 +76,32 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       expect(response.status).to eq(422)
       expect(subject["errors"]).to eq([{"message" => "User already exists in this organisation", "status" => 422}])
     end
+
+    context 'when an existing user already exists with same email' do
+      it 'does not create organisation_user for duplicate email' do
+        organisations_user = create :organisations_user
+        new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
+        new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email
+        expect {
+          post :create, format: :json, organisations_user: new_organisations_user_params
+        }.to change(OrganisationsUser, :count).by(0)
+         .and change(User, :count).by(0)
+        expect(response.status).to eq(422)
+        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+      end
+
+      it 'does not create organisation_user for case insensitive duplicate email' do
+        organisations_user = create :organisations_user
+        new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
+        new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email.upcase
+        expect {
+          post :create, format: :json, organisations_user: new_organisations_user_params
+        }.to change(OrganisationsUser, :count).by(0)
+         .and change(User, :count).by(0)
+        expect(response.status).to eq(422)
+        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+      end
+    end
   end
 
   describe "PUT organisations_user/1" do
