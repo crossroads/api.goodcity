@@ -14,6 +14,7 @@ module PackageFiltering
           map { |f| "packages.#{f} ILIKE :search_text" }.
           join(" OR ")
         search_query += " OR package_types.code = :search_code"
+        search_query += " OR package_types.name_en ILIKE :search_text"
         query = joins(:package_type).where(search_query,
                   search_text: "%#{search_text}%",
                   search_code: search_text.upcase)

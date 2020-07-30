@@ -260,5 +260,18 @@ describe Package do
       end
     end
 
+    context "should find items by package-type name" do
+      let!(:code) { create :package_type, name: "Bookshelf", code: "FSB" }
+      let!(:pkg1) { create :package, package_type: code }
+      let!(:pkg2) { create :package, package_type: code }
+      let!(:pkg3) { create :package }
+      let(:search_text) { "book" }
+      it do
+        expect(subject.size).to eql(2)
+        expect(subject.to_a).to include(pkg1)
+        expect(subject.to_a).to include(pkg2)
+      end
+    end
+
   end
 end
