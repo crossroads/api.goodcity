@@ -32,6 +32,7 @@ ActionController::Base.allow_rescue = false
 
 # Remove/comment out the lines below if your app doesn't have a database.
 # For some databases (like MongoDB and CouchDB) you may need to use :truncation instead.
+
 begin
   DatabaseCleaner.strategy = :transaction
 rescue NameError
@@ -39,6 +40,8 @@ rescue NameError
 end
 
 World(FactoryBot::Syntax::Methods)
+
+STOCKIT_ENABLED = true
 
 Before('@supervisor') do
   User.current_user = FactoryBot.create(:user, :supervisor)

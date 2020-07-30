@@ -567,6 +567,10 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             }.to change(Package, :count).by(1)
           end
         end
+
+        after do
+          stub_const('STOCKIT_ENABLED', true)
+        end
       end
     end
 
