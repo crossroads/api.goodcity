@@ -68,6 +68,7 @@ class Package < ActiveRecord::Base
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
   validate  :validate_set_id, on: [:create, :update]
+  validates_uniqueness_of :inventory_number, unless: :stockit_enabled?
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
@@ -207,6 +208,10 @@ class Package < ActiveRecord::Base
 
   def published?
     allow_web_publish.present?
+  end
+
+  def stockit_enabled?
+    STOCKIT_ENABLED
   end
 
   def add_to_stockit
