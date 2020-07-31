@@ -4,11 +4,11 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
   TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
 
-  let(:supervisor_user) { create(:user_with_token, :with_can_read_or_modify_user_permission, :with_can_manage_user_roles, role_name: 'Supervisor') }
-  let(:reviewer_user) { create(:user_with_token, :with_can_create_user_permission, role_name: "Reviewer") }
+  let(:supervisor_user) { create(:user, :with_token, :with_can_read_or_modify_user_permission, :with_can_manage_user_roles_permission, role_name: 'Supervisor') }
+  let(:reviewer_user) { create(:user, :with_token, :with_can_create_donor_permission, role_name: "Reviewer") }
   let(:system_admin_user) {
     create :user,
-      :with_can_read_or_modify_user_permission, :with_can_disable_user,
+      :with_can_read_or_modify_user_permission, :with_can_disable_user_permission,
       role_name: "System administrator"
   }
 
@@ -90,7 +90,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   end
 
   describe "POST users" do
-    let(:reviewer) { create(:user_with_token, :reviewer) }
+    let(:reviewer) { create(:user, :with_token, :reviewer) }
     let(:role) { create(:role, name: "System administrator" , level: 15) }
     let(:existing_user) { create(:user) }
 
@@ -170,7 +170,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe "PUT user/1" do
 
     context "Reviewer" do
-      let(:reviewer) { create(:user_with_token, :reviewer) }
+      let(:reviewer) { create(:user, :with_token, :reviewer) }
       let(:role) { create(:role, name: "Supervisor") }
 
       before { generate_and_set_token(reviewer_user) }
@@ -202,7 +202,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     context "as a Supervisor" do
-      let(:supervisor) { create(:user_with_token, :supervisor) }
+      let(:supervisor) { create(:user, :with_token, :supervisor) }
       let(:charity_role) { create(:role, name: "Charity") }
 
       before { generate_and_set_token(supervisor_user) }
@@ -237,7 +237,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         it "I cannot change the roles of a System Administrator [higher level role]" do
           put :update, id: system_admin_user.id,
              user: {user_role_ids: [charity_role.id]}
-
           expect(response.status).to eq(200)
           expect(system_admin_user.roles.pluck(:id)).to_not include(charity_role.id)
         end
@@ -245,7 +244,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     context "as a System Administrator user" do
-      let(:supervisor) { create(:user_with_token, :supervisor) }
+      let(:supervisor) { create(:user, :with_token, :supervisor) }
       before { generate_and_set_token(system_admin_user) }
 
       context "when I edit another user's details" do

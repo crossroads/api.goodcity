@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
-  let(:supervisor) { create(:user_with_token, :with_can_manage_organisations_users_permission, role_name: 'Supervisor') }
+  let(:supervisor) { create(:user, :with_token, :with_can_manage_organisations_users_permission, role_name: 'Supervisor') }
   before { generate_and_set_token(supervisor) }
   let(:organisation) { create :organisation }
   let(:new_organisation) { create :organisation }

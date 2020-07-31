@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Api::V1::SchedulesController, type: :controller do
 
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:schedule) { build(:schedule) }
   let(:schedule_params) { FactoryBot.attributes_for(:schedule) }
 

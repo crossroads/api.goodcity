@@ -4,7 +4,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:offer) { create(:offer, created_by: user) }
   let(:offer2) { create(:offer, created_by: user) }
   let(:item) { create(:item, offer: offer) }
@@ -22,7 +22,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   subject { JSON.parse(response.body) }
 
   describe "GET messages" do
-    let(:user) { create(:user_with_token, :with_can_manage_messages_permission, role_name: 'Reviewer') }
+    let(:user) { create(:user, :with_token, :with_can_manage_offer_messages_permission, role_name: 'Reviewer') }
     before { generate_and_set_token(user) }
 
     it "return serialized messages", :show_in_doc do

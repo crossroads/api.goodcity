@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PermissionsController, type: :controller do
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let!(:permission) { create :permission }
   let(:serialized_permission) { Api::V1::PermissionSerializer.new(permission).as_json }
   let(:serialized_permission_json) { JSON.parse( serialized_permission.to_json ) }
@@ -19,7 +19,7 @@ RSpec.describe Api::V1::PermissionsController, type: :controller do
 
     it 'returns all permissions except api-write' do
       get :index
-      expect(subject['permissions'].length).to eq(1)
+      expect(subject['permissions'].to_a).to_not include("api-write")
     end
   end
 

@@ -10,7 +10,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
   let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder" }
   let(:user) {
-    create(:user_with_token, :with_multiple_roles_and_permissions,
+    create(:user, :with_token, :with_multiple_roles_and_permissions,
            roles_and_permissions: {"Supervisor" => ["can_manage_orders"]})
   }
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }

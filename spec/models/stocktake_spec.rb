@@ -33,7 +33,7 @@ RSpec.describe Stocktake, type: :model do
 
       stocktake.reload
 
-      expect(stocktake.revisions.map(&:package_id)).to eq(packages.map(&:id))
+      expect(stocktake.revisions.map(&:package_id)).to match_array(packages.map(&:id))
       expect(stocktake.revisions.map(&:dirty).uniq).to eq([true])
       expect(stocktake.revisions.map(&:quantity).uniq).to eq([0])
       expect(stocktake.revisions.map(&:state).uniq).to eq(['pending'])
@@ -48,9 +48,9 @@ RSpec.describe Stocktake, type: :model do
 
       stocktake.reload
 
-      expect(stocktake.revisions.map(&:package_id)).to eq(packages.map(&:id))
+      expect(stocktake.revisions.map(&:package_id)).to match_array(packages.map(&:id))
       expect(stocktake.revisions.map(&:dirty).uniq).to eq([false, true])
-      expect(stocktake.revisions.map(&:quantity).uniq).to eq([5, 0])
+      expect(stocktake.revisions.map(&:quantity).uniq).to match_array([5, 0])
       expect(stocktake.revisions.map(&:state).uniq).to eq(['processed', 'pending'])
     end
   end

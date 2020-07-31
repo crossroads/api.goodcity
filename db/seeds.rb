@@ -184,7 +184,7 @@ end
 FactoryBot.create(:user, :system)
 
 # Create API User
-FactoryBot.create(:user, :api_user, first_name: "api", last_name: "write")
+FactoryBot.create(:user, :api_write, first_name: "api", last_name: "write")
 
 # Don't run the following setup on the live server.
 # This is for dummy data

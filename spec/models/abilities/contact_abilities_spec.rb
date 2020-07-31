@@ -7,7 +7,7 @@ describe "contact abilities" do
   let(:all_actions) { [:create, :destroy, :manage] }
 
   context "when Supervisor" do
-    let(:user)     { create(:user, :with_can_destroy_contact_permission, role_name: 'Supervisor') }
+    let(:user)     { create(:user, :with_can_destroy_contacts_permission, role_name: 'Supervisor') }
     let(:contact)  { create :contact }
     let(:can)      { [:create, :destroy] }
     let(:cannot)   { [:manage] }
@@ -16,7 +16,7 @@ describe "contact abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)     { create(:user, :with_can_destroy_contact_permission, role_name: 'Reviewer') }
+    let(:user)     { create(:user, :with_can_destroy_contacts_permission, role_name: 'Reviewer') }
     let(:contact)  { create :contact }
     let(:can)      { [:create, :destroy] }
     let(:cannot)   { [:manage] }
