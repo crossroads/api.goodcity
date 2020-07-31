@@ -251,7 +251,7 @@ describe Package do
       let!(:code) { create :package_type, code: "HPB" }
       let!(:pkg1) { create :package, package_type: code }
       let!(:pkg2) { create :package, package_type: code }
-      let!(:pkg3) { create :package }
+      let!(:pkg3) { create :package, package_type: create(:package_type, code: 'MDV') }
       let(:search_text) { 'HPB' }
       it do
         expect(subject.size).to eql(2)
@@ -264,7 +264,7 @@ describe Package do
       let!(:code) { create :package_type, name: "Bookshelf", code: "FSB" }
       let!(:pkg1) { create :package, package_type: code }
       let!(:pkg2) { create :package, package_type: code }
-      let!(:pkg3) { create :package }
+      let!(:pkg3) { create :package, package_type: create(:package_type, code: 'MDV') }
       let(:search_text) { "book" }
       it do
         expect(subject.size).to eql(2)
@@ -272,6 +272,5 @@ describe Package do
         expect(subject.to_a).to include(pkg2)
       end
     end
-
   end
 end
