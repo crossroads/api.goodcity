@@ -7,7 +7,7 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
       .and_return(true)
   }
 
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:basic_outbound_call_params) { {
     "AccountSid"     => ENV['TWILIO_ACCOUNT_SID'],
     "ApplicationSid" => ENV['TWILIO_CALL_APP_SID'],

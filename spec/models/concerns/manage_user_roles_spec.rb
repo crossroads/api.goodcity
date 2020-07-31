@@ -10,7 +10,7 @@ describe ManageUserRoles do
     let!(:reviewer_role) { create(:role, name: "Reviewer", level: 5) }
     let!(:supervisor_role) { create(:role, name: "Supervisor", level: 10) }
 
-    let!(:supervisor_user) { create(:user, :with_can_manage_user_roles, role_name: 'Supervisor') }
+    let!(:supervisor_user) { create(:user, :with_can_manage_user_roles_permission, role_name: 'Supervisor') }
     let!(:system_administrator) { create(:user, :system_administrator) }
     let!(:reviewer_user) { create(:user, :reviewer) }
     let!(:order_fulfilment_user) { create :user, :order_fulfilment }

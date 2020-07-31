@@ -120,7 +120,7 @@ RSpec.describe Order, type: :model do
   describe '.my_orders' do
     let(:user) { create :user, :charity, :with_can_manage_orders_permission }
     let(:supervisor) { create :user, :supervisor, :with_can_manage_orders_permission }
-    let(:authorised_by_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    let(:authorised_by_user) { create(:user, :with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
 
     ALL_ORDER_STATES.each do |state|
@@ -236,10 +236,10 @@ RSpec.describe Order, type: :model do
   end
 
   describe '.recently_used' do
-    let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    let!(:user) { create(:user, :with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
 
-    let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    let!(:user1) { create(:user, :with_token, :with_multiple_roles_and_permissions,
     roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
     let(:package1) { create(:package, :with_inventory_record)}
     let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
@@ -944,7 +944,7 @@ RSpec.describe Order, type: :model do
 
   describe "Live updates" do
     let(:push_service) { PushService.new }
-    let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
+    let(:charity_user) { create(:user, :with_token, :with_multiple_roles_and_permissions,
       roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
 
     before(:each) do
