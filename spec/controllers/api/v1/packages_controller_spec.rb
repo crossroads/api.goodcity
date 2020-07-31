@@ -1112,6 +1112,29 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
   end
 
+  describe "GET package/1/versions" do
+    let(:electrical) { create :electrical}
+    let(:package) { create :package, detail: electrical }
+
+    before { generate_and_set_token(user) }
+
+    it "returns 200" do
+      get :versions, id: package.id
+      expect(response.status).to eq(200)
+    end
+
+    it "returns versions of packages" do
+      get :versions, id: package.id
+      expect(parsed_body['versions'].size).to eq(package.versions.size + electrical.versions.size)
+      expect(parsed_body["versions"].first["id"]).to eq(package.versions.first.id)
+    end
+
+    it "returns versions of detail along with package versions" do
+      get :versions, id: package.id
+      expect(parsed_body["versions"].map { |version| version["id"] }).to include(electrical.versions.first.id)
+    end
+  end
+
   describe "PUT package/1" do
     let(:location) { create :location }
     let(:uninventorized_package) { create :package }
