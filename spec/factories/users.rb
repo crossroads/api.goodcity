@@ -76,17 +76,6 @@ FactoryBot.define do
       end
     end
 
-    # create(:user, :with_token, :with_multiple_roles_and_permissions, roles_and_permissions: { 'Order fulfilment' => ['can_login_to_stock', 'can_manage_packages']} )
-    trait :with_multiple_roles_and_permissions do
-      after(:create) do |user, evaluator|
-        evaluator.roles_and_permissions.each_pair do |role_name, permissions|
-          # create(:supervisor_role, :with_can_manage_packages_permission, :with_can_manage_messages_permission, ...)
-          perms = permissions.map{|permission| :"with_#{permission}_permission" }
-          user.roles << create(:"#{role_name.parameterize.underscore}_role", *perms)
-        end
-      end
-    end
-
     trait :stockit_user do
       first_name "Stockit"
       last_name "User"

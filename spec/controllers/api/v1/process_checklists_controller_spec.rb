@@ -1,8 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ProcessChecklistsController, type: :controller do
-  let(:manager) { create(:user, :with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+  let(:manager) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
   let(:user) { create(:user, :with_token) }
   let!(:process_checklist) { create(:process_checklist) }
   let!(:process_checklist2) { create(:process_checklist) }
