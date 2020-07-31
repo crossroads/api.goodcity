@@ -1,8 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::PackagesInventoriesController, type: :controller do
-  let(:user) { create(:user, :with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Reviewer' => ['can_manage_packages', 'can_manage_orders']} )}
+  let(:user) { create(:user, :with_token, :with_reviewer_role, :with_can_manage_packages_permission, :with_can_manage_orders_permission) }
   let!(:package) { create(:package) }
   let!(:package1) { create(:package) }
   let!(:packages_inventory) { create(:packages_inventory, :gain, package_id: package.id) }
