@@ -108,7 +108,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     end
 
     describe "update donor_condition" do
-      before { generate_and_set_token(create(:user, :with_can_manage_items_permission, role_name: 'can_manage_items')) }
+      before { generate_and_set_token(create(:user, :with_reviewer_role, :with_can_manage_items_permission)) }
 
       # TODO refactor this test, is not actually checking job is created
       it "should add stockit-update-item request job" do
