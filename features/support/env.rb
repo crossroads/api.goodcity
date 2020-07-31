@@ -44,16 +44,17 @@ end
 
 World(FactoryBot::Syntax::Methods)
 
-STOCKIT_ENABLED = true
-
 Before('@supervisor') do
   User.current_user = FactoryBot.create(:user, :supervisor)
+end
+
+Before('@stockit_enabled') do
+  STOCKIT_ENABLED = true
 end
 
 Before do
   FactoryBot.create :location, :dispatched
 end
-
 
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
 # See the DatabaseCleaner documentation for details. Example:
