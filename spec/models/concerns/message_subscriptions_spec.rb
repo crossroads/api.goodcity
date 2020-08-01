@@ -205,7 +205,7 @@ module Messages
         end
 
         context "should subscribe all users with permission '' if it's the first private message of the thread" do
-          let!(:order_fulfilment_user) { create :user, :with_order_fulfilment_role, :with_can_manage_order_messages }
+          let!(:order_fulfilment_user) { create :user, :with_order_fulfilment_role, :with_can_manage_order_messages_permission }
           let!(:order_administrator_user) { create :user, :with_order_administrator_role, :with_can_manage_order_messages_permission }
 
           before { User.current_user = order_fulfilment_user }

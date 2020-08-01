@@ -217,7 +217,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   end
 
   describe "GET messages/notifications" do
-    let(:user) { create(:user, :with_token, :with_can_manage_package_messages) }
+    let(:user) { create(:user, :with_token, :with_can_manage_package_messages_permission) }
     let(:package) { create :package }
     before { generate_and_set_token(user) }
 
