@@ -56,28 +56,32 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one offer" do
-        3.times { create :message, messageable: offer }
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
+
         get :index, offer_id: offer.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple offers" do
-        3.times { create :message, messageable: offer }
-        3.times { create :message, messageable: offer2 }
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
+
+        3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2, is_private: false) }
         get :index, offer_id: "#{offer.id},#{offer2.id}"
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for one order" do
-        3.times { create :message, messageable: order }
-        3.times { create :message, messageable: order2 }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+
+        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
         get :index, order_id: order.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :message, messageable: order }
-        3.times { create :message, messageable: order2 }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+
+        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
         get :index, order_id: "#{order.id},#{order2.id}"
         expect(subject['messages'].length).to eq(6)
       end
@@ -209,6 +213,26 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       put :mark_read, id: subscription.message_id
       expect(response.status).to eq(200)
       expect(subject['message']['body']).to eql(message.body)
+    end
+  end
+
+  describe "GET messages/notifications" do
+    let(:user) { create(:user, :with_token, :with_can_manage_package_messages) }
+    let(:package) { create :package }
+    before { generate_and_set_token(user) }
+
+    it "return serialized message notifications", :show_in_doc do
+      2.times do
+        message = create :message, :private, messageable: package
+        message.subscriptions
+          .where(user: user, state: "unread", subscribable: package).first_or_create
+      end
+
+      get :notifications, messageable_type: ["package"], is_private: "true"
+
+      expect(response.status).to eq(200)
+      expect(subject['messages'].length).to eq(1)
+      expect(subject['messages'][0]["unread_count"]).to eq(2)
     end
   end
 end
