@@ -1,6 +1,6 @@
 # USAGE:
 #   create(:user)
-#   create(:user, :order_administrator)       # TO BE DEPRECATED
+#   create(:user, :order_administrator)
 #   create(:user, :with_order_administrator_role)  # has the role but no permissions
 #   create(:user, :with_can_manage_packages_permission) # when you don't care which role the user gets (they'll get one)
 #   create(:user, :with_can_manage_packages_permission, role_name: "Supervisor") # can specify role if permission belongs to more than one
@@ -32,7 +32,6 @@ FactoryBot.define do
       roles_and_permissions { }
     end
 
-    # TO BE DEPRECATED
     # Role specific users. create(:user, :order_administrator)
     # No permissions are created
     FactoryBot.generate(:permissions_roles).keys.each do |role|
