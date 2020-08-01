@@ -124,6 +124,10 @@ RSpec.describe OrdersPackage, type: :model do
   end
 
   describe '#dispatch_orders_package' do
+    before(:all) do
+      Timecop.freeze(Time.current)
+    end
+
     let!(:orders_package) { create :orders_package, state: 'designated', quantity: 1 }
     let!(:dispatched_location) { create :location,  building: "Dispatched" }
 
@@ -138,9 +142,17 @@ RSpec.describe OrdersPackage, type: :model do
         orders_package.dispatch_orders_package
         }.to change(orders_package, :state).to eq 'dispatched'
     end
+
+    after(:all) do
+      Timecop.return
+    end
   end
 
   describe '#undispatch_orders_package' do
+    before(:all) do
+      Timecop.freeze(Time.current)
+    end
+
     let!(:orders_package) { create :orders_package, :with_state_requested, sent_on: Date.today }
 
     it 'sets state as designated' do
@@ -153,6 +165,10 @@ RSpec.describe OrdersPackage, type: :model do
       expect{
         orders_package.undispatch_orders_package
       }.to change(orders_package, :sent_on).to(nil)
+    end
+
+    after(:all) do
+      Timecop.return
     end
   end
 

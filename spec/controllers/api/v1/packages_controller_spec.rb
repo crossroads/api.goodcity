@@ -530,6 +530,47 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           end
         end
       end
+
+      context 'when inventory number is duplicate' do
+        before { package_params[:location_id] = location.id }
+        let(:package) { create(:package, :with_inventory_number) }
+
+        context 'if STOCKIT is disabled' do
+          before do
+            stub_const('STOCKIT_ENABLED', false)
+          end
+
+          it 'does not allow creation of package with duplicate inventory number' do
+            package_params[:inventory_number] = package.inventory_number
+            expect {
+              post :create, format: :json, package: package_params
+            }.to change(Package, :count).by(0)
+          end
+
+          it 'throws uniqueness constraint error for inventory number' do
+            package_params[:inventory_number] = package.inventory_number
+            post :create, format: :json, package: package_params
+            expect(parsed_body['errors']).to include('Inventory number has already been taken')
+          end
+        end
+
+        context 'if STOCKIT is enabled' do
+          before do
+            stub_const('STOCKIT_ENABLED', true)
+          end
+
+          it 'does allow creation of package with duplicate inventory number' do
+            package_params[:inventory_number] = package.inventory_number
+            expect {
+              post :create, format: :json, package: package_params
+            }.to change(Package, :count).by(1)
+          end
+        end
+
+        after do
+          stub_const('STOCKIT_ENABLED', true)
+        end
+      end
     end
 
     context "create package with storage type with creation of box/pallet setting enabled" do
@@ -1067,6 +1108,29 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       expect(response.status).to eq(422)
       expect(parsed_body['error']).to eq("Quantity to split should be at least 1 and less than 5")
+    end
+  end
+
+  describe "GET package/1/versions" do
+    let(:electrical) { create :electrical}
+    let(:package) { create :package, detail: electrical }
+
+    before { generate_and_set_token(user) }
+
+    it "returns 200" do
+      get :versions, id: package.id
+      expect(response.status).to eq(200)
+    end
+
+    it "returns versions of packages" do
+      get :versions, id: package.id
+      expect(parsed_body['versions'].size).to eq(package.versions.size + electrical.versions.size)
+      expect(parsed_body["versions"].first["id"]).to eq(package.versions.first.id)
+    end
+
+    it "returns versions of detail along with package versions" do
+      get :versions, id: package.id
+      expect(parsed_body["versions"].map { |version| version["id"] }).to include(electrical.versions.first.id)
     end
   end
 

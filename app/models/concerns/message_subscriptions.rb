@@ -46,15 +46,20 @@ module MessageSubscriptions
   private
 
   def first_message_subscribers(klass)
-    roles = if klass == 'Order'
-      ['Order fulfilment', 'Order administrator']
-    elsif  ['Offer', 'Item'].include?(klass)
-      ['Reviewer', 'Supervisor']
+    message_permissions =  if ['Offer', 'Item'].include?(klass)
+      ['can_manage_offer_messages']
+    elsif klass == 'Order'
+      ['can_manage_order_messages']
+    elsif klass == 'Package'
+      ['can_manage_package_messages']
     else
       []
     end
 
-    User.with_roles(roles).pluck(:id)
+    User.joins(roles: [:permissions])
+        .where(permissions: { name: message_permissions } )
+        .distinct
+        .pluck(:id)
   end
 
   # A public subscriber is defined as :
