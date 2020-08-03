@@ -21,6 +21,7 @@ RSpec.describe StocktakeRevision, type: :model do
     it { is_expected.to have_db_column(:state).of_type(:string) }
     it { is_expected.to have_db_column(:quantity).of_type(:integer) }
     it { is_expected.to have_db_column(:dirty).of_type(:boolean) }
+    it { is_expected.to have_db_column(:processed_delta).of_type(:integer) }
   end
 
   describe "Validations" do
