@@ -5,7 +5,7 @@ Given(/^I am a ([supervisor | reviewer]+) logging into "([^"]*)" app/) do |name,
   header 'X-GOODCITY-APP-NAME', "#{app}.goodcity"
 end
 
-Given(/^I am a ([order_administrator | order_fulfilment]+) logging into "([^"]*)" app/) do |name, app|
+Given(/^I am a ([order_administrator | order_fulfilment | stock_administrator | stock_fulfilment]+) logging into "([^"]*)" app/) do |name, app|
   @user = create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: { name.humanize => ['can_login_to_stock'] })
   header 'X-GOODCITY-APP-NAME', "#{app}.goodcity"
 end
