@@ -4,7 +4,7 @@ describe Message, type: :model do
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
   let!(:donor) { create :user }
-  let!(:reviewer) { create :user, :with_can_manage_offer_messages, role_name: 'reviewer' }
+  let!(:reviewer) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' }
   let(:offer) { create :offer, created_by_id: donor.id }
   let(:item)  { create :item, offer_id: offer.id }
   let(:order) { create :order }
@@ -86,7 +86,7 @@ describe Message, type: :model do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should not allow donor to access private messages" do
+    it "should allow reviewer to access private messages" do
       User.current_user = reviewer
       expect(Message.all).to include(private_message)
     end
