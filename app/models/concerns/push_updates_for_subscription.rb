@@ -21,11 +21,14 @@ module PushUpdatesForSubscription
   def app_name
     related_object = message.related_object
     klass_name = related_object.class.name
-    created_by_id = related_object.created_by_id
-    if klass_name == 'Order'
+    created_by_id = related_object.try(:created_by_id)
+
+    if klass_name == "Order"
       (self.user_id == created_by_id) ? BROWSE_APP : STOCK_APP
-    else # Offer / Item
+    elsif ["Offer", "Item"].include?(klass_name)
       (self.user_id == created_by_id) ? DONOR_APP : ADMIN_APP
+    elsif klass_name == "Package"
+      STOCK_APP
     end
   end
 

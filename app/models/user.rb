@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
   has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
 
-  before_save :downcase_email
+  before_validation :downcase_email
 
   accepts_nested_attributes_for :address, allow_destroy: true
 

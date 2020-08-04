@@ -17,6 +17,7 @@ module Api
           param :user_id, String
           param :package_id, String
           param :is_available, Boolean
+          param :quantity, Integer
         end
       end
 
@@ -32,10 +33,17 @@ module Api
 
       api :POST, '/v1/requested_packages', "Create a cart item"
       def create
-        if params[:quantity].blank?
-          @requested_package.quantity = PackagesInventory::Computer.available_quantity_of(@requested_package.package)
-        end
         save_and_render_object_with_errors(@requested_package)
+      end
+
+      api :PUT, '/v1/requested_packages', "Update a cart item"
+      def update
+        @requested_package.assign_attributes(requested_package_params)
+        if @requested_package.valid? && @requested_package.save
+          render json: @requested_package, serializer: serializer
+        else
+          render_error(@requested_package.errors.full_messages.join("."))
+        end
       end
 
       api :POST, '/v1/requested_packages/checkout', "Checkout and add all the packages to an order"

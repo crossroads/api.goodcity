@@ -219,6 +219,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_can_manage_package_messages do
+      after(:create) do |role|
+        role.permissions << (create :permission, name: "can_manage_package_messages")
+      end
+    end
+
     trait :with_can_manage_offer_messages do
       after(:create) do |role|
         role.permissions << (create :permission, name: "can_manage_offer_messages")
@@ -230,6 +236,5 @@ FactoryBot.define do
         role.permissions << (create :permission, name: "can_manage_order_messages")
       end
     end
-
   end
 end

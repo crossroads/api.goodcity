@@ -15,9 +15,7 @@
 #   - ignore_unavailable {boolean}
 #     > if true, will checkout regardless of whether some packages are unavailable or not
 #
-# Notes:
-#   Currently only for singleton items
-#
+
 class CartCheckout
   include ::ActiveModel::Validations
 
@@ -72,16 +70,16 @@ class CartCheckout
   def add_requested_packages_to_order(order)
     @requested_packages.each do |requested_package|
       if requested_package.is_available
-        designate_package(requested_package.package, order)
+        designate_package(requested_package.package, requested_package.quantity, order)
         break if errors.any?
       end
       requested_package.destroy
     end
   end
 
-  def designate_package(package, order)
+  def designate_package(package, quantity, order)
     begin
-      Package::Operations.designate(package, quantity: 1, to_order: order)
+      Package::Operations.designate(package, quantity: quantity, to_order: order)
     rescue Goodcity::OperationsError => e
       add_errors(e.message)
     end

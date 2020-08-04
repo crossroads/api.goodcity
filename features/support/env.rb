@@ -32,6 +32,10 @@ ActionController::Base.allow_rescue = false
 
 # Remove/comment out the lines below if your app doesn't have a database.
 # For some databases (like MongoDB and CouchDB) you may need to use :truncation instead.
+
+require 'webmock/cucumber'
+WebMock.disable_net_connect!(allow_localhost: true)
+
 begin
   DatabaseCleaner.strategy = :transaction
 rescue NameError
@@ -44,6 +48,10 @@ Before('@supervisor') do
   User.current_user = FactoryBot.create(:user, :supervisor)
 end
 
+Before('@stockit_enabled') do
+  STOCKIT_ENABLED = true
+end
+
 Before do
   FactoryBot.create :location, :dispatched
 end
@@ -51,7 +59,6 @@ end
 def parsed_body
   JSON.parse(last_response.body)
 end
-
 
 # You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
 # See the DatabaseCleaner documentation for details. Example:
@@ -72,4 +79,3 @@ end
 # The :transaction strategy is faster, but might give you threading problems.
 # See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
 Cucumber::Rails::Database.javascript_strategy = :truncation
-

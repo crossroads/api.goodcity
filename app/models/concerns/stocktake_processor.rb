@@ -4,6 +4,7 @@ module StocktakeProcessor
   included do
     private_class_method :apply_package_revision
     private_class_method :persist_errors
+    private_class_method :serialize_exception
   end
 
   class_methods do
@@ -39,6 +40,12 @@ module StocktakeProcessor
       errors.values
     end
 
+    def serialize_exception(e, revision)
+      message = e.message      
+      message = message.gsub(/^Validation failed:/, '') if e.is_a?(ActiveRecord::RecordInvalid)
+      { revision: revision, message: message }
+    end
+
     def persist_errors(stocktake, errors)
       ActiveRecord::Base.transaction do
         stocktake.revisions.each do |rev|
@@ -65,8 +72,10 @@ module StocktakeProcessor
           description:  stocktake.name,
           source:       stocktake
         )
-      rescue Goodcity::BaseError => e
-        return { revision: stocktake_revision, message: e.message }
+
+        stocktake_revision.update!(processed_delta: delta)
+      rescue Goodcity::BaseError, ActiveRecord::RecordInvalid => e
+        return serialize_exception(e, stocktake_revision)
       end
 
       return nil
