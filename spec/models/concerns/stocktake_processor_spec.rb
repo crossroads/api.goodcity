@@ -29,6 +29,14 @@ context StocktakeProcessor do
       expect(changed_ids).to match_array([package_1.id, package_2.id])
     end
 
+    it 'updates the processed_delta with the recorded difference' do      
+      expect { 
+        subject.process_stocktake(stocktake);
+      }.to change {
+        stocktake.reload.revisions.map(&:processed_delta)
+      }.from([0,0,0]).to([2,-2,0])
+    end
+
     it 'records a gain to account for positive differences' do
       errors = subject.process_stocktake(stocktake);
 
