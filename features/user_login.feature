@@ -34,3 +34,20 @@ Feature: 'User logging'
     Given I am a order_administrator logging into "admin" app
     And I enter the mobile number
     Then I should not be allowed to login
+
+    Scenario: A stock_administrator cannot login to admin app
+    Given I am a stock_administrator logging into "admin" app
+    And I enter the mobile number
+    Then I should not be allowed to login
+
+    Scenario: A stock_administrator can login to stock app
+    Given I am a stock_administrator logging into "stock" app
+    And I enter the mobile number
+    And I enter the mobile number
+    Then I should be allowed to login
+
+    Scenario: A stock_fulfilment can login to stock app
+    Given I am a stock_fulfilment logging into "stock" app
+    And I enter the mobile number
+    And I enter the mobile number
+    Then I should be allowed to login
