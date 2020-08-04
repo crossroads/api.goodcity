@@ -17,7 +17,6 @@ module PushUpdatesForMessage
 
     # All admin users with permission to view messages on that object
     user_ids += relevant_staff_user_ids
-    
     # Don't send updates to system users
     # Don't send to donor/charity if is private message or offer/order is cancelled
     user_ids -= [User.system_user.try(:id), User.stockit_user.try(:id)]
@@ -41,9 +40,12 @@ module PushUpdatesForMessage
 
   # All reviewers/supervisors/order_fulfillers
   def notify_deletion_to_subscribers
-    if object_class == "Order"
+    case object_class
+    when "Order"
       channels = [Channel::ORDER_FULFILMENT_CHANNEL]
-    else # Offer/Item
+    when "Package"
+      channels = [Channel::INVENTORY_CHANNEL]
+    else # Offer / Item
       channels = [Channel::REVIEWER_CHANNEL, Channel::SUPERVISOR_CHANNEL]
     end
     send_update('read', channels, :delete)
@@ -91,10 +93,13 @@ module PushUpdatesForMessage
   def app_name_for_user(user_id)
     obj = self.related_object
     created_by_id = obj.try(:created_by_id) || obj.try(:offer).try(:created_by_id)
-    if object_class == 'Order'
+
+    if object_class == "Order"
       (created_by_id == user_id) ? BROWSE_APP : STOCK_APP
-    else # Offer/Item
+    elsif ["Offer", "Item"].include?(object_class)
       (created_by_id == user_id) ? DONOR_APP : ADMIN_APP
+    elsif object_class == "Package"
+      STOCK_APP
     end
   end
 
