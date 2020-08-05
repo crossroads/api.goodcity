@@ -86,7 +86,7 @@ describe Message, type: :model do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should not allow donor to access private messages" do
+    it "should allow reviewer to access private messages" do
       User.current_user = reviewer
       expect(Message.all).to include(private_message)
     end
