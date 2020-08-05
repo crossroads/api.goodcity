@@ -74,7 +74,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, format: :json, organisations_user: new_organisations_user_params
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(subject["errors"]).to eq([{"message" => "User already exists in this organisation", "status" => 422}])
+      expect(subject["errors"]).to eq([{"message" => I18n.t("organisations_user_builder.existing_user.present"), "status" => 422}])
     end
 
     context 'when an existing user already exists with same email' do
@@ -87,7 +87,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
-        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+        expect(subject['errors']).to eq([{'message' => I18n.t("organisations_user_builder.existing_user.present"), 'status' => 422}])
       end
 
       it 'does not create organisation_user for case insensitive duplicate email' do
@@ -99,7 +99,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
-        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+        expect(subject['errors']).to eq([{'message' => I18n.t("organisations_user_builder.existing_user.present"), 'status' => 422}])
       end
 
       it 'does not create organisation_user for duplicate mobile' do
@@ -112,7 +112,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
-        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+        expect(subject['errors']).to eq([{'message' => I18n.t('organisations_user_builder.invalid.user'), 'status' => 422}])
       end
     end
 
@@ -127,7 +127,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
-        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+        expect(subject['errors']).to eq([{'message' => I18n.t('organisations_user_builder.invalid.user'), 'status' => 422}])
       end
     end
   end
