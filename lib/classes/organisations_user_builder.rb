@@ -26,7 +26,10 @@ class OrganisationsUserBuilder
   end
 
   def build
-    @user = build_user
+    users = User.where("lower(email) = (?) OR mobile = (?)", @email&.downcase, @mobile)
+    return fail_with_error(I18n.t('organisations_user_builder.invalid.user')) unless users.count <= 1
+
+    @user = build_user(users)
     return fail_with_error(@user.errors) unless @user.valid?
     return fail_with_error(I18n.t("organisations_user_builder.organisation.not_found")) unless organisation
     if !user_belongs_to_organisation(@user)
@@ -39,8 +42,8 @@ class OrganisationsUserBuilder
     end
   end
 
-  def build_user
-    @user = User.where("lower(email) = (?) OR mobile = (?)", @email&.downcase, @mobile).first_or_initialize(@user_attributes)
+  def build_user(obj)
+    @user = obj.first_or_initialize(@user_attributes)
     assign_user_app_acessor
     @user.save
     @user
@@ -54,6 +57,7 @@ class OrganisationsUserBuilder
   def update
     assign_user_app_acessor
     return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
+
     @organisations_user.update(position: @position, preferred_contact_number: @preferred_contact_number)
     return_success.merge!("organisations_user" => @organisations_user.reload)
   end

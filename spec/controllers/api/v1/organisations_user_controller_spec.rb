@@ -93,7 +93,35 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       it 'does not create organisation_user for case insensitive duplicate email' do
         organisations_user = create :organisations_user
         new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
-        new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email.upcase
+        new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email
+        expect {
+          post :create, format: :json, organisations_user: new_organisations_user_params
+        }.to change(OrganisationsUser, :count).by(0)
+         .and change(User, :count).by(0)
+        expect(response.status).to eq(422)
+        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+      end
+
+      it 'does not create organisation_user for duplicate mobile' do
+        organisations_user = create :organisations_user
+        user = create(:user, mobile: '+85264522773')
+        new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email
+        new_organisations_user_params[:user_attributes][:mobile] = user.mobile
+        expect {
+          post :create, format: :json, organisations_user: new_organisations_user_params
+        }.to change(OrganisationsUser, :count).by(0)
+         .and change(User, :count).by(0)
+        expect(response.status).to eq(422)
+        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+      end
+    end
+
+    context 'when an existing user already exists with same mobile number' do
+      it 'does not create organisation_user for duplicate email' do
+        organisations_user = create :organisations_user
+        user = create(:user)
+        new_organisations_user_params[:user_attributes][:email] = user.email
+        new_organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
         expect {
           post :create, format: :json, organisations_user: new_organisations_user_params
         }.to change(OrganisationsUser, :count).by(0)
