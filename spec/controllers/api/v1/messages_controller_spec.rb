@@ -56,32 +56,32 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one offer" do
-        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer) }
 
         get :index, offer_id: offer.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple offers" do
-        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer) }
 
-        3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2) }
         get :index, offer_id: "#{offer.id},#{offer2.id}"
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for one order" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
 
-        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2) }
         get :index, order_id: order.id
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
 
-        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
+        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2) }
         get :index, order_id: "#{order.id},#{order2.id}"
         expect(subject['messages'].length).to eq(6)
       end
@@ -180,6 +180,22 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           expect(subject['message']['order_id']).to eq(order.id)
         }.to change { Message.count }
       end
+    end
+  end
+
+  describe 'create package message' do
+    let(:stock_user) { create(:user_with_token, :with_can_manage_private_messages, :with_can_manage_package_messages) }
+    let(:message_params) {
+      FactoryBot.attributes_for(:message, :private, sender: user.id, messageable_id: (create :package).id, messageable_type: "Package")
+    }
+
+    before do
+      generate_and_set_token(stock_user)
+    end
+
+    it 'from stock admin user' do
+      post :create, message: message_params
+      expect(response.status).to eq(201)
     end
   end
 
