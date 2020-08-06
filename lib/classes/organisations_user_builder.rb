@@ -27,7 +27,7 @@ class OrganisationsUserBuilder
 
   def build
     users = User.where("lower(email) = (?) OR mobile = (?)", @email&.downcase, @mobile)
-    return fail_with_error(I18n.t('organisations_user_builder.invalid.user')) unless users.count <= 1
+    return fail_with_error(I18n.t('organisations_user_builder.invalid.user')) if users.count > 1
 
     @user = build_user(users)
     return fail_with_error(@user.errors) unless @user.valid?

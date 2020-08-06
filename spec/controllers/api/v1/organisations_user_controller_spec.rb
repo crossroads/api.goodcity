@@ -92,7 +92,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       end
     end
 
-    context 'when an existing user already exists with same email' do
+    context 'when a user is already present for a particular email' do
       it 'does not create a new organisation_user for existing email' do
         organisations_user = create :organisations_user
         user = create(:user)
@@ -107,7 +107,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       end
     end
 
-    context 'when an existing user already exists with same email' do
+    context 'when a user is already present in the organisation' do
       it 'does not create organisation_user for duplicate email' do
         organisations_user = create :organisations_user
         new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
