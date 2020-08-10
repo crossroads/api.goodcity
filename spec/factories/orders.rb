@@ -1,13 +1,15 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :order do
-    status   ["draft", "submitted", "processing", "closed", "cancelled"].sample
-    state    ["draft", "submitted", "processing", "closed", "cancelled"].sample
+    status   { %w[draft submitted processing closed cancelled].sample }
+    state    { %w[draft submitted processing closed cancelled].sample }
 
     code          { generate(:code) }
-    description     FFaker::Lorem.sentence
-    purpose_description FFaker::Lorem.sentence
-    stockit_id      nil
-    detail_type     "GoodCity"
+    description     { FFaker::Lorem.sentence }
+    purpose_description { FFaker::Lorem.sentence }
+    stockit_id      { nil }
+    detail_type     { 'GoodCity' }
     people_helped   { rand(10) + 1 }
     shipment_date    { Date.today }
     association     :stockit_organisation
@@ -22,15 +24,15 @@ FactoryBot.define do
     end
 
     trait :shipment do
-      detail_type "Shipment"
+      detail_type { 'Shipment' }
     end
 
     trait :carry_out do
-      detail_type  "CarryOut"
+      detail_type  { 'CarryOut' }
     end
 
     trait :stockit_local_order do
-      detail_type  "StockitLocalOrder"
+      detail_type  { 'StockitLocalOrder' }
     end
 
     trait :with_orders_packages do
@@ -70,39 +72,39 @@ FactoryBot.define do
     end
 
     trait :with_state_submitted do
-      state "submitted"
+      state { 'submitted' }
     end
 
     trait :with_status_processing do
-      status "processing"
+      status { 'processing' }
     end
 
     trait :with_state_processing do
-      state "processing"
+      state { 'processing' }
     end
 
     trait :with_state_awaiting_dispatch do
-      state "awaiting_dispatch"
+      state { 'awaiting_dispatch' }
     end
 
     trait :with_state_dispatching do
-      state "dispatching"
+      state { 'dispatching' }
     end
 
     trait :with_state_draft do
-      state "draft"
+      state { 'draft' }
     end
 
     trait :with_state_cancelled do
-      state "cancelled"
+      state { 'cancelled' }
     end
 
     trait :with_state_closed do
-      state "closed"
+      state { 'closed' }
     end
 
     trait :awaiting_dispatch do
-      state 'awaiting_dispatch'
+      state { 'awaiting_dispatch' }
       :with_processed_by
       processed_at { Time.now }
       :with_process_completed_by
@@ -127,7 +129,7 @@ FactoryBot.define do
   end
 
   factory :online_order, parent: :order do
-    booking_type {BookingType.find_or_create_by(identifier: "online-order" ,name_en: 'online order', name_zh_tw: 'online order')}
+    booking_type { BookingType.find_or_create_by(identifier: "online-order" ,name_en: 'online order', name_zh_tw: 'online order') }
   end
 
   factory :appointment, parent: :order do

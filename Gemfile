@@ -1,18 +1,19 @@
-source 'https://rubygems.org'
-ruby "2.5.1"
+# frozen_string_literal: true
 
-gem 'rails', '~> 4.2.11.1'
-gem 'rails-api'
+source 'https://rubygems.org'
+ruby '2.5.1'
+
 gem 'pg'
+gem 'rails', '~> 5.0.7.1'
 gem 'rake'
 
 gem 'active_model_otp', '~> 1.1.0'
 gem 'active_model_serializers', '~> 0.8.0'
-gem 'postgres_ext', '~> 2.4.0.beta.1'
+gem 'postgres_ext'
 gem 'postgres_ext-serializers', git: 'https://github.com/crossroads/postgres_ext-serializers.git', ref: '530a6f7426bff9bd69b3f2773cced146ba89e65c'
 # Gem does not released for this issue-fix. Once released remove git reference.
 # "Hard-destroy of Parent record should destroy child records"
-gem 'paranoia', '~> 2.1.0'
+gem 'paranoia'
 # , github: 'radar/paranoia', ref: 'fe70628'
 # Shivani - Should try config_for to load the .env
 gem 'dotenv-rails', '0.11.1' # v1.0.2 of dotenv-rails doesn't preload ENV before Pusher gem loads
@@ -31,7 +32,7 @@ gem 'rack-protection'
 gem 'state_machine'
 gem 'twilio-ruby', '~> 5.11.0'
 gem 'warden'
-gem 'rack-timeout'
+gem 'rack-timeout', require: 'rack/timeout/base'
 gem 'newrelic_rpm'
 gem 'traco'
 gem 'rails-i18n'

@@ -1,4 +1,4 @@
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# frozen_String_literal: true
 
 FactoryBot.define do
   factory :territory do
@@ -7,7 +7,7 @@ FactoryBot.define do
     initialize_with { Territory.find_or_initialize_by(name_en: name_en) }
     factory :territory_districts do
       transient do
-        districts_count 5
+        districts_count { 5 }
       end
 
       after(:create) do |territory, evaluator|

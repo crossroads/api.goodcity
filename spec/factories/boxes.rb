@@ -1,9 +1,11 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :box do
-    box_number   "MyString"
-    description  "MyString"
-    comments     "MyText"
+    box_number   { 'MyString' }
+    description  { 'MyString' }
+    comments     { 'MyText' }
     pallet
-    stockit_id   1
+    stockit_id   { 1 }
   end
 end
