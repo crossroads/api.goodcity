@@ -1,6 +1,4 @@
 class UnauthorizedController < ActionController::Metal
-  include ActionController::RackDelegation
-
   def self.call(env)
     @respond ||= action(:respond)
     @respond.call(env)

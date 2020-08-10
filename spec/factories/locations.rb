@@ -1,3 +1,5 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :location do
     sequence(:building)
@@ -11,12 +13,12 @@ FactoryBot.define do
     }
 
     trait :dispatched do
-      building 'Dispatched'
-      area ''
+      building { 'Dispatched' }
+      area { '' }
     end
 
     trait :multiple do
-      building 'Multiple'
+      building { 'Multiple' }
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :user, aliases: [:sender] do
     association :address
@@ -245,14 +247,14 @@ FactoryBot.define do
     end
 
     trait :stockit_user do
-      first_name "Stockit"
-      last_name "User"
+      first_name { 'Stockit' }
+      last_name { 'User' }
     end
 
     trait :system do
-      first_name "GoodCity"
-      last_name "Team"
-      mobile SYSTEM_USER_MOBILE
+      first_name { 'GoodCity' }
+      last_name { 'Team' }
+      mobile { SYSTEM_USER_MOBILE }
       after(:create) do |user|
         user.roles << create(:system_role)
       end
@@ -291,5 +293,4 @@ FactoryBot.define do
       user.auth_tokens << create(:scenario_before_auth_token)
     end
   end
-
 end

@@ -6,7 +6,7 @@ require "active_record/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"
 # require "action_view/railtie"
-# require "sprockets/railtie"
+require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -35,11 +35,12 @@ module GoodCityServer
 
     config.i18n.available_locales = ['en', 'zh-tw']
 
+    config.assets.version = '1.0'
+
     config.filter_parameters << :otp_secret_key
 
     config.active_job.queue_adapter = :sidekiq
 
     config.active_record.raise_in_transactional_callbacks = true
-
   end
 end
