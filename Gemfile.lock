@@ -23,15 +23,6 @@ GIT
       prawn (>= 1.0.0)
 
 GIT
-  remote: https://github.com/crossroads/postgres_ext-serializers.git
-  revision: 530a6f7426bff9bd69b3f2773cced146ba89e65c
-  ref: 530a6f7426bff9bd69b3f2773cced146ba89e65c
-  specs:
-    postgres_ext-serializers (0.0.3)
-      active_model_serializers (~> 0.8.0)
-      postgres_ext (>= 2.1, < 4)
-
-GIT
   remote: https://github.com/maccman/nestful.git
   revision: 84cc3121fdb96aa20ceb47ed9994edb00a5faacc
   specs:
@@ -296,11 +287,6 @@ GEM
       activerecord (>= 4.0, < 6.1)
     pdf-core (0.8.1)
     pg (1.2.3)
-    pg_array_parser (0.0.9)
-    postgres_ext (3.0.0)
-      activerecord (>= 4.0.0)
-      arel (>= 4.0.1)
-      pg_array_parser (~> 0.0.9)
     prawn (2.3.0)
       pdf-core (~> 0.8.1)
       ttfunk (~> 1.6)
@@ -544,7 +530,6 @@ DEPENDENCIES
   paper_trail (~> 4.0.0.beta)
   paranoia
   pg
-  postgres_ext-serializers!
   puma (>= 4.3.1)
   rack-cors
   rack-protection
