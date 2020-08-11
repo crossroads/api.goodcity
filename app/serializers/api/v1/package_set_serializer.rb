@@ -6,6 +6,10 @@ module Api::V1
 
     has_many :packages, serializer: PackageSerializer, include_package_set: false
 
+    def include_packages?
+      !@options[:exclude_set_packages]
+    end
+
     class StockFormat < PackageSetSerializer
       has_many :packages, serializer: StockitItemSerializer, include_images: true, include_package_set: false, root: :items
     end
