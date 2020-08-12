@@ -35,8 +35,6 @@ module GoodCityServer
 
     config.i18n.available_locales = ['en', 'zh-tw']
 
-    config.assets.version = '1.0'
-
     config.filter_parameters << :otp_secret_key
 
     config.active_job.queue_adapter = :sidekiq
