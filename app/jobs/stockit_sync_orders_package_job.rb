@@ -14,7 +14,7 @@ class StockitSyncOrdersPackageJob < ActiveJob::Base
       when "destroy"
         response = Stockit::OrdersPackageSync.delete(package, orders_package_id)
       end
-      if response && (errors = response["errors"] || response[:errors])
+      if response && (errors = response["errors"])
         log_text = "Inventory: #{package.inventory_number} Package: #{package_id}"
         errors.each { |attribute, error| log_text += " #{attribute}: #{error}" }
         logger.error log_text
