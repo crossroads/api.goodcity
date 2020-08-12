@@ -16,8 +16,8 @@ class Message < ActiveRecord::Base
   validates :body, presence: true
 
   default_scope do
-    unless User.current_user.try(:staff?)
-      where("is_private = 'f'")
+    unless User.current_user.try(:can_manage_private_messages?)
+      where(is_private: false)
     end
   end
 

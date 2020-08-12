@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
-  let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_settings )}
+  let(:order_administrator) { create(:user, :order_administrator, :with_can_manage_settings_permission )}
   let(:no_permission_user) { create :user }
   let(:parsed_body) { JSON.parse(response.body) }
   let(:payload) { FactoryBot.build(:appointment_slot_preset, hours: 23, minutes: 0).attributes.except('id', 'updated_at', 'created_at') }

@@ -54,6 +54,7 @@ module Api
           include_orders_packages: is_stock_app?,
           include_packages_locations: is_stock_app?,
           is_browse_app: is_browse_app?,
+          exclude_set_packages: true,
           include_package_set: bool_param(:include_package_set, false)
       end
 
