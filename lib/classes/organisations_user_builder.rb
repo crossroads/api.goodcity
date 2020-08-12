@@ -1,3 +1,7 @@
+
+#
+# This helper class should only be called by administrative users
+
 class OrganisationsUserBuilder
 
   # :organisations_user: {
@@ -28,46 +32,41 @@ class OrganisationsUserBuilder
   def build
     users = User.where("lower(email) = (?) OR mobile = (?)", @email&.downcase, @mobile)
     return fail_with_error(I18n.t('organisations_user_builder.invalid.user')) if users.count > 1
-
     @user = build_user(users)
     return fail_with_error(@user.errors) unless @user.valid?
     return fail_with_error(I18n.t("organisations_user_builder.organisation.not_found")) unless organisation
-
     return fail_with_error(I18n.t('organisations_user_builder.existing_user.present')) if user_belongs_to_organisation(@user)
-
     @organisations_user = build_organisations_user
     return_success.merge!("organisations_user" => @organisations_user)
+  end
+
+  def update
+    assign_user_app_accessor
+    return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
+    @organisations_user.update(position: @position, preferred_contact_number: @preferred_contact_number)
+    return_success.merge!("organisations_user" => @organisations_user.reload)
+  end
+
+  private
+
+  def build_user(obj)
+    @user = obj.first_or_initialize(@user_attributes)
+    assign_user_app_accessor
+    @user.save
+    @user
   end
 
   def build_organisations_user
     @organisations_user = @user.organisations_users.new(organisation_id: @organisation_id, position: @position, preferred_contact_number: @preferred_contact_number)
     TwilioService.new(@user).send_welcome_msg
     return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
-
     @organisations_user
   end
 
-  def build_user(obj)
-    @user = obj.first_or_initialize(@user_attributes)
-    assign_user_app_acessor
-    @user.save
-    @user
-  end
-
-  def assign_user_app_acessor
+  def assign_user_app_accessor
     @user.request_from_stock = (@app_name == STOCK_APP)
     @user.request_from_browse = (@app_name == BROWSE_APP)
   end
-
-  def update
-    assign_user_app_acessor
-    return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
-
-    @organisations_user.update(position: @position, preferred_contact_number: @preferred_contact_number)
-    return_success.merge!("organisations_user" => @organisations_user.reload)
-  end
-
-  private
 
   def organisation
     @organisation ||= Organisation.find_by_id(@organisation_id)

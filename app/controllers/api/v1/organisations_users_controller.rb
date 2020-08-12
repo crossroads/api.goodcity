@@ -27,7 +27,7 @@ module Api
         end
       end
 
-      api :POST, "/v1/organisations_user", "Create a package"
+      api :POST, "/v1/organisations_user", "Create an organisations_user record"
       param_group :organisations_user
 
       def create
