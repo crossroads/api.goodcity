@@ -1,4 +1,4 @@
-class ChangeRejectionCommentsColumnType < ActiveRecord::Migration
+class ChangeRejectionCommentsColumnType < ActiveRecord::Migration[4.2]
   def up
     change_column :items, :rejection_comments, :text
   end

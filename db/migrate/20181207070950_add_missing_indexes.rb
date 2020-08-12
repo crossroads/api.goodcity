@@ -1,4 +1,4 @@
-class AddMissingIndexes < ActiveRecord::Migration
+class AddMissingIndexes < ActiveRecord::Migration[4.2]
   def change
     add_index :orders_packages, [:order_id, :package_id]
     add_index :orders_packages, :order_id
@@ -10,7 +10,7 @@ class AddMissingIndexes < ActiveRecord::Migration
     add_index :packages, :offer_id
     add_index :packages, :package_type_id
     add_index :packages, :location_id
-    
+
     add_index :offers, :created_by_id
     add_index :messages, :offer_id
     add_index :messages, :item_id

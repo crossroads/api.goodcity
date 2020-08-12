@@ -1,4 +1,4 @@
-class AddExtraQuantityFields < ActiveRecord::Migration
+class AddExtraQuantityFields < ActiveRecord::Migration[4.2]
   def change
     add_column    :packages, :available_quantity,   :integer, default: 0
     add_column    :packages, :on_hand_quantity,     :integer, default: 0

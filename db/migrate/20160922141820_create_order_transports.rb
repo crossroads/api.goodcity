@@ -1,4 +1,4 @@
-class CreateOrderTransports < ActiveRecord::Migration
+class CreateOrderTransports < ActiveRecord::Migration[4.2]
   def change
     create_table :order_transports do |t|
       t.date :scheduled_at

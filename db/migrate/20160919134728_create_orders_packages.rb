@@ -1,4 +1,4 @@
-class CreateOrdersPackages < ActiveRecord::Migration
+class CreateOrdersPackages < ActiveRecord::Migration[4.2]
   def change
     create_table :orders_packages do |t|
       t.integer :package_id

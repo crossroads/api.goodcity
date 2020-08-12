@@ -1,4 +1,4 @@
-class CreateDonorConditions < ActiveRecord::Migration
+class CreateDonorConditions < ActiveRecord::Migration[4.2]
   def change
     create_table :donor_conditions do |t|
       t.string :name_en

@@ -1,4 +1,4 @@
-class CreateCrossroadsTransports < ActiveRecord::Migration
+class CreateCrossroadsTransports < ActiveRecord::Migration[4.2]
   def change
     create_table :crossroads_transports do |t|
       t.string :name_en

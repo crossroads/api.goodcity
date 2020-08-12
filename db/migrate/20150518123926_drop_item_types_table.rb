@@ -1,4 +1,4 @@
-class DropItemTypesTable < ActiveRecord::Migration
+class DropItemTypesTable < ActiveRecord::Migration[4.2]
   def up
     rename_column :items, :item_type_id, :package_type_id
 

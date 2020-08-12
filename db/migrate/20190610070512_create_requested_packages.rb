@@ -1,4 +1,4 @@
-class CreateRequestedPackages < ActiveRecord::Migration
+class CreateRequestedPackages < ActiveRecord::Migration[4.2]
   def change
     create_table :requested_packages do |t|
       t.references :user, index: true

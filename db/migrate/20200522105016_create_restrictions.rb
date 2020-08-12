@@ -1,4 +1,4 @@
-class CreateRestrictions < ActiveRecord::Migration
+class CreateRestrictions < ActiveRecord::Migration[4.2]
   def change
     create_table :restrictions do |t|
       t.string :name_en

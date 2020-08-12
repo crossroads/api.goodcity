@@ -1,4 +1,4 @@
-class CreateGogovanTransports < ActiveRecord::Migration
+class CreateGogovanTransports < ActiveRecord::Migration[4.2]
   def change
     create_table :gogovan_transports do |t|
       t.string :name_en

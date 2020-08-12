@@ -1,4 +1,4 @@
-class CreateElectricals < ActiveRecord::Migration
+class CreateElectricals < ActiveRecord::Migration[4.2]
   def change
     create_table :electricals do |t|
       t.string :brand

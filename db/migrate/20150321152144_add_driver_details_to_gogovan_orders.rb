@@ -1,4 +1,4 @@
-class AddDriverDetailsToGogovanOrders < ActiveRecord::Migration
+class AddDriverDetailsToGogovanOrders < ActiveRecord::Migration[4.2]
   def change
     add_column :gogovan_orders, :price, :float
     add_column :gogovan_orders, :driver_name, :string

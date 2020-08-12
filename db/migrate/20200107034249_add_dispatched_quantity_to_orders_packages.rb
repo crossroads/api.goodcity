@@ -1,4 +1,4 @@
-class AddDispatchedQuantityToOrdersPackages < ActiveRecord::Migration
+class AddDispatchedQuantityToOrdersPackages < ActiveRecord::Migration[4.2]
   def change
     add_column :orders_packages, :dispatched_quantity, :integer, default: 0
 

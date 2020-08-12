@@ -1,4 +1,4 @@
-class SaleableFieldForOffersAndPackages < ActiveRecord::Migration
+class SaleableFieldForOffersAndPackages < ActiveRecord::Migration[4.2]
   def up
     add_column :offers, :saleable, :boolean, default: false
     add_column :packages, :saleable, :boolean, default: false
