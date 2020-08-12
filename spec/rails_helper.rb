@@ -4,7 +4,7 @@ require "simplecov"
 SimpleCov.start
 ENV["RAILS_ENV"] ||= 'test'
 require 'support/env' # Must load our dummy env vars before rails
-require File.expand_path("../../config/environment", __FILE__)
+require File.expand_path('../config/environment', __dir__)
 require 'rspec/rails'
 
 require 'ffaker'
@@ -57,6 +57,8 @@ RSpec.configure do |config|
 
   # Apipie can record examples using "APIPIE_RECORD=examples rake"
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
+
+  FactoryBot.use_parent_strategy = false
 
   FactoryBot.create :user, :system
 
