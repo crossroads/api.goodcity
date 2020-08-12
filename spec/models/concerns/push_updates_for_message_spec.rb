@@ -6,7 +6,7 @@ context PushUpdatesForMessage do
   let!(:message) { create :message, sender: reviewer1, messageable: create(:offer) }
   let(:donor) { message.messageable.created_by }
   let(:donor_channel) { "user_#{donor.id}" }
-  let(:reviewer1) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' }
+  let(:reviewer1) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission }
   let(:reviewer1_channel) { "user_#{reviewer1.id}_admin" }
   let(:push_service) { PushService.new }
 
@@ -18,7 +18,7 @@ context PushUpdatesForMessage do
 
     context "when reviewer1 sends a message on an offer to user channel" do
       let!(:message) { create :message, sender: reviewer1, messageable: create(:offer) }
-      let!(:reviewer2) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' } # create this user but don't use it
+      let!(:reviewer2) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission } # create this user but don't use it
       let(:reviewer2_channel) { "user_#{reviewer2.id}_admin" }
       it "should send a push update to donor, message sender / offer reviewer, other reviewers" do
         expect(message).to receive(:send_update).with('unread', [donor_channel])
@@ -32,10 +32,10 @@ context PushUpdatesForMessage do
       let(:recipient) { create :user, :charity }
       let(:recipient_channel) { "user_#{recipient.id}_browse" }
       let(:order) { create :order, created_by: recipient }
-      let(:order_fulfilment1) { create :user, :with_can_manage_order_messages, role_name: 'Order fulfilment' }
+      let(:order_fulfilment1) { create :user, :with_order_fulfilment_role, :with_can_manage_order_messages_permission }
       let(:order_fulfilment1_channel) { "user_#{order_fulfilment1.id}_stock" }
       let!(:message) { create :message, sender: order_fulfilment1, messageable: order }
-      let!(:order_fulfilment2) { create :user, :with_can_manage_order_messages, role_name: 'Order fulfilment' } # create this user but don't use it
+      let!(:order_fulfilment2) { create :user, :with_order_fulfilment_role, :with_can_manage_order_messages_permission } # create this user but don't use it
       let(:order_fulfilment2_channel) { "user_#{order_fulfilment2.id}_stock" }
       it "should send a push update to order recipient, order_fulfilment1 and order_fulfilment2" do
         expect(message).to receive(:send_update).with('unread', [recipient_channel])
@@ -152,8 +152,8 @@ context PushUpdatesForMessage do
   end
 
   context "relevant_staff_user_ids" do
-    let!(:reviewer1) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' }
-    let!(:order_fulfilment1) { create :user, :with_can_manage_order_messages, role_name: 'Order fulfilment' }
+    let!(:reviewer1) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission }
+    let!(:order_fulfilment1) { create :user, :with_order_fulfilment_role, :with_can_manage_order_messages_permission }
 
     context "should search for 'can_manage_offer_messages' permission" do
       let(:message) { create :message, messageable: create(:offer) }
