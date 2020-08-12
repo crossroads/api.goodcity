@@ -34,7 +34,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
   describe "POST organisations_user/1" do
     it "creates new organisations user", :show_in_doc do
       expect {
-        post :create, format: :json, organisations_user: organisations_user_params
+        post :create, params: { organisations_user: organisations_user_params }
       }.to change(OrganisationsUser, :count).by(1)
       expect(response.status).to eq(201)
     end
@@ -42,7 +42,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
     it "sends error if new organisations_user is with invalid mobile number", :show_in_doc do
       organisations_user_params[:user_attributes][:mobile] = "23535"
       expect {
-        post :create, format: :json, organisations_user: organisations_user_params
+        post :create, params: { organisations_user: organisations_user_params }
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
       expect(subject["errors"]).to eq([{"message" => "Mobile is invalid", "status" => 422}])
@@ -51,7 +51,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
     it "sends error if new organisations_user is with invalid email id", :show_in_doc do
       organisations_user_params[:user_attributes][:email] = "abc"
       expect {
-        post :create, format: :json, organisations_user: organisations_user_params
+        post :create, params: { organisations_user: organisations_user_params }
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
       expect(subject["errors"]).to eq([{"message" => "Email is invalid", "status" => 422}])
@@ -61,7 +61,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       organisations_user = create :organisations_user
       organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
       expect {
-        post :create, format: :json, organisations_user: organisations_user_params
+        post :create, params:{ organisations_user: organisations_user_params }
       }.to change(OrganisationsUser, :count).by(1)
       expect(response.status).to eq(201)
     end
@@ -71,7 +71,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
       new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
       new_organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
       expect {
-        post :create, format: :json, organisations_user: new_organisations_user_params
+        post :create, params: { organisations_user: new_organisations_user_params }
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
       expect(subject["errors"]).to eq([{"message" => "User already exists in this organisation", "status" => 422}])
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
         new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email
         expect {
-          post :create, format: :json, organisations_user: new_organisations_user_params
+          post :create, params: { organisations_user: new_organisations_user_params }
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
@@ -95,7 +95,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
         new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email.upcase
         expect {
-          post :create, format: :json, organisations_user: new_organisations_user_params
+          post :create, params: { organisations_user: new_organisations_user_params }
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
@@ -104,30 +104,28 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
     end
   end
 
-  describe "PUT organisations_user/1" do
-    it "update user_attributes of organisations_user ", :show_in_doc do
+  describe 'PUT organisations_user/1' do
+    it 'update user_attributes of organisations_user ', :show_in_doc do
       organisations_user_id = update_organisations_user_params[:id]
-      put :update, id: organisations_user_id, organisations_user: update_organisations_user_params
+      put :update, params: { id: organisations_user_id, organisations_user: update_organisations_user_params }
       organisations_user = OrganisationsUser.find_by_id(organisations_user_id)
       expect(organisations_user.user.last_name).to eq(update_user_attributes[:last_name])
     end
 
-    it "update position of organisations_user ", :show_in_doc do
+    it 'update position of organisations_user ', :show_in_doc do
       organisations_user_id = update_organisations_user_params[:id]
-      update_organisations_user_params[:position] = "Admin"
-      put :update, id: organisations_user_id, organisations_user: update_organisations_user_params
+      update_organisations_user_params[:position] = 'Admin'
+      put :update, params: { id: organisations_user_id, organisations_user: update_organisations_user_params }
       organisations_user = OrganisationsUser.find_by_id(organisations_user_id)
-      expect(organisations_user.position).to eq("Admin")
+      expect(organisations_user.position).to eq('Admin')
     end
 
-    it "it adds charity_role to organisations_user" do
+    it 'it adds charity_role to organisations_user' do
       update_organisations_user_params
       organisations_user_id = update_organisations_user_params[:id]
-      put :update, id: organisations_user_id, organisations_user: update_organisations_user_params
+      put :update, params: { id: organisations_user_id, organisations_user: update_organisations_user_params }
       organisations_user = OrganisationsUser.find_by_id(organisations_user_id)
-      expect(organisations_user.user.roles.pluck(:name)).to include("Charity")
+      expect(organisations_user.user.roles.pluck(:name)).to include('Charity')
     end
   end
 end
-
-

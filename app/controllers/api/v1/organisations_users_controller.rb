@@ -31,20 +31,21 @@ module Api
       param_group :organisations_user
 
       def create
-        builder = OrganisationsUserBuilder.new(params["organisations_user"].to_hash, app_name).build
-        if builder["result"]
-          save_and_render_object_with_errors(builder["organisations_user"], new_record: true)
+        builder = OrganisationsUserBuilder.new(organisations_user_params, app_name)
+                                          .build
+        if builder['result']
+          save_and_render_object_with_errors(builder['organisations_user'], new_record: true)
         else
-          render_error(builder["errors"])
+          render_error(builder['errors'])
         end
       end
 
       def update
-        builder = OrganisationsUserBuilder.new(params["organisations_user"].to_hash, app_name).update
-        if builder["result"]
-          save_and_render_object_with_errors(builder["organisations_user"])
+        builder = OrganisationsUserBuilder.new(organisations_user_params, app_name).update
+        if builder['result']
+          save_and_render_object_with_errors(builder['organisations_user'])
         else
-          render_error(builder["errors"])
+          render_error(builder['errors'])
         end
       end
 
@@ -55,8 +56,13 @@ module Api
       private
 
       def organisations_user_params
-        params.require(:organisations_user).permit(:organisation_id, :position,     :preferred_contact_number, user_attributes: [:first_name,
-        :last_name, :mobile, :email, :title])
+        params.require(:organisations_user)
+              .permit(:id, :organisation_id, :position,
+                      :preferred_contact_number,
+                      user_attributes: %i[first_name
+                                          last_name
+                                          mobile
+                                          email title])
       end
 
       def serializer
