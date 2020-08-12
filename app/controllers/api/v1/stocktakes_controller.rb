@@ -61,7 +61,7 @@ module Api
       private
 
       def stocktake_params
-        attributes = [:location_id, :name]
+        attributes = [:location_id, :name, :comment]
         { state: 'open' }.merge(
           params.require(:stocktake).permit(attributes)
         )

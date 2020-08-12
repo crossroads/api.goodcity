@@ -7,7 +7,7 @@ describe "Delivery abilities" do
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :confirm_delivery] }
 
   context "when Supervisor" do
-    let(:user)     { create(:user, :with_can_manage_deliveries, role_name: 'Supervisor') }
+    let(:user)     { create(:user, :supervisor, :with_can_manage_deliveries_permission) }
     let(:delivery) { create :delivery }
     let(:can)      { [:index, :show, :create, :update, :destroy, :confirm_delivery] }
     let(:cannot)   { [:manage] }
@@ -16,7 +16,7 @@ describe "Delivery abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)     { create(:user, :with_can_manage_deliveries, role_name: 'Reviewer') }
+    let(:user)     { create(:user, :with_can_manage_deliveries_permission, role_name: 'Reviewer') }
     let(:delivery) { create :delivery }
     let(:can)      { [:index, :show, :create, :update, :destroy, :confirm_delivery] }
     let(:cannot)   { [:manage] }

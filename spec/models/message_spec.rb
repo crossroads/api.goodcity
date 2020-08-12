@@ -4,7 +4,7 @@ describe Message, type: :model do
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
   let!(:donor) { create :user }
-  let!(:reviewer) { create :user, :with_can_manage_offer_messages, role_name: 'Reviewer' }
+  let!(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission }
   let(:offer) { create :offer, created_by_id: donor.id }
   let(:item)  { create :item, offer_id: offer.id }
   let(:order) { create :order }

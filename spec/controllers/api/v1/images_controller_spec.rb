@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ImagesController, type: :controller do
 
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:offer) { create :offer, created_by: user }
   let(:item)  { create :item, offer: offer }
   let(:image) { create :image, favourite: true, item: item }

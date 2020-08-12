@@ -72,13 +72,12 @@ module MessageSubscriptions
   end
 
   # A private subscriber is defined as :
-  #   > A supervisor or reviewer who has answered the private thread
+  #   > An admin/stock app user who has answered the private thread
   def private_subscribers_to(obj)
-    User.staff
-        .joins(messages: [:subscriptions])
+    User.joins(messages: [:subscriptions])
         .where(messages: { is_private: true })
         .where(subscriptions: { subscribable: obj })
-        .pluck(:id)
+        .pluck(:id).uniq
   end
 
   def first_message?
