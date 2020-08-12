@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-Given(/^I am a ([supervisor | reviewer]+) logging into admin app/) do |role|
+Given(/^I am a ([supervisor | reviewer]+) logging into "([^"]*)" app/) do |role, app|
   @user = create(:user, :"with_#{role}_role", :with_can_login_to_admin_permission)
-  header 'X-GOODCITY-APP-NAME', "admin.goodcity"
+  header 'X-GOODCITY-APP-NAME', "#{app}.goodcity"
 end
 
-Given(/^I am a ([order_administrator | order_fulfilment | stock_administrator | stock_fulfilment]+) logging into stock app/) do |role|
+Given(/^I am a ([order_administrator | order_fulfilment | stock_administrator | stock_fulfilment]+) logging into "([^"]*)" app/) do |role, app|
   @user = create(:user, :"with_#{role}_role", :with_can_login_to_stock_permission)
-  header 'X-GOODCITY-APP-NAME', "stock.goodcity"
+  header 'X-GOODCITY-APP-NAME', "#{app}.goodcity"
 end
 
 And('I enter the mobile number') do
