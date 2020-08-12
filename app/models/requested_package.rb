@@ -1,4 +1,4 @@
-class RequestedPackage < ActiveRecord::Base
+class RequestedPackage < ApplicationRecord
   include Watcher
 
   has_paper_trail class_name: 'Version'

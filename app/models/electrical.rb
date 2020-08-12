@@ -1,4 +1,4 @@
-class Electrical < ActiveRecord::Base
+class Electrical < ApplicationRecord
   include SubformUtilities
   has_paper_trail class_name: 'Version'
 

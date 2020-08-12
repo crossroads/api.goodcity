@@ -1,4 +1,4 @@
-class Image < ActiveRecord::Base
+class Image < ApplicationRecord
   has_paper_trail class_name: 'Version', meta: { related: :offer }
   include CloudinaryHelper
   include Paranoid

@@ -1,4 +1,4 @@
-class PackageSet < ActiveRecord::Base
+class PackageSet < ApplicationRecord
   include Watcher
 
   has_many   :packages

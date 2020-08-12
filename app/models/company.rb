@@ -1,4 +1,4 @@
-class Company < ActiveRecord::Base
+class Company < ApplicationRecord
   has_many :offers
 
   validates :name, uniqueness: true

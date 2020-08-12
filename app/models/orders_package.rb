@@ -1,4 +1,4 @@
-class OrdersPackage < ActiveRecord::Base
+class OrdersPackage < ApplicationRecord
   include RollbarSpecification
   include OrdersPackageActions
   include HookControls

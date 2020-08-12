@@ -1,4 +1,4 @@
-class Message < ActiveRecord::Base
+class Message < ApplicationRecord
   has_paper_trail class_name: 'Version', meta: { related: :messageable }
 
   include Paranoid

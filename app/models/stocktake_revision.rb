@@ -1,4 +1,4 @@
-class StocktakeRevision < ActiveRecord::Base
+class StocktakeRevision < ApplicationRecord
   include Watcher
   include PushUpdatesMinimal
 
@@ -31,7 +31,7 @@ class StocktakeRevision < ActiveRecord::Base
   watch [PackagesInventory] do |packages_inventory|
     #
     # The stocktake count is invalidated if someone performs a quantity action on the package
-    #  
+    #
     location = packages_inventory.location
     StocktakeRevision
       .joins(:stocktake)

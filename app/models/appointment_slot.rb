@@ -1,4 +1,4 @@
-class AppointmentSlot < ActiveRecord::Base
+class AppointmentSlot < ApplicationRecord
   include PushUpdatesMinimal
 
   validates :quota, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

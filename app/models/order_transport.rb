@@ -1,4 +1,4 @@
-class OrderTransport < ActiveRecord::Base
+class OrderTransport < ApplicationRecord
   include PushUpdatesMinimal
 
   before_save :save_timeslot_to_schedule

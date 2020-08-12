@@ -1,2 +1,2 @@
-class ValuationMatrix < ActiveRecord::Base
+class ValuationMatrix < ApplicationRecord
 end

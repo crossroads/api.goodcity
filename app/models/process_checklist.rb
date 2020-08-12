@@ -1,4 +1,4 @@
-class ProcessChecklist < ActiveRecord::Base
+class ProcessChecklist < ApplicationRecord
   translates :text
   belongs_to :booking_type
   has_many :orders

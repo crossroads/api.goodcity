@@ -1,4 +1,4 @@
-class Stocktake < ActiveRecord::Base
+class Stocktake < ApplicationRecord
   include StocktakeProcessor
   include PushUpdatesMinimal
 
