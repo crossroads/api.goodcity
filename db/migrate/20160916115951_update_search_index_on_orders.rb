@@ -1,4 +1,4 @@
-class UpdateSearchIndexOnOrders < ActiveRecord::Migration
+class UpdateSearchIndexOnOrders < ActiveRecord::Migration[4.2]
   def up
     execute "DROP INDEX st_designations_code_idx;"
 

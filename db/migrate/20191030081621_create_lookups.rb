@@ -1,4 +1,4 @@
-class CreateLookups < ActiveRecord::Migration
+class CreateLookups < ActiveRecord::Migration[4.2]
   def change
     create_table :lookups do |t|
       t.string :name

@@ -1,4 +1,4 @@
-class AddIsSuccessToBraintreeTransactions < ActiveRecord::Migration
+class AddIsSuccessToBraintreeTransactions < ActiveRecord::Migration[4.2]
   def up
     add_column :braintree_transactions, :is_success, :boolean
 

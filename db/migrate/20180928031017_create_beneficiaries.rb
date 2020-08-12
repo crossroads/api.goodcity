@@ -1,4 +1,4 @@
-class CreateBeneficiaries < ActiveRecord::Migration
+class CreateBeneficiaries < ActiveRecord::Migration[4.2]
   def change
     create_table :beneficiaries do |t|
       t.references :identity_type, index: true, foreign_key: true

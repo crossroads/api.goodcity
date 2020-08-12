@@ -1,4 +1,4 @@
-class CreateStocktakeRevisions < ActiveRecord::Migration
+class CreateStocktakeRevisions < ActiveRecord::Migration[4.2]
   def change
     create_table :stocktake_revisions do |t|
       t.references  :stocktake, null: false, index: true, foreign_key: true

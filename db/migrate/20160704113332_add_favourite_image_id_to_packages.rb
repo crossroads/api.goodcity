@@ -1,4 +1,4 @@
-class AddFavouriteImageIdToPackages < ActiveRecord::Migration
+class AddFavouriteImageIdToPackages < ActiveRecord::Migration[4.2]
   def up
     add_column :packages, :favourite_image_id, :integer
     remove_column :packages, :image_id

@@ -1,4 +1,4 @@
-class AddPermissionIdToUser < ActiveRecord::Migration
+class AddPermissionIdToUser < ActiveRecord::Migration[4.2]
   def change
     add_reference :users, :permission, index: true
     remove_column :users, :district_id
