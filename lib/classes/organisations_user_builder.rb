@@ -35,7 +35,7 @@ class OrganisationsUserBuilder
     @user = build_user(users)
     return fail_with_error(@user.errors) unless @user.valid?
     return fail_with_error(I18n.t("organisations_user_builder.organisation.not_found")) unless organisation
-    return fail_with_error(I18n.t('organisations_user_builder.existing_user.present')) if user_belongs_to_organisation(@user)
+    return fail_with_error(I18n.t('organisations_user_builder.existing_user.present')) if @user.organisation_ids.include?(@organisation_id)
     @organisations_user = build_organisations_user
     return_success.merge!("organisations_user" => @organisations_user)
   end
@@ -79,10 +79,6 @@ class OrganisationsUserBuilder
     else
       fail_with_error(@user.errors.full_messages.join(" "))
     end
-  end
-
-  def user_belongs_to_organisation(user)
-    user.organisation_ids.include?(@organisation_id)
   end
 
   def charity_role
