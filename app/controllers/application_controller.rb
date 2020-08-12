@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  include ActionController::Helpers
   include CanCan::ControllerAdditions
   include TokenValidatable
   include AppMatcher
@@ -59,5 +60,5 @@ class ApplicationController < ActionController::API
     payload[:app_name] = app_name # calling app: donor, admin, stock, browse
     payload[:app_version] = app_version # calling app version
   end
- 
+
 end
