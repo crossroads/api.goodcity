@@ -1,4 +1,4 @@
-class Printer < ActiveRecord::Base
+class Printer < ApplicationRecord
   has_many   :users
   belongs_to :location
 

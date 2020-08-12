@@ -1,3 +1,3 @@
-class Timeslot < ActiveRecord::Base
+class Timeslot < ApplicationRecord
   translates :name
 end

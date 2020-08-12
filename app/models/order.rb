@@ -1,4 +1,4 @@
-class Order < ActiveRecord::Base
+class Order < ApplicationRecord
   has_paper_trail class_name: "Version"
   include PushUpdatesMinimal
   include OrderFiltering

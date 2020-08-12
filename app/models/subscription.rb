@@ -1,4 +1,4 @@
-class Subscription < ActiveRecord::Base
+class Subscription < ApplicationRecord
   include PushUpdatesForSubscription
   belongs_to :user
   belongs_to :message

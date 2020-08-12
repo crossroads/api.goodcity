@@ -1,4 +1,4 @@
-class StorageType < ActiveRecord::Base
+class StorageType < ApplicationRecord
   has_many :packages
 
   def singleton?

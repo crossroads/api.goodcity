@@ -1,4 +1,4 @@
-class GoodcityRequest < ActiveRecord::Base
+class GoodcityRequest < ApplicationRecord
   include PushUpdatesMinimal
 
   has_paper_trail class_name: 'Version'

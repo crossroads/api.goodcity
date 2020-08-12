@@ -1,4 +1,4 @@
-class ComputerAccessory < ActiveRecord::Base
+class ComputerAccessory < ApplicationRecord
   include SubformUtilities
   has_paper_trail class_name: "Version"
 

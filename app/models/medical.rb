@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Medical model
-class Medical < ActiveRecord::Base
+class Medical < ApplicationRecord
   include SubformUtilities
   has_paper_trail class_name: 'Version'
 

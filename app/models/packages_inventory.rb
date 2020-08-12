@@ -1,4 +1,4 @@
-class PackagesInventory < ActiveRecord::Base
+class PackagesInventory < ApplicationRecord
   module Actions
     INVENTORY   = 'inventory'.freeze
     UNINVENTORY = "uninventory".freeze
