@@ -11,14 +11,14 @@ RSpec.describe Api::V1::CancellationReasonsController, type: :controller do
     let!(:visible_to_offer) { create :cancellation_reason, visible_to_offer: true, visible_to_order: false }
     let!(:visible_to_order) { create :cancellation_reason, visible_to_offer: false, visible_to_order: true }
     it 'returns cancellation_reasons visible to offer if `for:offer` exist in params' do
-      get :index, for: 'offer'
+      get :index, params: { for: 'offer' }
       expect(response.status).to eq(200)
       expect(parsed_body['cancellation_reasons'].length).to eq(1)
       expect(parsed_body['cancellation_reasons'].map{ |reason| reason["id"] }).to include(visible_to_offer.id)
     end
 
     it 'returns cancellation_reasons visible to order `for:offer` exist in params' do
-      get :index, for: 'order'
+      get :index, params: { for: 'order' }
       expect(response.status).to eq(200)
       expect(parsed_body['cancellation_reasons'].length).to eq(1)
       expect(parsed_body['cancellation_reasons'].map{ |reason| reason["id"] }).to include(visible_to_order.id)
@@ -30,12 +30,12 @@ RSpec.describe Api::V1::CancellationReasonsController, type: :controller do
     let(:serialized_cancellation_reason_json) { JSON.parse( serialized_cancellation_reason.as_json.to_json ) }
 
     it "returns 200" do
-      get :show, id: cancellation_reason.id
+      get :show, params: { id: cancellation_reason.id }
       expect(response.status).to eq(200)
     end
 
     it "return serialized address", :show_in_doc do
-      get :show, id: cancellation_reason.id
+      get :show, params: { id: cancellation_reason.id }
       expect(parsed_body).to eq(serialized_cancellation_reason_json)
     end
   end
@@ -43,5 +43,4 @@ RSpec.describe Api::V1::CancellationReasonsController, type: :controller do
   describe "serializer" do
     it { expect(controller.send(:serializer)).to eql (Api::V1::CancellationReasonSerializer) }
   end
-
 end

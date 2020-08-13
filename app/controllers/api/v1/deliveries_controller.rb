@@ -174,19 +174,15 @@ module Api
       end
 
       def address_attributes
-        [:address_type, :district_id, :street, :flat, :building]
+        %i[address_type district_id street flat building]
       end
 
       def schedule_attributes
-        [:scheduled_at, :slot_name, :zone, :resource, :slot]
+        %i[scheduled_at slot_name zone resource slot]
       end
 
       def get_hash(object)
-        Hash[
-          object.map do |(m, n)|
-            [m.underscore, (n.is_a?(Hash) ? get_hash(n) : n)]
-          end
-        ]
+        object.deep_transform_keys(&:underscore)
       end
     end
   end
