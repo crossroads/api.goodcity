@@ -22,7 +22,7 @@ module Api
       param :needCarry, ['true', 'false'], desc: "Porterage?"
       param :offerId, String, desc: "Id of the offer"
       def calculate_price
-        order_price = GogovanOrder.place_order(current_user, order_params)
+        order_price = GogovanOrder.place_order(current_user, order_params.to_h)
         render json: order_price.to_json
       end
 

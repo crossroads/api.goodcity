@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::DonorConditionsController, type: :controller do
-
   let(:user) { create(:user_with_token) }
   let(:donor_condition) { create(:donor_condition) }
   let(:serialized_donor_condition) { Api::V1::DonorConditionSerializer.new(donor_condition).as_json }
@@ -12,12 +11,12 @@ RSpec.describe Api::V1::DonorConditionsController, type: :controller do
 
   describe "GET donor_condition" do
     it "returns 200" do
-      get :show, id: donor_condition.id
+      get :show, params: { id: donor_condition.id }
       expect(response.status).to eq(200)
     end
 
     it "return serialized donor_condition", :show_in_doc do
-      get :show, id: donor_condition.id
+      get :show, params: { id: donor_condition.id }
       expect( parsed_body ).to eq(serialized_donor_condition_json)
     end
   end
@@ -41,5 +40,4 @@ RSpec.describe Api::V1::DonorConditionsController, type: :controller do
       expect( parsed_body['donor_conditions'].map { |condition| condition['visible_to_donor']} ).to eq(DonorCondition.pluck(:visible_to_donor))
     end
   end
-
 end

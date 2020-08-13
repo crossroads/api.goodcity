@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
-
   let(:user) { create(:user_with_token) }
   let(:gogovan_order) { create(:gogovan_order) }
   let(:serialized_order) { Api::V1::GogovanOrderSerializer.new(gogovan_order).as_json }
@@ -54,7 +53,7 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
       before { generate_and_set_token(user) }
       it "can initiate gogovan order and get price", :show_in_doc do
         allow(GogovanOrder).to receive(:place_order).with(user, order_attributes).and_return(price_details)
-        post :calculate_price, order_attributes
+        post :calculate_price, params:  order_attributes
         expect(response.status).to eq(200)
         expect(response.body).to eq(price_details.to_json)
       end
@@ -65,7 +64,7 @@ RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
     before { generate_and_set_token(user) }
     let(:ggv_uuid) { offer.delivery.gogovan_order.ggv_uuid }
     it "returns 200" do
-      get :driver_details, id: ggv_uuid
+      get :driver_details, params: { id: ggv_uuid }
       expect(response.status).to eq(200)
       expect(parsed_body.keys).to include("gogovan_orders")
     end

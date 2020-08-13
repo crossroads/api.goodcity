@@ -6,7 +6,7 @@ RSpec.describe Api::V1::GogovanTransportsController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET gogovan_transport" do
-    
+
     before { generate_and_set_token(reviewer) }
 
     it "returns 200", :show_in_doc do
