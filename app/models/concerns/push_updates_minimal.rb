@@ -42,7 +42,7 @@ module PushUpdatesMinimal
   end
 
   def read_operation(record)
-    if record.destroyed?
+    if record.destroyed? || record.try(:deleted_at)
       return :delete
     end
     record.new_record? ? :create : :update
