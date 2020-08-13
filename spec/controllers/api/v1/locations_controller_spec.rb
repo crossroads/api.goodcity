@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::LocationsController, type: :controller do
-
   let(:reviewer) { create(:user_with_token, :with_can_manage_locations_permission, role_name: 'Reviewer') }
   let(:parsed_body) { JSON.parse(response.body) }
   before { generate_and_set_token(reviewer) }
@@ -21,19 +20,18 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
     end
 
     it "finds location using searchText" do
-      loc1 = create :location, building: "TestBuilding"
+      create :location, building: "TestBuilding"
       create :location
-      get :index, searchText: "TestBuilding"
+      get :index, params: { searchText: "TestBuilding" }
       expect(parsed_body['locations'][0]['building']).to eql("TestBuilding")
       expect(parsed_body['meta']['total_pages']).to eql(1)
     end
-    
   end
 
   describe "POST location/1" do
     it "create new location if stockit_id is not present", :show_in_doc do
       expect {
-        post :create, location: {building: "234", area: "C"}
+        post :create, params: { location: {building: "234", area: "C" } }
       }.to change(Location, :count).by(1)
       expect(response.status).to eq(201)
     end
@@ -41,10 +39,9 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
     it "updates location if stockit_id is already present", :show_in_doc do
       location = create :location, stockit_id: 123
       expect {
-        post :create, location: location.attributes
+        post :create, params: { location: location.attributes }
       }.to_not change(Location, :count)
       expect(response.status).to eq(201)
     end
   end
-
 end

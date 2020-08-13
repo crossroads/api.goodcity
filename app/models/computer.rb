@@ -1,6 +1,6 @@
 class Computer < ApplicationRecord
   include SubformUtilities
-  has_paper_trail class_name: 'Version'
+  has_paper_trail versions: { class_name: 'Version' }
 
   validates :mar_os_serial_num, :mar_ms_office_serial_num, length: { is: 14 }, allow_nil: true, allow_blank: true
 
