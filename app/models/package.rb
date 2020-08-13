@@ -211,7 +211,7 @@ class Package < ActiveRecord::Base
   end
 
   def should_validate_inventory_number?
-    !STOCKIT_ENABLED
+    !STOCKIT_ENABLED && inventory_number.present?
   end
 
   def add_to_stockit
