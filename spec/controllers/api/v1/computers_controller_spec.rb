@@ -32,12 +32,12 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
 
   describe "Get computer" do
     it "returns 200", :show_in_doc do
-      get :show, id: @computer.id
+      get :show, params: { id: @computer.id }
       expect(response.status).to eq(200)
     end
 
     it "returns correct record", :show_in_doc do
-      get :show, id: @computer.id
+      get :show, params: { id: @computer.id }
       expect(@parsed_body_with_country).to eq(JSON.parse(response.body))
     end
   end
@@ -45,7 +45,7 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
   describe "PUT update" do
     it "returns 200" do
       allow(Stockit::ItemDetailSync).to receive(:update).with(@computer).and_return({"status"=>201, "computer_id"=> 12})
-      put :update, id: @computer.id, :computer => { brand: "lenovo" }
+      put :update, params: { id: @computer.id, :computer => { brand: "lenovo" } }
       expect(response.status).to eq(200)
       expect(@computer.reload.brand).to eq("lenovo")
     end
@@ -54,7 +54,7 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
   describe "DELETE destroy" do
     it "returns 200" do
       allow(Stockit::ItemDetailSync).to receive(:destroy).with(@computer).and_return({"status"=>201})
-      delete :destroy, id: @computer.id
+      delete :destroy, params: { id: @computer.id }
       expect(response.status).to eq(200)
     end
   end
