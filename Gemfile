@@ -51,7 +51,7 @@ gem 'sidekiq'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
 gem 'lograge'
-gem 'paper_trail', '~> 4.0.0.beta'
+gem 'paper_trail'
 # gem 'rubyXL', '~>3.3.8' # only enable when needed for writing xlsx file into yml
 gem 'request_store'
 gem 'easyzpl', git: 'https://github.com/crossroads/easyzpl.git'
