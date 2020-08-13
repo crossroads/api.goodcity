@@ -1,5 +1,5 @@
 class Item < ApplicationRecord
-  has_paper_trail class_name: 'Version', meta: { related: :offer },
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer },
   only: [:donor_description, :donor_condition_id, :state]
   include Paranoid
   include StateMachineScope

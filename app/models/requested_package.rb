@@ -1,7 +1,7 @@
 class RequestedPackage < ApplicationRecord
   include Watcher
 
-  has_paper_trail class_name: 'Version'
+  has_paper_trail versions: { class_name: 'Version' }
 
   # --- Live Updates
 

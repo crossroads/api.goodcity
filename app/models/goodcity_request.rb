@@ -1,7 +1,7 @@
 class GoodcityRequest < ApplicationRecord
   include PushUpdatesMinimal
 
-  has_paper_trail class_name: 'Version'
+  has_paper_trail versions: { class_name: 'Version' }
   belongs_to :package_type
   belongs_to :order
   belongs_to :created_by, class_name: 'User'

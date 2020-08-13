@@ -1,5 +1,5 @@
 class Message < ApplicationRecord
-  has_paper_trail class_name: 'Version', meta: { related: :messageable }
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :messageable }
 
   include Paranoid
   include StateMachineScope

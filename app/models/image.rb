@@ -1,5 +1,5 @@
 class Image < ApplicationRecord
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include CloudinaryHelper
   include Paranoid
   include PushUpdates
