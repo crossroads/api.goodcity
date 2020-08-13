@@ -338,10 +338,10 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       context 'stock app' do
-        it 'returns order_administrator and order_fulfulment users' do
+        it 'returns order_administrator and order_fulfilment users' do
           generate_and_set_token(order_administrator)
           get :mentionable_users, order_id: order.id, roles: 'Order administrator, Order fulfilment'
-          users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+          users = [[User.order_administrators.map(&:id), User.order_fulfilments.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
         end
       end

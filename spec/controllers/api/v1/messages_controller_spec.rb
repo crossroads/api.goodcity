@@ -184,7 +184,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   end
 
   describe 'create package message' do
-    let(:stock_user) { create(:user_with_token, :with_can_manage_package_messages) }
+    let(:stock_user) { create(:user, :with_token, :with_can_manage_package_messages_permission) }
     let(:message_params) {
       FactoryBot.attributes_for(:message, :private, sender: user.id, messageable_id: (create :package).id, messageable_type: "Package")
     }
