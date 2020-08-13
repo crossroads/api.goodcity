@@ -1,6 +1,6 @@
 class ComputerAccessory < ApplicationRecord
   include SubformUtilities
-  has_paper_trail class_name: "Version"
+  has_paper_trail versions: { class_name: "Version" }
 
   belongs_to :country, required: false
   belongs_to :comp_test_status, class_name: "Lookup", required: false
