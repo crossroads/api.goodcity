@@ -20,13 +20,13 @@ RSpec.describe Api::V1::ImagesController, type: :controller do
     it "return cloudinary signature", :show_in_doc do
       get :generate_signature
       body = JSON.parse(response.body)
-      expect( body.keys ).to eq(["api_key", "signature", "timestamp", "tags"])
+      expect(body.keys).to eq(%w[api_key signature timestamp tags])
     end
 
     # don't want client apps displaying error if app is simply out of data and image
     # has already been deleted
     it "returns 200 for deleting missing image" do
-      delete :destroy, id: -1
+      delete :destroy, params: { id: -1 }
       expect(response.status).to eq(200)
     end
   end
