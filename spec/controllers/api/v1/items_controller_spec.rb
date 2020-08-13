@@ -45,15 +45,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   describe "DELETE item/1" do
     before { generate_and_set_token(user) }
-    let(:item)  { create :item, offer: offer, state: "draft" }
-
-    it "should delete draft item", :show_in_doc do
-      delete :destroy, params: { id: item.id }
-      expect(response.status).to eq(200)
-      expect(Item.only_deleted.count).to be_zero
-      body = JSON.parse(response.body)
-      expect(body).to eq( {} )
-    end
+    let(:item) { create :item, offer: offer, state: "draft" }
 
     it 'should not delete the last item if offer not draft' do
       offer = create :offer, created_by: user, state: 'reviewed'
@@ -62,6 +54,14 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       expect(response.status).to eq(422)
       body = JSON.parse(response.body)
       expect(body['errors']).to eq('Cannot delete the last item of a submitted offer')
+    end
+
+    it "should delete draft item" do
+      delete :destroy, params: { id: item.id }
+      expect(response.status).to eq(200)
+      expect(Item.only_deleted.count).to be_zero
+      body = JSON.parse(response.body)
+      expect(body).to be_empty
     end
 
     it 'should revert to under_review offer state if deleted item is last accepted item' do
