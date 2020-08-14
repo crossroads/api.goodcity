@@ -70,6 +70,7 @@ class Ability
     organisations_users_abilities
     requested_packages_abilities
     package_abilities
+    location_abilities
     package_type_abilities
     packages_locations_abilities
     schedule_abilities
@@ -401,11 +402,13 @@ class Ability
     can [:index, :show], Schedule if can_read_schedule?
   end
 
-  def stockit_abilities
-    if can_manage_locations? || @api_user
-      can [:index, :create, :destroy], Location
+  def location_abilities
+    if (can_manage_locations? || @api_user)
+      can %i[index create destroy], Location
     end
+  end
 
+  def stockit_abilities
     if @api_user
       can [:create, :index], Box
       can [:create, :index], Pallet
