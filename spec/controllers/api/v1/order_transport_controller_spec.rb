@@ -15,9 +15,9 @@ RSpec.describe Api::V1::OrderTransportsController, type: :controller do
 
   describe 'PUT order_transports/1' do
     it 'updates the order_transport' do
-      put :update, id: order_transport.id,
-                   order_transport: { scheduled_at: '2020-05-11T16:30:00+08:00',
-                                      timeslot: '16:30', order_id: order.id }
+      put :update, params: { id: order_transport.id,
+                             order_transport: { scheduled_at: '2020-05-11T16:30:00+08:00',
+                                                timeslot: '16:30', order_id: order.id } }
 
       expect(response).to have_http_status(:success)
       expect(parsed_body['order_transport']['timeslot']).to eq('16:30')
@@ -27,9 +27,9 @@ RSpec.describe Api::V1::OrderTransportsController, type: :controller do
     context 'if an update is made on cancelled order' do
       it 'does not allow to perform the operation' do
         order_transport = create(:order_transport, order: cancelled_order, timeslot: '2PM-3PM')
-        put :update, id: order_transport.id,
-                     order_transport: { timeslot: '16:30',
-                                        order_id: cancelled_order.id }
+        put :update, params: { id: order_transport.id,
+                               order_transport: { timeslot: '16:30',
+                                                  order_id: cancelled_order.id } }
         order_transport.reload
         expect(response).to have_http_status(:forbidden)
         expect(order_transport.timeslot).to eq('2PM-3PM')
