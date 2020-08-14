@@ -283,6 +283,19 @@ describe User, :type => :model do
       expect(user.user_role_names).to include("Reviewer")
       expect(user.user_role_names.count).to eq(1)
     end
+
+    it 'returns valid role names for user' do
+      user = create :user
+      reviewer_role = create :role, name: "Reviewer"
+      supervisor_role = create :role, name: "Supervisor"
+      create :user_role, user: user, role: reviewer_role
+      create :user_role, user: user, role: supervisor_role, expiry_date: 5.days.ago
+
+      expect(user.user_role_names).to include("Reviewer")
+      expect(user.user_role_names.count).to eq(1)
+
+      expect(user.user_role_names).to_not include("Supervisor")
+    end
   end
 
   describe "#user_permissions_names" do

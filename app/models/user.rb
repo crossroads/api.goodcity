@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
   has_many :offers_with_unread_messages, class_name: 'Offer', through: :unread_subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
-  has_many :user_roles
+  has_many :user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Date.today) }
   has_many :roles, through: :user_roles
 
   belongs_to :image, dependent: :destroy
