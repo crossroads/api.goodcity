@@ -363,8 +363,7 @@ class Package < ActiveRecord::Base
     end
 
     if current_image
-      images.update_all(favourite: false)
-      current_image.update_column(:favourite, true)
+      current_image.update_attributes(favourite: true)
       self.favourite_image_id = current_image.id
     end
   end
