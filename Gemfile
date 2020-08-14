@@ -87,12 +87,13 @@ group :development, :test do
 end
 
 group :test do
-  gem 'simplecov', require: false
-  gem 'webmock'
-  gem 'shoulda-matchers'
-  gem "shoulda-callback-matchers"
-  gem 'rspec_junit_formatter'
-  gem 'timecop'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
+  gem 'rails-controller-testing'
+  gem 'rspec_junit_formatter'
+  gem 'shoulda-callback-matchers'
+  gem 'shoulda-matchers'
+  gem 'simplecov', require: false
+  gem 'timecop'
+  gem 'webmock'
 end
