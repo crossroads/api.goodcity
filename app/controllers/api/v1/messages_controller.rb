@@ -18,7 +18,7 @@ module Api
         param :message, Hash, require: true do
           param :body, String, desc: "Message body", allow_nil: true
           param :sender, String, desc: "Message sent by"
-          param :is_private, [true, false], desc: "Message Type e.g. [public, private]"
+          param :is_private, ['true', 'false'], desc: "Message Type e.g. [public, private]"
           param :offer_id, String, desc: "Offer for which message has been posted", allow_nil: true
           param :item_id, String, desc: "Item for which message has been posted", allow_nil: true
           param :state, String, desc: "Current User's Subscription State e.g. unread, read "
@@ -29,7 +29,7 @@ module Api
       api :GET, "/v1/messages", "List all messages"
       param :ids, Array, of: Integer, desc: "Filter by message ids e.g. ids = [1,2,3,4]"
       param :offer_id, String, desc: "Return messages for offer id."
-      param :is_private, ["true", "false"], desc: "Message Type e.g. [public, private]"
+      param :is_private, ['true', 'false'], desc: "Message Type e.g. [public, private]"
       param :item_id, String, desc: "Return messages for item id."
       param :order_id, String, desc: "Return messages for order id"
       param :package_id, String, desc: "Return messages for package id"
