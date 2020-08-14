@@ -34,7 +34,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
     it "supports pagination", :show_in_doc do
       8.times { create :message, messageable: item }
-      get :index, page: 1, per_page: 6
+      get :index, params: { page: 1, per_page: 6 }
       expect(response.status).to eq(200)
       expect(subject['meta']['total_pages']).to eq(2)
       expect(subject['meta']['total_count']).to eq(8)
@@ -44,21 +44,21 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     describe 'filtering messages' do
       it "for one item" do
         3.times { create :message, messageable: item }
-        get :index, item_id: item.id
+        get :index, params: { item_id: item.id }
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple items" do
         3.times { create :message, messageable: item }
         3.times { create :message, messageable: item2 }
-        get :index, item_id: "#{item.id},#{item2.id}"
+        get :index, params: { item_id: "#{item.id},#{item2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for one offer" do
         3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
 
-        get :index, offer_id: offer.id
+        get :index, params: { offer_id: offer.id }
         expect(subject['messages'].length).to eq(3)
       end
 
@@ -66,7 +66,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
 
         3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2, is_private: false) }
-        get :index, offer_id: "#{offer.id},#{offer2.id}"
+        get :index, params: { offer_id: "#{offer.id},#{offer2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
 
@@ -74,7 +74,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
 
         3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
-        get :index, order_id: order.id
+        get :index, params: { order_id: order.id }
         expect(subject['messages'].length).to eq(3)
       end
 
@@ -82,7 +82,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
 
         3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
-        get :index, order_id: "#{order.id},#{order2.id}"
+        get :index, params: { order_id: "#{order.id},#{order2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
 
@@ -90,7 +90,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         3.times { create :message, messageable: offer }
         3.times { create :message, messageable: offer, sender_id: user.id }
         3.times { create :message, messageable: offer2 }
-        get :index, offer_id: "#{offer.id},#{offer2.id}", state: 'unread'
+        get :index, params: { offer_id: "#{offer.id},#{offer2.id}", state: 'unread' }
         expect(subject['messages'].length).to eq(6)
       end
 
@@ -99,7 +99,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         1.times { create :message, messageable: order }
         4.times { create :message, messageable: item }
 
-        get :index, scope: 'item'
+        get :index, params: { scope: 'item' }
         expect(subject['messages'].length).to eq(4)
         subject['messages'].each do |m|
           expect(m['messageable_type']).to eq('Item')
@@ -112,7 +112,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   describe "GET message" do
     before { generate_and_set_token(user) }
     it "returns 200 and payload", :show_in_doc do
-      get :show, id: message.id
+      get :show, params: { id: message.id }
       expect(response.status).to eq(200)
       expect(subject['message']['body']).to eql(message.body)
     end
@@ -124,7 +124,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     it 'returns 201', :show_in_doc do
-      post :create, message: message_params
+      post :create, params: { message: message_params }
       expect(response.status).to eq(201)
     end
 
@@ -149,34 +149,34 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
         generate_and_set_token(user)
       end
       it 'returns 201' do
-        post :create, message: outdated_offer_params
+        post :create, params: { message: outdated_offer_params }
         expect(response).to have_http_status(:success)
       end
 
       it 'creates new message for the offer' do
         expect{
-          post :create, message: outdated_offer_params
+          post :create, params: { message: outdated_offer_params }
           expect(subject['message']['offer_id']).to eq(offer.id)
         }.to change { Message.count }
       end
 
       it 'creates the new message for the item' do
         expect{
-          post :create, message: outdated_item_params
+          post :create, params: { message: outdated_item_params }
           expect(subject['message']['item_id']).to eq(item.id)
         }.to change { Message.count }
       end
 
       it 'creates the new message for the order through stock app' do
         expect{
-          post :create, message: outdated_order_params
+          post :create, params: { message: outdated_order_params }
           expect(subject['message']['order_id']).to eq(order.id)
         }.to change { Message.count }
       end
 
       it 'creates the new message for the order through browse app' do
         expect{
-          post :create, message: outdated_order_params_charity
+          post :create, params: { message: outdated_order_params_charity }
           expect(subject['message']['order_id']).to eq(order.id)
         }.to change { Message.count }
       end
@@ -201,7 +201,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     it "mark all messages of a certain scope as read" do
-      put :mark_all_read, scope: 'order'
+      put :mark_all_read, params: { scope: 'order' }
       expect(subscription_states).to all(eq('unread'))
       expect(order_subscription_states).to all(eq('read'))
     end
@@ -210,7 +210,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   describe "PUT messages/:id/mark_read" do
     before { generate_and_set_token(user) }
     it "donor will read a message and automatically marked Read" do
-      put :mark_read, id: subscription.message_id
+      put :mark_read, params: { id: subscription.message_id }
       expect(response.status).to eq(200)
       expect(subject['message']['body']).to eql(message.body)
     end
@@ -228,7 +228,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
           .where(user: user, state: "unread", subscribable: package).first_or_create
       end
 
-      get :notifications, messageable_type: ["package"], is_private: "true"
+      get :notifications, params: { messageable_type: ["package"], is_private: "true" }
 
       expect(response.status).to eq(200)
       expect(subject['messages'].length).to eq(1)
