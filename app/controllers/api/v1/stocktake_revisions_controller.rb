@@ -32,7 +32,7 @@ module Api
 
       api :DELETE, "/v1/stocktakes/:id", "Deletes a revision"
       def destroy
-        @stocktake_revision.destroy! 
+        @stocktake_revision.destroy!
         render json: {}, status: 200
       end
 
