@@ -163,10 +163,11 @@ module Api
       description "Deletion of the Package item in review mode"
 
       def destroy
+        is_inventorized = PackagesInventory.where(package: @package).present?
+        raise Goodcity::InventorizedPackageError if is_inventorized
+
         @package.really_destroy!
         render json: {}
-      rescue ActiveRecord::InvalidForeignKey
-        raise Goodcity::InventorizedPackageError
       end
 
       api :PUT, "/v1/packages/1", "Mark a package as missing"
@@ -300,7 +301,8 @@ module Api
       end
 
       def add_remove_item
-        render nothing: true, status: 204 and return if params[:quantity].to_i.zero?
+        return head :no_content, status: 204 if params[:quantity].to_i.zero?
+
         response = Package::Operations.pack_or_unpack(
                     container: @package,
                     package: Package.find(params[:item_id]),
