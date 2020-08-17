@@ -6,7 +6,7 @@ module TwilioConfig
   end
 
   def render_twiml(response)
-    render text: response.to_s
+    render plain: response.to_s
   end
 
   def set_json_header
