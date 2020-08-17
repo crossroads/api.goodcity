@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::SchedulesController, type: :controller do
-
   let(:user) { create(:user_with_token) }
   let(:schedule) { build(:schedule) }
   let(:schedule_params) { FactoryBot.attributes_for(:schedule) }
@@ -13,9 +12,8 @@ RSpec.describe Api::V1::SchedulesController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "return serialized schedules", show_in_doc: true do
-      post :create, schedule: schedule_params, format: :json
-      body = JSON.parse(response.body)
+    it "return serialized schedules", show_in_doc: true, format: :json do
+      post :create, params: { schedule: schedule_params, format: :json }
       expect(response.status).to eq(201)
     end
   end

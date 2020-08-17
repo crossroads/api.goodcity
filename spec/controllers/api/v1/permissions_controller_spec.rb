@@ -6,7 +6,6 @@ RSpec.describe Api::V1::PermissionsController, type: :controller do
   let(:serialized_permission) { Api::V1::PermissionSerializer.new(permission).as_json }
   let(:serialized_permission_json) { JSON.parse( serialized_permission.to_json ) }
   let!(:api_write_permission) { create :permission, :api_write }
-  
   let(:subject) { JSON.parse(response.body) }
 
   describe 'GET permissions' do
@@ -27,12 +26,12 @@ RSpec.describe Api::V1::PermissionsController, type: :controller do
     before { generate_and_set_token(user) }
 
     it 'returns 200' do
-      get :show, id: permission.id
+      get :show, params: { id: permission.id }
       expect(response.status).to eq(200)
     end
 
     it 'returns serialised_permission', :show_in_doc do
-      get :show, id: permission.id
+      get :show, params: { id: permission.id }
       expect(subject).to eq(serialized_permission_json)
     end
   end
