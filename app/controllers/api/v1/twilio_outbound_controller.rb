@@ -8,10 +8,10 @@ module Api
 
       skip_authorization_check
       skip_before_action :validate_token, except: :generate_call_token
-      skip_before_action :verify_authenticity_token, except: :generate_call_token
+      skip_before_action :verify_authenticity_token, except: :generate_call_token, raise: false
 
       # before_action :validate_twilio_request, except: :generate_call_token
-      after_filter :set_header, except: :generate_call_token
+      after_action :set_header, except: :generate_call_token
 
       resource_description do
         short "Handle Twilio Outbound Calls"
