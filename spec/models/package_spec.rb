@@ -603,6 +603,7 @@ RSpec.describe Package, type: :model do
 
       it 'should set favourite image from its existing images' do
         expect {
+          @package.reload
           @package.favourite_image_id = @pkg_image2.id
           @package.save
         }.to change { @package.favourite_image_id }.to(@pkg_image2.id)
