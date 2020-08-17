@@ -77,7 +77,7 @@ module Api
       def mentionable_users
         return render json: { users: [] } if params['roles'].nil?
 
-        @users = User.active.exclude_user(current_user.id).with_roles(mentionable_role).uniq
+        @users = User.active.exclude_user(current_user.id).with_roles(mentionable_role).distinct
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
 
