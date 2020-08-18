@@ -19,8 +19,13 @@ class User < ActiveRecord::Base
   has_many :offers_with_unread_messages, class_name: 'Offer', through: :unread_subscriptions, source: :subscribable, source_type: 'Offer'
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
-  has_many :user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Date.today) }
+
+  has_many :user_roles
   has_many :roles, through: :user_roles
+
+  has_many :active_user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Time.now.in_time_zone) },
+            class_name: "UserRole"
+  has_many :active_roles, class_name: "Role", through: :active_user_roles, source: "role"
 
   belongs_to :image, dependent: :destroy
   belongs_to :printer
@@ -50,21 +55,21 @@ class User < ActiveRecord::Base
 
   after_create :generate_auth_token
 
-  scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
-  scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
-  scope :stock_fulfilments, -> { where(roles: {name: "Stock fulfilment"}).joins(:roles) }
-  scope :stock_administrators, -> { where(roles: { name: 'Stock administrator' }).joins(:roles) }
-  scope :order_fulfilments, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
-  scope :order_administrators, -> { where(roles: { name: 'Order administrator' }).joins(:roles) }
-  scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
+  scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
+  scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
+  scope :stock_fulfilments, -> { where(roles: {name: "Stock fulfilment"}).joins(:active_roles) }
+  scope :stock_administrators, -> { where(roles: { name: 'Stock administrator' }).joins(:active_roles) }
+  scope :order_fulfilments, -> { where(roles: {name: "Order fulfilment"}).joins(:active_roles) }
+  scope :order_administrators, -> { where(roles: { name: 'Order administrator' }).joins(:active_roles) }
+  scope :system, -> { where(roles: {name: "System"}).joins(:active_roles) }
 
-  scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:roles) }
-  scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
-  scope :by_roles, -> (role_names) { where(roles: {name: role_names }).joins(:roles) }
+  scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:active_roles) }
+  scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:active_roles) }
+  scope :by_roles, ->(role_names) { where(roles: {name: role_names }).joins(:active_roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
-  scope :with_roles, ->(role_names) { where(roles: { name: role_names}).joins(:roles) }
+  scope :with_roles, ->(role_names) { where(roles: { name: role_names}).joins(:active_roles) }
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
@@ -149,11 +154,11 @@ class User < ActiveRecord::Base
   end
 
   def staff?
-    reviewer? || supervisor? || administrator?
+    reviewer? || supervisor?
   end
 
   def user_role_names
-    @user_role_names ||= roles.pluck(:name)
+    @user_role_names ||= active_roles.pluck(:name)
   end
 
   def reviewer?
@@ -188,14 +193,6 @@ class User < ActiveRecord::Base
   def can_manage_private_messages?
     (user_permissions_names &
     ["can_manage_offer_messages", "can_manage_order_messages", "can_manage_package_messages"]).any?
-  end
-
-  def admin?
-    administrator?
-  end
-
-  def administrator?
-    user_role_names.include?("Administrator") && @treat_user_as_donor != true
   end
 
   def downcase_email
