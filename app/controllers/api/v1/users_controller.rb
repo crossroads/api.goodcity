@@ -104,7 +104,7 @@ module Api
 
       def user_params
         attributes = %i[image_id first_name last_name email receive_email
-          other_phone title mobile printer_id]
+          other_phone title mobile printer_id preferred_language]
         attributes.concat([:disabled]) if current_user.can_disable_user?(params[:id])
         attributes.concat([:last_connected, :last_disconnected]) if User.current_user.id == params["id"]&.to_i
         params.require(:user).permit(attributes)
