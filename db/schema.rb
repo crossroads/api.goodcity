@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200814124000) do
+ActiveRecord::Schema.define(version: 20200817133634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1016,6 +1016,7 @@ ActiveRecord::Schema.define(version: 20200814124000) do
     t.boolean  "receive_email",        default: false
     t.string   "other_phone"
     t.integer  "printer_id"
+    t.string   "preferred_language"
   end
 
   add_index "users", ["image_id"], name: "index_users_on_image_id", using: :btree

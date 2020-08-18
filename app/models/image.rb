@@ -42,7 +42,7 @@ class Image < ActiveRecord::Base
   end
 
   def reset_favourite
-    favourite &&
+    favourite && imageable &&
     imageable.images.where.not(id: id).each{ |img| img.update_attributes(favourite: false) }
   end
 
