@@ -94,7 +94,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:existing_user) { create(:user) }
 
     before do
-      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [charity_role.id] }
+      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [charity_role.id], preferred_language: "zh-tw" }
       @user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [role.id] }
       @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
       @user_params3 = {"first_name": "Test", "last_name": "Name", "mobile": "3812912"}
@@ -111,6 +111,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(parsed_body['user']['first_name']).to eql(@valid_user_params[:first_name])
         expect(parsed_body['user']['last_name']).to eql(@valid_user_params[:last_name])
         expect(parsed_body['user']['mobile']).to eql(@valid_user_params[:mobile])
+        expect(parsed_body["user"]["preferred_language"]).to eql("zh-tw")
         expect(parsed_body['user_roles'][0]['role_id']).to eql(charity_role.id)
       end
     end

@@ -98,6 +98,14 @@ describe User, :type => :model do
       it { is_expected.to_not allow_value("Mister").for(:title) }
       it { is_expected.to_not allow_value("").for(:title) }
     end
+
+    context "preferred_language" do
+      it { is_expected.to allow_value(nil).for(:preferred_language) }
+      it { is_expected.to allow_value("en").for(:preferred_language) }
+      it { is_expected.to allow_value("zh-tw").for(:preferred_language) }
+      it { is_expected.to_not allow_value("fr").for(:preferred_language) }
+      it { is_expected.to_not allow_value("").for(:preferred_language) }
+    end
   end
 
   describe ".search" do
