@@ -44,7 +44,9 @@ class User < ActiveRecord::Base
   validates :email, fake_email: true, :if => lambda { Rails.env.production? }
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
-  validates :preferred_language, inclusion: { in: USER_LANGUAGES }, allow_nil: true
+  validates :preferred_language,
+            inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
+            allow_nil: true
 
   after_create :generate_auth_token
 
