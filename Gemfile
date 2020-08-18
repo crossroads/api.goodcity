@@ -8,6 +8,7 @@ gem 'rails', '~> 5.0.7.1'
 gem 'rake'
 
 gem 'active_model_otp'
+gem 'rotp', '~> 3.3.1'
 gem 'active_model_serializers', '~> 0.8.0'
 # TODO:  Make postgres_ext and postgres_ext_serializer compatible with rails 5 / Find other alternatives
 # gem 'postgres_ext'
