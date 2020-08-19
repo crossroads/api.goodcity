@@ -51,3 +51,13 @@ Feature: 'User logging'
     And I enter the mobile number
     And I enter the mobile number
     Then I should be allowed to login
+
+    Scenario: An old reviewer [expired role] cannot login to admin app
+    Given I am an old reviewer logging into "admin" app
+    And I enter the mobile number
+    Then I should not be allowed to login
+
+    Scenario: An old stock_fulfilment [expired role] cannot login to stock app
+    Given I am an old stock_fulfilment logging into "stock" app
+    And I enter the mobile number
+    Then I should not be allowed to login

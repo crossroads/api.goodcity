@@ -10,6 +10,11 @@ Given(/^I am a ([order_administrator | order_fulfilment | stock_administrator | 
   header 'X-GOODCITY-APP-NAME', "#{app}.goodcity"
 end
 
+Given(/^I am an old ([supervisor | reviewer | stock_fulfilment]+) logging into "([^"]*)" app/) do |role, app|
+  @user = create(:user, :"with_#{role}_role", :with_can_login_to_admin_permission, role_expiry: 5.days.ago)
+  header "X-GOODCITY-APP-NAME", "#{app}.goodcity"
+end
+
 And('I enter the mobile number') do
   request('api/v1/auth/send_pin', method: :post, params: { mobile: @user.mobile })
   @response = last_response
@@ -29,3 +34,4 @@ end
 Then('I should be allowed to login') do
   expect(@response.status).to eq(200)
 end
+
