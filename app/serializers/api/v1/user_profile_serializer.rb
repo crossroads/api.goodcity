@@ -14,10 +14,6 @@ module Api::V1
       object.try(:mobile) && object.mobile.slice(4..-1)
     end
 
-    def max_role_level__sql
-      "(SELECT MAX(roles.level) FROM roles INNER JOIN user_roles ON roles.id = user_roles.role_id WHERE user_roles.user_id = users.id)"
-    end
-
     def max_role_level
       object.max_role_level
     end

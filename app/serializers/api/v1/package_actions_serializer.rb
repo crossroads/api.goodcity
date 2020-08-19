@@ -6,10 +6,10 @@ module Api::V1
 
     has_one :user, serializer: UserSerializer
 
-    alias_method :item_id, :package_id
-
-    def item_id__sql
-      "package_id"
+    def item_id
+      object.package_id
     end
+
+    alias package_id item_id
   end
 end

@@ -11,9 +11,5 @@ module Api::V1
     def orders_count
       object.orders.size
     end
-
-    def orders_count__sql
-      "(SELECT COUNT(*) FROM orders o WHERE o.organisation_id = orders.id"
-    end
   end
 end
