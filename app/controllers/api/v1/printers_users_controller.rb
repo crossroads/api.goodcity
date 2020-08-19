@@ -23,9 +23,9 @@ module Api
         save_and_render_object(@printers_user)
       end
 
-      api :PUT, '/v1/holidays/1', "Update holiday"
+      api :PUT, '/v1/printers_users/1', "Update printers_users"
       def update
-        @printers_user.update_attributes(printers_users_params)
+        @printers_user.update_attributes(printers_user_params)
         render json: @printers_user, serializer: serializer
       end
 
@@ -35,7 +35,7 @@ module Api
         Api::V1::PrintersUserSerializer
       end
 
-      def printers_users_params
+      def printers_user_params
         params.require(:printers_users).permit(:printer_id, :user_id, :tag)
       end
     end
