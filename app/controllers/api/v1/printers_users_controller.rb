@@ -13,8 +13,8 @@ module Api
 
       def_param_group :printers_users do
         param :printers_users, Hash, required: true do
-          param :package_id, Integer, desc: "Id of package"
-          param :offer_id, Integer, desc: "Id of offer"
+          param :printer_id, Integer, desc: "Id of printer"
+          param :user_id, Integer, desc: "Id of user"
         end
       end
 
