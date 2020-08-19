@@ -6,8 +6,6 @@ module Api::V1
 
     has_one :image, serializer: ImageSerializer
     has_one :address, serializer: AddressSerializer
-    # has_many :printers, serializer: PrinterSerializer
-    # has_many :printers_users, serializer: PrintersUserSerializer
     has_many :user_roles, serializer: UserRoleSerializer
 
     def include_user_roles?
@@ -31,10 +29,6 @@ module Api::V1
       "coalesce((select array_agg(organisations_users.id) from organisations_users where
         user_id = users.id), '{}'::int[])"
     end
-
-    # def include_printer?
-    #   @options[:include_printers]
-    # end
 
     def include_attribute?
       return !@options[:user_summary] unless @options[:user_summary].nil?
