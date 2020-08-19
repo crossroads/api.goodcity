@@ -227,6 +227,7 @@ GEM
     http_accept_language (2.1.1)
     i18n (1.8.5)
       concurrent-ruby (~> 1.0)
+    json (2.3.1)
     jwt (1.5.6)
     kaminari (1.2.1)
       activesupport (>= 4.1.0)
@@ -426,10 +427,11 @@ GEM
     sidekiq-statistic (1.4.0)
       sidekiq (>= 5.0)
       tilt (~> 2.0)
-    simplecov (0.19.0)
+    simplecov (0.16.1)
       docile (~> 1.1)
-      simplecov-html (~> 0.11)
-    simplecov-html (0.12.2)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.2)
     sinatra (2.0.8.1)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -558,7 +560,7 @@ DEPENDENCIES
   sidekiq
   sidekiq-scheduler
   sidekiq-statistic
-  simplecov
+  simplecov (~> 0.16.1)
   sinatra
   slack-ruby-client
   spring
