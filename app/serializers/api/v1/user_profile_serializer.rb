@@ -9,6 +9,7 @@ module Api::V1
     has_many :user_roles, serializer: UserRoleSerializer
 
     has_many :organisations_users, serializer: OrganisationsUserSerializer
+    # has_many :printers_users, serializer: PrintersUserSerializer
 
     def mobile
       object.try(:mobile) && object.mobile.slice(4..-1)
