@@ -88,6 +88,7 @@ class Ability
 
   def printer_abilities
     can :index, Printer if can_access_printers?
+    can [:create, :update], PrintersUser if can_access_printers?
   end
 
   def address_abilities
@@ -321,7 +322,6 @@ class Ability
       can %i[show create update destroy], PackageSet
       can %i[index], Restriction
       can %i[index], PackagesInventory
-      can %i[create update], PrintersUser
     end
     can [:show], Package,  orders_packages: { order: { created_by_id: @user_id }}
     can [:show], Package,  requested_packages: { user_id: @user_id }
