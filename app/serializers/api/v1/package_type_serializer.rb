@@ -4,10 +4,13 @@ module Api::V1
     attributes :id, :code, :other_child_packages,
                :default_child_packages, :other_terms, :visible_in_selects,
                :allow_requests, :allow_pieces, :allow_expiry_date,
-               :subform, :allow_box, :allow_pallet
-    attribute "name_#{current_language}".to_sym
+               :subform, :allow_box, :allow_pallet, :name
 
     has_one :location, serializer: LocationSerializer
+
+    def name
+      object.try("name_#{current_language}".to_sym)
+    end
 
     def include_attribute?
       User.current_user.present? && !@options[:exclude_code_details]
