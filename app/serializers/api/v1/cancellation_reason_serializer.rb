@@ -1,10 +1,7 @@
 module Api::V1
   class CancellationReasonSerializer < ApplicationSerializer
     embed :ids, include: true
-    attributes :id, :name
-
-    def name__sql
-      "name_#{current_language}"
-    end
+    attribute :id
+    attribute "name_#{current_language}".to_sym
   end
 end

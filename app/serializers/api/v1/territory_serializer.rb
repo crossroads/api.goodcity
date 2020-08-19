@@ -5,8 +5,8 @@ module Api::V1
 
     has_many :districts, serializer: DistrictSerializer
 
-    def name__sql
-      "name_#{current_language}"
+    def name
+      object.try("name_#{current_language}".to_sym)
     end
   end
 end
