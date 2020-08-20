@@ -8,7 +8,7 @@ class Image < ApplicationRecord
   belongs_to :imageable, polymorphic: true, touch: true
 
   before_save :handle_heic_image
-  before_destroy :delete_image_from_cloudinary, unless: "has_multiple_items"
+  before_destroy :delete_image_from_cloudinary, unless: :has_multiple_items
   after_update :clear_unused_transformed_images
 
   after_update :reset_favourite, if: :favourite_changed?

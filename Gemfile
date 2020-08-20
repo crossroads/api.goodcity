@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 ruby '2.5.1'
 
 gem 'pg'
-gem 'rails', '~> 5.0.7.1'
+gem 'rails', '~> 5.2.4.3'
 gem 'rake'
 
 gem 'active_model_otp'
@@ -26,7 +26,7 @@ gem 'cloudinary'
 gem 'factory_bot_rails' # used in rake db:seed in production
 gem 'ffaker'
 # shivani - changed from jwt 0.1.13 to 1.2.0
-gem 'jwt', '~> 1.5.0'
+gem 'jwt', '~> 2.0.0'
 gem 'puma', '>= 4.3.1'
 gem 'rack-cors'
 gem 'rack-protection'

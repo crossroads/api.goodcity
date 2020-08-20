@@ -19,7 +19,6 @@ class Package < ApplicationRecord
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
   belongs_to :package_set
-  has_many :locations, through: :packages_locations
 
   belongs_to :detail, polymorphic: true, dependent: :destroy, required: false
   belongs_to :package_type, inverse_of: :packages
@@ -33,6 +32,7 @@ class Package < ApplicationRecord
   belongs_to :stockit_moved_by, class_name: 'User'
 
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
+  has_many   :locations, through: :packages_locations
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy

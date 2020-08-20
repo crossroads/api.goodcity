@@ -33,7 +33,7 @@ module Warden
       end
 
       def otp_code_validity
-        Rails.application.secrets.token['otp_code_validity']
+        Rails.application.secrets.token[:otp_code_validity]
       end
 
       def appstore

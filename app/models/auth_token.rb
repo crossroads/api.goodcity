@@ -30,7 +30,7 @@ class AuthToken < ApplicationRecord
 
   # Number of seconds the OTP code is valid for
   def otp_code_validity
-    Rails.application.secrets.token['otp_code_validity']
+    Rails.application.secrets.token[:otp_code_validity]
   end
 
   def drift_time
