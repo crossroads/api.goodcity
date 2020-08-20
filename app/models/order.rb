@@ -41,8 +41,8 @@ class Order < ApplicationRecord
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
-  has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
+  has_many :process_checklists, through: :orders_process_checklists
 
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
 

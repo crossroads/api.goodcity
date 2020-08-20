@@ -37,19 +37,21 @@ class ApplicationController < ActionController::API
 
   def current_user
     @current_user ||= begin
-      user = nil
-      User.current_user = nil
-      if token.valid?
-        user_id = token.data[0]["user_id"]
-        user = User.find_by_id(user_id) if user_id.present?
-        if user
-          return nil if user.disabled
-          user.instance_variable_set(:@treat_user_as_donor, true) unless STAFF_APPS.include?(app_name)
-          User.current_user = user
-        end
-      end
+      return nil unless token.valid? && token_data.present?
+
+      user_id = token_data
+      user = User.find_by_id(user_id)
+      return nil unless user.present?
+      return nil if user.disabled
+
+      user.instance_variable_set(:@treat_user_as_donor, true) unless STAFF_APPS.include?(app_name)
+      User.current_user = user
       user
     end
+  end
+
+  def token_data
+    token.data && token.data[0]['user_id']
   end
 
   # For Lograge

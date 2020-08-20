@@ -15,15 +15,16 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET offers" do
-    before { generate_and_set_token(reviewer) }
+    before(:each) do
+      generate_and_set_token(reviewer)
+    end
     it "returns 200" do
       get :index
       expect(response.status).to eq(200)
     end
 
     it "return serialized offers", :show_in_doc do
-      2.times{ create :offer }
-      debugger
+      2.times { create :offer }
       get :index
       body = JSON.parse(response.body)
       expect( body['offers'].size ).to eq(2)

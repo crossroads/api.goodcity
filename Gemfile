@@ -25,8 +25,7 @@ gem 'loofah', '>= 2.3.1'
 gem 'cloudinary'
 gem 'factory_bot_rails' # used in rake db:seed in production
 gem 'ffaker'
-# shivani - changed from jwt 0.1.13 to 1.2.0
-gem 'jwt', '~> 2.0.0'
+gem 'jwt', '~> 2.2.2'
 gem 'puma', '>= 4.3.1'
 gem 'rack-cors'
 gem 'rack-protection'
