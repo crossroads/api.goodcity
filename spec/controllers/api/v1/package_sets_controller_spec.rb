@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::PackageSetsController, type: :controller do
   let(:package_type) { create(:package_type, code: 'AFO') }
   let(:other_package_type) { create(:package_type, code: 'BBC') }
-  let(:package_set) { create(:package_set, :with_packages, package_type_id: package_type.id) }
+  let(:package_set) { create(:package_set, package_type_id: package_type.id) }
   let(:empty_package_set) { create(:package_set, package_type_id: package_type.id) }
   let(:unauthorized_user) { create(:user) }
   let(:parsed_body) { JSON.parse(response.body) }
@@ -16,7 +16,10 @@ RSpec.describe Api::V1::PackageSetsController, type: :controller do
     )
   }
 
-  before { touch(package_set) }
+  before do
+    touch(package_set)
+    package_set.packages << create_list(:package, 3, package_set_id: package_set.id)
+  end
 
   describe "GET #show" do
     describe "as an authorized user" do
