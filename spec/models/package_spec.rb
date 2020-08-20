@@ -322,7 +322,7 @@ RSpec.describe Package, type: :model do
         expect(push_service).to receive(:send_update_store) do |channels, data|
           expect(channels).to include(Channel::BROWSE_CHANNEL)
         end
-        package_published.allow_web_publish = false
+        package_published.reload.allow_web_publish = false
         package_published.save
       end
     end

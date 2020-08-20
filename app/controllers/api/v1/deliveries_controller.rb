@@ -2,6 +2,7 @@ module Api
   module V1
     class DeliveriesController < Api::V1::ApiController
       load_and_authorize_resource :delivery, parent: false
+
       resource_description do
         short 'Get, create, and update deliveries.'
         formats ['json']
@@ -122,6 +123,10 @@ module Api
           :contact_id, :schedule_id, :delivery_type, :gogovan_order_id)
       end
 
+      def delivery_attrs
+        params.require(:delivery).permit!
+      end
+
       def order_params
         params.require(:gogovanOrder).permit(:pickupTime, :districtId,
           :needEnglish, :needCart, :needCarry, :offerId, :name, :mobile,
@@ -141,7 +146,7 @@ module Api
       end
 
       def get_delivery_details
-        params["delivery"] = get_hash(params["delivery"])
+        params["delivery"] = get_hash(delivery_attrs.to_h)
         params.require(:delivery).permit(:start, :finish, :offer_id,
           :contact_id, :schedule_id, :delivery_type, :gogovan_order_id,
           schedule_attributes: schedule_attributes,
@@ -182,7 +187,11 @@ module Api
       end
 
       def get_hash(object)
-        object.deep_transform_keys(&:underscore)
+        Hash[
+          object.map do |k,v|
+            [k.underscore, v.is_a?(Hash) ? get_hash(v) : v]
+          end
+        ]
       end
     end
   end

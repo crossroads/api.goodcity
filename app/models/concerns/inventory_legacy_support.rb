@@ -53,12 +53,12 @@ module InventoryLegacySupport
       def inventorize_update
         if package_id_changed? || location_id_changed?
           # 1. We negate the entire previous quantity
-          record_inventory_change(- quantity_was, package_id_was, location_id_was)
+          record_inventory_change(- quantity_before_last_save, package_id_before_last_save, location_id_before_last_save)
           # 2. We record from scratch with the new infos
           record_inventory_change(quantity, package_id, location_id)
         else
           # We just record the change in quantity
-          record_inventory_change(quantity - quantity_was, package_id, location_id)
+          record_inventory_change(quantity - quantity_before_last_save, package_id, location_id)
         end
       end
 

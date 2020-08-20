@@ -55,7 +55,7 @@ class Package < ApplicationRecord
   push_targets do |record|
     chans = [ Channel::STOCK_CHANNEL ]
     chans << Channel::STAFF_CHANNEL if record.item_id
-    chans << Channel::BROWSE_CHANNEL if (record.allow_web_publish || record.allow_web_publish_was)
+    chans << Channel::BROWSE_CHANNEL if (record.allow_web_publish || record.allow_web_publish_before_last_save)
     chans
   end
 
