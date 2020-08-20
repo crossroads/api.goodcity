@@ -6,7 +6,7 @@ module ControllerMacros
   end
 
   # Creates a token and sets the request header effectively logging the user in
-  def generate_and_set_token(user=nil)
+  def generate_and_set_token(user = nil)
     user ||= create(:user_with_token)
     User.current_user = user
     jwt_config = Rails.application.secrets.jwt
@@ -19,7 +19,7 @@ module ControllerMacros
     {
       iss: jwt_config[:issuer],
       exp: 14.days.from_now.to_i,
-      user_id: user.id
+      user_id: User.current_user.id
     }
   end
 end
