@@ -13,7 +13,7 @@ class PackageSet < ApplicationRecord
   # ---------------------
 
   watch [Package], on: [:update, :destroy] do |package|
-    package_set_id = package.package_set_id_changed? ? package.package_set_id_was : package.package_set_id
+    package_set_id = package.package_set_id_changed? ? package.package_set_id_before_last_save : package.package_set_id
 
     package_set = PackageSet.find_by(id: package_set_id)
     package_set.destroy! if package_set.present? && package_set.packages.length < 2
@@ -44,7 +44,7 @@ class PackageSet < ApplicationRecord
   # When an item has it's type set for the first time, we initialize the set for its packages
   #
   watch [Item], on: [:update] do |item|
-    next unless item.package_type_id_changed? && item.package_type_id_was.blank?
+    next unless item.package_type_id_changed? && item.package_type_id_before_last_save.blank?
 
     children = Package.where(item: item)
 

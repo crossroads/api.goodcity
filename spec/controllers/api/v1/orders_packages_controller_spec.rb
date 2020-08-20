@@ -228,10 +228,9 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
 
         it 'fails to undispatch the packages if no valid location is provided' do
           expect(current_state).to eq('dispatched')
-
           put :exec_action, params: { id: orders_package.id, action_name: 'undispatch'}
           expect(status).to eq(422)
-          expect(error_text).to match(/^Couldn't find Location with 'id'=/)
+          expect(error_text).to match(/^Couldn't find Location without an ID/)
           expect(orders_package.reload.state).to eq('dispatched')
         end
 

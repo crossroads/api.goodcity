@@ -21,7 +21,7 @@ module TwilioConfig
 
   def activity_sid(friendly_name)
     twilio_client.taskrouter
-                 .workspaces(twilio_creds["workspace_sid"])
+                 .workspaces(twilio_creds[:workspace_sid])
                  .activities
                  .list(friendly_name: friendly_name)
                  .first.sid
@@ -29,7 +29,7 @@ module TwilioConfig
 
   def idle_worker
     twilio_client.taskrouter
-                 .workspaces(twilio_creds["workspace_sid"])
+                 .workspaces(twilio_creds[:workspace_sid])
                  .workers
                  .list(activity_name: "Idle")
                  .first
@@ -41,24 +41,24 @@ module TwilioConfig
 
   def offline_worker
     twilio_client.taskrouter
-                 .workspaces(twilio_creds["workspace_sid"])
+                 .workspaces(twilio_creds[:workspace_sid])
                  .workers
                  .list(activity_name: "Offline")
                  .first
   end
 
   def twilio_client
-    Twilio::REST::Client.new(twilio_creds["account_sid"],
-      twilio_creds["auth_token"])
+    Twilio::REST::Client.new(twilio_creds[:account_sid],
+      twilio_creds[:auth_token])
   end
 
   def twilio_outgoing_call_capability
-    account_sid = twilio_creds["account_sid"]
-    api_key = twilio_creds["api_key"]
-    api_secret = twilio_creds["twilio_secret"]
+    account_sid = twilio_creds[:account_sid]
+    api_key = twilio_creds[:api_key]
+    api_secret = twilio_creds[:twilio_secret]
 
     # Required for Voice
-    outgoing_application_sid = twilio_creds["call_app_sid"]
+    outgoing_application_sid = twilio_creds[:call_app_sid]
     identity = 'user'
 
     # Create Voice grant for our token
@@ -79,11 +79,10 @@ module TwilioConfig
 
     # Generate the token
     token.to_jwt
-
   end
 
   def twilio_creds
-    @twilio ||= Rails.application.secrets.twilio
+    @twilio_creds ||= Rails.application.secrets.twilio
   end
 
   def user(mobile = nil)
@@ -91,7 +90,7 @@ module TwilioConfig
   end
 
   def voice_number
-    number = twilio_creds["voice_number"].to_s
+    number = twilio_creds[:voice_number].to_s
     number.prepend("+") unless number.starts_with?("+")
     number
   end
