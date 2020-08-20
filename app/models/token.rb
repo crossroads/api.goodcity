@@ -19,22 +19,26 @@ class Token
   # Additional options can be encoded inside the token
   # options = { "mobile" => "+85212345678" }
   def generate(options = {})
-    now = Time.now
-    options.merge!({
-      "iat": now.to_i,
-      "iss": issuer,
-      "exp": (now + validity).to_i
-    })
+    now = Time.current
+    options.merge!(
+      {
+        "iat": now.to_i,
+        "iss": issuer,
+        "exp": (now + validity).to_i
+      }
+    )
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
 
   def generate_api_token(options = {})
-    now = Time.now
-    options.merge!({
-      "iat": now.to_i,
-      "iss": issuer,
-      "exp": (now + validity(for_api: true)).to_i
-    })
+    now = Time.current
+    options.merge!(
+      {
+        "iat": now.to_i,
+        "iss": issuer,
+        "exp": (now + validity(for_api: true)).to_i
+      }
+    )
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
 
@@ -51,26 +55,15 @@ class Token
 
   # Decode the json web token when we receive it from the client
   def token
-    @token ||= JWT.decode(jwt_string, secret_key, true, verify_expiration: false)
+    @token ||= JWT.decode(jwt_string, secret_key, true, { algorithm: hmac_sha_algo })
   end
 
   # Is the JWT token authentic?
   # - exp should be in the future
   # - iat should be in the past
   def token_validation
-    if (!jwt_string.blank? && !(token.all? &:blank?))
-      cur_time = Time.now
-      iat_time = Time.at(token[0]["iat"])
-      exp_time = Time.at(token[0]["exp"])
-      if exp_time < cur_time
-        errors.add(:base, I18n.t('token.expired'))
-      elsif !(iat_time < cur_time && iat_time < exp_time)
-        errors.add(:base, I18n.t('token.invalid'))
-      end
-    else
-      errors.add(:base, I18n.t('token.invalid'))
-    end
-  rescue JWT::DecodeError
+    !jwt_string.blank? && !(token.all? & :blank?)
+  rescue JWT::DecodeError, JWT::ExpiredSignature
     errors.add(:base, I18n.t('token.invalid'))
   end
 
@@ -80,19 +73,19 @@ class Token
 
   # Key used to generate tokens. MUST be private. Changing this will invalidate all tokens.
   def secret_key
-    jwt_config['secret_key']
+    jwt_config[:secret_key]
   end
 
   def hmac_sha_algo
-    jwt_config['hmac_sha_algo']
+    jwt_config[:hmac_sha_algo]
   end
 
   def issuer
-    jwt_config['issuer']
+    jwt_config[:issuer]
   end
 
   # Number of seconds the token is valid for
   def validity(options = {})
-    options[:for_api] ? jwt_config['validity_for_api'] : jwt_config['validity']
+    options[:for_api] ? jwt_config[:validity_for_api] : jwt_config[:validity]
   end
 end

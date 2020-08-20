@@ -10,6 +10,7 @@ require 'rspec/rails'
 require 'ffaker'
 require 'webmock/rspec'
 require 'paper_trail/frameworks/rspec'
+require_relative "support/controller_macros"
 
 WebMock.disable_net_connect!(:allow => "codeclimate.com")
 
@@ -61,7 +62,6 @@ RSpec.configure do |config|
   FactoryBot.use_parent_strategy = false
 
   FactoryBot.create :user, :system
-
   # Default app to be 'admin' in order to not use treat_user_as_donor
   config.include ApplicationHeaders
   config.before(:each, type: :controller) do

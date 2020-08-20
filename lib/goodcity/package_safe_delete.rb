@@ -1,7 +1,7 @@
 #
 # For a given inventory_number, this will
 #   - delete all packages with that number and their associated package_locations,
-#     orders_packages, images, requested_packages and inventory_number  
+#     orders_packages, images, requested_packages and inventory_number
 #   - request updated information from Stockit to recreate a good package
 # Note: destroy and delete have significant differences here.
 #   - destroy will remove a row from the database and run callbacks to update stockit

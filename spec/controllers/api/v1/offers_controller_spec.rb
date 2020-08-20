@@ -23,6 +23,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
     it "return serialized offers", :show_in_doc do
       2.times{ create :offer }
+      debugger
       get :index
       body = JSON.parse(response.body)
       expect( body['offers'].size ).to eq(2)
