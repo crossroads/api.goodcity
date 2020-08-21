@@ -62,7 +62,7 @@ class Token
   # - exp should be in the future
   # - iat should be in the past
   def token_validation
-    !jwt_string.blank? && !(token.all? & :blank?)
+    raise JWT::DecodeError unless !jwt_string.blank? && !(token.all? &:blank?)
   rescue JWT::DecodeError, JWT::ExpiredSignature
     errors.add(:base, I18n.t('token.invalid'))
   end

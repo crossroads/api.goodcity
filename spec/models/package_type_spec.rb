@@ -24,7 +24,7 @@ RSpec.describe PackageType, type: :model do
   describe 'scope' do
     describe "visible" do
       it "returns records with allow_stock true value" do
-        expect(PackageType.visible.to_sql).to include("WHERE \"package_types\".\"allow_stock\" = 't'")
+        expect(PackageType.visible.to_sql).to include("WHERE \"package_types\".\"allow_stock\" = TRUE")
       end
     end
   end
