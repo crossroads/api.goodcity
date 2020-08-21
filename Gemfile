@@ -6,6 +6,7 @@ ruby '2.5.1'
 gem 'pg'
 gem 'rails', '~> 5.2.4.3'
 gem 'rake'
+gem 'bootsnap', require: false
 
 gem 'active_model_otp'
 gem 'rotp', '~> 3.3.1'
