@@ -1,6 +1,6 @@
 module Api::V1
   class IdentityTypeSerializer < ApplicationSerializer
-    attribute :name
+    attributes :id, :name
 
     def name
       object.try("name_#{current_language}".to_sym)
