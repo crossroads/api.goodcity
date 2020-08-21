@@ -42,7 +42,6 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
   end
 
   describe "POST /appointment_slot_presets" do
-
     context 'When not logged in' do
       # TODO: Fix tests for 4XX status
       # it "denies creation of a default appointment slot" do
@@ -118,7 +117,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
       it "prevents updating a slot with a time that already exists" do
         p1 = FactoryBot.create(:appointment_slot_preset, hours: 23, minutes: 0, day: 2)
         p2 = FactoryBot.create(:appointment_slot_preset, hours: 22, minutes: 0, day: 2)
-        put :update, id: p2.id, appointment_slot_preset: { hours: p1.hours }
+        put :update, params: { id: p2.id, appointment_slot_preset: { hours: p1.hours } }
         expect(parsed_body['errors']).to eq(["An appointment slot already exists for this time"])
         expect(response.status).to eq(422)
       end

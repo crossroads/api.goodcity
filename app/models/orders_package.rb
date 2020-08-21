@@ -112,7 +112,8 @@ class OrdersPackage < ApplicationRecord
 
   def assert_availability!
     return if cancelled?
-    requires_recompute = !persisted? || (state_changed? && state_before_last_save.eql?(States::CANCELLED))
+
+    requires_recompute = !persisted? || (state_changed? && state_was.eql?(States::CANCELLED))
     if requires_recompute && PackagesInventory::Computer.available_quantity_of(package) < quantity
       raise Goodcity::InsufficientQuantityError.new(quantity)
     end

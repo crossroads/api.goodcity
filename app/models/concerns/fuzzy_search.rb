@@ -64,15 +64,15 @@ module FuzzySearch
     #     SIMILARITY(name_zh_tw, 'steve') DESC
     #
     scope :search, -> (search_text) {
-      similarities = search_props.map { |f| "SIMILARITY(#{f}, #{sanitize(search_text)})" }
+      similarities = search_props.map { |f| "SIMILARITY(#{f}, #{search_text})" }
 
       select_list = similarities + ["#{table_name}.*"]
       conditions = similarities.map { |s| "#{s} > #{similarity_threshold}" }
       ordering = similarities.map { |s| "#{s} DESC" }
 
-      select(select_list.join(','))
-        .where(conditions.join(' OR '))
-        .order(ordering.join(','))
+      select(Arel.sql(select_list.join(',')))
+        .where(Arel.sql(conditions.join(' OR ')))
+        .order(Arel.sql(ordering.join(',')))
         .distinct
     }
   end

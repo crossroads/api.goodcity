@@ -60,7 +60,8 @@ RSpec.describe OrdersPackage, type: :model do
         end
 
         it 'fails to update the state from cancelled to designated without availability' do
-          orders_package = create(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          orders_package = build(:orders_package, :with_inventory_record, state: 'cancelled', package: pkg, quantity: 1)
+          orders_package.save
           expect(OrdersPackage.count).to eq(2)
           expect {
             orders_package.update(state: 'designated')

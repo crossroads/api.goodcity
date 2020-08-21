@@ -25,7 +25,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     it "supports filtering requests by order id" do
       (1..3).each { |i| create :order, id: i }
       (1..3).each { |i| create :goodcity_request, order: Order.find(i) }
-      get :index, order_ids: '1,2'
+      get :index, params: { order_ids: '1,2' }
       expect(requests_fetched.length).to eq(2)
       requests_fetched.each do |r|
         expect(r.order_id).to be_in([1,2])
@@ -71,7 +71,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
     it "returns 201", :show_in_doc do
       expect {
-        post :create, goodcity_request: goodcity_request_params
+        post :create, params: { goodcity_request: goodcity_request_params }
       }.to change(GoodcityRequest, :count).by(1)
       expect(response.status).to eq(201)
     end
@@ -82,7 +82,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     let(:gc_request) { create(:goodcity_request, quantity: 5) }
 
     it "Updates goodcity_request record", :show_in_doc do
-      put :update, id: goodcity_request.id, goodcity_request: gc_request.attributes.except(:id)
+      put :update, params: { id: goodcity_request.id, goodcity_request: gc_request.attributes.except(:id) }
       expect(response.status).to eq(200)
       expect(goodcity_request.reload.quantity).to eq(goodcity_request.quantity)
     end
@@ -92,11 +92,10 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     before { generate_and_set_token(user) }
 
     it "returns 200", :show_in_doc do
-      delete :destroy, id: goodcity_request.id
+      delete :destroy, params: { id: goodcity_request.id }
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)
-      expect(body).to eq( {} )
+      expect(body).to be_empty
     end
   end
-
 end
