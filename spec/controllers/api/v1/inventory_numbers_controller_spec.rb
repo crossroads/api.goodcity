@@ -29,7 +29,7 @@ RSpec.describe Api::V1::InventoryNumbersController, type: :controller do
 
     it 'returns blank response if inventory_number do not exist in db' do
       expect {
-        post :remove_number, code: rand(1000..9999)
+        post :remove_number, params: { code: rand(1000..9999) }
       }.to change(InventoryNumber, :count).by(0)
       expect(response.status).to eq(200)
       expect(parsed_body).to be_empty

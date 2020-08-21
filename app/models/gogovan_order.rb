@@ -122,7 +122,7 @@ class GogovanOrder < ApplicationRecord
   end
 
   def order_completed?
-    changes.has_key?("status") && changes["status"].last == "completed"
+    previous_changes.key?("status") && previous_changes["status"].last == "completed"
   end
 
   def pick_up_location
