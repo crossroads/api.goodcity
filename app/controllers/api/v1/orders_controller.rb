@@ -130,12 +130,14 @@ module Api
 
       def order_record
         if order_params[:stockit_id]
+          # Stockit designation create/update
           @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
           @order.assign_attributes(order_params)
           @order.stockit_activity = stockit_activity
           @order.stockit_contact = stockit_contact
           @order.stockit_organisation = stockit_organisation
-          @order.detail = stockit_local_order
+          @order.detail_type, @order.detail_id = set_stockit_detail
+          @order.state = set_stockit_status_map if order_params["status"].present?
         elsif is_browse_app?
           @order.assign_attributes(order_params)
           @order.created_by = current_user
@@ -214,8 +216,27 @@ module Api
         StockitOrganisation.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_organisation_id"])
       end
 
-      def stockit_local_order
-        StockitLocalOrder.accessible_by(current_ability).find_by(stockit_id: params["order"]["detail_id"])
+      def set_stockit_detail
+        if order_params["detail_type"] == "LocalOrder"
+          obj = StockitLocalOrder.accessible_by(current_ability).find_by(stockit_id: params["order"]["detail_id"])
+          detail_type = obj.class.name
+          detail_id = obj.id
+        else
+          detail_type = ([order_params["detail_type"]] & ["Shipment", "CarryOut", "GoodCity"]).first
+          detail_id = nil
+        end
+        [detail_type, detail_id]
+      end
+
+      def set_stockit_status_map
+        case order_params["detail_type"]
+        when "CarryOut", "Shipment"
+          Order::SHIPMENT_STATUS_MAP[order_params["status"]] || "submitted"
+        when "LocalOrder"
+          Order::LOCAL_ORDER_STATUS_MAP[order_params["status"]] || "submitted"
+        else
+          'submitted'
+        end
       end
 
       def eager_load_designation
