@@ -4,7 +4,7 @@ class Ability
   # Actions :index, :show, :create, :update, :destroy, :manage
   # See the wiki for details: https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
 
-  attr_accessor :user, :user_id, :admin, :supervisor, :reviewer, :user_offer_ids, :user_permissions
+  attr_accessor :user, :user_id, :user_offer_ids, :user_permissions
 
   PERMISSION_NAMES = %w[
     can_manage_items can_manage_goodcity_requests
@@ -36,14 +36,9 @@ class Ability
     if user.present?
       @user = user
       @user_id = user.id
-      @admin = user.admin?
-      @supervisor = user.supervisor?
-      @reviewer = user.reviewer?
       @api_user = user.api_user?
       @user_offer_ids = user.offers.pluck(:id)
       @user_permissions ||= @user.user_permissions_names
-
-      can(:manage, :all) if admin
       define_abilities
     end
   end
