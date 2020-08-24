@@ -86,6 +86,7 @@ Stock fulfilment: &stock_fulfilment
 - can_manage_order_messages
 - can_manage_stocktake_revisions
 - can_manage_package_messages
+- can_read_users
 
 Stock administrator:
 - *stock_fulfilment

@@ -32,6 +32,19 @@ describe "User abilities" do
     end}
   end
 
+  context "when Stock-Administrator" do
+    let(:user) { create(:user, :with_stock_administrator_role, :with_can_read_users_permission) }
+    let(:person) { create :user }
+    let(:can)    { %i[index show] }
+    let(:cannot) { %i[create destroy manage] }
+    it{ can.each do |do_action|
+      is_expected.to be_able_to(do_action, person)
+    end}
+    it{ cannot.each do |do_action|
+      is_expected.to_not be_able_to(do_action, person)
+    end}
+  end
+
   context "when Owner" do
     let(:user)   { create :user }
     let(:person) { user }
