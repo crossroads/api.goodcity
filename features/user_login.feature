@@ -61,3 +61,12 @@ Feature: 'User logging'
     Given I am an old stock_fulfilment logging into "stock" app
     And I enter the mobile number
     Then I should not be allowed to login
+
+    Scenario: A order_fulfilment (and expired order_administrator role) can login to stock app
+    Given I am a order_fulfilment logging into "stock" app
+    Given I have expired role order_administrator and permission "can_manage_settings"
+    And I enter the mobile number
+    And I enter the pin
+    Then I should be allowed to login
+    And I create GoodcitySetting
+    Then I should get unauthorized error
