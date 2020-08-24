@@ -2,17 +2,14 @@ require "rails_helper"
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:booking_type) { create :booking_type, :appointment }
-  let(:charity_user) { create :user, :charity, :with_can_manage_orders_permission }
+  let(:charity_user) { create :user, :charity }
   let!(:order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: booking_type }
   let!(:dispatching_order) { create :order, :with_state_dispatching, booking_type: booking_type }
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch, booking_type: booking_type }
   let!(:processing_order) { create :order, :with_state_processing, booking_type: booking_type }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
   let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder" }
-  let(:user) {
-    create(:user_with_token, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Supervisor" => ["can_manage_orders"]})
-  }
+  let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
   let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id) }
@@ -528,7 +525,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   end
 
   describe "PUT orders/1" do
-    before { generate_and_set_token(charity_user) }
+    before { generate_and_set_token(user) }
 
     context "If logged in user is Supervisor in Browse app" do
       it "should add an address to an order" do
@@ -619,6 +616,25 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         order.reload
         expect(response).to have_http_status(:forbidden)
         expect(order.people_helped).to eq(2)
+      end
+
+      let(:order) { create(:order, :with_state_cancelled, people_helped: 2) }
+      context 'when user is owner (charity)' do
+        before { generate_and_set_token(charity_user) }
+        it 'returns forbidden' do
+          put :update, params: { id: order.id, order: { people_helped: 20 } }
+          expect(response).to have_http_status(:forbidden)
+          expect(order.reload.people_helped).to eq(2)
+        end
+      end
+
+      context 'returns success' do
+        before { generate_and_set_token(user) }
+        it 'does allow to perform the operation' do
+          put :update, id: order.id, order: { people_helped: 20 }
+          expect(response).to have_http_status(:success)
+          expect(order.reload.people_helped).to eq(20)
+        end
       end
     end
   end

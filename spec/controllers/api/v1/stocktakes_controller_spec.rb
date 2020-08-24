@@ -75,7 +75,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
     let(:other_packages) { (1..3).map { create(:package, received_quantity: 10) } }
 
     let(:payload) {
-      { location_id: location.id, name: 'lorem stocktake', state: 'open' }
+      { location_id: location.id, name: 'lorem stocktake', state: 'open', comment: 'Comment' }
     }
 
     before { initialize_inventory(other_packages, location: other_location) }
@@ -104,6 +104,7 @@ RSpec.describe Api::V1::StocktakesController, type: :controller do
 
         expect(parsed_body["stocktake"]["location_id"]).to eq(payload[:location_id])
         expect(parsed_body["stocktake"]["name"]).to eq(payload[:name])
+        expect(parsed_body["stocktake"]["comment"]).to eq(payload[:comment])
         expect(parsed_body["stocktake"]["state"]).to eq("open")
       end
 

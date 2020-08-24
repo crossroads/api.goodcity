@@ -22,7 +22,7 @@ describe "OrdersPackage abilities" do
   end
 
   context "when api user" do
-    let(:user) { create(:user, :api_user) }
+    let(:user) { create(:user, :api_write) }
     it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, orders_package) } }
   end
 

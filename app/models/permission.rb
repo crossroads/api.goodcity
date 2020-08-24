@@ -4,6 +4,8 @@ class Permission < ApplicationRecord
   has_many :role_permissions
   has_many :roles, through: :role_permissions
 
+  validates :name, uniqueness: true
+
   scope :api_write,  -> { where(name: 'api-write').first }
   scope :reviewer,   -> { where(name: 'Reviewer').first }
   scope :supervisor, -> { where(name: 'Supervisor').first }

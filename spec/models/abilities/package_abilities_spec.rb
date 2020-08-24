@@ -66,8 +66,8 @@ describe "Package abilities" do
     it { limited_actions.each {|do_action| is_expected.to be_able_to(do_action, published_package)}}
   end
 
-  context "when api_user" do
-    let(:user) { create :user, :api_user }
+  context "when api_write" do
+    let(:user) { create :user, :api_write }
     it{  is_expected.to be_able_to(:create, package)  }
   end
 

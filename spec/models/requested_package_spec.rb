@@ -137,7 +137,7 @@ describe RequestedPackage, :type => :model do
 
   describe "Live updates" do
     let(:push_service) { PushService.new }
-    let(:user) { create(:user, :charity) }
+    let(:user) { create(:user, :charity, image_id: nil) }
 
     before(:each) do
       allow(PushService).to receive(:new).and_return(push_service)

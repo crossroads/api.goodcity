@@ -61,7 +61,7 @@ describe ResyncDuplicateUsers do
     end
 
     it 'does not effect other than charity users' do
-      user = create(:user,:with_multiple_roles_and_permissions, email: 'test1@test.com', roles_and_permissions: {'Order administrator' => ['can_manage_order_messages']})
+      user = create(:user, :with_order_administrator_role, :with_can_manage_order_messages_permission, email: 'test1@test.com')
 
       user_2 = create(:user, :charity)
       user_2.update_column(:email, 'tEst1@test.com')

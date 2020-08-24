@@ -20,7 +20,7 @@ class Ability
     can_manage_locations can_read_versions can_create_goodcity_requests
     can_manage_settings can_manage_companies can_manage_package_detail
     can_access_printers can_remove_offers_packages
-    can_access_orders_process_checklists can_mention_users
+    can_access_orders_process_checklists can_mention_users can_read_users
     can_manage_order_messages can_manage_offer_messages can_disable_user
     can_manage_stocktakes can_manage_stocktake_revisions can_manage_package_messages
   ].freeze
@@ -70,6 +70,7 @@ class Ability
     organisations_users_abilities
     requested_packages_abilities
     package_abilities
+    location_abilities
     package_type_abilities
     packages_locations_abilities
     schedule_abilities
@@ -246,8 +247,8 @@ class Ability
     can %i[index show transition], Order, created_by_id: @user_id
     can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
     if can_manage_orders? || @api_user
-      can %i[create index show transition summary], Order
-      can %i[update destroy], Order, state: %w[draft submitted processing awaiting_dispatch dispatching]
+      can %i[create index show update transition summary], Order
+      can %i[destroy], Order, state: %w[draft submitted processing awaiting_dispatch dispatching]
       can :index, ProcessChecklist
     end
   end
@@ -401,11 +402,13 @@ class Ability
     can [:index, :show], Schedule if can_read_schedule?
   end
 
-  def stockit_abilities
-    if can_manage_locations? || @api_user
-      can [:index, :create, :destroy], Location
+  def location_abilities
+    if (can_manage_locations? || @api_user)
+      can %i[index create destroy], Location
     end
+  end
 
+  def stockit_abilities
     if @api_user
       can [:create, :index], Box
       can [:create, :index], Pallet
@@ -417,6 +420,7 @@ class Ability
   def user_abilities
     can [:current_user_profile], User
     can %i[show update orders_count], User, id: @user_id
+    can %i[index show], User if can_read_users?
     can %i[index show update recent_users create], User if can_read_or_modify_user?
     can %i[create show], User if can_create_donor?
     can %i[mentionable_users], User if can_mention_users?

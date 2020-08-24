@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::InventoryNumbersController, type: :controller do
-  let(:user) { create(:user_with_token, :with_can_add_or_remove_inventory_number, role_name: 'Reviewer') }
+  let(:user) { create(:user, :with_token, :with_can_add_or_remove_inventory_number_permission, role_name: 'Reviewer') }
   let(:inventory_number) { create(:inventory_number) }
   let(:parsed_body) { JSON.parse(response.body) }
 

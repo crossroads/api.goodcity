@@ -14,7 +14,6 @@ class Message < ApplicationRecord
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions, source: :subscribable, source_type: "Offer"
 
   validates :body, presence: true
-
   scope :with_eager_load, -> { includes([:sender]) }
   scope :non_private, -> { where(is_private: false) }
   scope :with_state_for_user, ->(user, state) { joins(:subscriptions).where("subscriptions.user_id = ? and subscriptions.state = ?", user.id, state) }
@@ -38,7 +37,7 @@ class Message < ApplicationRecord
   def self.default_scope
     return if User.current_user.try(:staff?)
 
-    where("is_private = 'f'")
+    where('is_private = false')
   end
 
   def parsed_body
