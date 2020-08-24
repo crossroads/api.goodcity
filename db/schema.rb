@@ -495,9 +495,9 @@ ActiveRecord::Schema.define(version: 20200817133634) do
     t.text     "cancel_reason"
     t.integer  "booking_type_id"
     t.string   "staff_note",              default: ""
-    t.integer  "cancellation_reason_id"
     t.boolean  "continuous",              default: false
     t.date     "shipment_date"
+    t.integer  "cancellation_reason_id"
   end
 
   add_index "orders", ["address_id"], name: "index_orders_on_address_id", using: :btree
@@ -990,8 +990,9 @@ ActiveRecord::Schema.define(version: 20200817133634) do
   create_table "user_roles", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "role_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.datetime "expiry_date"
   end
 
   add_index "user_roles", ["role_id"], name: "index_user_roles_on_role_id", using: :btree
