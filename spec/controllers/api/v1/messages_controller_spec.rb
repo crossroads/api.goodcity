@@ -194,7 +194,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     it 'from stock admin user' do
-      post :create, message: message_params
+      post :create, params: { message: message_params }
       expect(response.status).to eq(201)
     end
   end
