@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::AddressesController, type: :controller do
 
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:address) { create(:profile_address, addressable: user) }
   let(:serialized_address) { Api::V1::AddressSerializer.new(address).as_json }
   let(:serialized_address_json) { JSON.parse( serialized_address.to_json ) }

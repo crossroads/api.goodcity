@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::PackageTypesController, type: :controller do
-  let(:user) { create(:user_with_token, :reviewer) }
+  let(:user) { create(:user, :with_token, :reviewer) }
 
   describe "GET package_types" do
     before { generate_and_set_token(user) }

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
-  let(:supervisor) { create(:user_with_token, :with_can_check_organisations_permission, role_name: 'Supervisor') }
+  let(:supervisor) { create(:user, :with_token, :with_can_check_organisations_permission, role_name: 'Supervisor') }
   let(:parsed_body) { JSON.parse(response.body) }
 
   before { generate_and_set_token(supervisor) }

@@ -1,6 +1,8 @@
 class Role < ApplicationRecord
   include CacheableJson
 
+  validates :name, uniqueness: true
+
   has_many :user_roles
   has_many :users, through: :user_roles
   has_many :role_permissions, dependent: :destroy

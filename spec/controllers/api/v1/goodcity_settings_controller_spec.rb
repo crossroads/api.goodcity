@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
 
-  let(:supervisor_with_settings_permission)  { create(:user, :with_can_manage_settings, role_name: 'Supervisor') }
-  let(:supervisor_without_settings_permission)  { create(:user, role_name: 'Supervisor') }
+  let(:supervisor_with_settings_permission) { create(:user, :with_can_manage_settings_permission, role_name: 'Supervisor') }
+  let(:reviewer_without_settings_permission) { create(:user, role_name: 'Reviewer') }
   let(:goodcity_setting) { create(:goodcity_setting) }
   let(:goodcity_setting_params) { FactoryBot.attributes_for(:goodcity_setting) }
   let(:parsed_body) { JSON.parse(response.body ) }
@@ -27,7 +27,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     end
 
     context "as a user without 'can_manage_settings' permission" do
-      before { generate_and_set_token(supervisor_without_settings_permission) }
+      before { generate_and_set_token(reviewer_without_settings_permission) }
       it "returns 403" do
         post :create, params: { goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(403)
@@ -59,7 +59,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     end
 
     context "as a user without 'can_manage_settings' permission" do
-      before { generate_and_set_token(supervisor_without_settings_permission) }
+      before { generate_and_set_token(reviewer_without_settings_permission) }
       it "returns 403" do
         put :update, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(403)
@@ -92,7 +92,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     end
 
     context "as a user without 'can_manage_settings' permission" do
-      before { generate_and_set_token(supervisor_without_settings_permission) }
+      before { generate_and_set_token(reviewer_without_settings_permission) }
       it "returns 403" do
         delete :destroy,  params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(403)

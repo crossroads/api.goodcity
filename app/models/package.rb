@@ -211,7 +211,7 @@ class Package < ApplicationRecord
   end
 
   def should_validate_inventory_number?
-    !STOCKIT_ENABLED
+    !STOCKIT_ENABLED && inventory_number.present?
   end
 
   def add_to_stockit
@@ -363,8 +363,7 @@ class Package < ApplicationRecord
     end
 
     if current_image
-      images.update_all(favourite: false)
-      current_image.update_column(:favourite, true)
+      current_image.update_attributes(favourite: true)
       self.favourite_image_id = current_image.id
     end
   end
@@ -407,7 +406,7 @@ class Package < ApplicationRecord
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.saleable ||= offer.try(:saleable)
+    self.saleable ||= offer.try(:saleable) || false
     true
   end
 

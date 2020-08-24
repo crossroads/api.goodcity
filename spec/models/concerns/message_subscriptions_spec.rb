@@ -6,8 +6,8 @@ module Messages
   describe Operations do
     let(:offer) { create :offer }
     let(:message) { create :message, messageable: offer }
-    let!(:supervisor) { create :user, :with_can_manage_offer_messages, role_name: 'supervisor' }
-    let(:reviewer) { create(:user, :with_can_manage_offer_messages, role_name: 'reviewer' ) }
+    let!(:supervisor) { create :user, :with_supervisor_role, :with_can_manage_offer_messages_permission }
+    let(:reviewer) { create(:user, :with_reviewer_role, :with_can_manage_offer_messages_permission ) }
 
     let(:offer1) { create :offer }
     let(:offer2) { create :offer }
@@ -55,7 +55,7 @@ module Messages
       end
 
       context 'donor sends messages but offer has no reviewer' do
-        let!(:reviewer) { create :user, :with_can_manage_offer_messages, role_name: 'reviewer' }
+        let!(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission }
         let(:offer) { create :offer, reviewed_by_id: reviewer.id }
         let(:message) { create :message, sender: offer.created_by, messageable: offer }
 
@@ -67,8 +67,8 @@ module Messages
       end
 
       context 'there is no donor (i.e. an admin created the offer)' do
-        let!(:reviewer) { create :user, :with_can_manage_offer_messages, role_name: 'reviewer' }
-        let!(:reviewer2) { create :user, :reviewer }
+        let!(:reviewer) { create :user, :with_reviewer_role, :with_can_manage_offer_messages_permission }
+        let!(:reviewer2) { create :user, :with_reviewer_role }
         let(:offer) { create :offer, created_by_id: nil }
         let(:message) { create :message, sender: reviewer, messageable: offer }
 
@@ -111,7 +111,7 @@ module Messages
         end
 
         it 'should not subscribe other supervisors for subsequent messages' do
-          other_reviewer = create :user, :with_can_manage_offer_messages, role_name: 'reviewer'
+          other_reviewer = create(:user, :with_reviewer_role, :with_can_manage_offer_messages_permission)
 
           # The unrelated supervisor receives the first message of the thread
           expect(message1).to receive(:add_subscription).with('read', reviewer.id)
@@ -128,7 +128,7 @@ module Messages
         end
 
         context 'message is posted something in the private thread' do
-          let!(:supervisor) { create :user, :with_can_manage_offer_messages, role_name: 'supervisor' }
+          let!(:supervisor) { create(:user, :with_supervisor_role, :with_can_manage_offer_messages_permission) }
           before { User.current_user = supervisor }
 
           it 'should subscribe a supervisor for subsequent messages' do
@@ -147,7 +147,7 @@ module Messages
           end
 
           it 'should subscribe a reviewer for subsequent messages' do
-            other_reviewer = create(:user, :with_can_manage_offer_messages, role_name: 'reviewer')
+            other_reviewer = create(:user, :with_reviewer_role, :with_can_manage_offer_messages_permission)
             User.current_user = other_reviewer
             # The unrelated supervisor receives the first message of the thread
             expect(message1).to receive(:add_subscription).with('read', reviewer.id)
@@ -205,8 +205,8 @@ module Messages
         end
 
         context "should subscribe all users with permission '' if it's the first private message of the thread" do
-          let!(:order_fulfilment_user) { create :user, :with_can_manage_order_messages, role_name: "order_fulfilment" }
-          let!(:order_administrator_user) { create :user, :with_can_manage_order_messages, role_name: "order_administrator" }
+          let!(:order_fulfilment_user) { create :user, :with_order_fulfilment_role, :with_can_manage_order_messages_permission }
+          let!(:order_administrator_user) { create :user, :with_order_administrator_role, :with_can_manage_order_messages_permission }
 
           before { User.current_user = order_fulfilment_user }
 
@@ -221,7 +221,7 @@ module Messages
       end
 
       context 'public thread' do
-        let!(:supervisor) { create :user, :with_can_manage_offer_messages, role_name: 'supervisor' }
+        let!(:supervisor) { create :user, :with_supervisor_role, :with_can_manage_offer_messages_permission }
         before { User.current_user = supervisor }
 
         it 'should subscribe a supervisor for subsequent messages' do

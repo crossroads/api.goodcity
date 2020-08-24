@@ -4,7 +4,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
   before { allow_any_instance_of(PushService).to receive(:send_notification) }
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:offer) { create(:offer, created_by: user) }
   let(:offer2) { create(:offer, created_by: user) }
   let(:item) { create(:item, offer: offer) }
@@ -22,7 +22,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   subject { JSON.parse(response.body) }
 
   describe "GET messages" do
-    let(:user) { create(:user_with_token, :with_can_manage_messages_permission, role_name: 'Reviewer') }
+    let(:user) { create(:user, :with_token, :with_can_manage_offer_messages_permission, role_name: 'Reviewer') }
     before { generate_and_set_token(user) }
 
     it "return serialized messages", :show_in_doc do
@@ -56,32 +56,32 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       end
 
       it "for one offer" do
-        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer) }
 
         get :index, params: { offer_id: offer.id }
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple offers" do
-        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer, is_private: false) }
-
+        3.times { create :subscription, state: 'unread', subscribable: offer, user: user, message: (create :message, messageable: offer) }
         3.times { create :subscription, state: 'unread', subscribable: offer2, user: user, message: (create :message, messageable: offer2, is_private: false) }
+
         get :index, params: { offer_id: "#{offer.id},#{offer2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
 
       it "for one order" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
+        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2) }
 
-        3.times { create :subscription, state: 'unread', subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
         get :index, params: { order_id: order.id }
         expect(subject['messages'].length).to eq(3)
       end
 
       it "for multiple orders" do
-        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order, is_private: false) }
+        3.times { create :subscription, state: 'unread', subscribable: order, user: user, message: (create :message, messageable: order) }
+        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2) }
 
-        3.times { create :subscription, state: "unread", subscribable: order2, user: user, message: (create :message, messageable: order2, is_private: false) }
         get :index, params: { order_id: "#{order.id},#{order2.id}" }
         expect(subject['messages'].length).to eq(6)
       end
@@ -183,6 +183,22 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
   end
 
+  describe 'create package message' do
+    let(:stock_user) { create(:user, :with_token, :with_can_manage_package_messages_permission) }
+    let(:message_params) {
+      FactoryBot.attributes_for(:message, :private, sender: user.id, messageable_id: (create :package).id, messageable_type: "Package")
+    }
+
+    before do
+      generate_and_set_token(stock_user)
+    end
+
+    it 'from stock admin user' do
+      post :create, message: message_params
+      expect(response.status).to eq(201)
+    end
+  end
+
   describe "PUT messages/mark_all_read" do
     before { generate_and_set_token(user) }
     let!(:offer) { create(:offer) }
@@ -217,7 +233,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   end
 
   describe "GET messages/notifications" do
-    let(:user) { create(:user_with_token, :with_can_manage_package_messages) }
+    let(:user) { create(:user, :with_token, :with_can_manage_package_messages_permission) }
     let(:package) { create :package }
     before { generate_and_set_token(user) }
 

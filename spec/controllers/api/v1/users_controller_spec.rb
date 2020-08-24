@@ -3,11 +3,11 @@ require 'rails_helper'
 RSpec.describe Api::V1::UsersController, type: :controller do
   TOTAL_REQUESTS_STATES = ["submitted", "awaiting_dispatch", "closed", "cancelled"]
 
-  let(:supervisor_user) { create(:user_with_token, :with_can_read_or_modify_user_permission, :with_can_manage_user_roles, role_name: 'Supervisor') }
-  let(:reviewer_user) { create(:user_with_token, :with_can_create_user_permission, role_name: "Reviewer") }
+  let(:supervisor_user) { create(:user, :with_token, :with_can_read_or_modify_user_permission, :with_can_manage_user_roles_permission, role_name: 'Supervisor') }
+  let(:reviewer_user) { create(:user, :with_token, :with_can_create_donor_permission, role_name: "Reviewer") }
   let(:system_admin_user) {
     create :user,
-      :with_can_read_or_modify_user_permission, :with_can_disable_user,
+      :with_can_read_or_modify_user_permission, :with_can_disable_user_permission,
       role_name: "System administrator"
   }
 
@@ -22,8 +22,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   let(:users) { create_list(:user, 2) }
 
   let(:charity_users) { ('a'..'z').map { |i|
-    create(:user, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}, first_name: "Jane_#{i}", last_name: 'Doe')}}
+    create(:user, :with_charity_role, :with_can_login_to_browse_permission, first_name: "Jane_#{i}", last_name: 'Doe')}}
 
   let(:parsed_body) { JSON.parse(response.body) }
 
@@ -89,12 +88,12 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   end
 
   describe "POST users" do
-    let(:reviewer) { create(:user_with_token, :reviewer) }
+    let(:reviewer) { create(:user, :with_token, :reviewer) }
     let(:role) { create(:role, name: "System administrator" , level: 15) }
     let(:existing_user) { create(:user) }
 
     before do
-      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [charity_role.id] }
+      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [charity_role.id], preferred_language: "zh-tw" }
       @user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [role.id] }
       @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
       @user_params3 = {"first_name": "Test", "last_name": "Name", "mobile": "3812912"}
@@ -111,6 +110,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(parsed_body['user']['first_name']).to eql(@valid_user_params[:first_name])
         expect(parsed_body['user']['last_name']).to eql(@valid_user_params[:last_name])
         expect(parsed_body['user']['mobile']).to eql(@valid_user_params[:mobile])
+        expect(parsed_body["user"]["preferred_language"]).to eql("zh-tw")
         expect(parsed_body['user_roles'][0]['role_id']).to eql(charity_role.id)
       end
     end
@@ -169,7 +169,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   describe "PUT user/1" do
 
     context "Reviewer" do
-      let(:reviewer) { create(:user_with_token, :reviewer) }
+      let(:reviewer) { create(:user, :with_token, :reviewer) }
       let(:role) { create(:role, name: "Supervisor") }
 
       before { generate_and_set_token(reviewer_user) }
@@ -203,7 +203,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     context "as a Supervisor" do
-      let(:supervisor) { create(:user_with_token, :supervisor) }
+      let(:supervisor) { create(:user, :with_token, :supervisor) }
       let(:charity_role) { create(:role, name: "Charity") }
 
       before { generate_and_set_token(supervisor_user) }
@@ -242,7 +242,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
             id: system_admin_user.id,
             user: { user_role_ids: [charity_role.id] }
           }
-
           expect(response.status).to eq(200)
           expect(system_admin_user.roles.pluck(:id)).to_not include(charity_role.id)
         end
@@ -250,7 +249,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     context "as a System Administrator user" do
-      let(:supervisor) { create(:user_with_token, :supervisor) }
+      let(:supervisor) { create(:user, :with_token, :supervisor) }
       before { generate_and_set_token(system_admin_user) }
 
       context "when I edit another user's details" do
@@ -298,8 +297,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     describe 'GET /mentionable_users' do
       let!(:reviewer) { create(:user, :reviewer) }
       let!(:donor) { create(:user) }
-      let(:supervisor) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_mention_users']}) }
-      let!(:order_administrator) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_mention_users']}) }
+      let(:supervisor) { create(:user, :with_supervisor_role, :with_can_mention_users_permission) }
+      let!(:order_administrator) { create(:user, :with_order_administrator_role, :with_can_mention_users_permission) }
       let!(:charity) { create(:user, :charity) }
       let!(:order_fulfilment) { create(:user, :order_fulfilment) }
       let!(:offer) { create(:offer, reviewed_by: reviewer, created_by: donor) }
@@ -345,10 +344,11 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       context 'stock app' do
-        it 'returns order_administrator and order_fulfulment users' do
+        it 'returns order_administrator and order_fulfilment users' do
           generate_and_set_token(order_administrator)
+
           get :mentionable_users, params: { order_id: order.id, roles: 'Order administrator, Order fulfilment' }
-          users = [[User.order_administrator.map(&:id), User.order_fulfilment.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
+          users = [[User.order_administrators.map(&:id), User.order_fulfilments.map(&:id)].flatten - [order_administrator.id]].flatten.map { |id| {'id' => id, 'first_name' => User.find(id).first_name, 'last_name' => User.find(id).last_name, 'image_id' => User.find(id).image_id } }
           expect(parsed_body['users']).to match_array(users)
         end
       end

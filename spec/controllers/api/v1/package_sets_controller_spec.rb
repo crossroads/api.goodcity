@@ -7,14 +7,7 @@ RSpec.describe Api::V1::PackageSetsController, type: :controller do
   let(:empty_package_set) { create(:package_set, package_type_id: package_type.id) }
   let(:unauthorized_user) { create(:user) }
   let(:parsed_body) { JSON.parse(response.body) }
-  let(:authorized_user) {
-    create(:user,
-      :with_multiple_roles_and_permissions,
-      roles_and_permissions: {
-        "SomeRole" => ["can_manage_packages"]
-      }
-    )
-  }
+  let(:authorized_user) { create(:user, :with_order_fulfilment_role, :with_can_manage_packages_permission) }
 
   before do
     touch(package_set)

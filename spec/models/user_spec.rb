@@ -4,29 +4,12 @@ describe User, :type => :model do
   let!(:mobile) { generate(:mobile) }
   let(:address_attributes) { {"district_id" => "9", "address_type" => "profile"} }
   let(:user_attributes) { FactoryBot.attributes_for(:user).merge("mobile" => mobile, "address_attributes" => address_attributes).stringify_keys }
-  let(:supervisor) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Supervisor" => ["can_login_to_stock", "can_login_to_admin"]})
-  }
-  let(:order_fulfilment_user) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Order fulfilment" => ["can_login_to_stock"]})
-  }
-  let(:reviewer) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Reviewer" => ["can_login_to_admin"]})
-  }
-  let(:charity) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Charity" => ["can_login_to_browse"]})
-  }
+  let(:supervisor) { create(:user, :with_supervisor_role, :with_can_login_to_stock_permission, :with_can_login_to_admin_permission) }
+  let(:order_fulfilment_user) { create(:user, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
+  let(:reviewer) { create(:user, :with_reviewer_role, :with_can_login_to_admin_permission) }
+  let(:charity) { create(:user, :with_charity_role, :with_can_login_to_browse_permission) }
 
-  let(:charity_users) {
-    (1..5).map {
-      create(:user, :with_multiple_roles_and_permissions,
-             roles_and_permissions: {"Charity" => ["can_login_to_browse"]})
-    }
-  }
+  let(:charity_users) { (1..5).map { create(:user, :with_charity_role, :with_can_login_to_browse_permission) } }
 
   let(:invalid_user_attributes) { {"mobile" => "85211111112", "first_name" => "John2", "last_name" => "Dey2"} }
 
@@ -114,6 +97,14 @@ describe User, :type => :model do
       it { is_expected.to allow_value("Ms").for(:title) }
       it { is_expected.to_not allow_value("Mister").for(:title) }
       it { is_expected.to_not allow_value("").for(:title) }
+    end
+
+    context "preferred_language" do
+      it { is_expected.to allow_value(nil).for(:preferred_language) }
+      it { is_expected.to allow_value("en").for(:preferred_language) }
+      it { is_expected.to allow_value("zh-tw").for(:preferred_language) }
+      it { is_expected.to_not allow_value("fr").for(:preferred_language) }
+      it { is_expected.to_not allow_value("").for(:preferred_language) }
     end
   end
 

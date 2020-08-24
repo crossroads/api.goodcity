@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
-  let(:supervisor) { create(:user_with_token, :with_can_manage_organisations_users_permission, role_name: 'Supervisor') }
+  let(:supervisor) { create(:user, :with_token, :with_can_manage_organisations_users_permission, role_name: 'Supervisor') }
   before { generate_and_set_token(supervisor) }
   let(:organisation) { create :organisation }
   let(:new_organisation) { create :organisation }
@@ -74,10 +74,40 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         post :create, params: { organisations_user: new_organisations_user_params }
       }.to change(OrganisationsUser, :count).by(0)
       expect(response.status).to eq(422)
-      expect(subject["errors"]).to eq([{"message" => "User already exists in this organisation", "status" => 422}])
+      expect(subject["errors"]).to eq([{"message" => I18n.t("organisations_user_builder.existing_user.present"), "status" => 422}])
     end
 
-    context 'when an existing user already exists with same email' do
+    context 'when a user is already present for a particular mobile number' do
+      it 'does not create a new organisation_user for existing mobile number' do
+        organisations_user = create :organisations_user
+        user = create(:user, mobile: '+85264522773')
+        new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email
+        new_organisations_user_params[:user_attributes][:mobile] = user.mobile
+        expect {
+          post :create, format: :json, organisations_user: new_organisations_user_params
+        }.to change(OrganisationsUser, :count).by(0)
+         .and change(User, :count).by(0)
+        expect(response.status).to eq(422)
+        expect(subject['errors']).to eq([{'message' => I18n.t('organisations_user_builder.invalid.user'), 'status' => 422}])
+      end
+    end
+
+    context 'when a user is already present for a particular email' do
+      it 'does not create a new organisation_user for existing email' do
+        organisations_user = create :organisations_user
+        user = create(:user)
+        new_organisations_user_params[:user_attributes][:email] = user.email
+        new_organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
+        expect {
+          post :create, format: :json, organisations_user: new_organisations_user_params
+        }.to change(OrganisationsUser, :count).by(0)
+         .and change(User, :count).by(0)
+        expect(response.status).to eq(422)
+        expect(subject['errors']).to eq([{'message' => I18n.t('organisations_user_builder.invalid.user'), 'status' => 422}])
+      end
+    end
+
+    context 'when a user is already present in the organisation' do
       it 'does not create organisation_user for duplicate email' do
         organisations_user = create :organisations_user
         new_organisations_user_params[:organisation_id] = organisations_user.organisation_id.to_s
@@ -87,7 +117,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
-        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+        expect(subject['errors']).to eq([{'message' => I18n.t("organisations_user_builder.existing_user.present"), 'status' => 422}])
       end
 
       it 'does not create organisation_user for case insensitive duplicate email' do
@@ -99,7 +129,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
-        expect(subject['errors']).to eq([{'message' => 'User already exists in this organisation', 'status' => 422}])
+        expect(subject['errors']).to eq([{'message' => I18n.t("organisations_user_builder.existing_user.present"), 'status' => 422}])
       end
     end
   end

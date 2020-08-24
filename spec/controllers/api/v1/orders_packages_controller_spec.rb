@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   let(:orders_package) { create :orders_package }
   let(:order) { create :order, :with_state_draft }
-  let(:user) { create(:user_with_token, :with_can_manage_orders_packages_permission, role_name: 'Reviewer') }
-  let(:charity_user) { create(:user_with_token, :with_can_manage_orders_packages_permission, role_name: 'Charity') }
+  let(:user) { create(:user, :with_token, :with_can_manage_orders_packages_permission, role_name: 'Reviewer') }
+  let(:charity_user) { create(:user, :with_token, :with_can_manage_orders_packages_permission, role_name: 'Charity') }
   let(:status) { response.status }
   subject { JSON.parse(response.body) }
 

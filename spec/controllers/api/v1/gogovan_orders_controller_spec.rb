@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::GogovanOrdersController, type: :controller do
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:gogovan_order) { create(:gogovan_order) }
   let(:serialized_order) { Api::V1::GogovanOrderSerializer.new(gogovan_order).as_json }
   let(:serialized_order_json) { JSON.parse(serialized_order.to_json) }

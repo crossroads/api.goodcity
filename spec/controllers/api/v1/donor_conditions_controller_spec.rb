@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::DonorConditionsController, type: :controller do
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:donor_condition) { create(:donor_condition) }
   let(:serialized_donor_condition) { Api::V1::DonorConditionSerializer.new(donor_condition).as_json }
   let(:serialized_donor_condition_json) { JSON.parse( serialized_donor_condition.to_json ) }

@@ -1,13 +1,27 @@
 # frozen_String_literal: true
 
+# USAGE:
+#   create(:user)
+#   create(:user, :order_administrator)
+#   create(:user, :with_order_administrator_role)  # has the role but no permissions
+#   create(:user, :with_can_manage_packages_permission) # when you don't care which role the user gets (they'll get one)
+#   create(:user, :with_can_manage_packages_permission, role_name: "Supervisor") # can specify role if permission belongs to more than one
+#   create(:user, :with_supervisor_role, :with_can_manage_packages_permission) # alternative way to specify role
+
+# You MUST specify role_name when using more than one permission to avoid getting permissions with mixed roles:
+#   create(:user, :with_can_manage_packages_permission, :with_can_manage_offers_permission, role_name: "Supervisor")
+#   create(:user, :with_supervisor_role, :with_can_manage_packages_permission, :with_can_manage_offers_permission)
+#
+
 FactoryBot.define do
   factory :user, aliases: [:sender] do
     association :address
 
+    title { ["Mr", "Mrs", "Miss", "Ms"].sample }
     first_name { FFaker::Name.first_name }
     last_name { FFaker::Name.last_name }
     mobile { generate(:mobile) }
-    email { FFaker::Internet.email }
+    email { "#{rand(1000)}#{FFaker::Internet.email}" }
     last_connected { 2.days.ago }
     last_disconnected { 1.day.ago }
     disabled { false }
@@ -21,228 +35,46 @@ FactoryBot.define do
       roles_and_permissions { }
     end
 
-    %i[reviewer order_fulfilment order_administrator supervisor system_administrator charity stock_administrator stock_fulfilment].each do |role|
-      trait role do
+    # Role specific users. create(:user, :order_administrator)
+    # No permissions are created
+    FactoryBot.generate(:permissions_roles).keys.each do |role|
+      trait role.parameterize.underscore.to_sym do
         after(:create) do |user|
-          user.roles << create("#{role}_role")
+          r = create("#{role.parameterize.underscore}_role")
+          user.roles << r unless user.roles.include?(r)
         end
       end
     end
 
-    trait :user_with_no_mobile do
-      mobile { nil }
-    end
-
-    trait :with_multiple_roles_and_permissions do
-      after(:create) do |user, evaluator|
-        evaluator.roles_and_permissions.each_pair do |role_name, permissions|
-          user.roles << create(:role, :with_dynamic_permission, name: role_name, permissions: permissions)
+    # Role specific users: create(:user, :with_order_administrator_role)
+    # No permissions are created
+    FactoryBot.generate(:permissions_roles).keys.each do |role|
+      trait "with_#{role.parameterize.underscore}_role".to_sym do
+        after(:create) do |user|
+          r = create("#{role.parameterize.underscore}_role")
+          user.roles << r unless user.roles.include?(r)
+        end
+        transient do
+          # ensures if multiple permission traits are used, that they get assigned to the same role
+          role_name { role.parameterize.underscore }
         end
       end
     end
 
-    trait :with_can_add_or_remove_inventory_number do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_add_or_remove_inventory_number, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_destroy_contact_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_destroy_contacts_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_read_versions_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_read_versions_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_holidays_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_holidays_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_create_and_read_messages_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_create_and_read_messages_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_packages_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_packages_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_stocktakes_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_stocktakes_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_stocktake_revisions_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_stocktake_revisions_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_organisations_users_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_organisations_users_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_deliveries do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_deliveries, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_orders_packages_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_orders_packages_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_remove_offers_packages_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_remove_offers_packages_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_check_organisations_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_check_organisations_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_items_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_items_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_goodcity_requests_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_goodcity_requests_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_messages_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_messages_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_offers_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_offers_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_add_package_types_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_add_package_types_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_read_or_modify_user_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_read_or_modify_user_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_create_user_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym, :with_can_create_user_permission)
-      end
-    end
-
-    trait :with_can_manage_package_detail_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_package_detail_permission, name: evaluator.role_name)
-      end
-    end
-
-
-    trait :with_can_manage_images_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_images_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_access_packages_locations_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_access_packages_locations_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_orders_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_orders_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_locations_permission do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_locations_permission, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_manage_settings do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_manage_settings, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_access_printers do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_access_printers, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_access_orders_process_checklists do
-      after(:create) do |user, evaluator|
-        user.roles << (create :role, :with_can_access_orders_process_checklists, name: evaluator.role_name)
-      end
-    end
-
-    trait :with_can_disable_user do
-      after(:create) do |user, evaluator|
-        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_disable_user)
-      end
-    end
-
-    trait :with_can_manage_user_roles do
-      after(:create) do |user, evaluator|
-        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_user_roles)
-      end
-    end
-
-    trait :with_can_manage_package_messages do
-      after(:create) do |user, evaluator|
-        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_package_messages)
-      end
-    end
-
-    trait :with_can_manage_offer_messages do
-      after(:create) do |user, evaluator|
-        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_offer_messages)
-      end
-    end
-
-    trait :with_can_manage_order_messages do
-      after(:create) do |user, evaluator|
-        user.roles << (create "#{evaluator.role_name.parameterize.underscore}_role".to_sym,  :with_can_manage_order_messages)
-      end
-    end
-
-    trait :api_user do
-      after(:create) do |user|
-        user.roles << create(:api_write_role)
+    # create(:user, :with_<insert permission name>_permission)
+    # If more than 1 role has the same permission, then only 1 role will be defined
+    # However, you can set the particular role by using the 'role_name parameter'
+    # E.g. create(:user, :with_can_manage_packages, role_name: "Supervisor")
+    # in order to avoid a user with role Reviewer AND Supervisor
+    FactoryBot.generate(:permissions_roles).each do |role_name, permissions|
+      permissions.each do |permission|
+        trait "with_#{permission}_permission".to_sym do
+          after(:create) do |user, evaluator|
+            # create(:supervisor_role, :with_can_manage_packages_permission)
+            r = create("#{(evaluator.role_name || role_name).parameterize.underscore}_role".to_sym, "with_#{permission}_permission".to_sym)
+            user.roles << r unless user.roles.include?(r)
+          end
+        end
       end
     end
 
@@ -258,10 +90,6 @@ FactoryBot.define do
       after(:create) do |user|
         user.roles << create(:system_role)
       end
-    end
-
-    trait :title do
-      title { ["Mr", "Mrs", "Miss", "Ms"].sample }
     end
 
     trait :with_organisation do
@@ -285,12 +113,11 @@ FactoryBot.define do
         user.requested_packages << (create :requested_package, user_id: user.id)
       end
     end
-  end
 
-  factory :user_with_token, parent: :user do
-    mobile { generate(:mobile) }
-    after(:create) do |user|
-      user.auth_tokens << create(:scenario_before_auth_token)
+    trait :with_token do
+      after(:create) do |user, evaluator|
+        create_list(:auth_token, 1)
+      end
     end
   end
 end

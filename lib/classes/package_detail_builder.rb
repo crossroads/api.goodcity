@@ -48,7 +48,7 @@ class PackageDetailBuilder
 
   def map_lookup_id
     FIXED_DETAIL_ATTRIBUTES.each_with_object({}) do |item, hash|
-      if (key = detail_params[item].presence)
+      if (key = detail_params && detail_params[item].presence)
         name = "electrical_#{item}" unless item.eql?("comp_test_status")
         hash["#{item}_id"] = Lookup.find_by(name: name || item, key: key)&.id
       end

@@ -61,6 +61,11 @@ RSpec.configure do |config|
 
   FactoryBot.use_parent_strategy = false
 
+  # Clean up system_user at end of specs
+  config.after(:all) do
+    User.system.destroy_all
+  end
+
   FactoryBot.create :user, :system
   # Default app to be 'admin' in order to not use treat_user_as_donor
   config.include ApplicationHeaders
