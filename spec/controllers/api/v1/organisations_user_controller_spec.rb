@@ -84,7 +84,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         new_organisations_user_params[:user_attributes][:email] = organisations_user.user.email
         new_organisations_user_params[:user_attributes][:mobile] = user.mobile
         expect {
-          post :create, format: :json, organisations_user: new_organisations_user_params
+          post :create, params: { organisations_user: new_organisations_user_params }
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)
@@ -99,7 +99,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         new_organisations_user_params[:user_attributes][:email] = user.email
         new_organisations_user_params[:user_attributes][:mobile] = organisations_user.user.mobile
         expect {
-          post :create, format: :json, organisations_user: new_organisations_user_params
+          post :create, params: { organisations_user: new_organisations_user_params }
         }.to change(OrganisationsUser, :count).by(0)
          .and change(User, :count).by(0)
         expect(response.status).to eq(422)

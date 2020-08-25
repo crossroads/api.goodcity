@@ -606,7 +606,7 @@ RSpec.describe Package, type: :model do
           @package.reload
           @package.favourite_image_id = @pkg_image2.id
           @package.save
-        }.to change { @package.favourite_image_id }.to(@pkg_image2.id)
+        }.to change { @package.reload.favourite_image_id }.to(@pkg_image2.id)
         expect(@pkg_image1.reload.favourite).to eq(false)
       end
 
