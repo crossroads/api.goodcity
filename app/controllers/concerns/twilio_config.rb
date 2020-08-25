@@ -49,7 +49,7 @@ module TwilioConfig
 
   def twilio_client
     Twilio::REST::Client.new(twilio_creds[:account_sid],
-      twilio_creds[:auth_token])
+                             twilio_creds[:auth_token])
   end
 
   def twilio_outgoing_call_capability
