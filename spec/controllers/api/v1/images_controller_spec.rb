@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ImagesController, type: :controller do
-
+  let(:cloudinary_config) { Rails.application.secrets.cloudinary }
   let(:user) { create(:user, :with_token) }
   let(:offer) { create :offer, created_by: user }
   let(:item)  { create :item, offer: offer }
@@ -20,6 +20,7 @@ RSpec.describe Api::V1::ImagesController, type: :controller do
     it "return cloudinary signature", :show_in_doc do
       get :generate_signature
       body = JSON.parse(response.body)
+      expect(body['api_key']).to eq(cloudinary_config[:api_key])
       expect(body.keys).to eq(%w[api_key signature timestamp tags])
     end
 

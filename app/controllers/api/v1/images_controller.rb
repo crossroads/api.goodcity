@@ -25,10 +25,10 @@ module Api
       def generate_signature
         unix_timestamp    = Time.now.to_i
         tags              = [Rails.env, params[:tags]].compact.join(",")
-        serialized_params = "tags=#{tags}&timestamp=#{unix_timestamp}#{cloudinary_config['api_secret']}"
+        serialized_params = "tags=#{tags}&timestamp=#{unix_timestamp}#{cloudinary_config[:api_secret]}"
         signature         = Digest::SHA1.hexdigest(serialized_params)
         render json: {
-          api_key:   cloudinary_config['api_key'],
+          api_key:   cloudinary_config[:api_key],
           signature: signature,
           timestamp: unix_timestamp,
           tags: tags }.to_json

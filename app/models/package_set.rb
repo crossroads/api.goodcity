@@ -67,6 +67,6 @@ class PackageSet < ApplicationRecord
   end
 
   def ensure_type_integrity
-    errors.add(:errors, I18n.t('package_sets.cannot_change_type')) if package_type_id_changed? && packages.size.positive?
+    errors.add(:errors, I18n.t('package_sets.cannot_change_type')) if saved_change_to_attribute?(:package_type_id) && packages.size.positive?
   end
 end
