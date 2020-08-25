@@ -196,7 +196,7 @@ describe SubscriptionsReminder do
   end
 
   context "send_sms_reminder" do
-    let(:sms_url) { "#{Rails.application.secrets.base_urls['app']}/offers" }
+    let(:sms_url) { "#{Rails.application.secrets.base_urls[:app]}/offers" }
     let(:ts)      { TwilioService.new(build :user) }
     it "should call TwilioService with offer url in SMS body" do
       expect(TwilioService).to receive(:new).and_return(ts)

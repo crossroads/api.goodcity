@@ -82,7 +82,7 @@ class Gogovan
   def ggv_driver_notes
     notes = ""
     if offer && ggv_uuid
-      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{ggv_uuid}"
+      link = "#{Rails.application.secrets.base_urls[:app]}/ggv_orders/#{ggv_uuid}"
       links = {"zh-tw" => "#{link}?ln=zh-tw", "en" => "#{link}?ln=en"}
 
       notes =
