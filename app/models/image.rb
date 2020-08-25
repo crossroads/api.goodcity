@@ -11,7 +11,7 @@ class Image < ApplicationRecord
   before_destroy :delete_image_from_cloudinary, unless: :has_multiple_items
   after_update :clear_unused_transformed_images
 
-  after_update :reset_favourite, if: :favourite_changed?
+  after_update :reset_favourite, if: :saved_change_to_favourite?
 
   scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
 
