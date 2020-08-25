@@ -21,11 +21,9 @@ class Token
   def generate(options = {})
     now = Time.current
     options.merge!(
-      {
-        "iat": now.to_i,
-        "iss": issuer,
-        "exp": (now + validity).to_i
-      }
+      "iat": now.to_i,
+      "iss": issuer,
+      "exp": (now + validity).to_i
     )
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
@@ -33,11 +31,9 @@ class Token
   def generate_api_token(options = {})
     now = Time.current
     options.merge!(
-      {
-        "iat": now.to_i,
-        "iss": issuer,
-        "exp": (now + validity(for_api: true)).to_i
-      }
+      "iat": now.to_i,
+      "iss": issuer,
+      "exp": (now + validity(for_api: true)).to_i
     )
     JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
   end
@@ -55,7 +51,7 @@ class Token
 
   # Decode the json web token when we receive it from the client
   def token
-    @token ||= JWT.decode(jwt_string, secret_key, true, { algorithm: hmac_sha_algo })
+    @token ||= JWT.decode(jwt_string, secret_key, true, algorithm: hmac_sha_algo)
   end
 
   # Is the JWT token authentic?

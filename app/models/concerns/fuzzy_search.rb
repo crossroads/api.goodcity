@@ -63,7 +63,7 @@ module FuzzySearch
     #     SIMILARITY(name_en, 'steve') DESC,
     #     SIMILARITY(name_zh_tw, 'steve') DESC
     #
-    scope :search, -> (search_text) {
+    scope :search, ->(search_text) {
       similarities = search_props.map { |f| "SIMILARITY(#{f}, '#{search_text}')" }
 
       select_list = similarities + ["#{table_name}.*"]

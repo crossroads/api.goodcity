@@ -188,7 +188,7 @@ module Api
 
       def get_hash(object)
         Hash[
-          object.map do |k,v|
+          object.map do |k, v|
             [k.underscore, v.is_a?(Hash) ? get_hash(v) : v]
           end
         ]
