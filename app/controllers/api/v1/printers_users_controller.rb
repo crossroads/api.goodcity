@@ -12,10 +12,9 @@ module Api
       end
 
       def_param_group :printers_users do
-        param :printers_users, Hash, required: true do
-          param :printer_id, Integer, desc: "Id of printer"
-          param :user_id, Integer, desc: "Id of user"
-        end
+        param :printer_id, Integer, desc: "Id of printer"
+        param :user_id, Integer, desc: "Id of user"
+        param :tag, String, desc: "A string identifier of the printer"
       end
 
       api :POST, '/v1/printers_users', "Create an printers_user"
