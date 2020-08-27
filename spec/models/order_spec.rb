@@ -941,7 +941,7 @@ RSpec.describe Order, type: :model do
 
   describe "Live updates" do
     let(:push_service) { PushService.new }
-    let(:charity_user) { create(:user, :with_token, :with_charity_role, :with_can_login_to_browse_permission) }
+    let(:charity_user) { create(:user, :with_token, :with_charity_role) }
 
     before(:each) do
       allow(PushService).to receive(:new).and_return(push_service)

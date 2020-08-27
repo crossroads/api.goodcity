@@ -23,7 +23,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   let(:users) { create_list(:user, 2) }
 
   let(:charity_users) { ('a'..'z').map { |i|
-    create(:user, :with_charity_role, :with_can_login_to_browse_permission, first_name: "Jane_#{i}", last_name: 'Doe')}}
+    create(:user, :with_charity_role, first_name: "Jane_#{i}", last_name: 'Doe')}}
 
   let(:parsed_body) { JSON.parse(response.body) }
 
