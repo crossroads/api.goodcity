@@ -89,7 +89,7 @@ class Ability
   def printer_abilities
     can :index, Printer if can_access_printers?
     if can_manage_printers?
-      can [:create], PrintersUser
+      can [:create, :update], PrintersUser
     elsif can_update_my_printers?
       can [:create, :update], PrintersUser, { user_id: @user_id }
     end
