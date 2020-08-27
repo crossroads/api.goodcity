@@ -66,10 +66,10 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
     context 'With Supervisor role' do
       before { generate_and_set_token(supervisor) }
 
-      it "returns 403", :show_in_doc do
+      it "returns 200", :show_in_doc do
         params = { printer_id: printer.id }
         put :update, id: printers_user.id, printers_users: params
-        expect(response.status).to eq(403)
+        expect(response.status).to eq(200)
         expect(printers_user.reload.printer_id).to eq(printers_user.reload.printer_id)
       end
     end
