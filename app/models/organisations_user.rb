@@ -14,4 +14,6 @@ class OrganisationsUser < ActiveRecord::Base
 
   validates :organisation_id, :user_id, presence: true
   validates :preferred_contact_number, format: {with: /\A.{8}\Z/}, allow_nil: true
+
+  scope :active, ->{ where(status: ACTIVE_STATUS) }
 end

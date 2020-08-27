@@ -15,4 +15,8 @@ class Role < ActiveRecord::Base
 
   scope :visible, ->{ where.not(name: 'api-write') }
   scope :allowed_roles, ->(level) { where("level <= ?", level) }
+
+  def grant(user)
+    user.roles << self unless user.roles.include?(self)
+  end
 end
