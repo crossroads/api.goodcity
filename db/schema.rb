@@ -583,9 +583,10 @@ ActiveRecord::Schema.define(version: 20200819173237) do
     t.integer  "organisation_id"
     t.integer  "user_id"
     t.string   "position"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
     t.string   "preferred_contact_number"
+    t.string   "status",                   default: "pending"
   end
 
   add_index "organisations_users", ["organisation_id"], name: "index_organisations_users_on_organisation_id", using: :btree
