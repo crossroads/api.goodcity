@@ -9,7 +9,7 @@ describe 'Message abilities' do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { %i[index show create update destroy manage] }
   let(:sender)      { create :user }
-  let(:charity) { create(:user, :with_charity_role) }
+  let(:charity) { create(:user, :charity) }
   let(:is_private) { false }
   let(:offer) { create(:offer, created_by: user) }
   let(:message) { create :message, messageable: offer, is_private: is_private }

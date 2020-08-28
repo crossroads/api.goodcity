@@ -3,7 +3,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user, :with_token) }
   let(:supervisor) { create(:user, :with_token, :supervisor, :charity) }
-  let(:charity_user) { create(:user, :with_token, :with_charity_role) }
+  let(:charity_user) { create(:user, :with_token, :charity) }
   let(:order_fulfilment) { create(:user, :with_token, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }

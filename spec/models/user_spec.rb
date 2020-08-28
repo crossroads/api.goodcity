@@ -7,9 +7,9 @@ describe User, :type => :model do
   let(:supervisor) { create(:user, :with_supervisor_role, :with_can_login_to_stock_permission, :with_can_login_to_admin_permission) }
   let(:order_fulfilment_user) { create(:user, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
   let(:reviewer) { create(:user, :with_reviewer_role, :with_can_login_to_admin_permission) }
-  let(:charity) { create(:user, :with_charity_role) }
+  let(:charity) { create(:user, :charity) }
 
-  let(:charity_users) { (1..5).map { create(:user, :with_charity_role) } }
+  let(:charity_users) { (1..5).map { create(:user, :charity) } }
 
   let(:invalid_user_attributes) { {"mobile" => "85211111112", "first_name" => "John2", "last_name" => "Dey2"} }
 
