@@ -22,7 +22,8 @@ class Ability
     can_access_printers can_remove_offers_packages
     can_access_orders_process_checklists can_mention_users can_read_users
     can_manage_order_messages can_manage_offer_messages can_disable_user
-    can_manage_stocktakes can_manage_stocktake_revisions can_manage_package_messages
+    can_manage_stocktakes can_manage_stocktake_revisions
+    can_manage_package_messages can_access_organisation_types
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -84,6 +85,7 @@ class Ability
     medical_abilities
     printer_abilities
     offers_package_abilities
+    organisation_type_abilities
   end
 
   def printer_abilities
@@ -282,6 +284,12 @@ class Ability
   def organisations_abilities
     if can_check_organisations? || @api_user
       can [:index, :search, :show, :orders], Organisation
+    end
+  end
+
+  def organisation_type_abilities
+    if can_access_organisation_types? || @api_user
+      can [:index], OrganisationType
     end
   end
 

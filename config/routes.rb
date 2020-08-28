@@ -117,6 +117,7 @@ Rails.application.routes.draw do
           get :orders
         end
       end
+      resources :organisation_types
 
       get "recent_users", to: "users#recent_users"
       get "mentionable_users", to: "users#mentionable_users"
