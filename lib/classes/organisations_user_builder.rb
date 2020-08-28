@@ -155,15 +155,4 @@ class OrganisationsUserBuilder
 
     raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
   end
-
-  # ------------------------
-  # Custom Exceptions
-  # ------------------------
-
-  class OrganisationUserAlreadyCreated < Goodcity::DuplicateRecordError
-    def initialize
-      super
-      with_translation('organisations_user_builder.existing_user.present')
-    end
-  end
 end
