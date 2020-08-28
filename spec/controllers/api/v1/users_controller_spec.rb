@@ -16,14 +16,19 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   let(:serialized_user_json) { JSON.parse( serialized_user.to_json ) }
 
   # ROLES
-  let(:charity_role) { create(:role, name: "Charity", level: 1) }
+  let(:low_level_role) { create(:role, name: "Sample", level: 1) }
   let(:order_fulfilment_role) { create(:role, name: "Order fulfilment", level: 5) }
   let(:system_admin_role) { create(:role, name: "System administrator", level: 15) }
 
   let(:users) { create_list(:user, 2) }
 
-  let(:charity_users) { ('a'..'z').map { |i|
-    create(:user, :charity, first_name: "Jane_#{i}", last_name: 'Doe')}}
+  let(:low_level_users) do
+    ('a'..'z').map { |i|
+      user = create(:user, :charity, first_name: "Jane_#{i}", last_name: 'Doe')
+      create(:user_role, user: user, role: low_level_role)
+      user
+    }
+  end
 
   let(:parsed_body) { JSON.parse(response.body) }
 
@@ -54,35 +59,35 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     before { generate_and_set_token(supervisor_user) }
 
     it "returns searched user according to params" do
-      get :index, searchText: charity_users.first.first_name, role_name: "Charity"
+      get :index, searchText: low_level_users.first.first_name, role_name: low_level_role.name
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(1)
     end
 
     it "returns only first 25 results" do
-      get :index, searchText: charity_users.first.last_name, role_name: "Charity"
+      get :index, searchText: low_level_users.first.last_name, role_name: low_level_role.name
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(25)
     end
 
     it "will not return any user if params does not matches any users" do
-      get :index, searchText: "zzzzzz", role_name: "Charity"
+      get :index, searchText: "zzzzzz", role_name: low_level_role.name
       expect(parsed_body['users'].count).to eq(0)
     end
 
-    it "will return charity user if params has role as 'Charity'" do
-      get :index, searchText: charity_users.first.first_name, role_name: "Charity"
-      expect(User.find(parsed_body["users"].first["id"]).roles.pluck(:name)).to include("Charity")
+    it "will return the user if it belongs to the specified role" do
+      get :index, searchText: low_level_users.first.first_name, role_name: low_level_role.name
+      expect(User.find(parsed_body["users"].first["id"]).roles.pluck(:name)).to include(low_level_role.name)
     end
 
     it "does not return searched user if the specified role is different" do
-      get :index, searchText: charity_users.first.first_name, role_name: "Supervisor"
+      get :index, searchText: low_level_users.first.first_name, role_name: "Supervisor"
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(0)
     end
 
     it "returns searched user if role isn't specified" do
-      get :index, searchText: charity_users.first.first_name
+      get :index, searchText: low_level_users.first.first_name
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(1)
     end
@@ -94,7 +99,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:existing_user) { create(:user) }
 
     before do
-      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [charity_role.id], preferred_language: "zh-tw" }
+      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [low_level_role.id], preferred_language: "zh-tw" }
       @user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [role.id] }
       @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
       @user_params3 = {"first_name": "Test", "last_name": "Name", "mobile": "3812912"}
@@ -112,7 +117,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(parsed_body['user']['last_name']).to eql(@valid_user_params[:last_name])
         expect(parsed_body['user']['mobile']).to eql(@valid_user_params[:mobile])
         expect(parsed_body["user"]["preferred_language"]).to eql("zh-tw")
-        expect(parsed_body['user_roles'][0]['role_id']).to eql(charity_role.id)
+        expect(parsed_body['user_roles'][0]['role_id']).to eql(low_level_role.id)
       end
     end
 
@@ -132,7 +137,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       end
 
       it "Does assign lower level and same level role to user", :show_in_doc do
-        role_ids = [charity_role.id, order_fulfilment_role.id]
+        role_ids = [low_level_role.id, order_fulfilment_role.id]
         user_params = {"first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": role_ids}
 
         expect {
@@ -203,15 +208,14 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     context "as a Supervisor" do
       let(:supervisor) { create(:user, :with_token, :supervisor) }
-      let(:charity_role) { create(:role, name: "Charity") }
 
       before { generate_and_set_token(supervisor_user) }
 
       context "when I edit my own details" do
         it "I cannot edit my own roles" do
           existing_user_roles = supervisor_user.roles
-          put :update, id: supervisor_user.id, user: { user_role_ids: [charity_role.id] }
-          expect(supervisor_user.reload.roles.pluck(:id)).not_to include(charity_role.id)
+          put :update, id: supervisor_user.id, user: { user_role_ids: [low_level_role.id] }
+          expect(supervisor_user.reload.roles.pluck(:id)).not_to include(low_level_role.id)
           expect(supervisor_user.reload.roles).to match_array(existing_user_roles)
         end
 
@@ -227,18 +231,18 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
         it "I can change the roles of a Reviewer [lower level role] " do
           put :update, id: reviewer_user.id,
-            user: {user_role_ids: [charity_role.id, system_admin_role.id]}
+            user: {user_role_ids: [low_level_role.id, system_admin_role.id]}
 
           expect(response.status).to eq(200)
-          expect(reviewer_user.roles.pluck(:id)).to include(charity_role.id)
+          expect(reviewer_user.roles.pluck(:id)).to include(low_level_role.id)
           expect(reviewer_user.roles.pluck(:id)).to_not include(system_admin_role.id)
         end
 
         it "I cannot change the roles of a System Administrator [higher level role]" do
           put :update, id: system_admin_user.id,
-             user: {user_role_ids: [charity_role.id]}
+             user: {user_role_ids: [low_level_role.id]}
           expect(response.status).to eq(200)
-          expect(system_admin_user.roles.pluck(:id)).to_not include(charity_role.id)
+          expect(system_admin_user.roles.pluck(:id)).to_not include(low_level_role.id)
         end
       end
     end
