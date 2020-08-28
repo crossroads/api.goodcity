@@ -1,9 +1,10 @@
 #
 # Grabs the designations from Stockit and updates GoodCity
 #
-#require 'goodcity/import_designations'; ImportDesignations.new.run
+# > require 'goodcity/import_designations'
+# > ImportDesignations.new.run(['S12345', 'S54321'])
 
-# turn off PushUpdates for changes
+# turn off PushUpdates to prevent broadcasting huge updates
 class PushService
   def send_update_store(channels, data)
   end
@@ -11,14 +12,14 @@ end
 
 class ImportDesignations
 
-  def initialize
+  def initialize(codes)
+    @codes = codes
     Order.record_timestamps = false
     ActiveRecord::Base.logger.level = 1 # quieter when run in console
     @log_file_name = 'import_designations.log'
   end
 
-  def run
-    codes = ['S4586C', 'S5254', 'S5533', 'S5373F', 'S4125A', 'S5423', 'S3525', 'S4894', 'S3318B', 'S4642C', 'S5507', 'S5097']
+  def run(codes)
     designations_json = Stockit::DesignationSync.new(nil, {code: codes.join(',')}).index
     # designations_json = Stockit::DesignationSync.index
     orders = JSON.parse(designations_json["designations"]) || []
