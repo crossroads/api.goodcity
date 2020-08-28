@@ -1,6 +1,8 @@
 #
 # Grabs the designations from Stockit and updates GoodCity
 #
+# DO NOT LOAD THIS SCRIPT IN RUNTIME - it will prevent push notifications
+#
 # > require 'goodcity/import_designations'
 # > ImportDesignations.new.run(['S12345', 'S54321'])
 
