@@ -23,7 +23,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     end
 
     it "supports filtering requests by order id" do
-      (1..3).each { |i| create :order, id: i }
+      (1..3).each { |i| create :order, created_by: user, id: i }
       (1..3).each { |i| create :goodcity_request, order: Order.find(i) }
       get :index, order_ids: '1,2'
       expect(requests_fetched.length).to eq(2)
@@ -35,16 +35,18 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     context "As a charity user" do
 
       let(:order) { create :order, created_by: charity_user }
-      let(:anonymous_order) { create :order }
+      let(:other_order) { create :order }
 
       before do
         generate_and_set_token(charity_user)
       end
 
-      it "returns the goodcity requests created by the current user" do
+      it "returns the goodcity requests of the user's organisation" do
+        order = create :order, created_by: charity_user, organisation_id: charity_user.organisations.first.id
         create :goodcity_request
-        create :goodcity_request, created_by: charity_user
-        create :goodcity_request, created_by: charity_user
+        create :goodcity_request, order: order, created_by: charity_user
+        create :goodcity_request, order: order, created_by: charity_user
+
         get :index
         expect(requests_fetched.length).to eq(2)
         requests_fetched.each do |r|
@@ -52,16 +54,14 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
         end
       end
 
-      it "also returns the goodcity requests of the user's orders" do
-        o = create :order, created_by: charity_user
+      it "doesn't return the goodcity requests of another organisation, even if the user created it" do
+        order = create :order, created_by: charity_user, organisation: create(:organisation)
         create :goodcity_request
-        create :goodcity_request, order: o
-        create :goodcity_request, order: o
+        create :goodcity_request, order: order, created_by: charity_user
+        create :goodcity_request, order: order, created_by: charity_user
+
         get :index
-        expect(requests_fetched.length).to eq(2)
-        requests_fetched.each do |r|
-          expect(r.order.created_by_id).to eq(charity_user.id)
-        end
+        expect(requests_fetched.length).to eq(0)
       end
     end
   end
@@ -78,9 +78,10 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
     context "As a charity user" do
       let(:organisation) { charity_user.active_organisations.first }
+      let(:other_organisation) { create :organisation }
       let(:package_type) { create(:package_type) }
       let(:order) { create :order, created_by: charity_user }
-      let(:anonymous_order) { create :order }
+      let(:other_order) { create :order, organisation: other_organisation }
       let(:organistion_order) { create :order, organisation: organisation }
 
       before do
@@ -102,12 +103,12 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
       it "forbids me to create a request for an order of another organisation", :show_in_doc do
         expect {
           post :create, goodcity_request: {
-            order_id: anonymous_order.id, 
+            order_id: other_order.id, 
             package_type: package_type.id,
             quantity: 1,
             description: "foo"
           }
-        }.to change(GoodcityRequest, :count).by(0)
+        }.not_to change(GoodcityRequest, :count)
         expect(response.status).to eq(403)
       end
     end
