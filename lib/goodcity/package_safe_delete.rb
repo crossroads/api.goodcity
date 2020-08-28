@@ -63,9 +63,13 @@ module Goodcity
         log(package, "Destroying requested_package #{rp.id}")
         rp.destroy
       end
+
+      log(package, "Destroying PackagesInventory records")
+      PackagesInventory.where(package_id: package.id).delete_all
+
       inventory_number = package.inventory_number
       log(package, "Destroying package #{package.id}")
-      package.reload.destroy
+      package.reload.really_destroy!
       destroy_inventory_number(inventory_number) # must come after package.destroy
     end
 
