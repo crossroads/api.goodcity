@@ -30,7 +30,7 @@ describe ResyncDuplicateUsers do
 
     it 'deletes the organisations_users records of deleted user' do
       user.update_column(:email, original_user.email.upcase)
-      original_organisations_user) {original_user.organisations_users.first }
+      original_organisations_user = original_user.organisations_users.first
       expect {
         ResyncDuplicateUsers.apply
       }.to change(OrganisationsUser, :count).by(-1)
@@ -71,7 +71,7 @@ describe ResyncDuplicateUsers do
     end
 
     it 'does not effect other than charity users' do
-      user = create(:user, :with_ordeexir_administrator_role, :with_can_manage_order_messages_permission, email: 'test1@test.com')
+      user = create(:user, :with_order_administrator_role, :with_can_manage_order_messages_permission, email: 'test1@test.com')
 
       user_2 = create(:user, :charity)
       user_2.update_column(:email, 'tEst1@test.com')
