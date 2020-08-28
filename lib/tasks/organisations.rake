@@ -1,4 +1,5 @@
 require "goodcity/organisation_populator"
+require "goodcity/tasks/organisation_tasks"
 
 namespace :goodcity do
   desc " use 'rake goodcity:populate_organisations' to create or update organisation details from HK IRD database"
@@ -9,7 +10,7 @@ namespace :goodcity do
   desc 'Initialize status field'
   task initialize_status_field: :environment do
     count = Goodcity::Tasks::OrganisationTasks.initialize_status_field!
-    puts("#{count}" records updated)
+    puts("#{count} records processed")
   end
 
   desc 'Restore Charity Role'
