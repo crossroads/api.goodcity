@@ -13,6 +13,8 @@ module Goodcity
     
         return if charity_role.blank?
         
+        count = 0
+
         ActiveRecord::Base.transaction do
           charity_role.users.find_each do |u|
             organisations_users = u.organisations_users
@@ -21,11 +23,16 @@ module Goodcity
             organisations_users.each do |ou|
               status = OrganisationsUser::Status::PENDING
               status = OrganisationsUser::Status::APPROVED if closed_orders.find { |o| o.organisation_id == ou.organisation_id }.present?
+              
               ou.status = status
               ou.save!
             end
+
+            count += 1
           end
         end
+
+        count
       end
 
       def restore_charity_roles!
