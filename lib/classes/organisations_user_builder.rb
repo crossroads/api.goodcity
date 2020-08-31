@@ -120,7 +120,7 @@ class OrganisationsUserBuilder
     record
   end
 
-  def assert_integrity!(organisation_user)
+  def assert_integrity!(organisations_user)
     raise Goodcity::ReadOnlyFieldError.new(:user_id).with_status(403)          if organisations_user.user_id != @user_id
     raise Goodcity::ReadOnlyFieldError.new(:organisation_id).with_status(403)  if organisations_user.organisation_id != @organisation_id
   end
