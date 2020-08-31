@@ -51,7 +51,6 @@ module Api
 
       def organisations_user_params
         params.require(:organisations_user).permit(
-          :id,
           :organisation_id,
           :user_id,
           :position,
