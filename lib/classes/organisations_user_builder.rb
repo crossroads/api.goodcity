@@ -48,29 +48,19 @@ class OrganisationsUserBuilder
     assert_permissions!
     assert_no_conflicts!
 
-    ActiveRecord::Base.transaction do
+    organisations_user = ActiveRecord::Base.transaction do
       apply_user_attributes!(@user, @user_attributes) if @user_attributes.present?
-
-      organisations_user = OrganisationsUser.create!(
-        user_id:                  @user_id,
-        organisation_id:          @organisation_id,
-        position:                 @position,
-        status:                   @status,
-        preferred_contact_number: @preferred_contact_number
-      )
-
-      notify_user(@user)
-
-      organisations_user
+      OrganisationsUser.create!(create_params)
     end
+
+    notify_user(@user)
+    organisations_user
   end
 
   def update!(organisations_user_id)
     organisations_user = strict_find!(OrganisationsUser, organisations_user_id)
 
-    raise Goodcity::ReadOnlyFieldError.new(:user_id).with_status(403)          if organisations_user.user_id != @user_id
-    raise Goodcity::ReadOnlyFieldError.new(:organisation_id).with_status(403)  if organisations_user.organisation_id != @organisation_id
-
+    assert_integrity!(organisations_user)
     assert_permissions!
     assert_no_conflicts!
 
@@ -90,12 +80,10 @@ class OrganisationsUserBuilder
   # Write methods
   # ------------------------
 
-  def apply_user_attributes!(user, first_name: nil, last_name: nil, email: nil, mobile: nil, title: nil)
-    user.first_name = first_name  if first_name.present?
-    user.last_name  = last_name   if last_name.present?
-    user.email      = email       if email.present?
-    user.mobile     = mobile      if mobile.present?
-    user.title      = title       if title.present?
+  def apply_user_attributes!(user, user_params)
+    [:first_name, :last_name, :email, :mobile, :title].each do |attr|
+      user.write_attribute(attr, user_params[:attr]) if user_params[:attr].present?
+    end
 
     user.save! if user.changed?
   end
@@ -103,7 +91,17 @@ class OrganisationsUserBuilder
   # ------------------------
   # Helpers
   # ------------------------
-  
+
+  def create_params
+    {
+      user_id:                  @user_id,
+      organisation_id:          @organisation_id,
+      position:                 @position,
+      status:                   @status,
+      preferred_contact_number: @preferred_contact_number
+    }
+  end
+
   def notify_user(user)
     TwilioService.new(user).send_welcome_msg
   end
@@ -122,12 +120,17 @@ class OrganisationsUserBuilder
     record
   end
 
+  def assert_integrity!(organisation_user)
+    raise Goodcity::ReadOnlyFieldError.new(:user_id).with_status(403)          if organisations_user.user_id != @user_id
+    raise Goodcity::ReadOnlyFieldError.new(:organisation_id).with_status(403)  if organisations_user.organisation_id != @organisation_id
+  end
+
   def assert_permissions!
     return if super_user?(@change_author)
 
     raise Goodcity::AccessDeniedError if @change_author.id != @user_id                  # A normal user can only create or modify his/her own records
     raise Goodcity::AccessDeniedError if @status != OrganisationsUser::INITIAL_STATUS   # A normal cannot set the status to anything but the inital "pending" status
-    
+
     if @user_attributes.present?
       # Prevent users from modifying their existing verified email and mobile
       email, mobile = @user_attributes.values_at(:email, :mobile)
