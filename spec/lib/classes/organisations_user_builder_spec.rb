@@ -203,6 +203,12 @@ describe OrganisationsUserBuilder do
       expect(organisations_user.preferred_contact_number).to eq('87654567')
     end
 
+    it "doesnt update the status if not provided" do
+      expect {
+        OrganisationsUserBuilder.update(organisations_user.id, build_params.except(:status))
+    }.not_to change { organisations_user.reload.status }
+    end
+
     it "applies the user_attributes to the user record" do
       payload = build_params
 

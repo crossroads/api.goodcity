@@ -128,8 +128,8 @@ class OrganisationsUserBuilder
   def assert_permissions!
     return if super_user?(@change_author)
 
-    raise Goodcity::AccessDeniedError if @change_author.id != @user_id                  # A normal user can only create or modify his/her own records
-    raise Goodcity::AccessDeniedError if @status != OrganisationsUser::INITIAL_STATUS   # A normal cannot set the status to anything but the inital "pending" status
+    raise Goodcity::AccessDeniedError if @change_author.id != @user_id                                      # A normal user can only create or modify his/her own records
+    raise Goodcity::AccessDeniedError if @status.present? && @status != OrganisationsUser::INITIAL_STATUS   # A normal cannot set the status to anything but the inital "pending" status
 
     if @user_attributes.present?
       # Prevent users from modifying their existing verified email and mobile
