@@ -81,8 +81,8 @@ class OrganisationsUserBuilder
   # ------------------------
 
   def apply_user_attributes!(user, user_params)
-    [:first_name, :last_name, :email, :mobile, :title].each do |attr|
-      user.write_attribute(attr, user_params[:attr]) if user_params[:attr].present?
+    [:first_name, :last_name, :email, :mobile, :title].each do |field|
+      user[field] = user_params[field]) if user_params[field].present?
     end
 
     user.save! if user.changed?
