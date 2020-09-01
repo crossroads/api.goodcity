@@ -5,5 +5,6 @@ class CreatePrintersUsers < ActiveRecord::Migration
       t.integer :user_id
       t.string  :tag
     end
+    execute("INSERT INTO printers_users(printer_id, user_id, tag) SELECT printer_id, id, 'stock' FROM users WHERE users.printer_id IS NOT NULL")
   end
 end
