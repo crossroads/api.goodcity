@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Organisation, type: :model do
-  let!(:country) { create(:country, name_en: DEFAULT_COUNTRY) }
-
   describe "Database columns" do
     it { is_expected.to have_db_column(:name_en).of_type(:string) }
     it { is_expected.to have_db_column(:name_zh_tw).of_type(:string) }
@@ -24,7 +22,6 @@ RSpec.describe Organisation, type: :model do
   end
 
   describe 'Validations' do
-    it { is_expected.to validate_uniqueness_of :name_en }
     it { is_expected.to validate_presence_of :name_en }
   end
 
@@ -98,14 +95,10 @@ RSpec.describe Organisation, type: :model do
       organisation.save
       expect(organisation.reload.name_en).to eq('GOOD CITY')
     end
-  end
 
-  describe '#validate_organisation_type' do
-    context 'if organisation_type is invalid' do
-      it 'returns error' do
-        organisation = build(:organisation, organisation_type_id: -2)
-        expect(organisation.errors.full_messages).to include('Invalid')
-      end
+    it 'does not create duplicate organisation for name_en' do
+      organisation = create(:organisation)
+      expect{ create(:organisation, name_en: organisation.name_en) }.to raise_error
     end
   end
 

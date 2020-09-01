@@ -154,6 +154,15 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       end
     end
 
+    context 'if country is nil' do
+      it 'sets to default country' do
+        params[:country_id] = nil
+        post :create, organisation: params
+        country_id = Country.find_by(name_en: DEFAULT_COUNTRY).id
+        expect(parsed_body['organisation']['country_id']).to eq(country_id)
+      end
+    end
+
     context 'when invalid user' do
       let(:user) { create(:user) }
 
@@ -172,7 +181,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
     it 'updates the attribute' do
       put :update, id: organisation.id, organisation: { name_en: 'Example' }
-      expect(organisation.reload.name_en).to eq('Example')
+      expect(organisation.reload.name_en).to eq('EXAMPLE')
     end
 
     context 'when invalid user' do
@@ -182,6 +191,15 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         generate_and_set_token(user)
         put :update, id: organisation.id, name_en: 'Example'
         expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'if name_en is duplicate' do
+      it 'returns error' do
+        create(:organisation, name_en: 'Good City')
+        organisation = create(:organisation)
+        put :update, id: organisation.id, organisation: { name_en: 'good city' }
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
