@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Organisation, type: :model do
+  let!(:country) { create(:country, name_en: DEFAULT_COUNTRY) }
+
   describe "Database columns" do
     it { is_expected.to have_db_column(:name_en).of_type(:string) }
     it { is_expected.to have_db_column(:name_zh_tw).of_type(:string) }
@@ -19,6 +21,11 @@ RSpec.describe Organisation, type: :model do
     it { is_expected.to belong_to :district }
     it { is_expected.to have_many :organisations_users }
     it { is_expected.to have_many(:users).through(:organisations_users) }
+  end
+
+  describe 'Validations' do
+    it { is_expected.to validate_uniqueness_of :name_en }
+    it { is_expected.to validate_presence_of :name_en }
   end
 
   describe 'Class Methods' do
@@ -81,6 +88,42 @@ RSpec.describe Organisation, type: :model do
         in_locale 'zh-tw' do
           expect(organisation.name_as_per_locale).to eq(organisation.name_zh_tw)
         end
+      end
+    end
+  end
+
+  describe '#downcase_name' do
+    it 'trims and converts name to upcase before save' do
+      organisation = build(:organisation, name_en: 'good city   ')
+      organisation.save
+      expect(organisation.reload.name_en).to eq('GOOD CITY')
+    end
+  end
+
+  describe '#validate_organisation_type' do
+    context 'if organisation_type is invalid' do
+      it 'returns error' do
+        organisation = build(:organisation, organisation_type_id: -2)
+        expect(organisation.errors.full_messages).to include('Invalid')
+      end
+    end
+  end
+
+  describe 'set_default_country' do
+    context 'if country is not specified' do
+      it 'sets default country to China' do
+        organisation = build(:organisation, country_id: nil)
+        organisation.save
+        expect(organisation.reload.country.name_en).to eq(DEFAULT_COUNTRY)
+      end
+    end
+
+    context 'if country is specified' do
+      it 'does not changes the country value' do
+        organisation = build(:organisation)
+        name = organisation.country.name_en
+        organisation.save
+        expect(organisation.reload.country.name_en).to eq(name)
       end
     end
   end
