@@ -125,4 +125,53 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       end
     end
   end
+
+  describe 'POST /create' do
+    let(:params) { FactoryBot.attributes_for(:organisation) }
+    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisation_permission) }
+
+    before { generate_and_set_token(user) }
+
+    it 'returns 200' do
+      post :create, organisation: params
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'creates new organisation record' do
+      expect{
+        post :create, organisation: params
+      }.to change{ Organisation.count }.by(1)
+    end
+
+    context 'when invalid user' do
+      let(:user) { create(:user) }
+
+      it 'returns forbidden' do
+        generate_and_set_token(user)
+        post :create, organisation: params
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
+  describe 'PUT /update' do
+    let!(:organisation) { create(:organisation) }
+    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisation_permission) }
+    before{ generate_and_set_token(user) }
+
+    it 'updates the attribute' do
+      put :update, id: organisation.id, organisation: { name_en: 'Example' }
+      expect(organisation.reload.name_en).to eq('Example')
+    end
+
+    context 'when invalid user' do
+      let(:user) { create(:user) }
+
+      it 'returns forbidden' do
+        generate_and_set_token(user)
+        put :update, id: organisation.id, name_en: 'Example'
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
 end
