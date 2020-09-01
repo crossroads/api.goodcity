@@ -19,8 +19,8 @@ class Ability
     can_read_schedule can_destroy_image can_destroy_package_with_specific_states
     can_manage_locations can_read_versions can_create_goodcity_requests
     can_manage_settings can_manage_companies can_manage_package_detail
-    can_access_printers can_remove_offers_packages
-    can_access_orders_process_checklists can_mention_users can_read_users
+    can_access_printers can_remove_offers_packages can_access_orders_process_checklists
+    can_mention_users can_read_users can_manage_printers can_update_my_printers
     can_manage_order_messages can_manage_offer_messages can_disable_user
     can_manage_stocktakes can_manage_stocktake_revisions can_manage_package_messages
   ].freeze
@@ -88,6 +88,11 @@ class Ability
 
   def printer_abilities
     can :index, Printer if can_access_printers?
+    if can_manage_printers?
+      can [:create, :update], PrintersUser
+    elsif can_update_my_printers?
+      can [:create, :update], PrintersUser, { user_id: @user_id }
+    end
   end
 
   def address_abilities
