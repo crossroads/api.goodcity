@@ -18,8 +18,8 @@ class Organisation < ActiveRecord::Base
   configure_search props: [:name_en, :name_zh_tw], tolerance: 0.1
 
   def upcase_name
-    name_en&.strip!&.upcase!
-    name_zh_tw&.strip!&.upcase!
+    self.name_en = name_en&.upcase&.strip
+    self.name_zh_tw = name_zh_tw&.upcase&.strip
   end
 
   def set_default_country

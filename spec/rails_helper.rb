@@ -60,6 +60,7 @@ RSpec.configure do |config|
 
   # Create a system_user at beginning of specs
   config.before(:all) do
+    FactoryBot.create(:country, name_en: DEFAULT_COUNTRY)
     FactoryBot.create(:user, :system)
   end
   # Clean up system_user at end of specs
