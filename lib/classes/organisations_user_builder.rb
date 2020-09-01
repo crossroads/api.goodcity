@@ -31,7 +31,6 @@ class OrganisationsUserBuilder
 
   def initialize(organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user)
     @change_author            = change_author
-    @user_id                  = user_id.to_i
     @organisation_id          = organisation_id.to_i
     @position                 = position
     @status                   = status
@@ -94,7 +93,7 @@ class OrganisationsUserBuilder
 
   def create_params
     {
-      user_id:                  @user_id,
+      user_id:                  @user.id,
       organisation_id:          @organisation_id,
       position:                 @position,
       status:                   @status,
@@ -106,7 +105,7 @@ class OrganisationsUserBuilder
     TwilioService.new(user).send_welcome_msg
   end
 
-  def super_user?(user)
+  def manager?(user)
     user&.api_user? || user&.has_permission?("can_manage_organisations_users")
   end
 
@@ -121,14 +120,14 @@ class OrganisationsUserBuilder
   end
 
   def assert_integrity!(organisations_user)
-    raise Goodcity::ReadOnlyFieldError.new(:user_id).with_status(403)          if organisations_user.user_id != @user_id
+    raise Goodcity::ReadOnlyFieldError.new(:user_id).with_status(403)          if organisations_user.user_id != @user.id
     raise Goodcity::ReadOnlyFieldError.new(:organisation_id).with_status(403)  if organisations_user.organisation_id != @organisation_id
   end
 
   def assert_permissions!
-    return if super_user?(@change_author)
+    return if manager?(@change_author)
 
-    raise Goodcity::AccessDeniedError if @change_author.id != @user_id                                      # A normal user can only create or modify his/her own records
+    raise Goodcity::AccessDeniedError if @change_author.id != @user.id                                      # A normal user can only create or modify his/her own records
     raise Goodcity::AccessDeniedError if @status.present? && @status != OrganisationsUser::INITIAL_STATUS   # A normal cannot set the status to anything but the inital "pending" status
 
     if @user_attributes.present?
@@ -140,8 +139,8 @@ class OrganisationsUserBuilder
     end
   end
 
-  def assert_non_existing!
-    if OrganisationsUser.find_by(organisation_id: @organisation_id, user_id: @user_id).present?
+  def assert_non_existing!  
+    if OrganisationsUser.find_by(organisation_id: @organisation_id, user_id: @user.id).present?
       raise Goodcity::DuplicateRecordError.with_translation('organisations_user_builder.existing_user.present')
     end
   end
@@ -152,7 +151,7 @@ class OrganisationsUserBuilder
     return if email.blank? && mobile.blank?
 
     conflicts = User
-      .where.not(id: @user_id)
+      .where.not(id: @user.id)
       .where("lower(email) = (?) OR mobile = (?)", email&.downcase, mobile)
       .count.positive?
 
