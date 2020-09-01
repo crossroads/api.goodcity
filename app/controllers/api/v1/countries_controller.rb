@@ -19,6 +19,10 @@ module Api
         end
       end
 
+      def show
+        render json: @country, serializer: Api::V1::CountrySerializer
+      end
+
       private
 
       def country_record

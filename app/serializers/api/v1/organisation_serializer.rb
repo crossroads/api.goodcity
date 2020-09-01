@@ -15,5 +15,11 @@ module Api::V1
     def orders_count__sql
       "(SELECT COUNT(*) FROM orders o WHERE o.organisation_id = orders.id"
     end
+
+    def include_orders_count?
+      @options[:details]
+    end
+
+    alias include_organisations_users? include_orders_count?
   end
 end

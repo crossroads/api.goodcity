@@ -12,6 +12,20 @@ module Api::V1
       error 500, "Internal Server Error"
     end
 
+    def create
+      @organisation.save
+      render json: @organisation, details: false, serializer: organisation_serializer
+    end
+
+    def update
+      @organisation.assign_attributes(organisation_params)
+      if @organisation.save
+        return render json: @organisation, details: false, serializer: organisation_serializer
+      end
+
+      render json: { errors: @organisation.errors.full_messages }, status: 422
+    end
+
     api :GET, '/v1/organisations', "List all organisations"
     def index
       find_record_and_render_json(organisation_serializer)
@@ -42,6 +56,13 @@ module Api::V1
     end
 
     private
+
+    def organisation_params
+      params.require(:organisation)
+            .permit(:name_en, :name_zh_tw, :country_id,
+                    :website, :organisation_type_id,
+                    :description_en, :description_zh_tw)
+    end
 
     def organisation_serializer
       Api::V1::OrganisationSerializer

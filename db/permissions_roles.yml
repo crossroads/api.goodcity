@@ -88,6 +88,7 @@ Stock fulfilment: &stock_fulfilment
 - can_manage_package_messages
 - can_read_users
 - can_access_organisation_types
+- can_manage_organisation
 
 Stock administrator:
 - *stock_fulfilment
@@ -128,6 +129,7 @@ Order fulfilment: &order_fulfilment
 - can_manage_organisations_users
 - can_manage_package_messages
 - can_access_organisation_types
+- can_manage_organisation
 
 Order administrator:
 - *order_fulfilment

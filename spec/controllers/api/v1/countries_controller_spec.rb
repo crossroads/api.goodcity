@@ -10,7 +10,6 @@ RSpec.describe Api::V1::CountriesController, type: :controller do
   }
   let(:parsed_body) {JSON.parse(response.body)}
 
-
   describe "POST countries" do
     before { generate_and_set_token(user) }
 
@@ -60,6 +59,22 @@ RSpec.describe Api::V1::CountriesController, type: :controller do
           expect(parsed_body["countries"].length).to eq(0)
         end
       end
+    end
+  end
+
+  describe '/show SHOW country' do
+    let(:country) { create :country }
+    before { generate_and_set_token(user) }
+
+    it 'returns success status' do
+      get :show, id: country.id
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'returns the country' do
+      get :show, id: country.id
+      expect(parsed_body['country']['id']).to eq(country.id)
+      expect(parsed_body['country']['name_en']).to eq(country.name_en)
     end
   end
 end
