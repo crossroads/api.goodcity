@@ -1,5 +1,6 @@
 class Printer < ActiveRecord::Base
-  has_many   :users
+  has_many   :printers_users
+  has_many   :users, through: :printers_users
   belongs_to :location
 
   scope :active, -> { where(active: true) }
