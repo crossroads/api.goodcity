@@ -138,9 +138,20 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     end
 
     it 'creates new organisation record' do
-      expect{
+      expect {
         post :create, organisation: params
-      }.to change{ Organisation.count }.by(1)
+      }.to change { Organisation.count }.by(1)
+    end
+
+    context 'when name_en is already present' do
+      it 'returns error' do
+        create(:organisation, name_en: 'GOOD CITY')
+        params[:name_en] = 'GOOD CITY'
+        expect {
+          post :create, organisation: params
+        }.not_to change { Organisation.count }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
 
     context 'when invalid user' do

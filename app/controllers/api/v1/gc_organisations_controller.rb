@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Api::V1
   class GcOrganisationsController < Api::V1::ApiController
@@ -13,8 +14,11 @@ module Api::V1
     end
 
     def create
-      @organisation.save
-      render json: @organisation, details: false, serializer: organisation_serializer
+      if @organisation.save
+        return render json: @organisation, details: false, serializer: organisation_serializer
+      end
+
+      render json: { errors: @organisation.errors.full_messages }, status: 422
     end
 
     def update

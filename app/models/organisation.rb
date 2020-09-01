@@ -8,9 +8,23 @@ class Organisation < ActiveRecord::Base
   has_many :orders
   has_many :users, through: :organisations_users
 
+  validates :name_en, presence: true, uniqueness: true
+
+  before_validation :upcase_name
+  before_save :set_default_country
+
   scope :with_order, -> { includes([:orders]) }
 
   configure_search props: [:name_en, :name_zh_tw], tolerance: 0.1
+
+  def upcase_name
+    name_en&.strip!&.upcase!
+    name_zh_tw&.strip!&.upcase!
+  end
+
+  def set_default_country
+    self.country_id = Country.find_by(name_en: DEFAULT_COUNTRY).id unless country_id
+  end
 
   def name_as_per_locale
     I18n.locale == :en ? name_en : name_zh_tw

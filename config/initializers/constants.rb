@@ -34,3 +34,4 @@ APP_NAME_AND_LOGIN_PERMISSION_MAPPING = {
 }
 PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
 MENTIONABLE_ROLES = ['Reviewer', 'Supervisor', 'Order administrator', 'Order fulfilment'].freeze
+DEFAULT_COUNTRY = 'China - Hong Kong (Special Administrative Region)'
