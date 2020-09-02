@@ -13,18 +13,37 @@ module Api::V1
       error 500, "Internal Server Error"
     end
 
+    def_param_group :organisation do
+      param :organisation, Hash, required: true do
+        param :name_en, String, desc: 'English name', allow_nil: false
+        param :name_zh_tw, String, desc: 'Chinese name', allow_nil: true
+        param :description_en, String, desc: 'English description of the organisation', allow_nil: true
+        param :description_zh_tw, String, desc: 'Chinese description of the organisation', allow_nil: true
+        param :type, String, desc: 'Type of organisation'
+        param :website, String, desc: 'Website detail', allow_nil: true
+        param :registration, String, desc: 'Registration detail', allow_nil: true
+        param :country_id, String, desc: 'Country identifier', allow_nil: true
+      end
+    end
+
+    api :POST, '/v1/gc_organisation', 'Create Organisation'
+    param_group :organisation
+
     def create
       if @organisation.save
-        return render json: @organisation, details: false, serializer: organisation_serializer
+        return render json: @organisation, skip_orders: true, serializer: organisation_serializer
       end
 
       render json: { errors: @organisation.errors.full_messages }, status: 422
     end
 
+    api :PUT, '/v1/gc_organisation/1', 'Create Organisation'
+    param_group :organisation
+
     def update
       @organisation.assign_attributes(organisation_params)
       if @organisation.save
-        return render json: @organisation, details: false, serializer: organisation_serializer
+        return render json: @organisation, skip_orders: true, serializer: organisation_serializer
       end
 
       render json: { errors: @organisation.errors.full_messages }, status: 422
@@ -65,7 +84,8 @@ module Api::V1
       params.require(:organisation)
             .permit(:name_en, :name_zh_tw, :country_id,
                     :website, :organisation_type_id,
-                    :description_en, :description_zh_tw)
+                    :registration, :description_en,
+                    :description_zh_tw)
     end
 
     def organisation_serializer

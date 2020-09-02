@@ -17,9 +17,7 @@ module Api::V1
     end
 
     def include_orders_count?
-      @options[:details]
+      !@options[:skip_orders]
     end
-
-    alias include_organisations_users? include_orders_count?
   end
 end
