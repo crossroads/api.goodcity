@@ -23,11 +23,15 @@ class Delivery < ActiveRecord::Base
   end
 
   def delete_old_associations
-    contact.try(:really_destroy!)
-    gogovan_order.try(:really_destroy!)
-    update_column(:contact_id, nil)
-    update_column(:gogovan_order_id, nil)
-    schedule && schedule.deliveries.delete(self)
+    ActiveRecord::Base.transaction do
+      old_contact = contact
+      old_ggv = gogovan_order
+      update_column(:contact_id, nil)
+      update_column(:gogovan_order_id, nil)
+      old_contact.try(:really_destroy!)
+      old_ggv.try(:really_destroy!)
+      schedule && schedule.deliveries.delete(self)
+    end
   end
 
   private

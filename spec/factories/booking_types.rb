@@ -1,5 +1,9 @@
 FactoryBot.define do
   factory :booking_type do
+    identifier   { "abc" }
+    name_zh_tw   { identifier }
+    name_en      { identifier }
+    
     trait :online_order do
       identifier  'online-order'
       name_zh_tw  "online order"
@@ -12,8 +16,6 @@ FactoryBot.define do
       name_en     "appointment"
     end
 
-    identifier   { "abc" }
-    name_zh_tw   { identifier }
-    name_en      { identifier }
+    initialize_with { BookingType.find_or_initialize_by(identifier: identifier) }
   end
 end
