@@ -29,6 +29,7 @@ Reviewer:
 - can_access_printers
 - can_mention_users
 - can_manage_offer_messages
+- can_update_my_printers
 
 Supervisor:
 - can_manage_packages
@@ -57,6 +58,7 @@ Supervisor:
 - can_access_printers
 - can_mention_users
 - can_manage_user_roles
+- can_manage_printers
 
 Charity:
 - can_login_to_browse
@@ -89,10 +91,12 @@ Stock fulfilment: &stock_fulfilment
 - can_read_users
 - can_access_organisation_types
 - can_manage_organisation
+- can_update_my_printers
 
 Stock administrator:
 - *stock_fulfilment
 - can_manage_stocktakes
+- can_manage_printers
 
 Order fulfilment: &order_fulfilment
 - can_manage_packages
@@ -130,8 +134,10 @@ Order fulfilment: &order_fulfilment
 - can_manage_package_messages
 - can_access_organisation_types
 - can_manage_organisation
+- can_update_my_printers
 
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
 - can_manage_user_roles
+- can_manage_printers
