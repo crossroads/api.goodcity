@@ -20,10 +20,10 @@ class User < ActiveRecord::Base
 
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
-  has_many :printers_users
-  has_many :printers, through: :printers_users
   has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) }, class_name: "OrganisationsUser"
   has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
+  has_many :printers_users
+  has_many :printers, through: :printers_users
 
   has_many :user_roles
   has_many :roles, through: :user_roles
