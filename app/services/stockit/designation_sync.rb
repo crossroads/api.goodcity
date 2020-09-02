@@ -17,7 +17,12 @@ module Stockit
     end
 
     def index
-      url = url_for("/api/v1/designations")
+      if @params.any?
+        query_string = @params.map{|k,v| "#{k}=#{v}"}.join("&")
+        url = url_for("/api/v1/designations?#{query_string}")
+      else
+        url = url_for("/api/v1/designations")
+      end
       get(url)
     end
 

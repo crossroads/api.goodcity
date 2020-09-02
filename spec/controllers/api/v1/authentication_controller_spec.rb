@@ -254,7 +254,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'printers node should be present in the response' do
         get :current_user_profile
-        expect(JSON.parse(response.body).keys).to include('printers')
+        expect(JSON.parse(response.body).keys).to include('printers_users')
       end
     end
 
@@ -266,7 +266,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'printers node should be present in the response' do
         get :current_user_profile
-        expect(JSON.parse(response.body).keys).to include("printers")
+        expect(JSON.parse(response.body).keys).to include("printers_users")
       end
     end
   end
