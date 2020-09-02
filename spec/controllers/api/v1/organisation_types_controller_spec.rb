@@ -29,7 +29,7 @@ RSpec.describe Api::V1::OrganisationTypesController, type: :controller do
       get :index
       expect(response_body['organisation_types'].length).to eq(OrganisationType.count)
       # expect(response_body['organisation_types'].to include(organisation_types.map { |o| {"name" => o.name_en, "id" => o.id } } )
-      expect(response_body['organisation_types']).to match_array(organisation_types.map{|o| { 'name' => o.name_en, 'id' => o.id } })
+      expect(response_body['organisation_types']).to match_array(organisation_types.map{|o| { 'name' => o.name_en, 'id' => o.id, 'category' => o.category_en } })
     end
   end
 end
