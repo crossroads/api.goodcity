@@ -201,6 +201,13 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         put :update, id: organisation.id, organisation: { name_en: 'good city' }
         expect(response).to have_http_status(:unprocessable_entity)
       end
+
+      it 'does not update the record' do
+        create(:organisation, name_en: 'Good City')
+        organisation = create(:organisation)
+        put :update, id: organisation.id, organisation: { name_en: 'good city' }
+        expect(organisation.reload.name_en).to eq(organisation.name_en)
+      end
     end
   end
 end
