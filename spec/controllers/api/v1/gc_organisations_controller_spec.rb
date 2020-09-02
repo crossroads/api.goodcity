@@ -127,7 +127,8 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
   end
 
   describe 'POST /create' do
-    let(:params) { FactoryBot.attributes_for(:organisation) }
+    let(:organisation_type) { create(:organisation_type) }
+    let(:params) { FactoryBot.attributes_for(:organisation, organisation_type_id: "#{organisation_type.id}") }
     let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisation_permission) }
 
     before { generate_and_set_token(user) }
@@ -160,6 +161,19 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         post :create, organisation: params
         country_id = Country.find_by(name_en: DEFAULT_COUNTRY).id
         expect(parsed_body['organisation']['country_id']).to eq(country_id)
+      end
+    end
+
+    context 'if organisation type is nil' do
+      it 'returns error' do
+        params[:organisation_type_id] = nil
+        post :create, organisation: params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not create new organisation' do
+        params[:organisation_type_id] = nil
+        expect { post :create, organisation: params }.not_to change { Organisation.count }
       end
     end
 
@@ -207,6 +221,18 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         organisation = create(:organisation)
         put :update, id: organisation.id, organisation: { name_en: 'good city' }
         expect(organisation.reload.name_en).to eq(organisation.name_en)
+      end
+    end
+
+    context 'if organisation type is nil' do
+      it 'returns error' do
+        put :create, organisation: { organisation_type_id: nil }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not change organisation_type_id' do
+        post :create, organisation: { organisation_type_id: nil }
+        expect(organisation.reload.organisation_type_id).to eq(organisation.organisation_type_id)
       end
     end
   end

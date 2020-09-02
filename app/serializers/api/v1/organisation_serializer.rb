@@ -7,6 +7,7 @@ module Api::V1
       :updated_at, :orders_count
 
     has_many :organisations_users, serializer: OrganisationsUserSerializer
+    has_one :country, serializer: CountrySerializer
 
     def orders_count
       object.orders.size

@@ -23,6 +23,7 @@ RSpec.describe Organisation, type: :model do
 
   describe 'Validations' do
     it { is_expected.to validate_presence_of :name_en }
+    it { is_expected.to validate_presence_of :organisation_type_id }
   end
 
   describe 'Class Methods' do
