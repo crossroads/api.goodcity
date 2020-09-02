@@ -9,6 +9,7 @@ class Organisation < ActiveRecord::Base
   has_many :users, through: :organisations_users
 
   validates :name_en, presence: true, uniqueness: true
+  validates :organisation_type_id, presence: true
 
   before_validation :upcase_name
   before_save :set_default_country
