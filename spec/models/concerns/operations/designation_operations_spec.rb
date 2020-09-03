@@ -53,17 +53,12 @@ context DesignationOperations do
       end
 
       it 'marks the orders_package as dispatched if the quantity is lowered to match the already dispatched quantity' do
-        # $stopme = true
-        # expect(Stockit::OrdersPackageSync).to receive(:create)
-        # expect(Stockit::OrdersPackageSync).to receive(:update).twice
+        expect(Stockit::OrdersPackageSync).to receive(:create)
+        expect(Stockit::OrdersPackageSync).to receive(:update).twice
 
         ord_pkg = designate(4, to_order: dispatching_order)
         OrdersPackage::Operations.dispatch(ord_pkg, quantity: 3, from_location: package.locations.first)
-        expect {
-          # byebug
-          designate(3, to_order: dispatching_order)
-          # byebug
-        }.to change {
+        expect { designate(3, to_order: dispatching_order) }.to change {
           OrdersPackage.find(ord_pkg.id).state
         }.from("designated").to("dispatched")
       end
