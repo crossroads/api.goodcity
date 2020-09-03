@@ -27,7 +27,7 @@ class Organisation < ActiveRecord::Base
   def validate_presence
     result = Organisation.where('name_en ILIKE ?', name_en)
     if result.present?
-      errors.add(:errors, I18n.t('organisation.name_en.already_exists'))
+      errors.add(:base, I18n.t('organisation.name_en.already_exists'))
       false
     end
   end
