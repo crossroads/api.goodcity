@@ -18,7 +18,7 @@ module Api::V1
     end
 
     def include_orders_count?
-      !@options[:skip_orders]
+      @options[:include_orders_count]
     end
   end
 end
