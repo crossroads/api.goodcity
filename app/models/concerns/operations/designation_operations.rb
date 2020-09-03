@@ -45,6 +45,8 @@ module DesignationOperations
         orders_package.quantity = quantity
         orders_package.updated_by = User.current_user
 
+        # byebug if $stopme || false
+        # dispatched_quantity = PackagesInventory::Computer.dispatched_quantity(orders_package:  ord_pkg)
         if orders_package.dispatched_quantity.eql?(quantity)
           # Case: we reduced the quantity, enough quantity has been dispatched to change the state of the orders_package
           orders_package.state = OrdersPackage::States::DISPATCHED
