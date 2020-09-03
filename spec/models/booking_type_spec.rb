@@ -10,4 +10,8 @@ RSpec.describe BookingType, type: :model do
     it { is_expected.to have_db_column(:name_zh_tw).of_type(:string) }
     it { is_expected.to have_db_column(:identifier).of_type(:string) }
   end
+
+  describe "Validations" do
+    it { is_expected.to validate_uniqueness_of(:identifier) }
+  end
 end
