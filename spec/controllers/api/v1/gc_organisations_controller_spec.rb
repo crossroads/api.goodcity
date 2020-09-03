@@ -77,7 +77,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
   describe "GET GC Organisation" do
     let(:organisation) { create :organisation }
-    let(:serialized_gc_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "gc_organisations").as_json.to_json) }
+    let(:serialized_gc_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "gc_organisations", include_orders_count: true).as_json.to_json) }
 
     before { get :show, id: organisation.id }
     it "returns 200" do
@@ -129,7 +129,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
   describe 'POST /create' do
     let(:organisation_type) { create(:organisation_type) }
     let(:params) { FactoryBot.attributes_for(:organisation, organisation_type_id: "#{organisation_type.id}") }
-    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisation_permission) }
+    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisations_permission) }
 
     before { generate_and_set_token(user) }
 
@@ -190,12 +190,12 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
   describe 'PUT /update' do
     let!(:organisation) { create(:organisation) }
-    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisation_permission) }
+    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisations_permission) }
     before{ generate_and_set_token(user) }
 
     it 'updates the attribute' do
       put :update, id: organisation.id, organisation: { name_en: 'Example' }
-      expect(organisation.reload.name_en).to eq('EXAMPLE')
+      expect(organisation.reload.name_en).to eq('Example')
     end
 
     context 'when invalid user' do
@@ -212,15 +212,16 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       it 'returns error' do
         create(:organisation, name_en: 'Good City')
         organisation = create(:organisation)
-        put :update, id: organisation.id, organisation: { name_en: 'good city' }
+        put :update, id: organisation.id, organisation: { name_en: 'good city   ' }
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not update the record' do
         create(:organisation, name_en: 'Good City')
         organisation = create(:organisation)
+        name = organisation.name_en
         put :update, id: organisation.id, organisation: { name_en: 'good city' }
-        expect(organisation.reload.name_en).to eq(organisation.name_en)
+        expect(organisation.reload.name_en).to eq(name)
       end
     end
 
