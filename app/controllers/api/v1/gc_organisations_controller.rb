@@ -31,19 +31,19 @@ module Api::V1
 
     def create
       if @organisation.save
-        return render json: @organisation, skip_orders: true, serializer: organisation_serializer
+        return render json: @organisation, include_orders_count: false, serializer: organisation_serializer
       end
 
       render json: { errors: @organisation.errors.full_messages }, status: 422
     end
 
-    api :PUT, '/v1/gc_organisation/1', 'Create Organisation'
+    api :PUT, '/v1/gc_organisation/1', 'Update Organisation'
     param_group :organisation
 
     def update
       @organisation.assign_attributes(organisation_params)
       if @organisation.save
-        return render json: @organisation, skip_orders: true, serializer: organisation_serializer
+        return render json: @organisation, include_orders_count: false, serializer: organisation_serializer
       end
 
       render json: { errors: @organisation.errors.full_messages }, status: 422
@@ -56,7 +56,7 @@ module Api::V1
 
     api :GET, '/v1/organisations/1', "Details of a package"
     def show
-      record = Api::V1::OrganisationSerializer.new(@organisation, root: "gc_organisations").as_json
+      record = Api::V1::OrganisationSerializer.new(@organisation, root: "gc_organisations", include_orders_count: true).as_json
       render json: record
     end
 
@@ -104,7 +104,8 @@ module Api::V1
       ActiveModel::ArraySerializer.new(
         orders,
         each_serializer: order_serializer,
-        root: "designations"
+        root: "designations",
+        include_orders_count: true
       ).as_json
     end
 
@@ -114,7 +115,7 @@ module Api::V1
       else
         records = @organisations.with_order.search(params["searchText"]).page(params["page"]).per(params["per_page"] || DEFAULT_SEARCH_COUNT)
       end
-      data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations").as_json
+      data = ActiveModel::ArraySerializer.new(records, each_serializer: serializer, root: "gc_organisations", include_orders_count: true).as_json
       render json: { "meta": { total_pages: records.total_pages, "search": params["searchText"] } }.merge(data)
     end
   end
