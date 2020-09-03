@@ -59,10 +59,12 @@ RSpec.configure do |config|
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 
   # Create a system_user at beginning of specs
+  # Create a default country at beginning of specs
   config.before(:all) do
-    FactoryBot.create(:country, name_en: DEFAULT_COUNTRY)
+    FactoryBot.create(:country, :default)
     FactoryBot.create(:user, :system)
   end
+
   # Clean up system_user at end of specs
   config.after(:all) do
     User.system.destroy_all
