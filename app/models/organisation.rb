@@ -11,16 +11,25 @@ class Organisation < ActiveRecord::Base
   validates :name_en, presence: true, uniqueness: true
   validates :organisation_type_id, presence: true
 
-  before_validation :upcase_name
+  before_validation :trim_name
   before_save :set_default_country
+  before_update :validate_presence
 
   scope :with_order, -> { includes([:orders]) }
 
   configure_search props: [:name_en, :name_zh_tw], tolerance: 0.1
 
-  def upcase_name
-    self.name_en = name_en&.upcase&.strip
-    self.name_zh_tw = name_zh_tw&.upcase&.strip
+  def trim_name
+    self.name_en = name_en&.strip
+    self.name_zh_tw = name_zh_tw&.strip
+  end
+
+  def validate_presence
+    result = Organisation.where('name_en ILIKE ?', name_en)
+    if result.present?
+      errors.add(:errors, I18n.t('organisation.name_en.already_exists'))
+      false
+    end
   end
 
   def set_default_country

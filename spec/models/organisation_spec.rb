@@ -23,6 +23,7 @@ RSpec.describe Organisation, type: :model do
 
   describe 'Validations' do
     it { is_expected.to validate_presence_of :name_en }
+    it { is_expected.to validate_uniqueness_of :name_en }
     it { is_expected.to validate_presence_of :organisation_type_id }
   end
 
@@ -90,16 +91,11 @@ RSpec.describe Organisation, type: :model do
     end
   end
 
-  describe '#downcase_name' do
+  describe '#trim_name' do
     it 'trims and converts name to upcase before save' do
       organisation = build(:organisation, name_en: 'good city   ')
       organisation.save
-      expect(organisation.reload.name_en).to eq('GOOD CITY')
-    end
-
-    it 'does not create duplicate organisation for name_en' do
-      organisation = create(:organisation)
-      expect{ create(:organisation, name_en: organisation.name_en) }.to raise_error
+      expect(organisation.reload.name_en).to eq('good city')
     end
   end
 
