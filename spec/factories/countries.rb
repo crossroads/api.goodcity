@@ -6,9 +6,5 @@ FactoryBot.define do
     trait :with_stockit_id do
       stockit_id { rand(1000) + 1 }
     end
-
-    trait :default do
-      initialize_with { new(name_en: DEFAULT_COUNTRY) }
-    end
   end
 end
