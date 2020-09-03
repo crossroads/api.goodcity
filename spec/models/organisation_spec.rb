@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Organisation, type: :model do
+  let!(:country) { create(:country, name_en: DEFAULT_COUNTRY) }
+
   describe "Database columns" do
     it { is_expected.to have_db_column(:name_en).of_type(:string) }
     it { is_expected.to have_db_column(:name_zh_tw).of_type(:string) }
