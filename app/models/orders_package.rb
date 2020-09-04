@@ -35,9 +35,14 @@ class OrdersPackage < ActiveRecord::Base
     ])
   }
 
-  PackagesInventory.on [:dispatch, :undispatch] do |pkg_inv|
+  watch [PackagesInventory] do |pkg_inv|
     # Compute 'dispatched_quantity' column on change
-    if pkg_inv.source_id.present? && pkg_inv.source_type.eql?('OrdersPackage')
+    dispatch_change = [
+      PackagesInventory::Actions::DISPATCH,
+      PackagesInventory::Actions::UNDISPATCH
+    ].include?(pkg_inv.action)
+
+    if dispatch_change && pkg_inv.source_id.present? && pkg_inv.source_type.eql?('OrdersPackage')
       ord_pkg = pkg_inv.source
       ord_pkg.update(
         dispatched_quantity: PackagesInventory::Computer.dispatched_quantity(orders_package:  ord_pkg)
