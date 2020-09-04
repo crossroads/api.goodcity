@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V1::LookupsController, type: :controller do
-  let(:user) { create(:user_with_token, :with_can_manage_package_detail_permission, role_name: "Order Fulfilment") }
+  let(:user) { create(:user, :with_token, :with_can_manage_package_detail_permission, role_name: "Order Fulfilment") }
 
   before do
     generate_and_set_token(user)

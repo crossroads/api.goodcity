@@ -16,8 +16,8 @@ class Message < ActiveRecord::Base
   validates :body, presence: true
 
   default_scope do
-    unless User.current_user.try(:staff?)
-      where("is_private = 'f'")
+    unless User.current_user.try(:can_manage_private_messages?)
+      where(is_private: false)
     end
   end
 
@@ -28,6 +28,7 @@ class Message < ActiveRecord::Base
   scope :filter_by_offer_id, ->(offer_id) { where(messageable_id: offer_id.split(","), messageable_type: "Offer") }
   scope :filter_by_order_id, ->(order_id) { where(messageable_id: order_id.split(","), messageable_type: "Order") }
   scope :filter_by_item_id, ->(item_id) { where(messageable_id: item_id.split(","), messageable_type: "Item") }
+  scope :filter_by_package_id, ->(package_id) { where(messageable_id: package_id.split(","), messageable_type: "Package") }
 
   # used to override the state value during serialization
   attr_accessor :state_value, :is_call_log

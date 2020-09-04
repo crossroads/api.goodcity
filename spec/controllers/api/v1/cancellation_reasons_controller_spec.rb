@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::CancellationReasonsController, type: :controller do
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:cancellation_reason) { create :cancellation_reason }
   let(:parsed_body) { JSON.parse(response.body) }
 

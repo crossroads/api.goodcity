@@ -5,19 +5,12 @@ System administrator:
 - can_disable_user
 - can_read_or_modify_user
 - can_manage_user_roles
-Stock fulfilment: []
-Stock administrator: []
+
 Reviewer:
 - can_manage_packages
 - can_manage_offers
 - can_manage_deliveries
-- can_manage_orders
-- can_manage_orders_packages
-- can_manage_order_transport
-- can_check_organisations
-- can_manage_packages_locations
 - can_manage_items
-- can_add_package_types
 - can_manage_images
 - can_destroy_image_for_imageable_states
 - can_add_or_remove_inventory_number
@@ -26,9 +19,9 @@ Reviewer:
 - can_handle_gogovan_order
 - can_manage_holidays
 - can_destroy_package_with_specific_states
-- can_manage_locations
 - can_read_schedule
 - can_read_versions
+- can_manage_locations
 - can_access_packages_locations
 - can_login_to_admin
 - can_manage_companies
@@ -36,51 +29,73 @@ Reviewer:
 - can_access_printers
 - can_mention_users
 - can_manage_offer_messages
+- can_update_my_printers
 
 Supervisor:
 - can_manage_packages
-- can_manage_package_detail
 - can_manage_offers
-- can_manage_goodcity_requests
 - can_manage_deliveries
-- can_manage_orders
-- can_manage_orders_packages
-- can_remove_offers_packages
-- can_manage_order_transport
-- can_check_organisations
-- can_manage_packages_locations
 - can_manage_items
-- can_add_package_types
 - can_manage_images
 - can_add_or_remove_inventory_number
 - can_manage_delivery_address
 - can_destroy_contacts
+- can_manage_locations
 - can_handle_gogovan_order
 - can_manage_holidays
-- can_manage_locations
 - can_read_schedule
-- can_read_versions
 - can_access_packages_locations
+- can_read_versions
 - can_manage_users
 - can_perform_message_crud
-- can_manage_organisations_users
 - can_read_or_modify_user
 - can_destroy_image
 - can_manage_offer_messages
-- can_manage_order_messages
-- can_login_to_stock
 - can_login_to_admin
 - can_manage_settings
 - can_manage_companies
 - can_create_donor
 - can_access_printers
-- can_access_orders_process_checklists
 - can_mention_users
 - can_manage_user_roles
+- can_manage_printers
+
 Charity:
 - can_login_to_browse
 - can_search_browse_packages
 - can_create_goodcity_requests
+
+Stock fulfilment: &stock_fulfilment
+- can_manage_packages
+- can_manage_goodcity_requests
+- can_manage_package_detail
+- can_manage_orders
+- can_manage_orders_packages
+- can_remove_offers_packages
+- can_manage_order_transport
+- can_check_organisations
+- can_manage_items
+- can_manage_images
+- can_add_or_remove_inventory_number
+- can_manage_locations
+- can_read_schedule
+- can_read_versions
+- can_access_packages_locations
+- can_login_to_stock
+- can_access_printers
+- can_access_orders_process_checklists
+- can_mention_users
+- can_manage_order_messages
+- can_manage_stocktake_revisions
+- can_manage_package_messages
+- can_read_users
+- can_update_my_printers
+
+Stock administrator:
+- *stock_fulfilment
+- can_manage_stocktakes
+- can_manage_printers
+
 Order fulfilment: &order_fulfilment
 - can_manage_packages
 - can_manage_goodcity_requests
@@ -113,7 +128,12 @@ Order fulfilment: &order_fulfilment
 - can_read_or_modify_user
 - can_mention_users
 - can_manage_order_messages
+- can_manage_organisations_users
+- can_manage_package_messages
+- can_update_my_printers
+
 Order administrator:
 - *order_fulfilment
 - can_manage_settings
 - can_manage_user_roles
+- can_manage_printers

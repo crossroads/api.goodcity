@@ -4,29 +4,12 @@ describe User, :type => :model do
   let!(:mobile) { generate(:mobile) }
   let(:address_attributes) { {"district_id" => "9", "address_type" => "profile"} }
   let(:user_attributes) { FactoryBot.attributes_for(:user).merge("mobile" => mobile, "address_attributes" => address_attributes).stringify_keys }
-  let(:supervisor) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Supervisor" => ["can_login_to_stock", "can_login_to_admin"]})
-  }
-  let(:order_fulfilment_user) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Order fulfilment" => ["can_login_to_stock"]})
-  }
-  let(:reviewer) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Reviewer" => ["can_login_to_admin"]})
-  }
-  let(:charity) {
-    create(:user, :with_multiple_roles_and_permissions,
-           roles_and_permissions: {"Charity" => ["can_login_to_browse"]})
-  }
+  let(:supervisor) { create(:user, :with_supervisor_role, :with_can_login_to_stock_permission, :with_can_login_to_admin_permission) }
+  let(:order_fulfilment_user) { create(:user, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
+  let(:reviewer) { create(:user, :with_reviewer_role, :with_can_login_to_admin_permission) }
+  let(:charity) { create(:user, :with_charity_role, :with_can_login_to_browse_permission) }
 
-  let(:charity_users) {
-    (1..5).map {
-      create(:user, :with_multiple_roles_and_permissions,
-             roles_and_permissions: {"Charity" => ["can_login_to_browse"]})
-    }
-  }
+  let(:charity_users) { (1..5).map { create(:user, :with_charity_role, :with_can_login_to_browse_permission) } }
 
   let(:invalid_user_attributes) { {"mobile" => "85211111112", "first_name" => "John2", "last_name" => "Dey2"} }
 
@@ -114,6 +97,14 @@ describe User, :type => :model do
       it { is_expected.to allow_value("Ms").for(:title) }
       it { is_expected.to_not allow_value("Mister").for(:title) }
       it { is_expected.to_not allow_value("").for(:title) }
+    end
+
+    context "preferred_language" do
+      it { is_expected.to allow_value(nil).for(:preferred_language) }
+      it { is_expected.to allow_value("en").for(:preferred_language) }
+      it { is_expected.to allow_value("zh-tw").for(:preferred_language) }
+      it { is_expected.to_not allow_value("fr").for(:preferred_language) }
+      it { is_expected.to_not allow_value("").for(:preferred_language) }
     end
   end
 
@@ -300,6 +291,19 @@ describe User, :type => :model do
       expect(user.user_role_names).to include("Reviewer")
       expect(user.user_role_names.count).to eq(1)
     end
+
+    it 'returns valid role names for user' do
+      user = create :user
+      reviewer_role = create :role, name: "Reviewer"
+      supervisor_role = create :role, name: "Supervisor"
+      create :user_role, user: user, role: reviewer_role
+      create :user_role, user: user, role: supervisor_role, expiry_date: 5.days.ago
+
+      expect(user.user_role_names).to include("Reviewer")
+      expect(user.user_role_names.count).to eq(1)
+
+      expect(user.user_role_names).to_not include("Supervisor")
+    end
   end
 
   describe "#user_permissions_names" do
@@ -307,6 +311,16 @@ describe User, :type => :model do
       permissions = order_fulfilment_user.user_permissions_names
       expect(permissions.count).to eq(1)
       expect(permissions).to eq(["can_login_to_stock"])
+    end
+  end
+
+  describe '.downcase_email' do
+    it 'saves user with always downcasing email' do
+      email = 'TeST@Gmail.COM'
+      user = build(:user)
+      user.email = email
+      user.save
+      expect(user.reload.email).to eq(email.downcase)
     end
   end
 
@@ -398,5 +412,21 @@ describe User, :type => :model do
         expect(charity.allowed_login?(DONOR_APP)).to be_truthy
       end
     end
+  end
+
+  context "find_user_by_mobile_or_email" do
+    let(:user) { create(:user) }
+
+    it "returns the user by mobile" do
+      expect(User.find_user_by_mobile_or_email(user.mobile, nil)).to eql(user)
+    end
+    it "returns the user by email" do
+      expect(User.find_user_by_mobile_or_email(nil, user.email)).to eql(user)
+    end
+    it "does not return a user when email is blank" do
+      user.update_column(:email, '')
+      expect(User.find_user_by_mobile_or_email(nil, '')).to eql(nil)
+    end
+
   end
 end

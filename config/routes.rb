@@ -24,6 +24,12 @@ Rails.application.routes.draw do
       resources :pallets, only: [:create]
       resources :user_roles, only: [:show, :index]
 
+      resources :stocktake_revisions, only: [:create, :update, :destroy]
+      resources :stocktakes, only: [:show, :index, :destroy, :create] do
+        put :commit, on: :member
+        put :cancel, on: :member
+      end
+
       resources :images, only: [:create, :update, :destroy, :show] do
         collection do
           get :generate_signature
@@ -34,6 +40,7 @@ Rails.application.routes.draw do
       resources :messages, only: [:create, :update, :index, :show] do
         put :mark_read, on: :member
         put :mark_all_read, on: :collection
+        get :notifications, on: :collection
       end
 
       resources :offers, only: [:create, :update, :index, :show, :destroy] do
@@ -81,7 +88,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :requested_packages, only: [:index, :create, :destroy] do
+      resources :requested_packages, only: [:index, :create, :update, :destroy] do
         post :checkout, on: :collection
       end
 
@@ -177,6 +184,7 @@ Rails.application.routes.draw do
       resources :orders_process_checklists, only: [:index]
       resources :restrictions, only: [:index]
       resources :packages_inventories, only: [:index]
+      resources :printers_users, only: [:create, :update]
 
       # routes used in stock app
       get "designations", to: "orders#index"

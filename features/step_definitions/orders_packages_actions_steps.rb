@@ -19,6 +19,7 @@ end
 # We provide a list of states for the orders_packages
 And(/^Their OrdersPackages are of state "([^"]*)"$/) do |orders_package_states|
   op_states = orders_package_states.split('|')
+  stub_request(:post, 'http://www.example.com/api/v1/items').to_return(status: 200, body: '', headers: {})
   @orders_packages_per_state = @order_states.reduce({}) do |dict, state|
     dict[state] = op_states.map do |op_state|
       create(
