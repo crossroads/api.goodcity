@@ -35,7 +35,7 @@ class OrdersPackage < ActiveRecord::Base
     ])
   }
 
-  watch [PackagesInventory] do |pkg_inv|
+  watch [PackagesInventory], on: [:create] do |pkg_inv|
     # Compute 'dispatched_quantity' column on change
     dispatch_change = [
       PackagesInventory::Actions::DISPATCH,
