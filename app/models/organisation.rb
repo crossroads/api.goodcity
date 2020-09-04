@@ -13,7 +13,6 @@ class Organisation < ActiveRecord::Base
 
   before_validation :trim_name
   before_save :set_default_country
-  before_update :validate_presence
 
   scope :with_order, -> { includes([:orders]) }
 
@@ -22,14 +21,6 @@ class Organisation < ActiveRecord::Base
   def trim_name
     self.name_en = name_en&.strip
     self.name_zh_tw = name_zh_tw&.strip
-  end
-
-  def validate_presence
-    result = Organisation.where('name_en ILIKE ?', name_en)
-    if result.present?
-      errors.add(:base, I18n.t('organisation.name_en.already_exists'))
-      false
-    end
   end
 
   def set_default_country
