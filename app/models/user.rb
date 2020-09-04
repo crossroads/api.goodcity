@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
             allow_nil: true
 
-  after_create :generate_auth_token
+  after_create :refresh_auth_token
 
   scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
   scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
@@ -165,6 +165,10 @@ class User < ActiveRecord::Base
     @user_role_names ||= active_roles.pluck(:name)
   end
 
+  def top_role
+    roles.order('level DESC').first
+  end
+
   def reviewer?
     user_role_names.include?("Reviewer") && @treat_user_as_donor != true
   end
@@ -264,7 +268,7 @@ class User < ActiveRecord::Base
     request_from_stock && mobile.blank? || request_from_browse && mobile.blank?
   end
 
-  def generate_auth_token
+  def refresh_auth_token
     auth_tokens.create(user_id: self.id)
   end
 

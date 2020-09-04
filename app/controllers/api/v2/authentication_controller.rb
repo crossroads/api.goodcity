@@ -1,6 +1,6 @@
 module Api
-  module V1
-    class AuthenticationController < Api::V1::ApiController
+  module V2
+    class AuthenticationController < Api::V2::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
                                                  :current_user_rooms]
       skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :hasura]
@@ -65,19 +65,13 @@ module Api
       error 500, "Internal Server Error"
       # Lookup user based on mobile. Validate mobile format first.
       def send_pin
-        @mobile = Mobile.new(params[:mobile])
-        unless @mobile.valid?
-          return render_error(@mobile.errors.full_messages.join(". "))
-        end
+        raise Goodcity::ValidationError.new(@mobile.errors.full_messages) unless Mobile.new(params[:mobile]).valid?
 
-        @user = User.find_by_mobile(@mobile.mobile)
+        user = User.find_by_mobile(params[:mobile])
+        
+        raise Goodcity::UnauthorizedError.new if user.blank?
 
-        if @user && @user.allowed_login?(app_name)
-          @user.send_verification_pin(app_name, params[:mobile])
-        elsif @user
-          return render json: {error: "You are not authorized."}, status: 401
-        end
-        render json: {otp_auth_key: otp_auth_key_for(@user)}
+        render json: { otp_auth_key: AuthenticationService.send_pin(user, app_name) }
       end
 
       api :POST, "/v1/auth/signup", "Register a new user"
@@ -184,6 +178,12 @@ module Api
         render json: channels, root: false
       end
 
+      api :POST, "/v1/auth/hasura", "Authentication for the Hasura GraphQL server"
+      def hasura
+        token = HasuraService.authenticate current_user
+        render json: { token: token }, status: :ok
+      end
+
       private
 
       def render_error(error_message)
@@ -192,19 +192,6 @@ module Api
 
       def authenticated_user
         warden.authenticated? && (is_browse_app? || @user.allowed_login?(app_name))
-      end
-
-      # Generate a token that contains the otp_auth_key.
-      # A client must return this token (which contains the embedded otp_auth_key) AND the correct OTP code
-      # to successfully authenticate. This helps prevent man-in-the-middle attacks by ensuring that only this
-      # client that can authenticate the OTP code with it.
-      # Note: if user is nil, we generate a fake token so as to ward off unruly hackers.
-      def otp_auth_key_for(user)
-        if user.present?
-          user.most_recent_token.otp_auth_key
-        else
-          AuthToken.new.new_otp_auth_key
-        end
       end
 
       def auth_params

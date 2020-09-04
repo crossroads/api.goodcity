@@ -19,4 +19,8 @@ class Role < ActiveRecord::Base
   def grant(user)
     user.roles << self unless user.roles.include?(self)
   end
+
+  def snake_name
+    name.downcase.strip.gsub(/\s+/, '_')
+  end
 end
