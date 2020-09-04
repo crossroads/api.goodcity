@@ -2,6 +2,7 @@ class OrdersPackage < ActiveRecord::Base
   include RollbarSpecification
   include OrdersPackageActions
   include HookControls
+  include Watcher
 
   module States
     DESIGNATED = 'designated'.freeze
