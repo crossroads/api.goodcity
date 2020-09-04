@@ -8,7 +8,7 @@ class Organisation < ActiveRecord::Base
   has_many :orders
   has_many :users, through: :organisations_users
 
-  validates :name_en, presence: true, uniqueness: true
+  validates :name_en, presence: true, uniqueness: { case_sensitive: false }
   validates :organisation_type_id, presence: true
 
   before_validation :trim_name

@@ -148,7 +148,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     context 'when name_en is already present' do
       it 'returns error' do
         create(:organisation, name_en: 'GOOD CITY')
-        params[:name_en] = 'GOOD CITY'
+        params[:name_en] = 'GooD CITY'
         expect {
           post :create, organisation: params
         }.not_to change { Organisation.count }
