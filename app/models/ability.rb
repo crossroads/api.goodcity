@@ -144,8 +144,8 @@ class Ability
     if can_manage_goodcity_requests?
       can [:index, :show, :create, :destroy, :update], GoodcityRequest
     else
-      can [:index, :show, :create, :update, :destroy], GoodcityRequest, GoodcityRequest.of_organisation(user_organisations) do |req|
-        req.order_id && user_organisations.include?(req.order.organisation_id)
+      can [:index, :show, :create, :update, :destroy], GoodcityRequest, GoodcityRequest.of_user(@user_id) do |r|
+        r.created_by_id == @user_id || r.order.created_by_id == @user_id
       end
     end
   end
