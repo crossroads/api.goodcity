@@ -10,8 +10,18 @@ class Token
 
   validate :token_validation
 
+  attr_reader :jwt_config
+
+  #
+  # Token class initializer
+  #
+  # @param [Hash] options
+  # @option options [String] :bearer The bearer token to parse
+  # @option options [Hash] :jwt_config The JWT options (secret, algo, ...)
+  #
   def initialize(options = {})
-    @bearer = options[:bearer] || '' # "Bearer zxcasdqwesdfsdfqwe"
+    @jwt_config = options[:jwt_config]  || Rails.application.secrets.jwt
+    @bearer     = options[:bearer]      || '' # "Bearer zxcasdqwesdfsdfqwe"
   end
 
   # Generate an encoded Json Web Token to send to client app
@@ -72,10 +82,6 @@ class Token
     end
   rescue JWT::DecodeError
     errors.add(:base, I18n.t('token.invalid'))
-  end
-
-  def jwt_config
-    Rails.application.secrets.jwt
   end
 
   # Key used to generate tokens. MUST be private. Changing this will invalidate all tokens.

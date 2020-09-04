@@ -331,7 +331,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       it { expect(parsed_body).to eql([]) }
     end
   end
-
 end
 
 
