@@ -53,16 +53,6 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
           expect(r.created_by_id).to eq(charity_user.id)
         end
       end
-
-      it "doesn't return the goodcity requests of another organisation, even if the user created it" do
-        order = create :order, created_by: charity_user, organisation: create(:organisation)
-        create :goodcity_request
-        create :goodcity_request, order: order, created_by: charity_user
-        create :goodcity_request, order: order, created_by: charity_user
-
-        get :index
-        expect(requests_fetched.length).to eq(0)
-      end
     end
   end
 
@@ -77,21 +67,18 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     end
 
     context "As a charity user" do
-      let(:organisation) { charity_user.active_organisations.first }
-      let(:other_organisation) { create :organisation }
       let(:package_type) { create(:package_type) }
       let(:order) { create :order, created_by: charity_user }
-      let(:other_order) { create :order, organisation: other_organisation }
-      let(:organistion_order) { create :order, organisation: organisation }
+      let(:other_order) { create :order }
 
       before do
         generate_and_set_token(charity_user)
       end
 
-      it "allows me to create a request for my own organisation", :show_in_doc do
+      it "allows me to create a request for my own order", :show_in_doc do
         expect {
           post :create, goodcity_request: {
-            order_id: organistion_order.id, 
+            order_id: order.id, 
             package_type: package_type.id,
             quantity: 1,
             description: "foo"
@@ -100,7 +87,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
         expect(response.status).to eq(201)
       end
 
-      it "forbids me to create a request for an order of another organisation", :show_in_doc do
+      it "it forbids me from creating a request for another user's order", :show_in_doc do
         expect {
           post :create, goodcity_request: {
             order_id: other_order.id, 
@@ -115,13 +102,24 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
   end
 
   describe "PUT goodcity_request/1 : update goodcity_request" do
-    before { generate_and_set_token(user) }
-    let(:gc_request) { create(:goodcity_request, quantity: 5) }
+    let(:other_user) { create :user }
+    let(:order) { create :order, created_by: charity_user }
+    let(:other_order) { create :order }
+    let(:gc_request) { create(:goodcity_request, order: order, quantity: 5) }
+    let(:my_gc_request) { create(:goodcity_request, created_by: charity_user, quantity: 5) }
+    let(:other_gc_request) { create(:goodcity_request, created_by: other_user, order: other_order, quantity: 5) }
+
+    before { generate_and_set_token(charity_user) }
 
     it "Updates goodcity_request record", :show_in_doc do
-      put :update, id: goodcity_request.id, goodcity_request: gc_request.attributes.except(:id)
+      put :update, id: gc_request.id, goodcity_request: gc_request.attributes.except(:id)
       expect(response.status).to eq(200)
       expect(goodcity_request.reload.quantity).to eq(goodcity_request.quantity)
+    end
+
+    it "it forbids me from updating a request for another user's order", :show_in_doc do
+      put :update, id: other_gc_request.id, goodcity_request: other_gc_request.attributes.except(:id)
+      expect(response.status).to eq(403)
     end
   end
 
