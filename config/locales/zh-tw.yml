@@ -113,9 +113,6 @@ zh-tw:
   stocktakes:
     invalid_state: Cannot process a closed or cancelled Stocktake
     dirty_revisions: Some quantity revisions require a re-count
-  organisation:
-    name_en:
-      already_exists: Name en is already taken.
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"
