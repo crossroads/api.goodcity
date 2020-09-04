@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::LocationsController, type: :controller do
 
-  let(:reviewer) { create(:user_with_token, :with_can_manage_locations_permission, role_name: 'Reviewer') }
+  let(:reviewer) { create(:user, :with_token, :with_can_manage_locations_permission, role_name: 'Reviewer') }
   let(:parsed_body) { JSON.parse(response.body) }
   before { generate_and_set_token(reviewer) }
 

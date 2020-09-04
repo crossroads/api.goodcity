@@ -4,7 +4,7 @@ describe TwilioService do
 
   let(:mobile) { generate(:mobile) }
   let(:user)   { create :user, mobile: mobile }
-  let(:user_with_no_mobile) { create :user, :user_with_no_mobile, request_from_browse: true }
+  let(:user_with_no_mobile) { create :user, mobile: nil, request_from_browse: true }
   let(:twilio) { TwilioService.new(user) }
   let(:twilio_with_no_mobile_user) {  TwilioService.new(user_with_no_mobile) }
 

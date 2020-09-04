@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::TimeslotsController, type: :controller do
 
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:timeslot) { create(:timeslot) }
   let(:serialized_timeslots) { Api::V1::TimeslotSerializer.new(timeslot) }
   let(:serialized_timeslots_json) { JSON.parse( serialized_timeslots.to_json ) }

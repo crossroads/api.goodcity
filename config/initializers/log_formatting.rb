@@ -1,7 +1,6 @@
+require 'lograge/formatters/json'
 
 if %w(staging production).include?(Rails.env)
-
-  require_relative '../../lib/logging/log_formatter'
 
   Rails.application.configure do
 
@@ -14,9 +13,19 @@ if %w(staging production).include?(Rails.env)
       options
     end
 
-    # Wire in the Rails.logger custom formatter
+    config.lograge.formatter = Lograge::Formatters::Json.new
+
+    # Wire in a custom formatter for Rails.logger.info(...) - can take hash or string args
     Rails.logger           = ActiveSupport::Logger.new("#{Rails.root}/log/#{Rails.env}.log", level: :info)
-    Rails.logger.formatter = LogFormatter.new
+    Rails.logger.formatter = ->(severity, time, progname, msg = '') {
+      return '' if msg.blank?
+      log_hash = {}
+      log_hash['time'] = time.iso8601(3)
+      log_hash['level'] = severity
+      log_hash['progname'] = progname if progname.present?
+      log_hash['msg'] = msg # string or hash
+      "#{log_hash.to_json}\n"
+    }
 
     # Turn down ActiveJob's verbose logging
     ActiveSupport.on_load :active_job do

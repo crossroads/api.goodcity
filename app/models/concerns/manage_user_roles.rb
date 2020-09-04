@@ -34,7 +34,7 @@ module ManageUserRoles
     end
 
     def max_role_level
-      self.roles.maximum("level") || 0
+      active_roles.maximum("level") || 0
     end
 
     def update_roles_for_user(user, role_ids)

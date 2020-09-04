@@ -58,7 +58,14 @@ RSpec.configure do |config|
   # Apipie can record examples using "APIPIE_RECORD=examples rake"
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 
-  FactoryBot.create :user, :system
+  # Create a system_user at beginning of specs
+  config.before(:all) do
+    FactoryBot.create(:user, :system)
+  end
+  # Clean up system_user at end of specs
+  config.after(:all) do
+    User.system.destroy_all
+  end
 
   # Default app to be 'admin' in order to not use treat_user_as_donor
   config.include ApplicationHeaders

@@ -1,12 +1,10 @@
 require 'rails_helper'
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
-  let(:user)   { create(:user_with_token) }
-  let(:supervisor) { create(:user_with_token, :supervisor, :with_organisation) }
-  let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
-  let(:order_fulfilment) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Order fulfilment' => ['can_login_to_stock']} )}
+  let(:user)   { create(:user, :with_token) }
+  let(:supervisor) { create(:user, :with_token, :supervisor, :with_organisation) }
+  let(:charity_user) { create(:user, :with_token, :with_charity_role, :with_can_login_to_browse_permission) }
+  let(:order_fulfilment) { create(:user, :with_token, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
   let(:mobile1) { generate(:mobile) }
@@ -41,6 +39,25 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       expect(parsed_body["errors"]).to eq("Mobile is invalid. Mobile can't be blank")
     end
 
+    context 'email' do
+      before do
+        set_browse_app_header
+      end
+      context 'when email is case-sensitive duplicate' do
+        it 'does not create a new user' do
+          user = create(:user)
+          expect { post :signup, format: 'json', user_auth: { mobile: '', email: user.email, first_name: '', last_name: '', address_attributes: { district_id: '', address_type: '' } } }.not_to change{ User.count }
+        end
+      end
+
+      context 'when email is unique' do
+        it 'creates a new user' do
+          user = build(:user)
+
+          expect { post :signup, format: 'json', user_auth: { mobile: '', email: user.email, first_name: '', last_name: '', address_attributes: { district_id: '', address_type: '' } } }.to change{ User.count }.by(1)
+        end
+      end
+    end
   end
 
   context "verify" do
@@ -237,7 +254,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'printers node should be present in the response' do
         get :current_user_profile
-        expect(JSON.parse(response.body).keys).to include('printers')
+        expect(JSON.parse(response.body).keys).to include('printers_users')
       end
     end
 
@@ -249,7 +266,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'printers node should be present in the response' do
         get :current_user_profile
-        expect(JSON.parse(response.body).keys).to include("printers")
+        expect(JSON.parse(response.body).keys).to include("printers_users")
       end
     end
   end

@@ -13,7 +13,11 @@ module PackageFiltering
         search_query = ['inventory_number', 'designation_name', 'notes', 'case_number'].
           map { |f| "packages.#{f} ILIKE :search_text" }.
           join(" OR ")
-        query = where(search_query, search_text: "%#{search_text}%")
+        search_query += " OR package_types.code = :search_code"
+        search_query += " OR package_types.name_en ILIKE :search_text"
+        query = joins(:package_type).where(search_query,
+                  search_text: "%#{search_text}%",
+                  search_code: search_text.upcase)
         query = query.inventorized if options[:with_inventory_no].present?
         query = query.not_multi_quantity if options[:restrict_multi_quantity].present?
         query = query.where(state: state) if state.present?

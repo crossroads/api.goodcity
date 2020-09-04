@@ -75,21 +75,29 @@ context TwilioInboundCallManager do
     let(:reviewer_channel) { "user_#{reviewer.id}_admin" }
     let!(:supervisor) { create :user, :supervisor }
     let(:supervisor_channel) { "user_#{supervisor.id}_admin" }
-    
-    before(:each) do
-      allow(call_manager).to receive(:offer).and_return(offer)
-    end
+
+    before{ allow(call_manager).to receive(:offer).and_return(offer) }
+
     subject{ call_manager.send(:call_notify_channels) }
-    
+
     context "when donor calling, reviewer should be notified" do
-      # it { expect(subject).to eql([reviewer_channel]) }
+      it { expect(subject).to eql([reviewer_channel]) }
     end
 
-    context "when donor calling and no reviewer then, all supervisors should be notified" do
+    context "when donor calling, reviewer of offer and supervisor who has messaged the donor should be notified" do
       before(:each) do
-        offer.reviewed_by_id = nil
+        create(:message, messageable: offer, sender: supervisor)
+        create(:user, :supervisor) # should not appear in results
       end
-      it { expect(subject).to eql([supervisor_channel]) }
+      it { expect(subject).to match_array( [reviewer_channel, supervisor_channel] ) }
+    end
+
+    context "when donor calling and no reviewer then, all reviewers and supervisors should be notified" do
+      before{ offer.update_column(:reviewed_by_id, nil) }
+      it do
+        expect(subject).to match_array( [reviewer_channel, supervisor_channel] )
+        expect(offer.messages.count).to eql(0)
+      end
     end
 
   end

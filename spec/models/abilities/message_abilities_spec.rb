@@ -9,13 +9,13 @@ describe 'Message abilities' do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { %i[index show create update destroy manage] }
   let(:sender)      { create :user }
-  let(:charity) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Charity' => ['can_login_to_browse']}) }
+  let(:charity) { create(:user, :with_charity_role, :with_can_login_to_browse_permission) }
   let(:is_private) { false }
   let(:offer) { create(:offer, created_by: user) }
   let(:message) { create :message, messageable: offer, is_private: is_private }
 
   context 'when Supervisor or Reviewer' do
-    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Supervisor' => ['can_manage_offer_messages']}) }
+    let(:user) { create(:user, :with_supervisor_role, :with_can_manage_offer_messages_permission) }
 
     context 'and message is not is_private' do
       @can = %i[index show create]
@@ -123,7 +123,7 @@ describe 'Message abilities' do
       end
     end
 
-    context 'when charity user recieves a message from a order admin' do
+    context 'when charity user recieves a message from an order admin' do
       let(:order_administrator) { create(:user, :order_administrator) }
       let!(:message) { create :message, is_private: is_private, messageable: order, sender: order_administrator }
 
@@ -139,6 +139,7 @@ describe 'Message abilities' do
     context 'private_message' do
       let(:is_private) { true }
       let!(:message) { create :message, is_private: is_private, messageable: order }
+      let!(:subscription) { } # nil, Charity doesn't get subscribed to private messages
       it 'is not allowed do any action' do
         all_actions.map { |action| is_expected.to_not be_able_to(action, message) }
       end
@@ -159,7 +160,7 @@ describe 'Message abilities' do
   context 'Order Administrator/fulfilment' do
     let(:order) { create :order, created_by: charity }
     let(:message) { create :message, is_private: is_private, messageable: order }
-    let(:user) { create(:user, :with_multiple_roles_and_permissions, roles_and_permissions: {'Order administrator' => ['can_manage_order_messages']}) }
+    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_order_messages_permission) }
 
     @can = %i[index show create]
     @cannot = %i[update destroy manage]

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ContactsController, type: :controller do
 
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:contact_params) { FactoryBot.attributes_for(:contact) }
   let(:parsed_body) { JSON.parse(response.body )}
 

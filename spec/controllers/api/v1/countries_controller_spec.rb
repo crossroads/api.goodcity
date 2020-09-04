@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::CountriesController, type: :controller do
-  let(:user) { create(:user, :api_user) }
+  let(:user) { create(:user, :api_write) }
   let(:country_params_with_stockit_id) {
     FactoryBot.attributes_for(:country, :with_stockit_id)
   }

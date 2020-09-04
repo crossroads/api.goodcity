@@ -46,15 +46,20 @@ module MessageSubscriptions
   private
 
   def first_message_subscribers(klass)
-    roles = if klass == 'Order'
-      ['Order fulfilment', 'Order administrator']
-    elsif  ['Offer', 'Item'].include?(klass)
-      ['Reviewer', 'Supervisor']
+    message_permissions =  if ['Offer', 'Item'].include?(klass)
+      ['can_manage_offer_messages']
+    elsif klass == 'Order'
+      ['can_manage_order_messages']
+    elsif klass == 'Package'
+      ['can_manage_package_messages']
     else
       []
     end
 
-    User.with_roles(roles).pluck(:id)
+    User.joins(roles: [:permissions])
+        .where(permissions: { name: message_permissions } )
+        .distinct
+        .pluck(:id)
   end
 
   # A public subscriber is defined as :
@@ -67,13 +72,12 @@ module MessageSubscriptions
   end
 
   # A private subscriber is defined as :
-  #   > A supervisor or reviewer who has answered the private thread
+  #   > An admin/stock app user who has answered the private thread
   def private_subscribers_to(obj)
-    User.staff
-        .joins(messages: [:subscriptions])
+    User.joins(messages: [:subscriptions])
         .where(messages: { is_private: true })
         .where(subscriptions: { subscribable: obj })
-        .pluck(:id)
+        .pluck(:id).uniq
   end
 
   def first_message?
