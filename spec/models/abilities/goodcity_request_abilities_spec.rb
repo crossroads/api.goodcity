@@ -24,8 +24,8 @@ describe "GoodcityRequest abilities" do
     let(:other_organisation) { create :organisation }
     let(:goodcity_request) { create :goodcity_request, order: order }
 
-    context "when the goodcity_request's order belongs to my organisation" do
-      let(:order) { create(:order, organisation: organisation) }
+    context "when the goodcity_request's order belongs to my order" do
+      let(:order) { create(:order, created_by: user) }
       let(:can) { [:index, :show, :create, :update, :destroy] }
 
       it { can.each do |do_action|
@@ -33,8 +33,8 @@ describe "GoodcityRequest abilities" do
       end }
     end
 
-    context "when the goodcity_request's order doesn't belongs to my organisation" do
-      let(:order) { create(:order, organisation: other_organisation) }
+    context "when the goodcity_request's order doesn't belongs to me" do
+      let(:order) { create(:order) }
       let(:cannot) { [:index, :show, :create, :update, :destroy] }
 
       it { cannot.each do |do_action|
