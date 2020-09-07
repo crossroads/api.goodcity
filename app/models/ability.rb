@@ -76,6 +76,7 @@ class Ability
     stocktake_abilities
     taxonomies
     user_abilities
+    user_role_abilities
     version_abilities
     company_abilities
     computer_abilities
@@ -424,6 +425,10 @@ class Ability
     can %i[index show update recent_users create], User if can_read_or_modify_user?
     can %i[create show], User if can_create_donor?
     can %i[mentionable_users], User if can_mention_users?
+  end
+
+  def user_role_abilities
+    can %i[create destroy update], UserRole if can_read_or_modify_user?
   end
 
   def version_abilities
