@@ -1,11 +1,14 @@
 # Search and logic for users is extracted here to avoid cluttering the model class
 module UserSearch
   extend ActiveSupport::Concern
+  include FuzzySearch
   SEARCH_ATTRIBUTES = ['users.first_name', 'users.last_name',
                       'users.email', 'users.mobile'].freeze
 
   included do
     # user: first_name, last_name, email, mobile
+    configure_search props: [:first_name, :last_name, :email, :mobile], tolerance: 0.1
+
     scope :search, ->(options = {}) {
       search_text = options[:search_text].downcase || ''
       role_name = options[:role_name].presence
