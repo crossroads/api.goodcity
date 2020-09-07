@@ -11,5 +11,6 @@ describe Api::V1::OrganisationsUserSerializer do
     expect(json["organisations_user"]["organisation_id"]).to eql(organisations_user.organisation_id)
     expect(json["organisations_user"]["position"]).to eql(organisations_user.position)
     expect(json["organisations_user"]["preferred_contact_number"]).to eql(organisations_user.preferred_contact_number)
+    expect(json["organisations_user"]["status"]).to eql(organisations_user.status)
   end
 end

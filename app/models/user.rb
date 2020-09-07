@@ -17,10 +17,14 @@ class User < ActiveRecord::Base
 
   has_many :unread_subscriptions, -> { where state: "unread" }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: 'Offer', through: :unread_subscriptions, source: :subscribable, source_type: 'Offer'
+
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
+  has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) }, class_name: "OrganisationsUser"
+  has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
   has_many :printers_users
   has_many :printers, through: :printers_users
+
   has_many :user_roles
   has_many :roles, through: :user_roles
 
@@ -165,10 +169,6 @@ class User < ActiveRecord::Base
     user_role_names.include?("Reviewer") && @treat_user_as_donor != true
   end
 
-  def charity?
-    user_role_names.include?("Charity")
-  end
-
   def supervisor?
     user_role_names.include?("Supervisor") && @treat_user_as_donor != true
   end
@@ -185,9 +185,12 @@ class User < ActiveRecord::Base
     user_role_names.include?('Stock administrator')
   end
 
+  def has_permission?(permssion)
+    user_permissions_names.include?(permssion)
+  end
+
   def can_disable_user?(id = nil)
-    user_permissions_names.include?("can_disable_user") &&
-    User.current_user.id != id&.to_i
+    has_permission?("can_disable_user") && User.current_user.id != id&.to_i
   end
 
   def can_manage_private_messages?

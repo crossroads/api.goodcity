@@ -9,40 +9,41 @@ class ResyncDuplicateUsers
     # Do this only for charity user
     user_hash = {}
     duplicate_users.map do |user|
-      if user.roles.map(&:name).uniq == ['Charity']
+      is_charity_user = user.roles.count.zero? && user.active_organisations.count.positive?
+      if is_charity_user
         email = user.email.downcase
-        if !user_hash[email]
-          user_hash[email] = [user.id]
-        else
-          user_hash[email] << user.id
-        end
+        user_hash[email] ||= []
+        user_hash[email] << user
       end
     end
 
     # 3. Iterate over the hash and find the orders from duplicate account.
     # Attach it to the account where user email is in lower case
-    user_hash.each do |k, v|
-      orders = []
-      original_user_id = nil
+    user_hash.each do |email, users|
+      original_user = users.find { |u| u.email == email } || users.first
+      bad_users = users.reject { |u| u == original_user }
+      bad_ids = bad_users.map(&:id)
 
-      v.map do |id|
-        user = User.find(id)
-        if user.email != k
-          orders << Order.where(created_by_id: user.id)
-        else
-          original_user_id = id
+      ActiveRecord::Base.transaction do
+        Order.where(created_by_id: bad_ids).each do |order|
+          order.update(created_by_id: original_user.id)
+          order.messages.where(sender_id: bad_ids).update_all(sender_id: original_user.id)
+          order.subscriptions.where(user_id: bad_ids).update_all(user_id: original_user.id)
         end
-      end
+  
+        # 4. delete bad organisations_users records
+        organisations_users         = OrganisationsUser.where(user_id: bad_ids)
+        original_organisations_user = original_user.organisations_users.first || organisations_users.first
 
-      orders.map do |order|
-        order.map { |o| o.update(created_by_id: original_user_id) }
-        order.map { |m| m.messages.where(sender_id: v).update_all(sender_id: original_user_id) }
-        order.map { |s| s.subscriptions.where(user_id: v).update_all(user_id: original_user_id) }
-      end
+        organisations_users
+          .select { |ou| ou != original_organisations_user }
+          .each(&:destroy!)
 
-      # 4. delete duplicate users
-      user_ids_to_delete = [v] - [original_user_id]
-      user_ids_to_delete.flatten.map { |id| User.find(id).destroy }
+        original_organisations_user&.update(user_id: original_user.id)
+
+        # 5. delete duplicate users
+        User.where(id: bad_ids).destroy_all
+      end
     end
   end
 end

@@ -13,7 +13,10 @@ class Role < ActiveRecord::Base
   has_many :role_permissions, dependent: :destroy
   has_many :permissions, through: :role_permissions
 
-  scope :charity, ->{ where(name: 'Charity').first }
   scope :visible, ->{ where.not(name: 'api-write') }
   scope :allowed_roles, ->(level) { where("level <= ?", level) }
+
+  def grant(user)
+    user.roles << self unless user.roles.include?(self)
+  end
 end
