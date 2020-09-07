@@ -78,6 +78,11 @@ FactoryBot.define do
       end
     end
 
+    trait :no_mobile do
+      mobile { nil }
+      is_mobile_verified { false }
+    end
+
     trait :stockit_user do
       first_name "Stockit"
       last_name "User"
@@ -92,9 +97,9 @@ FactoryBot.define do
       end
     end
 
-    trait :with_organisation do
+    trait :charity do
       after(:create) do |user|
-        user.organisations << create(:organisation)
+        user.organisations_users << (create :organisations_user, :approved, user_id: user.id)
       end
     end
 

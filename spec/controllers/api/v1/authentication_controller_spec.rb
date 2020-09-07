@@ -2,8 +2,8 @@ require 'rails_helper'
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user, :with_token) }
-  let(:supervisor) { create(:user, :with_token, :supervisor, :with_organisation) }
-  let(:charity_user) { create(:user, :with_token, :with_charity_role, :with_can_login_to_browse_permission) }
+  let(:supervisor) { create(:user, :with_token, :supervisor, :charity) }
+  let(:charity_user) { create(:user, :with_token, :charity) }
   let(:order_fulfilment) { create(:user, :with_token, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
@@ -166,7 +166,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(response.status).to eq(200)
       end
 
-      it 'sends otp_auth_key if user exists and have organisation assigned', :show_in_doc do
+      it 'sends otp_auth_key if user exists and has organisation assigned', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
         expect(supervisor).to receive(:send_verification_pin)
         post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }

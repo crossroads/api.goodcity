@@ -28,7 +28,6 @@ class PackagesInventory < ActiveRecord::Base
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
   INVENTORY_ACTIONS = (DECREMENTAL_ACTIONS + QUANTITY_GAIN_ACTIONS).freeze
 
-  include EventEmitter
   include AppendOnly
   include HookControls
   include Secured
@@ -41,7 +40,6 @@ class PackagesInventory < ActiveRecord::Base
   belongs_to :user
   belongs_to :source, polymorphic: true, touch: true
 
-  after_create { PackagesInventory.emit(self.action, self) }
   scope :for_package, ->(package) { where(package_id: Utils.to_id(package))}
 
   # --------------------

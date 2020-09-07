@@ -15,10 +15,17 @@ module Goodcity
       self.class.name.split(':').last
     end
 
+    def with_status(status)
+      @status = status
+      self
+    end
+
     def as_json
       { error: message, type: type, status: status }
     end
   end
+
+  class AccessError < BaseError; end
 
   class InvalidStateError < BaseError; end
 
@@ -36,6 +43,12 @@ module Goodcity
     end
   end
 
+  class ReadOnlyFieldError < BaseError
+    def initialize(field)
+      super(I18n.t('errors.read_only_field', field: field))
+    end
+  end
+
   class BadOrMissingField < BaseError
     def initialize(field)
       super(I18n.t('errors.bad_or_missing_field', field: field.to_s))
@@ -48,13 +61,25 @@ module Goodcity
     end
   end
 
+  class InvalidCredentialsError < AccessError
+    def initialize
+      super(I18n.t('organisations_user_builder.invalid.user'))
+    end
+  end
+
   # ----------------------------
   # I18n based errors
   # ----------------------------
 
-  def factory(base, translation_key, **opts)
-    Class.new(base) do
-      define_method(:initialize) { |i18n_data = {}| super(I18n.t(translation_key, i18n_data), **opts) }
+  def factory(base, default_translation_key, **opts)
+    error_klass = Class.new(base) do
+      define_method(:initialize) do |translation_key: default_translation_key, params: {}|
+        super(I18n.t(translation_key, params), **opts)
+      end
+
+      define_singleton_method(:with_translation) do |translation_key, params: {}|
+        error_klass.new(translation_key: translation_key, params: params)
+      end
     end
   end
 
@@ -63,6 +88,8 @@ module Goodcity
   InventorizedPackageError        = factory(BaseError, 'package.cannot_delete_inventorized')
   DisabledFeatureError            = factory(BaseError, 'goodcity.disabled_feature')
   DuplicateRecordError            = factory(BaseError, 'errors.duplicate_error', status: 409)
+
+  AccessDeniedError               = factory(AccessError, 'errors.forbidden', status: 403)
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')
