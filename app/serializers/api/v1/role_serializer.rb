@@ -4,7 +4,7 @@ module Api::V1
 
     attributes :id, :name, :level
 
-    has_many :role_permissions, serializer: RolePermissionSerializer
+    # has_many :role_permissions, serializer: RolePermissionSerializer
     # has_many :user_roles, serializer: UserRoleSerializer
   end
 end

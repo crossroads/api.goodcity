@@ -48,7 +48,7 @@ module Api
       api :GET, '/v1/users/1', "List a user"
       description "Returns information about a user. Note image may be empty if user is not a reviewer."
       def show
-        render json: @user, serializer: serializer
+        render json: @user, serializer: Api::V1::UserDetailsSerializer
       end
 
       api :PUT, '/v1/users/1', "Update user"

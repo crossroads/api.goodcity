@@ -19,6 +19,11 @@ module Api
 
       api :POST, '/v1/printers_users', "Create an printers_user"
       def create
+        @printers_user = PrintersUser
+          .where(user_id: params["printers_users"]["user_id"], tag: params["printers_users"]["tag"])
+          .first_or_initialize
+        @printers_user.printer_id = params["printers_users"]["printer_id"]
+
         save_and_render_object(@printers_user)
       end
 
