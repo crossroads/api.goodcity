@@ -2,15 +2,39 @@
 Donated elsewhere:
   :name_zh_tw: Donated elsewhere
   :visible_to_offer: true
+  :visible_to_order: false
 
 Transport too difficult:
   :name_zh_tw: Transport too difficult
   :visible_to_offer: true
+  :visible_to_order: false
 
 Unwanted:
   :name_zh_tw: Unwanted
   :visible_to_offer: false
+  :visible_to_order: false
 
 Donor cancelled:
   :name_zh_tw: Donor cancelled
   :visible_to_offer: true
+  :visible_to_order: false
+
+No show:
+  :name_zh_tw: 沒有出席
+  :visible_to_offer: false
+  :visible_to_order: true
+
+Nothing suitable:
+  :name_zh_tw: 沒有適合的物品
+  :visible_to_offer: false
+  :visible_to_order: true
+
+Changed mind:
+  :name_zh_tw: 改變了主意
+  :visible_to_offer: false
+  :visible_to_order: true
+
+Other:
+  :name_zh_tw: 其他
+  :visible_to_offer: false
+  :visible_to_order: true
