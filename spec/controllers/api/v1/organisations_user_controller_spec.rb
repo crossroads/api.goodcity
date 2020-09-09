@@ -83,11 +83,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '1234')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Mobile is invalid')
           end
@@ -99,11 +99,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '+85299775522')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -122,11 +122,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: '1234')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Email is invalid')
           end
@@ -138,11 +138,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: 'some@other.email')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -166,7 +166,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               expect {
                 post :create, format: :json, organisations_user: organisations_user_payload.except(param)
               }.not_to change(OrganisationsUser, :count)
-    
+
               expect(response.status).to eq(422)
               expect(parsed_body['error']).to eq("Missing parameter #{param}")
             end
@@ -218,11 +218,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '1234')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Mobile is invalid')
           end
@@ -234,11 +234,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '+85299775522')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -257,11 +257,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: '1234')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Email is invalid')
           end
@@ -273,11 +273,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: 'some@other.email')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -311,7 +311,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               expect {
                 post :create, format: :json, organisations_user: organisations_user_payload.except(param)
               }.not_to change(OrganisationsUser, :count)
-    
+
               expect(response.status).to eq(422)
               expect(parsed_body['error']).to eq("Missing parameter #{param}")
             end
@@ -379,11 +379,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '1234')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Mobile is invalid')
           end
@@ -395,11 +395,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '+85299775522')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -418,11 +418,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: '1234')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Email is invalid')
           end
@@ -434,11 +434,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: 'some@other.email')
             }
-  
+
             expect {
               post :create, format: :json, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -515,7 +515,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               expect {
                 post :create, format: :json, organisations_user: organisations_user_payload.except(param)
               }.not_to change(OrganisationsUser, :count)
-    
+
               expect(response.status).to eq(422)
               expect(parsed_body['error']).to eq("Missing parameter #{param}")
             end
@@ -538,7 +538,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
         expect(response.status).to eq(200)
       end
-      
+
       describe 'Modifying the user props with nested attributes (:user_attributes)' do
 
         it "allows modifying the user's attributes during the creation or the organisations_user", :show_in_doc do
@@ -567,11 +567,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '1234')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Mobile is invalid')
           end
@@ -583,11 +583,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(mobile: '+85299775522')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -606,11 +606,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: '1234')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(422)
             expect(parsed_body["error"]).to match('Email is invalid')
           end
@@ -622,11 +622,11 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               **organisations_user_payload,
               user_attributes: user_attributes.merge(email: 'some@other.email')
             }
-  
+
             expect {
               put :update, id: organisations_user.id, organisations_user: payload
             }.not_to change(OrganisationsUser, :count)
-  
+
             expect(response.status).to eq(403)
             expect(parsed_body["error"]).to match('The email or mobile already exists')
           end
@@ -715,11 +715,23 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
               expect {
                 post :create, format: :json, organisations_user: organisations_user_payload.except(param)
               }.not_to change(OrganisationsUser, :count)
-    
+
               expect(response.status).to eq(422)
               expect(parsed_body['error']).to eq("Missing parameter #{param}")
             end
           end
+        end
+      end
+
+      describe '/GET all_status' do
+        it 'returns 200' do
+          get :all_status
+          expect(response).to have_http_status(:success)
+        end
+
+        it 'returns all status' do
+          get :all_status
+          expect(parsed_body['status']).to match_array(OrganisationsUser.all_status)
         end
       end
     end

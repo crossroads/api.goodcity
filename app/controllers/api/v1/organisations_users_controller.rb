@@ -1,8 +1,9 @@
 module Api
   module V1
     class OrganisationsUsersController < Api::V1::ApiController
-      authorize_resource :organisations_user, parent: false
+      authorize_resource :organisations_user, parent: false, except: [:user_status, :organisation_user]
       load_resource :organisations_user, only: [:show, :update]
+      skip_authorization_check only: [:user_status, :organisation_user]
 
       resource_description do
         short "Get Organisations Users."
@@ -43,8 +44,17 @@ module Api
         render json: record, serializer: serializer, status: 200
       end
 
+      def organisation_user
+        record = OrganisationsUser.find_by(organisation_id: params[:organisation_id], user_id: params[:user_id])
+        render json: record, serializer: serializer
+      end
+
       def show
         render json: @organisations_user, serializer: serializer
+      end
+
+      def user_status
+        render json: { status: OrganisationsUser.all_status }, status: 200
       end
 
       private
@@ -60,7 +70,7 @@ module Api
             :first_name,
             :last_name,
             :mobile,
-            :email, 
+            :email,
             :title
           ])
       end
