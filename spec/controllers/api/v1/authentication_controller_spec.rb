@@ -2,12 +2,13 @@ require 'rails_helper'
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
   let(:user)   { create(:user, :with_token) }
-  let(:supervisor) { create(:user, :with_token, :supervisor, :with_organisation) }
-  let(:charity_user) { create(:user, :with_token, :with_charity_role, :with_can_login_to_browse_permission) }
+  let(:supervisor) { create(:user, :with_token, :supervisor, :charity) }
+  let(:charity_user) { create(:user, :with_token, :charity) }
   let(:order_fulfilment) { create(:user, :with_token, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
   let(:pin)    { user.most_recent_token[:otp_code] }
   let(:mobile) { generate(:mobile) }
   let(:mobile1) { generate(:mobile) }
+  let(:district_id) { create(:district).id.to_s }
 
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
   let(:jwt_token)    { Token.new.generate }
@@ -18,24 +19,24 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     it 'new user successfully', :show_in_doc do
       expect_any_instance_of(User).to receive(:send_verification_pin)
       expect(controller).to receive(:otp_auth_key_for).and_return(otp_auth_key)
-      post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
+      post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: district_id, address_type: 'Profile'} }
       expect(parsed_body["otp_auth_key"]).to eq( otp_auth_key )
     end
 
     it "with duplicate mobile don't create new user, send pin to existing number", :show_in_doc do
       allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
       expect(user).to receive(:send_verification_pin)
-      post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
+      post :signup, format: 'json', user_auth: { mobile: mobile, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: district_id, address_type: 'Profile'} }
       expect(response.status).to eq(200)
     end
 
     it "with invalid mobile number" do
-      post :signup, format: 'json', user_auth: { mobile: "123456", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
+      post :signup, format: 'json', user_auth: { mobile: "123456", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: district_id, address_type: 'Profile'} }
       expect(parsed_body["errors"]).to eq( 'Mobile is invalid' )
     end
 
     it "with blank mobile number" do
-      post :signup, format: 'json', user_auth: { mobile: "", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: '1', address_type: 'Profile'} }
+      post :signup, format: 'json', user_auth: { mobile: "", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: district_id, address_type: 'Profile'} }
       expect(parsed_body["errors"]).to eq("Mobile is invalid. Mobile can't be blank")
     end
 
@@ -162,28 +163,28 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       it 'sends otp_auth_key if user exists in system with no organisation assigned', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
         expect(user).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: district_id, address_type: 'Profile'} }
         expect(response.status).to eq(200)
       end
 
-      it 'sends otp_auth_key if user exists and have organisation assigned', :show_in_doc do
+      it 'sends otp_auth_key if user exists and has organisation assigned', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
         expect(supervisor).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: district_id, address_type: 'Profile'} }
         expect(response.status).to eq(200)
       end
 
       it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
         expect(charity_user).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: district_id, address_type: 'Profile'} }
         expect(response.status).to eq(200)
       end
 
       it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
         allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
         expect(charity_user).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
+        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: district_id, address_type: 'Profile'} }
         expect(response.status).to eq(200)
       end
     end
