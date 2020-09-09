@@ -18,27 +18,44 @@ module ManageUserRoles
 
   included do
 
-    def manage_roles_for_user(user, role_ids)
-      return unless self.can_update_roles_for_user?(user)
+    def assign_role_for_user(user_id: , role_id: , expiry_date:)
+      return unless self.can_update_roles_for_user?(user_id)
 
-      allowed_role_ids = Role.allowed_roles(max_role_level)
-                             .where(id: role_ids)
-                             .pluck(:id)
-      self.update_roles_for_user(user, allowed_role_ids)
+      if accessible_role?(role_id)
+        self.assign_role(user_id, role_id, expiry_date)
+      end
     end
 
-    def can_update_roles_for_user?(other_user)
+    def remove_role_for_user(user_role)
+      return unless self.can_update_roles_for_user?(user_role.user_id)
+
+      if accessible_role?(user_role.role_id)
+        user_role.destroy
+      end
+    end
+
+    def accessible_role?(role_id)
+      Role.allowed_roles(max_role_level).pluck(:id).include?(role_id.to_i)
+    end
+
+    def can_update_roles_for_user?(other_user_id)
+      other_user = User.find_by(id: other_user_id)
       self != other_user &&
-      self.max_role_level >= other_user.max_role_level &&
-      can_manage_user_roles?
+        self.max_role_level >= other_user.max_role_level &&
+        can_manage_user_roles?
     end
 
     def max_role_level
       active_roles.maximum("level") || 0
     end
 
-    def update_roles_for_user(user, role_ids)
-      user.roles = Role.where(id: role_ids)
+    def assign_role(user_id, role_id, expiry_date)
+      @user_role = UserRole
+          .where(user_id: user_id, role_id: role_id)
+          .first_or_initialize
+      @user_role.expiry_date = expiry_date
+      @user_role.save
+      @user_role
     end
 
     def can_manage_user_roles?
