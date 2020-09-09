@@ -36,9 +36,6 @@ module Api
             @user.organisations << Organisation.find_by(id: params["user"]["organisations_users_ids"])
           end
 
-          if params["user"]["user_role_ids"]
-            current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
-          end
           render json: @user, serializer: serializer, include_user_roles: true, status: 201
         else
           render_error(@user.errors.full_messages.join(". "))
@@ -59,9 +56,6 @@ module Api
 
       def update
         @user.update_attributes(user_params)
-        if params["user"]["user_role_ids"]
-          current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
-        end
         render json: @user, serializer: serializer
       end
 

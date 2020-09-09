@@ -21,17 +21,18 @@ module Api
       end
 
       def destroy
-        @user_role.destroy
+        current_user.remove_role_for_user(@user_role)
         render json: {}
       end
 
       api :POST, "/v1/user_roles", "Add an user_role"
       param_group :user_role
       def create
-        @user_role = UserRole
-          .where(user_id: params["user_role"]["user_id"], role_id: params["user_role"]["role_id"])
-          .first_or_initialize
-        @user_role.expiry_date = params["user_role"]["expiry_date"]
+        @user_role = current_user.assign_role_for_user(
+          user_id: params["user_role"]["user_id"],
+          role_id: params["user_role"]["role_id"],
+          expiry_date: params["user_role"]["expiry_date"]
+        )
 
         save_and_render_object(@user_role)
       end
