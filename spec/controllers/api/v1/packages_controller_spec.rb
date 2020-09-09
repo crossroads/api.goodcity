@@ -1537,7 +1537,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       it "fetches all the items that are present inside a pallet" do
-        puts(pallet.id)
         get :contained_packages, id: pallet
         expect(response.status).to eq(200)
         expect(parsed_body["items"].length).to eq(1)

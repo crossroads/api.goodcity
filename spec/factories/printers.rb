@@ -1,7 +1,8 @@
 FactoryBot.define do
   factory :printer do
+    association :location
+
     active false
-    location_id 1
     name { FFaker::Name.name }
     host { FFaker::Name.name }
     port { FFaker::Name.name }

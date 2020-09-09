@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :order do
+    
     status   ["draft", "submitted", "processing", "closed", "cancelled"].sample
     state    ["draft", "submitted", "processing", "closed", "cancelled"].sample
-
+    
     code          { generate(:code) }
     description     FFaker::Lorem.sentence
     purpose_description FFaker::Lorem.sentence
@@ -17,9 +18,7 @@ FactoryBot.define do
     association     :beneficiary
     association     :country
     association     :district
-    booking_type do |b|
-      BookingType.first || association(:booking_type)
-    end
+    association     :booking_type
 
     trait :shipment do
       detail_type "Shipment"

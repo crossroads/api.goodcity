@@ -10,9 +10,9 @@ module ManageUserRoles
   # Also user has access to roles which has level less than user's max role level.
   #
   # Example:
-  # Available Roles: Reviewer(level-5), Supervisor(level-10), Charity(level-1), Donor(level-1)
-  # Consider User has roles Charity and Reviewer, hence User's max role level 5
-  # User has access to only to Charity, Donor and Reviewer roles, can not access Supervisor role.
+  # Available Roles: Reviewer(level-5), Supervisor(level-10), Donor(level-1)
+  # Consider User has roles Supervisor and Reviewer, hence User's max role level 10
+  # User has access to only to Donor and Reviewer roles, can not access Supervisor role.
   # User can update roles of other users who have max role level <= 5.
   #
 
