@@ -61,20 +61,4 @@ RSpec.describe Api::V1::CountriesController, type: :controller do
       end
     end
   end
-
-  describe '/show SHOW country' do
-    let(:country) { create :country }
-    before { generate_and_set_token(user) }
-
-    it 'returns success status' do
-      get :show, id: country.id
-      expect(response).to have_http_status(:success)
-    end
-
-    it 'returns the country' do
-      get :show, id: country.id
-      expect(parsed_body['country']['id']).to eq(country.id)
-      expect(parsed_body['country']['name_en']).to eq(country.name_en)
-    end
-  end
 end
