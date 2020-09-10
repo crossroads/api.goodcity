@@ -10,9 +10,8 @@ class Permission < ApplicationRecord
   scope :reviewer,   -> { where(name: 'Reviewer').first }
   scope :supervisor, -> { where(name: 'Supervisor').first }
   scope :visible,    -> { where.not(name: 'api-write') }
-  scope :charity,    -> { where(name: 'Charity').first }
 
   def self.names(user_id)
-    joins(roles: :users).where('user_roles.user_id = (?)', user_id).pluck(:name)
+    joins(roles: :active_users).where('user_roles.user_id = (?)', user_id).pluck(:name)
   end
 end

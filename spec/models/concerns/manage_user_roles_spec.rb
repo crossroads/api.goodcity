@@ -4,7 +4,6 @@ describe ManageUserRoles do
   context "Update User Roles" do
 
     # ROLES
-    let!(:charity_role) { create(:role, name: "Charity", level: 1) }
     let!(:order_fulfilment_role) { create(:role, name: "Order fulfilment", level: 5) }
     let!(:system_admin_role) { create(:role, name: "System administrator", level: 15) }
     let!(:reviewer_role) { create(:role, name: "Reviewer", level: 5) }
@@ -24,7 +23,6 @@ describe ManageUserRoles do
           reviewer_user.manage_roles_for_user(charity_user, [order_fulfilment_role.id])
 
           expect(charity_user.roles.pluck(:id)).not_to include(order_fulfilment_role.id)
-          expect(charity_user.roles.pluck(:id)).to include(charity_role.id)
         end
       end
 
@@ -42,7 +40,6 @@ describe ManageUserRoles do
           supervisor_user.manage_roles_for_user(charity_user, [order_fulfilment_role.id])
 
           expect(charity_user.roles.pluck(:id)).to include(order_fulfilment_role.id)
-          expect(charity_user.roles.pluck(:id)).not_to include(charity_role.id)
         end
 
         it "can update other user [same role level] roles" do

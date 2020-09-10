@@ -50,13 +50,16 @@ FactoryBot.define do
     # No permissions are created
     FactoryBot.generate(:permissions_roles).keys.each do |role|
       trait "with_#{role.parameterize.underscore}_role".to_sym do
-        after(:create) do |user|
+        after(:create) do |user, evaluator|
           r = create("#{role.parameterize.underscore}_role")
-          user.roles << r unless user.roles.include?(r)
+          unless user.roles.include?(r)
+            create :user_role, user: user, role: r, expiry_date: evaluator.role_expiry
+          end
         end
         transient do
           # ensures if multiple permission traits are used, that they get assigned to the same role
           role_name { role.parameterize.underscore }
+          role_expiry { 5.days.from_now }
         end
       end
     end
@@ -78,6 +81,11 @@ FactoryBot.define do
       end
     end
 
+    trait :no_mobile do
+      mobile { nil }
+      is_mobile_verified { false }
+    end
+
     trait :stockit_user do
       first_name { 'Stockit' }
       last_name { 'User' }
@@ -92,9 +100,9 @@ FactoryBot.define do
       end
     end
 
-    trait :with_organisation do
+    trait :charity do
       after(:create) do |user|
-        user.organisations << create(:organisation)
+        user.organisations_users << (create :organisations_user, :approved, user_id: user.id)
       end
     end
 

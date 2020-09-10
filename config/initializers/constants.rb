@@ -29,8 +29,8 @@ STOCKIT_PREFIX = "X"
 APP_NAME_AND_LOGIN_PERMISSION_MAPPING = {
   ADMIN_APP => 'can_login_to_admin',
   STOCK_APP => 'can_login_to_stock',
-  BROWSE_APP => 'can_login_to_browse',
   SETTINGS_EDITOR_APP => 'can_manage_settings'
 }
 PACK_UNPACK_ALLOWED_ACTIONS = %w[pack unpack].freeze
 MENTIONABLE_ROLES = ['Reviewer', 'Supervisor', 'Order administrator', 'Order fulfilment'].freeze
+DEFAULT_COUNTRY = 'China - Hong Kong (Special Administrative Region)'

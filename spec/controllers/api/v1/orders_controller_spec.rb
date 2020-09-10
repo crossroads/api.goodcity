@@ -12,7 +12,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
-  let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id) }
+  let(:order_params) { FactoryBot.attributes_for(:order) }
   let(:returned_orders) do
     parsed_body["designations"]
       .map { |d| Order.find(d["id"]) }
@@ -24,10 +24,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   end
 
   def create_order_with_transport(state, opts = {})
-    scheduled_at = opts[:scheduled_at] || moment + rand(1..100).day
-    timeslot = opts[:scheduled_at] ? timeslot_of(scheduled_at) : "5:30PM"
-    o = create(:order, state: state, detail_type: opts[:detail_type])
+    scheduled_at  = opts[:scheduled_at] || moment + rand(1..100).day
+    timeslot      = opts[:scheduled_at] ? timeslot_of(scheduled_at) : "5:30PM"
 
+    o = create(:order, state: state, detail_type: opts[:detail_type], booking_type: opts[:booking_type])
     create :order_transport, order: o, scheduled_at: scheduled_at, timeslot: timeslot
     return o
   end
@@ -666,6 +666,17 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(saved_address.district_id).to eq(address.district_id)
         expect(saved_address.building).to eq(address.building)
       end
+
+      context "from stockit" do
+        let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id, detail_type: "Shipment", status: "Processing") }
+        it "should process a Shipment" do
+          post :create, order: order_params
+          expect(response.status).to eql(201)
+          expect(parsed_body["designation"]["detail_type"]).to eq("Shipment")
+          expect(parsed_body["designation"]["state"]).to eq("processing")
+        end
+      end
+
     end
   end
 end

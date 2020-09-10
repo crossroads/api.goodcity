@@ -87,6 +87,8 @@ class Order < ApplicationRecord
 
   scope :non_draft_orders, -> { where.not("orders.state = 'draft' AND detail_type = 'GoodCity'") }
 
+  scope :closed, -> { where(state: 'closed') }
+
   scope :with_eager_load, -> {
           includes([:subscriptions, :order_transport,
                     { packages: [:locations, :package_type] }])

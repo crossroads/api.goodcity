@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
   let(:supervisor) { create(:user, :with_token, :with_can_check_organisations_permission, role_name: 'Supervisor') }
+  let!(:country) { create(:country, name_en: DEFAULT_COUNTRY) }
   let(:parsed_body) { JSON.parse(response.body) }
 
   before { generate_and_set_token(supervisor) }
@@ -77,7 +78,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
   describe "GET GC Organisation" do
     let(:organisation) { create :organisation }
-    let(:serialized_gc_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "gc_organisations").as_json.to_json) }
+    let(:serialized_gc_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "gc_organisations", include_orders_count: true).as_json.to_json) }
 
     before { get :show, params: { id: organisation.id } }
     it "returns 200" do
@@ -122,6 +123,118 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         generate_and_set_token(charity)
         get :orders, params: { id: organisation.id }
         expect(response.status).to eq(403)
+      end
+    end
+  end
+
+  describe 'POST /create' do
+    let(:organisation_type) { create(:organisation_type) }
+    let(:params) { FactoryBot.attributes_for(:organisation, organisation_type_id: "#{organisation_type.id}") }
+    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisations_permission) }
+
+    before { generate_and_set_token(user) }
+
+    it 'returns 200' do
+      post :create, organisation: params
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'creates new organisation record' do
+      expect {
+        post :create, organisation: params
+      }.to change { Organisation.count }.by(1)
+    end
+
+    context 'when name_en is already present' do
+      it 'returns error' do
+        create(:organisation, name_en: 'GOOD CITY')
+        params[:name_en] = 'GooD CITY'
+        expect {
+          post :create, organisation: params
+        }.not_to change { Organisation.count }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context 'if country is nil' do
+      it 'sets to default country' do
+        params[:country_id] = nil
+        post :create, organisation: params
+        country_id = Country.find_by(name_en: DEFAULT_COUNTRY).id
+        expect(parsed_body['organisation']['country_id']).to eq(country_id)
+      end
+    end
+
+    context 'if organisation type is nil' do
+      it 'returns error' do
+        params[:organisation_type_id] = nil
+        post :create, organisation: params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not create new organisation' do
+        params[:organisation_type_id] = nil
+        expect { post :create, organisation: params }.not_to change { Organisation.count }
+      end
+    end
+
+    context 'when invalid user' do
+      let(:user) { create(:user) }
+
+      it 'returns forbidden' do
+        generate_and_set_token(user)
+        post :create, organisation: params
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
+  describe 'PUT /update' do
+    let!(:organisation) { create(:organisation) }
+    let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisations_permission) }
+    before{ generate_and_set_token(user) }
+
+    it 'updates the attribute' do
+      put :update, id: organisation.id, organisation: { name_en: 'Example' }
+      expect(organisation.reload.name_en).to eq('Example')
+    end
+
+    context 'when invalid user' do
+      let(:user) { create(:user) }
+
+      it 'returns forbidden' do
+        generate_and_set_token(user)
+        put :update, id: organisation.id, name_en: 'Example'
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'if name_en is duplicate' do
+      it 'returns error' do
+        create(:organisation, name_en: 'Good City')
+        organisation = create(:organisation)
+        put :update, id: organisation.id, organisation: { name_en: 'good city   ' }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not update the record' do
+        create(:organisation, name_en: 'Good City')
+        organisation = create(:organisation)
+        name = organisation.name_en
+        put :update, id: organisation.id, organisation: { name_en: 'good city' }
+        expect(organisation.reload.name_en).to eq(name)
+      end
+    end
+
+    context 'if organisation type is nil' do
+      it 'returns error' do
+        put :create, organisation: { organisation_type_id: nil }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not change organisation_type_id' do
+        post :create, organisation: { organisation_type_id: nil }
+        expect(organisation.reload.organisation_type_id).to eq(organisation.organisation_type_id)
       end
     end
   end

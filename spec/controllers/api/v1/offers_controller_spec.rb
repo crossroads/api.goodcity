@@ -666,22 +666,22 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       context "user.last_name" do
-        let!(:offer1) { create :offer, :submitted, created_by: (create :user, last_name: 'Test') }
-        let!(:offer2) { create :offer, :submitted, created_by: (create :user, last_name: 'Tester') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, last_name: 'Zexy Desperado') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, last_name: 'Fearless Desperado') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, last_name: 'Empty') }
         it do
-          get :search, params: { searchText: 'Test' }
+          get :search, params: { searchText: 'despera' }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end
       end
 
       context "user.email" do
-        let!(:offer1) { create :offer, :submitted, created_by: (create :user, email: 'mr_test@example.com') }
-        let!(:offer2) { create :offer, :submitted, created_by: (create :user, email: 'mr_tester@example.com') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, email: 'dynamic_menace@example.com') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, email: 'dynamic_intimidation@example.com') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, email: 'mr_empty@example.com') }
         it do
-          get :search, params: { searchText: 'Test' }
+          get :search, params: { searchText: 'dynam' }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end

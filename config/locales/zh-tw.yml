@@ -9,9 +9,12 @@ zh-tw:
     bad_request: Bad Request
     bad_or_missing_record: Invalid or missing %{klass}
     bad_or_missing_field: Invalid or empty field '%{field}'
+    read_only_field: The '%{field}' field cannot be modified
     expected_state: The following action can only be done on a %{state} %{subject}
     missing_params: Param '%{param}' is required
     duplicate_error: A record already exists
+    forbidden: Access Denied
+    invalid_credentials: Invalid credentials
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期

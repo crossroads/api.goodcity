@@ -19,9 +19,7 @@ FactoryBot.define do
     association     :beneficiary
     association     :country
     association     :district
-    booking_type do |b|
-      BookingType.first || association(:booking_type)
-    end
+    association     :booking_type
 
     trait :shipment do
       detail_type { 'Shipment' }

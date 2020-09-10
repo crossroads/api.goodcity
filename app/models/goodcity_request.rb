@@ -19,4 +19,9 @@ class GoodcityRequest < ApplicationRecord
   scope :of_user, ->(uid) {
     joins(:order).where('goodcity_requests.created_by_id = :id OR orders.created_by_id = :id', id: uid)
   }
+
+  scope :of_organisation, ->(organisation_ids) {
+    joins(:order).where('orders.organisation_id IN (?)', [organisation_ids].flatten)
+  }
+
 end
