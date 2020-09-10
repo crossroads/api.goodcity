@@ -94,7 +94,7 @@ RSpec.describe Organisation, type: :model do
   end
 
   describe '#trim_name' do
-    it 'trims and converts name to upcase before save' do
+    it 'trims the spaces before save' do
       organisation = build(:organisation, name_en: 'good city   ')
       organisation.save
       expect(organisation.reload.name_en).to eq('good city')
