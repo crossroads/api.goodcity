@@ -180,13 +180,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       before { generate_and_set_token(supervisor_user) }
 
       context "when I edit my own details" do
-        # it "I cannot edit my own roles" do
-        #   existing_user_roles = supervisor_user.roles
-        #   put :update, id: supervisor_user.id, user: { user_role_ids: [charity_role.id] }
-        #   expect(supervisor_user.reload.roles.pluck(:id)).not_to include(charity_role.id)
-        #   expect(supervisor_user.reload.roles).to match_array(existing_user_roles)
-        # end
-
         it "I cannot disable myself", :show_in_doc do
           put :update, id: supervisor_user.id, user: {disabled: true}
           expect(response.status).to eq(200)
