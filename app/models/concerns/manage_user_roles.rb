@@ -18,7 +18,7 @@ module ManageUserRoles
 
   included do
 
-    def assign_role_for_user(user_id: , role_id: , expiry_date:)
+    def assign_role_for_user(user_id: , role_id: , expiry_date: nil)
       return unless self.can_update_roles_for_user?(user_id)
 
       if accessible_role?(role_id)

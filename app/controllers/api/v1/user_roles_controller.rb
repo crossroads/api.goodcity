@@ -34,7 +34,11 @@ module Api
           expiry_date: params["user_role"]["expiry_date"]
         )
 
-        save_and_render_object(@user_role)
+        if @user_role
+          save_and_render_object(@user_role)
+        else
+          render json: {}, status: 401
+        end
       end
 
       private
