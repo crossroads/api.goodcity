@@ -12,6 +12,7 @@ RSpec.describe BookingType, type: :model do
   end
 
   describe "Validations" do
+    it { is_expected.to validate_uniqueness_of(:identifier) }
     it { is_expected.to validate_uniqueness_of(:name_en) }
     it { is_expected.to validate_uniqueness_of(:name_zh_tw) }
   end

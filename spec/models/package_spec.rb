@@ -257,7 +257,7 @@ RSpec.describe Package, type: :model do
   describe "Live updates" do
     let(:push_service) { PushService.new }
     let!(:package) { create :package, received_quantity: 1 }
-    let!(:package_with_item) { create :package, received_quantity: 1, item_id: 1 }
+    let!(:package_with_item) { create :package, :with_item, received_quantity: 1 }
 
     before(:each) do
       allow(PushService).to receive(:new).and_return(push_service)

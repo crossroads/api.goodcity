@@ -19,7 +19,7 @@ module UserSearch
 
     def self.search_user(role_name, search_query, search_text)
       if role_name
-        joins(:roles)
+        joins(:active_roles)
         .where("roles.name = ?", role_name)
         .where(search_query, search_text: "%#{search_text}%")
         .distinct

@@ -111,12 +111,13 @@ Rails.application.routes.draw do
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
       resources :organisations_users, only: [:create, :index, :update, :show]
-      resources :gc_organisations, only: [:index, :show] do
+      resources :gc_organisations do
         get 'names', on: :collection
         member do
           get :orders
         end
       end
+      resources :organisation_types
 
       get "recent_users", to: "users#recent_users"
       get "mentionable_users", to: "users#mentionable_users"
@@ -177,13 +178,14 @@ Rails.application.routes.draw do
       resources :beneficiaries, only: [:create, :show, :index, :update, :destroy]
       resources :order_transports, only: [:create, :show, :index, :update]
       resources :stockit_activities, only: [:create]
-      resources :countries, only: [:create, :index]
+      resources :countries, only: %i[create index]
       resources :inventory_numbers, only: [:create] do
         put :remove_number, on: :collection
       end
       resources :orders_process_checklists, only: [:index]
       resources :restrictions, only: [:index]
       resources :packages_inventories, only: [:index]
+      resources :printers_users, only: [:create, :update]
 
       # routes used in stock app
       get "designations", to: "orders#index"

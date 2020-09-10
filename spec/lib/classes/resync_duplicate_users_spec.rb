@@ -28,6 +28,16 @@ describe ResyncDuplicateUsers do
       expect(Order.where(created_by_id: original_user.id).count).to eq(2)
     end
 
+    it 'deletes the organisations_users records of deleted user' do
+      user.update_column(:email, original_user.email.upcase)
+      original_organisations_user = original_user.organisations_users.first
+      expect {
+        ResyncDuplicateUsers.apply
+      }.to change(OrganisationsUser, :count).by(-1)
+      
+      expect(OrganisationsUser.where(user: original_user)).to eq([original_organisations_user])
+    end
+
     context 'if email is nil' do
       it 'does not copies order from that account' do
         user_1 = create(:user, :charity)
