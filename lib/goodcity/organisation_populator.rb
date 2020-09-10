@@ -1,7 +1,6 @@
 module Goodcity
   class OrganisationPopulator
     ORGANISATION_TYPE_NAME = "NGO"
-    COUNTRY_NAME_EN = "China - Hong Kong (Special Administrative Region)"
     URL = "https://goodcitystorage.blob.core.windows.net/public/s88-orgs.json"
     ORGANISATION_MAPPING = {
       "name_en" => "name_en",
@@ -45,7 +44,7 @@ module Goodcity
     end
 
     def default_country
-      @default_country ||= Country.find_by_name_en(COUNTRY_NAME_EN)
+      @default_country ||= Country.find_by_name_en(DEFAULT_COUNTRY)
     end
   end
 end
