@@ -670,13 +670,12 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       context "from stockit" do
         let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id, detail_type: "Shipment", status: "Processing") }
         it "should process a Shipment" do
-          post :create, order: order_params
+          post :create, params: { order: order_params }
           expect(response.status).to eql(201)
           expect(parsed_body["designation"]["detail_type"]).to eq("Shipment")
           expect(parsed_body["designation"]["state"]).to eq("processing")
         end
       end
-
     end
   end
 end

@@ -77,11 +77,13 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
       it "allows me to create a request for my own order", :show_in_doc do
         expect {
-          post :create, goodcity_request: {
+          post :create, params: {
+            goodcity_request: {
             order_id: order.id,
             package_type: package_type.id,
             quantity: 1,
             description: "foo"
+            }
           }
         }.to change(GoodcityRequest, :count).by(1)
         expect(response.status).to eq(201)
@@ -89,11 +91,13 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
       it "it forbids me from creating a request for another user's order", :show_in_doc do
         expect {
-          post :create, goodcity_request: {
+          post :create, params: {
+            goodcity_request: {
             order_id: other_order.id,
             package_type: package_type.id,
             quantity: 1,
             description: "foo"
+            }
           }
         }.not_to change(GoodcityRequest, :count)
         expect(response.status).to eq(403)
@@ -118,7 +122,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     end
 
     it "it forbids me from updating a request for another user's order", :show_in_doc do
-      put :update, id: other_gc_request.id, goodcity_request: other_gc_request.attributes.except(:id)
+      put :update, params: { id: other_gc_request.id, goodcity_request: other_gc_request.attributes.except(:id) }
       expect(response.status).to eq(403)
     end
   end

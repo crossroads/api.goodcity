@@ -17,8 +17,7 @@ class PackageSet < ApplicationRecord
   end
 
   watch [Package], on: [:update, :destroy] do |package, event|
-    package_set_id = package.package_set_id_changed? ? package.package_set_id_was : package.package_set_id
-
+    package_set_id = package.saved_change_to_attribute?(:package_set_id) ? package.package_set_id_before_last_save : package.package_set_id
     package_set = PackageSet.find_by(id: package_set_id)
     package_set.destroy! if package_set.present? && package_set.packages.length < 2
   end
@@ -77,6 +76,6 @@ class PackageSet < ApplicationRecord
   end
 
   def ensure_type_integrity
-    errors.add(:errors, I18n.t('package_sets.cannot_change_type')) if saved_change_to_attribute?(:package_type_id) && packages.size.positive?
+    errors.add(:errors, I18n.t('package_sets.cannot_change_type')) if package_type_id_changed? && packages.size.positive?
   end
 end
