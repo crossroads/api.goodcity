@@ -135,13 +135,13 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     before { generate_and_set_token(user) }
 
     it 'returns 200' do
-      post :create, organisation: params
+      post :create, params: { organisation: params }
       expect(response).to have_http_status(:success)
     end
 
     it 'creates new organisation record' do
       expect {
-        post :create, organisation: params
+        post :create, params: { organisation: params }
       }.to change { Organisation.count }.by(1)
     end
 
@@ -150,7 +150,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         create(:organisation, name_en: 'GOOD CITY')
         params[:name_en] = 'GooD CITY'
         expect {
-          post :create, organisation: params
+          post :create, params: { organisation: params }
         }.not_to change { Organisation.count }
         expect(response).to have_http_status(:unprocessable_entity)
       end
@@ -159,7 +159,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     context 'if country is nil' do
       it 'sets to default country' do
         params[:country_id] = nil
-        post :create, organisation: params
+        post :create, params: { organisation: params }
         country_id = Country.find_by(name_en: DEFAULT_COUNTRY).id
         expect(parsed_body['organisation']['country_id']).to eq(country_id)
       end
@@ -168,13 +168,13 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     context 'if organisation type is nil' do
       it 'returns error' do
         params[:organisation_type_id] = nil
-        post :create, organisation: params
+        post :create, params: { organisation: params }
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not create new organisation' do
         params[:organisation_type_id] = nil
-        expect { post :create, organisation: params }.not_to change { Organisation.count }
+        expect { post :create, params: { organisation: params } }.not_to change { Organisation.count }
       end
     end
 
@@ -183,7 +183,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
       it 'returns forbidden' do
         generate_and_set_token(user)
-        post :create, organisation: params
+        post :create, params: { organisation: params }
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -195,7 +195,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     before{ generate_and_set_token(user) }
 
     it 'updates the attribute' do
-      put :update, id: organisation.id, organisation: { name_en: 'Example' }
+      put :update, params: { id: organisation.id, organisation: { name_en: 'Example' }}
       expect(organisation.reload.name_en).to eq('Example')
     end
 
@@ -204,7 +204,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
       it 'returns forbidden' do
         generate_and_set_token(user)
-        put :update, id: organisation.id, name_en: 'Example'
+        put :update, params: { id: organisation.id, name_en: 'Example'}
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -213,7 +213,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       it 'returns error' do
         create(:organisation, name_en: 'Good City')
         organisation = create(:organisation)
-        put :update, id: organisation.id, organisation: { name_en: 'good city   ' }
+        put :update, params: { id: organisation.id, organisation: { name_en: 'good city   ' } }
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
@@ -221,19 +221,19 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         create(:organisation, name_en: 'Good City')
         organisation = create(:organisation)
         name = organisation.name_en
-        put :update, id: organisation.id, organisation: { name_en: 'good city' }
+        put :update, params: { id: organisation.id, organisation: { name_en: 'good city' } }
         expect(organisation.reload.name_en).to eq(name)
       end
     end
 
     context 'if organisation type is nil' do
       it 'returns error' do
-        put :create, organisation: { organisation_type_id: nil }
+        put :create, params: { organisation: { organisation_type_id: nil } }
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not change organisation_type_id' do
-        post :create, organisation: { organisation_type_id: nil }
+        post :create, params: { organisation: { organisation_type_id: nil } }
         expect(organisation.reload.organisation_type_id).to eq(organisation.organisation_type_id)
       end
     end
