@@ -3,7 +3,7 @@ require 'cancan/matchers'
 
 describe "Territory abilities" do
 
-  subject(:ability) { Ability.new(user) }
+    subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
   context "when Supervisor" do

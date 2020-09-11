@@ -1,12 +1,142 @@
 require 'rails_helper'
 RSpec.describe Api::V2::AuthenticationController, type: :controller do
 
-  let(:user) { create(:user, :with_token) }
-  let(:mobile) { generate(:mobile) }
-  let(:parsed_body) { JSON.parse(response.body) }
-  let(:pin)    { user.most_recent_token[:otp_code] }
-  let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
-  
+  let(:user)          { create(:user, :with_token, :with_supervisor_role) }
+  let(:mobile)        { generate(:mobile) }
+  let(:email)         { 'some@email.com' }
+  let(:parsed_body)   { JSON.parse(response.body) }
+  let(:pin)           { user.most_recent_token[:otp_code] }
+  let(:otp_auth_key)  { "l/Ed2XSaihKD0u6RepsaaA==" }
+  let(:district)      { create(:district) }
+
+  def parse_jwt(jwt)
+    Token.new(bearer: jwt)
+  end
+
+  context "signup" do
+    let(:signup_params) {
+      { mobile: mobile, email: email, first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: district.id.to_s, address_type: 'Profile'} }
+    }
+    let(:signup_email_params) { signup_params.except(:mobile) }
+    let(:signup_mobile_params) { signup_params.except(:email) }
+
+    it 'creates new user successfully from a mobile number', :show_in_doc do
+      expect(AuthenticationService).to receive(:send_pin)
+      expect(AuthenticationService).to receive(:otp_auth_key_for).and_return(otp_auth_key)
+
+      expect {
+        post :signup, format: 'json', user_auth: signup_mobile_params
+      }.to change(User, :count).by(1)
+
+      expect(response.status).to eq(201)
+
+      user = User.last
+      expect(user.mobile).to eq(mobile)
+      expect(user.email).to eq(nil)
+      expect(user.first_name).to eq("Jake")
+      expect(user.last_name).to eq("Deamon")
+      expect(user.address.district).to eq(district)
+      expect(user.address.address_type).to eq("Profile")
+      expect(
+        parse_jwt(parsed_body['otp_auth_key']).read('otp_auth_key')
+      ).to eq(otp_auth_key)
+    end
+
+    it 'creates new user successfully from an email', :show_in_doc do
+      expect(AuthenticationService).to receive(:send_pin)
+      expect(AuthenticationService).to receive(:otp_auth_key_for).and_return(otp_auth_key)
+
+      expect {
+        post :signup, format: 'json', user_auth: signup_email_params
+      }.to change(User, :count).by(1)
+
+      expect(response.status).to eq(201)
+
+      user = User.last
+      expect(user.mobile).to eq(nil)
+      expect(user.email).to eq(email)
+      expect(user.first_name).to eq("Jake")
+      expect(user.last_name).to eq("Deamon")
+      expect(user.address.district).to eq(district)
+      expect(user.address.address_type).to eq("Profile")
+      expect(
+        parse_jwt(parsed_body['otp_auth_key']).read('otp_auth_key')
+      ).to eq(otp_auth_key)
+    end
+
+    it 'creates new user successfully from a mobile and an email', :show_in_doc do
+      expect(AuthenticationService).to receive(:send_pin)
+      expect(AuthenticationService).to receive(:otp_auth_key_for).and_return(otp_auth_key)
+
+      expect {
+        post :signup, format: 'json', user_auth: signup_params
+      }.to change(User, :count).by(1)
+
+      expect(response.status).to eq(201)
+
+      user = User.last
+      expect(user.mobile).to eq(mobile)
+      expect(user.email).to eq(email)
+      expect(user.first_name).to eq("Jake")
+      expect(user.last_name).to eq("Deamon")
+      expect(user.address.district).to eq(district)
+      expect(user.address.address_type).to eq("Profile")
+      expect(
+        parse_jwt(parsed_body['otp_auth_key']).read('otp_auth_key')
+      ).to eq(otp_auth_key)
+    end
+
+    it "logs in the user if his/her number already exists", :show_in_doc do
+      existing_user = create(:user, mobile: mobile)
+
+      expect(AuthenticationService).to receive(:send_pin).once
+      expect(AuthenticationService).to receive(:otp_auth_key_for).with(existing_user).once.and_return(otp_auth_key)
+
+      expect {
+        post :signup, format: 'json', user_auth: signup_mobile_params
+      }.not_to change(User, :count)
+
+      expect(response.status).to eq(200)
+      expect(
+        parse_jwt(parsed_body['otp_auth_key']).read('otp_auth_key')
+      ).to eq(otp_auth_key)
+    end
+
+    it "logs in the user if his/her email already exists (case insensitive)", :show_in_doc do
+      existing_user = create(:user, email: email.upcase)
+
+      expect(AuthenticationService).to receive(:send_pin).once
+      expect(AuthenticationService).to receive(:otp_auth_key_for).with(existing_user).once.and_return(otp_auth_key)
+
+      expect {
+        post :signup, format: 'json', user_auth: signup_email_params
+      }.not_to change(User, :count)
+
+      expect(response.status).to eq(200)
+      expect(
+        parse_jwt(parsed_body['otp_auth_key']).read('otp_auth_key')
+      ).to eq(otp_auth_key)
+    end
+
+    it "with invalid mobile number and no email" do
+      post :signup, format: 'json', user_auth: signup_params.merge({ mobile: '123456' })
+      expect(response.status).to eq(422)
+      expect(parsed_body["error"]).to match('Mobile is invalid')
+    end
+
+    it "with invalid email number and no mobile" do
+      post :signup, format: 'json', user_auth: signup_params.merge({ mobile: '', email: 'bad mail' })
+      expect(response.status).to eq(422)
+      expect(parsed_body["error"]).to match('Email is invalid')
+    end
+
+    it "with no mobile or email" do
+      post :signup, format: 'json', user_auth: signup_params.except(:mobile, :email)
+      expect(response.status).to eq(422)
+      expect(parsed_body["error"]).to match("Param 'mobile/email' is required")
+    end
+  end
+
   context "send_pin" do
     it 'should find user by mobile', :show_in_doc do
       expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
@@ -15,75 +145,71 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(controller).to receive(:app_name).and_return(DONOR_APP).at_least(:once)
       post :send_pin, mobile: mobile
       expect(response.status).to eq(200)
-      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
+
+      token = Token.new(bearer: parsed_body['otp_auth_key'])
+
+      expect(token.read('otp_auth_key')).to eql( otp_auth_key )
+      expect(token.read('pin_method')).to eql( 'mobile' )
     end
 
     it "where user does not exist" do
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(nil)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:otp_auth_key_for).and_return( otp_auth_key )
+      expect(AuthenticationService).not_to receive(:send_pin)
+      expect(AuthenticationService).not_to receive(:otp_auth_key_for)
+      expect(AuthenticationService).to receive(:fake_otp_auth_key).once.and_return(otp_auth_key)
+
       post :send_pin, mobile: mobile
-      expect(parsed_body['otp_auth_key']).to eql( otp_auth_key )
-    end
-
-    it 'do not send pin if donor login into admin', :show_in_doc do
-      set_admin_app_header
-      expect(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-      expect(user).to_not receive(:send_verification_pin)
-      expect(controller).to receive(:app_name).and_return(ADMIN_APP).at_least(:once)
-      post :send_pin, mobile: mobile
-      expect(response.status).to eq(401)
-      expect(parsed_body["error"]).to eq("You are not authorized.")
-      expect(parsed_body['otp_auth_key']).to eql( nil )
-    end
-
-    context "signup for Browse app" do
-      it 'sends otp_auth_key if user exists in system with no organisation assigned', :show_in_doc do
-        allow(User).to receive(:find_by_mobile).with(mobile).and_return(user)
-        expect(user).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
-        expect(response.status).to eq(200)
-      end
-
-      it 'sends otp_auth_key if user exists and has organisation assigned', :show_in_doc do
-        allow(User).to receive(:find_by_mobile).with(mobile).and_return(supervisor)
-        expect(supervisor).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
-        expect(response.status).to eq(200)
-      end
-
-      it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
-        allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
-        expect(charity_user).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
-        expect(response.status).to eq(200)
-      end
-
-      it 'sends otp_auth_key if existing charity_user logging into Browse', :show_in_doc do
-        allow(User).to receive(:find_by_mobile).with(mobile).and_return(charity_user)
-        expect(charity_user).to receive(:send_verification_pin)
-        post :signup, format: 'json', user_auth: { mobile: mobile, address_attributes: {district_id: '1', address_type: 'Profile'} }
-        expect(response.status).to eq(200)
-      end
+      expect(
+        Token.new(bearer: parsed_body['otp_auth_key']).read('otp_auth_key')
+      ).to eql( otp_auth_key )
     end
 
     context "where mobile is" do
       it 'empty' do
-        expect(User).to_not receive(:find_by_mobile)
-        expect(user).to_not receive(:send_verification_pin)
-        expect(controller).to_not receive(:otp_auth_key_for)
-        post :send_pin, mobile: ""
+        expect(AuthenticationService).not_to receive(:send_pin)
+        expect(AuthenticationService).not_to receive(:otp_auth_key_for)
+        post :send_pin, mobile: '123'
+  
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
+        expect(parsed_body["error"]).to eq("Mobile is invalid")
+        expect(parsed_body['otp_auth_key']).to eql( nil )
       end
 
       it "not +852..." do
-        expect(User).to_not receive(:find_by_mobile)
-        expect(user).to_not receive(:send_verification_pin)
-        expect(controller).to_not receive(:otp_auth_key_for)
-        post :send_pin, mobile: "+9101234567"
+        expect(AuthenticationService).not_to receive(:send_pin)
+        expect(AuthenticationService).not_to receive(:otp_auth_key_for)
+        post :send_pin, mobile: '+9101234567'
+  
         expect(response.status).to eq(422)
-        expect(parsed_body['errors']).to eql( "Mobile is invalid" )
+        expect(parsed_body["error"]).to eq("Mobile is invalid")
+        expect(parsed_body['otp_auth_key']).to eql( nil )
+      end
+    end
+  end
+
+  context "verify" do
+    let(:jwt_token) { Token.new.generate({}) }
+
+    context "with successful authentication" do
+      it 'should return a JWT token and the user data', :show_in_doc do
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin_jwt).and_return(user)
+        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(AuthenticationService).to receive(:generate_token).with(user, api_version: 2).and_return(jwt_token)
+
+        post :verify, format: 'json', otp_auth_key: 'otp_auth_key', pin: '1234'
+        expect(parsed_body['jwt_token']).not_to be_nil
+                expect(parsed_body["data"]["type"]).to eq("user")
+        expect(parsed_body["data"]["id"]).to eq(user.id.to_s)
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context "with unsucessful authentication" do
+      it 'should return unprocessable entity' do
+        allow(controller.send(:warden)).to receive(:authenticate).with(:pin_jwt).and_return(nil)
+        allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
+        post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
+        expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(response.status).to eq(422)
       end
     end
   end

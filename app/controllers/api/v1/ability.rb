@@ -2,6 +2,15 @@ module Api
   module V1
     class Ability < ::Ability
 
+      def initialize(user)
+        if user.present?
+          @api_user = user.api_user?
+          @user_offer_ids = user.offers.pluck(:id)
+        end
+        
+        super(user)
+      end
+
       def define_abilities
         address_abilities
         appointment_slot_abilities
@@ -99,8 +108,8 @@ module Api
         if can_manage_goodcity_requests?
           can [:index, :show, :create, :destroy, :update], GoodcityRequest
         else
-          can [:index, :show, :create, :update, :destroy], GoodcityRequest, GoodcityRequest.of_organisation(user_organisations) do |req|
-            req.order_id && user_organisations.include?(req.order.organisation_id)
+          can [:index, :show, :create, :update, :destroy], GoodcityRequest, GoodcityRequest.of_user(@user_id) do |r|
+            r.created_by_id == @user_id || r.order.created_by_id == @user_id
           end
         end
       end
@@ -279,10 +288,10 @@ module Api
       def package_abilities
         if can_manage_packages?
           can %i[index show create update destroy print_barcode package_valuation
-                search_stockit_items remove_from_set designate register_quantity_change
-                mark_missing move print_inventory_label stockit_item_details
-                split_package add_remove_item contained_packages parent_containers
-                fetch_added_quantity versions], Package
+                 search_stockit_items remove_from_set designate register_quantity_change
+                 mark_missing move print_inventory_label stockit_item_details
+                 split_package add_remove_item contained_packages parent_containers
+                 fetch_added_quantity versions], Package
           can %i[show create update destroy], PackageSet
           can %i[index], Restriction
           can %i[index], PackagesInventory

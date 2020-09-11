@@ -7,7 +7,9 @@ Rails.application.routes.draw do
   namespace "api" do
     namespace "v2", defaults: { format: "json" } do
       post "auth/send_pin", to: "authentication#send_pin"
-      post "auth/hasura", to: "authentication#hasura"
+      post "auth/signup",   to: "authentication#signup"
+      post "auth/verify",   to: "authentication#verify"
+      post "auth/hasura",   to: "authentication#hasura"
     end
 
     namespace "v1", defaults: { format: "json" } do

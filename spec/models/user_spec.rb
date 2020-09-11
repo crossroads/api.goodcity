@@ -250,16 +250,20 @@ describe User, :type => :model do
     end
   end
 
-  describe "#refresh_auth_token" do
-    it "create an auth_token record, after user creation" do
+  describe "#refresh_auth_token!" do
+    it "triggers after user creation" do
       user = build(:user)
-      expect(user.auth_tokens.size).to eq(0)
-      user.save!
-      expect(user.auth_tokens.size).to_not eq(0)
+
+      expect(user).to receive(:refresh_auth_token!).once.and_call_original
+      expect { user.save! }.to change(AuthToken, :count).by(1)
+      expect(user.reload.auth_tokens.size).to eq(1)
     end
 
     it "deletes old tokens and recreates a new one" do
-      raise "todo"
+      user  = create(:user)
+      expect {
+        user.refresh_auth_token!
+      }.to change { user.reload.auth_tokens.first.id }
     end
   end
 

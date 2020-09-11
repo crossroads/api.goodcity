@@ -41,9 +41,8 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
-
-  validates :mobile, presence: true, unless: :request_from_stock_without_mobile?
+  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: lambda { mobile.present? }
+  validates :mobile, presence: true, if: lambda { email.blank? }
   validates :mobile, uniqueness: true, if: lambda { mobile.present? }
 
   validates :email, allow_blank: true,
@@ -57,7 +56,7 @@ class User < ActiveRecord::Base
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
             allow_nil: true
 
-  after_create :refresh_auth_token
+  after_create :refresh_auth_token!
 
   scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
   scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
@@ -262,15 +261,20 @@ class User < ActiveRecord::Base
     props
   end
 
+  def refresh_auth_token!
+    # Create new token
+    token = auth_tokens.create!(user_id: self.id)
+
+    # Delete old ones
+    AuthToken
+      .where(user: self)
+      .where.not(id: token.id)
+      .destroy_all
+
+    token
+  end
+
   private
-
-  def request_from_stock_without_mobile?
-    request_from_stock && mobile.blank? || request_from_browse && mobile.blank?
-  end
-
-  def refresh_auth_token
-    auth_tokens.create(user_id: self.id)
-  end
 
   # required by PushUpdates module
   def offer

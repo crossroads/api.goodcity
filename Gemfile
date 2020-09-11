@@ -62,6 +62,7 @@ gem 'whenever', '~>  0.9.5', require: false
 gem 'sendgrid-ruby'
 gem 'fake_email_validator'
 gem 'with_advisory_lock'
+gem 'fast_jsonapi'
 
 group :development do
   gem 'spring'

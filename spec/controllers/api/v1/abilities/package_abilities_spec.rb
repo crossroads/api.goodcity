@@ -3,7 +3,7 @@ require 'cancan/matchers'
 
 describe "Package abilities" do
 
-  subject(:ability) { Ability.new(user) }
+    subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { [:index, :show, :update, :destroy, :manage] }
   let(:unpermitted_actions) {[:update, :destroy, :manage]}
   let(:limited_actions) {[:index, :show]}
