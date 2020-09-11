@@ -6,7 +6,7 @@ class Role < ActiveRecord::Base
   has_many :user_roles
   has_many :users, through: :user_roles
 
-  has_many :active_user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Time.now.in_time_zone) },
+  has_many :active_user_roles, -> { where("expires_at IS NULL OR expires_at >= ?", Time.now.in_time_zone) },
             class_name: "UserRole"
   has_many :active_users, class_name: "User", through: :active_user_roles, source: "user"
 

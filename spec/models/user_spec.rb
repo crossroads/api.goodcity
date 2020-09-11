@@ -302,7 +302,7 @@ describe User, :type => :model do
       reviewer_role = create :role, name: "Reviewer"
       supervisor_role = create :role, name: "Supervisor"
       create :user_role, user: user, role: reviewer_role
-      create :user_role, user: user, role: supervisor_role, expiry_date: 5.days.ago
+      create :user_role, user: user, role: supervisor_role, expires_at: 5.days.ago
 
       expect(user.user_role_names).to include("Reviewer")
       expect(user.user_role_names.count).to eq(1)
