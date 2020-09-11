@@ -84,6 +84,7 @@ Stock fulfilment: &stock_fulfilment
 - can_manage_stocktake_revisions
 - can_manage_package_messages
 - can_read_users
+- can_manage_organisations
 - can_update_my_printers
 
 Stock administrator:
@@ -126,6 +127,7 @@ Order fulfilment: &order_fulfilment
 - can_manage_order_messages
 - can_manage_organisations_users
 - can_manage_package_messages
+- can_manage_organisations
 - can_update_my_printers
 
 Order administrator:

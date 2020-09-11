@@ -7,6 +7,7 @@ module Api::V1
       :updated_at, :orders_count
 
     has_many :organisations_users, serializer: OrganisationsUserSerializer
+    has_one :country, serializer: CountrySerializer
 
     def orders_count
       object.orders.size
@@ -14,6 +15,10 @@ module Api::V1
 
     def orders_count__sql
       "(SELECT COUNT(*) FROM orders o WHERE o.organisation_id = orders.id"
+    end
+
+    def include_orders_count?
+      @options[:include_orders_count]
     end
   end
 end

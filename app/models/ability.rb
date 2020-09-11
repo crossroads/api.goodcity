@@ -22,7 +22,8 @@ class Ability
     can_access_printers can_remove_offers_packages can_access_orders_process_checklists
     can_mention_users can_read_users can_manage_printers can_update_my_printers
     can_manage_order_messages can_manage_offer_messages can_disable_user
-    can_manage_stocktakes can_manage_stocktake_revisions can_manage_package_messages
+    can_manage_stocktakes can_manage_stocktake_revisions
+    can_manage_package_messages can_manage_organisations
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -290,8 +291,9 @@ class Ability
 
   def organisations_abilities
     if can_check_organisations? || @api_user
-      can [:index, :search, :show, :orders], Organisation
+      can %i[index search show orders], Organisation
     end
+    can %i[create update], Organisation if can_manage_organisations? || @api_user
   end
 
   def company_abilities
@@ -358,7 +360,8 @@ class Ability
     can [:index, :show], IdentityType
     can [:index, :show], Territory
     can :index, Timeslot
-    can :index, Country
+    can %i[index show], OrganisationType
+    can %i[index show], Country
     can :index, GogovanTransport
     can :index, CrossroadsTransport
     can :index, BookingType

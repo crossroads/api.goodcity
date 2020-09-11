@@ -10,7 +10,6 @@ RSpec.describe Api::V1::CountriesController, type: :controller do
   }
   let(:parsed_body) {JSON.parse(response.body)}
 
-
   describe "POST countries" do
     before { generate_and_set_token(user) }
 
