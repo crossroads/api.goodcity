@@ -1,4 +1,4 @@
-class RemovePrinterId < ActiveRecord::Migration
+class RemovePrinterId < ActiveRecord::Migration[4.2]
   def up
     remove_column :users, :printer_id, :integer
   end
