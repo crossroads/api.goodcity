@@ -7,7 +7,7 @@ module Api
         param :user_role, Hash, required: true do
           param :user_id, String
           param :role_id, String
-          param :expiry_date, String, required: false, allow_nil: true
+          param :expires_at, String, required: false, allow_nil: true
         end
       end
 
@@ -31,7 +31,7 @@ module Api
         @user_role = current_user.assign_role_for_user(
           user_id: params["user_role"]["user_id"],
           role_id: params["user_role"]["role_id"],
-          expiry_date: params["user_role"]["expiry_date"]
+          expires_at: params["user_role"]["expires_at"]
         )
 
         if @user_role
@@ -48,7 +48,7 @@ module Api
       end
 
       def user_role_params
-        params.require(:user_role).permit(:role_id, :user_id, :expiry_date)
+        params.require(:user_role).permit(:role_id, :user_id, :expires_at)
       end
     end
   end

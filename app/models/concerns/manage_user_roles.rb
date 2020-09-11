@@ -18,11 +18,11 @@ module ManageUserRoles
 
   included do
 
-    def assign_role_for_user(user_id: , role_id: , expiry_date: nil)
+    def assign_role_for_user(user_id: , role_id: , expires_at: nil)
       return unless self.can_update_roles_for_user?(user_id)
 
       if accessible_role?(role_id)
-        self.assign_role(user_id, role_id, expiry_date)
+        self.assign_role(user_id, role_id, expires_at)
       end
     end
 
@@ -49,11 +49,11 @@ module ManageUserRoles
       active_roles.maximum("level") || 0
     end
 
-    def assign_role(user_id, role_id, expiry_date)
+    def assign_role(user_id, role_id, expires_at)
       @user_role = UserRole
           .where(user_id: user_id, role_id: role_id)
           .first_or_initialize
-      @user_role.expiry_date = expiry_date
+      @user_role.expires_at = expires_at
       @user_role.save
       @user_role
     end

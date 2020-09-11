@@ -69,19 +69,19 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
       end
 
       it "Does update expiry date for existing role", :show_in_doc do
-        expiry_date = DateTime.now.in_time_zone.days_since(10)
+        expires_at = DateTime.now.in_time_zone.days_since(10)
         expect {
           post :create, user_role: {
             user_id: reviewer_user.id,
             role_id: reviewer_role.id,
-            expiry_date: expiry_date
+            expires_at: expires_at
           }
         }.to change(UserRole, :count).by(0)
 
         expect(response.status).to eq(200)
         expect(parsed_body["user_role"]["role_id"]).to eql(reviewer_role.id)
         expect(parsed_body["user_role"]["user_id"]).to eql(reviewer_user.id)
-        expect(parsed_body["user_role"]["expiry_date"].to_datetime.to_i).to eql(expiry_date.change(hour: 20).to_i)
+        expect(parsed_body["user_role"]["expires_at"].to_datetime.to_i).to eql(expires_at.change(hour: 20).to_i)
       end
     end
   end
