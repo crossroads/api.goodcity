@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
   has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
   has_many :printers_users
   has_many :printers, through: :printers_users
-  
+
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 
@@ -55,7 +55,7 @@ class User < ActiveRecord::Base
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
   validates :preferred_language,
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
-            allow_nil: true
+            allow_nil: true, allow_blank: true
 
   after_create :generate_auth_token
 
@@ -102,6 +102,10 @@ class User < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def app_name(user,app_name)
+    user.request_from_stock = (app_name == "stock")
   end
 
   def send_sms(app_name)
