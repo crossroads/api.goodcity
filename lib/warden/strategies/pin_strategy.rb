@@ -7,8 +7,12 @@ module Warden
         params["pin"].present? && params['otp_auth_key'].present?
       end
 
+      def extract_auth_token
+        AuthToken.find_by_otp_auth_key(params['otp_auth_key'])
+      end
+
       def authenticate!
-        auth_token = AuthToken.find_by_otp_auth_key(params['otp_auth_key'])
+        auth_token = extract_auth_token
         return success!(auth_token.user) if valid_app_store_credentials?(auth_token)
         user = auth_token.try(:user)
         has_valid_otp_code?(auth_token) && valid_user(user) ? success!(user) : fail

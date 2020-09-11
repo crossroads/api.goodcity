@@ -6,7 +6,7 @@ require 'cancan/matchers'
 
 describe "PrintersUser abilities" do
 
-  subject(:ability)    { Ability.new(user) }
+  subject(:ability)    { Api::V1::Ability.new(user) }
   let(:all_actions)    { [:index, :show, :create, :update, :destroy, :manage] }
   let(:printer)        { create(:printer) }
   let(:printers_user)  { create(:printers_user, printer: printer, user: user) }

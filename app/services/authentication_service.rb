@@ -7,14 +7,20 @@ class AuthenticationService
     # A client must return this token (which contains the embedded otp_auth_key) AND the correct OTP code
     # to successfully authenticate. This helps prevent man-in-the-middle attacks by ensuring that only this
     # client that can authenticate the OTP code with it.
-    # Note: if user is nil, we generate a fake token so as to ward off unruly hackers.
     #
-    def otp_auth_key_for(user)
-      if user.present?
-        user.most_recent_token.otp_auth_key
-      else
-        AuthToken.new.new_otp_auth_key
-      end
+    #
+    def otp_auth_key_for(user, refresh: false)
+      user.refresh_auth_token! if refresh
+      user.most_recent_token.otp_auth_key
+    end
+
+    ##
+    # Generates a fake token so as to ward off unruly hackers
+    #
+    # @return [String] an anonymous auth token
+    #
+    def fake_otp_auth_key
+      AuthToken.new.new_otp_auth_key
     end
 
     ##
@@ -26,10 +32,7 @@ class AuthenticationService
     # @return [String] user auth token
     #
     def send_pin(user, app_name)
-      SlackPinService.new(user).send_otp(app_name)
-
       pin = user.most_recent_token.otp_code
-
       if user.mobile.present?
         TwilioService.new(user).sms_verification_pin(app_name, pin: pin)
       elsif user.email.present?
@@ -39,6 +42,49 @@ class AuthenticationService
       otp_auth_key_for(user)
     rescue => e
       raise Goodcity::ExternalServiceError.new(e.message.try(:split, ".").try(:first))
+    end
+
+    ##
+    # Registers a new user
+    #
+    # @param [Hash] user_params the user parameters to intitialize the user with
+    # @option user_params [String] :mobile the mobile number of the new user /\+852\d{8}/
+    # @option user_params [String] :email the email of the new user
+    # @option user_params [String] :first_name the user's name
+    # @option user_params [String] :last_name the user's last name
+    # @option user_params [Hash] :address_attributes the nested attributes to initialize the address with
+    #
+    # @return [User] the new user
+    #
+    def register_user(user_params)
+      mobile, email = user_params.values_at(:mobile, :email)
+
+      raise Goodcity::MissingParamError.new('mobile/email') if mobile.blank? && email.blank?
+
+      downcase_email = email&.downcase
+
+      raise Goodcity::DuplicateRecordError if mobile.present? && User.find_by(mobile: mobile).present?
+      raise Goodcity::DuplicateRecordError if email.present?  && User.find_by('LOWER(email) = (?)', downcase_email).present?
+
+      user = User.new(user_params)
+      user.email = downcase_email
+      user.save!
+      user
+    end
+
+    ##
+    # Generates a Token for the user
+    #
+    # @param [User] user the user to permit
+    # @param [Integer] api_version: the api version to allow
+    #
+    # @return [String] jwt token
+    #
+    def generate_token(user, api_version:)
+      Token.new.generate(user_id: user.id, metadata: {
+        type:         Token::Types::API,
+        api_version:  "v" + api_version
+      })
     end
   end
 end

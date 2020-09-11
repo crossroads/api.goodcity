@@ -27,7 +27,7 @@ class Ability
 
   PERMISSION_NAMES.each do |permission_name|
     define_method "#{permission_name}?" do
-      @user_permissions.include?(permission_name)
+      self.user_permissions.include?(permission_name)
     end
   end
 
@@ -36,11 +36,13 @@ class Ability
     if user.present?
       @user = user
       @user_id = user.id
-      @api_user = user.api_user?
-      @user_offer_ids = user.offers.pluck(:id)
-      @user_permissions ||= @user.user_permissions_names
       try(:define_abilities)
     end
+  end
+
+  def user_permissions
+    return [] unless @user.present?
+    @user.user_permissions_names
   end
 
   def user_organisations

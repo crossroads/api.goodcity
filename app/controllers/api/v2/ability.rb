@@ -9,6 +9,11 @@ module Api
         super(user)
       end
 
+      def user_permissions
+        return [] unless @user.present? && @role.present?
+        role.permissions.map(&:name) if role.present?
+      end
+
       # -----------------
       # Access definitions
       # -----------------

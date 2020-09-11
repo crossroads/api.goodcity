@@ -5,6 +5,8 @@ module Api
       # API V2 Base Controller
       # ------------------------
 
+      API_VERSION = 2
+
       skip_before_action :validate_token, only: [:error]
 
       rescue_from ActiveRecord::RecordInvalid, with: :invalid_params
@@ -15,11 +17,11 @@ module Api
       rescue_from Goodcity::BaseError, with: :render_goodcity_error
 
       def current_ability
-        @current_ability ||= Api::V2::Ability.new(current_user, role: active_role)
+        @current_ability ||= Api::V2::Ability.new(current_user, role: current_role)
       end
 
-      def active_role
-        @active_role ||= begin
+      def current_role
+        @current_role ||= begin
           allowed_roles = current_user&.roles || []
           role_name     = request.headers["X-GOODCITY-ROLE"]
 
@@ -36,6 +38,11 @@ module Api
       # ------------------------
       # Helpers
       # ------------------------
+
+      def serializer_options(model)
+        return {} unless params[:include].present?
+        GoodcitySerializer.parse_include_paths(model, params[:include])
+      end
 
       def render_error(error_message, code: 422)
         render_goodcity_error Goodcity::BaseError.new(error_message, status: code)

@@ -1,12 +1,51 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::ApiController, type: :controller do
-
-  before { generate_and_set_token }
+  let(:user) { create :user }
+  let(:supervisor_role) { create :role, name: 'Supervisor', level: 15 }
+  let(:order_administrator_role) { create :role, name: 'Order administrator', level: 10 }
 
   subject { JSON.parse(response.body) }
 
+  before do
+    supervisor_role.grant(user)
+    order_administrator_role.grant(user)
+  end
+
+  describe "Current role resolution" do    
+    context "when there is no logged in user" do
+      it "sets the current role to nil" do
+        expect(@controller.current_role).to be_nil
+      end
+    end
+
+    context "when there is a logged in user" do
+      before { generate_and_set_token(user) }
+
+      it "defaults the role to the highest level" do
+        expect(@controller.current_role).to eq(supervisor_role)
+      end
+
+      context "and the user specifies a role in the headers" do
+        before { request.headers['X-GOODCITY-ROLE'] = 'order_administrator' }
+
+        it "uses the specified role" do
+          expect(@controller.current_role).to eq(order_administrator_role)
+        end
+      end
+
+      context "and the user specifies a role he/she is not entitled to" do
+        before { request.headers['X-GOODCITY-ROLE'] = 'system' }
+
+        it "denies access" do
+          expect { @controller.current_role }.to raise_error(Goodcity::AccessDeniedError)
+        end
+      end
+    end
+  end
+
   context "handling ActiveRecord::RecordNotFound exceptions" do
+    before { generate_and_set_token }
 
     controller do
       def index
@@ -25,6 +64,7 @@ RSpec.describe Api::V2::ApiController, type: :controller do
   end
 
   context "handling CanCan::AccessDenied exceptions" do
+    before { generate_and_set_token }
 
     controller do
       def index
@@ -43,6 +83,7 @@ RSpec.describe Api::V2::ApiController, type: :controller do
   end
 
   context "handling Apipie::ParamInvalid exceptions" do
+    before { generate_and_set_token }
 
     let(:error_msg) { "Invalid parameter 'language' value \"test\": Must be one of: en, zh-tw." }
 
@@ -62,6 +103,8 @@ RSpec.describe Api::V2::ApiController, type: :controller do
   end
 
   context "per_page" do
+    before { generate_and_set_token }
+
     subject { controller.per_page }
 
     before(:each) do
