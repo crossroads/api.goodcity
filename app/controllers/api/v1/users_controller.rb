@@ -29,8 +29,7 @@ module Api
 
       api :POST, '/v1/users', "Create user"
       def create
-
-        @user.app_name(@user,app_name)
+        @user.app_name(@user, app_name)
         @user.assign_attributes(user_params)
 
         if @user.save

@@ -104,7 +104,7 @@ describe User, :type => :model do
       it { is_expected.to allow_value("en").for(:preferred_language) }
       it { is_expected.to allow_value("zh-tw").for(:preferred_language) }
       it { is_expected.to_not allow_value("fr").for(:preferred_language) }
-      it { is_expected.to_not allow_value("").for(:preferred_language) }
+      it { is_expected.allow_value("").for(:preferred_language) }
     end
   end
 

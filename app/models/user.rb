@@ -104,7 +104,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def app_name(user,app_name)
+  def app_name(user, app_name)
     user.request_from_stock = (app_name == "stock")
   end
 
