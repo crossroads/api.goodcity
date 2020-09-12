@@ -59,6 +59,7 @@ module Api
       end
 
       def update
+        @user.app_name(@user, app_name)
         @user.update_attributes(user_params)
         if params["user"]["user_role_ids"]
           current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
