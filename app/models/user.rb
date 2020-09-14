@@ -2,9 +2,10 @@ class User < ApplicationRecord
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdates
   include RollbarSpecification
-  include UserSearch
   include ManageUserRoles
+  include FuzzySearch
 
+  configure_search props: [:first_name, :last_name, :email, :mobile], tolerance: 0.1
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
   has_many :offers, foreign_key: :created_by_id, inverse_of: :created_by
@@ -79,6 +80,13 @@ class User < ApplicationRecord
 
   #added to allow sign_up without mobile number from stock app.
   attr_accessor :request_from_stock, :request_from_browse
+
+  def self.role_based_search(options = {})
+    role_name = options[:role_name].presence
+    search_text = options[:search_text].downcase || ''
+    return by_roles(role_name).search(search_text) if role_name
+    search(search_text)
+  end
 
   # If user exists, ignore data and just send_verification_pin
   # Otherwise, create new user and send pin

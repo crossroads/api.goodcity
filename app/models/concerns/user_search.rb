@@ -7,8 +7,6 @@ module UserSearch
 
   included do
     # user: first_name, last_name, email, mobile
-    configure_search props: [:first_name, :last_name, :email, :mobile], tolerance: 0.1
-
     scope :search, ->(options = {}) {
       search_text = options[:search_text].downcase || ''
       role_name = options[:role_name].presence
