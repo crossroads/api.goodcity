@@ -24,10 +24,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   end
 
   def create_order_with_transport(state, opts = {})
-    scheduled_at = opts[:scheduled_at] || moment + rand(1..100).day
-    timeslot = opts[:scheduled_at] ? timeslot_of(scheduled_at) : "5:30PM"
-    o = create(:order, state: state, detail_type: opts[:detail_type])
+    scheduled_at  = opts[:scheduled_at] || moment + rand(1..100).day
+    timeslot      = opts[:scheduled_at] ? timeslot_of(scheduled_at) : "5:30PM"
 
+    o = create(:order, state: state, detail_type: opts[:detail_type], booking_type: opts[:booking_type])
     create :order_transport, order: o, scheduled_at: scheduled_at, timeslot: timeslot
     return o
   end
