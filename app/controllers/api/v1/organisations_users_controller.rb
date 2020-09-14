@@ -44,11 +44,6 @@ module Api
         render json: record, serializer: serializer, status: 200
       end
 
-      def organisation_user
-        record = OrganisationsUser.find_by(organisation_id: params[:organisation_id], user_id: params[:user_id])
-        render json: record, serializer: serializer
-      end
-
       def show
         render json: @organisations_user, serializer: serializer
       end

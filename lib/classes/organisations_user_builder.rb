@@ -33,7 +33,7 @@ class OrganisationsUserBuilder
     @change_author            = change_author
     @organisation_id          = organisation_id.to_i
     @position                 = position
-    @status                   = status&.downcase
+    @status                   = status
     @preferred_contact_number = preferred_contact_number
     @user_attributes          = user_attributes&.symbolize_keys
     @user                     = strict_find!(User, user_id)
