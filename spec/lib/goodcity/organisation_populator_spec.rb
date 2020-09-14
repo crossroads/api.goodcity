@@ -22,7 +22,7 @@ describe Goodcity::OrganisationPopulator do
         organisation_fields_mapping = described_class::ORGANISATION_MAPPING.keep_if { |k, v| data.key? v }
         organisation = Organisation.find_by_registration(data['org_id'])
         organisation_fields_mapping.each do |organisation_column, data_key|
-          expect(organisation[organisation_column.to_sym]).to eq(data[data_key])
+          expect(organisation[organisation_column.to_sym].upcase).to eq(data[data_key].upcase)
         end
       end
     end
@@ -32,8 +32,8 @@ describe Goodcity::OrganisationPopulator do
     let(:registration_id_one) { "91/09657"}
     let(:registration_id_two) { "91/15022" }
     before do
-      Organisation.create(registration: registration_id_one, website: "")
-      Organisation.create(registration: registration_id_two, name_en: "abcd")
+      create(:organisation, registration: registration_id_one, website: '')
+      create(:organisation, registration: registration_id_two, name_en: "abcd")
     end
 
     describe ":updated data" do
@@ -59,7 +59,7 @@ describe Goodcity::OrganisationPopulator do
 
     context "default_country" do
       it do
-        expect(organisation_populator.send(:default_country).name_en).to eq(described_class::COUNTRY_NAME_EN)
+        expect(organisation_populator.send(:default_country).name_en).to eq(DEFAULT_COUNTRY)
       end
     end
 
@@ -68,7 +68,5 @@ describe Goodcity::OrganisationPopulator do
         expect(organisation_populator.send(:organisation_type).name_en).to eq(described_class::ORGANISATION_TYPE_NAME)
       end
     end
-
   end
-
 end
