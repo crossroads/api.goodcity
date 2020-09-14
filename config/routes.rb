@@ -112,7 +112,6 @@ Rails.application.routes.draw do
       resources :packages_locations, only: [:index, :show]
       resources :organisations_users, only: [:create, :index, :update, :show] do
         collection do
-          get :organisation_user
           get :user_status
         end
       end

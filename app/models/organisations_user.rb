@@ -18,9 +18,20 @@ class OrganisationsUser < ActiveRecord::Base
   validates :organisation_id, :user_id, presence: true
   validates :preferred_contact_number, format: {with: /\A.{8}\Z/}, allow_nil: true
 
+  before_save :validate_status
+  before_validation :downcase_status
+
   scope :active, -> { where(status: ACTIVE_STATUS) }
 
   def self.all_status
     ALL_STATUS
+  end
+
+  def downcase_status
+    self.status = status.downcase
+  end
+
+  def validate_status
+    raise I18n.t('organisations_user_builder.invalid.status') unless ALL_STATUS.include?(status)
   end
 end
