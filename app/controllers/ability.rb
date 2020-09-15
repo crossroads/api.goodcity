@@ -22,7 +22,8 @@ class Ability
     can_access_printers can_remove_offers_packages can_access_orders_process_checklists
     can_mention_users can_read_users can_manage_printers can_update_my_printers
     can_manage_order_messages can_manage_offer_messages can_disable_user
-    can_manage_stocktakes can_manage_stocktake_revisions can_manage_package_messages
+    can_manage_stocktakes can_manage_stocktake_revisions
+    can_manage_package_messages can_manage_organisations
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
