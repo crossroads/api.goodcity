@@ -42,7 +42,7 @@ class Ability
 
   def user_permissions
     return [] unless @user.present?
-    @user.user_permissions_names
+    @user_permissions ||= @user.user_permissions_names
   end
 
   def user_organisations

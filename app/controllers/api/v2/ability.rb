@@ -3,15 +3,13 @@ module Api
     class Ability < ::Ability
 
       def initialize(user, role: nil)
-        @role             = role
-        @user_permissions = role.permissions.map(&:name) if role.present?
-        
+        @role = role        
         super(user)
       end
 
       def user_permissions
         return [] unless @user.present? && @role.present?
-        role.permissions.map(&:name) if role.present?
+        @user_permissions = role.permissions.map(&:name)
       end
 
       # -----------------

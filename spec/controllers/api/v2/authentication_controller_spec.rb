@@ -188,6 +188,12 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
 
   context "verify" do
     let(:jwt_token) { Token.new.generate({}) }
+    let(:jwt_otp) {
+      Token.new.generate_otp_token({
+        pin_method:     :mobile,
+        otp_auth_key:   AuthenticationService.otp_auth_key_for(user)
+      })
+    }
 
     context "with successful authentication" do
       it 'should return a JWT token and the user data', :show_in_doc do
@@ -197,9 +203,18 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
 
         post :verify, format: 'json', otp_auth_key: 'otp_auth_key', pin: '1234'
         expect(parsed_body['jwt_token']).not_to be_nil
-                expect(parsed_body["data"]["type"]).to eq("user")
+        expect(parsed_body["data"]["type"]).to eq("user")
         expect(parsed_body["data"]["id"]).to eq(user.id.to_s)
         expect(response.status).to eq(200)
+      end
+
+      it 'verifies the mobile of the user' do      
+        expect(Token.new(bearer: jwt_otp).valid?).to eq(true)
+        expect_any_instance_of(AuthToken).to receive(:authenticate_otp).and_return(true)
+        
+        expect {
+          post :verify, format: 'json', otp_auth_key: jwt_otp, pin: '1234'
+        }.to change { user.reload.is_mobile_verified }.from(false).to(true)
       end
     end
 
@@ -208,7 +223,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin_jwt).and_return(nil)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
-        expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
+        expect(parsed_body["error"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
       end
     end

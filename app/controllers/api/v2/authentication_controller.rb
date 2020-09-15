@@ -76,12 +76,7 @@ module Api
           AuthenticationService.otp_auth_key_for(user)
         end
 
-        render json: {
-          otp_auth_key: Token.new.generate_otp_token({
-            pin_method:     :mobile,
-            otp_auth_key:   otp_auth_key
-          })
-        }
+        render json: { otp_auth_key: wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile) }
       end
 
       api :POST, "/v2/auth/signup", "Register a new user"
@@ -131,7 +126,7 @@ module Api
         AuthenticationService.send_pin(user, app_name)
 
         otp_auth_key  = AuthenticationService.otp_auth_key_for(user)
-        token         = Token.new.generate_otp_token({ otp_auth_key: otp_auth_key })
+        token         = wrap_otp_in_jwt(otp_auth_key, pin_method: mobile ? :mobile : :email)
 
         render json: { otp_auth_key: token }, status: status
       end
@@ -154,7 +149,7 @@ module Api
       error 403, "Forbidden"
       error 422, "Validation Error"
       error 500, "Internal Server Error"
-      def verify
+      def verify        
         user = warden.authenticate(:pin_jwt)
         if warden.authenticated?
           jwt_token = AuthenticationService.generate_token(user, api_version: API_VERSION)
@@ -176,6 +171,13 @@ module Api
       end
 
       private
+
+      def wrap_otp_in_jwt(otp_auth_key, pin_method: :mobile)
+        Token.new.generate_otp_token({
+          pin_method:     pin_method,
+          otp_auth_key:   otp_auth_key
+        })
+      end
 
       def auth_params
         attributes = [:mobile, :first_name, :last_name, :email, address_attributes: [:district_id, :address_type]]

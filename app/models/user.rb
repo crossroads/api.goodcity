@@ -127,8 +127,8 @@ class User < ActiveRecord::Base
   end
 
   def set_verified_flag(pin_for)
-    flag = pin_for.eql?('email') ? :is_email_verified : :is_mobile_verified
-    update_column(flag, true) unless send(flag)
+    update_column(:is_email_verified, true)   if pin_for.to_sym.eql?(:email)
+    update_column(:is_mobile_verified, true)  if pin_for.to_sym.eql?(:mobile)
   end
 
   def self.recent_orders_created_for(user_id)

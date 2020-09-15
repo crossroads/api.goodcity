@@ -83,7 +83,7 @@ class AuthenticationService
     def generate_token(user, api_version:)
       Token.new.generate(user_id: user.id, metadata: {
         type:         Token::Types::API,
-        api_version:  "v" + api_version
+        api_version:  "v#{api_version}"
       })
     end
   end

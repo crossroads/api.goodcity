@@ -40,7 +40,7 @@ class Token
   # params = { "mobile" => "+85212345678" }
   def generate(params, metadata: {}, validity: nil, type: DEFAULT_TYPE)
     now       = Time.now.to_i
-    validity  ||= default_validity(type)
+    validity  ||= default_validity(type)    
 
     payload = params.merge({
       "iat": now,
