@@ -22,13 +22,17 @@ describe HasuraService do
     let(:token_data) { token_reader.data[0] }
     let(:hasura_claims) { token_data["https://hasura.io/jwt/claims"] }
 
+    before { expect(token_reader.valid?).to be(true) }
+
     it "returns a token" do 
       expect(token).not_to be_nil
     end
 
     it "expires after 1 hour" do
-      Timecop.freeze(now + 1.hour)
+      Timecop.freeze(now + 59.minute)
+      expect(token_reader.valid?).to eq(true)
 
+      Timecop.freeze(now + 1.hour)
       expect(token_reader.valid?).to eq(false)
       expect(token_reader.errors.full_messages).to include('Expired token')
     end
@@ -38,14 +42,13 @@ describe HasuraService do
     end
 
     it "includes the user roles in the hasura claims" do 
-      expect(hasura_claims["x-hasura-allowed-roles"]).to eq(['supervisor', 'stock_fulfilment'])
+      expect(hasura_claims["x-hasura-allowed-roles"]).to eq(['supervisor', 'stock_fulfilment', 'user', 'public'])
     end
 
     it "includes the user's active organisation ids in the hasura claims" do 
-      expect(hasura_claims["x-hasura-organisation-ids"]).to match_array([
-        active_org_user.id.to_s,
-        pending_org_user.id.to_s
-      ])
+      expect(hasura_claims["x-hasura-organisation-ids"]).to eq(
+        "{#{[active_org_user, pending_org_user].map(&:organisation_id).map(&:to_s).join(',')}}"
+      )
     end
 
     it "includes the user id in the hasura claims" do 
