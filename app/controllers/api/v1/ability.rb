@@ -253,8 +253,9 @@ module Api
     
       def organisations_abilities
         if can_check_organisations? || @api_user
-          can [:index, :search, :show, :orders], Organisation
+          can %i[index search show orders], Organisation
         end
+        can %i[create update], Organisation if can_manage_organisations? || @api_user
       end
     
       def company_abilities
@@ -321,7 +322,8 @@ module Api
         can [:index, :show], IdentityType
         can [:index, :show], Territory
         can :index, Timeslot
-        can :index, Country
+        can %i[index show], OrganisationType
+        can %i[index show], Country
         can :index, GogovanTransport
         can :index, CrossroadsTransport
         can :index, BookingType
