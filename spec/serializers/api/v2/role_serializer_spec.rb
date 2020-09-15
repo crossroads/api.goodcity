@@ -10,17 +10,15 @@ describe Api::V2::RoleSerializer do
 
   describe "Default" do
     describe "attributes" do
-      EXPECTED_ATTRIBUTES = [
+      let(:expected_attributes) {[
         :level,
         :name
-      ]
+      ]}
 
-      it { expect(attributes.keys.map(&:to_sym)).to match_array(EXPECTED_ATTRIBUTES) }
+      it { expect(attributes.keys.map(&:to_sym)).to match_array(expected_attributes) }
 
-      EXPECTED_ATTRIBUTES.each do |attr|
-        it "includes the #{attr} attribute" do
-          expect(attributes[attr.to_s]).to eql(role[attr])
-        end
+      it "includes the correct attributes" do
+        expected_attributes.each { |attr| expect(attributes[attr.to_s]).to eql(role[attr]) }
       end
     end
   end
