@@ -127,6 +127,7 @@ class User < ActiveRecord::Base
   end
 
   def set_verified_flag(pin_for)
+    return unless pin_for.present?
     update_column(:is_email_verified, true)   if pin_for.to_sym.eql?(:email)
     update_column(:is_mobile_verified, true)  if pin_for.to_sym.eql?(:mobile)
   end

@@ -12,7 +12,7 @@ module Warden
       end
 
       def pin_method
-        params[:pin_for].to_sym
+        params[:pin_for]&.to_sym
       end
 
       def authenticate!        
