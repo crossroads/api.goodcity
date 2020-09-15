@@ -6,11 +6,7 @@ module Api::V2
     #   Attributes
     # ----------------------------
 
-    attributes :id,
-      :user_id,
-      :role_id,
-      :created_at,
-      :updated_at
+    attributes  :created_at, :updated_at
 
     belongs_to :role
     belongs_to :user

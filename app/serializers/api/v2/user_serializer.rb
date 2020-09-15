@@ -11,6 +11,7 @@ module Api::V2
       :mobile,
       :title,
       :created_at,
+      :updated_at,
       :last_connected,
       :last_disconnected,
       :email,
