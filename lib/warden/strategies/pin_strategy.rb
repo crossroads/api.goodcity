@@ -4,15 +4,15 @@ module Warden
   module Strategies
     class PinStrategy < Warden::Strategies::Base
       def valid?
-        params["pin"].present? && params['otp_auth_key'].present?
+        request_params[:pin].present? && request_params[:otp_auth_key].present?
       end
 
       def lookup_auth_token
-        AuthToken.find_by_otp_auth_key(params['otp_auth_key'])
+        AuthToken.find_by_otp_auth_key(request_params[:otp_auth_key])
       end
 
       def pin_method
-        params[:pin_for]&.to_sym
+        request_params[:pin_for]&.to_sym || :mobile
       end
 
       def authenticate!        
@@ -25,6 +25,10 @@ module Warden
       end
 
       private
+
+      def request_params
+        @request_params ||= params.with_indifferent_access
+      end
 
       def valid_user(user)
         user.present? && !user.disabled
