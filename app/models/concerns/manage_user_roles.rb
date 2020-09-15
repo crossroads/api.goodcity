@@ -19,19 +19,13 @@ module ManageUserRoles
   included do
 
     def assign_role_for_user(user_id: , role_id: , expires_at: nil)
-      return unless self.can_update_roles_for_user?(user_id)
-
-      if accessible_role?(role_id)
-        self.assign_role(user_id, role_id, expires_at)
-      end
+      return unless can_update_roles_for_user?(user_id)
+      assign_role(user_id, role_id, expires_at) if accessible_role?(role_id)
     end
 
     def remove_role_for_user(user_role)
-      return unless self.can_update_roles_for_user?(user_role.user_id)
-
-      if accessible_role?(user_role.role_id)
-        user_role.destroy
-      end
+      return unless can_update_roles_for_user?(user_role.user_id)
+      user_role.destroy if accessible_role?(user_role.role_id)
     end
 
     def accessible_role?(role_id)
@@ -50,12 +44,12 @@ module ManageUserRoles
     end
 
     def assign_role(user_id, role_id, expires_at)
-      @user_role = UserRole
+      user_role = UserRole
           .where(user_id: user_id, role_id: role_id)
           .first_or_initialize
-      @user_role.expires_at = expires_at
-      @user_role.save
-      @user_role
+      user_role.expires_at = expires_at
+      user_role.save
+      user_role
     end
 
     def can_manage_user_roles?

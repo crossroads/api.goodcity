@@ -5,8 +5,8 @@ module Api
 
       def_param_group :user_role do
         param :user_role, Hash, required: true do
-          param :user_id, String
-          param :role_id, String
+          param :user_id, String, required: true
+          param :role_id, String, required: true
           param :expires_at, String, required: false, allow_nil: true
         end
       end
@@ -29,9 +29,7 @@ module Api
       param_group :user_role
       def create
         @user_role = current_user.assign_role_for_user(
-          user_id: params["user_role"]["user_id"],
-          role_id: params["user_role"]["role_id"],
-          expires_at: params["user_role"]["expires_at"]
+          params["user_role"].slice('user_id', 'role_id', 'expires_at')
         )
 
         if @user_role
