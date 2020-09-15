@@ -1,5 +1,5 @@
 module Api::V2
   class Serializer
-    include FastJsonapi::ObjectSerializer
+    include JSONAPI::Serializer
   end
 end

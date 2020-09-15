@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Api::V1::OfferSerializer do
+describe Api::V1::UserSerializer do
 
   let(:donor) { create(:user, :with_email) }
   let(:charity) { build(:user, :charity) }

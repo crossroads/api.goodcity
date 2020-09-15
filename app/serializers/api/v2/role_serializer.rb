@@ -6,9 +6,7 @@ module Api::V2
     #   Attributes
     # ----------------------------
 
-    attributes :id,
-      :name,
-      :level
+    attributes :name, :level
 
   end
 end

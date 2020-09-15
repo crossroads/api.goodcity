@@ -8,11 +8,12 @@ context Api::V2::GoodcitySerializer do
     describe "#parse_include_paths" do
       it "generates fast_jsonapi options based on an include string" do
         {
-          "first_name,last_name"  => { include: [], fields: { user: [:first_name, :last_name] } },
-          "user.first_name,user.last_name"  => { include: [], fields: { user: [:first_name, :last_name] } },
-          "user.{first_name,last_name}"  => { include: [], fields: { user: [:first_name, :last_name] } },
-          "first_name,roles.*"    => {:include=>[:roles], :fields=>{:user=>[:first_name], :role=>[:id, :name, :level]}},
-          "user.{roles}.*"    => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:id, :name, :level]}}
+          "first_name,last_name"        => { include: [], fields: { user: [:first_name, :last_name] } },
+          "first_name,last_name,roles"  => { include: [], fields: { user: [:first_name, :last_name, :roles] } },
+          "{first_name,last_name}"      => { include: [], fields: { user: [:first_name, :last_name] } },
+          "first_name,roles.*"          => {:include=>[:roles], :fields=>{:user=>[:first_name, :roles], :role=>[:id, :name, :level]}},
+          "roles.*"                     => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:id, :name, :level]}},
+          "{roles}.*"                   => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:id, :name, :level]}}
         }.each do |input, expected_res|
           expect(Api::V2::GoodcitySerializer.parse_include_paths(model, input)).to eq(expected_res)
         end
@@ -26,6 +27,7 @@ context Api::V2::GoodcitySerializer do
           "" => [],
           ",,," => [],
           "user,roles" => [['user'], ['roles']],
+          "{user,roles}" => [['user'], ['roles']],
           "user.first_name,roles.{name,level}" => [['user', 'first_name'], ['roles', 'name'], ['roles', 'level']],
           "user.{offers,orders}.code" => [['user', 'offers', 'code'], ['user', 'orders', 'code']],
           "user.{offers,orders}.{code}" => [['user', 'offers', 'code'], ['user', 'orders', 'code']],

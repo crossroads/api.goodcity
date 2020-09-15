@@ -185,8 +185,6 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
-    fast_jsonapi (1.5)
-      activesupport (>= 4.2)
     ffaker (2.10.0)
     ffi (1.9.25)
     foreman (0.85.0)
@@ -218,6 +216,8 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     json (2.3.0)
+    jsonapi-serializer (2.1.0)
+      activesupport (>= 4.2)
     jwt (1.5.6)
     kaminari (0.16.3)
       actionpack (>= 3.0.0)
@@ -490,12 +490,12 @@ DEPENDENCIES
   execjs
   factory_bot_rails
   fake_email_validator
-  fast_jsonapi
   ffaker
   foreman
   go_go_van_api!
   guard-rspec
   http_accept_language
+  jsonapi-serializer
   jwt (~> 1.5.0)
   kaminari
   lograge

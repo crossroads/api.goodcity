@@ -2,7 +2,7 @@ module Api::V2
   class GoodcitySerializer < Serializer
 
     def initialize(resources, opts = {})
-      options = opts.clone
+      options = opts
 
       options[:include] ||= []    # By default, we do not want the body of relationships
 
@@ -41,7 +41,7 @@ module Api::V2
               .map { |field| field.gsub(/[{}]/, '').split(',') }
 
             res += Utils::Algo.flatten_matrix(matrix) { |f1,f2|  [f1,f2].flatten }  if matrix.length > 1
-            res << matrix.first                                                     if matrix.length == 1
+            res += matrix.first.map { |i| [i] }                                     if matrix.length == 1
             res
           end
       end
