@@ -11,9 +11,9 @@ context Api::V2::GoodcitySerializer do
           "first_name,last_name"        => { include: [], fields: { user: [:first_name, :last_name] } },
           "first_name,last_name,roles"  => { include: [], fields: { user: [:first_name, :last_name, :roles] } },
           "{first_name,last_name}"      => { include: [], fields: { user: [:first_name, :last_name] } },
-          "first_name,roles.*"          => {:include=>[:roles], :fields=>{:user=>[:first_name, :roles], :role=>[:id, :name, :level]}},
-          "roles.*"                     => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:id, :name, :level]}},
-          "{roles}.*"                   => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:id, :name, :level]}}
+          "first_name,roles.*"          => {:include=>[:roles], :fields=>{:user=>[:first_name, :roles], :role=>[:name, :level]}},
+          "roles.*"                     => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:name, :level]}},
+          "{roles}.*"                   => {:include=>[:roles], :fields=>{:user=>[:roles], :role=>[:name, :level]}}
         }.each do |input, expected_res|
           expect(Api::V2::GoodcitySerializer.parse_include_paths(model, input)).to eq(expected_res)
         end
