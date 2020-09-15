@@ -28,8 +28,12 @@ module Api
       api :POST, "/v1/user_roles", "Add an user_role"
       param_group :user_role
       def create
+        user_id, role_id, expires_at = params["user_role"].values_at('user_id', 'role_id', 'expires_at')
+
         @user_role = current_user.assign_role_for_user(
-          params["user_role"].slice('user_id', 'role_id', 'expires_at')
+          user_id: user_id,
+          role_id: role_id,
+          expires_at: expires_at
         )
 
         if @user_role

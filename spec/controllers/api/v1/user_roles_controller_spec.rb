@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::UserRolesController, type: :controller do
-  let(:reviewer) { create(:user, :with_token, :with_can_read_or_modify_user_permission,
-    :with_can_manage_user_roles_permission, role_name: "Reviewer") }
+  let(:reviewer) { create(:user, :with_token,:with_can_manage_user_roles_permission,
+                   role_name: "Reviewer") }
   let(:user_role) { reviewer.user_roles.first }
   let(:parsed_body) { JSON.parse(response.body) }
   let!(:reviewer_user) { create(:user, :with_can_manage_offers_permission, role_name: "Reviewer") }
@@ -46,7 +46,7 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
   end
 
   describe "POST user_roles" do
-    context "Reviewer" do
+    context "Reviewer with permission 'can_manage_user_roles'" do
       before do
         reviewer.roles = [ reviewer_role ]
         generate_and_set_token(reviewer)
@@ -81,7 +81,18 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
         expect(response.status).to eq(200)
         expect(parsed_body["user_role"]["role_id"]).to eql(reviewer_role.id)
         expect(parsed_body["user_role"]["user_id"]).to eql(reviewer_user.id)
-        expect(parsed_body["user_role"]["expires_at"].to_datetime.to_i).to eql(expires_at.change(hour: 20).to_i)
+        expect(parsed_body["user_role"]["expires_at"].to_datetime.to_i).to eql(expires_at.to_i)
+      end
+    end
+
+    context "Reviewer without permission 'can_manage_user_roles'" do
+      before do
+        generate_and_set_token(reviewer_user)
+      end
+
+      it "Does not assign role to other user" do
+        post :create, user_role: { user_id: reviewer.id, role_id: system_admin_role.id }
+        expect(response.status).to eq(401)
       end
     end
   end
