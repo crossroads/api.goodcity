@@ -120,8 +120,7 @@ RSpec.describe Order, type: :model do
   describe '.my_orders' do
     let(:user) { create :user, :charity, :with_can_manage_orders_permission }
     let(:supervisor) { create :user, :supervisor, :with_can_manage_orders_permission }
-    let(:authorised_by_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+    let(:authorised_by_user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
 
     ALL_ORDER_STATES.each do |state|
       let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  supervisor.id }
@@ -236,11 +235,9 @@ RSpec.describe Order, type: :model do
   end
 
   describe '.recently_used' do
-    let!(:user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+    let!(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
 
-    let!(:user1) { create(:user_with_token, :with_multiple_roles_and_permissions,
-    roles_and_permissions: { 'Supervisor' => ['can_manage_orders']} )}
+    let!(:user1) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
     let(:package1) { create(:package, :with_inventory_record)}
     let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
     let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
@@ -944,8 +941,7 @@ RSpec.describe Order, type: :model do
 
   describe "Live updates" do
     let(:push_service) { PushService.new }
-    let(:charity_user) { create(:user_with_token, :with_multiple_roles_and_permissions,
-      roles_and_permissions: { 'Charity' => ['can_login_to_browse']}) }
+    let(:charity_user) { create(:user, :with_token, :charity) }
 
     before(:each) do
       allow(PushService).to receive(:new).and_return(push_service)

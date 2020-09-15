@@ -6,14 +6,8 @@ describe "contact abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:create, :destroy, :manage] }
 
-  context "when Administrator" do
-    let(:user)     { create(:user, :administrator) }
-    let(:contact) { create :contact }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, contact) } }
-  end
-
   context "when Supervisor" do
-    let(:user)     { create(:user, :with_can_destroy_contact_permission, role_name: 'Supervisor') }
+    let(:user)     { create(:user, :with_can_destroy_contacts_permission, role_name: 'Supervisor') }
     let(:contact)  { create :contact }
     let(:can)      { [:create, :destroy] }
     let(:cannot)   { [:manage] }
@@ -22,7 +16,7 @@ describe "contact abilities" do
   end
 
   context "when Reviewer" do
-    let(:user)     { create(:user, :with_can_destroy_contact_permission, role_name: 'Reviewer') }
+    let(:user)     { create(:user, :with_can_destroy_contacts_permission, role_name: 'Reviewer') }
     let(:contact)  { create :contact }
     let(:can)      { [:create, :destroy] }
     let(:cannot)   { [:manage] }

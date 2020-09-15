@@ -165,21 +165,20 @@ class TwilioInboundCallManager
     @caller ||= User.find_by_mobile(@mobile) if @mobile.present?
   end
 
-  # TODO: ask Matt if we should change the logic here to always include all reviewers
-  # Notify all the offer's subscribed admins that a new call is incoming
-  # If none exist, notify all supervisors
+  # Notify all the offer's subscribed reviewers and supervisors that a donor is calling
+  # If none exist, notify all reviewers and supervisors
   def call_notify_channels
-    reviewer_channel = Channel.private_channels_for(offer.reviewed_by_id, ADMIN_APP)
-    subscribed_staff = Message.unscoped.joins(:subscriptions)
+    staff_ids = Message.unscoped.joins(:subscriptions)
       .select("distinct subscriptions.user_id as user_id")
-      .where(is_private: true, offer_id: offer.id)
+      .where(is_private: false, messageable: offer)
       .map(&:user_id)
-    channel_names = Channel.private_channels_for(subscribed_staff, ADMIN_APP)
-    if (channel_names - reviewer_channel).blank?
-      channel_names = Channel.private_channels_for(User.supervisors.pluck(:id), ADMIN_APP)
+    staff_ids -= [offer.created_by_id] # includes donor which should be removed
+    staff_ids += [offer.reviewed_by_id].compact
+    if staff_ids.empty?
+      staff_ids += User.reviewers.pluck(:id)
+      staff_ids += User.supervisors.pluck(:id)
     end
-    channel_names += reviewer_channel
-    channel_names.flatten.uniq.compact
+    Channel.private_channels_for(staff_ids.uniq.compact, ADMIN_APP)
   end
 
 end

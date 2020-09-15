@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::RejectionReasonsController, type: :controller do
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:rejection_reason) { create :rejection_reason }
   let(:serialized_rejection_reason) { Api::V1::RejectionReasonSerializer.new(rejection_reason).as_json }
   let(:serialized_rejection_reason_json) { JSON.parse( serialized_rejection_reason.to_json ) }

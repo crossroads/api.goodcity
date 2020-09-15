@@ -38,8 +38,8 @@ class Order < ActiveRecord::Base
   has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
-  has_many :messages, dependent: :destroy, inverse_of: :order
-  has_many :subscriptions, dependent: :destroy, inverse_of: :order
+  has_many :messages, as: :messageable, dependent: :destroy
+  has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
   has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
@@ -86,6 +86,8 @@ class Order < ActiveRecord::Base
   }.freeze
 
   scope :non_draft_orders, -> { where.not("orders.state = 'draft' AND detail_type = 'GoodCity'") }
+
+  scope :closed, -> { where(state: 'closed') }
 
   scope :with_eager_load, -> {
           includes([:subscriptions, :order_transport,

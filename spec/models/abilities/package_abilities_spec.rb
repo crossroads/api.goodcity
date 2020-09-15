@@ -12,11 +12,6 @@ describe "Package abilities" do
   let(:package)     { create :package, item: item }
   let(:published_package)  { create :package, item: item, allow_web_publish: true }
 
-  context "when Administrator" do
-    let(:user)    { create(:user, :administrator) }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, package) } }
-  end
-
   context "when Supervisor" do
     let(:user) { create(:user, :with_can_manage_packages_permission, role_name: 'Supervisor') }
     context "and package belongs to draft item" do
@@ -71,8 +66,8 @@ describe "Package abilities" do
     it { limited_actions.each {|do_action| is_expected.to be_able_to(do_action, published_package)}}
   end
 
-  context "when api_user" do
-    let(:user) { create :user, :api_user }
+  context "when api_write" do
+    let(:user) { create :user, :api_write }
     it{  is_expected.to be_able_to(:create, package)  }
   end
 

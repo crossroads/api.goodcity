@@ -9,7 +9,12 @@ en:
     bad_request: Bad Request
     bad_or_missing_record: Invalid or missing %{klass}
     bad_or_missing_field: Invalid or empty field '%{field}'
+    read_only_field: The '%{field}' field cannot be modified
     expected_state: The following action can only be done on a %{state} %{subject}
+    missing_params: Param '%{param}' is required
+    duplicate_error: A record already exists
+    forbidden: Access Denied
+    invalid_credentials: Invalid credentials
   warden:
     token_invalid: Invalid token
     token_expired: Expired token
@@ -112,6 +117,9 @@ en:
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
     cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
+  stocktakes:
+    invalid_state: Cannot process a closed or cancelled Stocktake
+    dirty_revisions: Some quantity revisions require a re-count
   organisations_user_builder:
     organisation:
       blank: "Organisation can't be blank"
@@ -121,6 +129,8 @@ en:
         blank: "Mobile can't be blank"
     existing_user:
       present: "User already exists in this organisation"
+    invalid:
+      user: The email or mobile already exists.
   appointment_slots:
     already_exists: "An appointment slot already exists for this time"
   operations:
@@ -148,6 +158,7 @@ en:
     storage_type_max: "A %{type} is limited to a quantity of %{quantity}"
     bad_action: "Inventory action %{action} is not permitted"
     bad_action_for_type: "Inventory action %{action} is not permitted on %{type} types"
+    action_requires_undispatch: "Action not allowed on a dispatched package. Please undispatch and try again"
     invalid_dispatch_location: "'Dispatched' is not a valid inventory location"
     quantities:
       invalid_negative_quantity: Required quantity not present at location

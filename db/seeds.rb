@@ -146,6 +146,14 @@ PackageCategoryImporter.import
 # Create PackageCategoriesPackageType
 PackageCategoryImporter.import_package_relation
 
+roles = YAML.load_file("#{Rails.root}/db/roles.yml")
+roles.each do |role_name, attrs|
+  if (role = Role.where(name: role_name).first_or_initialize)
+    role.assign_attributes(**attrs)
+    role.save
+  end
+end
+
 # Permission and Role mappings
 permissions_roles = YAML.load_file("#{Rails.root}/db/permissions_roles.yml")
 permissions_roles.each_pair do |role_name, permission_names|
@@ -176,7 +184,7 @@ end
 FactoryBot.create(:user, :system)
 
 # Create API User
-FactoryBot.create(:user, :api_user, first_name: "api", last_name: "write")
+FactoryBot.create(:user, :api_write, first_name: "api", last_name: "write")
 
 # Don't run the following setup on the live server.
 # This is for dummy data

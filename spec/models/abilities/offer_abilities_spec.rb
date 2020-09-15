@@ -7,12 +7,6 @@ describe "Offer abilities" do
   subject(:ability) { Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :search] }
 
-  context "when Administrator" do
-    let(:user)    { create(:user, :administrator) }
-    let(:offer)     { create :offer }
-    it{ all_actions.each { |do_action| is_expected.to be_able_to(do_action, offer) } }
-  end
-
   context "when Supervisor" do
     let(:user)    { create(:user, :with_can_manage_offers_permission, role_name: 'Supervisor') }
     context "and offer is draft" do

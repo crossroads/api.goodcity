@@ -17,7 +17,7 @@ module Api::V1
                :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
                :designated_quantity, :dispatched_quantity, :quantity, :favourite_image_id,
                :saleable, :value_hk_dollar, :package_set_id
-  
+
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity
@@ -59,7 +59,9 @@ module Api::V1
       @options[:include_package_set]
     end
 
-    alias_method :include_packages_locations?, :include_orders_packages?
+    def include_packages_locations?
+      @options[:include_packages_locations]
+    end
 
     %w[include_item? include_stockit_sent_on?
       include_order_id?].each do |method|

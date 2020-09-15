@@ -2,7 +2,7 @@ class Image < ActiveRecord::Base
   has_paper_trail class_name: 'Version', meta: { related: :offer }
   include CloudinaryHelper
   include Paranoid
-  include PushUpdates
+  include PushUpdatesMinimal
 
   has_one :user, inverse_of: :image
   belongs_to :imageable, polymorphic: true, touch: true
@@ -15,6 +15,23 @@ class Image < ActiveRecord::Base
 
   scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
 
+  # Live update rules
+  after_save :push_changes
+  after_destroy :push_changes
+  push_targets do |record|
+    package = record.imageable if record.imageable_type == "Package"
+    channels = []
+    if record.offer
+      channels << Channel.private_channels_for(record.offer.created_by_id, DONOR_APP)
+      channels << Channel::STAFF_CHANNEL
+    end
+    if package
+      channels << Channel::STOCK_CHANNEL if package.inventory_number.present?
+      channels << Channel::BROWSE_CHANNEL if (package.allow_web_publish || package.allow_web_publish_was)
+    end
+    channels
+  end
+
   def public_image_id
     cloudinary_id.split("/").last.split(".").first rescue nil
   end
@@ -25,7 +42,8 @@ class Image < ActiveRecord::Base
   end
 
   def reset_favourite
-    favourite && imageable.images.where.not(id: id).update_all(favourite: false)
+    favourite && imageable &&
+    imageable.images.where.not(id: id).each{ |img| img.update_attributes(favourite: false) }
   end
 
   private

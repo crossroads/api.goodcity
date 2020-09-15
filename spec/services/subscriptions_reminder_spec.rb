@@ -18,12 +18,12 @@ describe SubscriptionsReminder do
   subject { SubscriptionsReminder.new }
 
   # All specs begin life with an offer+message and an order+message
-  let!(:message) { create(:message, offer: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
-  let!(:message1) { create(:message, :with_order, order: order, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
+  let!(:message) { create(:message, messageable: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
+  let!(:message1) { create(:message, :with_order, messageable: order, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)} }
 
   context "check spec setup" do
     it "correctly forms the test conditions" do
-      expect(Subscription.where(user: donor, offer: offer, message: message, state: 'unread').count).to eql(1)
+      expect(Subscription.where(user: donor, subscribable: offer, message: message, state: 'unread').count).to eql(1)
       expect(donor.offers.count).to eql(1)
       expect(donor.sms_reminder_sent_at).to eql(nil)
       expect(Offer.count).to eql(1)
@@ -48,7 +48,7 @@ describe SubscriptionsReminder do
       end
 
       it "2 new unread messages created after we last reminded the user - only sends one reminder" do
-        create(:message, offer: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
+        create(:message, messageable: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
         donor.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(donor.subscriptions.unread.size).to eql(2)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([donor])
@@ -79,13 +79,13 @@ describe SubscriptionsReminder do
       end
 
       it "reviewers own active offer" do
-        create(:message, offer: reviewer_offer, sender: supervisor).tap{|m| m.update_column(:created_at, message_created_at)}
+        create(:message, messageable: reviewer_offer, sender: supervisor).tap{|m| m.update_column(:created_at, message_created_at)}
         reviewer.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([reviewer])
       end
 
       it "charity user who is also donor has unread message on offer and order both" do
-        create(:message, offer: charity_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
+        create(:message, messageable: charity_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
         charity.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([charity])
       end
@@ -136,13 +136,13 @@ describe SubscriptionsReminder do
       end
 
       it "donor's offer reviewed by reviewer" do
-        create(:message, offer: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
+        create(:message, messageable: offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
         reviewer.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
 
       it "reviewers own active offer reviewed by himself" do
-        create(:message, offer: reviewer_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
+        create(:message, messageable: reviewer_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
         reviewer.update_column(:sms_reminder_sent_at, before_delta.ago)
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])
       end
@@ -153,7 +153,7 @@ describe SubscriptionsReminder do
       end
 
       it 'charity user who is also donor has no unread messages on the offer but on order' do
-        create(:message, offer: charity_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
+        create(:message, messageable: charity_offer, sender: reviewer).tap{|m| m.update_column(:created_at, message_created_at)}
         charity.update_column(:sms_reminder_sent_at, before_delta.ago)
         charity.offers.map{|o| o.subscriptions.unread}.flatten.uniq.map{|s| s.update_column(:state, 'read')}
         expect(subject.send(:user_candidates_for_reminder).to_a).to eql([])

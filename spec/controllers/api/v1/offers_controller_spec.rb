@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::OffersController, type: :controller do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
-  let(:user) { create(:user_with_token) }
+  let(:user) { create(:user, :with_token) }
   let(:reviewer) { create(:user, :with_can_manage_offers_permission, role_name: 'Reviewer') }
   let(:supervisor) { create(:user, :with_can_manage_offers_permission, role_name: 'Supervisor') }
   let(:offer) { create(:offer, :with_transport, created_by: user) }
@@ -160,6 +160,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     it "returns 200" do
       get :show, id: offer.id
       expect(response.status).to eq(200)
+    end
+
+    context 'polymorphic associations' do
+      let(:item) { create(:item, id: offer.id, offer: offer) }
+      let!(:item_message) { create(:message, messageable: item) }
+      let!(:offer_message) { create(:message, messageable: offer) }
+      let!(:order_message) { create(:message, :with_order, sender: user) }
+
+      it 'expects to include messages related only to item' do
+        get :show, id: offer.id
+        expect(parsed_body['messages'].count).to eq(2)
+        expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer', 'Item')
+        expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include(offer.id, item.id)
+      end
     end
   end
 
@@ -531,20 +545,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         expect(subject['offers'].size).to eq(2)
         expect(subject['offers'].first["id"]).to eq(submitted_offer2.id)
       end
-
     end
 
     context "Reviewer Filter" do
+      let!(:offer) { create :offer }
       before(:each) {
         receiving_offer
         reviewing_offer
         receiving_offer
         scheduled_offer
         User.current_user = reviewer
-
+        Subscription.delete_all
         # Create notifications for offers
-        3.times { create(:subscription, offer_id: receiving_offer.id, user_id: reviewer.id, state: 'unread') }
-        3.times { create(:subscription, offer_id: reviewing_offer.id, user_id: reviewer.id, state: 'read') }
+        3.times { create(:subscription, subscribable: receiving_offer, user_id: reviewer.id, state: 'unread') }
+        3.times { create(:subscription, subscribable: reviewing_offer, user_id: reviewer.id, state: 'read') }
       }
 
       it "returns offers created by logged in user if selfReview is present in params" do
@@ -651,22 +665,22 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       context "user.last_name" do
-        let!(:offer1) { create :offer, :submitted, created_by: (create :user, last_name: 'Test') }
-        let!(:offer2) { create :offer, :submitted, created_by: (create :user, last_name: 'Tester') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, last_name: 'Zexy Desperado') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, last_name: 'Fearless Desperado') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, last_name: 'Empty') }
         it do
-          get :search, searchText: 'Test'
+          get :search, searchText: 'despera'
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end
       end
 
       context "user.email" do
-        let!(:offer1) { create :offer, :submitted, created_by: (create :user, email: 'mr_test@example.com') }
-        let!(:offer2) { create :offer, :submitted, created_by: (create :user, email: 'mr_tester@example.com') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, email: 'dynamic_menace@example.com') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, email: 'dynamic_intimidation@example.com') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, email: 'mr_empty@example.com') }
         it do
-          get :search, searchText: 'Test'
+          get :search, searchText: 'dynam'
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end

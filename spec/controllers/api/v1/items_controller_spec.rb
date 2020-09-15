@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ItemsController, type: :controller do
 
-  let(:user)  { create :user_with_token, :with_can_manage_items_permission }
+  let(:user)  { create :user, :with_token, :with_can_manage_items_permission }
   let(:offer) { create :offer, created_by: user }
   let(:item)  { create(:item, offer: offer) }
   let(:serialized_item) { Api::V1::ItemSerializer.new(item).as_json }
@@ -14,7 +14,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   describe "GET item/1" do
     before { generate_and_set_token(user) }
-  
+
     it "returns the item" do
       get :show, id: item.id
       expect(response.status).to eq(200)
@@ -24,6 +24,10 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     describe "known bugs" do
       describe "polymorphic serialization" do
         let(:package)  { create :package, id: item.id }
+        let!(:item) { create(:item, offer: offer) }
+        let!(:item_message) { create(:message, messageable: item) }
+        let!(:offer_message) { create(:message, messageable: offer) }
+        let!(:order_message) { create(:message, :with_order, sender: user) }
 
         before do
           create(:image, imageable: item)
@@ -94,17 +98,18 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     end
 
     let(:gogovan_order) { create :gogovan_order, :active }
-    let(:delivery) { create :delivery, gogovan_order:  gogovan_order }
-    let(:offer) { create :offer, :scheduled, created_by: user, delivery: delivery }
+    let(:delivery) { create :delivery, gogovan_order: gogovan_order }
+    let(:offer) { create :offer, state: 'scheduled', created_by: user, delivery: delivery }
+    let(:item) { create(:item, offer: offer) }
     it 'should not allow last item to be rejected if there\'s a confirmed gogovan booking' do
-      put :update, id: item.id, item: item_params.merge({state_event:'reject'})
+      put :update, id: item.id, item: item_params.merge({ state_event: 'reject' })
       expect(response.status).to eq(422)
       body = JSON.parse(response.body)
       expect(body['errors'][0]['requires_gogovan_cancellation']).not_to be_nil
     end
 
     describe "update donor_condition" do
-      before { generate_and_set_token(create(:user, :with_can_manage_items_permission, role_name: 'can_manage_items')) }
+      before { generate_and_set_token(create(:user, :with_reviewer_role, :with_can_manage_items_permission)) }
 
       # TODO refactor this test, is not actually checking job is created
       it "should add stockit-update-item request job" do

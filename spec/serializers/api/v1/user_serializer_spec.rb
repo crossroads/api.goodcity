@@ -7,7 +7,7 @@ describe Api::V1::OfferSerializer do
   let(:donor_serializer) { Api::V1::UserSerializer.new(donor).as_json }
   let(:donor_json) { JSON.parse(donor_serializer.to_json) }
   let(:admin) { create(:user, :reviewer) }
-  let(:charity_user) { create(:user, :charity, :title) }
+  let(:charity_user) { create(:user, :charity) }
 
   context "Donor" do
     before { User.current_user = donor }
@@ -58,8 +58,6 @@ describe Api::V1::OfferSerializer do
       expect(
         donor_json['user']['last_disconnected'].to_date
       ).to eql(donor.last_disconnected.to_date)
-      expect(
-        donor_json['user']['printers']).to eql(donor.printer)
     end
   end
 

@@ -6,6 +6,7 @@ class Channel
   BROWSE_CHANNEL = 'browse'.freeze
   ORDER_FULFILMENT_CHANNEL = 'order_fulfilment'.freeze
   INVENTORY_CHANNEL = 'inventory'.freeze
+  STOCK_MANAGEMENT_CHANNEL = 'stock_management'.freeze
   STAFF_CHANNEL = [REVIEWER_CHANNEL, SUPERVISOR_CHANNEL].freeze
   STOCK_CHANNEL = [INVENTORY_CHANNEL, ORDER_FULFILMENT_CHANNEL].freeze
 
@@ -36,6 +37,7 @@ class Channel
         channels << REVIEWER_CHANNEL if user.reviewer? and app_name == ADMIN_APP
         channels << SUPERVISOR_CHANNEL if user.supervisor? and app_name == ADMIN_APP
         channels << ORDER_FULFILMENT_CHANNEL if user.order_fulfilment? and app_name == STOCK_APP
+        channels << STOCK_MANAGEMENT_CHANNEL if (user.stock_fulfilment? || user.stock_administrator?) and app_name == STOCK_APP
         channels << STOCK_CHANNEL if app_name == STOCK_APP
       end
       channels << BROWSE_CHANNEL if app_name == BROWSE_APP

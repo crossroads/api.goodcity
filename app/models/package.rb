@@ -36,6 +36,7 @@ class Package < ActiveRecord::Base
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy
+  has_many   :messages, as: :messageable, dependent: :destroy
   has_many   :offers_packages
   has_many   :offers, through: :offers_packages
   has_many   :package_actions, -> { where action: PackagesInventory::INVENTORY_ACTIONS }, class_name: "PackagesInventory"
@@ -67,6 +68,7 @@ class Package < ActiveRecord::Base
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
   validate  :validate_set_id, on: [:create, :update]
+  validates_uniqueness_of :inventory_number, if: :should_validate_inventory_number?
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
   scope :received, -> { where(state: 'received') }
@@ -206,6 +208,10 @@ class Package < ActiveRecord::Base
 
   def published?
     allow_web_publish.present?
+  end
+
+  def should_validate_inventory_number?
+    !STOCKIT_ENABLED && inventory_number.present?
   end
 
   def add_to_stockit
@@ -357,8 +363,7 @@ class Package < ActiveRecord::Base
     end
 
     if current_image
-      images.update_all(favourite: false)
-      current_image.update_column(:favourite, true)
+      current_image.update_attributes(favourite: true)
       self.favourite_image_id = current_image.id
     end
   end
@@ -401,7 +406,7 @@ class Package < ActiveRecord::Base
   def set_default_values
     self.donor_condition ||= item.try(:donor_condition)
     self.grade ||= "B"
-    self.saleable ||= offer.try(:saleable)
+    self.saleable ||= offer.try(:saleable) || false
     true
   end
 

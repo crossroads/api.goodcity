@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
   include PushUpdates
   include RollbarSpecification
   include UserSearch
+  include ManageUserRoles
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
@@ -15,17 +16,28 @@ class User < ActiveRecord::Base
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions, source: "offer"
 
   has_many :unread_subscriptions, -> { where state: "unread" }, class_name: "Subscription"
-  has_many :offers_with_unread_messages, class_name: "Offer", through: :unread_subscriptions, source: :offer
+  has_many :offers_with_unread_messages, class_name: 'Offer', through: :unread_subscriptions, source: :subscribable, source_type: 'Offer'
+
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
-  has_many :user_roles
+  has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) }, class_name: "OrganisationsUser"
+  has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
+  has_many :printers_users
+  has_many :printers, through: :printers_users
+  
+  has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 
+  has_many :active_user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Time.now.in_time_zone) },
+            class_name: "UserRole"
+  has_many :active_roles, class_name: "Role", through: :active_user_roles, source: "role"
+
   belongs_to :image, dependent: :destroy
-  belongs_to :printer
   has_many :moved_packages, class_name: "Package", foreign_key: :stockit_moved_by_id, inverse_of: :stockit_moved_by
   has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
+
+  before_validation :downcase_email
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
@@ -41,15 +53,27 @@ class User < ActiveRecord::Base
   validates :email, fake_email: true, :if => lambda { Rails.env.production? }
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
+  validates :preferred_language,
+            inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
+            allow_nil: true
 
   after_create :generate_auth_token
 
-  scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:roles) }
-  scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:roles) }
-  scope :order_fulfilment, -> { where(roles: {name: "Order fulfilment"}).joins(:roles) }
-  scope :system, -> { where(roles: {name: "System"}).joins(:roles) }
-  scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:roles) }
+  scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
+  scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
+  scope :stock_fulfilments, -> { where(roles: {name: "Stock fulfilment"}).joins(:active_roles) }
+  scope :stock_administrators, -> { where(roles: { name: 'Stock administrator' }).joins(:active_roles) }
+  scope :order_fulfilments, -> { where(roles: {name: "Order fulfilment"}).joins(:active_roles) }
+  scope :order_administrators, -> { where(roles: { name: 'Order administrator' }).joins(:active_roles) }
+  scope :system, -> { where(roles: {name: "System"}).joins(:active_roles) }
+
+  scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:active_roles) }
+  scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:active_roles) }
+  scope :by_roles, ->(role_names) { where(roles: {name: role_names }).joins(:active_roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
+  scope :active, -> { where(disabled: false) }
+  scope :exclude_user, ->(id) { where.not(id: id) }
+  scope :with_roles, ->(role_names) { where(roles: { name: role_names}).joins(:active_roles) }
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
@@ -71,8 +95,13 @@ class User < ActiveRecord::Base
   end
 
   def self.find_user_by_mobile_or_email(mobile, email)
-    return find_by_mobile(mobile) if mobile
-    find_by_email(email) if email
+    if mobile.present?
+      return find_by_mobile(mobile)
+    elsif email.present?
+      find_by('LOWER(users.email) = ?', email.downcase)
+    else
+      nil
+    end
   end
 
   def send_sms(app_name)
@@ -129,19 +158,15 @@ class User < ActiveRecord::Base
   end
 
   def staff?
-    reviewer? || supervisor? || administrator?
+    reviewer? || supervisor?
   end
 
   def user_role_names
-    @user_role_names ||= roles.pluck(:name)
+    @user_role_names ||= active_roles.pluck(:name)
   end
 
   def reviewer?
     user_role_names.include?("Reviewer") && @treat_user_as_donor != true
-  end
-
-  def charity?
-    user_role_names.include?("Charity")
   end
 
   def supervisor?
@@ -149,15 +174,32 @@ class User < ActiveRecord::Base
   end
 
   def order_fulfilment?
-    user_role_names.include?("Order fulfilment")
+    user_role_names.include?('Order fulfilment')
   end
 
-  def admin?
-    administrator?
+  def stock_fulfilment?
+    user_role_names.include?('Stock fulfilment')
   end
 
-  def administrator?
-    user_role_names.include?("Administrator") && @treat_user_as_donor != true
+  def stock_administrator?
+    user_role_names.include?('Stock administrator')
+  end
+
+  def has_permission?(permssion)
+    user_permissions_names.include?(permssion)
+  end
+
+  def can_disable_user?(id = nil)
+    has_permission?("can_disable_user") && User.current_user.id != id&.to_i
+  end
+
+  def can_manage_private_messages?
+    (user_permissions_names &
+    ["can_manage_offer_messages", "can_manage_order_messages", "can_manage_package_messages"]).any?
+  end
+
+  def downcase_email
+    email.downcase! if email.present?
   end
 
   def donor?
@@ -205,14 +247,6 @@ class User < ActiveRecord::Base
     Version.for_offers.by_user(id).last.try(:related_id_or_item_id)
   end
 
-  def create_or_remove_user_roles(role_ids)
-    role_ids = role_ids || []
-    remove_user_roles(role_ids)
-    role_ids.each do |role_id|
-      user_roles.where(role_id: role_id).first_or_create
-    end
-  end
-
   def email_properties
     props = {}
     props["contact_name"] = "#{first_name} #{last_name}"
@@ -228,11 +262,6 @@ class User < ActiveRecord::Base
 
   def request_from_stock_without_mobile?
     request_from_stock && mobile.blank? || request_from_browse && mobile.blank?
-  end
-
-  def remove_user_roles(role_ids)
-    role_ids_to_remove = roles.pluck(:id) - role_ids
-    user_roles.where("role_id IN(?)", role_ids_to_remove).destroy_all
   end
 
   def generate_auth_token
