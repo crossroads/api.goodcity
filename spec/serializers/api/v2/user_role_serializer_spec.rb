@@ -12,15 +12,15 @@ describe Api::V2::UserRoleSerializer do
 
   describe "Default" do
     describe "attributes" do
-      EXPECTED_ATTRIBUTES = [
+      let(:expected_attributes) {[
         :created_at,
         :updated_at
-      ]
+      ]}
 
-      it { expect(attributes.keys.map(&:to_sym)).to match_array(EXPECTED_ATTRIBUTES) }
+      it { expect(attributes.keys.map(&:to_sym)).to match_array(expected_attributes) }
 
-      EXPECTED_ATTRIBUTES.each do |attr|
-        it "includes the #{attr} attribute" do
+      it "includes the correct attributes" do
+        expected_attributes.each do |attr|
           if user_role[attr].is_a?(Time)
             expect(Time.parse(attributes[attr.to_s]).to_s).to eql(user_role[attr].to_s)
           else
