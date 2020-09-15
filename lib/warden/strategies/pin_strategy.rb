@@ -7,15 +7,21 @@ module Warden
         params["pin"].present? && params['otp_auth_key'].present?
       end
 
-      def extract_auth_token
+      def lookup_auth_token
         AuthToken.find_by_otp_auth_key(params['otp_auth_key'])
       end
 
-      def authenticate!
-        auth_token = extract_auth_token
+      def pin_method
+        params[:pin_for].to_sym
+      end
+
+      def authenticate!        
+        auth_token = lookup_auth_token
         return success!(auth_token.user) if valid_app_store_credentials?(auth_token)
         user = auth_token.try(:user)
-        has_valid_otp_code?(auth_token) && valid_user(user) ? success!(user) : fail
+        return fail unless has_valid_otp_code?(auth_token) && valid_user(user)
+        user.set_verified_flag(pin_method) if pin_method.present?
+        success!(user)
       end
 
       private
@@ -24,7 +30,7 @@ module Warden
         user.present? && !user.disabled
       end
 
-      def has_valid_otp_code?(auth_token)
+      def has_valid_otp_code?(auth_token)        
         auth_token && auth_token.authenticate_otp(params["pin"], drift: otp_code_validity)
       end
 
