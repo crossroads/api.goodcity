@@ -19,7 +19,10 @@ module Api::V2
       def fields_for(type)
         serializer = serializer_for(type)
         return [] if serializer.blank?
-        serializer.attributes_to_serialize.keys
+        [
+          serializer.try(:attributes_to_serialize).try(:keys)     || [],
+          serializer.try(:relationships_to_serialize).try(:keys)  || []
+        ].flatten
       end
 
       #
