@@ -17,7 +17,7 @@ end
 
 Given(/^I have expired role ([order_administrator | order_fulfilment]+) and permission "([^"]*)"/) do |expired_role, permission|
   role = create(:"#{expired_role}_role", :"with_#{permission}_permission")
-  create :user_role, user: @user, role: role, expiry_date: 5.days.ago
+  create :user_role, user: @user, role: role, expires_at: 5.days.ago
 end
 
 And('I enter the mobile number') do

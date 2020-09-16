@@ -19,7 +19,13 @@ module Api
 
       api :POST, '/v1/printers_users', "Create an printers_user"
       def create
-        save_and_render_object(@printers_user)
+        user_id, printer_id, tag = params["printers_users"].values_at('user_id', 'printer_id', 'tag')
+        printer_user = PrintersUser
+          .where(user_id: user_id, tag: tag)
+          .first_or_initialize
+        printer_user.printer_id = printer_id
+
+        save_and_render_object(printer_user)
       end
 
       api :PUT, '/v1/printers_users/1', "Update printers_users"
