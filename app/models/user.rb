@@ -37,7 +37,8 @@ class User < ActiveRecord::Base
   has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
 
-  before_validation :downcase_email_and_check_permission
+  before_validation :downcase_email
+  before_validation :set_request_from_stock
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
@@ -198,9 +199,19 @@ class User < ActiveRecord::Base
     ["can_manage_offer_messages", "can_manage_order_messages", "can_manage_package_messages"]).any?
   end
 
-  def downcase_email_and_check_permission
-    self.request_from_stock = true if user_has_permissions(User.current_user)
+  def downcase_email
     email.downcase! if email.present?
+  end
+
+  def has_user_create_permission?
+    has_permission?("can_read_or_modify_user") ||
+    has_permission?("can_create_donor")
+  end
+
+  def set_request_from_stock
+    if User.current_user && User.current_user.has_user_create_permission?
+      self.request_from_stock = true
+    end
   end
 
   def user_has_permissions(user)
