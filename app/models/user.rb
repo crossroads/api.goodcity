@@ -24,11 +24,11 @@ class User < ActiveRecord::Base
   has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
   has_many :printers_users
   has_many :printers, through: :printers_users
-  
+
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 
-  has_many :active_user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Time.now.in_time_zone) },
+  has_many :active_user_roles, -> { where("expires_at IS NULL OR expires_at >= ?", Time.now.in_time_zone) },
             class_name: "UserRole"
   has_many :active_roles, class_name: "Role", through: :active_user_roles, source: "role"
 
