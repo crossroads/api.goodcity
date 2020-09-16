@@ -29,7 +29,7 @@ module Warden
         appstore.try(:[], 'number').present? &&
           appstore.try(:[], 'pin').present? &&
           appstore['pin'] == params['pin'] &&
-          pstore['number'] == auth_token.try(:user).try(:mobile)
+          appstore['number'] == auth_token.try(:user).try(:mobile)
       end
 
       def otp_code_validity
