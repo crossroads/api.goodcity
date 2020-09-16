@@ -35,7 +35,7 @@ class Message < ApplicationRecord
   after_destroy :notify_deletion_to_subscribers
 
   def self.default_scope
-    return if User.current_user.try(:staff?)
+    return if User.current_user.try(:can_manage_private_messages?)
 
     where('is_private = false')
   end
