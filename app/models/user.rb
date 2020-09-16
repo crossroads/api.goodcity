@@ -204,18 +204,13 @@ class User < ActiveRecord::Base
   end
 
   def has_user_create_permission?
-    has_permission?("can_read_or_modify_user") ||
-    has_permission?("can_create_donor")
+    has_permission?("can_read_or_modify_user") || has_permission?("can_create_donor")
   end
 
   def set_request_from_stock
-    if User.current_user && User.current_user.has_user_create_permission?
+    if User.current_user&.has_user_create_permission?
       self.request_from_stock = true
     end
-  end
-
-  def user_has_permissions(user)
-    user && (user.has_permission?("can_read_or_modify_user") || user.has_permission?("can_create_donor"))
   end
 
   def donor?
