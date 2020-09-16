@@ -189,6 +189,35 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     end
   end
 
+  context 'if registration is duplicate' do
+    before do
+      create(:organisation, registration: '123')
+    end
+
+    it 'response is 422' do
+      params[:registration] = '123'
+      post :create, organisation: params
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(parsed_body['errors']).to include('Registration has already been taken')
+    end
+
+    it 'does not create organisation record' do
+      params[:registration] = '123'
+      expect{
+        post :create, organisation: params
+      }.not_to change { Organisation.count }
+    end
+  end
+
+  context 'if registration is empty' do
+    it 'creates a new organisation' do
+      params[:registration] = ''
+      expect{
+        post :create, organisation: params
+      }.to change { Organisation.count }.by(1)
+    end
+  end
+
   describe 'PUT /update' do
     let!(:organisation) { create(:organisation) }
     let(:user) { create(:user, :with_order_administrator_role, :with_can_manage_organisations_permission) }
@@ -228,14 +257,38 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
     context 'if organisation type is nil' do
       it 'returns error' do
-        put :create, organisation: { organisation_type_id: nil }
+        put :update, id: organisation.id, organisation: { organisation_type_id: nil }
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not change organisation_type_id' do
-        post :create, organisation: { organisation_type_id: nil }
+        put :update, id: organisation.id, organisation: { organisation_type_id: nil }
         expect(organisation.reload.organisation_type_id).to eq(organisation.organisation_type_id)
       end
+    end
+  end
+
+  context 'if registration is duplicate' do
+    before do
+      create(:organisation, registration: '123')
+    end
+
+    it 'response is 422' do
+      put :update, id: organisation.id, organisation: { registration: '123' }
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(parsed_body['errors']).to include('Registration has already been taken')
+    end
+
+    it 'does not update organisation record' do
+      put :update, id: organisation.id, organisation: { registration: '123' }
+      expect(organisation.reload.registration).to eq(organisation.registration)
+    end
+  end
+
+  context 'if registration is empty' do
+    it 'updates the organisation' do
+      put :update, id: organisation.id, organisation: { registration: 'abc' }
+      expect(organisation.reload.registration).to eq('abc')
     end
   end
 end

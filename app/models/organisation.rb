@@ -10,6 +10,7 @@ class Organisation < ActiveRecord::Base
 
   validates :name_en, presence: true, uniqueness: { case_sensitive: false }
   validates :organisation_type_id, presence: true
+  validates_uniqueness_of :registration
 
   before_validation :trim_name
   before_save :set_default_country
