@@ -21,6 +21,17 @@ class Role < ActiveRecord::Base
   end
 
   def snake_name
-    name.downcase.strip.gsub(/\s+/, '_')
+    name.parameterize.underscore
+  end
+
+  class << self
+    #
+    # The empty "null" role can be used to represent users with no roles
+    #
+    # @return [Role] a null role
+    #
+    def null_role
+      Role.new(name: 'null').freeze
+    end
   end
 end

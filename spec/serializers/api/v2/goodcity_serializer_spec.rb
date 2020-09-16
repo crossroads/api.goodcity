@@ -8,6 +8,7 @@ context Api::V2::GoodcitySerializer do
     describe "#parse_include_paths" do
       it "generates fast_jsonapi options based on an include string" do
         {
+          "*"                           => { include: [], fields: {:user=>[:id, :first_name, :last_name, :mobile, :title, :created_at, :updated_at, :last_connected, :last_disconnected, :email, :is_email_verified, :is_mobile_verified, :disabled, :preferred_language, :roles]}},
           "first_name,last_name"        => { include: [], fields: { user: [:first_name, :last_name] } },
           "first_name,last_name,roles"  => { include: [], fields: { user: [:first_name, :last_name, :roles] } },
           "{first_name,last_name}"      => { include: [], fields: { user: [:first_name, :last_name] } },

@@ -41,6 +41,22 @@ RSpec.describe Api::V2::ApiController, type: :controller do
           expect { @controller.current_role }.to raise_error(Goodcity::AccessDeniedError)
         end
       end
+
+      context "and the user specifies the 'user' role" do
+        before { request.headers['X-GOODCITY-ROLE'] = 'user' }
+
+        it "returns a null role with no permissions" do
+          expect(@controller.current_role).not_to be_nil
+          expect(@controller.current_role.name).to eq(Role.null_role.name)
+          expect(@controller.current_role.permissions).to eq([])
+        end
+
+        it "returns a null role which cannot be persisted" do
+          expect(@controller.current_role).not_to be_nil
+          expect(@controller.current_role.name).to eq(Role.null_role.name)
+          expect { @controller.current_role.save }.to raise_error(RuntimeError)
+        end
+      end
     end
   end
 
