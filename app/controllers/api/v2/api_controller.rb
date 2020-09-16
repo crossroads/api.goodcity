@@ -9,12 +9,12 @@ module Api
 
       skip_before_action :validate_token, only: [:error]
 
-      rescue_from ActiveRecord::RecordInvalid, with: :invalid_params
+      rescue_from ActiveRecord::RecordInvalid,  with: :invalid_params
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
-      rescue_from CanCan::AccessDenied, with: :access_denied
-      rescue_from Apipie::ParamInvalid, with: :invalid_params
-      rescue_from Apipie::ParamMissing, with: :invalid_params
-      rescue_from Goodcity::BaseError, with: :render_goodcity_error
+      rescue_from CanCan::AccessDenied,         with: :access_denied
+      rescue_from Apipie::ParamInvalid,         with: :invalid_params
+      rescue_from Apipie::ParamMissing,         with: :invalid_params
+      rescue_from Goodcity::BaseError,          with: :render_goodcity_error
 
       def current_ability
         @current_ability ||= Api::V2::Ability.new(current_user, role: current_role)
@@ -25,13 +25,12 @@ module Api
           allowed_roles = current_user&.roles || []
           role_name     = request.headers["X-GOODCITY-ROLE"]
 
-          if role_name.blank?
-            current_user&.top_role
-          else
-            role = allowed_roles.find { |r| r.snake_name == role_name }
-            raise Goodcity::AccessDeniedError unless role.present?
-            role
-          end
+          return current_user&.top_role if role_name.blank?
+          return Role.null_role         if role_name.eql?('user')
+          
+          role = allowed_roles.find { |r| r.snake_name == role_name }
+          raise Goodcity::AccessDeniedError unless role.present?
+          role
         end
       end
 
