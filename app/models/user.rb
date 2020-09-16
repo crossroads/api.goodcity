@@ -104,10 +104,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def app_name(user, app_name)
-    user.request_from_stock = (app_name == "stock")
-  end
-
   def send_sms(app_name)
     begin
       TwilioService.new(self).sms_verification_pin(app_name)
@@ -203,14 +199,13 @@ class User < ActiveRecord::Base
   end
 
   def downcase_email_and_check_permission
-    self.request_from_stock=true if user_has_permissions(User.current_user)
+    self.request_from_stock = true if user_has_permissions(User.current_user)
     email.downcase! if email.present?
   end
 
   def user_has_permissions(user)
-  user && (user.has_permission?("can_read_or_modify_user") || user.has_permission?("can_create_donor"))
+    user && (user.has_permission?("can_read_or_modify_user") || user.has_permission?("can_create_donor"))
   end
-
 
   def donor?
     user_role_names.empty? || @treat_user_as_donor == true
