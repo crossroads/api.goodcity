@@ -26,7 +26,7 @@ RSpec.describe Organisation, type: :model do
   describe 'Validations' do
     it { is_expected.to validate_presence_of :name_en }
     it { is_expected.to validate_uniqueness_of(:name_en).case_insensitive }
-    it { is_expected.to validate_uniqueness_of(:registration) }
+    it { is_expected.to validate_uniqueness_of(:registration).case_insensitive }
     it { is_expected.to validate_presence_of :organisation_type_id }
   end
 
