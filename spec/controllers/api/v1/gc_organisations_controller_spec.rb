@@ -206,6 +206,26 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
           post :create, organisation: params
         }.not_to change { Organisation.count }
       end
+
+      context 'when new registration has different case' do
+        before do
+          create(:organisation, registration: "A123")
+        end
+
+        it 'does not create organisation record' do
+          params[:registration] = 'a123'
+          post :create, organisation: params
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(parsed_body['errors']).to include('Registration has already been taken')
+        end
+
+        it 'does not create organisation record' do
+          params[:registration] = 'a123'
+          expect {
+            post :create, organisation: params
+          }.not_to change { Organisation.count }
+        end
+      end
     end
 
     context 'if registration is empty' do
@@ -292,6 +312,24 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       it 'does not update organisation record' do
         put :update, id: organisation.id, organisation: { registration: '123' }
         expect(organisation.reload.registration).to eq(organisation.registration)
+      end
+
+      context 'when new registration has different case' do
+        before do
+          create(:organisation, registration: "A123")
+        end
+
+        it 'does not create organisation record' do
+          put :update, id: organisation.id, organisation: { registration: 'a123' }
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(parsed_body['errors']).to include('Registration has already been taken')
+        end
+
+        it 'does not create organisation record' do
+          expect {
+            put :update, id: organisation.id, organisation: { registration: 'a123' }
+          }.not_to change { organisation.reload }
+        end
       end
     end
 
