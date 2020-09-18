@@ -43,7 +43,6 @@ class User < ActiveRecord::Base
   accepts_nested_attributes_for :address, allow_destroy: true
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
-
   validates :mobile, presence: true, unless: :request_from_stock_without_mobile?
   validates :mobile, uniqueness: true, if: lambda { mobile.present? }
 
@@ -56,7 +55,7 @@ class User < ActiveRecord::Base
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
   validates :preferred_language,
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
-            allow_nil: true, allow_blank: true
+            allow_nil: true
 
   after_create :generate_auth_token
 
