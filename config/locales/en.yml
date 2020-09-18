@@ -60,6 +60,9 @@ en:
     attributes:
       user:
         mobile: "Mobile"
+      organisation:
+        name_en: 'Name EN'
+        registration: 'Registration'
     errors:
       models:
         requested_package:
@@ -74,6 +77,11 @@ en:
             mobile:
               invalid: "is invalid"
               blank: "can't be blank"
+        organisation:
+          attributes:
+            name_en:
+              taken: 'is already been taken'
+
   notification:
     new_offer: New offer submitted by %{name}
     new_order: "New order from %{organisation_name_en}: %{contact_name}"
