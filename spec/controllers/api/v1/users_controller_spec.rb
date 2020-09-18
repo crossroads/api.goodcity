@@ -99,15 +99,15 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:existing_user) { create(:user) }
 
     before do
-      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [low_level_role.id], preferred_language: "zh-tw" }
-      @user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": [role.id] }
+      @valid_user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778", preferred_language: "zh-tw" }
+      @user_params = { "first_name": "Test", "last_name": "Name", "mobile": "+85278945778"}
       @user_params2 = {"first_name": "Test", "last_name": "Name", "mobile": existing_user.mobile}
       @user_params3 = {"first_name": "Test", "last_name": "Name", "mobile": "3812912"}
     end
 
     context "Supervisor" do
       before { generate_and_set_token(supervisor_user) }
-      it "creates user with role and returns 201", :show_in_doc do
+      it "creates user", :show_in_doc do
         expect {
           post :create, user: @valid_user_params
           }.to change(User, :count).by(1)
@@ -117,38 +117,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(parsed_body['user']['last_name']).to eql(@valid_user_params[:last_name])
         expect(parsed_body['user']['mobile']).to eql(@valid_user_params[:mobile])
         expect(parsed_body["user"]["preferred_language"]).to eql("zh-tw")
-        expect(parsed_body['user_roles'][0]['role_id']).to eql(low_level_role.id)
-      end
-    end
-
-    context "Reviewer" do
-      before { generate_and_set_token(supervisor_user) }
-
-      it "Does not assign higher level role to user", :show_in_doc do
-        expect {
-          post :create, user: @user_params
-        }.to change(User, :count).by(1)
-
-        expect(response.status).to eq(201)
-        expect(parsed_body['user']['first_name']).to eql(@user_params[:first_name])
-        expect(parsed_body['user']['last_name']).to eql(@user_params[:last_name])
-        expect(parsed_body['user']['mobile']).to eql(@user_params[:mobile])
-        expect(parsed_body["user_roles"]).to eql([])
-      end
-
-      it "Does assign lower level and same level role to user", :show_in_doc do
-        role_ids = [low_level_role.id, order_fulfilment_role.id]
-        user_params = {"first_name": "Test", "last_name": "Name", "mobile": "+85278945778", "user_role_ids": role_ids}
-
-        expect {
-          post :create, user: user_params
-        }.to change(User, :count).by(1)
-
-        expect(response.status).to eq(201)
-        expect(parsed_body['user']['first_name']).to eql(user_params[:first_name])
-        expect(parsed_body['user']['last_name']).to eql(user_params[:last_name])
-        expect(parsed_body['user']['mobile']).to eql(user_params[:mobile])
-        expect(parsed_body["user_roles"].map { |row| row["role_id"] }).to match_array(role_ids)
       end
     end
 
@@ -212,37 +180,10 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       before { generate_and_set_token(supervisor_user) }
 
       context "when I edit my own details" do
-        it "I cannot edit my own roles" do
-          existing_user_roles = supervisor_user.roles
-          put :update, id: supervisor_user.id, user: { user_role_ids: [low_level_role.id] }
-          expect(supervisor_user.reload.roles.pluck(:id)).not_to include(low_level_role.id)
-          expect(supervisor_user.reload.roles).to match_array(existing_user_roles)
-        end
-
         it "I cannot disable myself", :show_in_doc do
           put :update, id: supervisor_user.id, user: {disabled: true}
           expect(response.status).to eq(200)
           expect(supervisor_user.reload.disabled).to eq(false)
-        end
-      end
-
-      context "when I edit another user's details" do
-        before { generate_and_set_token(supervisor_user) }
-
-        it "I can change the roles of a Reviewer [lower level role] " do
-          put :update, id: reviewer_user.id,
-            user: {user_role_ids: [low_level_role.id, system_admin_role.id]}
-
-          expect(response.status).to eq(200)
-          expect(reviewer_user.roles.pluck(:id)).to include(low_level_role.id)
-          expect(reviewer_user.roles.pluck(:id)).to_not include(system_admin_role.id)
-        end
-
-        it "I cannot change the roles of a System Administrator [higher level role]" do
-          put :update, id: system_admin_user.id,
-             user: {user_role_ids: [low_level_role.id]}
-          expect(response.status).to eq(200)
-          expect(system_admin_user.roles.pluck(:id)).to_not include(low_level_role.id)
         end
       end
     end

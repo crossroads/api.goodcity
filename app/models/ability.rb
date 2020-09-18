@@ -23,7 +23,7 @@ class Ability
     can_mention_users can_read_users can_manage_printers can_update_my_printers
     can_manage_order_messages can_manage_offer_messages can_disable_user
     can_manage_stocktakes can_manage_stocktake_revisions
-    can_manage_package_messages can_manage_organisations
+    can_manage_package_messages can_manage_organisations can_manage_user_roles
   ].freeze
 
   PERMISSION_NAMES.each do |permission_name|
@@ -81,6 +81,7 @@ class Ability
     stocktake_abilities
     taxonomies
     user_abilities
+    user_role_abilities
     version_abilities
     company_abilities
     computer_abilities
@@ -308,7 +309,7 @@ class Ability
       can [:create, :update], OrganisationsUser, { user_id: @user_id, status: OrganisationsUser::Status::PENDING }
       can [:show], OrganisationsUser, user_id: @user_id
     end
-  end 
+  end
 
   def requested_packages_abilities
     can %i[create destroy update index checkout], RequestedPackage, user_id: @user_id
@@ -431,6 +432,10 @@ class Ability
     can %i[index show update recent_users create], User if can_read_or_modify_user?
     can %i[create show], User if can_create_donor?
     can %i[mentionable_users], User if can_mention_users?
+  end
+
+  def user_role_abilities
+    can %i[create destroy update], UserRole if can_manage_user_roles?
   end
 
   def version_abilities
