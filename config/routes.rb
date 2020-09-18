@@ -22,7 +22,7 @@ Rails.application.routes.draw do
       resources :roles, only: [:index, :show]
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
-      resources :user_roles, only: [:show, :index]
+      resources :user_roles, only: [:show, :index, :create, :destroy]
 
       resources :stocktake_revisions, only: [:create, :update, :destroy]
       resources :stocktakes, only: [:show, :index, :destroy, :create] do

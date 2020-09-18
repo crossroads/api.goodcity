@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200901073549) do
+ActiveRecord::Schema.define(version: 20200911110239) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -997,9 +997,9 @@ ActiveRecord::Schema.define(version: 20200901073549) do
   create_table "user_roles", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "role_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.datetime "expiry_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "expires_at"
   end
 
   add_index "user_roles", ["role_id"], name: "index_user_roles_on_role_id", using: :btree
