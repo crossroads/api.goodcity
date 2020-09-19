@@ -47,9 +47,10 @@ module Goodcity
     #  - removes package from users cart, this will send a push update
     #  - removes inventory number from Inventory table
     def destroy_package(package)
+      log(package, "Starting to delete")
       package.packages_locations.each do |pl|
         log(package, "Destroying package_location #{pl.location.try(:label)}")
-        pl.destroy
+        pl.delete # don't fire Packages Inventory operations
       end
       package.images.each do |i|
         log(package, "Destroying image #{i.id}")

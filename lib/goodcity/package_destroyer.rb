@@ -1,3 +1,7 @@
+#
+# require 'goodcity/package_destroyer'
+# Goodcity::PackageDestroyer.destroy(package)
+
 module Goodcity
   class PackageDestroyer
 

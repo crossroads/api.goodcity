@@ -2,7 +2,8 @@ require 'goodcity/compare/base'
 
 #
 # Usage:
-# > Goodcity::Compare::Items.run
+#  require 'goodcity/compare/items'
+#  Goodcity::Compare::Items.run
 #
 # Generates two huge SQL datasets for Stockit Items and Goodcity packages
 #   and determines how they differ
@@ -90,12 +91,12 @@ module Goodcity
         @missing_order_or_package = 0
         @differences.each do |stockit_id, diffs|
           raise NilStockitIdError if stockit_id.blank? # failsafe
-          auto_fix_single_columns(stockit_id, diffs)
+          # auto_fix_single_columns(stockit_id, diffs)
           # auto_fix_box_id(stockit_id, diffs)
           # auto_fix_pallet_id(stockit_id, diffs)
-          auto_fix_dispatched(stockit_id, diffs) # DONE
-          auto_fix_quantity(stockit_id, diffs)
-          auto_fix_locations(stockit_id, diffs)
+          # auto_fix_dispatched(stockit_id, diffs)
+          # auto_fix_quantity(stockit_id, diffs) 
+          # auto_fix_locations(stockit_id, diffs) # doesn't handle PackagesInventories
           # auto_fix_timestamp(stockit_id, diffs, 'created_at', 'min') # DONE
         end
         log("AUTOFIX: updated #{@auto_fix_counter} data points")
