@@ -105,6 +105,7 @@ class SendgridService
 
   def send_email_for_order(order, template_name)
     return unless user.email.present?
+    return unless send_to_sendgrid?
     begin
       @add_bcc = true
       substitution_hash.merge!(user.email_properties)
@@ -123,6 +124,6 @@ class SendgridService
   end
 
   def send_to_sendgrid?
-    Rails.env.production? || Rails.env.staging?
+    Rails.env.production?
   end
 end
