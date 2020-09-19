@@ -8,7 +8,6 @@
 #    FROM boxes
 #    LEFT JOIN items on items.box_id=boxes.id
 #    WHERE items.sent_on is NULL
-#        AND boxes.pallet_id IS NULL
 #        AND items.quantity != 0
 #    ORDER BY boxes.box_number, items.inventory_number
 #
