@@ -91,6 +91,7 @@ Stock administrator:
 - *stock_fulfilment
 - can_manage_stocktakes
 - can_manage_printers
+- can_manage_user_roles
 
 Order fulfilment: &order_fulfilment
 - can_manage_packages
