@@ -28,9 +28,6 @@ class SendgridService
     if send_to_sendgrid?
       sendgrid_instance.client.mail._("send").post(request_body: mail.to_json)
     end
-
-    message = "SlackSMS ('#{user.email}') #{message_body}"
-    SlackMessageJob.perform_later(message, ENV["SLACK_PIN_CHANNEL"])
   end
 
   def send_pin_email
@@ -115,11 +112,6 @@ class SendgridService
     rescue => e
       Rollbar.error(e, error_class: "Sendgrid Error", error_message: "Sendgrid confirmation email")
     end
-  end
-
-  def message_body
-    pin = user.most_recent_token.otp_code
-    I18n.t("twilio.browse_sms_verification_pin", pin: pin)
   end
 
   def send_to_sendgrid?
