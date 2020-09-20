@@ -56,6 +56,7 @@ Rails.application.routes.draw do
           put :receive_offer
           put :mark_inactive
           put :merge_offer
+          put :reopen_offer
         end
       end
       resources :offers_packages, only: [:destroy]

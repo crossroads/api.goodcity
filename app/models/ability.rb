@@ -237,7 +237,7 @@ class Ability
 
     if can_manage_offers?
       can [:index, :show, :update, :complete_review, :close_offer, :search,
-        :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary], Offer
+        :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary, :reopen_offer], Offer
     end
   end
 
