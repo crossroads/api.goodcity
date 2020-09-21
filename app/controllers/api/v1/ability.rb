@@ -44,6 +44,7 @@ module Api
         stocktake_abilities
         taxonomies
         user_abilities
+        user_role_abilities
         version_abilities
         company_abilities
         computer_abilities
@@ -199,7 +200,7 @@ module Api
     
         if can_manage_offers?
           can [:index, :show, :update, :complete_review, :close_offer, :search,
-            :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary], Offer
+            :destroy, :review, :mark_inactive, :merge_offer, :receive_offer, :summary, :reopen_offer], Offer
         end
       end
     
@@ -271,7 +272,7 @@ module Api
           can [:create, :update], OrganisationsUser, { user_id: @user_id, status: OrganisationsUser::Status::PENDING }
           can [:show], OrganisationsUser, user_id: @user_id
         end
-      end 
+      end
     
       def requested_packages_abilities
         can %i[create destroy update index checkout], RequestedPackage, user_id: @user_id
@@ -394,6 +395,10 @@ module Api
         can %i[index show update recent_users create], User if can_read_or_modify_user?
         can %i[create show], User if can_create_donor?
         can %i[mentionable_users], User if can_mention_users?
+      end
+    
+      def user_role_abilities
+        can %i[create destroy update], UserRole if can_manage_user_roles?
       end
     
       def version_abilities
