@@ -54,6 +54,25 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  context "Reopen Offer" do
+    it "should reopen closed offer" do
+      offer = create :offer, :closed
+      expect{ offer.reopen }.to change(offer, :under_review?)
+    end
+
+    it "should reopen cancelled offer" do
+      offer = create :offer, :cancelled
+      expect{ offer.reopen }.to change(offer, :under_review?)
+    end
+
+    it "should not reopen offer from states other than closed and cancelled" do
+      [:submitted, :under_review, :reviewed, :scheduled, :received, :receiving, :inactive].each do |state|
+        offer = create :offer, state
+        expect{ offer.reopen }.to_not change(offer, :under_review?)
+      end
+    end
+  end
+
   describe "Class Methods" do
     describe "valid_state?" do
       it "should verify state valid or not" do

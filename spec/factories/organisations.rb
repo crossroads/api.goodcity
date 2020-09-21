@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :organisation do
-    name_en { FFaker::Company.name }
+    sequence(:name_en) { |n| "#{FFaker::Company.name}#{n}" }
     name_zh_tw { FFaker::Company.name }
     description_en ["Mr. Johnson and Mr. Smith both have left their respective  jobs in order to specialize in environmental engineering consulting to small and medium sized businesses.",
         "Mr Johnson's previous employment was with Randolf and Associates
