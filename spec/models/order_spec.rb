@@ -123,8 +123,8 @@ RSpec.describe Order, type: :model do
     let(:authorised_by_user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
 
     ALL_ORDER_STATES.each do |state|
-      let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  supervisor.id }
-      let(:"unauthorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  nil }
+      let(:"authorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  supervisor.id, booking_type: online_type }
+      let(:"unauthorised_#{state}_order") { create :order, :"with_state_#{state}", created_by: user, submitted_by_id:  nil, booking_type: online_type }
     end
 
     let!(:orders) { (1..5).map { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: nil } }
@@ -429,7 +429,7 @@ RSpec.describe Order, type: :model do
         priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_before_6
         non_priority_order = create :order, state: "awaiting_dispatch", order_transport: transport_after_6
         expect(priority_order.is_priority?).to eq(true)
-        #expect(non_priority_order.is_priority?).to eq(false)
+        expect(non_priority_order.is_priority?).to eq(false)
       end
 
       it 'should filter prioritised orders awaiting dispatch' do

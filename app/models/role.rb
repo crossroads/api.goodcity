@@ -19,4 +19,19 @@ class Role < ActiveRecord::Base
   def grant(user)
     user.roles << self unless user.roles.include?(self)
   end
+
+  def snake_name
+    name.parameterize.underscore
+  end
+
+  class << self
+    #
+    # The empty "null" role can be used to represent users with no roles
+    #
+    # @return [Role] a null role
+    #
+    def null_role
+      Role.new(name: 'null').freeze
+    end
+  end
 end

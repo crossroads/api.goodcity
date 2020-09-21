@@ -11,7 +11,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   let(:district_id) { create(:district).id.to_s }
 
   let(:otp_auth_key) { "/JqONEgEjrZefDV3ZIQsNA==" }
-  let(:jwt_token)    { Token.new.generate }
+  let(:jwt_token)    { Token.new.generate({}) }
   let(:serialized_user) { JSON.parse(Api::V1::UserProfileSerializer.new(user).as_json.to_json) }
   let(:parsed_body) { JSON.parse(response.body) }
 
@@ -37,7 +37,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     it "with blank mobile number" do
       post :signup, format: 'json', user_auth: { mobile: "", first_name: "Jake", last_name: "Deamon", address_attributes: {district_id: district_id, address_type: 'Profile'} }
-      expect(parsed_body["errors"]).to eq("Mobile is invalid. Mobile can't be blank")
+      expect(parsed_body["errors"]).to eq("Mobile can't be blank")
     end
 
     context 'email' do
@@ -65,8 +65,10 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
     context "with successful authentication" do
       it 'should allow access to user and verify email after signed in on browse', :show_in_doc do
         set_browse_app_header
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        auth_token = AuthToken.new
+        allow(AuthToken).to receive(:find_by_otp_auth_key).and_return(auth_token)
+        allow(auth_token).to receive(:user).and_return(user)
+        allow(auth_token).to receive(:authenticate_otp).and_return(true)
         expect(controller).to receive(:generate_token).with(user_id: user.id).and_return(jwt_token)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234', pin_for: 'email'
         expect(parsed_body["user"]["user_profile"]["is_email_verified"]).to be_truthy
@@ -77,8 +79,10 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'should allow access to user after signed-in', :show_in_doc do
         set_donor_app_header
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        auth_token = AuthToken.new
+        allow(AuthToken).to receive(:find_by_otp_auth_key).and_return(auth_token)
+        allow(auth_token).to receive(:user).and_return(user)
+        allow(auth_token).to receive(:authenticate_otp).and_return(true)
         expect(controller).to receive(:generate_token).with(user_id: user.id).and_return(jwt_token)
         post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
         expect(parsed_body["user"]["user_profile"]["is_mobile_verified"]).to be_truthy
@@ -331,7 +335,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
       it { expect(parsed_body).to eql([]) }
     end
   end
-
 end
 
 

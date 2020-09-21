@@ -15,6 +15,7 @@ zh-tw:
     duplicate_error: A record already exists
     forbidden: Access Denied
     invalid_credentials: Invalid credentials
+    invalid_params: Invalid or missing params
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
