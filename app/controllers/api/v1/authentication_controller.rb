@@ -3,7 +3,7 @@ module Api
     class AuthenticationController < Api::V1::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
                                                  :current_user_rooms]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :hasura]
 
       resource_description do
         short "Handle user login and registration"
@@ -145,7 +145,6 @@ module Api
       def verify
         @user = warden.authenticate(:pin)
         if authenticated_user
-          @user.set_verified_flag(params[:pin_for])
           render json: {jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user)}
         else
           render_error({pin: I18n.t("auth.invalid_pin")})
