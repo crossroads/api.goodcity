@@ -48,7 +48,8 @@ module Api
         render json: @organisations_user, serializer: serializer
       end
 
-      def user_status
+      api :GET, '/v1/organisations_user/status_list', 'Get a list of available status for user'
+      def status_list
         render json: { status: OrganisationsUser.all_status }, status: 200
       end
 
