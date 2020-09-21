@@ -30,6 +30,7 @@ module Api
       api :POST, '/v1/users', "Create user"
       def create
         @user.assign_attributes(user_params)
+
         if @user.save
           if params["user"]["organisations_users_ids"].present?
             @user.organisations << Organisation.find_by(id: params["user"]["organisations_users_ids"])
