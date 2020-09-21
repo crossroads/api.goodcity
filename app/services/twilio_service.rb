@@ -7,8 +7,8 @@ class TwilioService
     @user = user
   end
 
-  def sms_verification_pin(app_name)
-    send_sms(body: pin_sms_text(app_name))
+  def sms_verification_pin(app_name, pin: nil)
+    send_sms(body: pin_sms_text(app_name, pin: pin))
   end
 
   def send_welcome_msg
@@ -47,8 +47,8 @@ class TwilioService
 
   private
 
-  def pin_sms_text(app_name)
-    pin = user.most_recent_token.otp_code
+  def pin_sms_text(app_name, pin: nil)
+    pin ||= user.most_recent_token.otp_code
     if app_name == BROWSE_APP
       I18n.t('twilio.browse_sms_verification_pin', pin: pin)
     else

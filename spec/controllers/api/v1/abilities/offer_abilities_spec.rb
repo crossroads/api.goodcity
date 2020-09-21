@@ -4,7 +4,7 @@ require 'cancan/matchers'
 describe "Offer abilities" do
 
   before { allow_any_instance_of(PushService).to receive(:notify) }
-  subject(:ability) { Ability.new(user) }
+    subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage, :search] }
 
   context "when Supervisor" do
