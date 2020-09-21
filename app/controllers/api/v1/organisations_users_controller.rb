@@ -1,9 +1,9 @@
 module Api
   module V1
     class OrganisationsUsersController < Api::V1::ApiController
-      authorize_resource :organisations_user, parent: false, except: [:status_list, :organisation_user]
+      authorize_resource :organisations_user, parent: false, except: [:status_list]
       load_resource :organisations_user, only: [:show, :update]
-      skip_authorization_check only: [:status_list, :organisation_user]
+      skip_authorization_check only: [:status_list]
 
       resource_description do
         short "Get Organisations Users."
