@@ -63,7 +63,7 @@ zh-tw:
         mobile: "手提電話"
       organisation:
         name_en: '機構名稱(英文)'
-        registration: '機構名稱(中文)'
+        registration: '註冊編號'
     errors:
       models:
         requested_package:
@@ -81,6 +81,8 @@ zh-tw:
         organisation:
           attributes:
             name_en:
+              taken: '已被登記'
+            registration:
               taken: '已被登記'
 
   notification:
