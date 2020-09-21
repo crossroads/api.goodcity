@@ -15,6 +15,7 @@ en:
     duplicate_error: A record already exists
     forbidden: Access Denied
     invalid_credentials: Invalid credentials
+    invalid_params: Invalid or missing params
   warden:
     token_invalid: Invalid token
     token_expired: Expired token

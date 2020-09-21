@@ -33,9 +33,9 @@ class SendgridService
     SlackMessageJob.perform_later(message, ENV["SLACK_PIN_CHANNEL"])
   end
 
-  def send_pin_email
+  def send_pin_email(pin: nil)
     return unless user.email.present?
-    pin = user.most_recent_token.otp_code
+    pin ||= user.most_recent_token.otp_code
     substitution_hash["pin"] = pin
     @mail.template_id = ENV[pin_template_id]
     @mail.from = sendgrid_email_formation(ENV["FROM_EMAIL"], I18n.t("email_from_name"))
