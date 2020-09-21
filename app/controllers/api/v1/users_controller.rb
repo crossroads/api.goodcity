@@ -90,7 +90,7 @@ module Api
                     search_text: params['searchText'],
                     role_name: params['role_name']}).limit(25)
         data = ActiveModel::ArraySerializer.new(records,
-          each_serializer: serializer,
+          each_serializer: Api::V1::UserDetailsSerializer,
           include_user_roles: true,
           root: "users").as_json
         render json: { "meta": {"search": params["searchText"] } }.merge(data)
