@@ -3,7 +3,7 @@ require 'cancan/matchers'
 
 describe "User abilities" do
 
-  subject(:ability) { Ability.new(user) }
+  subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { %i[index show create update destroy manage current_user_profile can_read_or_modify_user] }
 
   context "when Supervisor" do

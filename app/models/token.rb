@@ -10,37 +10,79 @@ class Token
 
   validate :token_validation
 
+  attr_reader :jwt_config
+
+  GC_METADATA_NAMESPACE = "https://goodcity.hk/jwt/metadata"
+
+  module Types
+    API = "api".freeze      # An 'api' token is used as a mean of resolving the current user when connecting to the REST API
+    OTP = "otp".freeze      # An 'otp' token is designed to be used once during the auth process
+  end
+
+  DEFAULT_TYPE  = Types::API
+  ALL_TYPES     = [Types::API, Types::OTP].freeze
+
+  #
+  # Token class initializer
+  #
+  # @param [Hash] options
+  # @option options [String] :bearer The bearer token to parse
+  # @option options [Hash] :jwt_config The JWT options (secret, algo, ...)
+  #
   def initialize(options = {})
-    @bearer = options[:bearer] || '' # "Bearer zxcasdqwesdfsdfqwe"
+    @jwt_config = options[:jwt_config]  || Rails.application.secrets.jwt
+    @bearer     = options[:bearer]      || '' # "Bearer zxcasdqwesdfsdfqwe"
   end
 
   # Generate an encoded Json Web Token to send to client app
   # as part of the authentication/authorization process
   # Additional options can be encoded inside the token
-  # options = { "mobile" => "+85212345678" }
-  def generate(options = {})
-    now = Time.now
-    options.merge!({
-      "iat": now.to_i,
+  # params = { "mobile" => "+85212345678" }
+  def generate(params, metadata: {}, validity: nil, type: DEFAULT_TYPE)
+    now       = Time.now.to_i
+    validity  ||= default_validity(type)    
+
+    payload = params.merge({
+      "iat": now,
       "iss": issuer,
-      "exp": (now + validity).to_i
+      "exp": now + validity,
+
+      GC_METADATA_NAMESPACE => { type: type }.merge(metadata.stringify_keys)
     })
-    JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
+    JWT.encode(payload.stringify_keys, secret_key, hmac_sha_algo)
   end
 
-  def generate_api_token(options = {})
-    now = Time.now
-    options.merge!({
-      "iat": now.to_i,
-      "iss": issuer,
-      "exp": (now + validity(for_api: true)).to_i
-    })
-    JWT.encode(options.stringify_keys, secret_key, hmac_sha_algo)
+  def generate_api_token(params, metadata: {}, validity: nil)
+    generate(params, metadata: metadata, validity: validity, type: Types::API)
+  end
+
+  def generate_otp_token(params, metadata: {}, validity: nil)
+    generate(params, metadata: metadata, validity: validity, type: Types::OTP)
   end
 
   # Allow access to the data stored inside the token e.g. mobile number
   def data
     token
+  end
+
+  def read(key, default: nil)
+    data[0][key] || default
+  end
+
+  def metadata
+    @metadata ||= read(GC_METADATA_NAMESPACE, default: {}).symbolize_keys
+  end
+
+  def access_type
+    metadata[:type] || DEFAULT_TYPE
+  end
+
+  def api?
+    access_type == Types::API
+  end
+
+  def otp?
+    access_type == Types::OTP
   end
 
   private
@@ -60,8 +102,9 @@ class Token
   def token_validation
     if (!jwt_string.blank? && !(token.all? &:blank?))
       cur_time = Time.now
-      iat_time = Time.at(token[0]["iat"])
-      exp_time = Time.at(token[0]["exp"])
+      iat_time = Time.at read("iat")
+      exp_time = Time.at read("exp")
+      return errors.add(:base, I18n.t('token.invalid')) unless ALL_TYPES.include?(access_type)
       if exp_time < cur_time
         errors.add(:base, I18n.t('token.expired'))
       elsif !(iat_time < cur_time && iat_time < exp_time)
@@ -72,10 +115,6 @@ class Token
     end
   rescue JWT::DecodeError
     errors.add(:base, I18n.t('token.invalid'))
-  end
-
-  def jwt_config
-    Rails.application.secrets.jwt
   end
 
   # Key used to generate tokens. MUST be private. Changing this will invalidate all tokens.
@@ -92,7 +131,8 @@ class Token
   end
 
   # Number of seconds the token is valid for
-  def validity(options = {})
-    options[:for_api] ? jwt_config['validity_for_api'] : jwt_config['validity']
+  def default_validity(type)
+    return jwt_config['validity_for_otp'].to_i if type == Types::OTP
+    return jwt_config['validity'].to_i
   end
 end

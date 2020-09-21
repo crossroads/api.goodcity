@@ -10,7 +10,8 @@ namespace :goodcity do
       stockit_user.user_roles.where(role: role).first_or_create
       if stockit_user.save
         stockit_user.auth_tokens.delete_all
-        api_token = Token.new.generate_api_token(user_id: stockit_user.id)
+        validity_for_stockit = Rails.application.secrets.jwt[:validity_for_api]
+        api_token = Token.new.generate_otp_token(user_id: stockit_user.id, validity: validity_for_stockit)
         puts "STOCKIT API TOKEN = #{api_token}"
       else
         puts stockit_user.errors.full_messages

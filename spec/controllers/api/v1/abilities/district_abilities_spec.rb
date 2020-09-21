@@ -1,41 +1,48 @@
 require 'rails_helper'
 require 'cancan/matchers'
 
-describe "RejectionReason abilities" do
+describe "District abilities" do
 
-  subject(:ability) { Ability.new(user) }
+    subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
 
   context "when Supervisor" do
     let(:user)     { create(:user, :supervisor) }
-    let(:rejection_reason) { create :rejection_reason }
+    let(:district) { create :district }
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      is_expected.to be_able_to(do_action, rejection_reason)
+      is_expected.to be_able_to(do_action, district)
     end}
     it{ cannot.each do |do_action|
-      is_expected.to_not be_able_to(do_action, rejection_reason)
+      is_expected.to_not be_able_to(do_action, district)
     end}
   end
 
   context "when Reviewer" do
     let(:user)     { create(:user, :reviewer) }
-    let(:rejection_reason) { create :rejection_reason }
+    let(:district) { create :district }
     let(:can)      { [:index, :show] }
     let(:cannot)   { [:create, :update, :destroy, :manage] }
     it{ can.each do |do_action|
-      is_expected.to be_able_to(do_action, rejection_reason)
+      is_expected.to be_able_to(do_action, district)
     end}
     it{ cannot.each do |do_action|
-      is_expected.to_not be_able_to(do_action, rejection_reason)
+      is_expected.to_not be_able_to(do_action, district)
     end}
   end
 
   context "when Anonymous" do
     let(:user)     { nil }
-    let(:rejection_reason) { create :rejection_reason }
-    it{ all_actions.each { |do_action| is_expected.to_not be_able_to(do_action, rejection_reason) } }
+    let(:district) { create :district }
+    let(:can)      { [:index, :show] }
+    let(:cannot)   { [:create, :update, :destroy, :manage] }
+    it{ can.each do |do_action|
+      is_expected.to be_able_to(do_action, district)
+    end}
+    it{ cannot.each do |do_action|
+      is_expected.to_not be_able_to(do_action, district)
+    end}
   end
 
 end

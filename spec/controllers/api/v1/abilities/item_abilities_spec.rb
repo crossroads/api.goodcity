@@ -3,7 +3,7 @@ require 'cancan/matchers'
 
 describe "Item abilities" do
 
-  subject(:ability) { Ability.new(user) }
+    subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { [:index, :show, :create, :update, :destroy, :manage] }
   let(:state)       { 'draft' }
   let(:item)        { create :item, state: state }
