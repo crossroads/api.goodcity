@@ -38,7 +38,6 @@ class User < ActiveRecord::Base
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
 
   before_validation :downcase_email
-  before_validation :set_request_from_stock
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
@@ -200,16 +199,6 @@ class User < ActiveRecord::Base
 
   def downcase_email
     email.downcase! if email.present?
-  end
-
-  def has_user_create_permission?
-    has_permission?("can_read_or_modify_user") || has_permission?("can_create_donor")
-  end
-
-  def set_request_from_stock
-    if User.current_user&.has_user_create_permission?
-      self.request_from_stock = true
-    end
   end
 
   def donor?
