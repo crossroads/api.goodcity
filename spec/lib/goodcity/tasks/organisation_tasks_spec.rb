@@ -14,18 +14,13 @@ describe Goodcity::Tasks::OrganisationTasks do
       charity_role.grant(user_with_processing_order)
       charity_role.grant(user_with_closed_order)
 
-      OrganisationsUser.all.each { |ou| ou.update!(status: '') }
-
       create(:order, :with_state_processing, created_by: user_with_processing_order, organisation_id: user_with_processing_order.organisations.first.id)
       create(:order, :with_state_closed, created_by: user_with_closed_order, organisation_id: user_with_closed_order.organisations.first.id)
     end
 
     it "gives users with closed orders the approved status" do
-      expect {
         Goodcity::Tasks::OrganisationTasks.initialize_status_field!
-      }.to change {
-        user_with_closed_order.reload.organisations_users.first.status
-      }.to('approved')
+        expect(user_with_closed_order.reload.organisations_users.first.status).to eq('approved')
     end
 
     it "gives users with active orders the pending status" do
@@ -43,7 +38,7 @@ describe Goodcity::Tasks::OrganisationTasks do
         user.reload.organisations_users.first.status
       }.to('pending')
     end
-  end 
+  end
 
   describe "Restore charity role" do
     let(:user) { create :user }
@@ -69,5 +64,5 @@ describe Goodcity::Tasks::OrganisationTasks do
         Goodcity::Tasks::OrganisationTasks.restore_charity_roles!
       }.not_to change { user.roles.count }
     end
-  end 
+  end
 end
