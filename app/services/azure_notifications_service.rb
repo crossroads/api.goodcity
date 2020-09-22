@@ -158,7 +158,7 @@ class AzureNotificationsService
   end
 
   def settings
-    Rails.application.secrets.azure_notifications[@app_name]
+    Rails.application.secrets.azure_notifications[@app_name.to_sym]
   end
 
   def notification_title
