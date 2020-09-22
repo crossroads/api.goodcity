@@ -60,8 +60,8 @@ RSpec.describe PackageSet, type: :model do
 
       it 'if the packages are destroyed' do
         p1, p2 = packages
-        expect { p1.destroy }.not_to change(PackageSet, :count)
-        expect { p2.destroy }.to change(PackageSet, :count).by(-1)
+        expect { p1.reload.destroy }.not_to change(PackageSet, :count)
+        expect { p2.reload.destroy }.to change(PackageSet, :count).by(-1)
       end
     end
   end
@@ -87,32 +87,32 @@ RSpec.describe PackageSet, type: :model do
       end
     end
 
-    describe "on creation of packages" do    
+    describe "on creation of packages" do
       before { touch(package_set) }
-  
+
       it 'is not assigned a package set if it doesnt have sibling packages' do
         expect { touch(package) }.not_to change(PackageSet, :count)
         expect(package.package_set_id).to be_nil
       end
-  
+
       it 'is assigned a package set if it has sibling packages' do
         expect { touch(sibling_1) }.not_to change(PackageSet, :count)
         expect { touch(sibling_2) }.to change(PackageSet, :count).by(1)
-  
+
         expect(sibling_1.reload.package_set_id).to eq(sibling_2.reload.package_set_id)
-  
+
         expect { touch(sibling_3) }.not_to change(PackageSet, :count)
         expect(sibling_3.reload.package_set_id).to eq(sibling_2.reload.package_set_id)
       end
-  
+
       it 'is assigned a package set with a description equal to the package type' do
         touch(sibling_1, sibling_2)
         expect(sibling_1.reload.package_set.description).to eq(item.package_type.name_en)
       end
-  
+
       it 'it can be created with an explicit set which is different from the siblings' do
         expect([sibling_1, sibling_2, sibling_3].map(&:reload).map(&:package_set_id).uniq.length).to eq(1)
-  
+
         expect { touch(sibling_4) }.not_to change(PackageSet, :count)
         expect(sibling_4.reload.package_set_id).not_to eq(sibling_1.reload.package_set_id)
       end

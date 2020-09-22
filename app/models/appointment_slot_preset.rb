@@ -1,4 +1,4 @@
-class AppointmentSlotPreset < ActiveRecord::Base
+class AppointmentSlotPreset < ApplicationRecord
   include PushUpdatesMinimal
 
   validate :no_conflict, on: :update

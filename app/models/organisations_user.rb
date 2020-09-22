@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class OrganisationsUser < ActiveRecord::Base
+class OrganisationsUser < ApplicationRecord
   module Status
     PENDING   = 'pending'
     APPROVED  = 'approved'

@@ -1,10 +1,10 @@
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# frozen_String_literal: true
 
 FactoryBot.define do
   factory :message do
     body        { generate(:message_body) }
     sender      { |m| m.association(:user) }
-    is_private  false
+    is_private  { false }
     association :messageable, factory: :order
 
     trait :reviewer_message do
@@ -17,7 +17,7 @@ FactoryBot.define do
 
     trait :subscribe_to_message do
       transient do
-        offer_subscription_count 1
+        offer_subscription_count { 1 }
       end
       after(:create) do |message, evaluator|
         create_list(:offer_subscription, evaluator.offer_subscription_count, message: message)
@@ -29,7 +29,7 @@ FactoryBot.define do
     end
 
     trait :private do
-      is_private  true
+      is_private  { true }
     end
 
     trait :with_order do
@@ -54,6 +54,4 @@ FactoryBot.define do
       "We can accept delivery today if you are able to book a van to arrive before 4pm."
     ].sample
   end
-
-
 end

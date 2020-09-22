@@ -1,5 +1,5 @@
 
-class BookingType < ActiveRecord::Base
+class BookingType < ApplicationRecord
   has_many :orders
   
   validates :identifier, :name_en, :name_zh_tw, uniqueness: true

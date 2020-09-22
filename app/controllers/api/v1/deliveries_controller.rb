@@ -2,6 +2,7 @@ module Api
   module V1
     class DeliveriesController < Api::V1::ApiController
       load_and_authorize_resource :delivery, parent: false
+
       resource_description do
         short 'Get, create, and update deliveries.'
         formats ['json']
@@ -122,6 +123,10 @@ module Api
           :contact_id, :schedule_id, :delivery_type, :gogovan_order_id)
       end
 
+      def delivery_attrs
+        params.require(:delivery).permit!
+      end
+
       def order_params
         params.require(:gogovanOrder).permit(:pickupTime, :districtId,
           :needEnglish, :needCart, :needCarry, :offerId, :name, :mobile,
@@ -141,7 +146,7 @@ module Api
       end
 
       def get_delivery_details
-        params["delivery"] = get_hash(params["delivery"])
+        params["delivery"] = get_hash(delivery_attrs.to_h)
         params.require(:delivery).permit(:start, :finish, :offer_id,
           :contact_id, :schedule_id, :delivery_type, :gogovan_order_id,
           schedule_attributes: schedule_attributes,
@@ -174,17 +179,17 @@ module Api
       end
 
       def address_attributes
-        [:address_type, :district_id, :street, :flat, :building]
+        %i[address_type district_id street flat building]
       end
 
       def schedule_attributes
-        [:scheduled_at, :slot_name, :zone, :resource, :slot]
+        %i[scheduled_at slot_name zone resource slot]
       end
 
       def get_hash(object)
         Hash[
-          object.map do |(m, n)|
-            [m.underscore, (n.is_a?(Hash) ? get_hash(n) : n)]
+          object.map do |k, v|
+            [k.underscore, v.is_a?(Hash) ? get_hash(v) : v]
           end
         ]
       end

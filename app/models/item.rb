@@ -1,5 +1,5 @@
-class Item < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer },
+class Item < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer },
   only: [:donor_description, :donor_condition_id, :state]
   include Paranoid
   include StateMachineScope
@@ -17,6 +17,8 @@ class Item < ActiveRecord::Base
   has_many   :received_packages,  -> { where(state: 'received') },  class_name: "Package" # Used in Offer
   has_many   :inventory_packages, -> { where.not(inventory_number: nil) }, class_name: "Package"
 
+  before_save :set_description
+
   scope :with_eager_load, -> {
     eager_load([:package_type, :rejection_reason, :donor_condition, :images,
       { messages: :sender }, { packages: :package_type }
@@ -30,9 +32,8 @@ class Item < ActiveRecord::Base
   # StateMachine has Issue with rails 4.2, it does not set initial
   # state by default
   # refer - https://github.com/pluginaweek/state_machine/issues/334
-  after_initialize :set_initial_state
-  before_save :set_description
-  after_commit :update_stockit_item, on: :update, unless: "GoodcitySync.request_from_stockit"
+  # after_initialize :set_initial_state
+  after_commit :update_stockit_item, on: :update, unless: :from_stockit?
 
   def set_initial_state
     self.state ||= :draft
@@ -58,6 +59,10 @@ class Item < ActiveRecord::Base
     after_transition on: [:accept, :reject], do: :assign_reviewer
     after_transition on: :reject, do: :send_reject_message
     after_transition on: :submit, do: :send_new_item_message
+  end
+
+  def from_stockit?
+    GoodcitySync.request_from_stockit
   end
 
   def set_description

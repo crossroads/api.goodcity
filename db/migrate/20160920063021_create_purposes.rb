@@ -1,4 +1,4 @@
-class CreatePurposes < ActiveRecord::Migration
+class CreatePurposes < ActiveRecord::Migration[4.2]
   def change
     create_table :purposes do |t|
       t.string :name_en

@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::DeliveriesController, type: :controller do
-
   let(:user) { delivery.offer.created_by }
   subject { JSON.parse(response.body) }
   before { generate_and_set_token(user) }
@@ -12,7 +11,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
     it "returns 201", :show_in_doc do
       expect(controller).to receive(:delete_existing_delivery)
-      post :create, delivery: attributes_for(:delivery).merge(offer_id: offer.id)
+      post :create, params: { delivery: attributes_for(:delivery).merge(offer_id: offer.id) }
       expect(response.status).to eq(201)
     end
   end
@@ -23,7 +22,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
     it "owner can update", :show_in_doc do
       params = { gogovan_order_id: gogovan_order.id }
-      put :update, id: delivery.id, delivery: params
+      put :update, params: { id: delivery.id, delivery: params }
       expect(response.status).to eq(200)
       expect(delivery.reload.gogovan_order_id).to eq(gogovan_order.id)
     end
@@ -34,7 +33,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     let(:crossroads_delivery) { build(:crossroads_delivery) }
 
     it "owner can update", :show_in_doc do
-      put :update, id: delivery.id, delivery: crossroads_delivery.attributes.except(:id)
+      put :update, params: { id: delivery.id, delivery: crossroads_delivery.attributes.except(:id) }
       expect(response.status).to eq(200)
       expect(delivery.reload.contact).to_not be_nil
     end
@@ -45,7 +44,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     let(:drop_off_delivery) { build(:drop_off_delivery) }
 
     it "owner can update", :show_in_doc do
-      put :update, id: delivery.id, delivery: drop_off_delivery.attributes.except(:id)
+      put :update, params: { id: delivery.id, delivery: drop_off_delivery.attributes.except(:id) }
       expect(response.status).to eq(200)
       expect(delivery.reload.schedule).to_not be_nil
     end
@@ -55,10 +54,10 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     let(:delivery) { create :drop_off_delivery }
 
     it "returns 200", :show_in_doc do
-      delete :destroy, id: delivery.id
+      delete :destroy, params: { id: delivery.id }
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)
-      expect(body).to eq( {} )
+      expect(body).to eq({})
     end
   end
 
@@ -171,7 +170,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
           it "should fail to modify the delivery" do
             expect(Gogovan).not_to receive(:cancel_order)
             expect(GogovanOrder).not_to receive(:book_order)
-            post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+            post :confirm_delivery, params: { delivery: new_delivery, gogovanOrder: ggv_order }
 
             expect(response.status).to eq(422)
             expect(subject['errors'].length).to eq(1)
@@ -188,7 +187,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
           expect(Gogovan).not_to receive(:cancel_order)
           expect(GogovanOrder).not_to receive(:book_order)
-          post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+          post :confirm_delivery, params: { delivery: new_delivery, gogovanOrder: ggv_order }
 
           expect(response.status).to eq(422)
           expect(subject['errors'].length).to eq(1)
@@ -202,7 +201,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
 
           expect(Gogovan).not_to receive(:cancel_order)
           expect(GogovanOrder).not_to receive(:book_order)
-          post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+          post :confirm_delivery, params: { delivery: new_delivery, gogovanOrder: ggv_order }
 
           expect(response.status).to eq(422)
           expect(subject['errors'].length).to eq(1)
@@ -215,7 +214,7 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
       it "should confirm delivery by removing old associated records" do
         expect(Gogovan).to receive(:cancel_order).with(old_delivery.gogovan_order.booking_id).and_return(200)
         expect(GogovanOrder).to receive(:book_order).with(user, ggv_order).and_return(gogovan_order)
-        post :confirm_delivery, delivery: new_delivery, gogovanOrder: ggv_order
+        post :confirm_delivery, params: { delivery: new_delivery, gogovanOrder: ggv_order }
 
         expect(old_offer.reload.state).to eq("scheduled")
         expect(response.status).to eq(200)
@@ -227,13 +226,12 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
         expect{
           GogovanOrder.find(old_ggv_id)
         }.to raise_error(ActiveRecord::RecordNotFound)
-
       end
     end
 
     it "should set new gogovan_transport option to offer" do
       expect(Gogovan).to receive_message_chain(:new, :confirm_order).and_return({"id"=> gogovan_order.booking_id})
-      post :confirm_delivery, delivery: delivery_params, gogovanOrder: ggv_order
+      post :confirm_delivery, params: { delivery: delivery_params, gogovanOrder: ggv_order }
 
       expect(offer.reload.state).to eq("scheduled")
       expect(response.status).to eq(200)
@@ -258,9 +256,8 @@ RSpec.describe Api::V1::DeliveriesController, type: :controller do
     describe "not owned by me" do
       let(:user) { create :user }
       it do
-        expect{controller.send(:delete_existing_delivery)}.to raise_error(CanCan::AccessDenied)
+        expect{ controller.send(:delete_existing_delivery) }.to raise_error(CanCan::AccessDenied)
       end
     end
   end
-
 end

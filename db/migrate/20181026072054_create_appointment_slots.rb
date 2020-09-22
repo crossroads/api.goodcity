@@ -1,4 +1,4 @@
-class CreateAppointmentSlots < ActiveRecord::Migration
+class CreateAppointmentSlots < ActiveRecord::Migration[4.2]
   def change
     create_table :appointment_slots do |t|
       t.timestamp :timestamp

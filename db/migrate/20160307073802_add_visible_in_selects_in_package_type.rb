@@ -1,4 +1,4 @@
-class AddVisibleInSelectsInPackageType < ActiveRecord::Migration
+class AddVisibleInSelectsInPackageType < ActiveRecord::Migration[4.2]
   def up
     add_column :package_types, :visible_in_selects, :boolean, default: false
     add_column :package_types, :stockit_id, :integer

@@ -1,9 +1,9 @@
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# frozen_String_literal: true
 
 FactoryBot.define do
   factory :image do
     cloudinary_id { FactoryBot.generate(:fake_cloudinary_image_id) }
-    favourite false
+    favourite { false }
     trait :with_item do
       association :imageable, factory: :item
     end
@@ -64,10 +64,9 @@ FactoryBot.define do
     seq[i]
   end
 
-  # red_chair: 
+  # red_chair:
   #   cloudinary_id: "1487128065/demo/jnsuiph0zz06eeah5ddv.jpg"
   sequence :cloudinary_demo_images do |n|
     @cloudinary_demo_images ||= YAML.load_file("#{Rails.root}/db/cloudinary_demo_images.yml")
   end
-
 end

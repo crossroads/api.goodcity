@@ -1,4 +1,4 @@
-class Holiday < ActiveRecord::Base
+class Holiday < ApplicationRecord
   include RollbarSpecification
   by_star_field :holiday
 

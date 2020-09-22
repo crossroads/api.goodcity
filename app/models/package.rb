@@ -1,5 +1,5 @@
-class Package < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+class Package < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include Paranoid
   include StateMachineScope
   include PushUpdatesMinimal
@@ -19,7 +19,6 @@ class Package < ActiveRecord::Base
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
   belongs_to :package_set
-  has_many :locations, through: :packages_locations
 
   belongs_to :detail, polymorphic: true, dependent: :destroy, required: false
   belongs_to :package_type, inverse_of: :packages
@@ -33,6 +32,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_moved_by, class_name: 'User'
 
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
+  has_many   :locations, through: :packages_locations
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy
@@ -53,9 +53,9 @@ class Package < ActiveRecord::Base
   after_save :push_changes
   after_destroy :push_changes
   push_targets do |record|
-    chans = [ Channel::STOCK_CHANNEL ]
+    chans = [Channel::STOCK_CHANNEL]
     chans << Channel::STAFF_CHANNEL if record.item_id
-    chans << Channel::BROWSE_CHANNEL if (record.allow_web_publish || record.allow_web_publish_was)
+    chans << Channel::BROWSE_CHANNEL if record.allow_web_publish || record.allow_web_publish_before_last_save
     chans
   end
 

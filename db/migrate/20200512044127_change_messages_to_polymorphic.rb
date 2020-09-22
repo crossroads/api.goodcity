@@ -1,4 +1,4 @@
-class ChangeMessagesToPolymorphic < ActiveRecord::Migration
+class ChangeMessagesToPolymorphic < ActiveRecord::Migration[4.2]
   def up
     add_column :messages, :messageable_type, :string
     add_column :messages, :messageable_id, :int

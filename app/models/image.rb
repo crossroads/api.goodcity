@@ -1,5 +1,5 @@
-class Image < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+class Image < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include CloudinaryHelper
   include Paranoid
   include PushUpdatesMinimal
@@ -8,10 +8,10 @@ class Image < ActiveRecord::Base
   belongs_to :imageable, polymorphic: true, touch: true
 
   before_save :handle_heic_image
-  before_destroy :delete_image_from_cloudinary, unless: "has_multiple_items"
+  before_destroy :delete_image_from_cloudinary, unless: :has_multiple_items
   after_update :clear_unused_transformed_images
 
-  after_update :reset_favourite, if: :favourite_changed?
+  after_update :reset_favourite, if: :saved_change_to_favourite?
 
   scope :donor_images, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
 

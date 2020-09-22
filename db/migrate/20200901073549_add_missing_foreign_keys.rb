@@ -1,4 +1,4 @@
-class AddMissingForeignKeys < ActiveRecord::Migration
+class AddMissingForeignKeys < ActiveRecord::Migration[4.2]
   def change
     add_foreign_key "addresses", "districts", name: "addresses_district_id_fk"
     add_foreign_key "auth_tokens", "users", name: "auth_tokens_user_id_fk"

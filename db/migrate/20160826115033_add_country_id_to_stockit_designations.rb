@@ -1,4 +1,4 @@
-class AddCountryIdToStockitDesignations < ActiveRecord::Migration
+class AddCountryIdToStockitDesignations < ActiveRecord::Migration[4.2]
   def up
     add_column :stockit_designations, :country_id, :integer
 

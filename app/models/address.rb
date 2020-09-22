@@ -1,5 +1,5 @@
-class Address < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+class Address < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include Paranoid
 
   belongs_to :addressable, polymorphic: true

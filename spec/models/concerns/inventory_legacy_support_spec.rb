@@ -80,10 +80,11 @@ describe InventoryLegacySupport do
 
         context "by increasing it's quantity" do
           let(:added_quantity) { 10 }
+          let(:updated_quantity) { packages_location.quantity + added_quantity }
 
           it "records an INCREMENTAL MOVE in the inventory" do
             expect {
-              packages_location.increment!(:quantity, added_quantity)
+              packages_location.update(quantity: updated_quantity)
             }.to change(PackagesInventory, :count).by(1)
 
             expect(PackagesInventory.count).to eq(2)
@@ -97,7 +98,7 @@ describe InventoryLegacySupport do
 
           it "accounts in the total computed quantity" do
             expect {
-              packages_location.increment!(:quantity, added_quantity)
+              packages_location.update(quantity: updated_quantity)
             }.to change {
               computer.package_quantity(package)
             }.by(added_quantity)
@@ -108,10 +109,11 @@ describe InventoryLegacySupport do
 
         context "by decreasing it's quantity" do
           let(:removed_quantity) { 10 }
+          let(:updated_quantity) { packages_location.quantity - removed_quantity }
 
           it "records a DECREMENTAL MOVE in the inventory" do
             expect {
-              packages_location.decrement!(:quantity, removed_quantity)
+              packages_location.update(quantity: updated_quantity)
             }.to change(PackagesInventory, :count).by(1)
 
             expect(PackagesInventory.count).to eq(2)
@@ -125,7 +127,7 @@ describe InventoryLegacySupport do
 
           it "accounts in the total computed quantity" do
             expect {
-              packages_location.decrement!(:quantity, removed_quantity)
+              packages_location.update(quantity: updated_quantity)
             }.to change {
               computer.package_quantity(package)
             }.by(-1 * removed_quantity)

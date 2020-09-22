@@ -1,4 +1,4 @@
-class Organisation < ActiveRecord::Base
+class Organisation < ApplicationRecord
   include FuzzySearch
 
   belongs_to :organisation_type

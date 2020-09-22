@@ -1,4 +1,4 @@
-class CreateProcessChecklist < ActiveRecord::Migration
+class CreateProcessChecklist < ActiveRecord::Migration[4.2]
   def change
     create_table :process_checklists do |t|
       t.string :text_en

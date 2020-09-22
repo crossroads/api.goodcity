@@ -149,7 +149,7 @@ module Api
       error 403, "Forbidden"
       error 422, "Validation Error"
       error 500, "Internal Server Error"
-      def verify        
+      def verify
         user = warden.authenticate(:pin_jwt)
         if warden.authenticated?
           jwt_token = AuthenticationService.generate_token(user, api_version: API_VERSION)

@@ -1,5 +1,5 @@
-class UserRole < ActiveRecord::Base
-  has_paper_trail class_name: 'Version'
+class UserRole < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }
 
   belongs_to :user
   belongs_to :role

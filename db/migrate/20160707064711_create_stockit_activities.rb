@@ -1,4 +1,4 @@
-class CreateStockitActivities < ActiveRecord::Migration
+class CreateStockitActivities < ActiveRecord::Migration[4.2]
   def change
     create_table :stockit_activities do |t|
       t.string :name

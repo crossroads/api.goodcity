@@ -27,7 +27,7 @@ RSpec.describe Api::V1::RejectionReasonsController, type: :controller do
     end
 
     it 'returns rejections reasons with matching ids from params' do
-      get :index, ids: [rejection_reason.id]
+      get :index, params: { ids: [rejection_reason.id] }
       expect(subject['rejection_reasons'].length).to eq(1)
     end
   end
@@ -36,12 +36,12 @@ RSpec.describe Api::V1::RejectionReasonsController, type: :controller do
     before { generate_and_set_token(user) }
 
     it 'returns 200' do
-      get :show, id: rejection_reason.id
+      get :show, params: { id: rejection_reason.id }
       expect(response.status).to eq(200)
     end
 
     it 'returns serialised_rejection_reason', :show_in_doc do
-      get :show, id: rejection_reason.id
+      get :show, params: { id: rejection_reason.id }
       expect(subject).to eq(serialized_rejection_reason_json)
     end
   end

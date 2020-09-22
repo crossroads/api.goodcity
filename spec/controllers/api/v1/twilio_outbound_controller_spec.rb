@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
-
   before {
     allow_any_instance_of(described_class).to receive(:validate_twilio_request)
       .and_return(true)
@@ -38,7 +37,7 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
     }) }
 
     it "will generate response for twilio when Admin calling Donor's number", :show_in_doc do
-      post :connect_call, params
+      post :connect_call, params: params
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say voice=\"alice\">Connecting call to #{offer.created_by.full_name}</Say>\n<Dial action=\"/api/v1/twilio_outbound/completed_call\" callerId=\"+163456799\">#{offer.created_by.mobile}</Dial>\n</Response>\n")
     end
@@ -61,13 +60,13 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
     }
 
     it "will generate response for twilio when Admin-Donor call is completed", :show_in_doc do
-      post :completed_call, params
+      post :completed_call, params: params
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Hangup/>\n</Response>\n")
     end
 
     it "will generate response for twilio when Donor is not-answering or busy or call-fails", :show_in_doc do
-      post :completed_call, failed_call_params
+      post :completed_call, params: failed_call_params
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say voice=\"alice\">Couldn't reach User try again soon. Goodbye.</Say>\n<Hangup/>\n</Response>\n")
     end
@@ -90,7 +89,7 @@ RSpec.describe Api::V1::TwilioOutboundController, type: :controller do
     }
 
     it "called from Twilio when outbound call completed", :show_in_doc do
-      post :call_status, params
+      post :call_status, params: params
       expect(response.status).to eq(200)
       expect(response.body).to eq("{}")
     end

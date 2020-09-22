@@ -3,7 +3,7 @@
 
   @example
 
-  class MyModel < ActiveRecord::Base
+  class MyModel < ApplicationRecord
     include HookControls
 
     managed_hook :create, :after, :do_something

@@ -1,4 +1,4 @@
-class AddIndexesToOrder < ActiveRecord::Migration
+class AddIndexesToOrder < ActiveRecord::Migration[4.2]
   def change
     add_index :orders, :state
     add_index :order_transports, :scheduled_at

@@ -1,4 +1,4 @@
-class UpdateOrderTransportsAttributes < ActiveRecord::Migration
+class UpdateOrderTransportsAttributes < ActiveRecord::Migration[4.2]
   def change
     remove_column :order_transports, :vehicle_type, :string
 

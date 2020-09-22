@@ -1,9 +1,9 @@
 module Api::V1
   class GogovanTransportSerializer < ApplicationSerializer
-    attributes :id, :name, :disabled
+    attributes :id, :disabled, :name
 
-    def name__sql
-      "name_#{current_language}"
+    def name
+      object.try("name_#{current_language}".to_sym)
     end
   end
 end

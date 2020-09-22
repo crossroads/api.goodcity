@@ -26,10 +26,7 @@ module Api::V1
     has_one  :cancellation_reason, serializer: CancellationReasonSerializer
 
     def item_ids
-    end
-
-    def item_ids__sql
-      'package_ids'
+      object.packages.pluck(:id)
     end
 
     def include_packages?
@@ -50,8 +47,8 @@ module Api::V1
       @options[:include_messages]
     end
 
-    alias_method :include_stockit_contact?, :include_non_browse_details?
-    alias_method :include_stockit_local_order?, :include_non_browse_details?
-    alias_method :include_item_ids?, :include_packages?
+    alias include_stockit_contact? include_non_browse_details?
+    alias include_stockit_local_order? include_non_browse_details?
+    alias include_item_ids? include_packages?
   end
 end

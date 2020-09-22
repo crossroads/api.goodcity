@@ -1,4 +1,4 @@
-class Role < ActiveRecord::Base
+class Role < ApplicationRecord
   include CacheableJson
 
   validates :name, uniqueness: true

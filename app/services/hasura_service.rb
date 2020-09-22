@@ -10,8 +10,8 @@ class HasuraService
 
       Token.new(jwt_config: jwt_config).generate({
         "user_id":  user.id,
-        "audience": jwt_config['audience'],
-        "issuer":   jwt_config['issuer'],
+        "audience": jwt_config[:audience],
+        "issuer":   jwt_config[:issuer],
         "https://hasura.io/jwt/claims": {
           "x-hasura-allowed-roles":           allowed_roles,
           "x-hasura-default-role":            default_role,

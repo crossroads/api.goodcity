@@ -1,4 +1,4 @@
-class AddIndexesToPackageTypes < ActiveRecord::Migration
+class AddIndexesToPackageTypes < ActiveRecord::Migration[4.2]
 
   def up
     add_index :package_types, :allow_requests

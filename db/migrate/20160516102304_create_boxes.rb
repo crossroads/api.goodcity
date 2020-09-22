@@ -1,4 +1,4 @@
-class CreateBoxes < ActiveRecord::Migration
+class CreateBoxes < ActiveRecord::Migration[4.2]
   def change
     create_table :boxes do |t|
       t.string  :box_number

@@ -13,10 +13,6 @@ module Api::V1
       object.orders.size
     end
 
-    def orders_count__sql
-      "(SELECT COUNT(*) FROM orders o WHERE o.organisation_id = orders.id"
-    end
-
     def include_orders_count?
       @options[:include_orders_count]
     end

@@ -1,3 +1,5 @@
+# frozen_String_literal: true
+
 # USAGE:
 #   create(:user)
 #   create(:user, :order_administrator)
@@ -10,6 +12,7 @@
 #   create(:user, :with_can_manage_packages_permission, :with_can_manage_offers_permission, role_name: "Supervisor")
 #   create(:user, :with_supervisor_role, :with_can_manage_packages_permission, :with_can_manage_offers_permission)
 #
+
 FactoryBot.define do
   factory :user, aliases: [:sender] do
     association :address
@@ -84,14 +87,14 @@ FactoryBot.define do
     end
 
     trait :stockit_user do
-      first_name "Stockit"
-      last_name "User"
+      first_name { 'Stockit' }
+      last_name { 'User' }
     end
 
     trait :system do
-      first_name "GoodCity"
-      last_name "Team"
-      mobile SYSTEM_USER_MOBILE
+      first_name { 'GoodCity' }
+      last_name { 'Team' }
+      mobile { SYSTEM_USER_MOBILE }
       after(:create) do |user|
         user.roles << create(:system_role)
       end
@@ -125,5 +128,4 @@ FactoryBot.define do
       end
     end
   end
-
 end

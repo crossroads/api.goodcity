@@ -20,10 +20,10 @@ RSpec.describe PackagesInventory, type: :model do
       expect {
         create(:packages_inventory, action: 'love')
       }.to raise_error(ActiveRecord::RecordInvalid)
-
       ['dispatch', 'inventory', 'loss', 'gain', 'move'].each do |act|
         expect {
-          build(:packages_inventory, act.to_sym).sneaky(:save)
+          package = build(:packages_inventory, act.to_sym)
+          package.sneaky(:save)
         }.not_to raise_error
       end
     end
@@ -116,17 +116,17 @@ RSpec.describe PackagesInventory, type: :model do
             Package::Operations.register_loss(box, quantity: 1, location: location, action: negative_action)
           end
 
-          it "should allow increasing the quantity of a box back to 1" do  
+          it "should allow increasing the quantity of a box back to 1" do
             pi = build(:packages_inventory, package: box, action: 'gain', quantity: 1, location: location)
             pi.save
-    
+
             expect(pi.persisted?).to eq(true)
           end
 
           it "should prevent increasing the quantity of a box above 1" do
             pi = build(:packages_inventory, package: box, action: 'gain', quantity: 2, location: location)
             pi.save
-    
+
             expect(pi.persisted?).to eq(false)
             expect(pi.errors.messages).to eq({:errors=>["A Box is limited to a quantity of 1"]})
           end
@@ -142,10 +142,10 @@ RSpec.describe PackagesInventory, type: :model do
           OrdersPackage::Operations.dispatch(orders_package, quantity: 1, from_location: location)
         end
 
-        it "should prevent increasing the quantity of a box back to 1" do  
+        it "should prevent increasing the quantity of a box back to 1" do
           pi = build(:packages_inventory, package: box, action: 'gain', quantity: 1, location: location)
           pi.save
-  
+
           expect(pi.persisted?).to eq(false)
           expect(pi.errors.messages).to eq({:errors=>["Action not allowed on a dispatched package. Please undispatch and try again"]})
         end
