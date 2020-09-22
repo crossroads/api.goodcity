@@ -16,7 +16,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   let(:serialized_message) { Api::V1::MessageSerializer.new(message, :scope => user).as_json }
   let(:serialized_message_json) { JSON.parse(serialized_message.to_json) }
   let(:message_params) do
-    FactoryBot.attributes_for(:message, sender: user.id, messageable_id: offer.id, messageable_type: 'Offer' )
+    FactoryBot.attributes_for(:message, sender: user.id.to_s, messageable_id: offer.id, messageable_type: 'Offer' )
   end
 
   subject { JSON.parse(response.body) }
@@ -124,7 +124,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     it 'returns 201', :show_in_doc do
-      post :create, params: { message: message_params }
+      post :create, params: { message: message_params }, as: :json
       expect(response.status).to eq(201)
     end
 
@@ -133,50 +133,50 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
       let(:item) { create(:item, :with_messages, offer: offer) }
       let(:order) { create(:order, created_by: user) }
       let(:outdated_offer_params) do
-        FactoryBot.attributes_for(:message, sender: user.id, offer_id: offer.id)
+        FactoryBot.attributes_for(:message, sender: user.id.to_s, offer_id: offer.id.to_s)
       end
       let(:outdated_item_params) do
-        FactoryBot.attributes_for(:message, sender: user.id, item_id: item.id)
+        FactoryBot.attributes_for(:message, sender: user.id.to_s, item_id: item.id.to_s)
       end
       let(:outdated_order_params) do
-        FactoryBot.attributes_for(:message, sender: user.id, designation_id: order.id)
+        FactoryBot.attributes_for(:message, sender: user.id.to_s, designation_id: order.id.to_s)
       end
       let(:outdated_order_params_charity) do
-        FactoryBot.attributes_for(:message, sender: user.id, order_id: order.id)
+        FactoryBot.attributes_for(:message, sender: user.id.to_s, order_id: order.id.to_s)
       end
 
       before do
         generate_and_set_token(user)
       end
       it 'returns 201' do
-        post :create, params: { message: outdated_offer_params }
+        post :create, params: { message: outdated_offer_params }, as: :json
         expect(response).to have_http_status(:success)
       end
 
       it 'creates new message for the offer' do
         expect{
-          post :create, params: { message: outdated_offer_params }
+          post :create, params: { message: outdated_offer_params }, as: :json
           expect(subject['message']['offer_id']).to eq(offer.id)
         }.to change { Message.count }
       end
 
       it 'creates the new message for the item' do
         expect{
-          post :create, params: { message: outdated_item_params }
+          post :create, params: { message: outdated_item_params }, as: :json
           expect(subject['message']['item_id']).to eq(item.id)
         }.to change { Message.count }
       end
 
       it 'creates the new message for the order through stock app' do
         expect{
-          post :create, params: { message: outdated_order_params }
+          post :create, params: { message: outdated_order_params }, as: :json
           expect(subject['message']['order_id']).to eq(order.id)
         }.to change { Message.count }
       end
 
       it 'creates the new message for the order through browse app' do
         expect{
-          post :create, params: { message: outdated_order_params_charity }
+          post :create, params: { message: outdated_order_params_charity }, as: :json
           expect(subject['message']['order_id']).to eq(order.id)
         }.to change { Message.count }
       end
@@ -186,7 +186,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
   describe 'create package message' do
     let(:stock_user) { create(:user, :with_token, :with_can_manage_package_messages_permission) }
     let(:message_params) {
-      FactoryBot.attributes_for(:message, :private, sender: user.id, messageable_id: (create :package).id, messageable_type: "Package")
+      FactoryBot.attributes_for(:message, :private, sender: user.id.to_s, messageable_id: (create :package).id, messageable_type: "Package")
     }
 
     before do
@@ -194,7 +194,7 @@ RSpec.describe Api::V1::MessagesController, type: :controller do
     end
 
     it 'from stock admin user' do
-      post :create, params: { message: message_params }
+      post :create, params: { message: message_params }, as: :json
       expect(response.status).to eq(201)
     end
   end
