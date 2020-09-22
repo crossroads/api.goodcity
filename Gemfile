@@ -55,6 +55,7 @@ gem 'twilio-ruby', '~> 5.11.0'
 gem 'warden'
 gem 'whenever', '~>  0.9.5', require: false
 gem 'with_advisory_lock'
+gem 'jsonapi-serializer'
 
 group :development do
   gem 'annotate'

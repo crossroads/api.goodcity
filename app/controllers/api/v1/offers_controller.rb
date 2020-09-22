@@ -140,6 +140,12 @@ module Api
         render json: @offer, serializer: offer_serializer
       end
 
+      api :PUT, '/v1/offers/1/reopen_offer', "Reopen closed/cancelled offer"
+      def reopen_offer
+        @offer.update_attributes({ state_event: 'reopen' })
+        render json: @offer, serializer: offer_serializer
+      end
+
       def summary
         all_offers_count = Offer.offers_count_for(self_reviewer: false).merge(
           Offer.offers_count_for(self_reviewer: true)

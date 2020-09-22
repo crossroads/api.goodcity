@@ -8,7 +8,7 @@ describe Warden::Strategies::PinStrategy, type: :controller do
   let(:otp_auth_key) { "zKER89Q/NRm0TXhqGII+Ww==" }
   let(:strategy) { Warden::Strategies::PinStrategy.new(env) }
   let(:auth_token) { build :auth_token }
-  let(:user) { build :user }
+  let(:user) { create :user }
 
   before { allow(strategy).to receive(:request).and_return(double( params: params)) }
 

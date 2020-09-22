@@ -10,6 +10,10 @@ module Api
       rescue_from Apipie::ParamMissing, with: :invalid_params
       rescue_from Goodcity::BaseError, with: :goodcity_error
 
+      def current_ability
+        @current_ability ||= Api::V1::Ability.new(current_user)
+      end
+
       def serializer_for(object)
         "Api::V1::#{object.class}Serializer".safe_constantize
       end

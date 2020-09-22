@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe "OrdersPackage abilities" do
-  subject(:ability) { Ability.new(user) }
+    subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { [:index, :search, :show, :destroy, :exec_action] }
   let(:orders_package) { create :orders_package }
 

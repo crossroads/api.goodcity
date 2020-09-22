@@ -29,8 +29,8 @@ RSpec.describe ApplicationController, type: :controller do
 
     context "current_user" do
 
-      let(:data)  { [{ "user_id" => "1" }] }
-      let(:token) { double(data: data) }
+      let(:jwt) { Token.new.generate({ "user_id" => "1" }) }
+      let(:token) { Token.new(bearer: jwt) }
       let(:user) { build :user }
       before { allow(controller).to receive(:token).and_return(token) }
 

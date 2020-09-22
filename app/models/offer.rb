@@ -99,6 +99,10 @@ class Offer < ApplicationRecord
       transition [:draft, :inactive, :cancelled] => :submitted
     end
 
+    event :reopen do
+      transition [:closed, :cancelled] => :under_review
+    end
+
     event :start_review do
       transition submitted: :under_review
     end

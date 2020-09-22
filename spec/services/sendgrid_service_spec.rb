@@ -7,6 +7,7 @@ describe SendgridService do
   before do
     allow(Stockit::OrdersPackageSync).to receive(:create)
     allow(Stockit::OrdersPackageSync).to receive(:update)
+    allow(sendgrid).to receive(:send_to_sendgrid?).and_return(true)
   end
 
   context "initialize" do
@@ -51,7 +52,7 @@ describe SendgridService do
   end
 
   describe "Appointment confirmation email" do
-    let!(:order) { create :order, :with_state_submitted }
+    let!(:order) { create :order, :with_state_submitted, booking_type: create(:booking_type, :appointment) }
     let!(:order_transport) { create :order_transport, order: order }
     let!(:beneficiary) { create :beneficiary, order: order }
     let(:organisation) { create :organisation }
@@ -72,7 +73,6 @@ describe SendgridService do
           expect(data_sent['contact_organisation_name_en']).to eq(user.organisations.first.name_en)
           expect(data_sent['contact_organisation_name_zh_tw']).to eq(user.organisations.first.name_zh_tw)
         end
-
         sendgrid.send_appointment_confirmation_email(order)
       end
 

@@ -2,7 +2,7 @@ require "rails_helper"
 require "cancan/matchers"
 
 describe "Printer abilities" do
-  subject(:ability) { Ability.new(user) }
+    subject(:ability) { Api::V1::Ability.new(user) }
 
   context "when Supervisor" do
     let(:user) { create(:user, :supervisor, :with_can_access_printers_permission) }
