@@ -363,7 +363,7 @@ class Package < ApplicationRecord
     end
 
     if current_image
-      current_image.update_attributes(favourite: true)
+      current_image.update_column(:favourite, true)
       self.favourite_image_id = current_image.id
     end
   end
