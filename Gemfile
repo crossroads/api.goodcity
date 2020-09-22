@@ -44,7 +44,7 @@ gem 'request_store'
 gem 'rollbar'
 gem 'rotp', '~> 3.3.1'
 gem 'sendgrid-ruby'
-gem 'sidekiq'
+gem 'sidekiq', '~> 5.2.8'
 gem 'sidekiq-scheduler'
 gem 'sidekiq-statistic'
 gem 'sinatra', require: nil # for sidekiq reporting console
