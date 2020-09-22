@@ -57,7 +57,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
       it 'converts status to lower case before saving' do
         organisations_user_payload[:status] = 'Approved'
-        post :create, organisations_user: organisations_user_payload
+        post :create, params: { organisations_user: organisations_user_payload }
         expect(parsed_body['organisations_user']['status']).to eq('approved')
       end
 
@@ -252,7 +252,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
         it 'converts status to lower case before updating' do
           organisations_user_payload[:status] = 'Approved'
-          put :update, id: organisations_user.id, organisations_user: organisations_user_payload
+          put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload }
           expect(parsed_body['organisations_user']['status']).to eq('approved')
           expect(organisations_user.reload.status).to eq('approved')
         end
