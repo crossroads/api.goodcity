@@ -185,7 +185,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
     before { generate_and_set_token(user) }
     it "returns 201", :show_in_doc do
-      post :create, params: { offer: offer_params }
+      post :create, params: { offer: offer_params }, as: :json
       expect(response.status).to eq(201)
     end
 
@@ -197,7 +197,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       context "as a user" do
         before { generate_and_set_token(user) }
         it "ignores the created_by_id param" do
-          post :create, params: { offer: offer_params }
+          post :create, params: { offer: offer_params }, as: :json
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(user)
         end
@@ -225,7 +225,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       context "as a supervisor" do
         before { generate_and_set_token(supervisor) }
         it "ignores sets the created_by_id property to the defined value" do
-          post :create, params: { offer: offer_params }
+          post :create, params: { offer: offer_params }, as: :json
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
         end
@@ -253,7 +253,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       context "as a reviewer" do
         before { generate_and_set_token(reviewer) }
         it "ignores sets the created_by_id property to the defined value" do
-          post :create, params: { offer: offer_params }
+          post :create, params: { offer: offer_params }, as: :json
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
         end
@@ -286,7 +286,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "owner can submit", :show_in_doc do
         extra_params = { state_event: 'submit', saleable: true}
         expect(offer).to be_draft
-        put :update, params: { id: offer.id, offer: offer_params.merge(extra_params) }
+        put :update, params: { id: offer.id, offer: offer_params.merge(extra_params) }, as: :json
         expect(response.status).to eq(200)
         expect(offer.reload).to be_submitted
       end
