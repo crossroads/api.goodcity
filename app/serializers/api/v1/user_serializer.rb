@@ -21,16 +21,6 @@ module Api::V1
       object.organisations_users.pluck(:id)
     end
 
-    def user_roles_ids__sql
-      "coalesce((select array_agg(user_roles.id) from user_roles where
-        user_id = users.id), '{}'::int[])"
-    end
-
-    def organisations_users_ids__sql
-      "coalesce((select array_agg(organisations_users.id) from organisations_users where
-        user_id = users.id), '{}'::int[])"
-    end
-
     def include_attribute?
       return !@options[:user_summary] unless @options[:user_summary].nil?
       (User.current_user.try(:staff?) || User.current_user.try(:id) == id)

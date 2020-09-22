@@ -1,4 +1,4 @@
-class ImageColumnChanges < ActiveRecord::Migration
+class ImageColumnChanges < ActiveRecord::Migration[4.2]
   def change
     rename_column :images, :parent_id, :item_id
     rename_column :images, :image_id, :cloudinary_id

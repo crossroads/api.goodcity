@@ -1,4 +1,4 @@
-class LinkPackageToOffer < ActiveRecord::Migration
+class LinkPackageToOffer < ActiveRecord::Migration[4.2]
   def change
     add_column :packages, :offer_id, :integer, :null => false, :default => 0
 

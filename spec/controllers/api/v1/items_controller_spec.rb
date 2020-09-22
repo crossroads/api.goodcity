@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::ItemsController, type: :controller do
-
   let(:user)  { create :user, :with_token, :with_can_manage_items_permission }
   let(:offer) { create :offer, created_by: user }
   let(:item)  { create(:item, offer: offer) }
@@ -16,18 +15,15 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     before { generate_and_set_token(user) }
 
     it "returns the item" do
-      get :show, id: item.id
+      get :show, params: { id: item.id }
       expect(response.status).to eq(200)
       expect(parsed_body['item']['id']).to eq(item.id)
     end
 
     describe "known bugs" do
       describe "polymorphic serialization" do
-        let(:package)  { create :package, id: item.id }
-        let!(:item) { create(:item, offer: offer) }
-        let!(:item_message) { create(:message, messageable: item) }
-        let!(:offer_message) { create(:message, messageable: offer) }
-        let!(:order_message) { create(:message, :with_order, sender: user) }
+        let(:package) { create :package, id: item.id }
+        let(:item) { create(:item, offer: offer) }
 
         before do
           create(:image, imageable: item)
@@ -39,7 +35,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
         it { expect(item.reload.images.count).to eq(1) }
 
         it "returns only the images of the item" do
-          get :show, id: item.id
+          get :show, params: { id: item.id }
           expect(response.status).to eq(200)
           expect(parsed_body['item']['image_ids']).to eq([item.images.first.id])
         end
@@ -49,23 +45,23 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
 
   describe "DELETE item/1" do
     before { generate_and_set_token(user) }
-    let(:item)  { create :item, offer: offer, state: "draft" }
-
-    it "should delete draft item", :show_in_doc do
-      delete :destroy, id: item.id
-      expect(response.status).to eq(200)
-      expect(Item.only_deleted.count).to be_zero
-      body = JSON.parse(response.body)
-      expect(body).to eq( {} )
-    end
+    let(:item) { create :item, offer: offer, state: "draft" }
 
     it 'should not delete the last item if offer not draft' do
       offer = create :offer, created_by: user, state: 'reviewed'
       item = create :item, offer: offer, state: "accepted"
-      delete :destroy, id: item.id
+      delete :destroy, params: { id: item.id }
       expect(response.status).to eq(422)
       body = JSON.parse(response.body)
       expect(body['errors']).to eq('Cannot delete the last item of a submitted offer')
+    end
+
+    it "should delete draft item" do
+      delete :destroy, params: { id: item.id }
+      expect(response.status).to eq(200)
+      expect(Item.only_deleted.count).to be_zero
+      body = JSON.parse(response.body)
+      expect(body).to be_empty
     end
 
     it 'should revert to under_review offer state if deleted item is last accepted item' do
@@ -73,7 +69,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
       item = create :item, offer: offer, state: 'accepted'
       create :item, offer: offer, state: 'rejected'
 
-      delete :destroy, id: item.id
+      delete :destroy, params: { id: item.id }
       expect(response.status).to eq(200)
       offer.reload
       expect(offer.state).to eq('under_review')
@@ -83,7 +79,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   describe "POST item/1" do
     before { generate_and_set_token(user) }
     it "returns 201", :show_in_doc do
-      post :create, item: item_params
+      post :create, params: { item: item_params }
       expect(response.status).to eq(201)
     end
   end
@@ -92,17 +88,18 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     before { generate_and_set_token(user) }
     it "owner can update", :show_in_doc do
       extra_params = { donor_description: "Test item" }
-      put :update, id: item.id, item: item_params.merge(extra_params)
+      put :update, params: { id: item.id, item: item_params.merge(extra_params) }
       expect(response.status).to eq(200)
       expect(item.reload.donor_description).to eq("Test item")
     end
 
-    let(:gogovan_order) { create :gogovan_order, :active }
-    let(:delivery) { create :delivery, gogovan_order: gogovan_order }
-    let(:offer) { create :offer, state: 'scheduled', created_by: user, delivery: delivery }
+    let!(:gogovan_order) { create :gogovan_order, :active }
+    let!(:delivery) { create :delivery, gogovan_order: gogovan_order }
+    let(:offer) { create(:offer, created_by: user) }
     let(:item) { create(:item, offer: offer) }
     it 'should not allow last item to be rejected if there\'s a confirmed gogovan booking' do
-      put :update, id: item.id, item: item_params.merge({ state_event: 'reject' })
+      offer.update(delivery: delivery, state: 'scheduled')
+      put :update, params: { id: item.id, item: item_params.merge({state_event:'reject'}) }
       expect(response.status).to eq(422)
       body = JSON.parse(response.body)
       expect(body['errors'][0]['requires_gogovan_cancellation']).not_to be_nil
@@ -119,7 +116,7 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
         conditions.delete(item.donor_condition)
         extra_params = { donor_condition_id: conditions.last.id }
         # expect(StockitUpdateJob).to receive(:perform_later).with(package.id)
-        put :update, id: item.id, item: item.attributes.except("id").merge(extra_params)
+        put :update, params: { id: item.id, item: item.attributes.except("id").merge(extra_params) }
         expect(response.status).to eq(200)
       end
     end

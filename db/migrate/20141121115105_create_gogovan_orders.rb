@@ -1,4 +1,4 @@
-class CreateGogovanOrders < ActiveRecord::Migration
+class CreateGogovanOrders < ActiveRecord::Migration[4.2]
   def change
     create_table :gogovan_orders do |t|
       t.integer :booking_id

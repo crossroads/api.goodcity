@@ -4,12 +4,13 @@ require "simplecov"
 SimpleCov.start
 ENV["RAILS_ENV"] ||= 'test'
 require 'support/env' # Must load our dummy env vars before rails
-require File.expand_path("../../config/environment", __FILE__)
+require File.expand_path('../config/environment', __dir__)
 require 'rspec/rails'
 
 require 'ffaker'
 require 'webmock/rspec'
 require 'paper_trail/frameworks/rspec'
+require_relative "support/controller_macros"
 
 WebMock.disable_net_connect!(:allow => "codeclimate.com")
 
@@ -58,13 +59,15 @@ RSpec.configure do |config|
   # Apipie can record examples using "APIPIE_RECORD=examples rake"
   config.filter_run :show_in_doc => true if ENV['APIPIE_RECORD']
 
-  # Create a system_user at beginning of specs
-  config.before(:all) do
-    FactoryBot.create(:user, :system)
-  end
+  FactoryBot.use_parent_strategy = false
+
   # Clean up system_user at end of specs
   config.after(:all) do
     User.system.destroy_all
+  end
+
+  config.before(:all) do
+    FactoryBot.create(:user, :system)
   end
 
   # Default app to be 'admin' in order to not use treat_user_as_donor

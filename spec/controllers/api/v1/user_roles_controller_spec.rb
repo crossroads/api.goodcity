@@ -23,7 +23,8 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
 
     it "return serialized user_role", :show_in_doc do
       reviewer.roles = [reviewer_role]
-      get :index, search_by_user_id: reviewer.id
+      get :index, params: { search_by_user_id: reviewer.id }
+
       expect(parsed_body['user_roles'].length).to eq(1)
       expect(parsed_body['user_roles'][0]['role_id']).to eq(reviewer_role.id)
       expect(parsed_body['user_roles'][0]['user_id']).to eq(reviewer.id)
@@ -33,7 +34,7 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
   describe "GET user_role" do
     before do
       generate_and_set_token(reviewer)
-      get :show, id: user_role.id
+      get :show, params: { id: user_role.id }
     end
     it "returns 200" do
       expect(response.status).to eq(200)
@@ -53,14 +54,14 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
       end
 
       it "Does not assign higher level role to user" do
-        post :create, user_role: { user_id: reviewer_user.id, role_id: system_admin_role.id }
+        post :create, params: { user_role: { user_id: reviewer_user.id, role_id: system_admin_role.id } }
 
         expect(response.status).to eq(401)
       end
 
       it "Does assign lower level and same level role to user", :show_in_doc do
         expect {
-          post :create, user_role: { user_id: reviewer_user.id, role_id: order_fulfilment_role.id }
+          post :create, params: { user_role: { user_id: reviewer_user.id, role_id: order_fulfilment_role.id } }
         }.to change(UserRole, :count).by(1)
 
         expect(response.status).to eq(200)
@@ -71,11 +72,11 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
       it "Does update expiry date for existing role", :show_in_doc do
         expires_at = DateTime.now.in_time_zone.days_since(10)
         expect {
-          post :create, user_role: {
+          post :create, params: { user_role: {
             user_id: reviewer_user.id,
             role_id: reviewer_role.id,
             expires_at: expires_at
-          }
+          } }
         }.to change(UserRole, :count).by(0)
 
         expect(response.status).to eq(200)
@@ -91,7 +92,7 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
       end
 
       it "Does not assign role to other user" do
-        post :create, user_role: { user_id: reviewer.id, role_id: system_admin_role.id }
+        post :create, params: { user_role: { user_id: reviewer.id, role_id: system_admin_role.id } }
         expect(response.status).to eq(401)
       end
     end
@@ -106,7 +107,7 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
 
       it "Does not delete higher level role of other user" do
         expect {
-          delete :destroy, id: admin_user.user_roles.first.id
+          delete :destroy, params: { id: admin_user.user_roles.first.id }
         }.to change(admin_user.user_roles, :count).by(0)
 
         expect(response.status).to eq(200)
@@ -115,7 +116,7 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
 
       it "Does delete lower level and same level role to user", :show_in_doc do
         expect {
-          delete :destroy, id: reviewer_user.user_roles.first.id
+          delete :destroy, params: { id: reviewer_user.user_roles.first.id }
         }.to change(reviewer_user.user_roles, :count).by(-1)
 
         expect(response.status).to eq(200)

@@ -105,7 +105,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       # end
 
       it "returns searched non-draft order as designation if search text is present" do
-        get :index, searchText: order.code
+        get :index, params: { searchText: order.code }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["id"]).to eq(order.id)
@@ -114,14 +114,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "returns empty response if search text is draft goodcity order" do
-        get :index, searchText: draft_order.code
+        get :index, params: { searchText: draft_order.code }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(0)
         expect(parsed_body["meta"]["total_pages"]).to eql(0)
       end
 
       it "returns response if search text is draft stockit order" do
-        get :index, searchText: stockit_draft_order.code
+        get :index, params: { searchText: stockit_draft_order.code }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["meta"]["total_pages"]).to eql(1)
@@ -130,7 +130,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "can search orders using their description (case insensitive)" do
         create :order, :with_state_submitted, description: "IPhone 100s"
         create :order, :with_state_submitted, description: "Android T"
-        get :index, searchText: "iphone"
+        get :index, params: { searchText: "iphone" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["description"]).to eq("IPhone 100s")
@@ -141,7 +141,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "can search orders by the organization that submitted them" do
         organisation = create :organisation, name_en: "Crossroads Foundation LTD"
         create :order, :with_state_submitted, organisation: organisation
-        get :index, searchText: "crossroads"
+        get :index, params: { searchText: "crossroads" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["gc_organisation_id"]).to eq(organisation.id)
@@ -152,7 +152,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "can search orders from a user's first or last name" do
         submitter = create :user, first_name: "Harrrrrrry", last_name: "Houdini"
         submitted_order = create :order, :with_state_submitted, submitted_by_id: submitter.id
-        get :index, searchText: "rrrrrry"
+        get :index, params: { searchText: "rrrrrry" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["submitted_by_id"]).to eq(submitter.id)
@@ -164,7 +164,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "can search orders from a user's full name" do
         submitter = create :user, first_name: "Jeff", last_name: "Goldblum"
         create :order, :with_state_submitted, submitted_by: submitter
-        get :index, searchText: "jeff goldblum"
+        get :index, params: { searchText: "jeff goldblum" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["submitted_by_id"]).to eq(submitter.id)
@@ -175,7 +175,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "can search orders from a beneficiary's first name" do
         beneficiary = create :beneficiary, first_name: "Steeeve", last_name: "Sinatra"
         create :order, :with_state_submitted, beneficiary: beneficiary
-        get :index, searchText: "eeev"
+        get :index, params: { searchText: "eeev" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["beneficiary_id"]).to eq(beneficiary.id)
@@ -186,7 +186,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "can search orders from a beneficiary's last name" do
         beneficiary = create :beneficiary, first_name: "Dave", last_name: "Grohl"
         create :order, :with_state_submitted, beneficiary: beneficiary
-        get :index, searchText: "Groh"
+        get :index, params: { searchText: "Groh" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["beneficiary_id"]).to eq(beneficiary.id)
@@ -197,7 +197,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "can search orders from a beneficiary's full name" do
         beneficiary = create :beneficiary, first_name: "Damon", last_name: "Albarn"
         create :order, :with_state_submitted, beneficiary: beneficiary
-        get :index, searchText: "Damon Alba"
+        get :index, params: { searchText: "Damon Alba" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
         expect(parsed_body["designations"][0]["beneficiary_id"]).to eq(beneficiary.id)
@@ -206,7 +206,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "should be able to fetch designations without their associations" do
-        get :index, shallow: "true"
+        get :index, params: { shallow: "true" }
         expect(response.status).to eq(200)
         expect(parsed_body.keys.length).to eq(2)
         expect(parsed_body).to have_key("designations")
@@ -222,7 +222,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           2.times { create :order, :awaiting_dispatch, description: "IPhone 100s" }
           create :order, :with_state_processing, description: "IPhone 100s"
 
-          get :index, searchText: "iphone", state: "awaiting_dispatch,processing"
+          get :index, params: { searchText: "iphone", state: "awaiting_dispatch,processing" }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(3)
           expect(parsed_body["designations"].map { |it| it["state"] }).to match_array([
@@ -241,7 +241,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             create :order, :with_state_processing, description: "IPhone 100s", detail_type: "shipment"
             create :order, :with_state_processing, description: "IPhone 100s", detail_type: "other"
 
-            get :index, searchText: "iphone", type: type
+            get :index, params: { searchText: "iphone", type: type }
             expect(response.status).to eq(200)
             expect(parsed_body["designations"].count).to eq(1)
             expect(parsed_body["meta"]["total_pages"]).to eql(1)
@@ -253,7 +253,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           create :appointment, :with_state_submitted, description: "IPhone 100s", order_transport: order_transport
           create :online_order, :awaiting_dispatch, description: "IPhone 100s", order_transport: ggv_transport
 
-          get :index, searchText: "iphone", type: "appointment,online_orders"
+          get :index, params: { searchText: "iphone", type: "appointment,online_orders" }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(2)
           expect(parsed_body["designations"].map { |it| it["state"] }).to match_array([
@@ -266,7 +266,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
         it "should return nothing if searching for an invalid type" do
           create :order, :with_state_submitted, description: "IPhone 100s"
-          get :index, searchText: "iphone", type: "bad_type"
+          get :index, params: { searchText: "iphone", type: "bad_type" }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(0)
         end
@@ -277,7 +277,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           create :order, :with_state_processing, description: "IPhone 100s", processed_at: Time.now - 2.days
           create :order, :awaiting_dispatch, description: "IPhone 100s"
 
-          get :index, searchText: "iphone", priority: "true"
+          get :index, params: { searchText: "iphone", priority: "true" }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(2)
           expect(parsed_body["designations"].map { |it| it["state"] }).to match_array([
@@ -294,7 +294,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           create :order, :with_state_processing, description: "IPhone 100s", processed_at: Time.now - 2.days
           create :order, :awaiting_dispatch, description: "IPhone 100s"
 
-          get :index, searchText: "iphone", state: "processing", priority: "true"
+          get :index, params: { searchText: "iphone", state: "processing", priority: "true" }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(1)
           expect(parsed_body["designations"][0]["state"]).to eq("processing")
@@ -334,7 +334,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
           it "can return orders scheduled after a certain time" do
             after = epoch_ms(moment + 2.day)
-            get :index, after: after
+            get :index, params: { after: after }
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
@@ -346,7 +346,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
           it "can return orders scheduled before a certain time" do
             before = epoch_ms(moment + 2.day)
-            get :index, before: before
+            get :index, params: { before: before }
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(3)
             returned_orders
@@ -359,7 +359,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           it "can return orders scheduled between two dates" do
             before = epoch_ms(moment + 3.day)
             after = epoch_ms(moment + 1.day)
-            get :index, before: before, after: after
+            get :index, params: { before: before, after: after }
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(2)
             returned_orders
@@ -373,7 +373,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           it "can combine other filters with the due date" do
             before = epoch_ms(moment + 3.day)
             after = epoch_ms(moment + 1.day)
-            get :index, before: before, after: after, state: "submitted"
+            get :index, params: { before: before, after: after, state: "submitted" }
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(1)
             returned_orders
@@ -392,7 +392,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           it "can return shipment orders scheduled before a certain time if type: Shipment send in params" do
             before = epoch_ms(moment + 3.day)
             after = epoch_ms(moment + 1.day)
-            get :index, before: before, after: after, type: "shipment"
+            get :index, params: { before: before, after: after, type: "shipment" }
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(1)
             returned_orders
@@ -406,7 +406,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           it "can return goodcity orders scheduled before a certain time if type: GoodCity send in params" do
             before = epoch_ms(moment + 3.day)
             after = epoch_ms(moment + 1.day)
-            get :index, before: before, after: after, type: "appointment"
+            get :index, params: { before: before, after: after, type: "appointment" }
             expect(response.status).to eq(200)
             expect(returned_orders.count).to eq(1)
             returned_orders
@@ -435,7 +435,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
                 Order.delete_all
                 (1..5).each { create_order_with_transport(state) }
 
-                get :index, state: state
+                get :index, params: { state: state }
                 orders_fetched.each_with_index do |o, i|
                   next_o = orders_fetched[i + 1]
                   if next_o.present?
@@ -452,7 +452,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
                 Order.delete_all
                 unsorted_orders = (1..5).map { create_order_with_transport(state) }.reverse
 
-                get :index, state: state
+                get :index, params: { state: state }
                 orders_fetched.each_with_index do |o, i|
                   expect(o.id).to eq(unsorted_orders[i].id)
                 end
@@ -465,7 +465,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       describe "When designating an item ( ?toDesignateItem=true )" do
         it "returns a non draft goodcity order with a submitted_at timestamp" do
           record = create :order, :with_state_submitted, submitted_at: DateTime.now, booking_type: booking_type
-          get :index, searchText: record.code, toDesignateItem: true, submitted_at: DateTime.now
+          get :index, params: { searchText: record.code, toDesignateItem: true, submitted_at: DateTime.now }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(1)
           expect(parsed_body["meta"]["total_pages"]).to eql(1)
@@ -473,7 +473,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
         it "doesnt return a non draft goodcity order with no submitted_at timestamp" do
           record = create :order, :with_state_submitted, submitted_at: nil
-          get :index, searchText: record.code, toDesignateItem: true, submitted_at: DateTime.now
+          get :index, params: { searchText: record.code, toDesignateItem: true, submitted_at: DateTime.now }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(0)
           expect(parsed_body["meta"]["total_pages"]).to eql(0)
@@ -481,7 +481,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
         it "returns a draft stockit order" do
           record = create :order, :with_state_draft, detail_type: "StockitLocalOrder"
-          get :index, searchText: record.code, toDesignateItem: true
+          get :index, params: { searchText: record.code, toDesignateItem: true }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(1)
           expect(parsed_body["meta"]["total_pages"]).to eql(1)
@@ -489,7 +489,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
         it "doesnt return a draft goodcity order" do
           record = create :order, :with_state_draft, detail_type: "GoodCity"
-          get :index, searchText: record.code, toDesignateItem: true
+          get :index, params: { searchText: record.code, toDesignateItem: true }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(0)
           expect(parsed_body["meta"]["total_pages"]).to eql(0)
@@ -519,7 +519,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     let(:order) { create(:order, :with_orders_packages) }
     before { generate_and_set_token(user) }
     it "returns meta with count of orders_packages" do
-      get :show, id: order.id
+      get :show, params: { id: order.id }
       expect(parsed_body["designation"]["id"]).to eq(order.id)
     end
   end
@@ -532,7 +532,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         set_browse_app_header
         address = create :address
         expect(order.address_id).to eq(nil)
-        put :update, id: order.id, order: {address_id: address.id}
+        put :update, params: { id: order.id, order: { address_id: address.id } }
         expect(response.status).to eq(200)
         expect(order.reload.address.id).to eq(address.id)
       end
@@ -543,7 +543,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "should update the staff note property" do
         expect(order.staff_note).to eq("")
-        put :update, id: order.id, order: {staff_note: "hello"}
+        put :update, params: { id: order.id, order: {staff_note: "hello"} }
         expect(response.status).to eq(200)
         expect(order.reload.staff_note).to eq("hello")
       end
@@ -566,7 +566,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(order.process_checklists.count).to eq(0)
 
           # Add one
-          put :update, id: order.id, order: payload
+          put :update, params: { id: order.id, order: payload }
           expect(order.reload.process_checklists.count).to eq(1)
           expect(order.can_transition).to eq(false)
 
@@ -575,14 +575,14 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             {order_id: order.id, process_checklist_id: checklist_it2.id},
             {order_id: order.id, process_checklist_id: checklist_it3.id},
           ]
-          put :update, id: order.id, order: payload
+          put :update, params: { id: order.id, order: payload }
           expect(order.reload.process_checklists.count).to eq(3)
           expect(order.can_transition).to eq(true)
 
           # Delete one
           payload["orders_process_checklists_attributes"] = order.orders_process_checklists.as_json
           payload["orders_process_checklists_attributes"][0]["_destroy"] = true
-          put :update, id: order.id, order: payload
+          put :update, params: { id: order.id, order: payload }
           expect(order.reload.process_checklists.count).to eq(2)
           expect(order.can_transition).to eq(false)
         end
@@ -602,7 +602,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             end
 
             expect(order.process_checklists.count).to eq(0)
-            put :update, id: order.id, order: payload
+            put :update, params: { id: order.id, order: payload }
             expect(order.reload.process_checklists.count).to eq(1)
           end
         end
@@ -614,7 +614,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       context 'when user is owner (charity)' do
         before { generate_and_set_token(charity_user) }
         it 'returns forbidden' do
-          put :update, id: order.id, order: { people_helped: 20 }
+          put :update, params: { id: order.id, order: { people_helped: 20 } }
           expect(response).to have_http_status(:forbidden)
           expect(order.reload.people_helped).to eq(2)
         end
@@ -623,12 +623,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       context 'returns success' do
         before { generate_and_set_token(user) }
         it 'does allow to perform the operation' do
-          put :update, id: order.id, order: { people_helped: 20 }
+          put :update, params: { id: order.id, order: { people_helped: 20 } }
           expect(response).to have_http_status(:success)
           expect(order.reload.people_helped).to eq(20)
         end
       end
-      
     end
   end
 
@@ -638,7 +637,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "should create an order via POST method" do
         set_browse_app_header
-        post :create, order: order_params
+        post :create, params: { order: order_params }
         expect(response.status).to eq(201)
         expect(parsed_body["order"]["people_helped"]).to eq(order_params[:people_helped])
       end
@@ -647,7 +646,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         set_browse_app_header
         beneficiary_count = Beneficiary.count
         order_params["beneficiary_attributes"] = FactoryBot.build(:beneficiary).attributes.except("id", "updated_at", "created_at", "created_by_id")
-        post :create, order: order_params
+        post :create, params: { order: order_params }
         expect(response.status).to eq(201)
         expect(Beneficiary.count).to eq(beneficiary_count + 1)
         beneficiary = Beneficiary.find_by(id: parsed_body["order"]["beneficiary_id"])
@@ -658,7 +657,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         address = FactoryBot.build(:address)
         set_browse_app_header
         order_params["address_attributes"] = address.attributes.except("id", "updated_at", "created_at")
-        expect { post :create, order: order_params }.to change(Address, :count).by(1)
+        expect { post :create, params: { order: order_params } }.to change(Address, :count).by(1)
         expect(response.status).to eq(201)
         saved_address = Address.find_by(id: parsed_body["order"]["address_id"])
         expect(saved_address).not_to be_nil
@@ -671,13 +670,12 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       context "from stockit" do
         let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id, detail_type: "Shipment", status: "Processing") }
         it "should process a Shipment" do
-          post :create, order: order_params
+          post :create, params: { order: order_params }
           expect(response.status).to eql(201)
           expect(parsed_body["designation"]["detail_type"]).to eq("Shipment")
           expect(parsed_body["designation"]["state"]).to eq("processing")
         end
       end
-
     end
   end
 end

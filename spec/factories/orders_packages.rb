@@ -1,10 +1,12 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :orders_package do
     association   :order
     association   :package, :with_inventory_record
     association   :updated_by, factory: :user, strategy: :build
-    state         ["requested", "cancelled", "designated", "received", "dispatched"].sample
-    quantity      2
+    state         { %w[requested cancelled designated received dispatched].sample }
+    quantity      { 2 }
     dispatched_quantity { state.eql?("dispatched") ? quantity : 0 }
 
     trait :with_package_item do
@@ -12,16 +14,16 @@ FactoryBot.define do
     end
 
     trait :with_state_requested do
-      state "requested"
+      state { 'requested' }
     end
 
     trait :with_state_designated do
-      state "designated"
+      state { 'designated' }
     end
 
     trait :with_state_dispatched do
       dispatched_quantity { quantity }
-      state "dispatched"
+      state { 'dispatched' }
     end
 
     trait :with_inventory_record do
@@ -36,10 +38,10 @@ FactoryBot.define do
 
 
   trait :with_state_requested do
-    state 'requested'
+    state { 'requested' }
   end
 
   trait :with_state_cancelled do
-    state 'cancelled'
+    state { 'cancelled' }
   end
 end

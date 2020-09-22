@@ -1,2 +1,2 @@
-class StockitContact < ActiveRecord::Base
+class StockitContact < ApplicationRecord
 end

@@ -1,4 +1,4 @@
-class OrdersPackage < ActiveRecord::Base
+class OrdersPackage < ApplicationRecord
   include RollbarSpecification
   include OrdersPackageActions
   include HookControls
@@ -118,6 +118,7 @@ class OrdersPackage < ActiveRecord::Base
 
   def assert_availability!
     return if cancelled?
+
     requires_recompute = !persisted? || (state_changed? && state_was.eql?(States::CANCELLED))
     if requires_recompute && PackagesInventory::Computer.available_quantity_of(package) < quantity
       raise Goodcity::InsufficientQuantityError.new(quantity)

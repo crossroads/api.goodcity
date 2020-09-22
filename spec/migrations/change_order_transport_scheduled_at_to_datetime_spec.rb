@@ -10,7 +10,7 @@ describe "Migrate OrderTransports to have scheduled_at as DateTime instead of da
   let(:migration) { ChangeOrderTransportScheduledAtToDatetime.new }
 
   def migration_has_been_run?(version)
-    table_name = ActiveRecord::Migrator.schema_migrations_table_name
+    table_name = ActiveRecord::SchemaMigration.table_name
     query = "SELECT version FROM %s WHERE version = '%s'" % [table_name, version]
     ActiveRecord::Base.connection.execute(query).any?
   end

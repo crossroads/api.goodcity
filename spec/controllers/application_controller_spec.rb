@@ -25,7 +25,6 @@ RSpec.describe ApplicationController, type: :controller do
       after do
         I18n.locale = 'en'
       end
-
     end
 
     context "current_user" do
@@ -41,8 +40,9 @@ RSpec.describe ApplicationController, type: :controller do
           expect(User).to receive(:find_by_id).with("1").and_return(user)
           expect( controller.send(:current_user) ).to eql(user)
         end
+
         it "should not find the user_id" do
-          expect(token).to receive("data").and_return([{}])
+          allow(token).to receive("data").and_return([{}])
           expect(User).to_not receive(:find_by_id)
           expect( controller.send(:current_user) ).to eql(nil)
         end
@@ -52,11 +52,9 @@ RSpec.describe ApplicationController, type: :controller do
         before { expect(token).to receive("valid?").and_return(false) }
         it "should return nil if token invalid" do
           expect(User).to_not receive(:find_by_id)
-          expect( controller.send(:current_user) ).to eql(nil)
+          expect(controller.send(:current_user)).to eql(nil)
         end
       end
-
     end
-
   end
 end

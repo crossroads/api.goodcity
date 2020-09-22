@@ -1,4 +1,4 @@
-class Printer < ActiveRecord::Base
+class Printer < ApplicationRecord
   has_many   :printers_users
   has_many   :users, through: :printers_users
   belongs_to :location
@@ -13,5 +13,4 @@ class Printer < ActiveRecord::Base
     fallback_printer_id = Printer.where.not(id: id).first&.id || nil
     User.where(printer_id: id).update_all(printer_id: fallback_printer_id)
   end
-
 end

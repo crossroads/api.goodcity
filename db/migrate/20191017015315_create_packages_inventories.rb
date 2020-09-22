@@ -1,4 +1,4 @@
-class CreatePackagesInventories < ActiveRecord::Migration
+class CreatePackagesInventories < ActiveRecord::Migration[4.2]
   def up
     create_table :packages_inventories do |t|
       t.references  :package,       null: false, index: true

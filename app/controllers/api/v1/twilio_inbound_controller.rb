@@ -9,12 +9,12 @@ module Api
 
       skip_authorization_check
       skip_before_action :validate_token, except: :accept_call
-      skip_before_action :verify_authenticity_token, except: :accept_call
+      skip_before_action :verify_authenticity_token, except: :accept_call, raise: false
 
       before_action :validate_twilio_request, except: :accept_call
 
-      after_filter :set_header, except: [:assignment, :hold_music]
-      after_filter :set_json_header, only: :assignment
+      after_action :set_header, except: [:assignment, :hold_music]
+      after_action :set_json_header, only: :assignment
 
       resource_description do
         short "Handle Twilio Inbound Voice Calls"

@@ -9,17 +9,16 @@ RSpec.describe Api::V1::PackagesInventoriesController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET packages_inventories" do
-
     describe 'returns packages inventories for given package_id' do
       before { generate_and_set_token(user) }
 
       it "returns 200", :show_in_doc do
-        get :index, package_id: package.id
+        get :index, params: { package_id: package.id }
         expect(response.status).to eq(200)
       end
 
       it "returns all the packages_inventories" do
-        get :index, package_id: package.id
+        get :index, params: { package_id: package.id }
         expect(parsed_body['item_actions'].length).to eq(2)
         expect(parsed_body['item_actions'][0]['id']).to eq(packages_inventory.id)
         expect(parsed_body['item_actions'][1]['id']).to eq(packages_inventory2.id)
@@ -36,7 +35,7 @@ RSpec.describe Api::V1::PackagesInventoriesController, type: :controller do
       before { generate_and_set_token(user) }
 
       it "returns empty packages_inventories" do
-        get :index, package_id: package1.id
+        get :index, params: { package_id: package1.id }
         expect(parsed_body['item_actions'].length).to eq(0)
       end
     end

@@ -27,8 +27,8 @@ module Api
           param :language, I18n.available_locales.map(&:to_s), desc: "Offer language. If not set, defaults to API header language.", allow_nil: true
           param :state_event, Offer.valid_events, desc: "Fires the state transition (if allowed) for this offer.", allow_nil: true
           param :origin, String, desc: "Not yet used", allow_nil: true
-          param :stairs, [true, false], desc: "Does offer collection involve using stairs?", allow_nil: true
-          param :parking, [true, false], desc: "Is parking provided?", allow_nil: true
+          param :stairs, %w[true false], desc: "Does offer collection involve using stairs?", allow_nil: true
+          param :parking, %w[true false], desc: "Is parking provided?", allow_nil: true
           param :estimated_size, String, desc: "How big is the item?", allow_nil: true
           param :notes, String, desc: "Not yet used", allow_nil: true
           param :reviewed_by_id, String, allow_nil: true, desc: "User id of reviewer who is looking at the offer. Can only be set by reviewers. It will be ignored otherwise."

@@ -1,4 +1,4 @@
-class CreatePrintersUsers < ActiveRecord::Migration
+class CreatePrintersUsers < ActiveRecord::Migration[4.2]
   def change
     create_table :printers_users do |t|
       t.integer :printer_id

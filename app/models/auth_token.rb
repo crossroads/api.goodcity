@@ -1,7 +1,7 @@
-class AuthToken < ActiveRecord::Base
+class AuthToken < ApplicationRecord
   include RollbarSpecification
   belongs_to :user
-  has_one_time_password length: 4
+  has_one_time_password column_name: :otp_secret_key, length: 4
 
   scope :most_recent, -> { order('id desc').limit(1) }
 
@@ -30,7 +30,7 @@ class AuthToken < ActiveRecord::Base
 
   # Number of seconds the OTP code is valid for
   def otp_code_validity
-    Rails.application.secrets.token['otp_code_validity']
+    Rails.application.secrets.token[:otp_code_validity]
   end
 
   def drift_time

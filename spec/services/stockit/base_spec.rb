@@ -7,8 +7,8 @@ describe Stockit::Base do
   end
 
   subject { StockitBaseTestClass.new }
-  let(:endpoint) { Rails.application.secrets.base_urls["stockit"] }
-  let(:api_token) { Rails.application.secrets.stockit["api_token"] }
+  let(:endpoint) { Rails.application.secrets.base_urls[:stockit] }
+  let(:api_token) { Rails.application.secrets.stockit[:api_token] }
   let(:headers) { {"token" => api_token} }
   let(:default_options) { { format: :json, headers: headers } }
 

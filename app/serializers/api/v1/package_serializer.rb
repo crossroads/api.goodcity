@@ -23,10 +23,6 @@ module Api::V1
       object.available_quantity
     end
 
-    def quantity__sql
-      "available_quantity"
-    end
-
     def designation_id
       object.order_id
     end
@@ -39,16 +35,8 @@ module Api::V1
       !is_browse_app?
     end
 
-    def designation_id__sql
-      "order_id"
-    end
-
     def sent_on
       object.stockit_sent_on
-    end
-
-    def sent_on__sql
-      "stockit_sent_on"
     end
 
     def include_orders_packages?
@@ -69,9 +57,9 @@ module Api::V1
     end
 
     %w[include_state? include_received_at? include_rejected_at?
-      include_designation_id? include_sent_on?
-      include_offer_id? include_designation_name?
-      include_received_quantity?].each do |method|
+       include_designation_id? include_sent_on?
+       include_offer_id? include_designation_name?
+       include_received_quantity?].each do |method|
       alias_method method.to_sym, :not_browse_app?
     end
   end

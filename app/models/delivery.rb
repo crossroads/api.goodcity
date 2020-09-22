@@ -1,5 +1,5 @@
-class Delivery < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+class Delivery < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include Paranoid
   include PushUpdatesForDelivery
 
@@ -10,8 +10,8 @@ class Delivery < ActiveRecord::Base
 
   accepts_nested_attributes_for :contact, :schedule
 
-  before_save :update_offer_state
   before_destroy :push_back_offer_state
+  after_save :update_offer_state
   after_save :send_updates, if: :successfully_scheduled? # PushUpdatesForDelivery
   after_save :notify_reviewers, if: :successfully_scheduled? # PushUpdatesForDelivery
   after_destroy { send_updates(:delete) unless Rails.env.test? } # PushUpdatesForDelivery
@@ -46,7 +46,6 @@ class Delivery < ActiveRecord::Base
   end
 
   def process_completed?
-    (contact_id_changed? && contact.present?) || (delivery_type == 'Drop Off' && schedule_id_changed? && schedule.present?)
+    (contact_id_previously_changed? && contact.present?) || (delivery_type == 'Drop Off' && schedule_id_previously_changed? && schedule.present?)
   end
-
 end

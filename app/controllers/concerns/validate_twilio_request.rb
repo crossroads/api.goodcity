@@ -22,7 +22,7 @@ module ValidateTwilioRequest
   end
 
   def twilio_token
-    Rails.application.secrets.twilio["auth_token"]
+    Rails.application.secrets.twilio[:auth_token]
   end
 
   class TwilioAuthenticationError < StandardError; end

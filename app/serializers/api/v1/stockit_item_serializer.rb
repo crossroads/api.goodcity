@@ -27,10 +27,6 @@ module Api::V1
       object.available_quantity
     end
 
-    def quantity__sql
-      "available_quantity"
-    end
-
     def include_package_set?
       @options[:include_package_set]
     end
@@ -49,32 +45,16 @@ module Api::V1
       object.order_id
     end
 
-    def designation_id__sql
-      "order_id"
-    end
-
     def sent_on
       object.stockit_sent_on
-    end
-
-    def sent_on__sql
-      "stockit_sent_on"
     end
 
     def code_id
       object.package_type_id
     end
 
-    def code_id__sql
-      "packages.package_type_id"
-    end
-
     def image_id
       object.favourite_image_id
-    end
-
-    def image_id__sql
-      "packages.favourite_image_id"
     end
 
     # deprecated
@@ -82,13 +62,6 @@ module Api::V1
     # refer to package_set_id from now on
     def is_set
       false
-    end
-
-    # deprecated
-    # Kept for backwards compatibility
-    # refer to package_set_id from now on
-    def is_set__sql
-      "false"
     end
   end
 end

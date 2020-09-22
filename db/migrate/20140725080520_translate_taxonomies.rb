@@ -1,4 +1,4 @@
-class TranslateTaxonomies < ActiveRecord::Migration
+class TranslateTaxonomies < ActiveRecord::Migration[4.2]
   def change
     rename_column :item_types, :name, :name_en
     add_column    :item_types, :name_zh_tw, :string

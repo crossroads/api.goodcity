@@ -1,9 +1,9 @@
 module Api::V1
   class CrossroadsTransportSerializer < ApplicationSerializer
-    attributes :id, :name, :cost, :is_van_allowed
+    attributes :id, :cost, :is_van_allowed, :name
 
-    def name__sql
-      "name_#{current_language}"
+    def name
+      object.try("name_#{current_language}".to_sym)
     end
   end
 end

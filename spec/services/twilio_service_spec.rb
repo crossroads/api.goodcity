@@ -90,7 +90,7 @@ describe TwilioService do
 
   context "send_unread_message_reminder" do
     let(:donor) { create(:user, first_name: "John", last_name: "Lowe") }
-    let(:url) { "#{Rails.application.secrets.base_urls['app']}/offers" }
+    let(:url) { "#{Rails.application.secrets.base_urls[:app]}/offers" }
 
     it "sends unread messages sms to donor " do
       body = "You've got notifications in GoodCity, please check the latest updates. #{url}."

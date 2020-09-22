@@ -39,7 +39,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
     describe "POST organisations_user" do
       it "creates new organisations user", :show_in_doc do
         expect {
-          post :create, format: :json, organisations_user: organisations_user_payload.merge(status: 'approved')
+          post :create, format: :json, params: { organisations_user: organisations_user_payload.merge(status: 'approved') }
         }.to change(OrganisationsUser, :count).by(1)
 
         expect(OrganisationsUser.last.status).to eq('approved')
@@ -48,7 +48,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
       it "defaults to the 'pending' status", :show_in_doc do
         expect {
-          post :create, format: :json, organisations_user: organisations_user_payload.except(:status)
+          post :create, format: :json, params: { organisations_user: organisations_user_payload.except(:status) }
         }.to change(OrganisationsUser, :count).by(1)
 
         expect(OrganisationsUser.last.status).to eq('pending')
@@ -57,7 +57,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
       it 'converts status to lower case before saving' do
         organisations_user_payload[:status] = 'Approved'
-        post :create, organisations_user: organisations_user_payload
+        post :create, params: { organisations_user: organisations_user_payload }
         expect(parsed_body['organisations_user']['status']).to eq('approved')
       end
 
@@ -70,7 +70,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            post :create, format: :json, organisations_user: payload
+            post :create, format: :json, params: { organisations_user: payload }
           }.to change(OrganisationsUser, :count).by(1)
 
           expect(user.reload.first_name).to eq('Shteve')
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -107,7 +107,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -130,7 +130,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -146,7 +146,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -159,7 +159,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         it "does not create the organisations_user if user already belongs to organisation" do
           create :organisations_user, user: user, organisation: organisation
           expect {
-            post :create, format: :json, organisations_user: organisations_user_payload
+            post :create, format: :json, params: { organisations_user: organisations_user_payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(409)
@@ -170,7 +170,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           [:user_id, :organisation_id].each do |param|
             it "fails if the '#{param}' param is missing'" do
               expect {
-                post :create, format: :json, organisations_user: organisations_user_payload.except(param)
+                post :create, format: :json, params: { organisations_user: organisations_user_payload.except(param) }
               }.not_to change(OrganisationsUser, :count)
 
               expect(response.status).to eq(422)
@@ -188,7 +188,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
       it "updates the existing organisations_user", :show_in_doc do
         expect {
-          put :update, id: organisations_user.id, organisations_user: organisations_user_payload.merge(status: 'expired')
+          put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload.merge(status: 'expired') }
         }.to change {
           organisations_user.reload.status
         }.from('approved').to('expired')
@@ -205,7 +205,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            put :update, id: organisations_user.id, organisations_user: payload
+            put :update, params: { id: organisations_user.id, organisations_user: payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(user.reload.first_name).to eq('Shteve')
@@ -226,7 +226,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -242,7 +242,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -252,7 +252,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
         it 'converts status to lower case before updating' do
           organisations_user_payload[:status] = 'Approved'
-          put :update, id: organisations_user.id, organisations_user: organisations_user_payload
+          put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload }
           expect(parsed_body['organisations_user']['status']).to eq('approved')
           expect(organisations_user.reload.status).to eq('approved')
         end
@@ -271,7 +271,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -287,7 +287,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -300,7 +300,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         context 'readonly params' do
           it "forbids changing the user_id field" do
             expect {
-              put :update, id: organisations_user.id, organisations_user: organisations_user_payload.update(user_id: other_user.id)
+              put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload.update(user_id: other_user.id) }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -309,7 +309,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
           it "forbids changing the organisation_id field" do
             expect {
-              put :update, id: organisations_user.id, organisations_user: organisations_user_payload.update(organisation_id: other_organisation.id)
+              put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload.update(organisation_id: other_organisation.id) }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -321,7 +321,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           [:user_id, :organisation_id].each do |param|
             it "fails if the '#{param}' param is missing'" do
               expect {
-                post :create, format: :json, organisations_user: organisations_user_payload.except(param)
+                post :create, format: :json, params: { organisations_user: organisations_user_payload.except(param) }
               }.not_to change(OrganisationsUser, :count)
 
               expect(response.status).to eq(422)
@@ -343,7 +343,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
     describe "POST organisations_user" do
       it "creates new organisations user for himself/herself", :show_in_doc do
         expect {
-          post :create, format: :json, organisations_user: organisations_user_payload
+          post :create, format: :json, params: { organisations_user: organisations_user_payload }
         }.to change(OrganisationsUser, :count).by(1)
 
         organisations_user = OrganisationsUser.last
@@ -356,7 +356,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
       it "defaults to the 'pending' status", :show_in_doc do
         expect {
-          post :create, format: :json, organisations_user: organisations_user_payload.except(:status)
+          post :create, format: :json, params: { organisations_user: organisations_user_payload.except(:status) }
         }.to change(OrganisationsUser, :count).by(1)
 
         expect(OrganisationsUser.last.status).to eq('pending')
@@ -372,7 +372,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            post :create, format: :json, organisations_user: payload
+            post :create, format: :json, params: { organisations_user: payload }
           }.to change(OrganisationsUser, :count).by(1)
 
           expect(user.reload.first_name).to eq('Shteve')
@@ -393,7 +393,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -409,7 +409,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -432,7 +432,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -448,7 +448,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              post :create, format: :json, organisations_user: payload
+              post :create, format: :json, params: { organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -461,7 +461,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         it "does not create the organisations_user if user already belongs to organisation" do
           create :organisations_user, user: user, organisation: organisation
           expect {
-            post :create, format: :json, organisations_user: organisations_user_payload
+            post :create, format: :json, params: { organisations_user: organisations_user_payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(409)
@@ -471,7 +471,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         it "does not create the organisations_user for another user" do
           create :organisations_user, user: user, organisation: organisation
           expect {
-            post :create, format: :json, organisations_user: organisations_user_payload.merge(user_id: other_user.id)
+            post :create, format: :json, params: { organisations_user: organisations_user_payload.merge(user_id: other_user.id) }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(403)
@@ -487,7 +487,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            post :create, format: :json, organisations_user: payload
+            post :create, format: :json, params: { organisations_user: payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(422)
@@ -503,7 +503,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            post :create, format: :json, organisations_user: payload
+            post :create, format: :json, params: { organisations_user: payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(422)
@@ -513,7 +513,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         [:approved, :expired, :denied].each do |status|
           it "prevents a user from setting his/her status as '#{status}'" do
             expect {
-              post :create, format: :json, organisations_user: organisations_user_payload.merge(status: status.to_s)
+              post :create, format: :json, params: { organisations_user: organisations_user_payload.merge(status: status.to_s) }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -525,7 +525,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           [:user_id, :organisation_id].each do |param|
             it "fails if the '#{param}' param is missing'" do
               expect {
-                post :create, format: :json, organisations_user: organisations_user_payload.except(param)
+                post :create, format: :json, params: { organisations_user: organisations_user_payload.except(param) }
               }.not_to change(OrganisationsUser, :count)
 
               expect(response.status).to eq(422)
@@ -543,7 +543,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
       it "updates the existing organisations_user", :show_in_doc do
         expect {
-          put :update, id: organisations_user.id, organisations_user: organisations_user_payload.merge(position: 'El Conductor')
+          put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload.merge(position: 'El Conductor') }
         }.to change {
           organisations_user.reload.position
         }.from('Conductor').to('El Conductor')
@@ -560,7 +560,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            put :update, id: organisations_user.id, organisations_user: payload
+            put :update, params: { id: organisations_user.id, organisations_user: payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(user.reload.first_name).to eq('Shteve')
@@ -581,7 +581,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -597,7 +597,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -620,7 +620,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(422)
@@ -636,7 +636,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
             }
 
             expect {
-              put :update, id: organisations_user.id, organisations_user: payload
+              put :update, params: { id: organisations_user.id, organisations_user: payload }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -651,7 +651,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           other_record = create :organisations_user, user: other_user, organisation: organisation
 
           expect {
-            put :update, id: other_record.id, organisations_user: organisations_user_payload.merge(user_id: other_user.id)
+            put :update, params: { id: other_record.id, organisations_user: organisations_user_payload.merge(user_id: other_user.id) }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(403)
@@ -667,7 +667,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            put :update, id: organisations_user.id, organisations_user: payload
+            put :update, params: { id: organisations_user.id, organisations_user: payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(422)
@@ -683,7 +683,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           }
 
           expect {
-            put :update, id: organisations_user.id, organisations_user: payload
+            put :update, params: { id: organisations_user.id, organisations_user: payload }
           }.not_to change(OrganisationsUser, :count)
 
           expect(response.status).to eq(422)
@@ -693,7 +693,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         [:approved, :expired, :denied].each do |status|
           it "prevents a user from setting his/her status as '#{status}'" do
             expect {
-              put :update, id: organisations_user.id, organisations_user: organisations_user_payload.merge(status: status.to_s)
+              put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload.merge(status: status.to_s) }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -704,7 +704,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
         context 'readonly params' do
           it "forbids changing the user_id field" do
             expect {
-              put :update, id: organisations_user.id, organisations_user: organisations_user_payload.update(user_id: other_user.id)
+              put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload.update(user_id: other_user.id) }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -713,7 +713,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
 
           it "forbids changing the organisation_id field" do
             expect {
-              put :update, id: organisations_user.id, organisations_user: organisations_user_payload.update(organisation_id: other_organisation.id)
+              put :update, params: { id: organisations_user.id, organisations_user: organisations_user_payload.update(organisation_id: other_organisation.id) }
             }.not_to change(OrganisationsUser, :count)
 
             expect(response.status).to eq(403)
@@ -725,7 +725,7 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           [:user_id, :organisation_id].each do |param|
             it "fails if the '#{param}' param is missing'" do
               expect {
-                post :create, format: :json, organisations_user: organisations_user_payload.except(param)
+                post :create, format: :json, params: { organisations_user: organisations_user_payload.except(param) }
               }.not_to change(OrganisationsUser, :count)
 
               expect(response.status).to eq(422)

@@ -2,7 +2,7 @@ namespace :goodcity do
   # rake goodcity:add_stockit_user
   desc 'Add Stockit User'
   task add_stockit_user: :environment do
-    mobile = Rails.application.secrets.twilio["voice_number"]
+    mobile = Rails.application.secrets.twilio[:voice_number]
 
     if mobile
       stockit_user = User.where(first_name: "Stockit", last_name: "User", mobile: mobile).first_or_create

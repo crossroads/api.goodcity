@@ -25,7 +25,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     it "supports filtering requests by order id" do
       (1..3).each { |i| create :order, created_by: user, id: i }
       (1..3).each { |i| create :goodcity_request, order: Order.find(i) }
-      get :index, order_ids: '1,2'
+      get :index, params: { order_ids: '1,2' }
       expect(requests_fetched.length).to eq(2)
       requests_fetched.each do |r|
         expect(r.order_id).to be_in([1,2])
@@ -61,7 +61,7 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
     it "returns 201", :show_in_doc do
       expect {
-        post :create, goodcity_request: goodcity_request_params
+        post :create, params: { goodcity_request: goodcity_request_params }
       }.to change(GoodcityRequest, :count).by(1)
       expect(response.status).to eq(201)
     end
@@ -77,11 +77,13 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
       it "allows me to create a request for my own order", :show_in_doc do
         expect {
-          post :create, goodcity_request: {
-            order_id: order.id, 
+          post :create, params: {
+            goodcity_request: {
+            order_id: order.id,
             package_type: package_type.id,
             quantity: 1,
             description: "foo"
+            }
           }
         }.to change(GoodcityRequest, :count).by(1)
         expect(response.status).to eq(201)
@@ -89,11 +91,13 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
 
       it "it forbids me from creating a request for another user's order", :show_in_doc do
         expect {
-          post :create, goodcity_request: {
-            order_id: other_order.id, 
+          post :create, params: {
+            goodcity_request: {
+            order_id: other_order.id,
             package_type: package_type.id,
             quantity: 1,
             description: "foo"
+            }
           }
         }.not_to change(GoodcityRequest, :count)
         expect(response.status).to eq(403)
@@ -112,13 +116,13 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     before { generate_and_set_token(charity_user) }
 
     it "Updates goodcity_request record", :show_in_doc do
-      put :update, id: gc_request.id, goodcity_request: gc_request.attributes.except(:id)
+      put :update, params: { id: gc_request.id, goodcity_request: gc_request.attributes.except(:id) }
       expect(response.status).to eq(200)
       expect(goodcity_request.reload.quantity).to eq(goodcity_request.quantity)
     end
 
     it "it forbids me from updating a request for another user's order", :show_in_doc do
-      put :update, id: other_gc_request.id, goodcity_request: other_gc_request.attributes.except(:id)
+      put :update, params: { id: other_gc_request.id, goodcity_request: other_gc_request.attributes.except(:id) }
       expect(response.status).to eq(403)
     end
   end
@@ -127,10 +131,10 @@ RSpec.describe Api::V1::GoodcityRequestsController, type: :controller do
     before { generate_and_set_token(user) }
 
     it "returns 200", :show_in_doc do
-      delete :destroy, id: goodcity_request.id
+      delete :destroy, params: { id: goodcity_request.id }
       expect(response.status).to eq(200)
       body = JSON.parse(response.body)
-      expect(body).to eq( {} )
+      expect(body).to be_empty
     end
   end
 end

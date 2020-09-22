@@ -1,4 +1,4 @@
-class AddLanguageToUsers < ActiveRecord::Migration
+class AddLanguageToUsers < ActiveRecord::Migration[4.2]
   def change
     add_column :users, :preferred_language, :string
   end

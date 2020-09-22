@@ -1,4 +1,4 @@
-class GoodcitySetting < ActiveRecord::Base
+class GoodcitySetting < ApplicationRecord
   validates :key, uniqueness: true, presence: true
 
   def self.enabled?(key)

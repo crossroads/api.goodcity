@@ -1,2 +1,2 @@
-class Lookup < ActiveRecord::Base
+class Lookup < ApplicationRecord
 end

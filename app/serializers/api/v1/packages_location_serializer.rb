@@ -9,16 +9,8 @@ module Api::V1
       object.package_id
     end
 
-    def package_id__sql
-      'package_id'
-    end
-
     def item_id
       object.package_id
-    end
-
-    def item_id__sql
-      'package_id'
     end
   end
 end

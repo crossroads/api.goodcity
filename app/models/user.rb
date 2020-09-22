@@ -1,5 +1,5 @@
-class User < ActiveRecord::Base
-  has_paper_trail class_name: "Version"
+class User < ApplicationRecord
+  has_paper_trail versions: { class_name: "Version" }
   include PushUpdates
   include RollbarSpecification
   include UserSearch

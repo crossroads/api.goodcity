@@ -1,4 +1,4 @@
-class AddBodyIndexOnMessages < ActiveRecord::Migration
+class AddBodyIndexOnMessages < ActiveRecord::Migration[4.2]
   def up
     execute "CREATE INDEX messages_body_search_idx ON messages USING gin (body gin_trgm_ops);"
   end

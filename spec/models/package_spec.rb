@@ -322,7 +322,7 @@ RSpec.describe Package, type: :model do
         expect(push_service).to receive(:send_update_store) do |channels, data|
           expect(channels).to include(Channel::BROWSE_CHANNEL)
         end
-        package_published.allow_web_publish = false
+        package_published.reload.allow_web_publish = false
         package_published.save
       end
     end
@@ -603,9 +603,10 @@ RSpec.describe Package, type: :model do
 
       it 'should set favourite image from its existing images' do
         expect {
+          @package.reload
           @package.favourite_image_id = @pkg_image2.id
           @package.save
-        }.to change { @package.favourite_image_id }.to(@pkg_image2.id)
+        }.to change { @package.reload.favourite_image_id }.to(@pkg_image2.id)
         expect(@pkg_image1.reload.favourite).to eq(false)
       end
 

@@ -1,4 +1,4 @@
-class CreatePackageCategories < ActiveRecord::Migration
+class CreatePackageCategories < ActiveRecord::Migration[4.2]
   def change
     create_table :package_categories do |t|
       t.string :name_en

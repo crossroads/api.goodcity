@@ -39,8 +39,8 @@ class Token
   # Additional options can be encoded inside the token
   # params = { "mobile" => "+85212345678" }
   def generate(params, metadata: {}, validity: nil, type: DEFAULT_TYPE)
-    now       = Time.now.to_i
-    validity  ||= default_validity(type)    
+    now       = Time.current.to_i
+    validity  ||= default_validity(type)
 
     payload = params.merge({
       "iat": now,
@@ -62,7 +62,7 @@ class Token
 
   # Allow access to the data stored inside the token e.g. mobile number
   def data
-    token
+    token if jwt_string.present?
   end
 
   def read(key, default: nil)
@@ -93,7 +93,7 @@ class Token
 
   # Decode the json web token when we receive it from the client
   def token
-    @token ||= JWT.decode(jwt_string, secret_key, true, verify_expiration: false)
+    @token ||= JWT.decode(jwt_string, secret_key, true, algorithm: hmac_sha_algo)
   end
 
   # Is the JWT token authentic?
@@ -119,20 +119,21 @@ class Token
 
   # Key used to generate tokens. MUST be private. Changing this will invalidate all tokens.
   def secret_key
-    jwt_config['secret_key']
+    jwt_config[:secret_key]
   end
 
   def hmac_sha_algo
-    jwt_config['hmac_sha_algo']
+    jwt_config[:hmac_sha_algo]
   end
 
   def issuer
-    jwt_config['issuer']
+    jwt_config[:issuer]
   end
 
   # Number of seconds the token is valid for
   def default_validity(type)
-    return jwt_config['validity_for_otp'].to_i if type == Types::OTP
-    return jwt_config['validity'].to_i
+    return jwt_config[:validity_for_otp].to_i if type == Types::OTP
+
+    jwt_config[:validity].to_i
   end
 end
