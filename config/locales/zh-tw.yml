@@ -15,6 +15,7 @@ zh-tw:
     duplicate_error: A record already exists
     forbidden: Access Denied
     invalid_credentials: Invalid credentials
+    invalid_params: Invalid or missing params
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -60,6 +61,9 @@ zh-tw:
     attributes:
       user:
         mobile: "手提電話"
+      organisation:
+        name_en: '機構名稱(英文)'
+        registration: '註冊編號'
     errors:
       models:
         requested_package:
@@ -74,6 +78,13 @@ zh-tw:
             mobile:
               invalid: "不正確"
               blank: "不能留空"
+        organisation:
+          attributes:
+            name_en:
+              taken: '已被登記'
+            registration:
+              taken: '已被登記'
+
   notification:
     new_offer: "%{name} 的新捐獻。"
     new_order: "New order from %{organisation_name_zh_tw}: %{contact_name}"
@@ -127,6 +138,7 @@ zh-tw:
       present: "User already exists in this organisation"
     invalid:
       user: The email or mobile already exists.
+      status: Invalid status.
   appointment_slots:
     already_exists: "An appointment slot already exists for this time"
   operations:

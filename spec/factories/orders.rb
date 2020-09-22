@@ -12,6 +12,7 @@ FactoryBot.define do
     detail_type     { 'GoodCity' }
     people_helped   { rand(10) + 1 }
     shipment_date    { Date.today }
+    booking_type    { create :booking_type, :online_order }
     association     :stockit_organisation
     association     :stockit_activity
     association     :organisation
@@ -19,7 +20,6 @@ FactoryBot.define do
     association     :beneficiary
     association     :country
     association     :district
-    association     :booking_type
 
     trait :shipment do
       detail_type { 'Shipment' }
@@ -127,10 +127,10 @@ FactoryBot.define do
   end
 
   factory :online_order, parent: :order do
-    booking_type { BookingType.find_or_create_by(identifier: "online-order" ,name_en: 'online order', name_zh_tw: 'online order') }
+    booking_type { create :booking_type, :online_order }
   end
 
   factory :appointment, parent: :order do
-    booking_type { BookingType.find_or_create_by(identifier: "appointment", name_en: "appointment", name_zh_tw: "appointment") }
+    booking_type { create :booking_type, :appointment }
   end
 end

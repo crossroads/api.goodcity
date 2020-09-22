@@ -18,7 +18,7 @@ describe "Token", :type => :model do
         expect(secret_key).to eql(jwt_config[:secret_key])
         expect(hmac_sha_algo).to eql(jwt_config[:hmac_sha_algo])
       end
-      token.generate
+      token.generate({})
     end
     it "with extra parameters to encode" do
       expect(JWT).to receive(:encode) do |args, secret_key, hmac_sha_algo|

@@ -187,6 +187,66 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         expect(response).to have_http_status(:forbidden)
       end
     end
+
+    context 'if registration is duplicate' do
+      before do
+        create(:organisation, registration: '123')
+      end
+
+      it 'response is 422' do
+        params[:registration] = '123'
+        post :create, organisation: params
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(parsed_body['errors']).to include('Registration has already been taken')
+      end
+
+      it 'does not create organisation record' do
+        params[:registration] = '123'
+        expect{
+          post :create, organisation: params
+        }.not_to change { Organisation.count }
+      end
+
+      context 'when new registration has different case' do
+        before do
+          create(:organisation, registration: "A123")
+        end
+
+        it 'does not create organisation record' do
+          params[:registration] = 'a123'
+          post :create, organisation: params
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(parsed_body['errors']).to include('Registration has already been taken')
+        end
+
+        it 'does not create organisation record' do
+          params[:registration] = 'a123'
+          expect {
+            post :create, organisation: params
+          }.not_to change { Organisation.count }
+        end
+      end
+    end
+
+    context 'if registration is empty' do
+      it 'creates a new organisation for empty string' do
+        create(:organisation, registration: '')
+
+        params[:registration] = ''
+        expect{
+          post :create, organisation: params
+        }.to change { Organisation.count }.by(1)
+      end
+
+      it 'creates a new organisation for nil' do
+        create(:organisation, registration: nil)
+
+        params[:registration] = nil
+        expect {
+          post :create, organisation: params
+        }.to change { Organisation.count }.by(1)
+      end
+    end
   end
 
   describe 'PUT /update' do
@@ -228,13 +288,62 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
     context 'if organisation type is nil' do
       it 'returns error' do
-        put :create, params: { organisation: { organisation_type_id: nil } }
+        put :update, params: { id: organisation.id, organisation: { organisation_type_id: nil } }
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not change organisation_type_id' do
-        post :create, params: { organisation: { organisation_type_id: nil } }
+        put :update, params: { id: organisation.id, organisation: { organisation_type_id: nil } }
         expect(organisation.reload.organisation_type_id).to eq(organisation.organisation_type_id)
+      end
+    end
+
+    context 'if registration is duplicate' do
+      before do
+        create(:organisation, registration: '123')
+      end
+
+      it 'response is 422' do
+        put :update, id: organisation.id, organisation: { registration: '123' }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(parsed_body['errors']).to include('Registration has already been taken')
+      end
+
+      it 'does not update organisation record' do
+        put :update, id: organisation.id, organisation: { registration: '123' }
+        expect(organisation.reload.registration).to eq(organisation.registration)
+      end
+
+      context 'when new registration has different case' do
+        before do
+          create(:organisation, registration: "A123")
+        end
+
+        it 'does not create organisation record' do
+          put :update, id: organisation.id, organisation: { registration: 'a123' }
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(parsed_body['errors']).to include('Registration has already been taken')
+        end
+
+        it 'does not create organisation record' do
+          expect {
+            put :update, id: organisation.id, organisation: { registration: 'a123' }
+          }.not_to change { organisation.reload }
+        end
+      end
+    end
+
+    context 'if registration is empty' do
+      it 'can update the organisation to empty string' do
+        create(:organisation, registration: '')
+        put :update, id: organisation.id, organisation: { registration: 'abc' }
+        expect(organisation.reload.registration).to eq('abc')
+      end
+
+      it 'can update the organisation to nil' do
+        create(:organisation, registration: nil)
+        put :update, id: organisation.id, organisation: { registration: nil }
+        expect(organisation.reload.registration).to be_nil
       end
     end
   end

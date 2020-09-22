@@ -7,6 +7,7 @@ module Goodcity
     attr_accessor :status
 
     def initialize(message, status: 422)
+      message = message.join('. ') if message.is_a?(Array)
       super(message);
       @status = status;
     end
@@ -32,6 +33,10 @@ module Goodcity
   class OperationsError < BaseError; end
 
   class InventoryError < BaseError; end
+
+  class ValidationError < BaseError; end
+
+  class ExternalServiceError < BaseError; end
 
   # ----------------------------
   # Generic
@@ -61,12 +66,6 @@ module Goodcity
     end
   end
 
-  class InvalidCredentialsError < AccessError
-    def initialize
-      super(I18n.t('organisations_user_builder.invalid.user'))
-    end
-  end
-
   # ----------------------------
   # I18n based errors
   # ----------------------------
@@ -74,11 +73,17 @@ module Goodcity
   def factory(base, default_translation_key, **opts)
     error_klass = Class.new(base) do
       define_method(:initialize) do |translation_key: default_translation_key, params: {}|
-        super(I18n.t(translation_key, params), **opts)
+        msg = I18n.t(translation_key, { **params, default: translation_key })
+        super(msg, **opts)
       end
 
-      define_singleton_method(:with_translation) do |translation_key, params: {}|
-        error_klass.new(translation_key: translation_key, params: params)
+      [
+        :with_text,
+        :with_translation
+      ].each do |name|
+        define_singleton_method(name) do |translation_key, params: {}|
+          error_klass.new(translation_key: translation_key, params: params)
+        end
       end
     end
   end
@@ -88,8 +93,12 @@ module Goodcity
   InventorizedPackageError        = factory(BaseError, 'package.cannot_delete_inventorized')
   DisabledFeatureError            = factory(BaseError, 'goodcity.disabled_feature')
   DuplicateRecordError            = factory(BaseError, 'errors.duplicate_error', status: 409)
+  InvalidParamsError              = factory(BaseError, 'errors.invalid_params', status: 422)
+  NotFoundError                   = factory(BaseError, 'errors.not_found', status: 404)
 
   AccessDeniedError               = factory(AccessError, 'errors.forbidden', status: 403)
+  UnauthorizedError               = factory(AccessError, 'warden.unauthorized', status: 401)
+  InvalidCredentialsError         = factory(AccessError, 'organisations_user_builder.invalid.user', status: 401)
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')

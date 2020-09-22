@@ -53,7 +53,7 @@ FactoryBot.define do
         after(:create) do |user, evaluator|
           r = create("#{role.parameterize.underscore}_role")
           unless user.roles.include?(r)
-            create :user_role, user: user, role: r, expiry_date: evaluator.role_expiry
+            create :user_role, user: user, role: r, expires_at: evaluator.role_expiry
           end
         end
         transient do

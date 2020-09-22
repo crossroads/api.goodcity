@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :organisation do
-    name_en { FFaker::Company.name }
+    sequence(:name_en) { |n| "#{FFaker::Company.name}#{n}" }
     name_zh_tw { FFaker::Company.name }
     description_en { FFaker::Lorem.words(rand(2..10)).join(' ') }
 

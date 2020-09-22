@@ -328,7 +328,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
               state = i.even? ? :submitted : :processing
               detail_type = i.even? ? "GoodCity" : "Shipment"
               i.even? ? create_order_with_transport(state, :scheduled_at => scheduled_at, :detail_type => detail_type, booking_type: booking_type) :
-              create(:order, state: state, detail_type: detail_type, shipment_date: scheduled_at)
+              create(:order, state: state, detail_type: detail_type, shipment_date: scheduled_at, booking_type: booking_type)
             end
           end
 

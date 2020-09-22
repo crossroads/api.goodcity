@@ -39,7 +39,7 @@ class ApplicationController < ActionController::API
     @current_user ||= begin
       return nil unless token.valid? && token_data.present?
 
-      user_id = token_data
+      user_id = token.read('user_id')
       user = User.find_by_id(user_id)
       return nil unless user.present?
       return nil if user.disabled
