@@ -3,7 +3,7 @@ require 'warden/strategies/base'
 module Warden
   module Strategies
     class PinJwtStrategy < PinStrategy
-      def valid?        
+      def valid?
         params["pin"].present? && jwt_token.valid? && jwt_token.otp?
       end
 

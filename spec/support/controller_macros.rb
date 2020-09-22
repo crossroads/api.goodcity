@@ -20,7 +20,8 @@ module ControllerMacros
     {
       iss: jwt_config[:issuer],
       exp: 14.days.from_now.to_i,
-      user_id: User.current_user.id
+      user_id: User.current_user.id,
+      iat: Time.current.to_i
     }
   end
 end

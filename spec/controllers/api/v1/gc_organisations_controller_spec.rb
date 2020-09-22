@@ -195,7 +195,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
       it 'response is 422' do
         params[:registration] = '123'
-        post :create, organisation: params
+        post :create, params: { organisation: params }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(parsed_body['errors']).to include('Registration has already been taken')
       end
@@ -203,7 +203,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       it 'does not create organisation record' do
         params[:registration] = '123'
         expect{
-          post :create, organisation: params
+          post :create, params: { organisation: params }
         }.not_to change { Organisation.count }
       end
 
@@ -214,7 +214,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
         it 'does not create organisation record' do
           params[:registration] = 'a123'
-          post :create, organisation: params
+          post :create, params: { organisation: params }
           expect(response).to have_http_status(:unprocessable_entity)
           expect(parsed_body['errors']).to include('Registration has already been taken')
         end
@@ -222,7 +222,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         it 'does not create organisation record' do
           params[:registration] = 'a123'
           expect {
-            post :create, organisation: params
+            post :create, params: { organisation: params }
           }.not_to change { Organisation.count }
         end
       end
@@ -234,7 +234,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
         params[:registration] = ''
         expect{
-          post :create, organisation: params
+          post :create, params: { organisation: params }
         }.to change { Organisation.count }.by(1)
       end
 
@@ -243,7 +243,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
         params[:registration] = nil
         expect {
-          post :create, organisation: params
+          post :create, params: { organisation: params }
         }.to change { Organisation.count }.by(1)
       end
     end
@@ -304,13 +304,13 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       end
 
       it 'response is 422' do
-        put :update, id: organisation.id, organisation: { registration: '123' }
+        put :update, params: { id: organisation.id, organisation: { registration: '123' } }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(parsed_body['errors']).to include('Registration has already been taken')
       end
 
       it 'does not update organisation record' do
-        put :update, id: organisation.id, organisation: { registration: '123' }
+        put :update, params: { id: organisation.id, organisation: { registration: '123' } }
         expect(organisation.reload.registration).to eq(organisation.registration)
       end
 
@@ -320,14 +320,14 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
         end
 
         it 'does not create organisation record' do
-          put :update, id: organisation.id, organisation: { registration: 'a123' }
+          put :update, params: { id: organisation.id, organisation: { registration: 'a123' } }
           expect(response).to have_http_status(:unprocessable_entity)
           expect(parsed_body['errors']).to include('Registration has already been taken')
         end
 
         it 'does not create organisation record' do
           expect {
-            put :update, id: organisation.id, organisation: { registration: 'a123' }
+            put :update, params: { id: organisation.id, organisation: { registration: 'a123' } }
           }.not_to change { organisation.reload }
         end
       end
@@ -336,14 +336,14 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     context 'if registration is empty' do
       it 'can update the organisation to empty string' do
         create(:organisation, registration: '')
-        put :update, id: organisation.id, organisation: { registration: 'abc' }
+        put :update, params: { id: organisation.id, organisation: { registration: 'abc' } }
         expect(organisation.reload.registration).to eq('abc')
       end
 
       it 'can update the organisation to nil' do
         create(:organisation, registration: nil)
-        put :update, id: organisation.id, organisation: { registration: nil }
-        expect(organisation.reload.registration).to be_nil
+        put :update, params: { id: organisation.id, organisation: { registration: nil } }
+        expect(organisation.reload.registration).to be_empty
       end
     end
   end

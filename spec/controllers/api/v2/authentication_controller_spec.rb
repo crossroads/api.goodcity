@@ -25,7 +25,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(AuthenticationService).to receive(:otp_auth_key_for).and_return(otp_auth_key)
 
       expect {
-        post :signup, format: 'json', user_auth: signup_mobile_params
+        post :signup, format: 'json', params: { user_auth: signup_mobile_params }
       }.to change(User, :count).by(1)
 
       expect(response.status).to eq(201)
@@ -47,7 +47,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(AuthenticationService).to receive(:otp_auth_key_for).and_return(otp_auth_key)
 
       expect {
-        post :signup, format: 'json', user_auth: signup_email_params
+        post :signup, format: 'json', params: { user_auth: signup_email_params }
       }.to change(User, :count).by(1)
 
       expect(response.status).to eq(201)
@@ -69,7 +69,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(AuthenticationService).to receive(:otp_auth_key_for).and_return(otp_auth_key)
 
       expect {
-        post :signup, format: 'json', user_auth: signup_params
+        post :signup, format: 'json', params: { user_auth: signup_params }
       }.to change(User, :count).by(1)
 
       expect(response.status).to eq(201)
@@ -93,7 +93,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(AuthenticationService).to receive(:otp_auth_key_for).with(existing_user).once.and_return(otp_auth_key)
 
       expect {
-        post :signup, format: 'json', user_auth: signup_mobile_params
+        post :signup, format: 'json', params: { user_auth: signup_mobile_params }
       }.not_to change(User, :count)
 
       expect(response.status).to eq(200)
@@ -109,7 +109,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(AuthenticationService).to receive(:otp_auth_key_for).with(existing_user).once.and_return(otp_auth_key)
 
       expect {
-        post :signup, format: 'json', user_auth: signup_email_params
+        post :signup, format: 'json', params: { user_auth: signup_email_params }
       }.not_to change(User, :count)
 
       expect(response.status).to eq(200)
@@ -119,19 +119,19 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
     end
 
     it "with invalid mobile number and no email" do
-      post :signup, format: 'json', user_auth: signup_params.merge({ mobile: '123456' })
+      post :signup, format: 'json', params: { user_auth: signup_params.merge({ mobile: '123456' }) }
       expect(response.status).to eq(422)
       expect(parsed_body["error"]).to match('Mobile is invalid')
     end
 
     it "with invalid email number and no mobile" do
-      post :signup, format: 'json', user_auth: signup_params.merge({ mobile: '', email: 'bad mail' })
+      post :signup, format: 'json', params: { user_auth: signup_params.merge({ mobile: '', email: 'bad mail' }) }
       expect(response.status).to eq(422)
       expect(parsed_body["error"]).to match('Email is invalid')
     end
 
     it "with no mobile or email" do
-      post :signup, format: 'json', user_auth: signup_params.except(:mobile, :email)
+      post :signup, format: 'json', params: { user_auth: signup_params.except(:mobile, :email) }
       expect(response.status).to eq(422)
       expect(parsed_body["error"]).to match("Param 'mobile/email' is required")
     end
@@ -143,7 +143,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(AuthenticationService).to receive(:send_pin)
       expect(AuthenticationService).to receive(:otp_auth_key_for).and_return(otp_auth_key)
       expect(controller).to receive(:app_name).and_return(DONOR_APP).at_least(:once)
-      post :send_pin, mobile: mobile
+      post :send_pin, params: { mobile: mobile }
       expect(response.status).to eq(200)
 
       token = Token.new(bearer: parsed_body['otp_auth_key'])
@@ -157,7 +157,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       expect(AuthenticationService).not_to receive(:otp_auth_key_for)
       expect(AuthenticationService).to receive(:fake_otp_auth_key).once.and_return(otp_auth_key)
 
-      post :send_pin, mobile: mobile
+      post :send_pin, params: { mobile: mobile }
       expect(
         Token.new(bearer: parsed_body['otp_auth_key']).read('otp_auth_key')
       ).to eql( otp_auth_key )
@@ -167,8 +167,8 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       it 'empty' do
         expect(AuthenticationService).not_to receive(:send_pin)
         expect(AuthenticationService).not_to receive(:otp_auth_key_for)
-        post :send_pin, mobile: '123'
-  
+        post :send_pin, params: { mobile: '123' }
+
         expect(response.status).to eq(422)
         expect(parsed_body["error"]).to eq("Mobile is invalid")
         expect(parsed_body['otp_auth_key']).to eql( nil )
@@ -177,8 +177,8 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       it "not +852..." do
         expect(AuthenticationService).not_to receive(:send_pin)
         expect(AuthenticationService).not_to receive(:otp_auth_key_for)
-        post :send_pin, mobile: '+9101234567'
-  
+        post :send_pin, params: { mobile: '+9101234567' }
+
         expect(response.status).to eq(422)
         expect(parsed_body["error"]).to eq("Mobile is invalid")
         expect(parsed_body['otp_auth_key']).to eql( nil )
@@ -201,19 +201,19 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
         expect(AuthenticationService).to receive(:generate_token).with(user, api_version: 2).and_return(jwt_token)
 
-        post :verify, format: 'json', otp_auth_key: 'otp_auth_key', pin: '1234'
+        post :verify, format: 'json', params: { otp_auth_key: 'otp_auth_key', pin: '1234' }
         expect(parsed_body['jwt_token']).not_to be_nil
         expect(parsed_body["data"]["type"]).to eq("user")
         expect(parsed_body["data"]["id"]).to eq(user.id.to_s)
         expect(response.status).to eq(200)
       end
 
-      it 'verifies the mobile of the user' do      
+      it 'verifies the mobile of the user' do
         expect(Token.new(bearer: jwt_otp).valid?).to eq(true)
         expect_any_instance_of(AuthToken).to receive(:authenticate_otp).and_return(true)
-        
+
         expect {
-          post :verify, format: 'json', otp_auth_key: jwt_otp, pin: '1234'
+          post :verify, format: 'json', params: { otp_auth_key: jwt_otp, pin: '1234' }
         }.to change { user.reload.is_mobile_verified }.from(false).to(true)
       end
     end
@@ -222,7 +222,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
       it 'should return unprocessable entity' do
         allow(controller.send(:warden)).to receive(:authenticate).with(:pin_jwt).and_return(nil)
         allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
-        post :verify, format: 'json', otp_auth_key: otp_auth_key, pin: '1234'
+        post :verify, format: 'json', params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["error"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
       end
@@ -233,7 +233,7 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
     context 'as a guest' do
       it 'returns a 401' do
         post :hasura
-        expect(response.status).to eq(401)
+        expect(response.body).to be_empty
       end
     end
 
@@ -248,6 +248,3 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
     end
   end
 end
-
-
-
