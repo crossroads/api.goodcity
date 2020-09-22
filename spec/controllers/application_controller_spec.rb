@@ -37,7 +37,6 @@ RSpec.describe ApplicationController, type: :controller do
       context "with valid token" do
         before { expect(token).to receive("valid?").and_return(true) }
         it "should find the user by id" do
-          allow(token).to receive("data").and_return(data)
           expect(User).to receive(:find_by_id).with("1").and_return(user)
           expect( controller.send(:current_user) ).to eql(user)
         end
