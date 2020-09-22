@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 
-  has_many :active_user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Time.now.in_time_zone) },
+  has_many :active_user_roles, -> { where("expires_at IS NULL OR expires_at >= ?", Time.now.in_time_zone) },
             class_name: "UserRole"
   has_many :active_roles, class_name: "Role", through: :active_user_roles, source: "role"
 
@@ -41,8 +41,8 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
-  validates :mobile, presence: true, unless: :request_from_stock_without_mobile?
+  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: lambda { mobile.present? }
+  validates :mobile, presence: true, if: lambda { email.blank? }
   validates :mobile, uniqueness: true, if: lambda { mobile.present? }
 
   validates :email, allow_blank: true,
@@ -56,7 +56,7 @@ class User < ActiveRecord::Base
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
             allow_nil: true
 
-  after_create :generate_auth_token
+  after_create :refresh_auth_token!
 
   scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
   scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
@@ -127,8 +127,9 @@ class User < ActiveRecord::Base
   end
 
   def set_verified_flag(pin_for)
-    flag = pin_for.eql?('email') ? :is_email_verified : :is_mobile_verified
-    update_column(flag, true) unless send(flag)
+    return unless pin_for.present?
+    update_column(:is_email_verified, true)   if pin_for.to_sym.eql?(:email)
+    update_column(:is_mobile_verified, true)  if pin_for.to_sym.eql?(:mobile)
   end
 
   def self.recent_orders_created_for(user_id)
@@ -162,6 +163,10 @@ class User < ActiveRecord::Base
 
   def user_role_names
     @user_role_names ||= active_roles.pluck(:name)
+  end
+
+  def top_role
+    roles.order('level DESC').first
   end
 
   def reviewer?
@@ -257,15 +262,20 @@ class User < ActiveRecord::Base
     props
   end
 
+  def refresh_auth_token!
+    # Create new token
+    token = auth_tokens.create!(user_id: self.id)
+
+    # Delete old ones
+    AuthToken
+      .where(user: self)
+      .where.not(id: token.id)
+      .destroy_all
+
+    token
+  end
+
   private
-
-  def request_from_stock_without_mobile?
-    request_from_stock && mobile.blank? || request_from_browse && mobile.blank?
-  end
-
-  def generate_auth_token
-    auth_tokens.create(user_id: self.id)
-  end
 
   # required by PushUpdates module
   def offer

@@ -6,7 +6,7 @@ class Role < ActiveRecord::Base
   has_many :user_roles
   has_many :users, through: :user_roles
 
-  has_many :active_user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Time.now.in_time_zone) },
+  has_many :active_user_roles, -> { where("expires_at IS NULL OR expires_at >= ?", Time.current) },
             class_name: "UserRole"
   has_many :active_users, class_name: "User", through: :active_user_roles, source: "user"
 
@@ -18,5 +18,20 @@ class Role < ActiveRecord::Base
 
   def grant(user)
     user.roles << self unless user.roles.include?(self)
+  end
+
+  def snake_name
+    name.parameterize.underscore
+  end
+
+  class << self
+    #
+    # The empty "null" role can be used to represent users with no roles
+    #
+    # @return [Role] a null role
+    #
+    def null_role
+      Role.new(name: 'null').freeze
+    end
   end
 end

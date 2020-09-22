@@ -1,8 +1,9 @@
 module Api
   module V1
     class OrganisationsUsersController < Api::V1::ApiController
-      authorize_resource :organisations_user, parent: false
+      authorize_resource :organisations_user, parent: false, except: [:status_list]
       load_resource :organisations_user, only: [:show, :update]
+      skip_authorization_check only: [:status_list]
 
       resource_description do
         short "Get Organisations Users."
@@ -47,6 +48,11 @@ module Api
         render json: @organisations_user, serializer: serializer
       end
 
+      api :GET, '/v1/organisations_user/status_list', 'Get a list of available status for user'
+      def status_list
+        render json: { status: OrganisationsUser.all_status }, status: 200
+      end
+
       private
 
       def organisations_user_params
@@ -60,7 +66,7 @@ module Api
             :first_name,
             :last_name,
             :mobile,
-            :email, 
+            :email,
             :title
           ])
       end

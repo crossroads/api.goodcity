@@ -12,7 +12,7 @@ module TokenValidatable
   private
 
   def validate_token
-    unless token.valid?
+    unless token.valid? and token.api?
       throw(:warden, { status: :unauthorized, message: token.errors.full_messages.join })
     end
   end
