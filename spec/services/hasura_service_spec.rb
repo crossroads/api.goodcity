@@ -12,7 +12,7 @@ describe HasuraService do
   before { Timecop.freeze(now) }
   after  { Timecop.return }
 
-  before do 
+  before do
     touch(active_org_user, denied_org_user, pending_org_user, expired_org_user)
   end
 
@@ -24,38 +24,38 @@ describe HasuraService do
 
     before { expect(token_reader.valid?).to be(true) }
 
-    it "returns a token" do 
+    it "returns a token" do
       expect(token).not_to be_nil
     end
 
     it "expires after 1 hour" do
-      Timecop.freeze(now + 59.minute)
+      Timecop.travel(59.minute.from_now)
       expect(token_reader.valid?).to eq(true)
+      Timecop.travel(1.hour.from_now)
 
-      Timecop.freeze(now + 1.hour)
       expect(token_reader.valid?).to eq(false)
       expect(token_reader.errors.full_messages).to include('Expired token')
     end
 
-    it "includes the hasura claims namespace" do 
+    it "includes the hasura claims namespace" do
       expect(hasura_claims).to be_a(Hash)
     end
 
-    it "includes the user roles in the hasura claims" do 
+    it "includes the user roles in the hasura claims" do
       expect(hasura_claims["x-hasura-allowed-roles"]).to eq(['supervisor', 'stock_fulfilment', 'user', 'public'])
     end
 
-    it "includes the user's active organisation ids in the hasura claims" do 
+    it "includes the user's active organisation ids in the hasura claims" do
       expect(hasura_claims["x-hasura-organisation-ids"]).to eq(
         "{#{[active_org_user, pending_org_user].map(&:organisation_id).map(&:to_s).join(',')}}"
       )
     end
 
-    it "includes the user id in the hasura claims" do 
+    it "includes the user id in the hasura claims" do
       expect(hasura_claims["x-hasura-user-id"]).to eq(user.id.to_s)
     end
 
-    it "sets the strongest role as the default role" do 
+    it "sets the strongest role as the default role" do
       expect(hasura_claims["x-hasura-default-role"]).to eq('supervisor')
     end
 

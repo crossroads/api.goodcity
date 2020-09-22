@@ -100,8 +100,20 @@ class Token
   # - exp should be in the future
   # - iat should be in the past
   def token_validation
-    raise JWT::DecodeError unless !jwt_string.blank? && !(token.all? &:blank?)
-  rescue JWT::DecodeError, JWT::ExpiredSignature
+    if (!jwt_string.blank? && !(token.all? &:blank?))
+      cur_time = Time.now
+      iat_time = Time.at read("iat")
+      exp_time = Time.at read("exp")
+      return errors.add(:base, I18n.t('token.invalid')) unless ALL_TYPES.include?(access_type)
+      if exp_time < cur_time
+        errors.add(:base, I18n.t('token.expired'))
+      elsif !(iat_time < cur_time && iat_time < exp_time)
+        errors.add(:base, I18n.t('token.invalid'))
+      end
+    else
+      errors.add(:base, I18n.t('token.invalid'))
+    end
+  rescue JWT::DecodeError
     errors.add(:base, I18n.t('token.invalid'))
   end
 
