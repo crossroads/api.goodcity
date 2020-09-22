@@ -30,15 +30,14 @@ RSpec.describe ApplicationController, type: :controller do
 
     context "current_user" do
 
-      let(:data)  { [{ "user_id" => "1" }] }
-      let(:token) { double(data: data) }
+      let(:jwt) { Token.new.generate({ "user_id" => "1" }) }
+      let(:token) { Token.new(bearer: jwt) }
       let(:user) { build :user }
       before { allow(controller).to receive(:token).and_return(token) }
 
       context "with valid token" do
         before { expect(token).to receive("valid?").and_return(true) }
         it "should find the user by id" do
-          expect(token).to receive("data").and_return(data)
           expect(User).to receive(:find_by_id).with("1").and_return(user)
           expect( controller.send(:current_user) ).to eql(user)
         end

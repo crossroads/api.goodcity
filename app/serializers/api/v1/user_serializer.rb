@@ -7,6 +7,7 @@ module Api::V1
     has_one :image, serializer: ImageSerializer
     has_one :address, serializer: AddressSerializer
     has_many :user_roles, serializer: UserRoleSerializer
+    # has_many :organisations_users, serializer: OrganisationsUserSerializer
 
     def include_user_roles?
       options[:include_user_roles]

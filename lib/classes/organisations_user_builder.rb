@@ -139,7 +139,7 @@ class OrganisationsUserBuilder
     end
   end
 
-  def assert_non_existing!  
+  def assert_non_existing!
     if OrganisationsUser.find_by(organisation_id: @organisation_id, user_id: @user.id).present?
       raise Goodcity::DuplicateRecordError.with_translation('organisations_user_builder.existing_user.present')
     end
