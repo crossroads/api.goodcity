@@ -76,7 +76,7 @@ class AzureNotificationsService
     template = "{\"data\":{\"title\":\"#{notification_title}\", \"message\":\"$(message)\", \"notId\": \"$(notId)\", \"style\":\"inbox\", \"summaryText\":\"There are %n% notifications.\", #{payload} } }"
 
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-    <entry xmlns=\"http://www.w3.org/2005/Atom\"> 
+    <entry xmlns=\"http://www.w3.org/2005/Atom\">
       <content type=\"application/xml\">
         <GcmTemplateRegistrationDescription xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://schemas.microsoft.com/netservices/2010/10/servicebus/connect\">
           <Tags>#{tags.join(',')}</Tags>
@@ -142,15 +142,15 @@ class AzureNotificationsService
 
   def request_url(resource)
     sep = resource.include?('?') ? '&' : '?'
-    "#{settings['endpoint']}/#{resource}#{sep}api-version=2015-01"
+    "#{settings[:endpoint]}/#{resource}#{sep}api-version=2015-01"
   end
 
   def sas_token(url, lifetime: 10)
     target_uri = escaped_url(url).downcase
     expires = Time.now.to_i + lifetime
     to_sign = "#{target_uri}\n#{expires}"
-    signature = escaped_url(Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', settings['key'], to_sign)))
-    "SharedAccessSignature sr=#{target_uri}&sig=#{signature}&se=#{expires}&skn=#{settings['key_name']}"
+    signature = escaped_url(Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', settings[:key], to_sign)))
+    "SharedAccessSignature sr=#{target_uri}&sig=#{signature}&se=#{expires}&skn=#{settings[:key_name]}"
   end
 
   def escaped_url(url)
@@ -167,5 +167,4 @@ class AzureNotificationsService
     suffix = @app_name == DONOR_APP ? '' : " #{@app_name.titleize}"
     "#{prefix}GoodCity#{suffix}"
   end
-
 end
