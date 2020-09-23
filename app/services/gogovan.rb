@@ -8,7 +8,7 @@ class Gogovan
     @user         = user
     @name         = options['name']
     @mobile       = options['mobile']
-    @time         = options['pickupTime'] || get_pickup_date
+    @time         = options['pickupTime'] || default_pickup_date
     @need_english = options['needEnglish']
     @need_cart    = options['needCart']
     @cart_count   = 1 if options['needCart']
@@ -17,8 +17,8 @@ class Gogovan
     @vehicle      = options['vehicle']
     @ggv_uuid     = options['ggv_uuid']
     @offer        = Offer.find_by(id: options['offerId'])
-    @need_over_6ft = options["needOver6ft"]
-    @remove_net    = options["removeNet"] if @need_over_6ft
+    @need_over_6ft = options['needOver6ft']
+    @remove_net    = options['removeNet'] if @need_over_6ft
   end
 
   def confirm_order
@@ -30,7 +30,6 @@ class Gogovan
   end
 
   class << self
-
     def order_status(booking_id)
       GoGoVanApi::Order.new(booking_id).status
     end
@@ -38,7 +37,6 @@ class Gogovan
     def cancel_order(booking_id)
       GoGoVanApi::Order.new(booking_id).cancel
     end
-
   end
 
   private
@@ -52,7 +50,7 @@ class Gogovan
       order: {
         name:           @name || @user.full_name,
         phone_number:   @mobile || @user.mobile,
-        pickup_time:    parse_time.utc,
+        pickup_time:    parse_time,
         vehicle:        @vehicle,
         locations:      locations,
         extra_requirements: {
@@ -74,9 +72,10 @@ class Gogovan
     [pickup_location, District.crossroads_address].to_json
   end
 
-  def get_pickup_date
-    next_available_date = DateSet.new().available_dates.first
-    next_available_date.beginning_of_day + 12.hours
+  def default_pickup_date
+    next_available_date = DateSet.new.available_dates.first
+    next_available_date = next_available_date.beginning_of_day + 12.hours
+    next_available_date.utc
   end
 
   def ggv_driver_notes
