@@ -28,8 +28,8 @@ module GoodCityServer
     # config.i18n.default_locale = :de
 
     config.autoload_paths += %W(#{config.root}/app/models/concerns/operations)
-    config.eager_load_paths << "#{Rails.root}/lib/classes"
     config.eager_load_paths << "#{Rails.root}/lib/goodcity/error"
+    config.eager_load_paths << "#{Rails.root}/lib/classes"
 
     # config.active_record.schema_format = :sql
 
