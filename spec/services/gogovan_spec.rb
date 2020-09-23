@@ -45,7 +45,7 @@ describe Gogovan do
       expect(gogovan.mobile).to eql(mobile)
     end
     it "pickupTime" do
-      expect(gogovan.time).to eql(pickupTime)
+      expect(gogovan.time).to eql(DateTime.parse(pickupTime).utc)
     end
     it "needEnglish" do
       expect(gogovan.need_english).to eql(needEnglish)
@@ -106,15 +106,25 @@ describe Gogovan do
     end
   end
 
-  describe 'default_pickup_date' do
-    it 'expects time to be in UTC' do
-      expect(Gogovan.new.send(:default_pickup_date).zone).to eq('UTC')
-    end
-  end
+  describe 'parse_pickup_time' do
+    context 'when pickup date is not specified' do
+      it 'expects time to be in UTC' do
+        expect(Gogovan.new.send(:parse_pickup_time).zone).to eq('UTC')
+      end
 
-  describe 'parse_time' do
-    it 'parse time to a DateTime object' do
-      expect(Gogovan.new.send(:parse_time).class).to eq(DateTime)
+      it 'parse time to a DateTime object' do
+        expect(Gogovan.new.send(:parse_time).class).to eq(DateTime)
+      end
+    end
+
+    context 'when pickup date is specified' do
+      it 'expects time to be in UTC' do
+        expect(Gogovan.new(nil, { 'pickupTime' => Time.current.to_s }).send(:parse_pickup_time).zone).to eq('UTC')
+      end
+
+      it 'parse time to a DateTime object' do
+        expect(Gogovan.new(nil, { 'pickupTime' => Time.current.to_s }).send(:parse_time).class).to eq(DateTime)
+      end
     end
   end
 end

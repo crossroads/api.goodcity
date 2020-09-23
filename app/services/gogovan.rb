@@ -8,7 +8,7 @@ class Gogovan
     @user         = user
     @name         = options['name']
     @mobile       = options['mobile']
-    @time         = options['pickupTime'] || default_pickup_date
+    @time         = parse_pickup_time(options['pickupTime'])
     @need_english = options['needEnglish']
     @need_cart    = options['needCart']
     @cart_count   = 1 if options['needCart']
@@ -30,6 +30,7 @@ class Gogovan
   end
 
   class << self
+
     def order_status(booking_id)
       GoGoVanApi::Order.new(booking_id).status
     end
@@ -37,6 +38,7 @@ class Gogovan
     def cancel_order(booking_id)
       GoGoVanApi::Order.new(booking_id).cancel
     end
+
   end
 
   private
@@ -72,10 +74,11 @@ class Gogovan
     [pickup_location, District.crossroads_address].to_json
   end
 
-  def default_pickup_date
+  def parse_pickup_time(time=nil)
+    return DateTime.parse(time).utc if time.present?
+
     next_available_date = DateSet.new.available_dates.first
-    next_available_date = next_available_date.beginning_of_day + 12.hours
-    next_available_date.utc
+    (next_available_date.beginning_of_day + 12.hours).utc
   end
 
   def ggv_driver_notes
