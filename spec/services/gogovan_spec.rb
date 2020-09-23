@@ -105,4 +105,16 @@ describe Gogovan do
       expect(gogovan.send(:ggv_driver_notes)).to eql(zh + "\n" + en)
     end
   end
+
+  describe 'default_pickup_date' do
+    it 'expects time to be in UTC' do
+      expect(Gogovan.new.send(:default_pickup_date).zone).to eq('UTC')
+    end
+  end
+
+  describe 'parse_time' do
+    it 'parse date to a DateTime object' do
+      expect(Gogovan.new.send(:parse_time).class).to eq(DateTime)
+    end
+  end
 end
