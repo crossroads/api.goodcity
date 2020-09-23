@@ -113,7 +113,7 @@ describe Gogovan do
   end
 
   describe 'parse_time' do
-    it 'parse date to a DateTime object' do
+    it 'parse time to a DateTime object' do
       expect(Gogovan.new.send(:parse_time).class).to eq(DateTime)
     end
   end
