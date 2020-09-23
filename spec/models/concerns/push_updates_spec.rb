@@ -4,12 +4,12 @@ describe PushUpdates do
   let(:user) {create :user}
   let(:offer) { create :offer }
   let(:service) { PushService.new }
-  
+
   before(:each) do
     User.current_user = user
     allow(offer).to receive(:service).and_return(service)
   end
-  
+
   it 'update - changed properties are included' do
     expect(service).to receive(:send_update_store).at_least(:once) do |channel, data|
       expect(data[:item]['Offer'].to_json).to include("\"id\":#{offer.id},\"notes\":\"New test note\"")
@@ -27,7 +27,6 @@ describe PushUpdates do
   end
 
   it 'all classes that include PushUpdates should have offer property' do
-    Rails.application.eager_load!
     include_private = true
     ActiveRecord::Base.descendants.find_all{|m| m.ancestors.include?(PushUpdates)}.each do |m|
       expect(m.new.respond_to?(:offer, include_private)).to be(true), "#{m.name} is missing offer property"
