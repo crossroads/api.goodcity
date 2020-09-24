@@ -1,5 +1,5 @@
 class UnauthorizedController < ActionController::Metal
-  def self.call(env)
+  def self.call(env)    
     @respond ||= action(:respond)
     @respond.call(env)
   end
