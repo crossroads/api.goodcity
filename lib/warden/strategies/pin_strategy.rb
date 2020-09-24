@@ -28,7 +28,7 @@ module Warden
       private
 
       def request_params
-        @request_params ||= params.with_indifferent_access
+        @request_params ||= env['action_dispatch.request.parameters'].with_indifferent_access
       end
 
       def valid_user(user)
@@ -36,13 +36,13 @@ module Warden
       end
 
       def valid_otp_code?(auth_token)
-        auth_token&.authenticate_otp(params['pin'], drift: otp_code_validity)
+        auth_token&.authenticate_otp(request_params['pin'], drift: otp_code_validity)
       end
 
       def valid_app_store_credentials?(auth_token)
         appstore.try(:[], 'number').present? &&
           appstore.try(:[], 'pin').present? &&
-          appstore['pin'] == params['pin'] &&
+          appstore['pin'] == request_params['pin'] &&
           appstore['number'] == auth_token.try(:user).try(:mobile)
       end
 
