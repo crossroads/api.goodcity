@@ -13,7 +13,7 @@ module TokenValidatable
 
   def validate_token
     unless token.valid? and token.api?
-      throw(:warden, { status: :unauthorized, message: token.errors.full_messages.join })
+      raise Goodcity::UnauthorizedError.with_text(token.errors.full_messages.join)
     end
   end
 
