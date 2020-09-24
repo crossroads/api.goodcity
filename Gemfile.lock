@@ -211,6 +211,8 @@ GEM
     gli (2.19.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    grape-swagger-rails (0.3.1)
+      railties (>= 3.2.12)
     guard (2.16.2)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
@@ -537,6 +539,7 @@ DEPENDENCIES
   ffaker
   foreman
   go_go_van_api!
+  grape-swagger-rails
   guard-rspec
   http_accept_language
   jsonapi-serializer
@@ -594,4 +597,4 @@ RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.16.6
+   1.17.3

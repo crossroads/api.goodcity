@@ -57,6 +57,10 @@ gem 'whenever', '~>  0.9.5', require: false
 gem 'with_advisory_lock'
 gem 'jsonapi-serializer'
 
+group :development, :staging do
+  gem 'grape-swagger-rails'
+end
+
 group :development do
   gem 'annotate'
   gem 'bullet'

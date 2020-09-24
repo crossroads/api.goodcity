@@ -7,6 +7,10 @@ module Api
 
       API_VERSION = 2
 
+      resource_description do
+        api_version "v2"
+      end
+
       skip_before_action :validate_token, only: [:error]
 
       rescue_from ActiveRecord::RecordInvalid,  with: :invalid_params

@@ -5,32 +5,7 @@ module Api
       skip_authorization_check only: [:signup, :verify, :send_pin, :hasura]
 
       resource_description do
-        short "Handle user login and registration"
-        description <<-EOS
-
-          ==The login process (in brief):
-
-          * User sends mobile number to <code>/auth/send_pin</code>
-          * If the user exists, the server sends a 4-digit pin (<code>OTP code</code>) via SMS to the mobile number
-          * Server responds with <code>otp_auth_key</code>
-          * User calls <code>/auth/verify</code> with <code>OTP code</code> AND <code>otp_auth_key</code>
-          * Server successfully authenticates and returns <code>jwt_token</code>
-          * <code>jwt_token</code> is sent with all API requests requiring authorization
-
-          ==Diagrams
-          A fuller explanation of the user login / registration process is detailed in the following flowchart diagrams.
-
-          * {Login flowchart}[link:/doc/login_flowchart.svg]
-          * {Registration flowchart}[link:/doc/registration_flowchart.svg]
-          * {Device registration}[link:/doc/azure_notification_hub.png]
-
-          ==JWT Token
-          When sending the JWT token to authenticate each request, place it in
-          the request header using the "Authorization Bearer" scheme. Example:
-
-          <code>Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0MTc1NzkwMTQsImlzcyI6Ikdvb2RDaXR5VGVzdCIsImV4cCI6MTQxNzU4MDgxNH0.x-N_aUb3S5wcNy5i2w2WUZjEA2ud_81u8yQV0JfsT6A</code>
-
-        EOS
+        short "The login process"
         formats ["json"]
       end
 
