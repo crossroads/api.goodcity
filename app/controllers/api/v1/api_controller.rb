@@ -93,7 +93,7 @@ module Api
       private
 
       def access_denied
-        raise Goodcity::UnauthorizedError if request.format.json?
+        goodcity_error(Goodcity::AccessDeniedError.new) if request.format.json?
         render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
       end
 
