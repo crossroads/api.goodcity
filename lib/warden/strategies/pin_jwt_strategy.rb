@@ -4,7 +4,7 @@ module Warden
   module Strategies
     class PinJwtStrategy < PinStrategy
       def valid?
-        params["pin"].present? && jwt_token.valid? && jwt_token.otp?
+        request_params["pin"].present? && jwt_token.valid? && jwt_token.otp?
       end
 
       def pin_method
@@ -19,7 +19,7 @@ module Warden
       private
 
       def jwt_token
-        @jwt_data ||= Token.new(bearer: params['otp_auth_key'])
+        @jwt_data ||= Token.new(bearer: request_params['otp_auth_key'])
       end
     end
   end
