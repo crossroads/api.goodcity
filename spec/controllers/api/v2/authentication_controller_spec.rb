@@ -233,7 +233,11 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
     context 'as a guest' do
       it 'returns a 401' do
         post :hasura
-        expect(response.body).to be_empty
+        expect(parsed_body).to eq({
+          "error"  => "Invalid token",
+          "type"   => "UnauthorizedError",
+          "status" => 401
+        })
       end
     end
 
