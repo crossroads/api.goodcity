@@ -125,13 +125,10 @@ module Api
       error 422, "Validation Error"
       error 500, "Internal Server Error"
       def verify
-        user = warden.authenticate(:pin_jwt)
-        if warden.authenticated?
-          jwt_token = AuthenticationService.generate_token(user, api_version: API_VERSION)
-          render json: { jwt_token: jwt_token, **Api::V2::UserSerializer.new(user, serializer_options(:user)) }
-        else
-          render_error(I18n.t("auth.invalid_pin"))
-        end
+        user      = AuthenticationService.authenticate!(params, strategy: :pin_jwt)
+        jwt_token = AuthenticationService.generate_token(user, api_version: API_VERSION)
+
+        render json: { jwt_token: jwt_token, **Api::V2::UserSerializer.new(user, serializer_options(:user)) }
       end
 
       api :POST, "/v2/auth/hasura", "Authentication for the Hasura GraphQL server"
@@ -157,10 +154,6 @@ module Api
       def auth_params
         attributes = [:mobile, :first_name, :last_name, :email, address_attributes: [:district_id, :address_type]]
         params.require(:user_auth).permit(attributes)
-      end
-
-      def warden
-        request.env["warden"]
       end
     end
   end

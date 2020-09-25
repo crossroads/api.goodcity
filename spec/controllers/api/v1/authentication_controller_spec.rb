@@ -93,8 +93,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'should return unprocessable entity if donor is accessing admin app', :show_in_doc do
         set_admin_app_header
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(user)
         expect(controller).to receive(:app_name).and_return(ADMIN_APP).at_least(:once)
         post :verify, params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
@@ -103,8 +102,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'returns unprocessable entity if donor is accessing stock app', :show_in_doc do
         set_stock_app_header
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(user)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(user)
         expect(controller).to receive(:app_name).and_return(STOCK_APP).at_least(:once)
         post :verify, params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
@@ -113,8 +111,7 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
       it 'allows user with order fulfilment user to access stock after sign-in', :show_in_doc do
         set_stock_app_header
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(order_fulfilment)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        expect(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(order_fulfilment)
         expect(controller).to receive(:generate_token).with(user_id: order_fulfilment.id).and_return(jwt_token)
         post :verify, params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["jwt_token"]).to eq(jwt_token)
@@ -124,8 +121,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     context "with unsucessful authentication" do
       it 'should return unprocessable entity' do
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin).and_return(nil)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
+        expect(AuthenticationService).to receive(:authenticate).with(anything, strategy: :pin).and_return(nil)
+        
         post :verify, params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["errors"]["pin"]).to eq(I18n.t('auth.invalid_pin'))
         expect(response.status).to eq(422)
@@ -211,12 +208,6 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         expect(response.status).to eq(422)
         expect(parsed_body['errors']).to eql( "Mobile is invalid" )
       end
-    end
-  end
-
-  context 'verify warden' do
-    it 'warden object' do
-      expect(controller.send(:warden)).to eq(request.env["warden"])
     end
   end
 

@@ -495,8 +495,6 @@ GEM
       unf_ext
     unf_ext (0.0.7.7)
     uniform_notifier (1.13.0)
-    warden (1.2.8)
-      rack (>= 2.0.6)
     webmock (3.8.3)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -588,7 +586,6 @@ DEPENDENCIES
   timecop
   traco
   twilio-ruby (~> 5.11.0)
-  warden
   webmock
   whenever (~> 0.9.5)
   with_advisory_lock
