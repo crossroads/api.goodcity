@@ -28,7 +28,7 @@ module Warden
       private
 
       def request_params
-        @request_params ||= env['action_dispatch.request.parameters'].with_indifferent_access
+        @request_params ||= params.with_indifferent_access
       end
 
       def valid_user(user)

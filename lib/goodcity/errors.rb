@@ -82,6 +82,7 @@ module Goodcity
         :with_translation
       ].each do |name|
         define_singleton_method(name) do |translation_key, params: {}|
+          translation_key = default_translation_key if translation_key.blank?
           error_klass.new(translation_key: translation_key, params: params)
         end
       end
