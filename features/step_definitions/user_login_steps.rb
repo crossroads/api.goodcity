@@ -49,5 +49,5 @@ end
 
 Then("I should get unauthorized error") do
   expect(@response.status).to eq(403)
-  expect(parsed_body["error"]).to eq("You are not authorized to take this action.")
+  expect(parsed_body["error"]).to eq("Access Denied")
 end
