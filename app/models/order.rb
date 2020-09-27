@@ -114,6 +114,10 @@ class Order < ApplicationRecord
   scope :goodcity_orders, -> { where(detail_type: "GoodCity") }
   scope :shipments, -> { where(detail_type: "Shipment") }
 
+  def assign_state(status)
+    self.state = SHIPMENT_STATUS_MAP[status] || "processing"
+  end
+
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
   end
