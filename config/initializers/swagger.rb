@@ -9,5 +9,6 @@ if Rails.env.staging? || Rails.env.development?
 
   GrapeSwaggerRails.options.before_action do
     GrapeSwaggerRails.options.app_url = request.protocol + request.host_with_port
+    GrapeSwaggerRails.options.app_url = 'https://api-staging.goodcity.hk' if Rails.env.staging?
   end
 end
