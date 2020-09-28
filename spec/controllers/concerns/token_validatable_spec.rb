@@ -22,7 +22,7 @@ describe TokenValidatableFakeController do
       end
       it "should be authorized with enabled user" do
         User.current_user = user
-        expect{ subject.send(:validate_token) }.to_not throw_symbol(:warden)
+        expect{ subject.send(:validate_token) }.to_not raise_error(Goodcity::UnauthorizedError)
       end
     end
 
@@ -33,7 +33,7 @@ describe TokenValidatableFakeController do
       end
       it "should throw unauthorized error" do
         User.current_user = user
-        expect{ subject.send(:validate_token) }.to throw_symbol(:warden)
+        expect{ subject.send(:validate_token) }.to raise_error(Goodcity::UnauthorizedError)
       end
     end
 
@@ -44,11 +44,11 @@ describe TokenValidatableFakeController do
       end
       it "should throw unauthorized error if user is enabled" do
         User.current_user = user
-        expect{ subject.send(:validate_token) }.to throw_symbol(:warden)
+        expect{ subject.send(:validate_token) }.to raise_error(Goodcity::UnauthorizedError)
       end
       it "should throw unauthorized error if user is disabled" do
         User.current_user = disabled_user
-        expect{ subject.send(:validate_token) }.to throw_symbol(:warden)
+        expect{ subject.send(:validate_token) }.to raise_error(Goodcity::UnauthorizedError)
       end
     end
 

@@ -1,5 +1,25 @@
 class AuthenticationService
 
+  module Strategies
+    @@strategies        = {}
+    @@default_strategy  = nil
+
+    module_function
+
+    def add(key, klass)
+      @@strategies[key] = klass
+    end
+
+    def load(key, *args)
+      @@strategies[key].new(*args)
+    end
+
+    def default_strategy(key)
+      @@default_strategy = key if key
+      @@default_strategy
+    end
+  end
+
   class << self
 
     ##
@@ -85,6 +105,47 @@ class AuthenticationService
         type:         Token::Types::API,
         api_version:  "v#{api_version}"
       })
+    end
+
+    #
+    # Authenticates a user with the selected strategy
+    #
+    # @param [Hash] params the request post data
+    # @param [Goodcity::Authentication::Strategies::BaseStrategy] strategy the auth strategy to use
+    #
+    # @throws Goodcity::BaseError
+    #
+    # @return [User] the authenticated user
+    #
+    def authenticate!(params, strategy: Strategies.default_strategy)
+      instance = Strategies.load(strategy, params)
+
+      raise Goodcity::InvalidParamsError unless instance.valid?
+
+      begin
+        user ||= instance.execute
+        raise Goodcity::UnauthorizedError unless user.present?
+        return user
+      rescue StandardError => e
+        raise e if e.is_a?(Goodcity::BaseError)
+        raise Goodcity::UnauthorizedError.with_text(e.try(:message))
+      end
+    end
+
+    #
+    # Authenticates a user with the selected strategy
+    #
+    # @param [Hash] params the request post data
+    # @param [Goodcity::Authentication::Strategies::BaseStrategy] strategy the auth strategy to use
+    #
+    # @return [User|nil] the authenticated user or nil if invalid
+    #
+    def authenticate(params, strategy: Strategies.default_strategy)
+      begin
+        authenticate!(params, strategy: strategy)
+      rescue
+        nil
+      end
     end
   end
 end

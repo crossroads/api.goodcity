@@ -36,19 +36,11 @@ ActiveRecord::Migration.maintain_test_schema!
 RSpec.configure do |config|
   Kernel.srand 852
 
-  config.include Warden::Test::Helpers
-  config.include Warden::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
   config.include ActiveJob::TestHelper
   config.include LocaleSwitcher
   config.include Touch
   config.include InventoryInitializer
-
-  Warden.test_mode!
-
-  config.after(:each) do
-    Warden.test_reset!
-  end
 
   config.use_transactional_fixtures = true
 

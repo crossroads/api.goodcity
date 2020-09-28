@@ -82,6 +82,7 @@ module Goodcity
         :with_translation
       ].each do |name|
         define_singleton_method(name) do |translation_key, params: {}|
+          translation_key = default_translation_key if translation_key.blank?
           error_klass.new(translation_key: translation_key, params: params)
         end
       end
@@ -99,6 +100,7 @@ module Goodcity
   AccessDeniedError               = factory(AccessError, 'errors.forbidden', status: 403)
   UnauthorizedError               = factory(AccessError, 'warden.unauthorized', status: 401)
   InvalidCredentialsError         = factory(AccessError, 'organisations_user_builder.invalid.user', status: 401)
+  InvalidPinError                 = factory(AccessError, 'auth.invalid_pin', status: 401)
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')
