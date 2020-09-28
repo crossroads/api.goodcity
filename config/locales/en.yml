@@ -79,7 +79,7 @@ en:
             mobile:
               invalid: "is invalid"
               blank: "can't be blank"
-              taken: "has already been taken."
+              taken: "has already been taken"
             email:
               blank: "can't be blank"
               taken: "has already been taken."
