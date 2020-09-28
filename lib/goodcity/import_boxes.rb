@@ -25,40 +25,50 @@
 
 # Questions: what about boxes on a pallet?
 
-class Goodcity
+module Goodcity
   class ImportBoxes
 
-    STATUS_FAIL = 'fail'
-    STATUS_SUCCESS = 'success'
-    CSV_LOG_HEADER = ["box_number", "inventory_number", "status", "log_comment"]
+    STATUS_FAIL     = 'fail'
+    STATUS_SUCCESS  = 'success'
+    CSV_LOG_HEADER  = ["box_number", "inventory_number", "status", "log_comment"]
 
     def initialize(user)
       @import_boxes_csv_file_path = File.join(Rails.root, 'tmp', 'import_boxes.csv')
-      @log_file_path = File.join(Rails.root, 'log', 'import_boxes.log')
-      @log = []
-      @user = user
-      User.current_user = user # for PaperTrail / Versions
+      @log_file_path              = File.join(Rails.root, 'log', 'import_boxes.log')
+      @log                        = []
+      @user                       = user
+      User.current_user           = user # for PaperTrail / Versions
     end
 
     def run!
       CSV.foreach(@import_boxes_csv_file_path, headers: true) do |row|
         puts "Putting package #{row["inventory_number"]} in box #{box_number}"
-        import_box(row)
+        import_row(row)
       end
       write_log_file
       puts "Please review the log #{@log_file_path} for any errors."
     end
 
-    private
+    def import_row!(row)
+      validate_key_fields!(row)
 
-    def import_box(row)
-      return unless validate_key_fields?(row)
+      SettingsValidator.bypass do
+        package   = find_package!(row)
+        box       = create_box(row, package)
+
+        pack_package_in_box(box, package)
+
+        box
+      end
+    end
+
+    def import_row(row)
+      return unless validate_key_fields!(row)
+
       ActiveRecord::Base.transaction do
         begin
-          package = find_package(row)
-          box = create_box(row, package)
-          pack_package_in_box(box, package)
-          log_entry(row, STATUS_SUCCESS, "Package #{row["inventory_number"]} is in box #{box_number}")
+          import_box!(row)
+          log_entry(row, STATUS_SUCCESS, "Package #{row["inventory_number"]} is in box #{row["box_number"]}")
         rescue Exception => ex
           # This may create a rod for our backs... 
           #   capture error, log it, rollback and carry on
@@ -68,20 +78,22 @@ class Goodcity
       end
     end
 
+    private
+
     # If box doesn't exist, create a package with a box package_type and inventorize it
     def create_box(row, package)
       # Stockit boxes get their internal details from the first item in the box so we make the same assumption here.
-      box = Package.where(inventory_number: box_number).first
+      box = Package.where(inventory_number: row["box_number"]).first
       if !box.present?
         box = Package.new(
           storage_type_id:    storage_type_box.id,
           donor_condition_id: package.donor_condition_id,
           inventory_number:   row["box_number"],
           package_type:       package.package_type, # what if this package_type doesn't have "allow_box" set?
-          quantity:           1,
+          received_quantity:  1,
           grade:              package.grade,
-          description:        row["description"],
-          comments:           row["comments"],
+          notes:              row["description"],
+          comment:            row["comments"],
           length:             row["length"],
           width:              row["width"],
           height:             row["height"],
@@ -94,33 +106,34 @@ class Goodcity
     end
 
     # The package must pre-exist in GoodCity
-    def find_package(row)
-      Package.where(inventory_number: row["inventory_number"]).first
+    def find_package!(row)
+      code    = row["inventory_number"]
+      package = Package.find_by(inventory_number: code)
+
+      raise Goodcity::NotFoundError.with_text("Package with inventory number '#{code}' was not found") if package.blank?
+
+      package
     end
 
     # If the package isn't already in the box
     # Note we assume (correctly) that the full quantity of the item goes in the box and
     #   that there is only have one location because this is a Stockit item.
     def pack_package_in_box(box, package)
+      return if PackagesInventory.packages_contained_in(box).include?(package) # already in there ;)
+
       location_id = package.locations.first.id
-      quantity = package.received_quantity
-      Package::Operations.pack_or_unpack(box, package, location_id, quantity, @user.id, "pack")
+      quantity    = package.received_quantity
+
+      Package::Operations.pack_or_unpack(container: box, package: package, location_id: location_id, quantity: quantity, user_id: @user.id, task: "pack!", strict: false)
     end
 
     def storage_type_box
       @storage_type_box ||= StorageType.find_by_name("Box")
     end
 
-    # return true if ok to continue
-    def validate_key_fields(row)
-      if row["box_number"].blank?
-        log_entry(row, STATUS_FAIL, "Missing box_number")
-      elsif row["inventory_number"].blank?
-        log_entry(row, STATUS_FAIL, "Missing inventory_number")
-      else
-        return true
-      end
-      return false
+    def validate_key_fields!(row)
+      raise Goodcity::InvalidParamsError.with_text('Missing box_number')        if row["box_number"].blank?
+      raise Goodcity::InvalidParamsError.with_text('Missing inventory_number')  if row["inventory_number"].blank?
     end
 
     def log_entry(row, status, log_comment)
@@ -131,6 +144,7 @@ class Goodcity
     end
 
     def write_log_file
+      return if Rails.env.test?
       CSV.open(@log_file_path, "wb") do |csv|
         csv << CSV_HEADER
         @log.each do |row|
@@ -138,6 +152,5 @@ class Goodcity
         end
       end
     end
-
   end
 end
