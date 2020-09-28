@@ -61,6 +61,7 @@ zh-tw:
     attributes:
       user:
         mobile: "手提電話"
+        email: "電郵"
       organisation:
         name_en: '機構名稱(英文)'
         registration: '註冊編號'
@@ -78,6 +79,10 @@ zh-tw:
             mobile:
               invalid: "不正確"
               blank: "不能留空"
+              taken: '已被登記'
+            email:
+              blank: "不能留空"
+              taken: "已被登記."
         organisation:
           attributes:
             name_en:

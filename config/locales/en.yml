@@ -61,6 +61,7 @@ en:
     attributes:
       user:
         mobile: "Mobile"
+        email: "Email"
       organisation:
         name_en: 'Name EN'
         registration: 'Registration'
@@ -78,6 +79,10 @@ en:
             mobile:
               invalid: "is invalid"
               blank: "can't be blank"
+              taken: "has already been taken."
+            email:
+              blank: "can't be blank"
+              taken: "has already been taken."
         organisation:
           attributes:
             name_en:
