@@ -21,7 +21,11 @@ module Api
       end
 
       def define_abilities
-        # todo   
+        users_abilities
+      end
+
+      def users_abilities
+        can [:me], User
       end
     end
   end

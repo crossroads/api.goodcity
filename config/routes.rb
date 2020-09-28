@@ -4,12 +4,18 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
   root :controller => 'static', :action => '/'
 
+  mount GrapeSwaggerRails::Engine => '/swagger' if Rails.env.staging? || Rails.env.development?
+
   namespace "api" do
     namespace "v2", defaults: { format: "json" } do
       post "auth/send_pin", to: "authentication#send_pin"
       post "auth/signup",   to: "authentication#signup"
       post "auth/verify",   to: "authentication#verify"
       post "auth/hasura",   to: "authentication#hasura"
+
+      resources :users do
+        get :me, on: :collection
+      end
     end
 
     namespace "v1", defaults: { format: "json" } do

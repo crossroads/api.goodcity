@@ -3,6 +3,10 @@ module Api
     class ApiController < ApplicationController
       skip_before_action :validate_token, only: [:error]
 
+      resource_description do
+        api_version "v1"
+      end
+
       rescue_from ActiveRecord::RecordInvalid, with: :invalid_params
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from CanCan::AccessDenied, with: :access_denied
@@ -89,7 +93,7 @@ module Api
       private
 
       def access_denied
-        throw(:warden, { status: 403, message: I18n.t("warden.unauthorized") }) if request.format.json?
+        goodcity_error(Goodcity::AccessDeniedError.new) if request.format.json?
         render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
       end
 
