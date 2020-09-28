@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200911110239) do
+ActiveRecord::Schema.define(version: 2020_09_28_043046) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -677,6 +677,8 @@ ActiveRecord::Schema.define(version: 20200911110239) do
     t.integer  "pallet_id"
     t.integer  "stockit_id"
     t.integer  "order_id"
+    t.integer  "on_hand_boxed_quantity",  default: 0
+    t.integer  "on_hand_palletized_quantity", default: 0
     t.date     "stockit_sent_on"
     t.date     "stockit_designated_on"
     t.integer  "stockit_designated_by_id"
