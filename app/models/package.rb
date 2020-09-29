@@ -65,6 +65,8 @@ class Package < ApplicationRecord
   validates :designated_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :dispatched_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity, numericality: { greater_than: 0 }
+  validates :on_hand_boxed_quantity, numericality: { greater_than_or_equal_to: 0 }
+  validates :on_hand_palletized_quantity, numericality: {greater_than_or_equal_to: 0}
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
   validate  :validate_set_id, on: [:create, :update]
@@ -387,7 +389,11 @@ class Package < ApplicationRecord
   end
 
   def box?
-    storage_type_name&.eql?("Box")
+    storage_type_name&.eql?('Box')
+  end
+
+  def pallet?
+    storage_type_name&.eql?('Pallet')
   end
 
   def box_or_pallet?

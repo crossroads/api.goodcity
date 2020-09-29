@@ -51,6 +51,8 @@ RSpec.describe Package, type: :model do
     it { is_expected.to_not allow_value(-1).for(:designated_quantity) }
     it { is_expected.to_not allow_value(-1).for(:dispatched_quantity) }
     it { is_expected.to_not allow_value(-1).for(:received_quantity) }
+    it { is_expected.to_not allow_value(-1).for(:on_hand_boxed_quantity) }
+    it { is_expected.to_not allow_value(-1).for(:on_hand_palletized_quantity) }
     it { is_expected.to_not allow_value(0).for(:received_quantity) }
     it { is_expected.to_not allow_value(0).for(:weight) }
     it { is_expected.to_not allow_value(0).for(:pieces) }
@@ -368,6 +370,12 @@ RSpec.describe Package, type: :model do
         task: 'pack',
         quantity: 2
       }
+      @params3 = {
+        id: pallet.id,
+        item_id: package1.id,
+        task: 'pack',
+        quantity: 2
+      }
     end
 
     describe "#quantity_contained_in" do
@@ -378,6 +386,25 @@ RSpec.describe Package, type: :model do
       end
     end
 
+    context 'on update_package_quantities' do
+      context 'when box' do
+        it 'updates quantities of items in the box' do
+          pack_or_unpack(@params1)
+          pack_or_unpack(@params2)
+          expect(box.reload.on_hand_boxed_quantity).to eq(7)
+          expect(box.on_hand_palletized_quantity).to eq(0)
+        end
+      end
+
+      context 'when pallet' do
+        it 'updates quantities of items in the pallet' do
+          pack_or_unpack(@params3)
+          expect(pallet.reload.on_hand_palletized_quantity).to eq(2)
+          expect(pallet.on_hand_boxed_quantity).to eq(0)
+        end
+      end
+    end
+
     describe "#box?" do
       it "returns true if is box" do
         expect(box.box?).to eq(true)
@@ -385,6 +412,20 @@ RSpec.describe Package, type: :model do
 
       it "returns false if it is not a box" do
         expect(pallet.box?).to eq(false)
+      end
+    end
+
+    describe '#pallet?' do
+      context 'if box' do
+        it 'returns false' do
+          expect(box.pallet?).to eq(false)
+        end
+      end
+
+      context 'if pallet' do
+        it 'returns true' do
+          expect(pallet.pallet?).to eq(true)
+        end
       end
     end
   end

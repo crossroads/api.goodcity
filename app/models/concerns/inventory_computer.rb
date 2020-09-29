@@ -5,6 +5,8 @@ module InventoryComputer
   # Adds a sub module containing all the needed SQL computations
   #
   class Computer
+    PACK_UNPACK = [PackagesInventory::Actions::PACK, PackagesInventory::Actions::UNPACK].freeze
+    DISPATCH_UNDISPATCH = [PackagesInventory::Actions::DISPATCH, PackagesInventory::Actions::UNDISPATCH].freeze
 
     class << self
       ##
@@ -31,14 +33,14 @@ module InventoryComputer
         quantity_where(location: location)
       end
 
-      def total_quantity_in_box(box)
+      def total_quantity_in(source)
         historical_quantity
-          .where(source: box, action: ['pack', 'unpack'])
+          .where(source: source, action: PACK_UNPACK)
           .as_of_now
       end
 
       def quantity_contained_in(container:, package: nil)
-        res = historical_quantity.where(source: container, action: ['pack', 'unpack'])
+        res = historical_quantity.where(source: container, action: PACK_UNPACK)
         res = res.where(package_id: Utils.to_id(package)) if package.present?
         res.as_of_now
       end
@@ -50,15 +52,22 @@ module InventoryComputer
       end
 
       def dispatched_quantity(package: nil, orders_package: nil)
-        res = historical_quantity.where(
-          action: [
-            PackagesInventory::Actions::DISPATCH,
-            PackagesInventory::Actions::UNDISPATCH
-          ]
-        )
+        res = historical_quantity.where(action: DISPATCH_UNDISPATCH)
         res = res.where(package: package) if package.present?
         res = res.where(source: orders_package) if orders_package.present?
         res.as_of_now
+      end
+
+      def boxed_quantity(package)
+        return total_quantity_in(package) if package.box?
+
+        0
+      end
+
+      def palletized_quantity(package)
+        return total_quantity_in(package) if package.pallet?
+
+        0
       end
 
       ##
@@ -80,7 +89,9 @@ module InventoryComputer
           on_hand_quantity: package_quantity(package),
           available_quantity: available_quantity_of(package),
           dispatched_quantity: dispatched_quantity(package: package),
-          designated_quantity: designated_quantity_of(package)
+          designated_quantity: designated_quantity_of(package),
+          on_hand_boxed_quantity: boxed_quantity(package),
+          on_hand_palletized_quantity: palletized_quantity(package)
         }
       end
 
