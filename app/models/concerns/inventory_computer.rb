@@ -59,15 +59,12 @@ module InventoryComputer
       end
 
       def boxed_quantity(package)
-        return total_quantity_in(package) if package.box?
 
-        0
+
       end
 
       def palletized_quantity(package)
-        return total_quantity_in(package) if package.pallet?
-
-        0
+        historical_quantity.joins("inner join packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'").where(packages_inventories: {package_id: package.id, action: ["pack", "unpack"]}).where.not(packages: {on_hand_quantity: 0}).group("packages.storage_type_id, packages_inventories.id")
       end
 
       ##
@@ -84,15 +81,29 @@ module InventoryComputer
         historical_quantity.as_of_now
       end
 
+      def on_hand_packed_quantities_for(package)
+        res = historical_quantity.joins("inner join packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'").select("packages_inventories.*").where(packages_inventories: {package_id: package.id, action: ["pack", "unpack"]}).where.not(packages: {on_hand_quantity: 0}).group("packages.storage_type_id").raw.sum(:quantity)
+
+        res = res.map { |storage_id, qty| {"#{StorageType.find(storage_id).name}" => qty} }
+        qty_hash = { on_hand_boxed_quantity: 0, on_hand_palletized_quantity: 0 }
+        res.map do |r|
+          if r['Box']
+            qty_hash[:on_hand_boxed_quantity] = r['Box'].abs
+          end
+          if r['Pallet']
+            qty_hash[:on_hand_palletized_quantity] = r['Pallet'].abs
+          end
+        end
+        qty_hash
+      end
+
       def package_quantity_summary(package)
         {
           on_hand_quantity: package_quantity(package),
           available_quantity: available_quantity_of(package),
           dispatched_quantity: dispatched_quantity(package: package),
           designated_quantity: designated_quantity_of(package),
-          on_hand_boxed_quantity: boxed_quantity(package),
-          on_hand_palletized_quantity: palletized_quantity(package)
-        }
+        }.merge(on_hand_packed_quantities_for(package))
       end
 
       def update_package_quantities!(package)
@@ -115,6 +126,10 @@ module InventoryComputer
 
       def compute
         as_of(nil)
+      end
+
+      def raw
+        relation
       end
 
       def as_of(time)
