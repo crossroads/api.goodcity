@@ -216,11 +216,17 @@ module StockOperations
 
       def response(pkg_inventory)
         return unless pkg_inventory
+
         if pkg_inventory.save
+          update_packge_quantities(pkg_inventory.source) if pkg_inventory&.source&.box_or_pallet?
           { packages_inventory: pkg_inventory, success: true }
         elsif pkg_inventory.errors
           error(pkg_inventory.errors.full_messages)
         end
+      end
+
+      def update_packge_quantities(container)
+        PackagesInventory::Computer.update_package_quantities!(container)
       end
 
       # checks if a box is added to a box.
@@ -228,6 +234,5 @@ module StockOperations
         @package.box? && @cause.box?
       end
     end
-
   end
 end

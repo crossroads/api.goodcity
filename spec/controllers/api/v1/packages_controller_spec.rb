@@ -633,6 +633,20 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(parsed_body["package"]["id"]).to eq(package.id)
         expect(parsed_body["package"]["storage_type_id"]).to eq(package.storage_type_id)
       end
+
+      it 'has 0 on_hand_boxed_quantity' do
+        package_params[:storage_type] = 'Box'
+        package_params[:received_quantity] = 1
+        post :create, params: { package: package_params }
+        expect(parsed_body['package']['on_hand_boxed_quantity']).to eq(0)
+      end
+
+      it 'has 0 on_hand_palletized_quantity' do
+        package_params[:storage_type] = 'Pallet'
+        package_params[:received_quantity] = 1
+        post :create, params: { package: package_params }
+        expect(parsed_body['package']['on_hand_boxed_quantity']).to eq(0)
+      end
     end
 
     context "should not create package with creation of box/pallet setting disabled" do
@@ -1544,7 +1558,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
     end
 
-    describe "adding_items_to_box" do
+    describe "add_remove_item" do
       before(:each) do
         generate_and_set_token(user)
         current_user = user
@@ -1578,7 +1592,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           item_id: package1.id,
           location_id: location.id,
           task: 'unpack',
-          quantity: 5
+          quantity: 3
         }
 
         @params5 = {
@@ -1605,28 +1619,44 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
       end
 
-      it "adds an item to the box" do
-        put :add_remove_item, params: @params1
-        expect(response.status).to eq(201)
-        expect([parsed_body["packages_inventories"]].length).to eq(1)
-        expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
-        expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
-        expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
-        expect(parsed_body["packages_inventories"]["action"]).to eq("pack")
-        expect(parsed_body["packages_inventories"]["quantity"]).to eq(-5)
+      context 'when adding item' do
+        it "adds an item to the box" do
+          put :add_remove_item, params: @params1
+          expect(response.status).to eq(201)
+          expect([parsed_body["packages_inventories"]].length).to eq(1)
+          expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
+          expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
+          expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
+          expect(parsed_body["packages_inventories"]["action"]).to eq("pack")
+          expect(parsed_body["packages_inventories"]["quantity"]).to eq(-5)
+        end
+
+        it 'updates the on_hand_boxed_quantity' do
+          put :add_remove_item, params: @params1
+          expect(box.reload.on_hand_boxed_quantity).to eq(5)
+        end
       end
 
-      it "removes an item from the box" do
-        put :add_remove_item, params: @params1 # add to box
-        put :add_remove_item, params: @params4 # remove it
-        expect(response.status).to eq(201)
-        expect([parsed_body["packages_inventories"]].length).to eq(1)
-        expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
-        expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
-        expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
-        expect(parsed_body["packages_inventories"]["action"]).to eq("unpack")
-        expect(parsed_body["packages_inventories"]["quantity"]).to eq(5)
+      context 'when removing item' do
+        it "removes an item from the box" do
+          put :add_remove_item, params: @params1 # add to box
+          put :add_remove_item, params: @params4 # remove it
+          expect(response.status).to eq(201)
+          expect([parsed_body["packages_inventories"]].length).to eq(1)
+          expect(parsed_body["packages_inventories"]["package_id"]).to eq(package1.id)
+          expect(parsed_body["packages_inventories"]["source_id"]).to eq(box.id)
+          expect(parsed_body["packages_inventories"]["source_type"]).to eq("Package")
+          expect(parsed_body["packages_inventories"]["action"]).to eq("unpack")
+          expect(parsed_body["packages_inventories"]["quantity"]).to eq(3)
+        end
+
+        it 'updates the on_hand_boxed_quantity' do
+          put :add_remove_item, params: @params1 # add to box
+          put :add_remove_item, params: @params4 # remove it
+          expect(box.reload.on_hand_boxed_quantity).to eq(2)
+        end
       end
+
 
       it "doesnot create packages inventory record if selected quantity is 0" do
         put :add_remove_item, params: @params5
