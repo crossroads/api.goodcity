@@ -1633,7 +1633,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
         it 'updates the on_hand_boxed_quantity' do
           put :add_remove_item, params: @params1
-          expect(box.reload.on_hand_boxed_quantity).to eq(5)
+          expect(package1.reload.on_hand_boxed_quantity).to eq(5)
         end
       end
 
@@ -1653,7 +1653,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         it 'updates the on_hand_boxed_quantity' do
           put :add_remove_item, params: @params1 # add to box
           put :add_remove_item, params: @params4 # remove it
-          expect(box.reload.on_hand_boxed_quantity).to eq(2)
+          expect(package1.reload.on_hand_boxed_quantity).to eq(2)
         end
       end
 

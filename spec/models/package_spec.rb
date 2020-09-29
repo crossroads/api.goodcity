@@ -386,21 +386,21 @@ RSpec.describe Package, type: :model do
       end
     end
 
-    context 'on update_package_quantities' do
+    context 'on adding item to box/pallet' do
       context 'when box' do
         it 'updates quantities of items in the box' do
           pack_or_unpack(@params1)
           pack_or_unpack(@params2)
-          expect(box.reload.on_hand_boxed_quantity).to eq(7)
-          expect(box.on_hand_palletized_quantity).to eq(0)
+          expect(package1.reload.on_hand_boxed_quantity).to eq(5)
+          expect(package1.on_hand_palletized_quantity).to eq(0)
         end
       end
 
       context 'when pallet' do
         it 'updates quantities of items in the pallet' do
           pack_or_unpack(@params3)
-          expect(pallet.reload.on_hand_palletized_quantity).to eq(2)
-          expect(pallet.on_hand_boxed_quantity).to eq(0)
+          expect(package1.reload.on_hand_palletized_quantity).to eq(2)
+          expect(package1.on_hand_boxed_quantity).to eq(0)
         end
       end
     end
