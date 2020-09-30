@@ -42,7 +42,7 @@ class OrdersPackage < ApplicationRecord
   def self.search_and_filter(options)
     orders_packages = joins(package: [:package_type])
     orders_packages = orders_packages.search(options) if options[:search_text]
-    orders_packages = orders_packages.get_by_state(options[:state_names]) if options[:state_names]
+    orders_packages = orders_packages.get_by_state(options[:state_names]) if options[:state_names].any?
     orders_packages = orders_packages.sorting(options) if options[:sort_column]
     orders_packages
   end
