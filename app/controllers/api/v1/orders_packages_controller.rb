@@ -90,7 +90,7 @@ module Api
 
       def apply_filters(orders_packages)
         orders_packages.search_and_filter({
-          search_text: params['searchText']
+          search_text: params['searchText'],
           state_names: array_param(:state),
           sort_column: params[:sort_column],
           is_desc: bool_param(:is_desc, false),
