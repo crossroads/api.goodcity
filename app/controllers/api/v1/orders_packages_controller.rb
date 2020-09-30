@@ -84,8 +84,17 @@ module Api
 
       def orders_package_by_order_id
         orders_packages = @orders_packages.with_eager_load.for_order(params["order_id"])
-        @orders_packages = orders_packages.page(page).per(per_page).order('id')
+        @orders_packages = apply_filters(orders_packages).page(page).per(per_page).order('id')
         render json: { meta: { total_pages: @orders_packages.total_pages, orders_packages_count: orders_packages.size } }.merge(serialized_orders_packages)
+      end
+
+      def apply_filters(orders_packages)
+        orders_packages.search_and_filter({
+          search_text: params['searchText']
+          state_names: array_param(:state),
+          sort_column: params[:sort_column],
+          is_desc: bool_param(:is_desc, false),
+        })
       end
 
       def orders_packages_params
