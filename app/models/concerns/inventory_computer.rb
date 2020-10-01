@@ -19,6 +19,10 @@ module InventoryComputer
         SumAsOf.new(PackagesInventory)
       end
 
+      def quantify
+        SumAsOf.new(StorageType)
+      end
+
       def quantity_where(query)
         historical_quantity.where(query).as_of_now
       end
@@ -58,11 +62,6 @@ module InventoryComputer
         res.as_of_now
       end
 
-      def boxed_quantity(package)
-
-
-      end
-
       def palletized_quantity(package)
         historical_quantity.joins("inner join packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'").where(packages_inventories: {package_id: package.id, action: ["pack", "unpack"]}).where.not(packages: {on_hand_quantity: 0}).group("packages.storage_type_id, packages_inventories.id")
       end
@@ -82,17 +81,23 @@ module InventoryComputer
       end
 
       def on_hand_packed_quantities_for(package)
-        res = historical_quantity.joins("inner join packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'").select("packages_inventories.*").where(packages_inventories: {package_id: package.id, action: ["pack", "unpack"]}).where.not(packages: {on_hand_quantity: 0}).group("packages.storage_type_id").raw.sum(:quantity)
+        res = historical_quantity.joins("INNER JOIN packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'")
+        res = res.select('packages_inventories.*')
+        res = res.where(packages_inventories: { package_id: package.id,
+                                                action: PACK_UNPACK })
+        res = res.where.not(packages: { on_hand_quantity: 0 })
+                 .group('packages.storage_type_id').raw.sum(:quantity)
+        res = quantify.process_by(res, :name)
+        res = update_on_hand_quantities(res)
+        res
+      end
 
-        res = res.map { |storage_id, qty| {"#{StorageType.find(storage_id).name}" => qty} }
+      def update_on_hand_quantities(value)
         qty_hash = { on_hand_boxed_quantity: 0, on_hand_palletized_quantity: 0 }
-        res.map do |r|
-          if r['Box']
-            qty_hash[:on_hand_boxed_quantity] = r['Box'].abs
-          end
-          if r['Pallet']
-            qty_hash[:on_hand_palletized_quantity] = r['Pallet'].abs
-          end
+
+        value.map do |r|
+          qty_hash[:on_hand_boxed_quantity] = r['Box'].abs if r['Box']
+          qty_hash[:on_hand_palletized_quantity] = r['Pallet'].abs if r['Pallet']
         end
         qty_hash
       end
@@ -140,6 +145,10 @@ module InventoryComputer
 
       def of(model)
         where("#{model.class.name.underscore}_id = (?)", Utils.to_id(model))
+      end
+
+      def process_by(data, attr)
+        data.map { |id, value| { @model.find(id).try(attr).to_s => value } }
       end
 
       alias_method :current, :to_i
