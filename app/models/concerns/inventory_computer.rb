@@ -19,7 +19,7 @@ module InventoryComputer
         SumAsOf.new(PackagesInventory)
       end
 
-      def quantify
+      def storage_type
         SumAsOf.new(StorageType)
       end
 
@@ -62,10 +62,6 @@ module InventoryComputer
         res.as_of_now
       end
 
-      def palletized_quantity(package)
-        historical_quantity.joins("inner join packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'").where(packages_inventories: {package_id: package.id, action: ["pack", "unpack"]}).where.not(packages: {on_hand_quantity: 0}).group("packages.storage_type_id, packages_inventories.id")
-      end
-
       ##
       # Returns quantity which not designated
       #
@@ -87,19 +83,9 @@ module InventoryComputer
                                                 action: PACK_UNPACK })
         res = res.where.not(packages: { on_hand_quantity: 0 })
                  .group('packages.storage_type_id').raw.sum(:quantity)
-        res = quantify.process_by(res, :name)
-        res = update_on_hand_quantities(res)
+        res = storage_type.group_by(res, :name)
+        res = box_pallet_on_hand_qty_hash(res)
         res
-      end
-
-      def update_on_hand_quantities(value)
-        qty_hash = { on_hand_boxed_quantity: 0, on_hand_palletized_quantity: 0 }
-
-        value.map do |r|
-          qty_hash[:on_hand_boxed_quantity] = r['Box'].abs if r['Box']
-          qty_hash[:on_hand_palletized_quantity] = r['Pallet'].abs if r['Pallet']
-        end
-        qty_hash
       end
 
       def package_quantity_summary(package)
@@ -116,6 +102,18 @@ module InventoryComputer
           package.assign_attributes package_quantity_summary(package)
           package.save!
         end
+      end
+
+      private
+
+      def box_pallet_on_hand_qty_hash(value)
+        qty_hash = { on_hand_boxed_quantity: 0, on_hand_palletized_quantity: 0 }
+
+        value.map do |r|
+          qty_hash[:on_hand_boxed_quantity] = r['Box'].abs if r['Box']
+          qty_hash[:on_hand_palletized_quantity] = r['Pallet'].abs if r['Pallet']
+        end
+        qty_hash
       end
     end
 
@@ -147,7 +145,7 @@ module InventoryComputer
         where("#{model.class.name.underscore}_id = (?)", Utils.to_id(model))
       end
 
-      def process_by(data, attr)
+      def group_by(data, attr)
         data.map { |id, value| { @model.find(id).try(attr).to_s => value } }
       end
 
