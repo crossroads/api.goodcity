@@ -1491,12 +1491,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:pallet) { create(:package, :with_inventory_record, storage_type: pallet_storage) }
     let(:package1) { create(:package, :with_inventory_number, received_quantity: 50, storage_type: package_storage)}
     let(:package2) { create(:package, :with_inventory_number, received_quantity: 40, storage_type: package_storage)}
+    let(:box_package) { create(:package, :with_inventory_number, received_quantity: 1, storage_type: box_storage) }
     let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
 
     before {
-      initialize_inventory(package1, package2, location: location)
+      initialize_inventory(package1, package2, box_package, location: location)
     }
 
     def pack(qty, pkg, into:)
@@ -1610,12 +1611,29 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           task: 'pack',
           quantity: 5
         }
+
         @params7 = {
           id: box.id,
           item_id: package2.id,
           location_id: location.id,
           task: "pack",
           quantity: package2.on_hand_quantity + 20,
+        }
+
+        @params8 = {
+          id: pallet.id,
+          item_id: box_package.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 1
+        }
+
+        @params9 = {
+          id: pallet.id,
+          item_id: package1.id,
+          location_id: location.id,
+          task: 'pack',
+          quantity: 3
         }
       end
 
@@ -1631,9 +1649,52 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(parsed_body["packages_inventories"]["quantity"]).to eq(-5)
         end
 
-        it 'updates the on_hand_boxed_quantity' do
-          put :add_remove_item, params: @params1
-          expect(package1.reload.on_hand_boxed_quantity).to eq(5)
+        context 'when item is added to box' do
+          it 'updates the on_hand_boxed_quantity' do
+            put :add_remove_item, params: @params1
+            expect(package1.reload.on_hand_boxed_quantity).to eq(5)
+          end
+
+          it 'does not change the the on_hand_palletized_quantity' do
+            put :add_remove_item, params: @params1
+            expect(package1.reload.on_hand_palletized_quantity).to eq(0)
+          end
+        end
+
+        context 'when item is added to pallet' do
+          it 'updates the on_hand_palletized_quantity' do
+            put :add_remove_item, params: @params9
+            expect(package1.reload.on_hand_palletized_quantity).to eq(5)
+          end
+
+          it 'does not change the the on_hand_boxed_quantity' do
+            put :add_remove_item, params: @params1
+            expect(package1.reload.on_hand_boxed_quantity).to eq(0)
+          end
+        end
+
+        context 'when box is added to the pallet' do
+          it 'updates the on_hand_palletized_quantity' do
+            put :add_remove_item, params: @params8
+            expect(box_package.reload.on_hand_palletized_quantity).to eq(1)
+          end
+
+          it 'does not change the on_hand_boxed_quantity' do
+            put :add_remove_item, params: @params8
+            expect(box_package.on_hand_boxed_quantity).to eq(0)
+          end
+        end
+
+        context 'item is added to both box and pallet' do
+          before do
+            Package::Operations.pack_or_unpack(container: pallet, package: package1, quantity: 3, location_id: location.id, user_id: user.id, task: 'pack')
+          end
+
+          it 'updates on_hand_palletized_quantity and on_hand_boxed_quantity' do
+            put :add_remove_item, params: @params1
+            expect(package1.reload.on_hand_palletized_quantity).to eq(3)
+            expect(package1.on_hand_boxed_quantity).to eq(5)
+          end
         end
       end
 
@@ -1650,17 +1711,107 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(parsed_body["packages_inventories"]["quantity"]).to eq(3)
         end
 
-        it 'updates the on_hand_boxed_quantity' do
-          put :add_remove_item, params: @params1 # add to box
-          put :add_remove_item, params: @params4 # remove it
-          expect(package1.reload.on_hand_boxed_quantity).to eq(2)
+        context 'when item is removed from box' do
+          it 'updates the on_hand_boxed_quantity' do
+            put :add_remove_item, params: @params1 # add to box
+            put :add_remove_item, params: @params4 # remove it
+            expect(package1.reload.on_hand_boxed_quantity).to eq(2)
+          end
+        end
+
+        context 'when item is removed from pallet' do
+          it 'updates the on_hand_palletized_quantity' do
+            put :add_remove_item, params: @params9 # add to pallet
+            @params9[:task] = 'unpack'
+            @params9[:quantity] = 2
+            put :add_remove_item, params: @params9 # remove it
+            expect(package1.reload.on_hand_palletized_quantity).to eq(1)
+          end
+        end
+
+        context 'when item has both on_hand box and pallet quantity' do
+          before do
+            Package::Operations.pack_or_unpack(container: pallet, package: package1, quantity: 3, location_id: location.id, user_id: user.id, task: 'pack')
+
+            Package::Operations.pack_or_unpack(container: box, package: package1, quantity: 5, location_id: location.id, user_id: user.id, task: 'pack')
+          end
+
+          context 'on removing few items from box' do
+            before do
+              @params1[:task] = 'unpack'
+              @params1[:quantity] = 2
+              put :add_remove_item, params: @params1
+            end
+
+            it 'updates the on_hand_boxed_quantity' do
+              expect(package1.reload.on_hand_boxed_quantity).to eq(3)
+            end
+
+            it 'does not change on_hand_palletized_quantity' do
+              expect(package1.reload.on_hand_palletized_quantity).to eq(3)
+            end
+          end
+
+          context 'on removing few items from pallet' do
+            before do
+              @params9[:task] = 'unpack'
+              @params9[:quantity] = 2
+              put :add_remove_item, params: @params9
+            end
+
+            it 'updates the on_hand_palletized_quantity' do
+              expect(package1.reload.on_hand_palletized_quantity).to eq(1)
+            end
+
+            it 'does not change the on_hand_boxed_quantity' do
+              expect(package1.reload.on_hand_boxed_quantity).to eq(5)
+            end
+          end
+
+          context 'on removing all items from box' do
+            before do
+              @params1[:task] = 'unpack'
+              @params1[:quantity] = 5
+              put :add_remove_item, params: @params1
+            end
+
+            it 'on_hand_box_quantity will be 0' do
+              expect(package1.reload.on_hand_boxed_quantity).to eq(0)
+            end
+
+            it 'does not change the on_hand_palletized_quantity' do
+              expect(package1.reload.on_hand_palletized_quantity).to eq(3)
+            end
+          end
+
+          context 'on removing all items from pallet' do
+            before do
+              @params9[:task] = 'unpack'
+              @params9[:quantity] = 3
+              put :add_remove_item, params: @params9
+            end
+
+            it 'on_hand_palletized_quantity will be 0' do
+              expect(package1.reload.on_hand_palletized_quantity).to eq(0)
+            end
+
+            it 'does not change the on_hand_box_quantity' do
+              expect(package1.reload.on_hand_boxed_quantity).to eq(5)
+            end
+          end
         end
       end
 
+      context 'if selected quantity is 0' do
+        it "doesnot create packages inventory record if selected quantity is 0" do
+          put :add_remove_item, params: @params5
+          expect(response.status).to eq(204)
+        end
 
-      it "doesnot create packages inventory record if selected quantity is 0" do
-        put :add_remove_item, params: @params5
-        expect(response.status).to eq(204)
+        it 'does not change the on_hand_xxx_quantity' do
+          expect(package1.reload.on_hand_boxed_quantity).to eq(0)
+          expect(package1.reload.on_hand_palletized_quantity).to eq(0)
+        end
       end
 
       it "throws adding box to a box error" do
@@ -1675,12 +1826,23 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(parsed_body["errors"]).to eq(["Added quantity cannot be larger than available quantity."])
       end
 
-      it "throws already designated error" do
-        GoodcitySync.request_from_stockit = true
-        Package::Operations.designate(package2, quantity: package2.available_quantity, to_order: create(:order, state: "submitted").id)
-        put :add_remove_item, params: @params2
-        expect(response.status).to eq(422)
-        expect(parsed_body["errors"]).to eq(["Cannot add/remove designated/dispatched items."])
+      context 'when already designated' do
+        before(:each) do
+          GoodcitySync.request_from_stockit = true
+          Package::Operations.designate(package2, quantity: package2.available_quantity, to_order: create(:order, state: "submitted").id)
+        end
+
+        it "throws already designated error" do
+          put :add_remove_item, params: @params2
+          expect(response.status).to eq(422)
+          expect(parsed_body["errors"]).to eq(["Cannot add/remove designated/dispatched items."])
+        end
+
+        it 'does not change the on_hand_xxx_quantity' do
+          put :add_remove_item, params: @params2
+          expect(package2.reload.on_hand_boxed_quantity).to eq(0)
+          expect(package2.reload.on_hand_palletized_quantity).to eq(0)
+        end
       end
     end
   end
