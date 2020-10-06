@@ -1637,7 +1637,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         }
       end
 
-      context 'when adding item' do
+      context 'add item to container' do
         it "adds an item to the box" do
           put :add_remove_item, params: @params1
           expect(response.status).to eq(201)
@@ -1664,11 +1664,11 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         context 'when item is added to pallet' do
           it 'updates the on_hand_palletized_quantity' do
             put :add_remove_item, params: @params9
-            expect(package1.reload.on_hand_palletized_quantity).to eq(5)
+            expect(package1.reload.on_hand_palletized_quantity).to eq(3)
           end
 
           it 'does not change the the on_hand_boxed_quantity' do
-            put :add_remove_item, params: @params1
+            put :add_remove_item, params: @params9
             expect(package1.reload.on_hand_boxed_quantity).to eq(0)
           end
         end
@@ -1698,7 +1698,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
       end
 
-      context 'when removing item' do
+      context 'remove item from container' do
         it "removes an item from the box" do
           put :add_remove_item, params: @params1 # add to box
           put :add_remove_item, params: @params4 # remove it
