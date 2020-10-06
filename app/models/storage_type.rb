@@ -17,10 +17,6 @@ class StorageType < ApplicationRecord
     !unit?
   end
 
-  def self.type_for(name)
-    find_by(name: name)
-  end
-
   def self.storage_type_ids(name)
     package_storage_type_id = find_by(name: "Package").id
     if name == "Pallet"

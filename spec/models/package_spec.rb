@@ -414,20 +414,6 @@ RSpec.describe Package, type: :model do
         expect(pallet.box?).to eq(false)
       end
     end
-
-    describe '#pallet?' do
-      context 'if box' do
-        it 'returns false' do
-          expect(box.pallet?).to eq(false)
-        end
-      end
-
-      context 'if pallet' do
-        it 'returns true' do
-          expect(pallet.pallet?).to eq(true)
-        end
-      end
-    end
   end
 
   describe 'Computing quantities' do
