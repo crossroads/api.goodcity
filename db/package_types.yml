@@ -1367,6 +1367,15 @@ VP:
   :other_terms_en: Laser, Bubble jet
   :other_terms_zh_tw: '雷射打印機'
   :default_value_hk_dollar: 1200.00
+VB:
+  :default_packages: VB
+  :other_packages: VXX
+  :name_en: Box of Computers
+  :name_zh_tw: '其他電腦裝備'
+  :other_terms_en: Computer items
+  :other_terms_zh_tw: '雷射打印機'
+  :default_value_hk_dollar: 1200.00
+  :allow_box: true
 VXX:
   :default_packages: VXX
   :other_packages: 
