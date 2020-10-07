@@ -89,7 +89,7 @@ module Goodcity
           storage_type_id:    storage_type_box.id,
           donor_condition_id: package.donor_condition_id,
           inventory_number:   row["box_number"],
-          package_type:       package.package_type, # what if this package_type doesn't have "allow_box" set?
+          package_type:       select_box_package_type(package),
           received_quantity:  1,
           grade:              package.grade,
           notes:              row["description"],
@@ -125,6 +125,14 @@ module Goodcity
       quantity    = package.received_quantity
 
       Package::Operations.pack_or_unpack(container: box, package: package, location_id: location_id, quantity: quantity, user_id: @user.id, task: "pack!", strict: false)
+    end
+
+    # Given a package, choose a suitable type for the box: EB, VB, MB
+    def select_box_package_type(package)
+      available_box_types = PackageType.where(allow_box: true)
+      allowed_package_types = PackageType.joins(:subpackage_types).where( subpackage_types: {subpackage_type_id: package.package_type_id} )
+      options = (allowed_package_types & available_box_types).uniq.compact
+      options.sort{|x,y| x.code <=> y.code}.first
     end
 
     def storage_type_box
