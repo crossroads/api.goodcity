@@ -16,5 +16,4 @@ namespace :goodcity do
       Restriction.where(name_en: record[:name_en]).update(name_zh_tw: record[:name_zh_tw])
     end
   end
-
 end
