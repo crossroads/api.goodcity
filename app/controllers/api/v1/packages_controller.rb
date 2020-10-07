@@ -262,8 +262,12 @@ module Api
       def designate
         quantity = params[:quantity].to_i
         order_id = params[:order_id]
+        shipping_number = params[:shipping_number].to_i
 
-        Package::Operations.designate(@package, quantity: quantity, to_order: order_id)
+        Package::Operations.designate(@package,
+          quantity: quantity,
+          to_order: order_id,
+          shipping_number: shipping_number)
         send_stock_item_response
       end
 
