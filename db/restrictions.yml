@@ -1,8 +1,8 @@
 ---
 1:
-  :name_en: "Unrestricted"
-  :name_zh_tw:
+  :name_en: Unrestricted
+  :name_zh_tw: 不受限制的
 
 2:
-  :name_en: "Restricted"
-  :name_zh_tw:
+  :name_en: Restricted
+  :name_zh_tw: 受限制的
