@@ -10,7 +10,10 @@ context Goodcity::ImportBoxes do
   let(:box_storage_type) { create :storage_type, :with_box }
   let(:pallet_storage_type) { create :storage_type, :with_pallet }
   let(:pkg_storage_type) { create :storage_type, :with_pkg }
-  let(:package) { create :package, :with_inventory_record, inventory_number: inventory_number, received_quantity: 10 }
+  let(:computer_package_type) { create :package_type, code: "VXX"}
+  let(:box_of_computers_package_type) { create :package_type, code: "VB", allow_box: true }
+  let!(:subpackage_type) { create(:subpackage_type, package_type: box_of_computers_package_type, child_package_type: computer_package_type, is_default: false) }
+  let(:package) { create :package, :with_inventory_record, package_type: computer_package_type, inventory_number: inventory_number, received_quantity: 10 }
   let(:location) { package.locations.first }
   let(:row) { {
     "inventory_number"  => package.inventory_number,
