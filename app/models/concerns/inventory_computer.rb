@@ -19,10 +19,6 @@ module InventoryComputer
         SumAsOf.new(PackagesInventory)
       end
 
-      def storage_type
-        SumAsOf.new(StorageType)
-      end
-
       def quantity_where(query)
         historical_quantity.where(query).as_of_now
       end

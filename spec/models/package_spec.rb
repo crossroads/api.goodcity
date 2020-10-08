@@ -342,6 +342,7 @@ RSpec.describe Package, type: :model do
     let(:location) { Location.create(building: "21", area: "D") }
     let!(:creation_setting) { create(:goodcity_setting, key: "stock.enable_box_pallet_creation", value: "true") }
     let!(:addition_setting) { create(:goodcity_setting, key: "stock.allow_box_pallet_item_addition", value: "true") }
+    let(:params) { { id: box.id, item_id: package1.id, task: 'pack', quantity: 5 } }
 
     before { initialize_inventory(package1, package2, location: location) }
 
@@ -357,31 +358,12 @@ RSpec.describe Package, type: :model do
       expect(result[:success]).to eq(true)
     end
 
-    before(:each) do
-      @params1 = {
-        id: box.id,
-        item_id: package1.id,
-        task: 'pack',
-        quantity: 5
-      }
-      @params2 = {
-        id: box.id,
-        item_id: package2.id,
-        task: 'pack',
-        quantity: 2
-      }
-      @params3 = {
-        id: pallet.id,
-        item_id: package1.id,
-        task: 'pack',
-        quantity: 2
-      }
-    end
-
     describe "#quantity_contained_in" do
       it "returns the quantity of an item in the box" do
-        pack_or_unpack(@params1)
-        pack_or_unpack(@params2)
+        pack_or_unpack(params)
+        params[:item_id] = package2.id
+        params[:quantity] = 5
+        pack_or_unpack(params)
         expect(package1.quantity_contained_in(box.id)).to eq(5)
       end
     end
@@ -389,8 +371,9 @@ RSpec.describe Package, type: :model do
     context 'on adding item to box/pallet' do
       context 'when box' do
         it 'updates quantities of items added in the box' do
-          pack_or_unpack(@params1)
-          pack_or_unpack(@params2)
+          pack_or_unpack(params)
+          params[:item_id] = package2.id
+          params[:quantity] = 5
           expect(package1.reload.on_hand_boxed_quantity).to eq(5)
           expect(package1.on_hand_palletized_quantity).to eq(0)
         end
@@ -398,7 +381,9 @@ RSpec.describe Package, type: :model do
 
       context 'when pallet' do
         it 'updates quantities of items added in the pallet' do
-          pack_or_unpack(@params3)
+          params[:id] = pallet.id
+          params[:quantity] = 2
+          pack_or_unpack(params)
           expect(package1.reload.on_hand_palletized_quantity).to eq(2)
           expect(package1.on_hand_boxed_quantity).to eq(0)
         end
