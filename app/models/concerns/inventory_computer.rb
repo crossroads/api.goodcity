@@ -79,8 +79,7 @@ module InventoryComputer
                                                 action: PACKING_ACTIONS })
         res = res.where.not(packages: { on_hand_quantity: 0 })
                  .group('packages.storage_type_id').sum(:quantity)
-        res = group_by_storage_type(res)
-        res = quantify(res)
+        res = quantify_by_storage_type(res)
         res
       end
 
@@ -102,18 +101,11 @@ module InventoryComputer
 
       private
 
-      def quantify(inventories)
-        qty_hash = { on_hand_boxed_quantity: 0, on_hand_palletized_quantity: 0 }
-
-        inventories.map do |inv|
-          qty_hash[:on_hand_boxed_quantity] = inv['Box'].abs if inv['Box']
-          qty_hash[:on_hand_palletized_quantity] = inv['Pallet'].abs if inv['Pallet']
-        end
-        qty_hash
-      end
-
-      def group_by_storage_type(data)
-        data.map { |id, value| { StorageType.find(id).try(:name).to_s => value } }
+      def quantify_by_storage_type(inventories)
+        {
+          on_hand_boxed_quantity: inventories[StorageType.box_type_id]&.abs || 0,
+          on_hand_palletized_quantity: inventories[StorageType.pallet_type_id]&.abs || 0
+        }
       end
     end
 
