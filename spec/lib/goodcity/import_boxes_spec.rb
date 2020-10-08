@@ -87,13 +87,13 @@ context Goodcity::ImportBoxes do
 
     it "raises an error if the inventory_number is missing" do
       expect {
-        subject.import_row!(row.merge("inventory_number" => "")) 
+        subject.import_row!(row.merge("inventory_number" => ""))
       }.to raise_error(Goodcity::InvalidParamsError).with_message('Missing inventory_number')
     end
 
     it "raises an error if the box_number is missing" do
       expect {
-        subject.import_row!(row.merge("box_number" => "")) 
+        subject.import_row!(row.merge("box_number" => ""))
       }.to raise_error(Goodcity::InvalidParamsError).with_message('Missing box_number')
     end
 
@@ -101,7 +101,7 @@ context Goodcity::ImportBoxes do
       expect(Package.find_by(inventory_number: '999999')).to eq(nil)
 
       expect {
-        subject.import_row!(row.merge("inventory_number" => "999999")) 
+        subject.import_row!(row.merge("inventory_number" => "999999"))
       }.to raise_error(Goodcity::NotFoundError).with_message(
         "Package with inventory number '999999' was not found"
       )
@@ -114,7 +114,6 @@ context Goodcity::ImportBoxes do
 
       expect {
         subject.import_row!(row)
-        byebug
       }.to raise_error(Goodcity::InsufficientQuantityError).with_message(
         "The selected quantity (10) is unavailable"
       )

@@ -1642,7 +1642,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "throws quantity error" do
         put :add_remove_item, params: @params7
         expect(response.status).to eq(422)
-        expect(parsed_body["errors"]).to eq(["Added quantity cannot be larger than available quantity."])
+        expect(parsed_body["errors"]).to eq(["The selected quantity (60) is unavailable"])
       end
 
       it "throws already designated error" do
