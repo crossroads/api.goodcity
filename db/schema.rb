@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200911110239) do
+ActiveRecord::Schema.define(version: 2020_10_06_145926) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -530,6 +530,7 @@ ActiveRecord::Schema.define(version: 20200911110239) do
     t.datetime "updated_at",                      null: false
     t.datetime "sent_on"
     t.integer  "dispatched_quantity", default: 0
+    t.integer "shipping_number"
   end
 
   add_index "orders_packages", ["order_id", "package_id"], name: "index_orders_packages_on_order_id_and_package_id", using: :btree
