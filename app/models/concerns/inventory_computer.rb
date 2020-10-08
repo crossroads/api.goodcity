@@ -5,8 +5,8 @@ module InventoryComputer
   # Adds a sub module containing all the needed SQL computations
   #
   class Computer
-    PACK_UNPACK = [PackagesInventory::Actions::PACK, PackagesInventory::Actions::UNPACK].freeze
-    DISPATCH_UNDISPATCH = [PackagesInventory::Actions::DISPATCH, PackagesInventory::Actions::UNDISPATCH].freeze
+    PACKING_ACTIONS     = [PackagesInventory::Actions::PACK, PackagesInventory::Actions::UNPACK].freeze
+    DISPATCHING_ACTIONS = [PackagesInventory::Actions::DISPATCH, PackagesInventory::Actions::UNDISPATCH].freeze
 
     class << self
       ##
@@ -39,12 +39,12 @@ module InventoryComputer
 
       def total_quantity_in(source)
         historical_quantity
-          .where(source: source, action: PACK_UNPACK)
+          .where(source: source, action: PACKING_ACTIONS)
           .as_of_now
       end
 
       def quantity_contained_in(container:, package: nil)
-        res = historical_quantity.where(source: container, action: PACK_UNPACK)
+        res = historical_quantity.where(source: container, action: PACKING_ACTIONS)
         res = res.where(package_id: Utils.to_id(package)) if package.present?
         res.as_of_now
       end
@@ -56,7 +56,7 @@ module InventoryComputer
       end
 
       def dispatched_quantity(package: nil, orders_package: nil)
-        res = historical_quantity.where(action: DISPATCH_UNDISPATCH)
+        res = historical_quantity.where(action: DISPATCHING_ACTIONS)
         res = res.where(package: package) if package.present?
         res = res.where(source: orders_package) if orders_package.present?
         res.as_of_now
@@ -77,14 +77,14 @@ module InventoryComputer
       end
 
       def on_hand_packed_quantities_for(package)
-        res = historical_quantity.joins("INNER JOIN packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'")
+        res = PackagesInventory.joins("INNER JOIN packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'")
         res = res.select('packages_inventories.*')
         res = res.where(packages_inventories: { package_id: package.id,
-                                                action: PACK_UNPACK })
+                                                action: PACKING_ACTIONS })
         res = res.where.not(packages: { on_hand_quantity: 0 })
-                 .group('packages.storage_type_id').raw.sum(:quantity)
-        res = storage_type.group_by(res, :name)
-        res = box_pallet_on_hand_qty_hash(res)
+                 .group('packages.storage_type_id').sum(:quantity)
+        res = group_by_storage_type(res)
+        res = quantify(res)
         res
       end
 
@@ -106,14 +106,18 @@ module InventoryComputer
 
       private
 
-      def box_pallet_on_hand_qty_hash(value)
+      def quantify(inventories)
         qty_hash = { on_hand_boxed_quantity: 0, on_hand_palletized_quantity: 0 }
 
-        value.map do |r|
-          qty_hash[:on_hand_boxed_quantity] = r['Box'].abs if r['Box']
-          qty_hash[:on_hand_palletized_quantity] = r['Pallet'].abs if r['Pallet']
+        inventories.map do |inv|
+          qty_hash[:on_hand_boxed_quantity] = inv['Box'].abs if inv['Box']
+          qty_hash[:on_hand_palletized_quantity] = inv['Pallet'].abs if inv['Pallet']
         end
         qty_hash
+      end
+
+      def group_by_storage_type(data)
+        data.map { |id, value| { StorageType.find(id).try(:name).to_s => value } }
       end
     end
 
@@ -131,10 +135,6 @@ module InventoryComputer
         as_of(nil)
       end
 
-      def raw
-        relation
-      end
-
       def as_of(time)
         res = relation
         res = res.where("#{@model.table_name}.created_at <= (?)", time) unless time.blank?
@@ -143,10 +143,6 @@ module InventoryComputer
 
       def of(model)
         where("#{model.class.name.underscore}_id = (?)", Utils.to_id(model))
-      end
-
-      def group_by(data, attr)
-        data.map { |id, value| { @model.find(id).try(attr).to_s => value } }
       end
 
       alias_method :current, :to_i
