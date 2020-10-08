@@ -157,7 +157,7 @@ module StockOperations
         raise Goodcity::InsufficientQuantityError.new(@quantity)                                      if invalid_quantity?
 
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
-        response(pkg_inventory)
+        pkg_inventory
       end
 
       def unpack!

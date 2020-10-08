@@ -20,6 +20,7 @@ RSpec.describe OrdersPackage, type: :model do
     it{ is_expected.to have_db_column(:dispatched_quantity).of_type(:integer)}
     it{ is_expected.to have_db_column(:state).of_type(:string)}
     it{ is_expected.to have_db_column(:sent_on).of_type(:datetime)}
+    it { is_expected.to have_db_column(:shipping_number).of_type(:integer) }
   end
 
   describe "Validations" do

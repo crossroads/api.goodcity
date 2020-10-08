@@ -314,9 +314,10 @@ context StockOperations do
           task: "pack",
           id: box.id
         }
-        expect { pack_or_unpack(params) }.to raise_error(Goodcity::InvalidQuantityError).with_message(
-          "Invalid quantity (-1)"
-        )
+
+        response = pack_or_unpack(params)
+        expect(response[:success]).to eq(false)
+        expect(response[:errors]).to eq(["Invalid quantity (-1)"])
       end
 
       it "raises an exception if action is not allowed" do
