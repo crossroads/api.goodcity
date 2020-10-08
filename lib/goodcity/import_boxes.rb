@@ -56,7 +56,8 @@ module Goodcity
         package   = find_package!(row)
         box       = create_box(row, package)
 
-        pack_package_in_box(box, package)
+        record = pack_package_in_box(box, package)
+        record&.save
 
         box
       end
@@ -70,7 +71,7 @@ module Goodcity
           import_box!(row)
           log_entry(row, STATUS_SUCCESS, "Package #{row["inventory_number"]} is in box #{row["box_number"]}")
         rescue Exception => ex
-          # This may create a rod for our backs... 
+          # This may create a rod for our backs...
           #   capture error, log it, rollback and carry on
           log_entry(row, STATUS_FAIL, ex.message)
           raise ActiveRecord::Rollback
