@@ -38,17 +38,40 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       expect( subject["orders_packages"].size ).to eq(3)
     end
 
-    it "return orders_packages of order_id mentioned in params" do
+    it "return orders_packages of order_id mentioned in params as per given sorting_column" do
       order = create :order
       order2 = create :order
       create_list(:orders_package, 2, order_id: order.id)
       create_list(:orders_package, 2,order_id: order2.id)
       order_packages = Order.find(order.id).orders_packages
-      get :index, params: { order_id: order.id }
+      get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number"}
       expect( subject["orders_packages"].size ).to eq(2)
       expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
       expect(subject["orders_packages"][1]["order_id"]).to eq(order.id)
       expect(subject['meta']['orders_packages_count']).to eql(order_packages.size)
+    end
+
+    it "returns orders_packages for given order_id as per given states" do
+      order = create :order
+      order2 = create :order
+      create(:orders_package,order_id: order.id, state: "designated")
+      create(:orders_package,order_id: order2.id, state: "cancelled")
+      order_packages = Order.find(order.id).orders_packages
+      get :index, params: { order_id: order.id, state: "designated" }
+      expect( subject["orders_packages"].size ).to eq(1)
+      expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
+    end
+
+    it "returns orders_packages for given order_id as per searched text" do
+      order = create :order
+      order2 = create :order
+      create(:orders_package,order_id: order.id, state: "designated")
+      create(:orders_package,order_id: order2.id, state: "cancelled")
+      order_packages = Order.find(order.id).orders_packages
+      package = OrdersPackage.first.package
+      get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number", searchText: package.inventory_number }
+      expect( subject["orders_packages"].size ).to eq(1)
+      expect(subject["orders_packages"][0]["id"]).to eq(OrdersPackage.first.id)
     end
   end
 
