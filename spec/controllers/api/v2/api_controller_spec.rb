@@ -22,8 +22,8 @@ RSpec.describe Api::V2::ApiController, type: :controller do
     context "when there is a logged in user" do
       before { generate_and_set_token(user) }
 
-      it "defaults the role to the highest level" do
-        expect(@controller.current_role).to eq(supervisor_role)
+      it "doesn't pick a role if not set" do
+        expect(@controller.current_role).to eq(nil)
       end
 
       context "and the user specifies a role in the headers" do
@@ -57,6 +57,28 @@ RSpec.describe Api::V2::ApiController, type: :controller do
           expect { @controller.current_role.save }.to raise_error(RuntimeError)
         end
       end
+    end
+  end
+
+  context "handling PG::ForeignKeyViolation exceptions" do
+    before { generate_and_set_token }
+
+    controller do
+      def index
+        raise PG::ForeignKeyViolation
+      end
+    end
+
+    it do
+      get :index, format: 'json'
+      expect(response.status).to eq(409)
+      expect(subject['error']).to eq('A broken entity relationship has occurred')
+    end
+
+    it do
+      delete :index, format: 'json'
+      expect(response.status).to eq(409)
+      expect(subject['error']).to eq('Another entity is dependent on the record you are trying to delete')
     end
   end
 
