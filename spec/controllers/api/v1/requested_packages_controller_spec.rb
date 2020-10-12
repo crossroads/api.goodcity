@@ -23,11 +23,10 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "GET requested_pacakges" do
     context "as a guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401" do
-      #   get :index
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401" do
+        get :index
+        expect(response.status).to eq(401)
+      end
     end
 
     user_types.each do |user_type|
@@ -107,17 +106,16 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "PUT /requested_package/:id" do
     context 'if invalid user' do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401" do
-      #   put :update, params: { id: create(:requested_package).id }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401" do
+        put :update, params: { id: create(:requested_package).id }
+        expect(response.status).to eq(401)
+      end
 
-      # it "returns 403 for invalid login" do
-      #   create(:user)
-      #   put :update, params: { id: create(:requested_package).id }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 403 for invalid login" do
+        create(:user)
+        put :update, params: { id: create(:requested_package).id }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'if valid user' do
@@ -158,11 +156,10 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "DELETE /requested_package/:id" do
     context "as a guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401" do
-      #   delete :destroy, params: { id: create(:requested_package).id }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401" do
+        delete :destroy, params: { id: create(:requested_package).id }
+        expect(response.status).to eq(401)
+      end
     end
 
     user_types.each do |user_type|
@@ -194,11 +191,10 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   describe "Checkout process" do
     context "as a guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401" do
-      #   post :checkout
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401" do
+        post :checkout
+        expect(response.status).to eq(401)
+      end
     end
 
     user_types.each do |user_type|

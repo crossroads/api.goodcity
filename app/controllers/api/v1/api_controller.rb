@@ -13,6 +13,7 @@ module Api
       rescue_from Apipie::ParamInvalid, with: :invalid_params
       rescue_from Apipie::ParamMissing, with: :invalid_params
       rescue_from Goodcity::BaseError, with: :goodcity_error
+      rescue_from PG::ForeignKeyViolation, with: :foreign_key_violation
 
       def current_ability
         @current_ability ||= Api::V1::Ability.new(current_user)
@@ -91,6 +92,14 @@ module Api
       end
 
       private
+
+      def foreign_key_violation
+        goodcity_error(
+          request.method.eql?('DELETE') ?
+            Goodcity::ForeignKeyDeletionError.new :
+            Goodcity::ForeignKeyMismatchError.new
+        )
+      end
 
       def access_denied
         goodcity_error(Goodcity::AccessDeniedError.new) if request.format.json?
