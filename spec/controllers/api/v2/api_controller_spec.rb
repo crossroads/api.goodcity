@@ -69,13 +69,13 @@ RSpec.describe Api::V2::ApiController, type: :controller do
       end
     end
 
-    it do
+    it 'handles broken foreign key with an appropriate message' do
       get :index, format: 'json'
       expect(response.status).to eq(409)
       expect(subject['error']).to eq('A broken entity relationship has occurred')
     end
 
-    it do
+    it 'handles broken foreign key during a deletion with an appropriate message'do
       delete :index, format: 'json'
       expect(response.status).to eq(409)
       expect(subject['error']).to eq('Another entity is dependent on the record you are trying to delete')
