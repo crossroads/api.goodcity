@@ -24,7 +24,7 @@ RSpec.describe Api::V2::Ability do
       subject { Api::V2::Ability.new(user) }
 
       it "takes the permissions from all roles" do
-        expect(subject.user_permissions).to match([
+        expect(subject.user_permissions).to match_array([
           "permission_a1",
           "permission_a2",
           "permission_b1",
@@ -37,7 +37,7 @@ RSpec.describe Api::V2::Ability do
       subject { Api::V2::Ability.new(user, role: role_a) }
 
       it "only takes the permissions from the mentioned role" do
-        expect(subject.user_permissions).to match([
+        expect(subject.user_permissions).to match_array([
           "permission_a1",
           "permission_a2",
         ])
