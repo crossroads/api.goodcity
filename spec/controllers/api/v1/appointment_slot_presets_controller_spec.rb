@@ -9,11 +9,10 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
 
   describe "GET /appointment_slot_presets" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "prevents reading default slots", :show_in_doc do
-      #   get :index
-      #   expect(response.status).to eq(401)
-      # end
+      it "prevents reading default slots", :show_in_doc do
+        get :index
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as Supervisor' do
@@ -43,16 +42,15 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
 
   describe "POST /appointment_slot_presets" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies creation of a default appointment slot" do
-      #   post :create, appointment_slot_preset: payload
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies creation of a default appointment slot" do
+        post :create, params: { appointment_slot_preset: payload }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in without permissions' do
       before { generate_and_set_token(no_permission_user) }
-      # TODO: Fix tests for 4XX status
+
       it "denies creation of a default appointment slot" do
         post :create, params: { appointment_slot_preset: payload }
         expect(response.status).to eq(403)
@@ -90,11 +88,10 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
 
   describe "PUT /appointment_slot_presets/1" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies update of an appointment slot preset" do
-      #   put :update, id: appt_slot.id, appointment_slot_preset: payload
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies update of an appointment slot preset" do
+        put :update, params: { id: appt_slot.id, appointment_slot_preset: payload }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as a user without can_manage_settings permission' do
@@ -126,11 +123,10 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
 
   describe "DELETE /appointment_slot_presets/1" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies destruction of an appointment slot preset" do
-      #   delete :destroy, params: { id: appt_slot.id }
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies destruction of an appointment slot preset" do
+        delete :destroy, params: { id: appt_slot.id }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as a user without can_manage_settings permission' do
