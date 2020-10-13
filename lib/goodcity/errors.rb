@@ -96,6 +96,8 @@ module Goodcity
   DuplicateRecordError            = factory(BaseError, 'errors.duplicate_error', status: 409)
   InvalidParamsError              = factory(BaseError, 'errors.invalid_params', status: 422)
   NotFoundError                   = factory(BaseError, 'errors.not_found', status: 404)
+  ForeignKeyMismatchError         = factory(BaseError, 'errors.foreign_key_mismatch_violation', status: 409)
+  ForeignKeyDeletionError         = factory(BaseError, 'errors.foreign_key_delete_violation', status: 409)
 
   AccessDeniedError               = factory(AccessError, 'errors.forbidden', status: 403)
   UnauthorizedError               = factory(AccessError, 'warden.unauthorized', status: 401)

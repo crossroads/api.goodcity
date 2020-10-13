@@ -42,11 +42,10 @@ RSpec.describe Api::V1::PackageSetsController, type: :controller do
     end
 
     describe "as guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns a 401 " do
-      #   get :show, params: { id: package_set.id}
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns a 401 " do
+        get :show, params: { id: package_set.id}
+        expect(response.status).to eq(401)
+      end
     end
   end
 
@@ -84,11 +83,10 @@ RSpec.describe Api::V1::PackageSetsController, type: :controller do
     end
 
     describe "as guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns a 401 " do
-      #   post :create, params: post_body
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns a 401 " do
+        post :create, params: post_body
+        expect(response.status).to eq(401)
+      end
     end
   end
 
@@ -121,11 +119,10 @@ RSpec.describe Api::V1::PackageSetsController, type: :controller do
     end
 
     describe "as guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns a 401 " do
-      #   put :update, params: { id: package_set.id, package_set: params }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns a 401 " do
+        put :update, params: { id: package_set.id, package_set: params }
+        expect(response.status).to eq(401)
+      end
     end
   end
 
@@ -166,11 +163,10 @@ RSpec.describe Api::V1::PackageSetsController, type: :controller do
     end
 
     describe "as guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns a 401 " do
-      #   delete :destroy, params: { id: package_set.id }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns a 401 " do
+        delete :destroy, params: { id: package_set.id }
+        expect(response.status).to eq(401)
+      end
     end
   end
 end
