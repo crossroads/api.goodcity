@@ -273,9 +273,11 @@ RSpec.describe OrdersPackage, type: :model do
       expect(orders_packages[0]["id"]).to eq(orders_package1.id)
     end
 
-    it "will not returns orders_packages if searched package.inventory_number does not match" do
-      orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [], search_text: "dummy"})
-      expect(orders_packages.size ).to eq(0)
+    context 'if searched package.inventory_number does not match' do
+       it 'does not return order_packages' do
+         orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [], search_text: "dummy"})
+          expect(orders_packages.size ).to eq(0)
+       end
     end
   end
 
