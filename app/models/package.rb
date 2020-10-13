@@ -70,6 +70,7 @@ class Package < ApplicationRecord
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
   validate  :validate_set_id, on: [:create, :update]
+  validate  :validate_package_type, on: [:update]
   validates_uniqueness_of :inventory_number, if: :should_validate_inventory_number?
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
@@ -435,5 +436,12 @@ class Package < ApplicationRecord
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
+  end
+
+  def validate_package_type
+    return unless box_or_pallet?
+
+    count = PackagesInventory.packages_contained_in(self).count
+    errors.add(:error, I18n.t('box_pallet.errors.cannot_change_type')) if count.positive?
   end
 end

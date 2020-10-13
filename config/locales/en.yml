@@ -33,6 +33,7 @@ en:
       adding_box_to_box: Cannot add a box to another box.
       disable_addition: Cannot add/remove designated/dispatched items.
       disable_if_unavailable: Cannot perform add/remove operations if box/pallet is dispatched.
+      cannot_change_type: Cannot change type of a box with items. Please remove the items and try again
   token:
     invalid: Invalid token
     expired: Expired token
