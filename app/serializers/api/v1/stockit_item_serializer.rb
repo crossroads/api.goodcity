@@ -19,8 +19,10 @@ module Api::V1
                :image_id, :donor_condition_id, :package_set_id, :state,
                :case_number, :allow_web_publish, :received_quantity,
                :detail_type, :detail_id, :storage_type_id, :on_hand_quantity,
-               :available_quantity, :designated_quantity, :dispatched_quantity, :location_id,
-               :quantity, :expiry_date, :saleable, :value_hk_dollar, :restriction_id, :comment
+               :available_quantity, :designated_quantity, :dispatched_quantity,
+               :location_id, :quantity, :expiry_date, :saleable,
+               :value_hk_dollar, :restriction_id, :comment,
+               :on_hand_boxed_quantity, :on_hand_palletized_quantity
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
