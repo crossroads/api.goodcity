@@ -3,6 +3,7 @@ class OrdersPackage < ApplicationRecord
   include OrdersPackageActions
   include HookControls
   include Watcher
+  include OrdersPackageSearch
 
   module States
     DESIGNATED = 'designated'.freeze
@@ -29,12 +30,29 @@ class OrdersPackage < ApplicationRecord
   scope :for_order, ->(order_id) { joins(:order).where(orders: { id: order_id }) }
   scope :not_cancellable, -> () { where("orders_packages.state = 'dispatched' OR dispatched_quantity > 0") }
   scope :cancellable, -> () { where("orders_packages.state = 'designated' AND dispatched_quantity = 0") }
+  scope :sorting, -> (options) { order(sort_orders_package(options)) }
+  scope :by_state, ->(states) { where("orders_packages.state IN (?)", states) }
 
   scope :with_eager_load, ->{
     includes([
       { package: [ :locations, {package_type: [:location]}, :images, :orders_packages] }
     ])
   }
+
+  def self.search_and_filter(options)
+    orders_packages = joins(package: [:package_type])
+    orders_packages = orders_packages.select("orders_packages.*, package_types.code, package_types.name_en, packages.inventory_number")
+    orders_packages = orders_packages.search(options) if options[:search_text]
+    orders_packages = orders_packages.by_state(options[:state_names]) if options[:state_names]&.any?
+    orders_packages = orders_packages.sorting(options) if options[:sort_column]
+    orders_packages
+  end
+
+  def self.sort_orders_package(options)
+    sort_column = options[:sort_column]
+    sort_type = options[:is_desc] ? "DESC" : "ASC"
+    "#{sort_column} #{sort_type}"
+  end
 
   watch [PackagesInventory], on: [:create] do |pkg_inv|
     # Compute 'dispatched_quantity' column on change

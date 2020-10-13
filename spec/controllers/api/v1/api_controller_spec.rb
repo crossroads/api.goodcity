@@ -11,12 +11,31 @@ RSpec.describe Api::V1::ApiController, type: :controller do
       end
     end
 
-    # TODO: Fix tests for 4XX status
-    # it do
-    #   get :index
-    #   expect(response.status).to eq(404)
-    #   expect(subject).to eql( {"error"=>"Oh noes !"} )
-    # end
+    it do
+      get :index
+      expect(response.status).to eq(404)
+      expect(subject).to eql( {"error"=>"Oh noes !"} )
+    end
+  end
+
+  context "handling PG::ForeignKeyViolation exceptions" do
+    controller do
+      def index
+        raise PG::ForeignKeyViolation
+      end
+    end
+
+    it do
+      get :index, format: 'json'
+      expect(response.status).to eq(409)
+      expect(subject['error']).to eq('A broken entity relationship has occurred')
+    end
+
+    it do
+      delete :index, format: 'json'
+      expect(response.status).to eq(409)
+      expect(subject['error']).to eq('Another entity is dependent on the record you are trying to delete')
+    end
   end
 
   context "handling CanCan::AccessDenied exceptions" do
@@ -26,11 +45,10 @@ RSpec.describe Api::V1::ApiController, type: :controller do
       end
     end
 
-    # TODO: Fix tests for 4XX status
-    # it do
-    #   get :index, format: 'json'
-    #   expect(response.status).to eq(403)
-    # end
+    it do
+      get :index, format: 'json'
+      expect(response.status).to eq(403)
+    end
   end
 
   context "handling Apipie::ParamInvalid exceptions" do
