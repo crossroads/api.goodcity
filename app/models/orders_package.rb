@@ -31,7 +31,7 @@ class OrdersPackage < ApplicationRecord
   scope :not_cancellable, -> () { where("orders_packages.state = 'dispatched' OR dispatched_quantity > 0") }
   scope :cancellable, -> () { where("orders_packages.state = 'designated' AND dispatched_quantity = 0") }
   scope :sorting, -> (options) { order(sort_orders_package(options)) }
-  scope :get_by_state, ->(states) { where("orders_packages.state IN (?)", states) }
+  scope :by_state, ->(states) { where("orders_packages.state IN (?)", states) }
 
   scope :with_eager_load, ->{
     includes([
@@ -43,7 +43,7 @@ class OrdersPackage < ApplicationRecord
     orders_packages = joins(package: [:package_type])
     orders_packages = orders_packages.select("orders_packages.*, package_types.code, package_types.name_en, packages.inventory_number")
     orders_packages = orders_packages.search(options) if options[:search_text]
-    orders_packages = orders_packages.get_by_state(options[:state_names]) if options[:state_names].any?
+    orders_packages = orders_packages.by_state(options[:state_names]) if options[:state_names].any?
     orders_packages = orders_packages.sorting(options) if options[:sort_column]
     orders_packages
   end

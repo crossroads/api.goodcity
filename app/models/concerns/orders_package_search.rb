@@ -5,12 +5,9 @@ module OrdersPackageSearch
   included do
     scope :search, ->(options = {}) {
       search_text = options[:search_text].downcase || ''
-      if search_text.present?
-        search_query = SEARCH_ATTRIBUTES.map { |f| "#{f} ILIKE :search_text" }.join(" OR ")
-        where(search_query, search_text: "%#{search_text}%").distinct
-      else
-        none
-      end
+      return nil unless search_text.present?
+      search_query = SEARCH_ATTRIBUTES.map { |f| "#{f} ILIKE :search_text" }.join(" OR ")
+      where(search_query, search_text: "%#{search_text}%").distinct
     }
   end
 end
