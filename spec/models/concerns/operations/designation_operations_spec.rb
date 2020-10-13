@@ -23,17 +23,22 @@ context DesignationOperations do
     expect(PackagesInventory.count).to eq(1)
   end
 
-  def designate(quantity, pkg: package, to_order: order)
-    subject::Operations.designate(pkg, quantity: quantity, to_order: to_order)
+  def designate(quantity, pkg: package, to_order: order, shipping_number: nil)
+    subject::Operations.designate(pkg,
+      quantity: quantity,
+      to_order: to_order,
+      shipping_number: shipping_number
+    )
   end
 
   describe 'Designation operation' do
 
     it 'designates the entire quantity successfully' do
       expect(Stockit::OrdersPackageSync).to receive(:create).once
-      expect { designate(5) }.to change(OrdersPackage, :count).by(1)
+      expect { designate(5, shipping_number: 9999) }.to change(OrdersPackage, :count).by(1)
       expect(OrdersPackage.last.quantity).to eq(5)
       expect(OrdersPackage.last.state).to eq('designated')
+      expect(OrdersPackage.last.shipping_number).to eq(9999)
     end
 
     it 'designates a partial quantity successfully' do

@@ -82,6 +82,7 @@ module Goodcity
         :with_translation
       ].each do |name|
         define_singleton_method(name) do |translation_key, params: {}|
+          translation_key = default_translation_key if translation_key.blank?
           error_klass.new(translation_key: translation_key, params: params)
         end
       end
@@ -95,10 +96,13 @@ module Goodcity
   DuplicateRecordError            = factory(BaseError, 'errors.duplicate_error', status: 409)
   InvalidParamsError              = factory(BaseError, 'errors.invalid_params', status: 422)
   NotFoundError                   = factory(BaseError, 'errors.not_found', status: 404)
+  ForeignKeyMismatchError         = factory(BaseError, 'errors.foreign_key_mismatch_violation', status: 409)
+  ForeignKeyDeletionError         = factory(BaseError, 'errors.foreign_key_delete_violation', status: 409)
 
   AccessDeniedError               = factory(AccessError, 'errors.forbidden', status: 403)
   UnauthorizedError               = factory(AccessError, 'warden.unauthorized', status: 401)
   InvalidCredentialsError         = factory(AccessError, 'organisations_user_builder.invalid.user', status: 401)
+  InvalidPinError                 = factory(AccessError, 'auth.invalid_pin', status: 401)
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')

@@ -3,12 +3,17 @@ module Api
     class ApiController < ApplicationController
       skip_before_action :validate_token, only: [:error]
 
+      resource_description do
+        api_version "v1"
+      end
+
       rescue_from ActiveRecord::RecordInvalid, with: :invalid_params
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from CanCan::AccessDenied, with: :access_denied
       rescue_from Apipie::ParamInvalid, with: :invalid_params
       rescue_from Apipie::ParamMissing, with: :invalid_params
       rescue_from Goodcity::BaseError, with: :goodcity_error
+      rescue_from PG::ForeignKeyViolation, with: :foreign_key_violation
 
       def current_ability
         @current_ability ||= Api::V1::Ability.new(current_user)
@@ -88,8 +93,16 @@ module Api
 
       private
 
+      def foreign_key_violation
+        goodcity_error(
+          request.method.eql?('DELETE') ?
+            Goodcity::ForeignKeyDeletionError.new :
+            Goodcity::ForeignKeyMismatchError.new
+        )
+      end
+
       def access_denied
-        throw(:warden, { status: 403, message: I18n.t("warden.unauthorized") }) if request.format.json?
+        goodcity_error(Goodcity::AccessDeniedError.new) if request.format.json?
         render(file: "#{Rails.root}/public/403.#{I18n.locale}.html", status: 403, layout: false) if request.format.html?
       end
 

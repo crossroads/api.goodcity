@@ -4,8 +4,9 @@ Apipie.configure do |config|
   config.api_base_url            = "/api"
   config.doc_base_url            = "/api/docs"
   # where is your API defined?
-  config.api_controllers_matcher = "#{Rails.root}/app/controllers/api/v1/*.rb"
-  config.default_version         = "v1"
+  config.api_controllers_matcher    = "#{Rails.root}/app/controllers/**/*.rb"
+  config.default_version            = "v1"
+  config.swagger_content_type_input = :json
   #config.use_cache = Rails.env.production? # use with rake apipie:cache to use cached documents in production
   #~ config.authenticate = Proc.new do
      #~ authenticate_or_request_with_http_basic do |username, password|
@@ -97,6 +98,8 @@ Apipie.configure do |config|
 
   == Serialization
 
+  === API v1
+
   All responses are serialized in JSON format. Objects are serialized using {ActiveModelSerializer}[https://github.com/rails-api/active_model_serializers].
 
   Partial example:
@@ -115,7 +118,7 @@ Apipie.configure do |config|
 
   Please refer to a specific controller for more detailed examples.
 
-  == Side-loading
+  ==== Side-loading
 
   Objects that contain related data may also include those relationships to reduce the number of API requests required.
 
@@ -145,9 +148,44 @@ Apipie.configure do |config|
       }
     }
 
-  == Paginiation
+  === API v2
 
-  Currently no pagination is implemented.
+  All responses are serialized in the JSON API format. Objects are serialized using {JSON:API}[https://github.com/jsonapi-serializer/jsonapi-serializer].
+
+  Example
+
+  {
+    "data": {
+      "id": "3",
+      "type": "movie",
+      "attributes": {
+        "name": "test movie",
+        "year": null
+      },
+      "relationships": {
+        "actors": {
+          "data": [
+            {
+              "id": "1",
+              "type": "actor"
+            },
+            {
+              "id": "2",
+              "type": "actor"
+            }
+          ]
+        },
+        "owner": {
+          "data": {
+            "id": "3",
+            "type": "user"
+          }
+        }
+      }
+    }
+  }
+
+  Please refer to a specific controller for more detailed examples.
 
   EOS
 

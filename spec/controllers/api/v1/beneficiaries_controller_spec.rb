@@ -11,11 +11,10 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
 
   describe "GET beneficiaries" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "prevents reading beneficiaries", :show_in_doc do
-      #   get :index
-      #   expect(response.status).to eq(401)
-      # end
+      it "prevents reading beneficiaries", :show_in_doc do
+        get :index
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as Supervisor' do
@@ -76,11 +75,10 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
 
   describe "POST /beneficiaries" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies creation of a beneficiary" do
-      #   post :create, params: { beneficiary: payload }
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies creation of a beneficiary" do
+        post :create, params: { beneficiary: payload }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as Charity user' do
@@ -106,11 +104,10 @@ RSpec.describe Api::V1::BeneficiariesController, type: :controller do
 
   describe "PUT /beneficiaries/1" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies update of a beneficiary" do
-      #   put :update, params: { id: beneficiary.id, beneficiary: payload }
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies update of a beneficiary" do
+        put :update, params: { id: beneficiary.id, beneficiary: payload }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as a user without can_manage_orders permission' do

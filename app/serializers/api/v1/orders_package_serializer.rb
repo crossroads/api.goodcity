@@ -3,7 +3,7 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :package_id, :order_id, :state, :quantity,
                :dispatched_quantity, :sent_on, :designation_id,
-               :item_id, :created_at, :allowed_actions
+               :item_id, :created_at, :allowed_actions, :shipping_number
 
     has_one :package, serializer: PackageSerializer
     has_one :order, serializer: OrderShallowSerializer, root: 'designation'
