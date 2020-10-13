@@ -18,10 +18,10 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   describe "GET packages for Item" do
     let(:order) { create :order }
     let(:order2) { create :order }
+    let!(:orders_package1) { create :orders_package, order_id: order.id, state: 'designated' }
+    let!(:orders_package2) { create :orders_package, order_id: order2.id, state: 'designated' }
 
     before {
-      create(:orders_package, order_id: order.id, state: 'designated')
-      create(:orders_package, order_id: order2.id, state: 'designated')
       generate_and_set_token(user)
     }
 
@@ -55,25 +55,21 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     end
 
     it "returns orders_packages for given order_id as per given states" do
-      order_packages = Order.find(order.id).orders_packages
       get :index, params: { order_id: order.id, state: "designated" }
       expect( subject["orders_packages"].size ).to eq(1)
       expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
     end
 
     it "returns orders_packages for given order_id as per searched text" do
-      order_packages = Order.find(order.id).orders_packages
-      package = OrdersPackage.first.package
-      get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number", searchText: package.inventory_number }
+      get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number", searchText: orders_package1.package.inventory_number }
       expect( subject["orders_packages"].size ).to eq(1)
-      expect(subject["orders_packages"][0]["id"]).to eq(OrdersPackage.first.id)
+      expect(subject["orders_packages"][0]["id"]).to eq(orders_package1.id)
     end
 
     it "returns all orders_packages for given order_id for blank searchText" do
-      order_packages = Order.find(order.id).orders_packages
       get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number", searchText: "" }
       expect( subject["orders_packages"].size ).to eq(1)
-      expect(subject["orders_packages"][0]["id"]).to eq(OrdersPackage.first.id)
+      expect(subject["orders_packages"][0]["id"]).to eq(orders_package1.id)
     end
   end
 
