@@ -212,7 +212,12 @@ module Api
       end
 
       def print_inventory_label
-        PrintLabelJob.perform_later(@package.id, User.current_user.id, "inventory_label", print_count)
+        opts = {
+          print_count: print_count,
+          label: "inventory_label",
+          tag: params[:tag]
+        }
+        PrintLabelJob.perform_later(@package.id, User.current_user.id, opts)
         render json: {}, status: 204
       end
 
