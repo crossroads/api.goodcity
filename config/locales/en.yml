@@ -59,6 +59,8 @@ en:
     no_checkout_to_appointment: "Cannot checkout an appointment"
   activerecord:
     attributes:
+      order:
+        code: "Code"
       user:
         mobile: "Mobile"
         email: "Email"
@@ -87,6 +89,10 @@ en:
           attributes:
             name_en:
               taken: 'is already been taken'
+        order:
+          attributes:
+            code:
+              taken: "has already been taken."
 
   notification:
     new_offer: New offer submitted by %{name}
