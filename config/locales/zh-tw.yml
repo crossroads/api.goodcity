@@ -16,6 +16,8 @@ zh-tw:
     forbidden: Access Denied
     invalid_credentials: Invalid credentials
     invalid_params: Invalid or missing params
+    foreign_key_delete_violation: Another entity is dependent on the record you are trying to delete
+    foreign_key_mismatch_violation: A broken entity relationship has occurred
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -62,6 +64,7 @@ zh-tw:
     attributes:
       user:
         mobile: "手提電話"
+        email: "電郵"
       organisation:
         name_en: '機構名稱(英文)'
         registration: '註冊編號'
@@ -79,6 +82,10 @@ zh-tw:
             mobile:
               invalid: "不正確"
               blank: "不能留空"
+              taken: '已被登記'
+            email:
+              blank: "不能留空"
+              taken: "已被登記."
         organisation:
           attributes:
             name_en:

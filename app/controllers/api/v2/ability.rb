@@ -8,8 +8,8 @@ module Api
       end
 
       def user_permissions
-        return [] unless @user.present? && @role.present?
-        @user_permissions = role.permissions.map(&:name)
+        return [] unless @user.present?
+        @user_permissions ||= @role.present? ? @role.permissions.map(&:name) : super
       end
 
       # -----------------
@@ -21,7 +21,11 @@ module Api
       end
 
       def define_abilities
-        # todo   
+        users_abilities
+      end
+
+      def users_abilities
+        can [:me], User
       end
     end
   end

@@ -19,11 +19,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
 
   describe "GET /appointment_slots" do
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "prevents reading slots", :show_in_doc do
-      #   get :index
-      #   expect(response.status).to eq(401)
-      # end
+      it "prevents reading slots", :show_in_doc do
+        get :index
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as Supervisor' do
@@ -182,11 +181,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     let!(:payload) { {quota: 5, timestamp: now.to_s} }
 
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies creation of an appointment slot" do
-      #   post :create, appointment_slot: payload
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies creation of an appointment slot" do
+        post :create, params: { appointment_slot: payload }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in without permissions' do
@@ -221,11 +219,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     let!(:appt_slot) { FactoryBot.create :appointment_slot, timestamp: now, quota: 10 }
 
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies update of an appointment slot" do
-      #   put :update, params: { id: appt_slot.id, appointment_slot: {quota: 5 } }
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies update of an appointment slot" do
+        put :update, params: { id: appt_slot.id, appointment_slot: {quota: 5 } }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as a user without can_manage_settings permission' do
@@ -256,11 +253,10 @@ RSpec.describe Api::V1::AppointmentSlotsController, type: :controller do
     let!(:appt_slot) { FactoryBot.create :appointment_slot, timestamp: now, quota: 10 }
 
     context 'When not logged in' do
-      # TODO: Fix tests for 4XX status
-      # it "denies destruction of an appointment slot" do
-      #   delete :destroy, id: appt_slot.id
-      #   expect(response.status).to eq(401)
-      # end
+      it "denies destruction of an appointment slot" do
+        delete :destroy, params: { id: appt_slot.id }
+        expect(response.status).to eq(401)
+      end
     end
 
     context 'When logged in as a user without can_manage_settings permission' do

@@ -19,11 +19,10 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
 
   describe "POST /goodicty_settings" do
     context "as a guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401" do
-      #   post :create, params: { goodcity_setting: goodcity_setting_params }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401" do
+        post :create, params: { goodcity_setting: goodcity_setting_params }
+        expect(response.status).to eq(401)
+      end
     end
 
     context "as a user without 'can_manage_settings' permission" do
@@ -51,11 +50,10 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     end
 
     context "as a guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401" do
-      #   put :update, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401" do
+        put :update, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
+        expect(response.status).to eq(401)
+      end
     end
 
     context "as a user without 'can_manage_settings' permission" do
@@ -84,11 +82,10 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     end
 
     context "as a guest" do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401" do
-      #   delete :destroy, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401" do
+        delete :destroy, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
+        expect(response.status).to eq(401)
+      end
     end
 
     context "as a user without 'can_manage_settings' permission" do

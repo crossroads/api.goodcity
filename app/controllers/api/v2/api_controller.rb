@@ -7,6 +7,10 @@ module Api
 
       API_VERSION = 2
 
+      resource_description do
+        api_version "v2"
+      end
+
       skip_before_action :validate_token, only: [:error]
 
       rescue_from ActiveRecord::RecordInvalid,  with: :invalid_params
@@ -15,6 +19,7 @@ module Api
       rescue_from Apipie::ParamInvalid,         with: :invalid_params
       rescue_from Apipie::ParamMissing,         with: :invalid_params
       rescue_from Goodcity::BaseError,          with: :render_goodcity_error
+      rescue_from PG::ForeignKeyViolation,      with: :foreign_key_violation
 
       def current_ability
         @current_ability ||= Api::V2::Ability.new(current_user, role: current_role)
@@ -25,7 +30,7 @@ module Api
           allowed_roles = current_user&.roles || []
           role_name     = request.headers["X-GOODCITY-ROLE"]
 
-          return current_user&.top_role if role_name.blank?
+          return nil                    if role_name.blank?
           return Role.null_role         if role_name.eql?('user')
           
           role = allowed_roles.find { |r| r.snake_name == role_name }
@@ -66,6 +71,14 @@ module Api
       # ------------------------
       # Error handlers
       # ------------------------
+
+      def foreign_key_violation
+        render_goodcity_error(
+          request.method.eql?('DELETE') ?
+            Goodcity::ForeignKeyDeletionError.new :
+            Goodcity::ForeignKeyMismatchError.new
+        )
+      end
 
       def access_denied
         render_goodcity_error Goodcity::AccessDeniedError.new

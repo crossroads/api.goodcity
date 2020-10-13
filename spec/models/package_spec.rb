@@ -399,6 +399,24 @@ RSpec.describe Package, type: :model do
         expect(pallet.box?).to eq(false)
       end
     end
+
+    describe '.validate_package_type' do
+      context 'when box/pallet has items' do
+        it 'does not allow to change the package_type' do
+          pack_or_unpack(params)
+          box.update(package_type: create(:package_type))
+          expect(box.errors.full_messages).to match_array('Error Cannot change type of a box with items. Please remove the items and try again')
+        end
+      end
+
+      context 'when box/pallet has no items' do
+        it 'allows to change the package_type' do
+          package_type = create(:package_type)
+          box.update(package_type: package_type)
+          expect(box.reload.package_type_id).to eq(package_type.id)
+        end
+      end
+    end
   end
 
   describe 'Computing quantities' do

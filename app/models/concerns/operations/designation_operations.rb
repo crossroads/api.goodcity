@@ -31,7 +31,7 @@ module DesignationOperations
     #
     # @todo remove stockit references
     #
-    def designate(package, quantity:, to_order:, _orders_package: nil)
+    def designate(package, quantity:, to_order:, _orders_package: nil, shipping_number: nil)
       quantity        = quantity.to_i
       package         = Utils.to_model(package, Package)
       to_order        = Utils.to_model(to_order, Order)
@@ -43,6 +43,7 @@ module DesignationOperations
         orders_package.package = package
         orders_package.order = to_order
         orders_package.quantity = quantity
+        orders_package.shipping_number = shipping_number
         orders_package.updated_by = User.current_user
 
         if orders_package.dispatched_quantity.eql?(quantity)

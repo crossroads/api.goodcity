@@ -197,15 +197,16 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
 
     context "with successful authentication" do
       it 'should return a JWT token and the user data', :show_in_doc do
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin_jwt).and_return(user)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(true)
+        params = { otp_auth_key: 'otp_auth_key', pin: '1234' }
+
+        expect(AuthenticationService).to receive(:authenticate!).with(anything, strategy: :pin_jwt).and_return(user)
         expect(AuthenticationService).to receive(:generate_token).with(user, api_version: 2).and_return(jwt_token)
 
-        post :verify, format: 'json', params: { otp_auth_key: 'otp_auth_key', pin: '1234' }
+        post :verify, format: 'json', params: params
+        expect(response.status).to eq(200)
         expect(parsed_body['jwt_token']).not_to be_nil
         expect(parsed_body["data"]["type"]).to eq("user")
         expect(parsed_body["data"]["id"]).to eq(user.id.to_s)
-        expect(response.status).to eq(200)
       end
 
       it 'verifies the mobile of the user' do
@@ -220,11 +221,14 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
 
     context "with unsucessful authentication" do
       it 'should return unprocessable entity' do
-        allow(controller.send(:warden)).to receive(:authenticate).with(:pin_jwt).and_return(nil)
-        allow(controller.send(:warden)).to receive(:authenticated?).and_return(false)
+        allow_any_instance_of(Goodcity::Authentication::Strategies::PinJwtStrategy).to receive(:valid?).and_return(true) # pretend the format of params is correct
+        allow_any_instance_of(Goodcity::Authentication::Strategies::PinJwtStrategy).to receive(:lookup_auth_token).and_return(AuthToken.new) # pretend auth token is correct
+        allow_any_instance_of(Goodcity::Authentication::Strategies::PinJwtStrategy).to receive(:valid_otp_code?).and_return(false) # pretend the pin is wrong
+        expect(AuthenticationService).not_to receive(:generate_token)
+
         post :verify, format: 'json', params: { otp_auth_key: otp_auth_key, pin: '1234' }
         expect(parsed_body["error"]).to eq(I18n.t('auth.invalid_pin'))
-        expect(response.status).to eq(422)
+        expect(response.status).to eq(401)
       end
     end
   end
@@ -233,7 +237,11 @@ RSpec.describe Api::V2::AuthenticationController, type: :controller do
     context 'as a guest' do
       it 'returns a 401' do
         post :hasura
-        expect(response.body).to be_empty
+        expect(parsed_body).to eq({
+          "error"  => "Invalid token",
+          "type"   => "UnauthorizedError",
+          "status" => 401
+        })
       end
     end
 

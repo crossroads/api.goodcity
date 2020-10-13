@@ -211,6 +211,8 @@ GEM
     gli (2.19.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    grape-swagger-rails (0.3.1)
+      railties (>= 3.2.12)
     guard (2.16.2)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
@@ -497,8 +499,6 @@ GEM
       unf_ext
     unf_ext (0.0.7.7)
     uniform_notifier (1.13.0)
-    warden (1.2.8)
-      rack (>= 2.0.6)
     webmock (3.8.3)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -541,6 +541,7 @@ DEPENDENCIES
   ffaker
   foreman
   go_go_van_api!
+  grape-swagger-rails
   guard-rspec
   http_accept_language
   jsonapi-serializer
@@ -590,7 +591,6 @@ DEPENDENCIES
   timecop
   traco
   twilio-ruby (~> 5.11.0)
-  warden
   webmock
   whenever (~> 0.9.5)
   with_advisory_lock
@@ -599,4 +599,4 @@ RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.16.6
+   1.17.3

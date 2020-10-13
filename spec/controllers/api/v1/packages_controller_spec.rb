@@ -1764,7 +1764,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "throws quantity error" do
         put :add_remove_item, params: { id: box.id, item_id: package2.id, location_id: location.id, task: "pack", quantity: package2.on_hand_quantity + 20 }
         expect(response.status).to eq(422)
-        expect(parsed_body["errors"]).to eq(["Added quantity cannot be larger than available quantity."])
+        expect(parsed_body["errors"]).to eq(["The selected quantity (60) is unavailable"])
       end
 
       context 'when already designated' do
