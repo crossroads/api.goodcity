@@ -28,4 +28,18 @@ RSpec.describe Beneficiary, type: :model do
     it { is_expected.to belong_to :created_by }
   end
 
+  describe "Lifecycle" do
+    context "on destruction" do
+      let(:order) { create :order }
+      let(:beneficiary) { order.beneficiary }
+
+      it "clears its own beneficiary_id from orders" do
+        expect {
+          beneficiary.destroy!
+        }.to change {
+          order.reload.beneficiary_id
+        }.from(beneficiary.id).to(nil)
+      end
+    end
+  end
 end

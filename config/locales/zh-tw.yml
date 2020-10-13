@@ -16,6 +16,8 @@ zh-tw:
     forbidden: Access Denied
     invalid_credentials: Invalid credentials
     invalid_params: Invalid or missing params
+    foreign_key_delete_violation: Another entity is dependent on the record you are trying to delete
+    foreign_key_mismatch_violation: A broken entity relationship has occurred
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -33,6 +35,7 @@ zh-tw:
       adding_box_to_box: 不可將一個框架加至另一個框架
       disable_addition: 不可增加/刪除指定或派出的項目
       disable_if_unavailable: 若項目已派出，則無法執行增加/刪除的操作
+      cannot_change_type: Cannot change type of a box with items. Please remove the items and try again
   token:
     invalid: 代碼不正確
     expired: 代碼已過期

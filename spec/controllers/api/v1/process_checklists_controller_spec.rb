@@ -25,11 +25,10 @@ RSpec.describe Api::V1::ProcessChecklistsController, type: :controller do
     end
 
     describe 'as an anonymous user' do
-      # TODO: Fix tests for 4XX status
-      # it "returns 401", :show_in_doc do
-      #   get :index
-      #   expect(response.status).to eq(401)
-      # end
+      it "returns 401", :show_in_doc do
+        get :index
+        expect(response.status).to eq(401)
+      end
     end
 
     describe 'as a user without the ability' do

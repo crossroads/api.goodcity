@@ -5,6 +5,8 @@ module InventoryComputer
   # Adds a sub module containing all the needed SQL computations
   #
   class Computer
+    PACKING_ACTIONS     = [PackagesInventory::Actions::PACK, PackagesInventory::Actions::UNPACK].freeze
+    DISPATCHING_ACTIONS = [PackagesInventory::Actions::DISPATCH, PackagesInventory::Actions::UNDISPATCH].freeze
 
     class << self
       ##
@@ -31,14 +33,14 @@ module InventoryComputer
         quantity_where(location: location)
       end
 
-      def total_quantity_in_box(box)
+      def total_quantity_in(source)
         historical_quantity
-          .where(source: box, action: ['pack', 'unpack'])
+          .where(source: source, action: PACKING_ACTIONS)
           .as_of_now
       end
 
       def quantity_contained_in(container:, package: nil)
-        res = historical_quantity.where(source: container, action: ['pack', 'unpack'])
+        res = historical_quantity.where(source: container, action: PACKING_ACTIONS)
         res = res.where(package_id: Utils.to_id(package)) if package.present?
         res.as_of_now
       end
@@ -50,12 +52,7 @@ module InventoryComputer
       end
 
       def dispatched_quantity(package: nil, orders_package: nil)
-        res = historical_quantity.where(
-          action: [
-            PackagesInventory::Actions::DISPATCH,
-            PackagesInventory::Actions::UNDISPATCH
-          ]
-        )
+        res = historical_quantity.where(action: DISPATCHING_ACTIONS)
         res = res.where(package: package) if package.present?
         res = res.where(source: orders_package) if orders_package.present?
         res.as_of_now
@@ -75,13 +72,24 @@ module InventoryComputer
         historical_quantity.as_of_now
       end
 
+      def on_hand_packed_quantities_for(package)
+        res = PackagesInventory.joins("INNER JOIN packages on packages.id = packages_inventories.source_id and packages_inventories.source_type = 'Package'")
+        res = res.select('packages_inventories.*')
+        res = res.where(packages_inventories: { package_id: package.id,
+                                                action: PACKING_ACTIONS })
+        res = res.where.not(packages: { on_hand_quantity: 0 })
+                 .group('packages.storage_type_id').sum(:quantity)
+        res = quantify_by_storage_type(res)
+        res
+      end
+
       def package_quantity_summary(package)
         {
           on_hand_quantity: package_quantity(package),
           available_quantity: available_quantity_of(package),
           dispatched_quantity: dispatched_quantity(package: package),
-          designated_quantity: designated_quantity_of(package)
-        }
+          designated_quantity: designated_quantity_of(package),
+        }.merge(on_hand_packed_quantities_for(package))
       end
 
       def update_package_quantities!(package)
@@ -89,6 +97,15 @@ module InventoryComputer
           package.assign_attributes package_quantity_summary(package)
           package.save!
         end
+      end
+
+      private
+
+      def quantify_by_storage_type(inventories)
+        {
+          on_hand_boxed_quantity: inventories[StorageType.box_type_id]&.abs || 0,
+          on_hand_palletized_quantity: inventories[StorageType.pallet_type_id]&.abs || 0
+        }
       end
     end
 

@@ -16,7 +16,15 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   end
 
   describe "GET packages for Item" do
-   before { generate_and_set_token(user) }
+    let(:order) { create :order }
+    let(:order2) { create :order }
+    let!(:orders_package1) { create :orders_package, order_id: order.id, state: 'designated' }
+    let!(:orders_package2) { create :orders_package, order_id: order2.id, state: 'designated' }
+
+    before {
+      generate_and_set_token(user)
+    }
+
     it "returns 200" do
       get :index
       expect(response.status).to eq(204)
@@ -38,17 +46,30 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
       expect( subject["orders_packages"].size ).to eq(3)
     end
 
-    it "return orders_packages of order_id mentioned in params" do
-      order = create :order
-      order2 = create :order
-      create_list(:orders_package, 2, order_id: order.id)
-      create_list(:orders_package, 2,order_id: order2.id)
+    it "return orders_packages of order_id mentioned in params as per given sorting_column" do
       order_packages = Order.find(order.id).orders_packages
-      get :index, params: { order_id: order.id }
-      expect( subject["orders_packages"].size ).to eq(2)
+      get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number"}
+      expect( subject["orders_packages"].size ).to eq(1)
       expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
-      expect(subject["orders_packages"][1]["order_id"]).to eq(order.id)
       expect(subject['meta']['orders_packages_count']).to eql(order_packages.size)
+    end
+
+    it "returns orders_packages for given order_id as per given states" do
+      get :index, params: { order_id: order.id, state: "designated" }
+      expect( subject["orders_packages"].size ).to eq(1)
+      expect(subject["orders_packages"][0]["order_id"]).to eq(order.id)
+    end
+
+    it "returns orders_packages for given order_id as per searched text" do
+      get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number", searchText: orders_package1.package.inventory_number }
+      expect( subject["orders_packages"].size ).to eq(1)
+      expect(subject["orders_packages"][0]["id"]).to eq(orders_package1.id)
+    end
+
+    it "returns all orders_packages for given order_id for blank searchText" do
+      get :index, params: { order_id: order.id, sorting_column: "packages.inventory_number", searchText: "" }
+      expect( subject["orders_packages"].size ).to eq(1)
+      expect(subject["orders_packages"][0]["id"]).to eq(orders_package1.id)
     end
   end
 

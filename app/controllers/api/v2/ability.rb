@@ -8,8 +8,8 @@ module Api
       end
 
       def user_permissions
-        return [] unless @user.present? && @role.present?
-        @user_permissions = role.permissions.map(&:name)
+        return [] unless @user.present?
+        @user_permissions ||= @role.present? ? @role.permissions.map(&:name) : super
       end
 
       # -----------------

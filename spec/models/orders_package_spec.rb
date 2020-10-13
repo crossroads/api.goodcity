@@ -232,6 +232,56 @@ RSpec.describe OrdersPackage, type: :model do
     end
   end
 
+  describe '#search_and_filter' do
+    let!(:order) { create :order }
+    let!(:order2) { create :order }
+    let!(:orders_package1) { create(:orders_package,order_id: order.id, state: "designated") }
+    let!(:orders_package2) { create(:orders_package,order_id: order2.id, state: "cancelled") }
+
+    it "returns orders_packages sorted as per given sort_column"  do
+      orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: []})
+      expect(orders_packages[0]["id"]).to eq(orders_package1.id)
+      expect(orders_packages[1]["id"]).to eq(orders_package2.id)
+    end
+
+    it "returns orders_packages in descending order of given sort_column if is_desc: true is passed" do
+      orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: true, state_names: []})
+      expect(orders_packages[0]["id"]).to eq(orders_package2.id)
+      expect(orders_packages[1]["id"]).to eq(orders_package1.id)
+    end
+
+    it "returns orders_packages as per searched package.inventory_number" do
+      orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [], search_text: orders_package1.package.inventory_number})
+      expect(orders_packages.size ).to eq(1)
+      expect(orders_packages[0]["id"]).to eq(orders_package1.id)
+    end
+
+    it "returns orders_packages as per searched package_types.code" do
+      orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [], search_text: orders_package1.package.package_type.code})
+      expect(orders_packages.size ).to eq(1)
+      expect(orders_packages[0]["id"]).to eq(orders_package1.id)
+    end
+
+    it "returns orders_packages as per searched package_types.name_en" do
+      orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [], search_text: orders_package1.package.package_type.name_en})
+      expect(orders_packages.size ).to eq(1)
+      expect(orders_packages[0]["id"]).to eq(orders_package1.id)
+    end
+
+    it "returns orders_packages as per given state" do
+      orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [orders_package1.state]})
+      expect(orders_packages.size ).to eq(1)
+      expect(orders_packages[0]["id"]).to eq(orders_package1.id)
+    end
+
+    context 'if searched package.inventory_number does not match' do
+       it 'does not return order_packages' do
+         orders_packages = OrdersPackage.search_and_filter({sort_column: 'packages.inventory_number', is_desc: false, state_names: [], search_text: "dummy"})
+          expect(orders_packages.size ).to eq(0)
+       end
+    end
+  end
+
   describe 'Running actions' do
     context 'on a finished order' do
       let(:order) { create :order, :with_dispatched_orders_packages, :with_state_closed }
