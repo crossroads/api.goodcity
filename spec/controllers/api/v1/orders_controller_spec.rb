@@ -328,7 +328,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
               state = i.even? ? :submitted : :processing
               detail_type = i.even? ? "GoodCity" : "Shipment"
               i.even? ? create_order_with_transport(state, :scheduled_at => scheduled_at, :detail_type => detail_type, booking_type: booking_type) :
-              create(:order, state: state, detail_type: detail_type, shipment_date: scheduled_at, booking_type: booking_type)
+              create(:order, state: state, code: "S112"+i.to_s, detail_type: detail_type, shipment_date: scheduled_at, booking_type: booking_type)
             end
           end
 
@@ -631,6 +631,43 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
   end
 
+  describe 'GET /fetch_shipment_or_carryout_code' do
+    before { generate_and_set_token(user) }
+
+    it 'returns 200' do
+      get :fetch_shipment_or_carryout_code, params: { detail_type: "Shipment"}
+      expect(response).to have_http_status(:success)
+    end
+
+    context 'Shipment Order'do
+      let(:order){create(:order,detail_type: "Shipment",code:"S2233A")}
+
+      it "returns valid Shipment code"do
+        get :fetch_shipment_or_carryout_code, params: { detail_type: "Shipment"}
+        expect(parsed_body["code"]).to eq(2234)
+      end
+    end
+
+    context 'CarryOut Order'do
+      let(:order){create(:order)}
+
+      it "returns valid CarryOut code if CarryOut Order not present"do
+       get :fetch_shipment_or_carryout_code, params: { detail_type: "CarryOut"}
+       expect(parsed_body["code"]).to eq(1000)
+      end
+    end
+
+    context 'returns error'do
+      let(:order){create(:order,detail_type: "CarryOut",code:"C99999A")}
+
+      it "returns exhausted error"do
+        get :fetch_shipment_or_carryout_code, params: { detail_type: "CarryOut"}
+        expect(response.code).to eq("404")
+        expect(parsed_body["errors"]).to eq("Code Limit Exhausted")
+      end
+    end
+  end
+
   describe "POST orders" do
     context "If logged in user is Supervisor in Browse app " do
       before { generate_and_set_token(user) }
@@ -668,7 +705,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       context "from stockit" do
-        let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id, detail_type: "Shipment", status: "Processing") }
+        let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id, code: "S1231", detail_type: "Shipment", status: "Processing") }
         it "should process a Shipment" do
           post :create, params: { order: order_params }
           expect(response.status).to eql(201)

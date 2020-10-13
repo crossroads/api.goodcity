@@ -73,6 +73,16 @@ module Api
         render json: serializer.new(@order, include_allowed_actions: true)
       end
 
+      def fetch_shipment_or_carryout_code
+        record = Order.where(detail_type: params['detail_type']).order("id desc").first
+        record = record ? record.code.gsub(/\D/, "").to_i + 1 : 1000
+        if record <= 99999
+        render json: { code: record }
+        else
+          render json: { errors: "Code Limit Exhausted"}, status: 404
+        end
+      end
+
       api :PUT, '/v1/orders/1', "Update an order"
       param_group :order
       def update
@@ -106,17 +116,6 @@ module Api
           Order.priority_active_orders_count
         )
         render json: priority_and_non_priority_active_orders_count
-      end
-
-      def fetch_shipment_or_carryout_code
-        # debugger
-        record = Order.where(detail_type: params['detail_type']).order("id desc").first
-        record = record.code.gsub(/\D/, "").to_i + 0001
-        if record <= 99999
-        render json: { code: record}
-        else
-          render json: { errors: "Code Limit Exhausted"}, status: 404
-        end
       end
 
       private
