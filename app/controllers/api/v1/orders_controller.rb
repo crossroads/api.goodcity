@@ -35,7 +35,7 @@ module Api
         if order_record.save
           render json: @order, serializer: serializer, root: root, status: 201
         else
-          render json: @order.errors, status: 422
+          render json:{ errors: @order.errors.full_messages }, status: 422
         end
       end
 
@@ -108,6 +108,17 @@ module Api
         render json: priority_and_non_priority_active_orders_count
       end
 
+      def fetch_shipment_or_carryout_code
+        # debugger
+        record = Order.where(detail_type: params['detail_type']).order("id desc").first
+        record = record.code.gsub(/\D/, "").to_i + 0001
+        if record <= 99999
+        render json: { code: record}
+        else
+          render json: { errors: "Code Limit Exhausted"}, status: 404
+        end
+      end
+
       private
 
       def order_response(records)
@@ -165,19 +176,20 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
-          :created_by_id, :stockit_id, :code, :status,
+          :created_by_id, :stockit_id, :code, :status, :country_id,
           :created_at, :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
           :stockit_organisation_id, :stockit_activity_id,
           :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
-          :address_id,:submitted_by_id, :staff_note,
+          :address_id,:submitted_by_id, :staff_note, :shipment_date,
           :exclude_message_sender, :include_messages,
           purpose_ids: [],
           beneficiary_attributes: beneficiary_attributes,
           address_attributes: address_attributes,
           orders_process_checklists_attributes: orders_process_checklists_attributes
         )
+
       end
 
       def address_attributes

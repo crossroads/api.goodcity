@@ -35,9 +35,10 @@ class Order < ApplicationRecord
 
   has_many :packages
   has_many :goodcity_requests, dependent: :destroy
-  has_many :purposes, through: :orders_purposes
+
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
+  has_many :purposes, through: :orders_purposes
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
@@ -45,6 +46,8 @@ class Order < ApplicationRecord
   has_many :process_checklists, through: :orders_process_checklists
 
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
+  validates :code, format: {with: /\A[SC]\d{4,5}([A-Z]{1})?\z/} , if: :international_orders?
+  validates_uniqueness_of :code, if: :international_orders?
 
   after_initialize :set_initial_state
   before_create :assign_code
@@ -126,6 +129,10 @@ class Order < ApplicationRecord
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
     end
+  end
+
+  def international_orders?
+    detail_type=="Shipment" || detail_type=="CarryOut"
   end
 
   def update_transition_and_reason(event, cancel_opts)

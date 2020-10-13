@@ -59,6 +59,8 @@ zh-tw:
     no_checkout_to_appointment: "Cannot checkout an appointment"
   activerecord:
     attributes:
+      order:
+        code: "Code"
       user:
         mobile: "手提電話"
         email: "電郵"
@@ -89,6 +91,10 @@ zh-tw:
               taken: '已被登記'
             registration:
               taken: '已被登記'
+        order:
+          attributes:
+            code:
+              taken: "已被登記."
 
   notification:
     new_offer: "%{name} 的新捐獻。"
