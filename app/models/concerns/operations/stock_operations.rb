@@ -230,6 +230,7 @@ module StockOperations
 
       def response(pkg_inventory)
         return unless pkg_inventory
+
         if pkg_inventory.save
           { packages_inventory: pkg_inventory, success: true }
         elsif pkg_inventory.errors
@@ -242,6 +243,5 @@ module StockOperations
         @package.box? && @cause.box?
       end
     end
-
   end
 end

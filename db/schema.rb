@@ -651,6 +651,8 @@ ActiveRecord::Schema.define(version: 2020_10_06_145926) do
     t.integer "pallet_id"
     t.integer "stockit_id"
     t.integer "order_id"
+    t.integer "on_hand_boxed_quantity", default: 0
+    t.integer "on_hand_palletized_quantity", default: 0
     t.date "stockit_sent_on"
     t.date "stockit_designated_on"
     t.integer "stockit_designated_by_id"
