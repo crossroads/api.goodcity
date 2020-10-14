@@ -135,6 +135,11 @@ class Order < ApplicationRecord
     detail_type == "Shipment" || detail_type == "CarryOut"
   end
 
+  def self.get_subsequent_international_code(params)
+    record = Order.where(detail_type: params).order("id desc").first
+    record = record ? record.code.gsub(/\D/, "").to_i + 1 : 1000
+  end
+
   def update_transition_and_reason(event, cancel_opts)
     fire_state_event(event)
     opts = cancel_opts.select { |k| [:cancellation_reason_id, :cancel_reason].include?(k) }

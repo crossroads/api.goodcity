@@ -74,9 +74,9 @@ module Api
       end
 
       def fetch_shipment_or_carryout_code
-        record = Order.where(detail_type: params['detail_type']).order("id desc").first
-        record = record ? record.code.gsub(/\D/, "").to_i + 1 : 1000
-        if record <= 99999
+        record = Order.get_subsequent_international_code(params['detail_type'])
+
+        if record <= 99_999
           render json: { code: record }
         else
           render json: { errors: "Code Limit Exhausted" }, status: 404
