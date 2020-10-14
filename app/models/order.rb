@@ -1,8 +1,8 @@
 class Order < ApplicationRecord
   module Type
-    SHIPMENT = 'Shipment'
-    CARRY_OUT = 'CarryOut'
-    MAX_INTERNATIONAL_ORDER_CODE = 99_999
+    SHIPMENT = 'Shipment'.freeze
+    CARRY_OUT = 'CarryOut'.freeze
+    MAX_INTERNATIONAL_ORDER_CODE = 99_999.freeze
   end
 
   has_paper_trail versions: { class_name: "Version" }
