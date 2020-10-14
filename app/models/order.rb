@@ -1,4 +1,10 @@
 class Order < ApplicationRecord
+  module Type
+    SHIPMENT = 'Shipment'
+    CARRY_OUT = 'CarryOut'
+    MAX_INTERNATIONAL_ORDER_CODE = 99_999
+  end
+
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdatesMinimal
   include OrderFiltering
@@ -35,10 +41,9 @@ class Order < ApplicationRecord
 
   has_many :packages
   has_many :goodcity_requests, dependent: :destroy
-
+  has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
-  has_many :purposes, through: :orders_purposes
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
@@ -132,12 +137,12 @@ class Order < ApplicationRecord
   end
 
   def international_orders?
-    detail_type == "Shipment" || detail_type == "CarryOut"
+    [Type::SHIPMENT, Type::CARRY_OUT].include?(detail_type)
   end
 
   def self.get_subsequent_international_code(params)
     record = Order.where(detail_type: params).order("id desc").first
-    record = record ? record.code.gsub(/\D/, "").to_i + 1 : 1000
+    record ? record.code.gsub(/\D/, "").to_i + 1 : 1000
   end
 
   def update_transition_and_reason(event, cancel_opts)

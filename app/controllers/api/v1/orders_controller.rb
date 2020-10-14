@@ -76,7 +76,7 @@ module Api
       def fetch_shipment_or_carryout_code
         record = Order.get_subsequent_international_code(params['detail_type'])
 
-        if record <= 99_999
+        if record <= Order::Type::MAX_INTERNATIONAL_ORDER_CODE
           render json: { code: record }
         else
           render json: { errors: "Code Limit Exhausted" }, status: 404
