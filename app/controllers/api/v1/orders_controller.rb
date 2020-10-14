@@ -35,7 +35,7 @@ module Api
         if order_record.save
           render json: @order, serializer: serializer, root: root, status: 201
         else
-          render json:{ errors: @order.errors.full_messages }, status: 422
+          render json: { errors: @order.errors.full_messages }, status: 422
         end
       end
 
@@ -77,9 +77,9 @@ module Api
         record = Order.where(detail_type: params['detail_type']).order("id desc").first
         record = record ? record.code.gsub(/\D/, "").to_i + 1 : 1000
         if record <= 99999
-        render json: { code: record }
+          render json: { code: record }
         else
-          render json: { errors: "Code Limit Exhausted"}, status: 404
+          render json: { errors: "Code Limit Exhausted" }, status: 404
         end
       end
 
@@ -188,7 +188,6 @@ module Api
           address_attributes: address_attributes,
           orders_process_checklists_attributes: orders_process_checklists_attributes
         )
-
       end
 
       def address_attributes
