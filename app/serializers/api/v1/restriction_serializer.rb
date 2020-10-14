@@ -1,6 +1,6 @@
 module Api::V1
   class RestrictionSerializer < ApplicationSerializer
-    attributes :id, :name_en, :name_zh_tw
+    attributes :id, :name
 
     def name
       object.try("name_#{current_language}".to_sym)
