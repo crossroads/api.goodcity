@@ -2,7 +2,7 @@ class Order < ApplicationRecord
   module Type
     SHIPMENT = 'Shipment'.freeze
     CARRY_OUT = 'CarryOut'.freeze
-    MAX_INTERNATIONAL_ORDER_CODE = 99_999.freeze
+    MAX_INTERNATIONAL_ORDER_CODE = 99_999
   end
 
   has_paper_trail versions: { class_name: "Version" }
