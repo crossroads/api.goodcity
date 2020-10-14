@@ -1630,6 +1630,18 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             expect(package1.on_hand_boxed_quantity).to eq(5)
           end
         end
+
+        context 'when designating a box/pallet to order' do
+          it 'should designate to the order' do
+            put :add_remove_item, params: params
+            expect(package1.reload.on_hand_boxed_quantity).to eq(5)
+
+            order = create(:order, :with_state_submitted)
+            put :designate, params: { id: box.id, quantity: 1, order_id: order.id }
+            expect(response.status).to eq(200)
+            expect(box.reload.designated_quantity).to eq(1)
+          end
+        end
       end
 
       context 'remove item from container' do
