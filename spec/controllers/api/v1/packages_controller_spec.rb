@@ -1639,6 +1639,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             order = create(:order, :with_state_submitted)
             put :designate, params: { id: box.id, quantity: 1, order_id: order.id }
             expect(response.status).to eq(200)
+            expect(box.reload.designated_quantity).to eq(1)
           end
         end
       end
