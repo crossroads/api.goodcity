@@ -440,6 +440,7 @@ class Package < ApplicationRecord
 
   def validate_package_type
     return unless box_or_pallet?
+    return unless package_type_id_changed?
 
     count = PackagesInventory.packages_contained_in(self).count
     errors.add(:error, I18n.t('box_pallet.errors.cannot_change_type')) if count.positive?
