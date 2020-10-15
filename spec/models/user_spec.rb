@@ -151,11 +151,10 @@ describe User, :type => :model do
       it { expect(User.search("good@890.hk")).not_to include(user) }
       it { expect(User.search("goodcity@gmail.com")).to include(user) }
       it { expect(User.search("goodcity@team")).to include(user) }
-
-      it "is intolerant to typos on the mobile number" do
-        expect(User.search("+85287655678")).to include(user)
-        expect(User.search("+85287655679")).not_to include(user)
-      end
+      it { expect(User.search("+85287655678")).to include(user) }
+      it { expect(User.search("+87655678")).to include(user) }
+      it { expect(User.search("87665578")).to include(user) }
+      it { expect(User.search("87655679")).to include(user) }
     end
   end
 
