@@ -55,41 +55,89 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 
-  describe "GET searched user" do
-    before { generate_and_set_token(supervisor_user) }
+  describe "GET searched user" do    
+    let(:role_1) { create(:role, name: "Role 1", level: 1) }
+    let(:role_2) { create(:role, name: "Role 2", level: 5) }
+
+    let(:user_1) { create(:user, :charity, first_name: "Jane", last_name: 'Doe') }
+    let(:user_2) { create(:user, :charity, first_name: "Jane", last_name: 'Doe') }
+    let(:user_3) { create(:user, :charity, first_name: "John", last_name: 'Doe') }
+    let(:user_4) { create(:user, :charity, first_name: "Foo", last_name: 'Bar') }
+    let(:user_5) { create(:user, :charity, first_name: "Stephen", last_name: 'K') }
+
+    let(:supervisor) { create :user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor' }
+
+    before do
+      User.destroy_all # Ensure no lingering users exist
+
+      generate_and_set_token(supervisor)
+      role_1.grant(user_1)
+      role_2.grant(user_2)
+      role_1.grant(user_3)
+      role_1.grant(user_4)
+      role_2.grant(user_5)
+
+      expect(User.count).to eq(6)
+    end
 
     it "returns searched user according to params" do
-      get :index, params: { searchText: low_level_users.first.first_name, role_name: low_level_role.name }
+      get :index, params: { searchText: 'jane', role_name: role_1.name }
+
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(1)
+      expect(parsed_body['users'][0]['id']).to eq(user_1.id)
     end
 
     it "returns only first 25 results" do
-      get :index, params: { searchText: low_level_users.first.last_name, role_name: low_level_role.name }
+      touch(low_level_users)
+      expect(User.where("first_name ILIKE 'Jane%'").count).to be > 25
+      get :index, params: { searchText: "Jane", role_name: low_level_role.name }
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(25)
     end
 
     it "will not return any user if params does not matches any users" do
-      get :index, params: { searchText: "zzzzzz", role_name: low_level_role.name }
+      get :index, params: { searchText: "zzzzzz", role_name: role_1.name }
       expect(parsed_body['users'].count).to eq(0)
     end
 
     it "will return the user if it belongs to the specified role" do
-      get :index, params: { searchText: low_level_users.first.first_name, role_name: low_level_role.name }
-      expect(User.find(parsed_body["users"].first["id"]).roles.pluck(:name)).to include(low_level_role.name)
+      get :index, params: { searchText: "Stephen", role_name: role_2.name }
+      expect(parsed_body["users"].count).to eq(1)
+      expect(parsed_body["users"][0]["id"]).to eq(user_5.id)
+      expect(User.find(parsed_body["users"].first["id"]).roles.pluck(:name)).to include(role_2.name)
     end
 
     it "does not return searched user if the specified role is different" do
-      get :index, params: { searchText: low_level_users.first.first_name, role_name: "Supervisor" }
+      get :index, params: { searchText: "Stephen", role_name: role_1.name }
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(0)
     end
 
-    it "returns searched user if role isn't specified" do
-      get :index, params: { searchText: low_level_users.first.first_name  }
+    it "returns users of any role if role_name isn't specified" do
+      get :index, params: { searchText: "doe"  }
       expect(response.status).to eq(200)
-      expect(parsed_body['users'].count).to eq(1)
+      expect(parsed_body['users'].count).to eq(3)
+      expect(parsed_body['users'][0]['id']).to eq(user_1.id)
+      expect(parsed_body['users'][1]['id']).to eq(user_2.id)
+      expect(parsed_body['users'][2]['id']).to eq(user_3.id)
+    end
+
+    it "is tolerant to typos" do
+      get :index, params: { searchText: "jannne"  }
+      expect(response.status).to eq(200)
+      expect(parsed_body['users'].count).to eq(2)
+
+      ids = parsed_body['users'].map { |u| u['id'] }
+
+      expect(ids).to include(user_1.id)
+      expect(ids).to include(user_2.id)
+    end
+
+    it "is intolerant to very agressive typos" do
+      get :index, params: { searchText: "jneo"  }
+      expect(response.status).to eq(200)
+      expect(parsed_body['users'].count).to eq(0)
     end
   end
 
