@@ -14,10 +14,7 @@ class User < ApplicationRecord
       :first_name,
       :last_name,
       :email,
-      {
-        field: :mobile,
-        tolerance: 0 # exact match
-      }
+      :mobile
     ],
     default_tolerance: 0.8
   )
