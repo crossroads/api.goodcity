@@ -120,11 +120,6 @@ describe User, :type => :model do
       expect(User.search(charity_users.first.first_name)).to include(charity_users.first)
     end
 
-    it "will return users according to role type" do
-      search_options = {search_text: charity_users.first.first_name, role_name: "Sample"}
-      expect(User.search(search_options).first.roles.pluck(:name)).to include("Sample")
-    end
-
     it "will return users based on email from search text" do
       charity_users.first.update(email: "charity@abc.com")
       expect(User.search(charity_users.first.email)).to include(charity_users.first)
