@@ -447,6 +447,21 @@ describe User, :type => :model do
       user.update_column(:email, '')
       expect(User.find_user_by_mobile_or_email(nil, '')).to eql(nil)
     end
+  end
 
+  describe "Lifecycle hooks" do
+    let(:user) { create :user, :with_token }
+
+    before { touch(user) }
+
+    context "when destroyed" do
+      it "deletes any auth tokens remaining" do
+        expect {
+          user.destroy
+        }.to change {
+          AuthToken.where(user: user).count
+        }.from(1).to(0)
+      end
+    end
   end
 end
