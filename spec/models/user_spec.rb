@@ -117,29 +117,44 @@ describe User, :type => :model do
     end
 
     it "will return users according to searchText" do
-      search_options = {search_text: charity_users.first.first_name, role_name: "Sample"}
-      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
-    end
-
-    it "will return users according to role type" do
-      search_options = {search_text: charity_users.first.first_name, role_name: "Sample"}
-      expect(User.search(search_options).first.roles.pluck(:name)).to include("Sample")
+      expect(User.search(charity_users.first.first_name)).to include(charity_users.first)
     end
 
     it "will return users based on email from search text" do
       charity_users.first.update(email: "charity@abc.com")
-      search_options = {search_text: charity_users.first.email, role_name: "Sample"}
-      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
+      expect(User.search(charity_users.first.email)).to include(charity_users.first)
     end
 
     it "will return users based on mobile from search text" do
-      search_options = {search_text: charity_users.first.mobile, role_name: "Sample"}
-      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
+      expect(User.search(charity_users.first.mobile)).to include(charity_users.first)
     end
 
     it "will return nothing if searchText does not match any users" do
-      search_options = {search_text: "zzzzz", role_name: "Sample"}
-      expect(User.search(search_options).length).to eq(0)
+      expect(User.search("zzzzz").length).to eq(0)
+    end
+
+    context 'typo tolerance' do
+      let(:user) { create :user, first_name: "Abul", last_name: "Asar", email: "goodcity@team.com", mobile: "+85287655678" }
+
+      before { touch(user) }
+
+      it { expect(User.search("")).not_to include(user) }
+      it { expect(User.search("@@@@")).not_to include(user) }
+      it { expect(User.search("Abl Asr")).to include(user) }
+      it { expect(User.search("Abul Aar")).to include(user) }
+      it { expect(User.search("Aar Abul")).to include(user) }
+      it { expect(User.search("A Abul")).to include(user) }
+      it { expect(User.search("goodcity@team.com")).to include(user) }
+      it { expect(User.search("goodcity@tmea.com")).to include(user) }
+      it { expect(User.search("goodCITY@tmea.com")).to include(user) }
+      it { expect(User.search("123@890.com")).not_to include(user) }
+      it { expect(User.search("good@890.hk")).not_to include(user) }
+      it { expect(User.search("goodcity@gmail.com")).to include(user) }
+      it { expect(User.search("goodcity@team")).to include(user) }
+      it { expect(User.search("+85287655678")).to include(user) }
+      it { expect(User.search("+87655678")).to include(user) }
+      it { expect(User.search("87665578")).to include(user) }
+      it { expect(User.search("87655679")).to include(user) }
     end
   end
 
@@ -426,6 +441,21 @@ describe User, :type => :model do
       user.update_column(:email, '')
       expect(User.find_user_by_mobile_or_email(nil, '')).to eql(nil)
     end
+  end
 
+  describe "Lifecycle hooks" do
+    let(:user) { create :user, :with_token }
+
+    before { touch(user) }
+
+    context "when destroyed" do
+      it "deletes any auth tokens remaining" do
+        expect {
+          user.destroy
+        }.to change {
+          AuthToken.where(user: user).count
+        }.from(1).to(0)
+      end
+    end
   end
 end

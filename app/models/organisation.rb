@@ -17,7 +17,7 @@ class Organisation < ApplicationRecord
 
   scope :with_order, -> { includes([:orders]) }
 
-  configure_search props: [:name_en, :name_zh_tw], tolerance: 0.1
+  configure_search props: [:name_en, :name_zh_tw], default_tolerance: 0.9
 
   def trim_name
     self.name_en = name_en&.strip
