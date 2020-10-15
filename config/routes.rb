@@ -129,7 +129,7 @@ Rails.application.routes.draw do
           get :status_list
         end
       end
-      resources :gc_organisations do
+      resources :organisations do
         get 'names', on: :collection
         member do
           get :orders
