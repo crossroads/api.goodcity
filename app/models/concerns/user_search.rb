@@ -1,7 +1,7 @@
 # Search and logic for users is extracted here to avoid cluttering the model class
 module UserSearch
   extend ActiveSupport::Concern
-  include FuzzySearch
+
   SEARCH_ATTRIBUTES = ['users.first_name', 'users.last_name',
                       'users.email', 'users.mobile'].freeze
 
