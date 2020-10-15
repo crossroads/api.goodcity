@@ -141,8 +141,13 @@ class Order < ApplicationRecord
   end
 
   def self.get_subsequent_international_code(params)
-    record = Order.where(detail_type: params).order("id desc").first
-    record ? record.code.gsub(/\D/, "").to_i + 1 : 1000
+    record = Order.where(detail_type: params).order("id desc").pluck(:code)
+    unless record.empty?
+      susequent_value = record.map{|s| s.gsub(/\D/, "")}
+      susequent_value.map!(&:to_i).max + 1
+    else
+      1000
+    end
   end
 
   def update_transition_and_reason(event, cancel_opts)
