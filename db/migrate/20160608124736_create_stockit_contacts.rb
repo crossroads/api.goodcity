@@ -1,4 +1,4 @@
-class CreateStockitContacts < ActiveRecord::Migration
+class CreateStockitContacts < ActiveRecord::Migration[4.2]
   def change
     create_table :stockit_contacts do |t|
       t.string :first_name

@@ -1,4 +1,4 @@
-class AddIndexesForStockitOrdersSearch < ActiveRecord::Migration
+class AddIndexesForStockitOrdersSearch < ActiveRecord::Migration[4.2]
 
   def up
     unless index_exists?(:stockit_designations, :code, name: "st_designations_code_idx")

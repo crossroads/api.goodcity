@@ -1,3 +1,5 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :base_package_type, class: :PackageType do
     code               { generate(:package_types).keys.sample }
@@ -11,11 +13,11 @@ FactoryBot.define do
     association        :location
 
     trait :allow_expiry_date do
-      allow_expiry_date true
+      allow_expiry_date { true }
     end
 
     trait :disallow_expiry_date do
-      allow_expiry_date false
+      allow_expiry_date { false }
     end
   end
 

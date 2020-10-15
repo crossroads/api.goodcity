@@ -21,8 +21,9 @@ module Api
       EOS
       def index
         @users = @users.except_stockit_user
-        @users = @users.by_roles(params[:roles]) if params[:roles].present?
         return search_user_and_render_json if params[:searchText].present?
+        
+        @users = @users.with_roles(params[:roles]) if params[:roles].present?
         @users = @users.where(id: ids_param) if ids_param.present?
         render json: @users, each_serializer: serializer
       end
@@ -36,9 +37,6 @@ module Api
             @user.organisations << Organisation.find_by(id: params["user"]["organisations_users_ids"])
           end
 
-          if params["user"]["user_role_ids"]
-            current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
-          end
           render json: @user, serializer: serializer, include_user_roles: true, status: 201
         else
           render_error(@user.errors.full_messages.join(". "))
@@ -48,7 +46,7 @@ module Api
       api :GET, '/v1/users/1', "List a user"
       description "Returns information about a user. Note image may be empty if user is not a reviewer."
       def show
-        render json: @user, serializer: serializer
+        render json: @user, serializer: Api::V1::UserDetailsSerializer, root: 'user'
       end
 
       api :PUT, '/v1/users/1', "Update user"
@@ -59,9 +57,6 @@ module Api
 
       def update
         @user.update_attributes(user_params)
-        if params["user"]["user_role_ids"]
-          current_user.manage_roles_for_user(@user, params["user"]["user_role_ids"])
-        end
         render json: @user, serializer: serializer
       end
 
@@ -77,7 +72,7 @@ module Api
       def mentionable_users
         return render json: { users: [] } if params['roles'].nil?
 
-        @users = User.active.exclude_user(current_user.id).with_roles(mentionable_role).uniq
+        @users = User.active.exclude_user(current_user.id).with_roles(mentionable_role).distinct
         render json: @users, each_serializer: Api::V1::UserMentionsSerializer
       end
 
@@ -92,19 +87,21 @@ module Api
       end
 
       def search_user_and_render_json
-        records = @users.search({
-                    search_text: params['searchText'],
-                    role_name: params['role_name']}).limit(25)
+        records = @users.limit(25)
+        records = records.search(params['searchText'])               if params['searchText'].present?
+        records = records.with_roles(params['role_name'])            if params['role_name'].present?
         data = ActiveModel::ArraySerializer.new(records,
-          each_serializer: serializer,
+          each_serializer: Api::V1::UserDetailsSerializer,
           include_user_roles: true,
-          root: "users").as_json
+          root: "users"
+        ).as_json
         render json: { "meta": {"search": params["searchText"] } }.merge(data)
       end
 
       def user_params
         attributes = %i[image_id first_name last_name email receive_email
           other_phone title mobile printer_id preferred_language]
+        attributes.concat([address_attributes: [:district_id, :address_type]])
         attributes.concat([:disabled]) if current_user.can_disable_user?(params[:id])
         attributes.concat([:last_connected, :last_disconnected]) if User.current_user.id == params["id"]&.to_i
         params.require(:user).permit(attributes)

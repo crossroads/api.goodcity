@@ -20,7 +20,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
       before { generate_and_set_token(supervisor) }
 
       it "returns 201", :show_in_doc do
-        post :create, printers_users: printers_supervisor_params
+        post :create, params: { printers_users: printers_supervisor_params }
         expect(response.status).to eq(201)
       end
     end
@@ -29,7 +29,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
       before { generate_and_set_token(stock_administrator) }
 
       it "returns 201", :show_in_doc do
-        post :create, printers_users: printers_stock_administrator_params
+        post :create, params: { printers_users: printers_stock_administrator_params }
         expect(response.status).to eq(201)
       end
     end
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
       before { generate_and_set_token(stock_administrator) }
 
       it "returns 201", :show_in_doc do
-        post :create, printers_users: printers_order_administrator_params
+        post :create, params: { printers_users: printers_order_administrator_params }
         expect(response.status).to eq(201)
       end
     end
@@ -47,7 +47,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
       before { generate_and_set_token(charity_user) }
 
       it "returns 403", :show_in_doc do
-        post :create, printers_users: printers_charity_user_params
+        post :create, params: { printers_users: printers_charity_user_params }
         expect(response.status).to eq(403)
       end
     end
@@ -56,7 +56,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
       before { generate_and_set_token(reviewer) }
 
       it "returns 403", :show_in_doc do
-        post :create, printers_users: printers_reviewer_params
+        post :create, params: { printers_users: printers_reviewer_params }
         expect(response.status).to eq(403)
       end
     end
@@ -68,7 +68,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
 
       it "returns 200", :show_in_doc do
         params = { printer_id: printer.id }
-        put :update, id: printers_user.id, printers_users: params
+        put :update, params: { id: printers_user.id, printers_users: params }
         expect(response.status).to eq(200)
         expect(printers_user.reload.printer_id).to eq(printers_user.reload.printer_id)
       end
@@ -81,7 +81,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
 
       it "returns 200", :show_in_doc do
         params = { printer_id: printer.id }
-        put :update, id: update_printers_user.id, printers_users: params
+        put :update, params: { id: update_printers_user.id, printers_users: params }
         expect(response.status).to eq(200)
         expect(update_printers_user.reload.printer_id).to eq(printer.id)
       end
@@ -94,7 +94,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
 
       it "returns 200", :show_in_doc do
         params = { printer_id: printer.id }
-        put :update, id: update_printers_user.id, printers_users: params
+        put :update, params: { id: update_printers_user.id, printers_users: params }
         expect(response.status).to eq(200)
         expect(update_printers_user.reload.printer_id).to eq(printer.id)
       end
@@ -107,7 +107,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
 
       it "returns 200", :show_in_doc do
         params = { printer_id: printer.id }
-        put :update, id: update_printers_user.id, printers_users: params
+        put :update, params: { id: update_printers_user.id, printers_users: params }
         expect(response.status).to eq(200)
         expect(update_printers_user.reload.printer_id).to eq(printer.id)
       end
@@ -118,7 +118,7 @@ RSpec.describe Api::V1::PrintersUsersController, type: :controller do
 
       it "returns 403", :show_in_doc do
         params = { printer_id: printer.id }
-        put :update, id: printers_user.id, printers_users: params
+        put :update, params: { id: printers_user.id, printers_users: params }
         expect(response.status).to eq(403)
       end
     end

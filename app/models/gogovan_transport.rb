@@ -1,4 +1,4 @@
-class GogovanTransport < ActiveRecord::Base
+class GogovanTransport < ApplicationRecord
   include RollbarSpecification
 
   translates :name

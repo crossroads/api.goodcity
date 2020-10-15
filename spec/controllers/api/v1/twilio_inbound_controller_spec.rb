@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::TwilioInboundController, type: :controller do
-
   before {
     allow_any_instance_of(described_class).to receive(:validate_twilio_request)
       .and_return(true)
@@ -43,7 +42,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       allow_any_instance_of(described_class).to receive(:activity_sid)
       allow_any_instance_of(described_class).to receive_message_chain(:offline_worker, :update)
 
-      get :accept_call, { donor_id: user.id }
+      get :accept_call, params: { donor_id: user.id }
       expect(response.status).to eq(200)
       expect(response.body).to eq("{}")
     end
@@ -58,7 +57,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
 
     it "will return response to Twilio on call-failure", :show_in_doc do
 
-      post :call_fallback, parameters
+      post :call_fallback, params: parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say>Unfortunately there is some issue with connecting to Goodcity. Please try again after some time. Thank you.</Say>\n<Hangup/>\n</Response>\n")
     end
@@ -75,7 +74,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       allow_any_instance_of(described_class).to receive_message_chain(:activity_sid)
       allow_any_instance_of(described_class).to receive_message_chain(:idle_worker, :update)
 
-      post :call_complete, parameters
+      post :call_complete, params: parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("{}")
     end
@@ -86,7 +85,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
 
     context "Inactive Donor" do
       it "will return response to Twilio", :show_in_doc do
-        post :voice, parameters
+        post :voice, params: parameters
         expect(response.status).to eq(200)
         expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Dial>\n<Number>+85222729348</Number>\n</Dial>\n</Response>\n")
       end
@@ -111,7 +110,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       }) }
 
       it "should ask for offer id", :show_in_doc do
-        post :voice, parameters
+        post :voice, params: parameters
         expect(response.status).to eq(200)
         expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say>Hello #{reviewer.full_name},</Say>\n<Gather action=\"/api/v1/twilio_inbound/accept_offer_id\" numDigits=\"5\">\n<Say>Please input an offer ID and we will forward you to the donor's number.</Say>\n</Gather>\n<Say>Goodbye</Say>\n<Hangup/>\n</Response>\n")
       end
@@ -134,7 +133,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
 
     context "Caller waiting in queue for less than 30 seconds" do
       it "will return response to Twilio", :show_in_doc do
-        post :hold_donor, parameters
+        post :hold_donor, params: parameters
         expect(response.status).to eq(200)
         expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say>Hello #{user.full_name},</Say>\n<Say>Thank you for calling GoodCity.HK, operated by Crossroads Foundation. Please wait a moment while we try to connect you to one of our staff.</Say>\n<Play>http://test.host/api/v1/twilio_inbound/hold_music</Play>\n</Response>\n")
       end
@@ -144,7 +143,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       let(:params) { parameters.merge({ "QueueTime" => "40" }) }
 
       it "will return response to Twilio", :show_in_doc do
-        post :hold_donor, params
+        post :hold_donor, params: params
         expect(response.status).to eq(200)
         expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Leave/>\n</Response>\n")
       end
@@ -159,7 +158,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
     }) }
 
     it "will return response to Twilio when user press 1 key", :show_in_doc do
-      post :accept_callback, parameters
+      post :accept_callback, params: parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say>Thank you, our staff will call you as soon as possible. Goodbye.</Say>\n<Hangup/>\n</Response>\n")
     end
@@ -176,7 +175,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
     let(:call_version) { Version.call_logs.last }
 
     it "will return response to Twilio when admin inputs offer-id", :show_in_doc do
-      post :accept_offer_id, parameters
+      post :accept_offer_id, params: parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say>Connecting to #{user.full_name}..</Say>\n<Dial callerId=\"+163456799\">\n<Number>#{user.mobile}</Number>\n</Dial>\n</Response>\n")
       expect(call_version.item_id).to eq(offer.id)
@@ -194,7 +193,7 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
     }) }
 
     it "will return response to Twilio when user press 1 key", :show_in_doc do
-      post :send_voicemail, parameters
+      post :send_voicemail, params: parameters
       expect(response.status).to eq(200)
       expect(response.body).to eq("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n<Say>Goodbye.</Say>\n<Hangup/>\n</Response>\n")
     end
@@ -225,10 +224,9 @@ RSpec.describe Api::V1::TwilioInboundController, type: :controller do
       expect(TwilioInboundCallManager).to receive_message_chain(:new, :mobile).and_return(admin.mobile)
       allow_any_instance_of(described_class).to receive(:activity_sid)
 
-      post :assignment, parameters, format: :json
+      post :assignment, params: parameters, format: :json
       expect(response.status).to eq(200)
       expect(JSON.parse(response.body)).to eq({"instruction"=>"dequeue", "post_work_activity_sid"=>nil, "from"=>ENV['TWILIO_VOICE_NUMBER'], "to"=>admin.mobile})
     end
   end
-
 end

@@ -20,4 +20,3 @@ RSpec.describe Api::V1::CrossroadsTransportsController, type: :controller do
     end
   end
 end
-

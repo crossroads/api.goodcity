@@ -1,4 +1,4 @@
-class AddColumnsToElectrical < ActiveRecord::Migration
+class AddColumnsToElectrical < ActiveRecord::Migration[4.2]
   def change
     add_column :electricals, :test_status_id, :integer
     add_column :electricals, :voltage_id, :integer

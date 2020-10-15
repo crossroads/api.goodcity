@@ -8,7 +8,7 @@ class Gogovan
     @user         = user
     @name         = options['name']
     @mobile       = options['mobile']
-    @time         = options['pickupTime'] || get_pickup_date
+    @time         = parse_pickup_time(options['pickupTime'])
     @need_english = options['needEnglish']
     @need_cart    = options['needCart']
     @cart_count   = 1 if options['needCart']
@@ -17,8 +17,8 @@ class Gogovan
     @vehicle      = options['vehicle']
     @ggv_uuid     = options['ggv_uuid']
     @offer        = Offer.find_by(id: options['offerId'])
-    @need_over_6ft = options["needOver6ft"]
-    @remove_net    = options["removeNet"] if @need_over_6ft
+    @need_over_6ft = options['needOver6ft']
+    @remove_net    = options['removeNet'] if @need_over_6ft
   end
 
   def confirm_order
@@ -52,7 +52,7 @@ class Gogovan
       order: {
         name:           @name || @user.full_name,
         phone_number:   @mobile || @user.mobile,
-        pickup_time:    parse_time.utc,
+        pickup_time:    parse_time,
         vehicle:        @vehicle,
         locations:      locations,
         extra_requirements: {
@@ -74,15 +74,17 @@ class Gogovan
     [pickup_location, District.crossroads_address].to_json
   end
 
-  def get_pickup_date
-    next_available_date = DateSet.new().available_dates.first
-    next_available_date.beginning_of_day + 12.hours
+  def parse_pickup_time(time=nil)
+    return DateTime.parse(time).utc if time.present?
+
+    next_available_date = DateSet.new.available_dates.first
+    (next_available_date.beginning_of_day + 12.hours).utc
   end
 
   def ggv_driver_notes
     notes = ""
     if offer && ggv_uuid
-      link = "#{Rails.application.secrets.base_urls["app"]}/ggv_orders/#{ggv_uuid}"
+      link = "#{Rails.application.secrets.base_urls[:app]}/ggv_orders/#{ggv_uuid}"
       links = {"zh-tw" => "#{link}?ln=zh-tw", "en" => "#{link}?ln=en"}
 
       notes =

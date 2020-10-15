@@ -1,4 +1,4 @@
-class PackageType < ActiveRecord::Base
+class PackageType < ApplicationRecord
   include CacheableJson
 
   belongs_to :location

@@ -1,4 +1,4 @@
-class CreateStockitLocalOrders < ActiveRecord::Migration
+class CreateStockitLocalOrders < ActiveRecord::Migration[4.2]
   def change
     create_table :stockit_local_orders do |t|
       t.string :client_name

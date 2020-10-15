@@ -1,4 +1,4 @@
-class ConvertTimestampWithoutTzToTimestampWithTz < ActiveRecord::Migration
+class ConvertTimestampWithoutTzToTimestampWithTz < ActiveRecord::Migration[4.2]
 
   MODEL_NAMES = ['address', 'auth_token', 'beneficiary', 'booking_type', 'box',
     'cancellation_reason', 'contact', 'country',

@@ -1,3 +1,5 @@
+# frozen_String_literal: true
+
 # USAGE:
 #   create(:role)                   # empty
 #   create(:reviewer_role)          # named, no permissions specified
@@ -6,10 +8,9 @@
 #   create(:reviewer_role, :with_can_manage_offers_permission, :with_can_manage_messages_permission) # specify multiple permissions
 #
 FactoryBot.define do
-
   factory :role do
     name            { generate(:permissions_roles).keys.sample }
-    level           10
+    level           { 10 }
     initialize_with { Role.find_or_initialize_by(name: name) } # avoid duplicate roles
 
     transient do
@@ -19,8 +20,8 @@ FactoryBot.define do
     # create(:reviewer_role) # No permissions, just the role
     YAML.load_file("#{Rails.root}/db/roles.yml").each do |role, attrs|
       factory "#{role.parameterize.underscore}_role", parent: :role do
-        name role
-        level attrs[:level]
+        name { role }
+        level { attrs[:level] }
       end
     end
 
@@ -46,6 +47,5 @@ FactoryBot.define do
         end
       end
     end
-
   end
 end

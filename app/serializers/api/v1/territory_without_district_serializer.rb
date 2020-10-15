@@ -3,8 +3,8 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :name
 
-    def name__sql
-      "name_#{current_language}"
+    def name
+      object.try("name_#{current_language}".to_sym)
     end
   end
 end

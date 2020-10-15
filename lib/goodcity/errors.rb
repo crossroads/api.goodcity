@@ -7,6 +7,7 @@ module Goodcity
     attr_accessor :status
 
     def initialize(message, status: 422)
+      message = message.join('. ') if message.is_a?(Array)
       super(message);
       @status = status;
     end
@@ -15,16 +16,27 @@ module Goodcity
       self.class.name.split(':').last
     end
 
+    def with_status(status)
+      @status = status
+      self
+    end
+
     def as_json
       { error: message, type: type, status: status }
     end
   end
+
+  class AccessError < BaseError; end
 
   class InvalidStateError < BaseError; end
 
   class OperationsError < BaseError; end
 
   class InventoryError < BaseError; end
+
+  class ValidationError < BaseError; end
+
+  class ExternalServiceError < BaseError; end
 
   # ----------------------------
   # Generic
@@ -33,6 +45,12 @@ module Goodcity
   class BadOrMissingRecord < BaseError
     def initialize(klass)
       super(I18n.t('errors.bad_or_missing_record', klass: klass.to_s))
+    end
+  end
+
+  class ReadOnlyFieldError < BaseError
+    def initialize(field)
+      super(I18n.t('errors.read_only_field', field: field))
     end
   end
 
@@ -52,9 +70,22 @@ module Goodcity
   # I18n based errors
   # ----------------------------
 
-  def factory(base, translation_key, **opts)
-    Class.new(base) do
-      define_method(:initialize) { |i18n_data = {}| super(I18n.t(translation_key, i18n_data), **opts) }
+  def factory(base, default_translation_key, **opts)
+    error_klass = Class.new(base) do
+      define_method(:initialize) do |translation_key: default_translation_key, params: {}|
+        msg = I18n.t(translation_key, { **params, default: translation_key })
+        super(msg, **opts)
+      end
+
+      [
+        :with_text,
+        :with_translation
+      ].each do |name|
+        define_singleton_method(name) do |translation_key, params: {}|
+          translation_key = default_translation_key if translation_key.blank?
+          error_klass.new(translation_key: translation_key, params: params)
+        end
+      end
     end
   end
 
@@ -63,6 +94,15 @@ module Goodcity
   InventorizedPackageError        = factory(BaseError, 'package.cannot_delete_inventorized')
   DisabledFeatureError            = factory(BaseError, 'goodcity.disabled_feature')
   DuplicateRecordError            = factory(BaseError, 'errors.duplicate_error', status: 409)
+  InvalidParamsError              = factory(BaseError, 'errors.invalid_params', status: 422)
+  NotFoundError                   = factory(BaseError, 'errors.not_found', status: 404)
+  ForeignKeyMismatchError         = factory(BaseError, 'errors.foreign_key_mismatch_violation', status: 409)
+  ForeignKeyDeletionError         = factory(BaseError, 'errors.foreign_key_delete_violation', status: 409)
+
+  AccessDeniedError               = factory(AccessError, 'errors.forbidden', status: 403)
+  UnauthorizedError               = factory(AccessError, 'warden.unauthorized', status: 401)
+  InvalidCredentialsError         = factory(AccessError, 'organisations_user_builder.invalid.user', status: 401)
+  InvalidPinError                 = factory(AccessError, 'auth.invalid_pin', status: 401)
 
   UnprocessedError                = factory(OperationsError, 'operations.dispatch.unprocessed_order')
   AlreadyDispatchedError          = factory(OperationsError, 'orders_package.quantity_already_dispatched')

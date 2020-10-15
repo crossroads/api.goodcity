@@ -1,4 +1,4 @@
-class UpdateJoinTablesToSubscriptions < ActiveRecord::Migration
+class UpdateJoinTablesToSubscriptions < ActiveRecord::Migration[4.2]
   def change
     drop_table :subscriptions
     create_table :subscriptions do |t|

@@ -6,37 +6,49 @@ end
 
 describe TokenValidatableFakeController do
 
-  let(:token) { Token.new }
+  let(:api_jwt) { Token.new.generate_api_token({}) }
+  let(:otp_jwt) { Token.new.generate_otp_token({}) }
+  let(:api_token) { Token.new(bearer: api_jwt) }
+  let(:otp_token) { Token.new(bearer: otp_jwt) }
   let(:user) { create :user, disabled: false }
   let(:disabled_user) { create :user, disabled: true }
 
-  before do
-    expect(Token).to receive(:new).and_return(token)
-  end
-
   describe "validate_token" do
 
-    describe "with valid token" do
+    describe "with valid API token" do
       before do
-        expect(token).to receive(:valid?).and_return(true)
+        expect(Token).to receive(:new).and_return(api_token)
+        expect(api_token).to receive(:valid?).and_return(true)
       end
       it "should be authorized with enabled user" do
         User.current_user = user
-        expect{ subject.send(:validate_token) }.to_not throw_symbol(:warden)
+        expect{ subject.send(:validate_token) }.to_not raise_error(Goodcity::UnauthorizedError)
+      end
+    end
+
+    describe "with valid OTP token" do
+      before do
+        expect(Token).to receive(:new).and_return(otp_token)
+        expect(otp_token).to receive(:valid?).and_return(true)
+      end
+      it "should throw unauthorized error" do
+        User.current_user = user
+        expect{ subject.send(:validate_token) }.to raise_error(Goodcity::UnauthorizedError)
       end
     end
 
     describe "with invalid token" do
       before do
-        expect(token).to receive(:valid?).and_return(false)
+        expect(Token).to receive(:new).and_return(api_token)
+        expect(api_token).to receive(:valid?).and_return(false)
       end
       it "should throw unauthorized error if user is enabled" do
         User.current_user = user
-        expect{ subject.send(:validate_token) }.to throw_symbol(:warden)
+        expect{ subject.send(:validate_token) }.to raise_error(Goodcity::UnauthorizedError)
       end
       it "should throw unauthorized error if user is disabled" do
         User.current_user = disabled_user
-        expect{ subject.send(:validate_token) }.to throw_symbol(:warden)
+        expect{ subject.send(:validate_token) }.to raise_error(Goodcity::UnauthorizedError)
       end
     end
 

@@ -7,9 +7,5 @@ module Api::V1
     def item_id
       object.imageable_id
     end
-
-    def item_id__sql
-      "imageable_id"
-    end
   end
 end

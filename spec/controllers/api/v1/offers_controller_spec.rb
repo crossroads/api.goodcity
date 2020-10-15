@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::OffersController, type: :controller do
-
   before { allow_any_instance_of(PushService).to receive(:notify) }
   let(:user) { create(:user, :with_token) }
   let(:reviewer) { create(:user, :with_can_manage_offers_permission, role_name: 'Reviewer') }
@@ -16,14 +15,16 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET offers" do
-    before { generate_and_set_token(reviewer) }
+    before(:each) do
+      generate_and_set_token(reviewer)
+    end
     it "returns 200" do
       get :index
       expect(response.status).to eq(200)
     end
 
     it "return serialized offers", :show_in_doc do
-      2.times{ create :offer }
+      2.times { create :offer }
       get :index
       body = JSON.parse(response.body)
       expect( body['offers'].size ).to eq(2)
@@ -33,7 +34,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "is 'false'" do
         offer1 = create(:offer, :with_messages)
         expect(offer1.messages.size).to eql(1)
-        get :index, exclude_messages: "false"
+        get :index, params: { exclude_messages: "false" }
         expect(assigns(:offers).to_a).to eql([offer1])
         expect(response.body).to include(offer1.messages.first.body)
       end
@@ -41,7 +42,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "is 'true'" do
         offer1 = create(:offer, :with_messages)
         expect(offer1.messages.size).to eql(1)
-        get :index, exclude_messages: "true"
+        get :index, params: { exclude_messages: "true" }
         expect(assigns(:offers).to_a).to eql([offer1])
         expect(response.body).to_not include(offer1.messages.first.body)
       end
@@ -58,14 +59,14 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "returns offers in the submitted state" do
         offer1 = create(:offer, state: "submitted")
         offer2 = create(:offer, state: "draft")
-        get :index, states: ["submitted"]
+        get :index, params: { states: ["submitted"] }
         expect(assigns(:offers).to_a).to eql([offer1])
       end
 
       it "returns offers in the active states" do
         offer1 = create(:offer, state: "draft")
         offer2 = create(:offer, state: "closed")
-        get :index, states: ["active"]
+        get :index, params: { states: ["active"] }
         subject = assigns(:offers).to_a
         expect(subject).to include(offer1)
         expect(subject).to_not include(offer2)
@@ -85,7 +86,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "returns offers created by this user" do
         offer1 = create(:offer)
         offer2 = create(:offer)
-        get :index, created_by_id: offer1.created_by_id
+        get :index, params: { created_by_id: offer1.created_by_id }
         expect(assigns(:offers).to_a).to eql([offer1])
       end
 
@@ -123,7 +124,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "returns offers reviewed by this user" do
         offer1 = create(:offer, reviewed_by: user)
         offer2 = create(:offer)
-        get :index, reviewed_by_id: offer1.reviewed_by_id
+        get :index, params: { reviewed_by_id: offer1.reviewed_by_id }
         expect(assigns(:offers).to_a).to eql([offer1])
       end
     end
@@ -134,20 +135,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       before { generate_and_set_token(supervisor) }
 
       it "should return a 200" do
-        get :index, summarize: 'true'
+        get :index, params: { summarize: 'true' }
         expect(response.status).to eq(200)
       end
 
       it "should return the orders with the users associations" do
         2.times{ create :offer }
-        get :index, summarize: 'true'
+        get :index, params: { summarize: 'true' }
         body = JSON.parse(response.body)
         expect( body['offers'].size ).to eq(2)
         expect( body['user'] ).not_to be_nil
       end
 
       it "should not return items or messages (to avoid a large payload)" do
-        get :index, summarize: 'true'
+        get :index, params: { summarize: 'true' }
         body = JSON.parse(response.body)
         expect(body).not_to include('items')
         expect(body).not_to include('messages')
@@ -158,7 +159,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   describe "GET offers/1" do
     before { generate_and_set_token(user) }
     it "returns 200" do
-      get :show, id: offer.id
+      get :show, params: { id: offer.id }
       expect(response.status).to eq(200)
     end
 
@@ -169,7 +170,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       let!(:order_message) { create(:message, :with_order, sender: user) }
 
       it 'expects to include messages related only to item' do
-        get :show, id: offer.id
+        get :show, params: { id: offer.id }
         expect(parsed_body['messages'].count).to eq(2)
         expect(parsed_body['messages'].map { |p| p['messageable_type'] }).to include('Offer', 'Item')
         expect(parsed_body['messages'].map { |p| p['messageable_id'] }).to include(offer.id, item.id)
@@ -184,7 +185,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
     before { generate_and_set_token(user) }
     it "returns 201", :show_in_doc do
-      post :create, offer: offer_params
+      post :create, params: { offer: offer_params }, as: :json
       expect(response.status).to eq(201)
     end
 
@@ -196,20 +197,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       context "as a user" do
         before { generate_and_set_token(user) }
         it "ignores the created_by_id param" do
-          post :create, offer: offer_params
+          post :create, params: { offer: offer_params }, as: :json
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(user)
         end
 
         it "ignore posted properties that require elevated rights" do
-          post :create, offer: {
+          post :create, params: { offer: {
             reviewed_by_id: reviewer.id,
             reviewed_at: yesterday.to_s,
             state: "under_review",
             submitted_at: nil,
             created_by_id: nil,
             language: 'zh-tw'
-          }
+          } }
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(user)
           expect(created_offer.reviewed_by_id).to eq(nil)
@@ -224,20 +225,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       context "as a supervisor" do
         before { generate_and_set_token(supervisor) }
         it "ignores sets the created_by_id property to the defined value" do
-          post :create, offer: offer_params
+          post :create, params: { offer: offer_params }, as: :json
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
         end
 
         it "sets all the properties correctly" do
-          post :create, offer: {
+          post :create, params: { offer: {
             reviewed_by_id: reviewer.id,
             reviewed_at: yesterday.to_s,
-            state: "under_review",
+            state: 'under_review',
             submitted_at: nil,
             created_by_id: nil,
             language: 'zh-tw'
-          }
+          } }
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
           expect(created_offer.reviewed_by_id).to eq(reviewer.id)
@@ -252,20 +253,20 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       context "as a reviewer" do
         before { generate_and_set_token(reviewer) }
         it "ignores sets the created_by_id property to the defined value" do
-          post :create, offer: offer_params
+          post :create, params: { offer: offer_params }, as: :json
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
         end
 
         it "sets all the properties correctly" do
-          post :create, offer: {
+          post :create, params: { offer: {
             reviewed_by_id: supervisor.id,
             reviewed_at: yesterday.to_s,
             state: "under_review",
             submitted_at: nil,
             created_by_id: nil,
             language: 'zh-tw'
-          }
+          } }
           expect(response.status).to eq(201)
           expect(created_offer.created_by).to eq(nil)
           expect(created_offer.reviewed_by_id).to eq(supervisor.id)
@@ -285,7 +286,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "owner can submit", :show_in_doc do
         extra_params = { state_event: 'submit', saleable: true}
         expect(offer).to be_draft
-        put :update, id: offer.id, offer: offer_params.merge(extra_params)
+        put :update, params: { id: offer.id, offer: offer_params.merge(extra_params) }, as: :json
         expect(response.status).to eq(200)
         expect(offer.reload).to be_submitted
       end
@@ -297,7 +298,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       before { generate_and_set_token(reviewer) }
       it "can review", :show_in_doc do
         expect(submitted_offer).to be_submitted
-        put :review, id: submitted_offer.id
+        put :review, params: { id: submitted_offer.id }
         expect(response.status).to eq(200)
         expect(submitted_offer.reload).to be_under_review
       end
@@ -318,7 +319,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       before { generate_and_set_token(reviewer) }
       it "can complete review", :show_in_doc do
         expect(in_review_offer).to be_under_review
-        put :complete_review, id: in_review_offer.id, offer: offer_attributes, complete_review_message: "test"
+        put :complete_review, params: { id: in_review_offer.id, offer: offer_attributes,  complete_review_message: "test" }
         expect(response.status).to eq(200)
         expect(in_review_offer.reload).to be_reviewed
         expect(in_review_offer.crossroads_transport).to eq(crossroads_transport)
@@ -332,7 +333,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "can close offer", :show_in_doc do
         expect(in_review_offer).to be_under_review
         expect {
-          put :close_offer, id: in_review_offer.id, complete_review_message: "test"
+          put :close_offer, params: { id: in_review_offer.id, complete_review_message: "test" }
           }.to change(in_review_offer.messages, :count).by(1)
         expect(response.status).to eq(200)
         expect(in_review_offer.reload).to be_closed
@@ -346,7 +347,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       it "can close offer", :show_in_doc do
         expect(in_review_offer).to be_under_review
         expect {
-          put :receive_offer, id: in_review_offer.id, close_offer_message: "test"
+          put :receive_offer, params: { id: in_review_offer.id, close_offer_message: "test" }
         }.to change(in_review_offer.messages, :count).by(1)
         expect(response.status).to eq(200)
         expect(in_review_offer.reload).to be_received
@@ -364,7 +365,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       let(:scheduled_offer) { create :offer, :scheduled, :with_items, created_by: donor }
 
       it "can merge offer", :show_in_doc do
-        put :merge_offer, id: merge_offer.id, base_offer_id: base_offer.id
+        put :merge_offer, params: { id: merge_offer.id, base_offer_id: base_offer.id }
         expect(response.status).to eq(200)
         expect(JSON.parse(response.body)["status"]).to eq(true)
         expect{
@@ -373,7 +374,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       end
 
       it "can not merge offer when scheduled", :show_in_doc do
-        put :merge_offer, id: scheduled_offer.id, base_offer_id: base_offer.id
+        put :merge_offer, params: { id: scheduled_offer.id, base_offer_id: base_offer.id }
         expect(response.status).to eq(200)
         expect(JSON.parse(response.body)["status"]).to eq(false)
       end
@@ -384,7 +385,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     context "donor" do
       before { generate_and_set_token(user) }
       it "returns 200", :show_in_doc do
-        delete :destroy, id: offer.id
+        delete :destroy, params: { id: offer.id }
         expect(response.status).to eq(200)
         body = JSON.parse(response.body)
         expect(body).to eq( {} )
@@ -394,7 +395,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
     context "reviewer" do
       before { generate_and_set_token(reviewer) }
       it "can delete offer", :show_in_doc do
-        delete :destroy, id: in_review_offer.id
+        delete :destroy, params: { id: in_review_offer.id }
         expect(response.status).to eq(200)
         body = JSON.parse(response.body)
         expect(body).to eq( {} )
@@ -430,25 +431,25 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       }
 
       it "return only offers with the specified states in params" do
-        get :search, searchText: 'Test', state: "submitted"
+        get :search, params: { searchText: 'Test', state: "submitted" }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)
       end
 
       it "return offer with multiple states specified in params" do
-        get :search, searchText: 'Test', state: 'submitted,under_review'
+        get :search, params: { searchText: 'Test', state: 'submitted,under_review' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(3)
       end
 
       it "returns offers in priority" do
-        get :search, searchText: 'Test', state: 'reviewed,under_review,submitted', priority: true
+        get :search, params: { searchText: 'Test', state: 'reviewed,under_review,submitted', priority: true }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
       end
 
       it "returns all offers if no states speicified in params" do
-        get :search, searchText: 'Test', state: 'submitted,under_review'
+        get :search, params: { searchText: 'Test', state: 'submitted,under_review' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(3)
       end
@@ -470,14 +471,14 @@ RSpec.describe Api::V1::OffersController, type: :controller do
 
       it 'can return offers scheduled after a certain time' do
         after = epoch_ms(Time.zone.now - 4.day)
-        get :search, searchText: 'Test', after: after
+        get :search, params: { searchText: 'Test', after: after }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
       end
 
       it 'can return offers scheduled before a certain time' do
         before = epoch_ms(Time.zone.now)
-        get :search, searchText: 'Test', before: before
+        get :search, params: { searchText: 'Test', before: before }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)
       end
@@ -494,25 +495,25 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       }
 
       it "can return offers in descending order if 'sort_type' is 'created_at_desc' in params" do
-        get :search, sort_column: 'created_at', is_desc: true
+        get :search, params: { sort_column: 'created_at', is_desc: true }
         expect(response.status).to eq(200)
         expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer1.id, scheduled_offer.id])
       end
 
       it "can return offers in ascending order if 'sort_type' is 'created_at_asc' in params" do
-        get :search, sort_column: 'created_at'
+        get :search, params: { sort_column: 'created_at' }
         expect(response.status).to eq(200)
         expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer.id, scheduled_offer1.id])
       end
 
       it "can return offers in descending order if 'sort_type' is 'scheduled_at_desc' in params" do
-        get :search, sort_column: 'schedules.scheduled_at', is_desc: true
+        get :search, params: { sort_column: 'schedules.scheduled_at', is_desc: true }
         expect(response.status).to eq(200)
         expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer1.id, scheduled_offer.id])
       end
 
       it "can return offers in descending order if 'sort_type' is 'scheduled_at_asc' in params" do
-        get :search, sort_column: 'schedules.scheduled_at'
+        get :search, params: { sort_column: 'schedules.scheduled_at' }
         expect(response.status).to eq(200)
         expect(subject["offers"].map{|offer| offer["id"]}).to eq([scheduled_offer.id, scheduled_offer1.id])
       end
@@ -528,19 +529,19 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       }
 
       it "returns recent_offers if 'recent_offers' is present in params" do
-        get :search, recent_offers:true, state: 'submitted'
+        get :search, params: { recent_offers:true, state: 'submitted' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(3)
       end
 
       it "returns recent_offers according to 'recent_offer_count' param" do
-        get :search, recent_offer_count:2, recent_offers:true, state: 'submitted'
+        get :search, params: { recent_offer_count:2, recent_offers:true, state: 'submitted' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
       end
 
       it "returns recent_offers sorted in most recent order" do
-        get :search, recent_offer_count:2, recent_offers:true, state: 'submitted'
+        get :search, params: { recent_offer_count:2, recent_offers:true, state: 'submitted' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
         expect(subject['offers'].first["id"]).to eq(submitted_offer2.id)
@@ -562,32 +563,32 @@ RSpec.describe Api::V1::OffersController, type: :controller do
       }
 
       it "returns offers created by logged in user if selfReview is present in params" do
-        get :search, searchText: 'Test', selfReview: true
+        get :search, params: { searchText: 'Test', selfReview: true }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)
       end
 
       it "returns offers by all users" do
-        get :search, searchText: 'Test'
+        get :search, params: { searchText: 'Test' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(3)
       end
 
       it "returns offers with notifications" do
-        get :search, with_notifications: 'all'
+        get :search, params: { with_notifications: 'all' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(2)
       end
 
       it "returns offers with unread notifications" do
-        get :search, with_notifications: 'unread'
+        get :search, params: { with_notifications: 'unread' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)
         expect(subject['offers'][0]['id']).to eq(receiving_offer.id)
       end
 
       it "returns offers with read notifications" do
-        get :search, with_notifications: 'read'
+        get :search, params: { with_notifications: 'read' }
         expect(response.status).to eq(200)
         expect(subject['offers'].size).to eq(1)
         expect(subject['offers'][0]['id']).to eq(reviewing_offer.id)
@@ -647,7 +648,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         let!(:offer2) { create :offer, :submitted, notes: 'Tester' }
         let!(:offer3) { create :offer, :submitted, notes: 'Empty' }
         it do
-          get :search, searchText: 'Test'
+          get :search, params: { searchText: 'Test' }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eql(2)
         end
@@ -658,29 +659,29 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         let!(:offer2) { create :offer, :submitted, created_by: (create :user, first_name: 'Tester') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, first_name: 'Empty') }
         it do
-          get :search, searchText: 'Test'
+          get :search, params: { searchText: 'Test' }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end
       end
 
       context "user.last_name" do
-        let!(:offer1) { create :offer, :submitted, created_by: (create :user, last_name: 'Test') }
-        let!(:offer2) { create :offer, :submitted, created_by: (create :user, last_name: 'Tester') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, last_name: 'Zexy Desperado') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, last_name: 'Fearless Desperado') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, last_name: 'Empty') }
         it do
-          get :search, searchText: 'Test'
+          get :search, params: { searchText: 'despera' }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end
       end
 
       context "user.email" do
-        let!(:offer1) { create :offer, :submitted, created_by: (create :user, email: 'mr_test@example.com') }
-        let!(:offer2) { create :offer, :submitted, created_by: (create :user, email: 'mr_tester@example.com') }
+        let!(:offer1) { create :offer, :submitted, created_by: (create :user, email: 'dynamic_menace@example.com') }
+        let!(:offer2) { create :offer, :submitted, created_by: (create :user, email: 'dynamic_intimidation@example.com') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, email: 'mr_empty@example.com') }
         it do
-          get :search, searchText: 'Test'
+          get :search, params: { searchText: 'dynam' }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end
@@ -691,13 +692,11 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         let!(:offer2) { create :offer, :submitted, created_by: (create :user, mobile: '+85251111112') }
         let!(:offer3) { create :offer, :submitted, created_by: (create :user, mobile: '+85253333333') }
         it do
-          get :search, searchText: '5111111'
+          get :search, params: { searchText: '5111111' }
           expect(response.status).to eq(200)
           expect(subject['offers'].size).to eq(2)
         end
       end
-
     end
   end
-
 end

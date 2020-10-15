@@ -1,4 +1,4 @@
-class AddMedicalSubform < ActiveRecord::Migration
+class AddMedicalSubform < ActiveRecord::Migration[4.2]
   def change
     create_table :medicals do |t|
       t.string :serial_number

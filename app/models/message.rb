@@ -1,5 +1,5 @@
-class Message < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :messageable }
+class Message < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :messageable }
 
   include Paranoid
   include StateMachineScope
@@ -14,13 +14,6 @@ class Message < ActiveRecord::Base
   has_many :offers_subscription, class_name: "Offer", through: :subscriptions, source: :subscribable, source_type: "Offer"
 
   validates :body, presence: true
-
-  default_scope do
-    unless User.current_user.try(:can_manage_private_messages?)
-      where(is_private: false)
-    end
-  end
-
   scope :with_eager_load, -> { includes([:sender]) }
   scope :non_private, -> { where(is_private: false) }
   scope :with_state_for_user, ->(user, state) { joins(:subscriptions).where("subscriptions.user_id = ? and subscriptions.state = ?", user.id, state) }
@@ -40,6 +33,12 @@ class Message < ActiveRecord::Base
   end
 
   after_destroy :notify_deletion_to_subscribers
+
+  def self.default_scope
+    return if User.current_user.try(:can_manage_private_messages?)
+
+    where('is_private = false')
+  end
 
   def parsed_body
     return body if lookup.empty?

@@ -1,9 +1,9 @@
 module Api::V1
   class DonorConditionSerializer < ApplicationSerializer
-    attributes :id, :name, :visible_to_donor
+    attributes :id, :visible_to_donor, :name
 
-    def name__sql
-      "name_#{current_language}"
+    def name
+      object.try("name_#{current_language}".to_sym)
     end
   end
 end

@@ -1,4 +1,4 @@
-class IdentityType < ActiveRecord::Base
+class IdentityType < ApplicationRecord
   include CacheableJson
 
   translates :name

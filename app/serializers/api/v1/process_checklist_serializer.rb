@@ -3,8 +3,8 @@ module Api::V1
     embed :ids, include: true
     attributes :id, :text, :booking_type_id
 
-    def text__sql
-      "text_#{current_language}"
+    def text
+      object.try("text_#{current_language}".to_sym)
     end
   end
 end

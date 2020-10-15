@@ -1,4 +1,4 @@
-class AddLookupToMessages < ActiveRecord::Migration
+class AddLookupToMessages < ActiveRecord::Migration[4.2]
   def change
     add_column :messages, :lookup, :jsonb, default: '{}'
 

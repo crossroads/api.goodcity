@@ -12,16 +12,8 @@ module Api::V1
       object.need_over_6ft
     end
 
-    def need_over_six_ft__sql
-      "need_over_6ft"
-    end
-
     def designation_id
       object.order_id
-    end
-
-    def designation_id__sql
-      "order_id"
     end
   end
 end

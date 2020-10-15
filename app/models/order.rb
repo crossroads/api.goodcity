@@ -1,5 +1,5 @@
-class Order < ActiveRecord::Base
-  has_paper_trail class_name: "Version"
+class Order < ApplicationRecord
+  has_paper_trail versions: { class_name: "Version" }
   include PushUpdatesMinimal
   include OrderFiltering
 
@@ -41,8 +41,8 @@ class Order < ActiveRecord::Base
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
-  has_many :process_checklists, through: :orders_process_checklists
   has_many :orders_process_checklists, inverse_of: :order
+  has_many :process_checklists, through: :orders_process_checklists
 
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
 
@@ -86,6 +86,8 @@ class Order < ActiveRecord::Base
   }.freeze
 
   scope :non_draft_orders, -> { where.not("orders.state = 'draft' AND detail_type = 'GoodCity'") }
+
+  scope :closed, -> { where(state: 'closed') }
 
   scope :with_eager_load, -> {
           includes([:subscriptions, :order_transport,

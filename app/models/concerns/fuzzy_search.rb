@@ -7,14 +7,33 @@ module FuzzySearch
     #
     # Configuration of fuzzy search
     #
-    # @param [string[]] props array of columns to search against
+    # @param [Array<Symbol|Hash>] props array of columns to search against
     # @param [float] tolerance the tolerance of the search between 0 and 1 \
-    #     1 requires a perfect match and 0 lets any similarity through
+    #     0 requires a perfect match and 1 lets any similarity through
     #
-    def configure_search(props: [], tolerance: 0.1)
-      @search_props ||= []
-      @search_props = (@search_props << props).flatten
-      @similarity_threshold = tolerance
+    def configure_search(props: [], default_tolerance: 0.9)
+      @default_tolerance  = default_tolerance
+      @search_config      = normalize_seach_configuration(props)
+    end
+
+    def search_configuration
+      return @search_config if @search_config.present?
+
+      @schema_based_search_config ||= begin
+        props = columns.select { |c| c.type == :string }.map(&:name)
+        normalize_seach_configuration(props)
+      end
+    end
+
+    def normalize_seach_configuration(props)
+      props.reduce({}) do |cfg, prop|
+        prop_name = prop.is_a?(Symbol) ? prop : prop[:field]
+        tolerance = prop.is_a?(Hash)   ? prop[:tolerance] : default_search_tolerance
+        cfg[prop_name] = {
+          threshold: search_tolerance_to_similarity_threshold(tolerance || default_search_tolerance)
+        }
+        cfg
+      end
     end
 
     ##
@@ -22,8 +41,17 @@ module FuzzySearch
     #
     # @return [float]
     #
-    def similarity_threshold
-      @similarity_threshold.present? ? @similarity_threshold : 0.1
+    def default_search_tolerance
+      @default_tolerance || 0.9
+    end
+
+    ##
+    # Returns the search similarity factor based on the set tolerance
+    #
+    # @return [float]
+    #
+    def search_tolerance_to_similarity_threshold(tolerance)
+      1 - tolerance
     end
 
     ##
@@ -31,9 +59,8 @@ module FuzzySearch
     #
     # @return [string[]]
     #
-    def search_props
-      return @search_props unless @search_props.blank?
-      columns.select { |c| c.type == :string }.map(&:name)
+    def search_prop_names
+      search_configuration.keys
     end
   end
 
@@ -63,16 +90,19 @@ module FuzzySearch
     #     SIMILARITY(name_en, 'steve') DESC,
     #     SIMILARITY(name_zh_tw, 'steve') DESC
     #
-    scope :search, -> (search_text) {
-      similarities = search_props.map { |f| "SIMILARITY(#{f}, #{sanitize(search_text)})" }
+    scope :search, ->(search_text) {
+      similarities = search_prop_names.reduce({}) do |sims, f|
+        sims[f] = "SIMILARITY(#{f}, '#{search_text}')"
+        sims
+      end 
 
-      select_list = similarities + ["#{table_name}.*"]
-      conditions = similarities.map { |s| "#{s} > #{similarity_threshold}" }
-      ordering = similarities.map { |s| "#{s} DESC" }
+      select_list = similarities.values + ["#{table_name}.*"]
+      conditions  = similarities.map { |f, s| "#{s} >= #{search_configuration[f][:threshold]}" }
+      ordering    = similarities.values.map { |s| "#{s} DESC" }
 
-      select(select_list.join(','))
-        .where(conditions.join(' OR '))
-        .order(ordering.join(','))
+      select(Arel.sql(select_list.join(',')))
+        .where(Arel.sql(conditions.join(' OR ')))
+        .order(Arel.sql(ordering.join(',')))
         .distinct
     }
   end

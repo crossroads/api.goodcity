@@ -135,9 +135,9 @@ module StockOperations
       package.reload
     end
 
-    def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task: )
+    def pack_or_unpack(container:, package: ,location_id:, quantity: , user_id:, task:, strict: true)
       package.inventory_lock do
-        raise Goodcity::ActionNotAllowedError.new unless PackUnpack.action_allowed?(task)
+        raise Goodcity::ActionNotAllowedError.new unless !strict || PackUnpack.action_allowed?(task)
         PackUnpack.new(container, package, location_id, quantity, user_id).public_send(task)
       end
     end
@@ -151,20 +151,34 @@ module StockOperations
         @user_id = user_id
       end
 
-      # @TODO Raise Goodcity errors instead of returning json
-      def pack
-        return error(I18n.t("box_pallet.errors.adding_box_to_box")) if adding_box_to_a_box?
-        return error(I18n.t("box_pallet.errors.disable_addition")) unless addition_allowed?
-        return error(I18n.t("box_pallet.errors.invalid_quantity")) if invalid_quantity?
+      def pack!
+        raise Goodcity::ActionNotAllowedError.with_translation("box_pallet.errors.adding_box_to_box") if adding_box_to_a_box?
+        raise Goodcity::ActionNotAllowedError.with_translation("box_pallet.errors.disable_addition")  unless addition_allowed?
+        raise Goodcity::InsufficientQuantityError.new(@quantity)                                      if invalid_quantity?
 
         pkg_inventory = pack_or_unpack(PackagesInventory::Actions::PACK)
+        pkg_inventory
+      end
+
+      def unpack!
+        raise Goodcity::ActionNotAllowedError.with_translation("box_pallet.errors.disable_if_unavailable") unless operation_allowed?
+
+        pkg_inventory = pack_or_unpack(PackagesInventory::Actions::UNPACK)
+        pkg_inventory
+      end
+
+      def pack
+        pkg_inventory = pack!
         response(pkg_inventory)
+      rescue Goodcity::BaseError => e
+        error(e.message)
       end
 
       def unpack
-        return error(I18n.t("box_pallet.errors.disable_if_unavailable")) unless operation_allowed?
-        pkg_inventory = pack_or_unpack(PackagesInventory::Actions::UNPACK)
+        pkg_inventory = unpack!
         response(pkg_inventory)
+      rescue Goodcity::BaseError => e
+        error(e.message)
       end
 
       private
@@ -216,6 +230,7 @@ module StockOperations
 
       def response(pkg_inventory)
         return unless pkg_inventory
+
         if pkg_inventory.save
           { packages_inventory: pkg_inventory, success: true }
         elsif pkg_inventory.errors
@@ -228,6 +243,5 @@ module StockOperations
         @package.box? && @cause.box?
       end
     end
-
   end
 end

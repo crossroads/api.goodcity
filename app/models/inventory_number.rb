@@ -1,4 +1,4 @@
-class InventoryNumber < ActiveRecord::Base
+class InventoryNumber < ApplicationRecord
   include RollbarSpecification
 
   validates :code, presence: true, uniqueness: true
@@ -16,14 +16,14 @@ class InventoryNumber < ActiveRecord::Base
     number.to_s.rjust(6, "0")
   end
 
-  # Find the first gap in the sequence of inventory_numbers 
+  # Find the first gap in the sequence of inventory_numbers
   #   in the Packages and InventoryNumbers tables and return the lowest
   def self.first_missing_code
     # Laws of numerical analysis dictate that if there is a gap in a sequence
     #   the first one will always be contained within this upper bound of table sizes.
     # This enables us to put an upper limit on the series generation
     #   and avoid slower than necessary queries.
-    max_count = [self.count, Package.count].max 
+    max_count = [self.count, Package.count].max
     reg = %r/^\d+$/ # ruby '\' quoting makes it hard to inject regex in SQL query strings
     sql_for_missing_code = sanitize_sql_array([%{
       SELECT s.i AS first_missing_code
@@ -31,7 +31,7 @@ class InventoryNumber < ActiveRecord::Base
       WHERE NOT EXISTS (
         SELECT 1 FROM (
           SELECT inventory_number FROM packages WHERE inventory_number ~ :term
-          UNION 
+          UNION
           SELECT code AS inventory_number FROM inventory_numbers
         ) AS inventory_number
       WHERE CAST(inventory_number AS INTEGER) = s.i)

@@ -25,12 +25,12 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
 
   describe 'GET medical' do
     it 'returns 200' do
-      get :show, id: @medical.id
+      get :show, params: { id: @medical.id }
       expect(response).to have_http_status(:success)
     end
 
     it 'includes country in the response' do
-      get :show, id: @medical.id
+      get :show, params: { id: @medical.id }
       expect(@parsed_with_country).to eq(JSON.parse(response.body))
     end
   end
@@ -38,14 +38,14 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
   describe 'PUT medical' do
     it 'returns 200' do
       allow(Stockit::ItemDetailSync).to receive(:update).with(@medical).and_return('status' => 201)
-      put :update, id: @medical.id, medical: { brand: 'Apollo' }
+      put :update, params: { id: @medical.id, medical: { brand: 'Apollo' } }
       expect(response).to have_http_status(:success)
     end
 
     it 'updates the field' do
       brand = 'Apollo'
       allow(Stockit::ItemDetailSync).to receive(:update).with(@medical).and_return("status" => 201)
-      put :update, id: @medical.id, medical: { brand: "Apollo" }
+      put :update, params: { id: @medical.id, medical: { brand: 'Apollo' } }
       expect(@medical.reload.brand).to eq(brand.downcase)
     end
   end
@@ -53,7 +53,7 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
   describe 'DESTROY medical' do
     it 'deletes the record' do
       expect{
-        delete :destroy, id: @medical.id
+        delete :destroy, params: { id: @medical.id }
       }.to change(Medical, :count).by(-1)
       expect(response).to have_http_status(:success)
       expect(response.body).to eq('{}')

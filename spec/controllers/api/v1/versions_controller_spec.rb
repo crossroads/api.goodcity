@@ -12,12 +12,12 @@ RSpec.describe Api::V1::VersionsController, type: :controller do
   describe "GET version" do
     before { generate_and_set_token(supervisor) }
     it "returns 200" do
-      get :show, id: version_1.id
+      get :show, params: { id: version_1.id }
       expect(response.status).to eq(200)
     end
 
     it "return serialized address", :show_in_doc do
-      get :show, id: version_1.id
+      get :show, params: { id: version_1.id }
       expect(subject["version"]["id"]).to eq(version_1.id)
     end
   end
@@ -42,14 +42,14 @@ RSpec.describe Api::V1::VersionsController, type: :controller do
     context "For Admin app" do
       it 'returns records as per item_id and event must be one of admin_called, donor_called or call_accepted if for_offers parameter is present in request' do
         set_admin_app_header
-        get :index, for_offer: true, item_id: supervisor_offer.id
+        get :index, params: { for_offer: true, item_id: supervisor_offer.id }
         expect(subject['versions'].length).to eq(1)
         expect(subject['versions'][0]['id']).to eq(version_1.id)
       end
 
       it 'returns records as per item_id if for_items parameter is present in request' do
         set_admin_app_header
-        get :index, for_item: true, item_id: supervisor_offer.items.first.id
+        get :index, params: { for_item: true, item_id: supervisor_offer.items.first.id }
         expect(subject['versions'].length).to eq(1)
         expect(subject['versions'][0]['id']).to eq(version_2.id)
       end

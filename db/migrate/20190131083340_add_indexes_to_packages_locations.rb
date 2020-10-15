@@ -1,4 +1,4 @@
-class AddIndexesToPackagesLocations < ActiveRecord::Migration
+class AddIndexesToPackagesLocations < ActiveRecord::Migration[4.2]
   def change
     add_index :packages_locations, :reference_to_orders_package
     add_index :packages_locations, [:package_id, :location_id]#, unique: true

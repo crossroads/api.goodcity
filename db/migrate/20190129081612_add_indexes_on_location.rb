@@ -1,4 +1,4 @@
-class AddIndexesOnLocation < ActiveRecord::Migration
+class AddIndexesOnLocation < ActiveRecord::Migration[4.2]
   def up
     add_index :locations, :stockit_id
     execute "CREATE EXTENSION IF NOT EXISTS btree_gin;"

@@ -34,7 +34,7 @@ class SubscriptionsReminder
   end
 
   def send_sms_reminder(user)
-    sms_url = "#{Rails.application.secrets.base_urls['app']}/offers"
+    sms_url = "#{Rails.application.secrets.base_urls[:app]}/offers"
     TwilioService.new(user).send_unread_message_reminder(sms_url)
     Rails.logger.info(class: self.class.name, msg: "SMS reminder sent", user_id: user.id)
   end

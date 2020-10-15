@@ -1,4 +1,4 @@
-class AddCompletedAtToGogovanOrders < ActiveRecord::Migration
+class AddCompletedAtToGogovanOrders < ActiveRecord::Migration[4.2]
   def change
     add_column :gogovan_orders, :completed_at, :datetime
 

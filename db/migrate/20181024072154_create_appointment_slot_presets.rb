@@ -1,4 +1,4 @@
-class CreateAppointmentSlotPresets < ActiveRecord::Migration
+class CreateAppointmentSlotPresets < ActiveRecord::Migration[4.2]
   def change
     create_table :appointment_slot_presets do |t|
       t.integer :day

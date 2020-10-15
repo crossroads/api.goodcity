@@ -9,9 +9,15 @@ en:
     bad_request: Bad Request
     bad_or_missing_record: Invalid or missing %{klass}
     bad_or_missing_field: Invalid or empty field '%{field}'
+    read_only_field: The '%{field}' field cannot be modified
     expected_state: The following action can only be done on a %{state} %{subject}
     missing_params: Param '%{param}' is required
     duplicate_error: A record already exists
+    forbidden: Access Denied
+    invalid_credentials: Invalid credentials
+    invalid_params: Invalid or missing params
+    foreign_key_delete_violation: Another entity is dependent on the record you are trying to delete
+    foreign_key_mismatch_violation: A broken entity relationship has occurred
   warden:
     token_invalid: Invalid token
     token_expired: Expired token
@@ -29,6 +35,7 @@ en:
       adding_box_to_box: Cannot add a box to another box.
       disable_addition: Cannot add/remove designated/dispatched items.
       disable_if_unavailable: Cannot perform add/remove operations if box/pallet is dispatched.
+      cannot_change_type: Cannot change type of a box with items. Please remove the items and try again
   token:
     invalid: Invalid token
     expired: Expired token
@@ -57,6 +64,10 @@ en:
     attributes:
       user:
         mobile: "Mobile"
+        email: "Email"
+      organisation:
+        name_en: 'Name EN'
+        registration: 'Registration'
     errors:
       models:
         requested_package:
@@ -71,6 +82,15 @@ en:
             mobile:
               invalid: "is invalid"
               blank: "can't be blank"
+              taken: "has already been taken"
+            email:
+              blank: "can't be blank"
+              taken: "has already been taken."
+        organisation:
+          attributes:
+            name_en:
+              taken: 'is already been taken'
+
   notification:
     new_offer: New offer submitted by %{name}
     new_order: "New order from %{organisation_name_en}: %{contact_name}"
@@ -128,6 +148,7 @@ en:
       present: "User already exists in this organisation"
     invalid:
       user: The email or mobile already exists.
+      status: Invalid status.
   appointment_slots:
     already_exists: "An appointment slot already exists for this time"
   operations:

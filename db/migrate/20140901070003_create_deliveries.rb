@@ -1,4 +1,4 @@
-class CreateDeliveries < ActiveRecord::Migration
+class CreateDeliveries < ActiveRecord::Migration[4.2]
   def change
     create_table :deliveries do |t|
       t.integer  :offer_id

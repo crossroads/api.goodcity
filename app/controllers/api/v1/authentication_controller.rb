@@ -3,7 +3,7 @@ module Api
     class AuthenticationController < Api::V1::ApiController
       skip_before_action :validate_token, only: [:signup, :verify, :send_pin,
                                                  :current_user_rooms]
-      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms]
+      skip_authorization_check only: [:signup, :verify, :send_pin, :current_user_rooms, :hasura]
 
       resource_description do
         short "Handle user login and registration"
@@ -64,7 +64,7 @@ module Api
       error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
       error 500, "Internal Server Error"
       # Lookup user based on mobile. Validate mobile format first.
-      def send_pin
+      def send_pin   
         @mobile = Mobile.new(params[:mobile])
         unless @mobile.valid?
           return render_error(@mobile.errors.full_messages.join(". "))
@@ -143,9 +143,8 @@ module Api
       error 500, "Internal Server Error"
 
       def verify
-        @user = warden.authenticate(:pin)
+        @user = AuthenticationService.authenticate(params, strategy: :pin)
         if authenticated_user
-          @user.set_verified_flag(params[:pin_for])
           render json: {jwt_token: generate_token(user_id: @user.id), user: Api::V1::UserProfileSerializer.new(@user)}
         else
           render_error({pin: I18n.t("auth.invalid_pin")})
@@ -191,7 +190,7 @@ module Api
       end
 
       def authenticated_user
-        warden.authenticated? && (is_browse_app? || @user.allowed_login?(app_name))
+        @user.present? && (is_browse_app? || @user.allowed_login?(app_name))
       end
 
       # Generate a token that contains the otp_auth_key.
@@ -210,10 +209,6 @@ module Api
       def auth_params
         attributes = [:mobile, :first_name, :last_name, :email, address_attributes: [:district_id, :address_type]]
         params.require(:user_auth).permit(attributes)
-      end
-
-      def warden
-        request.env["warden"]
       end
 
       def valid_platform?

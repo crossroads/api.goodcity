@@ -1,9 +1,27 @@
-class User < ActiveRecord::Base
-  has_paper_trail class_name: "Version"
+class User < ApplicationRecord
+  has_paper_trail versions: { class_name: "Version" }
   include PushUpdates
   include RollbarSpecification
-  include UserSearch
   include ManageUserRoles
+  include FuzzySearch
+
+  # --------------------
+  # Configuration
+  # --------------------
+
+  configure_search(
+    props: [
+      :first_name,
+      :last_name,
+      :email,
+      :mobile
+    ],
+    default_tolerance: 0.8
+  )
+
+  # --------------------
+  # Relationships
+  # --------------------
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
@@ -17,14 +35,18 @@ class User < ActiveRecord::Base
 
   has_many :unread_subscriptions, -> { where state: "unread" }, class_name: "Subscription"
   has_many :offers_with_unread_messages, class_name: 'Offer', through: :unread_subscriptions, source: :subscribable, source_type: 'Offer'
+
   has_many :organisations_users
   has_many :organisations, through: :organisations_users
+  has_many :active_organisations_users, -> { where(status: OrganisationsUser::ACTIVE_STATUS) }, class_name: "OrganisationsUser"
+  has_many :active_organisations, class_name: "Organisation", through: :active_organisations_users, source: "organisation"
   has_many :printers_users
   has_many :printers, through: :printers_users
-  has_many :user_roles
+
+  has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
 
-  has_many :active_user_roles, -> { where("expiry_date IS NULL OR expiry_date >= ?", Time.now.in_time_zone) },
+  has_many :active_user_roles, -> { where("expires_at IS NULL OR expires_at >= ?", Time.now.in_time_zone) },
             class_name: "UserRole"
   has_many :active_roles, class_name: "Role", through: :active_user_roles, source: "role"
 
@@ -33,13 +55,14 @@ class User < ActiveRecord::Base
   has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
 
-  before_validation :downcase_email
-
   accepts_nested_attributes_for :address, allow_destroy: true
 
-  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, unless: :request_from_stock_without_mobile?
+  # --------------------
+  # Validations
+  # --------------------
 
-  validates :mobile, presence: true, unless: :request_from_stock_without_mobile?
+  validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: lambda { mobile.present? }
+  validates :mobile, presence: true, if: lambda { email.blank? }
   validates :mobile, uniqueness: true, if: lambda { mobile.present? }
 
   validates :email, allow_blank: true,
@@ -53,7 +76,19 @@ class User < ActiveRecord::Base
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
             allow_nil: true
 
-  after_create :generate_auth_token
+  # --------------------
+  # Lifecycle hooks
+  # --------------------
+
+  after_create :refresh_auth_token!
+
+  before_validation :downcase_email
+
+  before_destroy :delete_auth_tokens
+
+  # --------------------
+  # Scopes
+  # --------------------
 
   scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
   scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
@@ -63,13 +98,15 @@ class User < ActiveRecord::Base
   scope :order_administrators, -> { where(roles: { name: 'Order administrator' }).joins(:active_roles) }
   scope :system, -> { where(roles: {name: "System"}).joins(:active_roles) }
 
-  scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:active_roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:active_roles) }
-  scope :by_roles, ->(role_names) { where(roles: {name: role_names }).joins(:active_roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
-  scope :with_roles, ->(role_names) { where(roles: { name: role_names}).joins(:active_roles) }
+  scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
+
+  # --------------------
+  # Methods
+  # --------------------
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
@@ -124,8 +161,9 @@ class User < ActiveRecord::Base
   end
 
   def set_verified_flag(pin_for)
-    flag = pin_for.eql?('email') ? :is_email_verified : :is_mobile_verified
-    update_column(flag, true) unless send(flag)
+    return unless pin_for.present?
+    update_column(:is_email_verified, true)   if pin_for.to_sym.eql?(:email)
+    update_column(:is_mobile_verified, true)  if pin_for.to_sym.eql?(:mobile)
   end
 
   def self.recent_orders_created_for(user_id)
@@ -161,12 +199,12 @@ class User < ActiveRecord::Base
     @user_role_names ||= active_roles.pluck(:name)
   end
 
-  def reviewer?
-    user_role_names.include?("Reviewer") && @treat_user_as_donor != true
+  def top_role
+    roles.order('level DESC').first
   end
 
-  def charity?
-    user_role_names.include?("Charity")
+  def reviewer?
+    user_role_names.include?("Reviewer") && @treat_user_as_donor != true
   end
 
   def supervisor?
@@ -185,9 +223,12 @@ class User < ActiveRecord::Base
     user_role_names.include?('Stock administrator')
   end
 
+  def has_permission?(permssion)
+    user_permissions_names.include?(permssion)
+  end
+
   def can_disable_user?(id = nil)
-    user_permissions_names.include?("can_disable_user") &&
-    User.current_user.id != id&.to_i
+    has_permission?("can_disable_user") && User.current_user.id != id&.to_i
   end
 
   def can_manage_private_messages?
@@ -255,15 +296,24 @@ class User < ActiveRecord::Base
     props
   end
 
+  def delete_auth_tokens
+    AuthToken.where(user: self).destroy_all
+  end
+
+  def refresh_auth_token!
+    # Create new token
+    token = auth_tokens.create!(user_id: self.id)
+
+    # Delete old ones
+    AuthToken
+      .where(user: self)
+      .where.not(id: token.id)
+      .destroy_all
+
+    token
+  end
+
   private
-
-  def request_from_stock_without_mobile?
-    request_from_stock && mobile.blank? || request_from_browse && mobile.blank?
-  end
-
-  def generate_auth_token
-    auth_tokens.create(user_id: self.id)
-  end
 
   # required by PushUpdates module
   def offer

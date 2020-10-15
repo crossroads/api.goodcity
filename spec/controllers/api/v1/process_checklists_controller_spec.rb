@@ -8,7 +8,6 @@ RSpec.describe Api::V1::ProcessChecklistsController, type: :controller do
   let(:parsed_body) { JSON.parse(response.body) }
 
   describe "GET process_checklists" do
-
     describe 'as a user with can_manage_orders ability' do
       before { generate_and_set_token(manager) }
 

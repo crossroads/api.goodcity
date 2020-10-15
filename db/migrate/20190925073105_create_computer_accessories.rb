@@ -1,4 +1,4 @@
-class CreateComputerAccessories < ActiveRecord::Migration
+class CreateComputerAccessories < ActiveRecord::Migration[4.2]
   def change
     create_table :computer_accessories do |t|
       t.string :brand

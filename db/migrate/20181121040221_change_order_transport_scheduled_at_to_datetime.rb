@@ -1,4 +1,4 @@
-class ChangeOrderTransportScheduledAtToDatetime < ActiveRecord::Migration
+class ChangeOrderTransportScheduledAtToDatetime < ActiveRecord::Migration[4.2]
 
   def has_valid_timeslot(transport)
     ts = transport.timeslot
@@ -22,14 +22,14 @@ class ChangeOrderTransportScheduledAtToDatetime < ActiveRecord::Migration
         .change(hour: time.hour, min: time.min)
         .utc
 
-      ActiveRecord::Base.connection.execute <<-SQL 
+      ActiveRecord::Base.connection.execute <<-SQL
         UPDATE order_transports
         SET scheduled_at = \'#{timestamp.to_s(:db)}\'
         WHERE id = #{transport.id}
       SQL
     end
   end
- 
+
    def down
     change_column :order_transports, :scheduled_at, :date
    end
