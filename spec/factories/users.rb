@@ -1,3 +1,5 @@
+# frozen_String_literal: true
+
 # USAGE:
 #   create(:user)
 #   create(:user, :order_administrator)
@@ -10,6 +12,7 @@
 #   create(:user, :with_can_manage_packages_permission, :with_can_manage_offers_permission, role_name: "Supervisor")
 #   create(:user, :with_supervisor_role, :with_can_manage_packages_permission, :with_can_manage_offers_permission)
 #
+
 FactoryBot.define do
   factory :user, aliases: [:sender] do
     association :address
@@ -50,7 +53,7 @@ FactoryBot.define do
         after(:create) do |user, evaluator|
           r = create("#{role.parameterize.underscore}_role")
           unless user.roles.include?(r)
-            create :user_role, user: user, role: r, expiry_date: evaluator.role_expiry
+            create :user_role, user: user, role: r, expires_at: evaluator.role_expiry
           end
         end
         transient do
@@ -78,23 +81,28 @@ FactoryBot.define do
       end
     end
 
+    trait :no_mobile do
+      mobile { nil }
+      is_mobile_verified { false }
+    end
+
     trait :stockit_user do
-      first_name "Stockit"
-      last_name "User"
+      first_name { 'Stockit' }
+      last_name { 'User' }
     end
 
     trait :system do
-      first_name "GoodCity"
-      last_name "Team"
-      mobile SYSTEM_USER_MOBILE
+      first_name { 'GoodCity' }
+      last_name { 'Team' }
+      mobile { SYSTEM_USER_MOBILE }
       after(:create) do |user|
         user.roles << create(:system_role)
       end
     end
 
-    trait :with_organisation do
+    trait :charity do
       after(:create) do |user|
-        user.organisations << create(:organisation)
+        user.organisations_users << (create :organisations_user, :approved, user_id: user.id)
       end
     end
 
@@ -120,5 +128,4 @@ FactoryBot.define do
       end
     end
   end
-
 end

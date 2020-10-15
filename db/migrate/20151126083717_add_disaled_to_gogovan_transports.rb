@@ -1,4 +1,4 @@
-class AddDisaledToGogovanTransports < ActiveRecord::Migration
+class AddDisaledToGogovanTransports < ActiveRecord::Migration[4.2]
   def change
     add_column :gogovan_transports, :disabled, :boolean, default: false
 

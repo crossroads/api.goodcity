@@ -1,4 +1,4 @@
-class CreateOrganisationsUsers < ActiveRecord::Migration
+class CreateOrganisationsUsers < ActiveRecord::Migration[4.2]
   def change
     create_table :organisations_users do |t|
       t.references :organisation, index: true, foreign_key: true

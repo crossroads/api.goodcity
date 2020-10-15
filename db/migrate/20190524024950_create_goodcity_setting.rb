@@ -1,4 +1,4 @@
-class CreateGoodcitySetting < ActiveRecord::Migration
+class CreateGoodcitySetting < ActiveRecord::Migration[4.2]
   def change
     create_table :goodcity_settings do |t|
       t.string :key, index: true, unique: true

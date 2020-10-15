@@ -8,17 +8,8 @@ module Api::V1
       object.object_changes && object.object_changes["state"].try(:last)
     end
 
-    def state__sql
-      "object_changes -> 'state' -> 1"
-    end
-
     def whodunnit_name
       User.find_by(id: whodunnit).try(:full_name)
-    end
-
-    def whodunnit_name__sql
-      " (select concat(first_name, ' ', last_name)
-        from users u where u.id = CAST(versions.whodunnit AS INT) )"
     end
   end
 end

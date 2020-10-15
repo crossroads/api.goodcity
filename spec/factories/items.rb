@@ -1,17 +1,17 @@
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# frozen_String_literal: true
 
 FactoryBot.define do
   factory :item do
     donor_description { generate(:donor_descriptions) }
-    state             'submitted'
+    state             { 'submitted' }
 
     association :donor_condition
     association :package_type
     association :offer
 
     trait :draft do
-      donor_description nil
-      state             'draft'
+      donor_description { nil }
+      state             { 'draft' }
     end
 
     trait :with_packages do
@@ -39,7 +39,7 @@ FactoryBot.define do
 
     trait :with_messages do
       transient do
-        messages_count 1
+        messages_count { 1 }
       end
       after(:create) do |item, evaluator|
         create_list(:message, evaluator.messages_count,
@@ -50,11 +50,11 @@ FactoryBot.define do
 
     trait :accepted do
       with_received_packages
-      state 'accepted'
+      state { 'accepted' }
     end
 
     trait :rejected do
-      state              'rejected'
+      state              { 'rejected' }
       association        :rejection_reason
       association        :offer, :under_review
       reject_reason      { generate(:reject_reasons) }
@@ -65,7 +65,7 @@ FactoryBot.define do
       transient do
         demo_key { generate(:cloudinary_demo_images).keys.sample } # e.g. red_chair
       end
-      state 'accepted'
+      state { 'accepted' }
       donor_description { generate(:cloudinary_demo_images)[demo_key][:donor_description] }
       images            { create_list(:demo_image, rand(3)+1, demo_key.to_sym, favourite: true) }
       packages          { create_list(:package, rand(3)+1, notes: donor_description) }
@@ -79,7 +79,7 @@ FactoryBot.define do
     end
   end
 
-  sequence :reject_reasons do |n|
+  sequence :reject_reasons do
     ["Sorry, this item is too large.",
      "The item condition is not suitable for our recipients.",
      "We are generally unable to find suitable homes for this sort of item."

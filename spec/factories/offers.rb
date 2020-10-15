@@ -1,15 +1,15 @@
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# frozen_String_literal: true
 
 FactoryBot.define do
   factory :offer do
-    language       "en"
-    state          "draft"
-    origin         "web"
+    language       { 'en' }
+    state          { 'draft' }
+    origin         { 'web' }
     stairs         { [false, true].sample }
     parking        { [false, true].sample }
     estimated_size { [1,2,3,4].sample.to_s }
     notes          { FFaker::Lorem.paragraph }
-    saleable       true
+    saleable       { true }
     association    :created_by, factory: :user
 
     trait :admin_offer do
@@ -20,13 +20,13 @@ FactoryBot.define do
 
     trait :submitted do
       submitted_at { Time.now }
-      state        'submitted'
+      state        { 'submitted' }
     end
 
     trait :under_review do
       submitted
       reviewed_at { Time.now }
-      state       'under_review'
+      state       { 'under_review' }
       association :reviewed_by, :reviewer, factory: :user
     end
 
@@ -34,46 +34,46 @@ FactoryBot.define do
       under_review
       review_completed_at { Time.now }
       with_transport
-      state       'reviewed'
+      state       { 'reviewed' }
     end
 
     trait :scheduled do
       reviewed
       with_delivery
-      state 'scheduled'
+      state { 'scheduled' }
     end
 
     trait :receiving do
       scheduled
       start_receiving_at { Time.now }
       association :received_by, :reviewer, factory: :user
-      state "receiving"
+      state { 'receiving' }
     end
 
     trait :received do
       receiving
       received_at { Time.now }
-      state "received"
+      state { 'received' }
     end
 
     trait :closed do
       received
       association :closed_by, :reviewer, factory: :user
-      state "closed"
+      state { 'closed' }
     end
 
     trait :cancelled do
       reviewed
       cancelled_at { Time.now }
-      state "cancelled"
+      state { 'cancelled' }
       association :cancellation_reason
-      cancel_reason "This offer is cancelled because it is not suitable."
+      cancel_reason { 'This offer is cancelled because it is not suitable.' }
     end
 
     trait :inactive do
       submitted
       inactive_at { Time.now }
-      state "inactive"
+      state { 'inactive' }
     end
 
     trait :with_items do
@@ -105,7 +105,7 @@ FactoryBot.define do
 
     trait :with_messages do
       transient do
-        messages_count 1
+        messages_count { 1 }
       end
       after(:create) do |offer, evaluator|
         create_list(:message, evaluator.messages_count, :reviewer_message, messageable: offer)
@@ -113,7 +113,7 @@ FactoryBot.define do
     end
 
     trait :paranoid do
-      state      "submitted"
+      state      { 'submitted' }
       items      { [create(:item)] }
     end
 
@@ -122,5 +122,4 @@ FactoryBot.define do
       association    :crossroads_transport
     end
   end
-
 end

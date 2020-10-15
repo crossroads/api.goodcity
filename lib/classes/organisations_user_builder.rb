@@ -2,7 +2,9 @@ class OrganisationsUserBuilder
 
   # :organisations_user: {
   #   :organisation_id,
+  #   :user_id,
   #   :position,
+  #   :status,
   #   :preferred_contact_number,
   #   user_attributes: {
   #     :first_name,
@@ -11,91 +13,148 @@ class OrganisationsUserBuilder
   #     :email
   #   }
 
-  def initialize(params, app_name)
-    @organisations_user = OrganisationsUser.find_by_id(params["id"]) if params["id"]
-    @user = @organisations_user.user if @organisations_user
-    @organisation_id = params["organisation_id"].presence.try(:to_i)
-    @user_attributes = params["user_attributes"]
-    @mobile = @user_attributes["mobile"].presence.try(:to_s)
-    @email = @user_attributes["email"].presence
-    @position = params["position"]
-    @preferred_contact_number = params["preferred_contact_number"]
-    @app_name = app_name
-    fail_with_error(I18n.t("organisations_user_builder.organisation.blank")) unless @organisation_id
-    fail_with_error(I18n.t("organisations_user_builder.user.mobile.blank")) unless @mobile
+  # ------------------------
+  # Entry points
+  # ------------------------
+
+  def self.create(organisations_user_params)
+    OrganisationsUserBuilder.new(organisations_user_params.symbolize_keys).create!
   end
 
-  def build
-    users = User.where("lower(email) = (?) OR mobile = (?)", @email&.downcase, @mobile)
-    return fail_with_error(I18n.t('organisations_user_builder.invalid.user')) if users.count > 1
-
-    @user = build_user(users)
-    return fail_with_error(@user.errors) unless @user.valid?
-    return fail_with_error(I18n.t("organisations_user_builder.organisation.not_found")) unless organisation
-
-    return fail_with_error(I18n.t('organisations_user_builder.existing_user.present')) if user_belongs_to_organisation(@user)
-
-    @organisations_user = build_organisations_user
-    return_success.merge!("organisations_user" => @organisations_user)
+  def self.update(organisations_user_id, organisations_user_params)
+    OrganisationsUserBuilder.new(organisations_user_params.symbolize_keys).update!(organisations_user_id)
   end
 
-  def build_organisations_user
-    @organisations_user = @user.organisations_users.new(organisation_id: @organisation_id, position: @position, preferred_contact_number: @preferred_contact_number)
-    TwilioService.new(@user).send_welcome_msg
-    return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
+  # ------------------------
+  # Implementation
+  # ------------------------
 
-    @organisations_user
+  def initialize(organisation_id: nil, user_id: nil, user_attributes: nil, position: '', preferred_contact_number: '', status: '', change_author: User.current_user)
+    @change_author            = change_author
+    @organisation_id          = organisation_id.to_i
+    @position                 = position
+    @status                   = status
+    @preferred_contact_number = preferred_contact_number
+    @user_attributes          = user_attributes&.symbolize_keys
+    @user                     = strict_find!(User, user_id)
+    @organisation             = strict_find!(Organisation, organisation_id)
   end
 
-  def build_user(obj)
-    @user = obj.first_or_initialize(@user_attributes)
-    assign_user_app_acessor
-    @user.save
-    @user
+  def create!
+    @status = OrganisationsUser::Status::PENDING if @status.blank?
+
+    assert_non_existing!
+    assert_permissions!
+    assert_no_conflicts!
+
+    organisations_user = ActiveRecord::Base.transaction do
+      apply_user_attributes!(@user, @user_attributes) if @user_attributes.present?
+      OrganisationsUser.create!(create_params)
+    end
+
+    notify_user(@user)
+    organisations_user
   end
 
-  def assign_user_app_acessor
-    @user.request_from_stock = (@app_name == STOCK_APP)
-    @user.request_from_browse = (@app_name == BROWSE_APP)
-  end
+  def update!(organisations_user_id)
+    organisations_user = strict_find!(OrganisationsUser, organisations_user_id)
 
-  def update
-    assign_user_app_acessor
-    return fail_with_error(update_user["errors"]) if update_user && update_user["errors"]
+    assert_integrity!(organisations_user)
+    assert_permissions!
+    assert_no_conflicts!
 
-    @organisations_user.update(position: @position, preferred_contact_number: @preferred_contact_number)
-    return_success.merge!("organisations_user" => @organisations_user.reload)
-  end
+    ActiveRecord::Base.transaction do
+      apply_user_attributes!(@user, @user_attributes) if @user_attributes.present?
 
-  private
+      organisations_user.position                   = @position unless @position.blank?
+      organisations_user.status                     = @status unless @status.blank?
+      organisations_user.preferred_contact_number   = @preferred_contact_number unless @preferred_contact_number.blank?
 
-  def organisation
-    @organisation ||= Organisation.find_by_id(@organisation_id)
-  end
-
-  def update_user
-    @user.roles << charity_role unless @user.roles.include?(charity_role)
-    if @user.update(@user_attributes)
-      @user
-    else
-      fail_with_error(@user.errors.full_messages.join(" "))
+      organisations_user.save! if organisations_user.changed?
+      organisations_user
     end
   end
 
-  def user_belongs_to_organisation(user)
-    user.organisation_ids.include?(@organisation_id)
+  # ------------------------
+  # Write methods
+  # ------------------------
+
+  def apply_user_attributes!(user, user_params)
+    [:first_name, :last_name, :email, :mobile, :title].each do |field|
+      user[field] = user_params[field] if user_params[field].present?
+    end
+
+    user.save! if user.changed?
   end
 
-  def charity_role
-    @charity_role ||= Role.charity
+  # ------------------------
+  # Helpers
+  # ------------------------
+
+  def create_params
+    {
+      user_id:                  @user.id,
+      organisation_id:          @organisation_id,
+      position:                 @position,
+      status:                   @status,
+      preferred_contact_number: @preferred_contact_number
+    }
   end
 
-  def fail_with_error(errors)
-    errors = errors.full_messages.join(". ") if errors.respond_to?(:full_messages)
-    {"result" => false, "errors" => errors}
+  def notify_user(user)
+    TwilioService.new(user).send_welcome_msg
   end
 
-  def return_success
-    {"result" => true}
+  def manager?(user)
+    user&.api_user? || user&.has_permission?("can_manage_organisations_users")
+  end
+
+  # ------------------------
+  # Error Management
+  # ------------------------
+
+  def strict_find!(model, id)
+    record = id ? model.find_by(id: id) : nil
+    raise Goodcity::BadOrMissingRecord.new(model) if record.blank?
+    record
+  end
+
+  def assert_integrity!(organisations_user)
+    raise Goodcity::ReadOnlyFieldError.new(:user_id).with_status(403)          if organisations_user.user_id != @user.id
+    raise Goodcity::ReadOnlyFieldError.new(:organisation_id).with_status(403)  if organisations_user.organisation_id != @organisation_id
+  end
+
+  def assert_permissions!
+    return if manager?(@change_author)
+
+    raise Goodcity::AccessDeniedError if @change_author.id != @user.id                                      # A normal user can only create or modify his/her own records
+    raise Goodcity::AccessDeniedError if @status.present? && @status != OrganisationsUser::INITIAL_STATUS   # A normal cannot set the status to anything but the inital "pending" status
+
+    if @user_attributes.present?
+      # Prevent users from modifying their existing verified email and mobile
+      email, mobile = @user_attributes.values_at(:email, :mobile)
+
+      raise Goodcity::ReadOnlyFieldError.new(:email) if email.present? && @user.is_email_verified && @user.email != email
+      raise Goodcity::ReadOnlyFieldError.new(:mobile) if mobile.present? && @user.is_mobile_verified && @user.mobile != mobile
+    end
+  end
+
+  def assert_non_existing!
+    if OrganisationsUser.find_by(organisation_id: @organisation_id, user_id: @user.id).present?
+      raise Goodcity::DuplicateRecordError.with_translation('organisations_user_builder.existing_user.present')
+    end
+  end
+
+  def assert_no_conflicts!
+    email, mobile = @user_attributes&.values_at(:email, :mobile)
+
+    return if email.blank? && mobile.blank?
+
+    conflicts = User
+      .where.not(id: @user.id)
+      .where("lower(email) = (?) OR mobile = (?)", email&.downcase, mobile)
+      .count.positive?
+
+    raise Goodcity::AccessDeniedError.with_translation('organisations_user_builder.invalid.user') if conflicts
   end
 end

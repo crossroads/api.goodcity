@@ -6,7 +6,7 @@ require "active_record/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"
 # require "action_view/railtie"
-# require "sprockets/railtie"
+require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -27,9 +27,9 @@ module GoodCityServer
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    config.autoload_paths += %W(#{config.root}/lib/classes)
-    config.autoload_paths += %W(#{config.root}/lib/goodcity/error)
     config.autoload_paths += %W(#{config.root}/app/models/concerns/operations)
+    config.eager_load_paths << "#{Rails.root}/lib/goodcity/error"
+    config.eager_load_paths << "#{Rails.root}/lib/classes"
 
     # config.active_record.schema_format = :sql
 
@@ -38,8 +38,5 @@ module GoodCityServer
     config.filter_parameters << :otp_secret_key
 
     config.active_job.queue_adapter = :sidekiq
-
-    config.active_record.raise_in_transactional_callbacks = true
-
   end
 end

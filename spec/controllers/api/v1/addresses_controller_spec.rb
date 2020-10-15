@@ -11,9 +11,10 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
 
   describe "POST address/1" do
     before { generate_and_set_token(user) }
+
     it "returns 201", :show_in_doc do
       expect {
-        post :create, address: address_params
+        post :create, params: { address: address_params }
       }.to change(Address, :count).by(1)
       expect(response.status).to eq(201)
     end
@@ -22,14 +23,15 @@ RSpec.describe Api::V1::AddressesController, type: :controller do
   describe "GET address" do
     before do
       generate_and_set_token(user)
-      get :show, id: address.id
+      get :show, params: { id: address.id }
     end
+
     it "returns 200" do
       expect(response.status).to eq(200)
     end
+
     it "return serialized address", :show_in_doc do
       expect(parsed_body).to eq(serialized_address_json)
     end
   end
-
 end

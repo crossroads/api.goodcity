@@ -1,0 +1,54 @@
+require 'rails_helper'
+require 'cancan/matchers'
+
+describe "contact abilities" do
+
+  subject(:ability) { Api::V1::Ability.new(user) }
+  let(:all_actions) { [:create, :destroy, :manage] }
+
+  context "when Supervisor" do
+    let(:user)     { create(:user, :with_can_destroy_contacts_permission, role_name: 'Supervisor') }
+    let(:contact)  { create :contact }
+    let(:can)      { [:create, :destroy] }
+    let(:cannot)   { [:manage] }
+    it { can.each { |do_action| is_expected.to be_able_to(do_action, contact) } }
+    it { cannot.each { |do_action| is_expected.to_not be_able_to(do_action, contact) } }
+  end
+
+  context "when Reviewer" do
+    let(:user)     { create(:user, :with_can_destroy_contacts_permission, role_name: 'Reviewer') }
+    let(:contact)  { create :contact }
+    let(:can)      { [:create, :destroy] }
+    let(:cannot)   { [:manage] }
+    it { can.each { |do_action| is_expected.to be_able_to(do_action, contact) } }
+    it { cannot.each { |do_action| is_expected.to_not be_able_to(do_action, contact) } }
+  end
+
+  context "when Owner" do
+    let(:delivery) { create :gogovan_delivery }
+    let(:user)     { delivery.offer.created_by }
+    let(:contact)  { delivery.contact }
+    let(:can)      { [:create, :destroy] }
+    let(:cannot)   { [:manage] }
+    it { can.each { |do_action| is_expected.to be_able_to(do_action, contact) } }
+    it { cannot.each { |do_action| is_expected.to_not be_able_to(do_action, contact) } }
+  end
+
+  context "when not Owner" do
+    let(:user)     { create(:user) }
+    let(:contact)  { create :contact }
+    let(:can)      { [:create] }
+    let(:cannot)   { [:destroy] }
+    it { can.each { |do_action| is_expected.to be_able_to(do_action, contact) } }
+    it { cannot.each { |do_action| is_expected.to_not be_able_to(do_action, contact) } }
+  end
+
+  context "when Anonymous" do
+    let(:user)     { nil }
+    let(:contact)  { create :contact }
+    let(:can)      { [] }
+    let(:cannot)   { [:create, :destroy, :manage] }
+    it { can.each { |do_action| is_expected.to be_able_to(do_action, contact) } }
+    it { cannot.each { |do_action| is_expected.to_not be_able_to(do_action, contact) } }
+  end
+end

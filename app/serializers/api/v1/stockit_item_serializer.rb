@@ -19,16 +19,14 @@ module Api::V1
                :image_id, :donor_condition_id, :package_set_id, :state,
                :case_number, :allow_web_publish, :received_quantity,
                :detail_type, :detail_id, :storage_type_id, :on_hand_quantity,
-               :available_quantity, :designated_quantity, :dispatched_quantity, :location_id,
-               :quantity, :expiry_date, :saleable, :value_hk_dollar, :restriction_id, :comment
+               :available_quantity, :designated_quantity, :dispatched_quantity,
+               :location_id, :quantity, :expiry_date, :saleable,
+               :value_hk_dollar, :restriction_id, :comment,
+               :on_hand_boxed_quantity, :on_hand_palletized_quantity
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity
-    end
-
-    def quantity__sql
-      "available_quantity"
     end
 
     def include_package_set?
@@ -49,32 +47,16 @@ module Api::V1
       object.order_id
     end
 
-    def designation_id__sql
-      "order_id"
-    end
-
     def sent_on
       object.stockit_sent_on
-    end
-
-    def sent_on__sql
-      "stockit_sent_on"
     end
 
     def code_id
       object.package_type_id
     end
 
-    def code_id__sql
-      "packages.package_type_id"
-    end
-
     def image_id
       object.favourite_image_id
-    end
-
-    def image_id__sql
-      "packages.favourite_image_id"
     end
 
     # deprecated
@@ -82,13 +64,6 @@ module Api::V1
     # refer to package_set_id from now on
     def is_set
       false
-    end
-
-    # deprecated
-    # Kept for backwards compatibility
-    # refer to package_set_id from now on
-    def is_set__sql
-      "false"
     end
   end
 end

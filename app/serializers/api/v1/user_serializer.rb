@@ -7,6 +7,7 @@ module Api::V1
     has_one :image, serializer: ImageSerializer
     has_one :address, serializer: AddressSerializer
     has_many :user_roles, serializer: UserRoleSerializer
+    # has_many :organisations_users, serializer: OrganisationsUserSerializer
 
     def include_user_roles?
       options[:include_user_roles]
@@ -18,16 +19,6 @@ module Api::V1
 
     def organisations_users_ids
       object.organisations_users.pluck(:id)
-    end
-
-    def user_roles_ids__sql
-      "coalesce((select array_agg(user_roles.id) from user_roles where
-        user_id = users.id), '{}'::int[])"
-    end
-
-    def organisations_users_ids__sql
-      "coalesce((select array_agg(organisations_users.id) from organisations_users where
-        user_id = users.id), '{}'::int[])"
     end
 
     def include_attribute?

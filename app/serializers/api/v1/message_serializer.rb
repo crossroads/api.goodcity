@@ -22,10 +22,6 @@ module Api::V1
       object.messageable_type == 'Item' ? object.messageable_id : nil
     end
 
-    def item_id__sql
-      "CASE WHEN messageable_type='Item' THEN messageable_id ELSE NULL END"
-    end
-
     # Deprication: This will be removed
     def order_id
       object.messageable_type == 'Order' ? object.messageable_id : nil
@@ -36,21 +32,9 @@ module Api::V1
       object.messageable_type == 'Order' ? object.messageable_id : nil
     end
 
-    def designation_id__sql
-      "CASE WHEN messageable_type='Order' THEN messageable_id ELSE NULL END"
-    end
-
-    def order_id__sql
-      "CASE WHEN messageable_type='Order' THEN messageable_id ELSE NULL END"
-    end
-
     # Deprication: This will be removed
     def offer_id
       object.messageable_type == 'Offer' ? object.messageable_id : nil
-    end
-
-    def offer_id__sql
-      "CASE WHEN messageable_type='Offer' THEN messageable_id ELSE NULL END"
     end
 
     def state
@@ -60,25 +44,6 @@ module Api::V1
         "never-subscribed"
       else
         object.subscriptions.where(user_id: User.current_user.id).pluck(:state).first || 'never-subscribed'
-      end
-    end
-
-    def state__sql
-      if object.state_value.present?
-        "'#{object.state_value}'"
-      elsif User.current_user.nil?
-        "'never-subscribed'"
-      else
-        state_query =
-          "select state
-           from subscriptions s
-           where s.message_id = messages.id and s.user_id = #{User.current_user.id}"
-
-        "CASE
-           WHEN EXISTS(#{state_query})
-           THEN (#{state_query})
-           ELSE 'never-subscribed'
-         END"
       end
     end
   end

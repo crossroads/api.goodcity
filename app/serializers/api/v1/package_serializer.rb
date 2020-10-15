@@ -12,19 +12,17 @@ module Api::V1
 
     attributes :id, :length, :width, :height, :weight, :pieces, :notes,
                :item_id, :state, :received_at, :rejected_at, :inventory_number,
-               :created_at, :updated_at, :package_type_id, :designation_id, :sent_on,
-               :offer_id, :designation_name, :grade, :donor_condition_id, :received_quantity,
-               :allow_web_publish, :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
-               :designated_quantity, :dispatched_quantity, :quantity, :favourite_image_id,
-               :saleable, :value_hk_dollar, :package_set_id
+               :created_at, :updated_at, :package_type_id, :designation_id,
+               :sent_on, :offer_id, :designation_name, :grade,
+               :donor_condition_id, :received_quantity, :allow_web_publish,
+               :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
+               :designated_quantity, :dispatched_quantity, :quantity,
+               :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id,
+               :on_hand_boxed_quantity, :on_hand_palletized_quantity
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
       object.available_quantity
-    end
-
-    def quantity__sql
-      "available_quantity"
     end
 
     def designation_id
@@ -39,16 +37,8 @@ module Api::V1
       !is_browse_app?
     end
 
-    def designation_id__sql
-      "order_id"
-    end
-
     def sent_on
       object.stockit_sent_on
-    end
-
-    def sent_on__sql
-      "stockit_sent_on"
     end
 
     def include_orders_packages?
@@ -69,9 +59,9 @@ module Api::V1
     end
 
     %w[include_state? include_received_at? include_rejected_at?
-      include_designation_id? include_sent_on?
-      include_offer_id? include_designation_name?
-      include_received_quantity?].each do |method|
+       include_designation_id? include_sent_on?
+       include_offer_id? include_designation_name?
+       include_received_quantity?].each do |method|
       alias_method method.to_sym, :not_browse_app?
     end
   end

@@ -1,5 +1,5 @@
-class Offer < ActiveRecord::Base
-  has_paper_trail class_name: 'Version'
+class Offer < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }
   include Paranoid
   include StateMachineScope
   include PushUpdates
@@ -97,6 +97,10 @@ class Offer < ActiveRecord::Base
 
     event :submit do
       transition [:draft, :inactive, :cancelled] => :submitted
+    end
+
+    event :reopen do
+      transition [:closed, :cancelled] => :under_review
     end
 
     event :start_review do

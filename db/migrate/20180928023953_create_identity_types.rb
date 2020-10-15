@@ -1,4 +1,4 @@
-class CreateIdentityTypes < ActiveRecord::Migration
+class CreateIdentityTypes < ActiveRecord::Migration[4.2]
   def change
     create_table :identity_types do |t|
       t.string :identifier

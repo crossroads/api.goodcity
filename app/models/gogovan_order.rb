@@ -1,5 +1,5 @@
-class GogovanOrder < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+class GogovanOrder < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include Paranoid
   include PushUpdates
 
@@ -122,7 +122,7 @@ class GogovanOrder < ActiveRecord::Base
   end
 
   def order_completed?
-    changes.has_key?("status") && changes["status"].last == "completed"
+    previous_changes.key?("status") && previous_changes["status"].last == "completed"
   end
 
   def pick_up_location

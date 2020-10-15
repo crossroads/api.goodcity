@@ -15,7 +15,7 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
   before do
     touch(stocktake)
     initialize_inventory(package_1, package_2, package_3, package_4, location: location)
-    create(:stocktake_revision, package: package_1, stocktake: stocktake, quantity: 12)  # we counted more 
+    create(:stocktake_revision, package: package_1, stocktake: stocktake, quantity: 12)  # we counted more
     create(:stocktake_revision, package: package_2, stocktake: stocktake, quantity: 8)   # we counted less
     create(:stocktake_revision, package: package_3, stocktake: stocktake, quantity: 10)  # we counted the same amount
   end
@@ -29,7 +29,7 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
       before { generate_and_set_token(other_user) }
 
       it "returns 403" do
-        post :create, stocktake_revision: payload
+        post :create, params: { stocktake_revision: payload }
         expect(response.status).to eq(403)
       end
     end
@@ -38,13 +38,13 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
       before { generate_and_set_token(entitled_user) }
 
       it "returns 201" do
-        post :create, stocktake_revision: payload
+        post :create, params: { stocktake_revision: payload }
         expect(response.status).to eq(201)
       end
 
       it "creates a new revision" do
         expect {
-          post :create, stocktake_revision: payload
+          post :create, params: { stocktake_revision: payload }
         }.to change(StocktakeRevision, :count).by(1)
 
         expect(parsed_body["stocktake_revision"]["quantity"]).to eq(payload[:quantity])
@@ -55,7 +55,7 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
 
       it "defaults to a 'pending' state if missing" do
         expect {
-          post :create, stocktake_revision: payload.except(:state)
+          post :create, params: { stocktake_revision: payload.except(:state) }
         }.to change(StocktakeRevision, :count).by(1)
 
         expect(parsed_body["stocktake_revision"]["quantity"]).to eq(payload[:quantity])
@@ -66,7 +66,7 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
 
       it "fails to create a revision if it already exists for that package" do
         expect {
-          post :create, stocktake_revision: payload.merge({ package_id: package_3.id })
+          post :create, params:{ stocktake_revision: payload.merge({ package_id: package_3.id }) }
         }.to change(StocktakeRevision, :count).by(0)
 
         expect(response.status).to eq(409)
@@ -76,13 +76,13 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
   end
 
   describe "DELETE /stocktake_revisions/:id" do
-    let(:stocktake_revision) { stocktake.revisions.first }
+    let(:stocktake_revision) { stocktake.reload.revisions.first }
 
     context "as a user without the 'can_manage_stocktake_revisions' permission" do
       before { generate_and_set_token(other_user) }
 
       it "returns 403" do
-        delete :destroy, id: stocktake_revision.id
+        delete :destroy, params: { id: stocktake_revision.id }
         expect(response.status).to eq(403)
       end
     end
@@ -91,33 +91,33 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
       before { generate_and_set_token(entitled_user) }
 
       it "returns 200" do
-        delete :destroy, id: stocktake_revision.id
+        delete :destroy, params: { id: stocktake_revision.id }
         expect(response.status).to eq(200)
       end
 
       it "deletes the revision" do
         expect {
-          delete :destroy, id: stocktake_revision.id
+          delete :destroy, params: { id: stocktake_revision.id }
         }.to change(StocktakeRevision, :count).by(-1)
       end
 
       it "does not delete the stocktake" do
         expect {
-          delete :destroy, id: stocktake_revision.id
+          delete :destroy, params: { id: stocktake_revision.id }
         }.not_to change(Stocktake, :count)
       end
     end
   end
 
   describe 'PUT /stocktake/:id' do
-    let(:stocktake_revision) { stocktake.revisions.first }
+    let(:stocktake_revision) { stocktake.reload.revisions.first }
     let!(:initial_quantity) { stocktake_revision.quantity }
 
     context "as a  user without the 'can_manage_stocktake_revisions' permission" do
       before { generate_and_set_token(other_user) }
-      
+
       it "returns 403" do
-        put :update, id: stocktake_revision.id
+        put :update, params: { id: stocktake_revision.id }
         expect(response.status).to eq(403)
       end
     end
@@ -126,13 +126,13 @@ RSpec.describe Api::V1::StocktakeRevisionsController, type: :controller do
       before { generate_and_set_token(entitled_user) }
 
       it "returns 200" do
-        put :update, id: stocktake_revision.id, stocktake_revision: { quantity: 100 }
+        put :update, params: { id: stocktake_revision.id, stocktake_revision: { quantity: 100 } }
         expect(response.status).to eq(200)
       end
 
       it "Updates the record" do
         expect {
-          put :update, id: stocktake_revision.id, stocktake_revision: { quantity: 100 }
+          put :update, params: { id: stocktake_revision.id, stocktake_revision: { quantity: 100 } }
         }.to change {
           stocktake_revision.reload.quantity
         }.from(initial_quantity).to(100)

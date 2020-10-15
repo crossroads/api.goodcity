@@ -1,5 +1,5 @@
-class Package < ActiveRecord::Base
-  has_paper_trail class_name: 'Version', meta: { related: :offer }
+class Package < ApplicationRecord
+  has_paper_trail versions: { class_name: 'Version' }, meta: { related: :offer }
   include Paranoid
   include StateMachineScope
   include PushUpdatesMinimal
@@ -19,7 +19,6 @@ class Package < ActiveRecord::Base
   validates_with SettingsValidator, settings: { keys: SETTINGS_KEYS }, if: :box_or_pallet?
   belongs_to :item
   belongs_to :package_set
-  has_many :locations, through: :packages_locations
 
   belongs_to :detail, polymorphic: true, dependent: :destroy, required: false
   belongs_to :package_type, inverse_of: :packages
@@ -33,6 +32,7 @@ class Package < ActiveRecord::Base
   belongs_to :stockit_moved_by, class_name: 'User'
 
   has_many   :packages_locations, inverse_of: :package, dependent: :destroy
+  has_many   :locations, through: :packages_locations
   has_many   :images, as: :imageable, dependent: :destroy
   has_many   :orders_packages, dependent: :destroy
   has_many   :requested_packages, dependent: :destroy
@@ -53,9 +53,9 @@ class Package < ActiveRecord::Base
   after_save :push_changes
   after_destroy :push_changes
   push_targets do |record|
-    chans = [ Channel::STOCK_CHANNEL ]
+    chans = [Channel::STOCK_CHANNEL]
     chans << Channel::STAFF_CHANNEL if record.item_id
-    chans << Channel::BROWSE_CHANNEL if (record.allow_web_publish || record.allow_web_publish_was)
+    chans << Channel::BROWSE_CHANNEL if record.allow_web_publish || record.allow_web_publish_before_last_save
     chans
   end
 
@@ -65,9 +65,12 @@ class Package < ActiveRecord::Base
   validates :designated_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :dispatched_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :received_quantity, numericality: { greater_than: 0 }
+  validates :on_hand_boxed_quantity, numericality: { greater_than_or_equal_to: 0 }
+  validates :on_hand_palletized_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :weight, :pieces, numericality: { allow_blank: true, greater_than: 0 }
   validates :width, :height, :length, numericality: { allow_blank: true, greater_than_or_equal_to: 0 }
   validate  :validate_set_id, on: [:create, :update]
+  validate  :validate_package_type, on: [:update]
   validates_uniqueness_of :inventory_number, if: :should_validate_inventory_number?
 
   scope :donor_packages, ->(donor_id) { joins(item: [:offer]).where(offers: { created_by_id: donor_id }) }
@@ -363,7 +366,7 @@ class Package < ActiveRecord::Base
     end
 
     if current_image
-      current_image.update_attributes(favourite: true)
+      current_image.update_column(:favourite, true)
       self.favourite_image_id = current_image.id
     end
   end
@@ -387,7 +390,7 @@ class Package < ActiveRecord::Base
   end
 
   def box?
-    storage_type_name&.eql?("Box")
+    storage_type_name&.eql?('Box')
   end
 
   def box_or_pallet?
@@ -433,5 +436,13 @@ class Package < ActiveRecord::Base
 
   def gc_inventory_number
     inventory_number && inventory_number.match(/^[0-9]+$/)
+  end
+
+  def validate_package_type
+    return unless box_or_pallet?
+    return unless package_type_id_changed?
+
+    count = PackagesInventory.packages_contained_in(self).count
+    errors.add(:error, I18n.t('box_pallet.errors.cannot_change_type')) if count.positive?
   end
 end

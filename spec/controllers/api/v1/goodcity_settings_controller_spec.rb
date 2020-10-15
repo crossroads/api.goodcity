@@ -20,7 +20,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
   describe "POST /goodicty_settings" do
     context "as a guest" do
       it "returns 401" do
-        post :create, goodcity_setting: goodcity_setting_params
+        post :create, params: { goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(401)
       end
     end
@@ -28,7 +28,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     context "as a user without 'can_manage_settings' permission" do
       before { generate_and_set_token(reviewer_without_settings_permission) }
       it "returns 403" do
-        post :create, goodcity_setting: goodcity_setting_params
+        post :create, params: { goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(403)
       end
     end
@@ -37,7 +37,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
       before { generate_and_set_token(supervisor_with_settings_permission) }
       it "returns 200" do
         expect {
-          post :create, goodcity_setting: goodcity_setting_params
+          post :create, params: { goodcity_setting: goodcity_setting_params }
         }.to change(GoodcitySetting, :count).by(1)
         expect(response.status).to eq(201)
       end
@@ -51,7 +51,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
 
     context "as a guest" do
       it "returns 401" do
-        put :update, id: goodcity_setting.id, goodcity_setting: goodcity_setting_params
+        put :update, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(401)
       end
     end
@@ -59,7 +59,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     context "as a user without 'can_manage_settings' permission" do
       before { generate_and_set_token(reviewer_without_settings_permission) }
       it "returns 403" do
-        put :update, id: goodcity_setting.id, goodcity_setting: goodcity_setting_params
+        put :update, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(403)
       end
     end
@@ -68,7 +68,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
       before { generate_and_set_token(supervisor_with_settings_permission) }
       it "returns 200" do
         expect {
-          put :update, id: goodcity_setting.id, goodcity_setting: { id: goodcity_setting.id, value: 'steve is happy' }
+          put :update, params: { id: goodcity_setting.id, goodcity_setting: { id: goodcity_setting.id, value: 'steve is happy' } }
         }.to change(GoodcitySetting, :count).by(0)
         expect(response.status).to eq(200)
         expect(GoodcitySetting.find(goodcity_setting.id).value).to eq('steve is happy');
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
 
     context "as a guest" do
       it "returns 401" do
-        delete :destroy, id: goodcity_setting.id, goodcity_setting: goodcity_setting_params
+        delete :destroy, params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(401)
       end
     end
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
     context "as a user without 'can_manage_settings' permission" do
       before { generate_and_set_token(reviewer_without_settings_permission) }
       it "returns 403" do
-        delete :destroy,  id: goodcity_setting.id, goodcity_setting: goodcity_setting_params
+        delete :destroy,  params: { id: goodcity_setting.id, goodcity_setting: goodcity_setting_params }
         expect(response.status).to eq(403)
       end
     end
@@ -100,7 +100,7 @@ RSpec.describe Api::V1::GoodcitySettingsController, type: :controller do
       before { generate_and_set_token(supervisor_with_settings_permission) }
       it "returns 200" do
         expect {
-          delete :destroy, id: goodcity_setting.id
+          delete :destroy, params: { id: goodcity_setting.id }
         }.to change(GoodcitySetting, :count).by(-1)
         expect(response.status).to eq(200)
       end

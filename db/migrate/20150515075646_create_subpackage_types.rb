@@ -1,4 +1,4 @@
-class CreateSubpackageTypes < ActiveRecord::Migration
+class CreateSubpackageTypes < ActiveRecord::Migration[4.2]
   def change
     create_table :subpackage_types do |t|
       t.integer :package_type_id

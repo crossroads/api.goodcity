@@ -1,3 +1,5 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :package do
     length                { rand(199) + 1 }
@@ -6,17 +8,17 @@ FactoryBot.define do
     weight                { rand(199) + 1 }
     pieces                { rand(199) + 1 }
     notes                 { FFaker::Lorem.paragraph }
-    state                 'expecting'
+    state                 { 'expecting' }
     value_hk_dollar       { [10, 20, 30].sample }
 
     received_quantity     { storage_type&.singleton? ? 1 : 5 }
     on_hand_quantity      { received_quantity }
     available_quantity    { received_quantity }
-    designated_quantity   0
-    dispatched_quantity   0
+    designated_quantity   { 0 }
+    dispatched_quantity   { 0 }
 
-    received_at nil
-    rejected_at nil
+    received_at { nil }
+    rejected_at { nil }
 
     association :package_type
 
@@ -70,18 +72,18 @@ FactoryBot.define do
     trait :received do
       with_inventory_record
       stockit_package
-      state "received"
+      state { 'received' }
       received_at { Time.now }
     end
 
     trait :published do
       with_inventory_number
-      allow_web_publish true
+      allow_web_publish { true }
     end
 
     trait :unpublished do
       with_inventory_number
-      allow_web_publish false
+      allow_web_publish { false }
     end
 
     trait :with_images do
@@ -99,6 +101,5 @@ FactoryBot.define do
     end
 
     factory :browseable_package, traits: [:published, :with_inventory_number, :received]
-
   end
 end

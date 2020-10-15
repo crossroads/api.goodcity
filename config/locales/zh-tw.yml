@@ -9,9 +9,15 @@ zh-tw:
     bad_request: Bad Request
     bad_or_missing_record: Invalid or missing %{klass}
     bad_or_missing_field: Invalid or empty field '%{field}'
+    read_only_field: The '%{field}' field cannot be modified
     expected_state: The following action can only be done on a %{state} %{subject}
     missing_params: Param '%{param}' is required
     duplicate_error: A record already exists
+    forbidden: Access Denied
+    invalid_credentials: Invalid credentials
+    invalid_params: Invalid or missing params
+    foreign_key_delete_violation: Another entity is dependent on the record you are trying to delete
+    foreign_key_mismatch_violation: A broken entity relationship has occurred
   warden:
     token_invalid: 代碼不正確
     token_expired: 代碼已過期
@@ -29,6 +35,7 @@ zh-tw:
       adding_box_to_box: 不可將一個框架加至另一個框架
       disable_addition: 不可增加/刪除指定或派出的項目
       disable_if_unavailable: 若項目已派出，則無法執行增加/刪除的操作
+      cannot_change_type: Cannot change type of a box with items. Please remove the items and try again
   token:
     invalid: 代碼不正確
     expired: 代碼已過期
@@ -57,6 +64,10 @@ zh-tw:
     attributes:
       user:
         mobile: "手提電話"
+        email: "電郵"
+      organisation:
+        name_en: '機構名稱(英文)'
+        registration: '註冊編號'
     errors:
       models:
         requested_package:
@@ -71,6 +82,17 @@ zh-tw:
             mobile:
               invalid: "不正確"
               blank: "不能留空"
+              taken: '已被登記'
+            email:
+              blank: "不能留空"
+              taken: "已被登記."
+        organisation:
+          attributes:
+            name_en:
+              taken: '已被登記'
+            registration:
+              taken: '已被登記'
+
   notification:
     new_offer: "%{name} 的新捐獻。"
     new_order: "New order from %{organisation_name_zh_tw}: %{contact_name}"
@@ -124,6 +146,7 @@ zh-tw:
       present: "User already exists in this organisation"
     invalid:
       user: The email or mobile already exists.
+      status: Invalid status.
   appointment_slots:
     already_exists: "An appointment slot already exists for this time"
   operations:

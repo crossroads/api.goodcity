@@ -1,4 +1,4 @@
-class CreatePackageTypes < ActiveRecord::Migration
+class CreatePackageTypes < ActiveRecord::Migration[4.2]
   def change
     create_table :package_types do |t|
       t.string :code

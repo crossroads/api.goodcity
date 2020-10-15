@@ -1,4 +1,4 @@
-class CrossroadsTransport < ActiveRecord::Base
+class CrossroadsTransport < ApplicationRecord
   include RollbarSpecification
 
   translates :name

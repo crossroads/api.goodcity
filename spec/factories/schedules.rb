@@ -1,4 +1,4 @@
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# frozen_String_literal: true
 
 FactoryBot.define do
   factory :schedule do
@@ -9,17 +9,17 @@ FactoryBot.define do
     scheduled_at { (Time.now + 1.weeks).to_s }
 
     factory :gogovan_schedule, parent: :schedule do
-      resource nil
-      slot nil
-      slot_name "1:00 PM"
-      zone nil
+      resource { nil }
+      slot { nil }
+      slot_name { '1:00 PM' }
+      zone { nil }
     end
 
     factory :drop_off_schedule, parent: :schedule do
-      resource nil
-      slot nil
-      slot_name "2PM-4PM"
-      zone nil
+      resource { nil }
+      slot { nil }
+      slot_name { '2PM-4PM' }
+      zone { nil }
     end
   end
 end

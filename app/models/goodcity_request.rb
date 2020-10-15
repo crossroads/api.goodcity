@@ -1,7 +1,7 @@
-class GoodcityRequest < ActiveRecord::Base
+class GoodcityRequest < ApplicationRecord
   include PushUpdatesMinimal
 
-  has_paper_trail class_name: 'Version'
+  has_paper_trail versions: { class_name: 'Version' }
   belongs_to :package_type
   belongs_to :order
   belongs_to :created_by, class_name: 'User'
@@ -19,4 +19,9 @@ class GoodcityRequest < ActiveRecord::Base
   scope :of_user, ->(uid) {
     joins(:order).where('goodcity_requests.created_by_id = :id OR orders.created_by_id = :id', id: uid)
   }
+
+  scope :of_organisation, ->(organisation_ids) {
+    joins(:order).where('orders.organisation_id IN (?)', [organisation_ids].flatten)
+  }
+
 end

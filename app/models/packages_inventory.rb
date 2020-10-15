@@ -1,4 +1,4 @@
-class PackagesInventory < ActiveRecord::Base
+class PackagesInventory < ApplicationRecord
   module Actions
     INVENTORY   = 'inventory'.freeze
     UNINVENTORY = "uninventory".freeze
@@ -28,7 +28,6 @@ class PackagesInventory < ActiveRecord::Base
   ALLOWED_ACTIONS = (INCREMENTAL_ACTIONS + DECREMENTAL_ACTIONS + UNRESTRICTED_ACTIONS).freeze
   INVENTORY_ACTIONS = (DECREMENTAL_ACTIONS + QUANTITY_GAIN_ACTIONS).freeze
 
-  include EventEmitter
   include AppendOnly
   include HookControls
   include Secured
@@ -41,7 +40,6 @@ class PackagesInventory < ActiveRecord::Base
   belongs_to :user
   belongs_to :source, polymorphic: true, touch: true
 
-  after_create { PackagesInventory.emit(self.action, self) }
   scope :for_package, ->(package) { where(package_id: Utils.to_id(package))}
 
   # --------------------
@@ -124,7 +122,7 @@ class PackagesInventory < ActiveRecord::Base
     errors.add(:errors, I18n.t('package_inventory.bad_action', action: action)) unless ALLOWED_ACTIONS.include?(action)
 
     # We prevent any quantity action on a dispatched box/pallet
-    if package.storage_type&.singleton? && QUANTITY_ACTIONS.include?(action) && package.dispatched_quantity.positive?
+    if package&.storage_type&.singleton? && QUANTITY_ACTIONS.include?(action) && package.dispatched_quantity.positive?
       errors.add(:errors, I18n.t('package_inventory.action_requires_undispatch'))
     end
 
@@ -135,7 +133,7 @@ class PackagesInventory < ActiveRecord::Base
     return errors.add(:errors, I18n.t('package_inventory.quantities.zero_invalid')) if quantity.zero?
     if incremental?
       outcome_qty = PackagesInventory::Computer.package_quantity(package) + quantity
-      maximum_qty = package.storage_type&.capped? ? package.storage_type.max_unit_quantity : Float::INFINITY
+      maximum_qty = package&.storage_type&.capped? ? package.storage_type.max_unit_quantity : Float::INFINITY
 
       errors.add(:errors, I18n.t('package_inventory.quantities.enforced_positive', action: action)) if quantity.negative?
       errors.add(:errors, I18n.t('package_inventory.storage_type_max', type: package.storage_type.name, quantity: maximum_qty )) if outcome_qty > maximum_qty

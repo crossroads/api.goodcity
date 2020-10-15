@@ -4,7 +4,20 @@ Rails.application.routes.draw do
   # See how all your routes lay out with "rake routes".
   root :controller => 'static', :action => '/'
 
+  mount GrapeSwaggerRails::Engine => '/swagger' if Rails.env.staging? || Rails.env.development?
+
   namespace "api" do
+    namespace "v2", defaults: { format: "json" } do
+      post "auth/send_pin", to: "authentication#send_pin"
+      post "auth/signup",   to: "authentication#signup"
+      post "auth/verify",   to: "authentication#verify"
+      post "auth/hasura",   to: "authentication#hasura"
+
+      resources :users do
+        get :me, on: :collection
+      end
+    end
+
     namespace "v1", defaults: { format: "json" } do
 
       get "/browse/fetch_packages", to: "packages#index" #temporary redirect for old browse apps
@@ -22,7 +35,7 @@ Rails.application.routes.draw do
       resources :roles, only: [:index, :show]
       resources :boxes, only: [:create]
       resources :pallets, only: [:create]
-      resources :user_roles, only: [:show, :index]
+      resources :user_roles, only: [:show, :index, :create, :destroy]
 
       resources :stocktake_revisions, only: [:create, :update, :destroy]
       resources :stocktakes, only: [:show, :index, :destroy, :create] do
@@ -56,6 +69,7 @@ Rails.application.routes.draw do
           put :receive_offer
           put :mark_inactive
           put :merge_offer
+          put :reopen_offer
         end
       end
       resources :offers_packages, only: [:destroy]
@@ -110,13 +124,18 @@ Rails.application.routes.draw do
       resources :holidays, only: [:index, :create, :destroy, :update]
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
-      resources :organisations_users, only: [:create, :index, :update, :show]
-      resources :gc_organisations, only: [:index, :show] do
+      resources :organisations_users, only: [:create, :index, :update, :show] do
+        collection do
+          get :status_list
+        end
+      end
+      resources :gc_organisations do
         get 'names', on: :collection
         member do
           get :orders
         end
       end
+      resources :organisation_types
 
       get "recent_users", to: "users#recent_users"
       get "mentionable_users", to: "users#mentionable_users"
@@ -177,7 +196,7 @@ Rails.application.routes.draw do
       resources :beneficiaries, only: [:create, :show, :index, :update, :destroy]
       resources :order_transports, only: [:create, :show, :index, :update]
       resources :stockit_activities, only: [:create]
-      resources :countries, only: [:create, :index]
+      resources :countries, only: %i[create index]
       resources :inventory_numbers, only: [:create] do
         put :remove_number, on: :collection
       end

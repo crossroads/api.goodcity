@@ -1,6 +1,8 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :stockit_organisation do
-    name FFaker::Company.name
-    stockit_id 1
+    name { FFaker::Company.name }
+    stockit_id { 1 }
   end
 end

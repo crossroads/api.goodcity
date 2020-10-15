@@ -1,4 +1,4 @@
-class PackagesLocation < ActiveRecord::Base
+class PackagesLocation < ApplicationRecord
   include RollbarSpecification
   include LocationOperations
   include PushUpdatesMinimal
@@ -8,7 +8,7 @@ class PackagesLocation < ActiveRecord::Base
   belongs_to :location
   belongs_to :package
 
-  has_paper_trail class_name: 'Version'
+  has_paper_trail versions: { class_name: 'Version' }
 
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :location, presence: true

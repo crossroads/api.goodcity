@@ -1,4 +1,4 @@
-class ChangeSubscriptionsToPolymorphic < ActiveRecord::Migration
+class ChangeSubscriptionsToPolymorphic < ActiveRecord::Migration[4.2]
   def up
     add_column :subscriptions, :subscribable_type, :string
     add_column :subscriptions, :subscribable_id, :int

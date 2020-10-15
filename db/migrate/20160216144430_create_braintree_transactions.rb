@@ -1,4 +1,4 @@
-class CreateBraintreeTransactions < ActiveRecord::Migration
+class CreateBraintreeTransactions < ActiveRecord::Migration[4.2]
   def change
     create_table :braintree_transactions do |t|
       t.string :transaction_id

@@ -8,7 +8,6 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
   let(:appt_slot) { create :appointment_slot_preset }
 
   describe "GET /appointment_slot_presets" do
-
     context 'When not logged in' do
       it "prevents reading default slots", :show_in_doc do
         get :index
@@ -38,24 +37,22 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
         get :index
         expect(response.status).to eq(403)
       end
-
     end
-
   end
 
   describe "POST /appointment_slot_presets" do
-
     context 'When not logged in' do
       it "denies creation of a default appointment slot" do
-        post :create, appointment_slot_preset: payload
+        post :create, params: { appointment_slot_preset: payload }
         expect(response.status).to eq(401)
       end
     end
 
     context 'When logged in without permissions' do
       before { generate_and_set_token(no_permission_user) }
+
       it "denies creation of a default appointment slot" do
-        post :create, appointment_slot_preset: payload
+        post :create, params: { appointment_slot_preset: payload }
         expect(response.status).to eq(403)
       end
     end
@@ -64,7 +61,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
       before { generate_and_set_token(order_administrator) }
 
       it "allows the order administrator to create an appointment slot preset" do
-        post :create, appointment_slot_preset: payload
+        post :create, params: { appointment_slot_preset: payload }
         expect(response.status).to eq(201)
         expect(parsed_body['appointment_slot_preset']['quota']).to eq(payload['quota'])
         expect(parsed_body['appointment_slot_preset']['hours']).to eq(payload['hours'])
@@ -76,7 +73,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
         existing_preset = FactoryBot.create :appointment_slot_preset, day: 1, hours: 14, minutes: 30, quota: 3
         expect(AppointmentSlotPreset.count).to eq(1)
 
-        post :create, appointment_slot_preset: { day: 1, hours: 14, minutes: 30, quota: 10 }
+        post :create, params: { appointment_slot_preset: { day: 1, hours: 14, minutes: 30, quota: 10 } }
         expect(response.status).to eq(200)
         expect(AppointmentSlotPreset.count).to eq(1)
         expect(AppointmentSlotPreset.first.day).to eq(1)
@@ -92,7 +89,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
   describe "PUT /appointment_slot_presets/1" do
     context 'When not logged in' do
       it "denies update of an appointment slot preset" do
-        put :update, id: appt_slot.id, appointment_slot_preset: payload
+        put :update, params: { id: appt_slot.id, appointment_slot_preset: payload }
         expect(response.status).to eq(401)
       end
     end
@@ -100,7 +97,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
     context 'When logged in as a user without can_manage_settings permission' do
       before { generate_and_set_token(no_permission_user) }
        it "denies update of an appointment slot preset" do
-        put :update, id: appt_slot.id, appointment_slot_preset: payload
+        put :update, params: { id: appt_slot.id, appointment_slot_preset: payload }
         expect(response.status).to eq(403)
       end
     end
@@ -109,7 +106,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
       before { generate_and_set_token(order_administrator) }
       it "allows a supervisor to modify an appointment slot preset" do
         new_preset = FactoryBot.create(:appointment_slot_preset)
-        put :update, id: new_preset.id, appointment_slot_preset: { day: 7 }
+        put :update, params:{ id: new_preset.id, appointment_slot_preset: { day: 7 } }
         expect(response.status).to eq(200)
         expect(parsed_body['appointment_slot_preset']['day']).to eq(7)
       end
@@ -117,7 +114,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
       it "prevents updating a slot with a time that already exists" do
         p1 = FactoryBot.create(:appointment_slot_preset, hours: 23, minutes: 0, day: 2)
         p2 = FactoryBot.create(:appointment_slot_preset, hours: 22, minutes: 0, day: 2)
-        put :update, id: p2.id, appointment_slot_preset: { hours: p1.hours }
+        put :update, params: { id: p2.id, appointment_slot_preset: { hours: p1.hours } }
         expect(parsed_body['errors']).to eq(["An appointment slot already exists for this time"])
         expect(response.status).to eq(422)
       end
@@ -127,7 +124,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
   describe "DELETE /appointment_slot_presets/1" do
     context 'When not logged in' do
       it "denies destruction of an appointment slot preset" do
-        delete :destroy, id: appt_slot.id
+        delete :destroy, params: { id: appt_slot.id }
         expect(response.status).to eq(401)
       end
     end
@@ -136,7 +133,7 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
       before { generate_and_set_token(no_permission_user) }
 
       it "denies destruction of an appointment slot preset" do
-        delete :destroy, id: appt_slot.id
+        delete :destroy, params:{ id: appt_slot.id }
         expect(response.status).to eq(403)
       end
     end
@@ -146,11 +143,10 @@ RSpec.describe Api::V1::AppointmentSlotPresetsController, type: :controller do
 
       it "allows a supervisor to destroy an appointment slot preset" do
         id = appt_slot.id
-        delete :destroy, id: id
+        delete :destroy, params:{ id: id }
         expect(response.status).to eq(200)
         expect(AppointmentSlotPreset.find_by(id: id)).to eq(nil)
       end
     end
   end
-
 end

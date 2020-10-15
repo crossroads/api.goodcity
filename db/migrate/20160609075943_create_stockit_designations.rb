@@ -1,4 +1,4 @@
-class CreateStockitDesignations < ActiveRecord::Migration
+class CreateStockitDesignations < ActiveRecord::Migration[4.2]
   def change
     create_table :stockit_designations do |t|
       t.string :status

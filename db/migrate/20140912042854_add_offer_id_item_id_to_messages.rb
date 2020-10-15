@@ -1,4 +1,4 @@
-class AddOfferIdItemIdToMessages < ActiveRecord::Migration
+class AddOfferIdItemIdToMessages < ActiveRecord::Migration[4.2]
   def change
     add_column :messages, :offer_id, :integer
     add_column :messages, :item_id, :integer

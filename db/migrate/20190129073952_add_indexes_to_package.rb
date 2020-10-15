@@ -1,4 +1,4 @@
-class AddIndexesToPackage < ActiveRecord::Migration
+class AddIndexesToPackage < ActiveRecord::Migration[4.2]
 
   def up
     execute "CREATE EXTENSION IF NOT EXISTS btree_gin;"

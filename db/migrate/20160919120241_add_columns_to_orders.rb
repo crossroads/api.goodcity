@@ -1,4 +1,4 @@
-class AddColumnsToOrders < ActiveRecord::Migration
+class AddColumnsToOrders < ActiveRecord::Migration[4.2]
   def change
     add_column :orders, :created_by_id, :integer
     add_column :orders, :processed_by_id, :integer

@@ -6,8 +6,6 @@ describe Api::V1::PackageCategorySerializer do
   let(:serializer) { Api::V1::PackageCategorySerializer.new(package_category).as_json }
   let(:json)       { JSON.parse( serializer.to_json ) }
 
-  it_behaves_like 'name_with_language'
-
   it "creates JSON" do
     expect(json['package_category']['id']).to eql(package_category.id)
     expect(json['package_category']['name']).to eql(package_category.name)

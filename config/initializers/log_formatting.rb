@@ -41,6 +41,5 @@ if %w(staging production).include?(Rails.env)
     # Turn down Sidekiq's verbose logging
     # https://github.com/mperham/sidekiq/wiki/Logging#default-logger-and-verboseness
     Sidekiq::Logging.logger.level = :warn
-
   end
 end

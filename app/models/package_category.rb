@@ -1,4 +1,4 @@
-class PackageCategory < ActiveRecord::Base
+class PackageCategory < ApplicationRecord
   include CacheableJson
 
   translates :name

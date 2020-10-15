@@ -1,10 +1,10 @@
-class PackageSet < ActiveRecord::Base
+class PackageSet < ApplicationRecord
   include Watcher
 
   has_many   :packages
   belongs_to :package_type
 
-  after_destroy   :unlink_packages
+  before_destroy  :unlink_packages
   validate        :ensure_type_integrity, on: [:update]
   validates       :package_type_id, presence: true
 
@@ -12,9 +12,12 @@ class PackageSet < ActiveRecord::Base
   # Auto-destroy
   # ---------------------
 
-  watch [Package], on: [:update, :destroy] do |package|
-    package_set_id = package.package_set_id_changed? ? package.package_set_id_was : package.package_set_id
+  watch [Package], on: [:destroy], timing: :before do |package, event|
+    package.update!(package_set_id: nil)
+  end
 
+  watch [Package], on: [:update, :destroy] do |package, event|
+    package_set_id = package.saved_change_to_attribute?(:package_set_id) ? package.package_set_id_before_last_save : package.package_set_id
     package_set = PackageSet.find_by(id: package_set_id)
     package_set.destroy! if package_set.present? && package_set.packages.length < 2
   end
@@ -44,14 +47,16 @@ class PackageSet < ActiveRecord::Base
   # When an item has it's type set for the first time, we initialize the set for its packages
   #
   watch [Item], on: [:update] do |item|
-    next unless item.package_type_id_changed? && item.package_type_id_was.blank?
+    next unless item.package_type_id_previously_changed? && item.package_type_id_before_last_save.blank?
 
     children = Package.where(item: item)
 
     link_packages(children, item.package_type) if children.length > 1
   end
 
-  private
+  # ---------------------
+  # Class methods
+  # ---------------------
 
   def self.link_packages(packages, package_type)
     package_set = packages.find { |p| p.package_set_id.present? }&.package_set
@@ -61,6 +66,10 @@ class PackageSet < ActiveRecord::Base
       package.update(package_set_id: package_set.id)
     end
   end
+
+  # ---------------------
+  # Methods
+  # ---------------------
 
   def unlink_packages
     Package.where(package_set_id: id).update_all(package_set_id: nil)

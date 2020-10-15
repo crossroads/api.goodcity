@@ -1,4 +1,4 @@
-class AddOrderIdToSubscriptions < ActiveRecord::Migration
+class AddOrderIdToSubscriptions < ActiveRecord::Migration[4.2]
   def change
     add_reference :subscriptions, :order, index: true, foreign_key: true
   end

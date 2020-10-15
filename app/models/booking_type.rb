@@ -1,8 +1,8 @@
 
-class BookingType < ActiveRecord::Base
+class BookingType < ApplicationRecord
   has_many :orders
-
-  validates_uniqueness_of :name_en, :name_zh_tw
+  
+  validates :identifier, :name_en, :name_zh_tw, uniqueness: true
 
   def appointment?
     identifier == "appointment"

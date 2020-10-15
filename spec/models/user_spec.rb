@@ -2,14 +2,15 @@ require "rails_helper"
 
 describe User, :type => :model do
   let!(:mobile) { generate(:mobile) }
-  let(:address_attributes) { {"district_id" => "9", "address_type" => "profile"} }
+  let(:district) { create :district }
+  let(:address_attributes) { {"district_id" => district.id.to_s, "address_type" => "profile"} }
   let(:user_attributes) { FactoryBot.attributes_for(:user).merge("mobile" => mobile, "address_attributes" => address_attributes).stringify_keys }
   let(:supervisor) { create(:user, :with_supervisor_role, :with_can_login_to_stock_permission, :with_can_login_to_admin_permission) }
   let(:order_fulfilment_user) { create(:user, :with_order_fulfilment_role, :with_can_login_to_stock_permission) }
   let(:reviewer) { create(:user, :with_reviewer_role, :with_can_login_to_admin_permission) }
-  let(:charity) { create(:user, :with_charity_role, :with_can_login_to_browse_permission) }
+  let(:charity) { create(:user, :charity) }
 
-  let(:charity_users) { (1..5).map { create(:user, :with_charity_role, :with_can_login_to_browse_permission) } }
+  let(:charity_users) { (1..5).map { create(:user, :charity) } }
 
   let(:invalid_user_attributes) { {"mobile" => "85211111112", "first_name" => "John2", "last_name" => "Dey2"} }
 
@@ -50,25 +51,26 @@ describe User, :type => :model do
         end
       end
 
-      context "for stock" do
-        it "allows blank" do
-          user = User.new(mobile: "")
-          user.request_from_stock = true
-          expect(user.valid?).to be_truthy
-        end
-
-        it "allows valid mobile number" do
-          user = User.new(mobile: "+85251234567")
-          user.request_from_stock = true
-          expect(user.valid?).to be_truthy
-        end
-
-        it "do not allows invalid hk number" do
-          user = User.new(mobile: "+44123456675")
-          user.request_from_stock = true
-          expect(user.valid?).to be_falsey
-        end
+      it "allows a blank mobile if an email is present" do
+        user = User.new(mobile: "", email: "some@email.com")
+        expect(user.valid?).to be_truthy
       end
+
+      it "allows a blank email if a mobile is present" do
+        user = User.new(mobile: "+85291111111", email: "")
+        expect(user.valid?).to be_truthy
+      end
+
+      it "do not allows invalid hk number" do
+        user = User.new(mobile: "+44123456675")
+        expect(user.valid?).to be_falsey
+      end
+
+      it "prevents a blank mobile and blank email" do
+        user = User.new(mobile: "", email: "")
+        expect(user.valid?).to be_falsey
+      end
+
       it { is_expected.to allow_value("+85251234567").for(:mobile) }
       it { is_expected.to allow_value("+85261234567").for(:mobile) }
       it { is_expected.to allow_value("+85291234567").for(:mobile) }
@@ -109,30 +111,50 @@ describe User, :type => :model do
   end
 
   describe ".search" do
-    it "will return users according to searchText" do
-      search_options = {search_text: charity_users.first.first_name, role_name: "Charity"}
-      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
+    before do
+      sample_role = create :role, name: "Sample"
+      charity_users.each { |u| sample_role.grant(u) }
     end
 
-    it "will return users according to role type" do
-      search_options = {search_text: charity_users.first.first_name, role_name: "Charity"}
-      expect(User.search(search_options).first.roles.pluck(:name)).to include("Charity")
+    it "will return users according to searchText" do
+      expect(User.search(charity_users.first.first_name)).to include(charity_users.first)
     end
 
     it "will return users based on email from search text" do
       charity_users.first.update(email: "charity@abc.com")
-      search_options = {search_text: charity_users.first.email, role_name: "Charity"}
-      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
+      expect(User.search(charity_users.first.email)).to include(charity_users.first)
     end
 
     it "will return users based on mobile from search text" do
-      search_options = {search_text: charity_users.first.mobile, role_name: "Charity"}
-      expect(User.search(search_options).pluck(:id)).to include(charity_users.first.id)
+      expect(User.search(charity_users.first.mobile)).to include(charity_users.first)
     end
 
     it "will return nothing if searchText does not match any users" do
-      search_options = {search_text: "zzzzz", role_name: "Charity"}
-      expect(User.search(search_options).length).to eq(0)
+      expect(User.search("zzzzz").length).to eq(0)
+    end
+
+    context 'typo tolerance' do
+      let(:user) { create :user, first_name: "Abul", last_name: "Asar", email: "goodcity@team.com", mobile: "+85287655678" }
+
+      before { touch(user) }
+
+      it { expect(User.search("")).not_to include(user) }
+      it { expect(User.search("@@@@")).not_to include(user) }
+      it { expect(User.search("Abl Asr")).to include(user) }
+      it { expect(User.search("Abul Aar")).to include(user) }
+      it { expect(User.search("Aar Abul")).to include(user) }
+      it { expect(User.search("A Abul")).to include(user) }
+      it { expect(User.search("goodcity@team.com")).to include(user) }
+      it { expect(User.search("goodcity@tmea.com")).to include(user) }
+      it { expect(User.search("goodCITY@tmea.com")).to include(user) }
+      it { expect(User.search("123@890.com")).not_to include(user) }
+      it { expect(User.search("good@890.hk")).not_to include(user) }
+      it { expect(User.search("goodcity@gmail.com")).to include(user) }
+      it { expect(User.search("goodcity@team")).to include(user) }
+      it { expect(User.search("+85287655678")).to include(user) }
+      it { expect(User.search("+87655678")).to include(user) }
+      it { expect(User.search("87665578")).to include(user) }
+      it { expect(User.search("87655679")).to include(user) }
     end
   end
 
@@ -189,21 +211,13 @@ describe User, :type => :model do
       end
     end
 
-    context "when mobile blank" do
-      let(:mobile) { nil }
-      let(:email) { "abc@example.com" }
+    context "when mobile and email are blank" do
       let(:new_user) { build(:user, mobile: nil) }
+      let(:payload) { user_attributes.except('mobile', 'email') }
 
       it "should raise validation error" do
-        user = User.creation_with_auth(user_attributes, DONOR_APP)
+        user = User.creation_with_auth(payload, DONOR_APP)
         expect(user.errors[:mobile]).to include("can't be blank")
-        expect(user.errors[:mobile]).to include("is invalid")
-      end
-
-      it "accepts when browse app" do
-        allow(new_user).to receive(:send_verification_pin)
-        expect(User).to receive(:new).with(user_attributes).and_return(new_user)
-        user = User.creation_with_auth(user_attributes, BROWSE_APP)
       end
     end
   end
@@ -235,22 +249,22 @@ describe User, :type => :model do
       user.set_verified_flag('mobile')
       expect(user.is_mobile_verified).to be_truthy
     end
-
-    it "should set verified flag for mobile if nil params come" do
-      # to verify login from other apps
-      user.update_column(:is_mobile_verified, false)
-      expect(user.is_mobile_verified).to be_falsey
-      user.set_verified_flag(nil)
-      expect(user.is_mobile_verified).to be_truthy
-    end
   end
 
-  describe "#generate_auth_token" do
-    it "create an auth_token record, after user creation" do
+  describe "#refresh_auth_token!" do
+    it "triggers after user creation" do
       user = build(:user)
-      expect(user.auth_tokens.size).to eq(0)
-      user.save!
-      expect(user.auth_tokens.size).to_not eq(0)
+
+      expect(user).to receive(:refresh_auth_token!).once.and_call_original
+      expect { user.save! }.to change(AuthToken, :count).by(1)
+      expect(user.reload.auth_tokens.size).to eq(1)
+    end
+
+    it "deletes old tokens and recreates a new one" do
+      user  = create(:user)
+      expect {
+        user.refresh_auth_token!
+      }.to change { user.reload.auth_tokens.first.id }
     end
   end
 
@@ -297,7 +311,7 @@ describe User, :type => :model do
       reviewer_role = create :role, name: "Reviewer"
       supervisor_role = create :role, name: "Supervisor"
       create :user_role, user: user, role: reviewer_role
-      create :user_role, user: user, role: supervisor_role, expiry_date: 5.days.ago
+      create :user_role, user: user, role: supervisor_role, expires_at: 5.days.ago
 
       expect(user.user_role_names).to include("Reviewer")
       expect(user.user_role_names.count).to eq(1)
@@ -427,6 +441,21 @@ describe User, :type => :model do
       user.update_column(:email, '')
       expect(User.find_user_by_mobile_or_email(nil, '')).to eql(nil)
     end
+  end
 
+  describe "Lifecycle hooks" do
+    let(:user) { create :user, :with_token }
+
+    before { touch(user) }
+
+    context "when destroyed" do
+      it "deletes any auth tokens remaining" do
+        expect {
+          user.destroy
+        }.to change {
+          AuthToken.where(user: user).count
+        }.from(1).to(0)
+      end
+    end
   end
 end

@@ -1,7 +1,9 @@
+# frozen_String_literal: true
+
 FactoryBot.define do
   factory :printer do
-    active false
-    location_id 1
+    association :location
+    active { false }
     name { FFaker::Name.name }
     host { FFaker::Name.name }
     port { FFaker::Name.name }
@@ -9,7 +11,7 @@ FactoryBot.define do
     password { FFaker::Name.name }
 
     trait :active do
-      active true
+      active { true }
     end
   end
 end

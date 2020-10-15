@@ -12,33 +12,33 @@ context StocktakeProcessor do
   }
 
   before { initialize_inventory(package_1, package_2, package_3, location: location) }
-  
+
   describe 'Processing a stocktake' do
     before do
-      create(:stocktake_revision, package: package_1, stocktake: stocktake, quantity: 12)  # we counted more 
+      create(:stocktake_revision, package: package_1, stocktake: stocktake, quantity: 12)  # we counted more
       create(:stocktake_revision, package: package_2, stocktake: stocktake, quantity: 8)   # we counted less
       create(:stocktake_revision, package: package_3, stocktake: stocktake, quantity: 10)  # we counted the same amount
     end
 
     it 'creates packages_inventory rows for each difference found' do
-      expect { 
-        subject.process_stocktake(stocktake);
+      expect {
+        subject.process_stocktake(stocktake.reload)
       }.to change(PackagesInventory, :count).by(2)
 
       changed_ids = PackagesInventory.last(2).map { |p| p.package_id }
       expect(changed_ids).to match_array([package_1.id, package_2.id])
     end
 
-    it 'updates the processed_delta with the recorded difference' do      
-      expect { 
-        subject.process_stocktake(stocktake);
+    it 'updates the processed_delta with the recorded difference' do
+      expect {
+        subject.process_stocktake(stocktake.reload)
       }.to change {
         stocktake.reload.revisions.map(&:processed_delta)
       }.from([0,0,0]).to([2,-2,0])
     end
 
     it 'records a gain to account for positive differences' do
-      errors = subject.process_stocktake(stocktake);
+      errors = subject.process_stocktake(stocktake.reload)
 
       expect(errors.length).to eq(0)
       packages_inventory = PackagesInventory.last(2).select { |pi| pi.package_id == package_1.id }.first
@@ -50,7 +50,7 @@ context StocktakeProcessor do
     end
 
     it 'records a loss to account for negative differences' do
-      errors = subject.process_stocktake(stocktake);
+      errors = subject.process_stocktake(stocktake.reload)
 
       expect(errors.length).to eq(0)
       packages_inventory = PackagesInventory.last(2).select { |pi| pi.package_id == package_2.id }.first
@@ -62,8 +62,8 @@ context StocktakeProcessor do
     end
 
     it 'doesnt record anything if the quantity is already correct' do
-      errors = subject.process_stocktake(stocktake);
-      
+      errors = subject.process_stocktake(stocktake.reload)
+
       expect(errors.length).to eq(0)
       expect(
         PackagesInventory
@@ -88,15 +88,15 @@ context StocktakeProcessor do
         stocktake.reload.revisions.pluck(:state).uniq
       }.from(['pending']).to(['processed'])
     end
-    
+
     it 'fails to process an already processed stocktake' do
-      expect { subject.process_stocktake(stocktake); }.to change(PackagesInventory, :count).by(2)
-      expect { subject.process_stocktake(stocktake); }.to raise_error(Goodcity::InvalidStateError).with_message('Cannot process a closed or cancelled Stocktake')
+      expect { subject.process_stocktake(stocktake.reload)  }.to change(PackagesInventory, :count).by(2)
+      expect { subject.process_stocktake(stocktake.reload)  }.to raise_error(Goodcity::InvalidStateError).with_message('Cannot process a closed or cancelled Stocktake')
     end
 
     it 'fails to process a stocktake with revisions marked as dirty' do
       StocktakeRevision.last.update(dirty: true)
-      expect { subject.process_stocktake(stocktake); }.to raise_error(Goodcity::InvalidStateError).with_message('Some quantity revisions require a re-count')
+      expect { subject.process_stocktake(stocktake)  }.to raise_error(Goodcity::InvalidStateError).with_message('Some quantity revisions require a re-count')
     end
 
     describe 'when an error occurs' do
@@ -107,17 +107,17 @@ context StocktakeProcessor do
 
       it 'doesnt record any inventory change' do
         expect {
-          errors = subject.process_stocktake(stocktake);
+          errors = subject.process_stocktake(stocktake.reload)
           expect(errors.length).to eq(1)
           expect(errors.first[:message]).to match(/please undesignate first/)
         }.not_to change(PackagesInventory, :count)
       end
 
       it 'adds a warning to the revision record' do
-        stocktake_revision = StocktakeRevision.find_by(package: package_2);
-        expect(stocktake_revision.reload.warning).to eq('');
-        subject.process_stocktake(stocktake);
-        expect(stocktake_revision.reload.warning).to match(/please undesignate first/);
+        stocktake_revision = StocktakeRevision.find_by(package: package_2)
+        expect(stocktake_revision.reload.warning).to eq('')
+        subject.process_stocktake(stocktake.reload)
+        expect(stocktake_revision.reload.warning).to match(/please undesignate first/)
       end
     end
   end
