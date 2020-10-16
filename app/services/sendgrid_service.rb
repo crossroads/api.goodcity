@@ -18,7 +18,7 @@ class SendgridService
 
   def set_personalizaton_variables
     @personalization = SendGrid::Personalization.new
-    @personalization.add_to(user.email)
+    @personalization.add_to(sendgrid_email_formation(user.email))
     @personalization.add_bcc(sendgrid_email_formation(ENV["BCC_EMAIL"], I18n.t("email_from_name"))) if @add_bcc
     @personalization.add_dynamic_template_data(substitution_hash)
     @mail.add_personalization(@personalization)
