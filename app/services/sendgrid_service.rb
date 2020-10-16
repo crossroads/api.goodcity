@@ -125,6 +125,6 @@ class SendgridService
   end
 
   def send_to_sendgrid?
-    Rails.env.production? || Rails.env.staging?
+    Rails.env.production?
   end
 end
