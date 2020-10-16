@@ -92,7 +92,7 @@ module FuzzySearch
     #
     scope :search, ->(search_text) {
       similarities = search_prop_names.reduce({}) do |sims, f|
-        sims[f] = "SIMILARITY(#{f}, '#{search_text}')"
+        sims[f] = self.model.sanitize_sql_for_conditions(["SIMILARITY(#{f}, ?)", search_text])
         sims
       end 
 
