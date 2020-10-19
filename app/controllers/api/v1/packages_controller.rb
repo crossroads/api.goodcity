@@ -212,12 +212,13 @@ module Api
       end
 
       def print_inventory_label
+        printer = PrintersUser.where(user_id: User.current_user.id, tag: params[:tag]).first.try(:printer)
+        return render json: { errors: I18n.t("package.printer_not_found") }, status: 400 unless printer
         opts = {
           print_count: print_count,
-          label: "inventory_label",
-          tag: params[:tag]
+          label: "inventory_label"
         }
-        PrintLabelJob.perform_later(@package.id, User.current_user.id, opts)
+        PrintLabelJob.perform_later(@package.id, printer.id, opts)
         render json: {}, status: 204
       end
 
