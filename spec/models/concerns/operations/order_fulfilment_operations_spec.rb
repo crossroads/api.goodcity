@@ -95,6 +95,26 @@ context OrderFulfilmentOperations do
         end
       end
 
+      context "exceed quantity than designated-quantity" do
+        context "of a \"#{state} order\"" do
+          let(:order) { create(:order, state: state) }
+          let(:orders_package) { create(:orders_package, :with_state_designated, order: order, package: pkg, quantity: 30) }
+
+          before do
+            touch(orders_package)
+            touch(inventory_length_before)
+          end
+
+          it 'does not allow to dispatch more than designated-quantity' do
+            expect {
+              subject::Operations::dispatch(orders_package, from_location: pkg.locations.first, quantity: orders_package.quantity + 10)
+            }.to raise_error(
+              Goodcity::ActionNotAllowedError
+            ).with_message("You cannot dispatch more than were ordered.")
+          end
+        end
+      end
+
       context "partial quantity" do
         context "of a \"#{state} order\"" do
           let(:dispatched_qty) { 3 }
