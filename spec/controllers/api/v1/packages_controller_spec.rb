@@ -1310,7 +1310,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "should print barcode service call with inventory number" do
       package.inventory_number = inventory_number
       package.save
-      expect(PrintLabelJob).to receive(:perform_later).with(package.id, printer_user.printer.id, {label: 'inventory_label', print_count:1})
+      expect(PrintLabelJob).to receive(:perform_later).with(package.id, printer_user.printer.id, {label_type: 'inventory_label', print_count:1})
 
       post :print_barcode, params: { package_id: package.id, labels: 1, tag: 'stock' }
     end
