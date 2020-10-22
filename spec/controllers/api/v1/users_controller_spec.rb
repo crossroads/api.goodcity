@@ -127,7 +127,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it "is tolerant to typos" do
       get :index, params: { searchText: "jannne"  }
       expect(response.status).to eq(200)
-      expect(parsed_body['users'].count).to eq(2)
+      expect(parsed_body['users'].count).to eq(3)
 
       ids = parsed_body['users'].map { |u| u['id'] }
 
