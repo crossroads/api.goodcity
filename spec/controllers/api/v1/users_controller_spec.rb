@@ -55,7 +55,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 
-  describe "GET searched user" do    
+  describe "GET searched user" do
     let(:role_1) { create(:role, name: "Role 1", level: 1) }
     let(:role_2) { create(:role, name: "Role 2", level: 5) }
 
@@ -64,8 +64,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:user_3) { create(:user, :charity, first_name: "John", last_name: 'Doe') }
     let(:user_4) { create(:user, :charity, first_name: "Foo", last_name: 'Bar') }
     let(:user_5) { create(:user, :charity, first_name: "Stephen", last_name: 'K') }
+    let(:user_6) { create(:user, first_name: 'Jango', last_name: 'Charlie') }
 
-    let(:supervisor) { create :user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor' }
+    let(:supervisor) { create :user, :with_can_read_or_modify_user_permission, role_name: 'Supervisor', first_name: 'Jane', last_name: 'Brown' }
 
     before do
       User.destroy_all # Ensure no lingering users exist
@@ -126,7 +127,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it "is tolerant to typos" do
       get :index, params: { searchText: "jannne"  }
       expect(response.status).to eq(200)
-      expect(parsed_body['users'].count).to eq(2)
+      expect(parsed_body['users'].count).to eq(3)
 
       ids = parsed_body['users'].map { |u| u['id'] }
 
@@ -138,6 +139,22 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       get :index, params: { searchText: "jneo"  }
       expect(response.status).to eq(200)
       expect(parsed_body['users'].count).to eq(0)
+    end
+
+    context 'when search scope is restricted for charity users' do
+      it 'returns charity users' do
+        get :index, params: { searchText: 'jannne', role_name: 'Charity' }
+        expect(response.status).to eq(200)
+        expect(parsed_body['users'].count).to eq(2)
+      end
+    end
+
+    context 'when search scope is not restricted to any roles' do
+      it 'returns users matching the searchText' do
+        get :index, params: { searchText: 'jan' }
+        expect(response.status).to eq(200)
+        expect(parsed_body['users'].count).to eq(3)
+      end
     end
   end
 
