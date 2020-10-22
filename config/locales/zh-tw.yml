@@ -133,6 +133,7 @@ zh-tw:
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
     cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
+    exceed_dispatch_quantity: "You cannot dispatch more than were ordered."
   stocktakes:
     invalid_state: Cannot process a closed or cancelled Stocktake
     dirty_revisions: Some quantity revisions require a re-count
