@@ -92,7 +92,7 @@ module Api
         records = records.search_by_role(params['role_name']) if params['role_name'].present?
 
         data = ActiveModel::ArraySerializer.new(records,
-          each_serializer: serializer,
+          each_serializer: Api::V1::UserDetailsSerializer,
           include_user_roles: true,
           root: 'users'
         ).as_json
