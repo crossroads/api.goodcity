@@ -171,6 +171,14 @@ class User < ApplicationRecord
       .order("orders.id DESC").limit(5)
   end
 
+  def self.search_by_role(name)
+    if name == 'Charity'
+      joins(:organisations_users).where(organisations_users: { status: [OrganisationsUser::ACTIVE_STATUS] })
+    else
+      with_roles(name)
+    end
+  end
+
   def allowed_login?(app_name)
     if [DONOR_APP, BROWSE_APP].include?(app_name)
       return true
