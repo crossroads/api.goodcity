@@ -55,7 +55,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 
-  describe "GET searched user" do
+  describe "GET searched user", focus: true do
     let(:role_1) { create(:role, name: "Role 1", level: 1) }
     let(:role_2) { create(:role, name: "Role 2", level: 5) }
 
