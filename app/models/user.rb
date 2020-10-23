@@ -171,12 +171,15 @@ class User < ApplicationRecord
       .order("orders.id DESC").limit(5)
   end
 
-  def self.search_by_role(name)
-    if name == 'Charity'
-      joins(:organisations_users).where(organisations_users: { status: [OrganisationsUser::ACTIVE_STATUS] })
-    else
-      with_roles(name)
-    end
+  def self.filter_users(opts)
+    res = search(opts['searchText']) if opts['searchText'].present?
+    res = res.by_organisation_status(opts['organisation_status'].split(',')) if opts['organisation_status'].present?
+    res = res.with_roles(opts['role_name']) if opts['role_name'].present?
+    res
+  end
+
+  def self.by_organisation_status(status_list)
+    joins(:organisations_users).where(organisations_users: { status: status_list })
   end
 
   def allowed_login?(app_name)
