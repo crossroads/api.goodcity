@@ -459,7 +459,7 @@ describe User, :type => :model do
     end
   end
 
-  describe '.by_organisation_status' do
+  describe '.with_organisation_status' do
     let(:role_1) { create(:role, name: "Role 1", level: 1) }
     let(:role_2) { create(:role, name: "Role 2", level: 5) }
 
@@ -485,11 +485,11 @@ describe User, :type => :model do
     end
 
     it 'search users by organisation status' do
-      users = User.by_organisation_status(%w[pending approved])
+      users = User.with_organisation_status(%w[pending approved])
       expect(users.count).to eq(3)
       expect(users).to match_array([user_1, user_2, user_3])
 
-      users = User.by_organisation_status(%w[expired denied])
+      users = User.with_organisation_status(%w[expired denied])
       expect(users.count).to eq(2)
       expect(users).to match_array([user_4, user_5])
     end
