@@ -2,8 +2,26 @@ class User < ApplicationRecord
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdates
   include RollbarSpecification
-  include UserSearch
   include ManageUserRoles
+  include FuzzySearch
+
+  # --------------------
+  # Configuration
+  # --------------------
+
+  configure_search(
+    props: [
+      :first_name,
+      :last_name,
+      :email,
+      :mobile
+    ],
+    default_tolerance: 0.8
+  )
+
+  # --------------------
+  # Relationships
+  # --------------------
 
   has_one :address, as: :addressable, dependent: :destroy
   has_many :auth_tokens, dependent: :destroy
@@ -37,9 +55,11 @@ class User < ApplicationRecord
   has_many :used_locations, -> { order "packages.stockit_moved_on DESC" }, class_name: "Location", through: :moved_packages, source: :location
   has_many :created_orders, -> { order "id DESC" }, class_name: "Order", foreign_key: :created_by_id
 
-  before_validation :downcase_email
-
   accepts_nested_attributes_for :address, allow_destroy: true
+
+  # --------------------
+  # Validations
+  # --------------------
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: lambda { mobile.present? }
   validates :mobile, presence: true, if: lambda { email.blank? }
@@ -56,7 +76,19 @@ class User < ApplicationRecord
             inclusion: { in: I18n.available_locales.map { |lang| lang.to_s.downcase } },
             allow_nil: true
 
+  # --------------------
+  # Lifecycle hooks
+  # --------------------
+
   after_create :refresh_auth_token!
+
+  before_validation :downcase_email
+
+  before_destroy :delete_auth_tokens
+
+  # --------------------
+  # Scopes
+  # --------------------
 
   scope :reviewers, -> { where(roles: {name: "Reviewer"}).joins(:active_roles) }
   scope :supervisors, -> { where(roles: {name: "Supervisor"}).joins(:active_roles) }
@@ -66,13 +98,16 @@ class User < ApplicationRecord
   scope :order_administrators, -> { where(roles: { name: 'Order administrator' }).joins(:active_roles) }
   scope :system, -> { where(roles: {name: "System"}).joins(:active_roles) }
 
-  scope :user_by_roles, lambda { |role| where(roles: { name: role}).joins(:active_roles) }
   scope :staff, -> { where(roles: {name: ["Supervisor", "Reviewer"]}).joins(:active_roles) }
-  scope :by_roles, ->(role_names) { where(roles: {name: role_names }).joins(:active_roles) }
   scope :except_stockit_user, -> { where.not(first_name: "Stockit", last_name: "User") }
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
-  scope :with_roles, ->(role_names) { where(roles: { name: role_names}).joins(:active_roles) }
+  scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
+  scope :with_organisation_status, ->(status_list) { joins(:organisations_users).where(organisations_users: { status: status_list }) }
+
+  # --------------------
+  # Methods
+  # --------------------
 
   # used when reviewer is logged into donor app
   attr :treat_user_as_donor
@@ -135,6 +170,13 @@ class User < ApplicationRecord
   def self.recent_orders_created_for(user_id)
     joins(:created_orders).where(orders: {submitted_by_id: user_id})
       .order("orders.id DESC").limit(5)
+  end
+
+  def self.filter_users(opts)
+    res = search(opts['searchText']) if opts['searchText'].present?
+    res = res.with_organisation_status(opts['organisation_status'].split(',')) if opts['organisation_status'].present?
+    res = res.with_roles(opts['role_name']) if opts['role_name'].present?
+    res
   end
 
   def allowed_login?(app_name)
@@ -260,6 +302,10 @@ class User < ApplicationRecord
       props["contact_organisation_name_zh_tw"] = org.name_zh_tw
     end
     props
+  end
+
+  def delete_auth_tokens
+    AuthToken.where(user: self).destroy_all
   end
 
   def refresh_auth_token!
