@@ -88,8 +88,7 @@ module Api
 
       def search_user_and_render_json
         records = @users.limit(25)
-        records = records.search(params['searchText']) if params['searchText'].present?
-        records = records.search_by_role(params['role_name']) if params['role_name'].present?
+        records = records.filter_users(params)
 
         data = ActiveModel::ArraySerializer.new(records,
           each_serializer: Api::V1::UserDetailsSerializer,
