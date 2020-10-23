@@ -55,7 +55,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
   end
 
-  describe "GET searched user" do
+  describe "GET searched user", focus: true do
     let(:role_1) { create(:role, name: "Role 1", level: 1) }
     let(:role_2) { create(:role, name: "Role 2", level: 5) }
 
@@ -141,9 +141,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(parsed_body['users'].count).to eq(0)
     end
 
-    context 'when search scope is restricted for charity users' do
+    context 'when search scope is restricted for organisation_status' do
       it 'returns charity users' do
-        get :index, params: { searchText: 'jannne', role_name: 'Charity' }
+        get :index, params: { searchText: 'jannne', organisation_status: 'pending,approved' }
         expect(response.status).to eq(200)
         expect(parsed_body['users'].count).to eq(2)
       end
