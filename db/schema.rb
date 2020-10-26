@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_06_145926) do
+ActiveRecord::Schema.define(version: 2020_10_26_042657) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -620,6 +620,8 @@ ActiveRecord::Schema.define(version: 2020_10_06_145926) do
     t.boolean "allow_pallet", default: false
     t.boolean "allow_expiry_date", default: false
     t.decimal "default_value_hk_dollar"
+    t.text "description_en"
+    t.text "description_zh_tw"
     t.index ["allow_requests"], name: "index_package_types_on_allow_requests"
     t.index ["location_id"], name: "index_package_types_on_location_id"
     t.index ["name_en"], name: "package_types_name_en_search_idx", using: :gin
