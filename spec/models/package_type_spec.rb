@@ -13,6 +13,10 @@ RSpec.describe PackageType, type: :model do
     it { is_expected.to have_db_column(:allow_box).of_type(:boolean) }
     it { is_expected.to have_db_column(:allow_pallet).of_type(:boolean) }
     it { is_expected.to have_db_column(:allow_expiry_date).of_type(:boolean) }
+    it { is_expected.to have_db_column(:length).of_type(:integer) }
+    it { is_expected.to have_db_column(:width).of_type(:integer) }
+    it { is_expected.to have_db_column(:height).of_type(:integer) }
+    it { is_expected.to have_db_column(:department).of_type(:string) }
   end
 
   describe 'Associations' do
