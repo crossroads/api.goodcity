@@ -447,7 +447,7 @@ class Order < ApplicationRecord
 
   def self.generate_gc_code(detail_type)
     prefix = order_code_prefix(detail_type)
-    splitter = prefix.length.to_i+1
+    splitter = prefix.length.to_i + 1
     reg = %r/^\d+$/
 
     code = next_code(detail_type, splitter, reg) + 1

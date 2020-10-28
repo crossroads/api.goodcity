@@ -63,7 +63,7 @@ zh-tw:
   activerecord:
     attributes:
       order:
-        code: "Code"
+        code: "編碼"
       user:
         mobile: "手提電話"
         email: "電郵"
