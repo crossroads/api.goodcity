@@ -112,6 +112,20 @@ RSpec.describe OrdersPackage, type: :model do
         }.to change(orders_package, :state).to('designated')
       end
     end
+
+    describe '#cancel' do
+      it 'changes state from requested to designated' do
+        expect{
+          orders_package.cancel
+        }.to change(orders_package, :state).to('cancelled')
+      end
+
+      it 'does not change the quantity' do
+        expect{
+          orders_package.cancel
+        }.not_to change(orders_package, :quantity)
+      end
+    end
   end
 
   describe "#for_order" do
