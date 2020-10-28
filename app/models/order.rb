@@ -1,5 +1,4 @@
 class Order < ApplicationRecord
-
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdatesMinimal
   include OrderFiltering
@@ -69,7 +68,7 @@ class Order < ApplicationRecord
 
   NON_PROCESSED_STATES = ["processing", "submitted", "draft"].freeze
 
-  INTERNATIONAL_ORDERS=["Shipment","CarryOut"].freeze
+  INTERNATIONAL_ORDERS = ["Shipment", "CarryOut"].freeze
 
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, "submitted", "processing", "draft"].flatten.uniq.freeze
 
@@ -446,25 +445,14 @@ class Order < ApplicationRecord
     return ""
   end
 
-  def self.generate_gc_code(detail_type='GoodCity')
+  def self.generate_gc_code(detail_type)
     prefix = order_code_prefix(detail_type)
-    splitter= prefix.length.to_i+1
+    splitter = prefix.length.to_i+1
     reg = %r/^\d+$/
 
-    code = missing_code_for(detail_type, splitter, reg) || next_code(detail_type, splitter, reg) + 1
+    code = next_code(detail_type, splitter, reg) + 1
     code = code.to_s.rjust(5, '0')
     "#{prefix}#{code}"
-  end
-
-  def self.missing_code_for(type, splitter, reg)
-    query = <<-query
-      select s.i as first_missing_code from generate_series(1, :max) s(i) WHERE s.i not in (
-          select CAST(substring(orders.code, :splitter) as INTEGER) as code from orders where orders.detail_type = :type and substring(orders.code, :splitter) ~ :reg
-      ) limit 1
-    query
-
-    code = connection.exec_query(sanitize_sql_array([query, type: type, reg: reg.source, splitter: splitter, max: Order.where(detail_type: type).count]))
-    code.first.present? ? code.first["first_missing_code"] : nil
   end
 
   def self.next_code(type, splitter, reg)
@@ -474,10 +462,6 @@ class Order < ApplicationRecord
 
     code = connection.exec_query(sanitize_sql_array([query, type: type, splitter: splitter, reg: reg.source])).first["code"] || 0
     code
-  end
-
-  def self.gc_code(record)
-    record ? record.code.gsub(/\D/, "").to_i + 1 : 1
   end
 
   def goodcity_order?

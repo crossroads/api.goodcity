@@ -640,11 +640,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
 
     context 'Shipment Order'do
-      let(:order){create(:order,detail_type: "Shipment",code:"S2233A")}
+      let(:order){create(:order,detail_type: "Shipment",code: "S2233")}
 
       it "returns valid Shipment code"do
         get :next_code, params: { detail_type: "Shipment"}
-        expect(parsed_body["code"]).to eq(2234)
+        expect(parsed_body["code"]).to eq("S02234")
       end
     end
 
@@ -653,19 +653,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "returns valid CarryOut code if CarryOut Order not present"do
        get :next_code, params: { detail_type: "CarryOut"}
-       expect(parsed_body["code"]).to eq(00001)
+       expect(parsed_body["code"]).to eq("C00001")
       end
     end
 
-    # context 'returns error'do
-    #   let(:order){create(:order,detail_type: "CarryOut",code:"C99999A")}
-
-    #   it "returns exhausted error"do
-    #     get :next_code, params: { detail_type: "CarryOut"}
-    #     expect(response.code).to eq("404")
-    #     expect(parsed_body["errors"]).to eq("Code Limit Exhausted")
-    #   end
-    # end
   end
 
   describe "POST orders" do
