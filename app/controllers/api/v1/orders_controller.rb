@@ -23,7 +23,7 @@ module Api
           param :stockit_id, String, desc: "stockit designation record id", allow_nil: true
           param :beneficiary_id, String, allow_nil: true
           param :address_id, String
-          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)'
+          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)', allow_nil: true
           param :staff_note, String, desc: 'Notes for internal use'
         end
       end
@@ -73,14 +73,11 @@ module Api
         render json: serializer.new(@order, include_allowed_actions: true)
       end
 
-      def fetch_shipment_or_carryout_code
-        record = Order.get_subsequent_international_code(params['detail_type'])
-
-        if record <= Order::Type::MAX_INTERNATIONAL_ORDER_CODE
-          render json: { code: record }
-        else
-          render json: { errors: "Code Limit Exhausted" }, status: 404
-        end
+      # GET /orders/next_code?detail_type=
+      def next_code
+        record = Order.generate_gc_code(params['detail_type'])
+        debugger
+        render json: { code: record["code"] }
       end
 
       api :PUT, '/v1/orders/1', "Update an order"

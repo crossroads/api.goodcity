@@ -211,11 +211,11 @@ module Api
       end
 
       def order_abilities
-        can %i[create fetch_shipment_or_carryout_code], Order
+        can %i[create], Order
         can %i[index show transition], Order, created_by_id: @user_id
         can %i[update destroy], Order, created_by_id: @user_id, state: %w[draft submitted processing awaiting_dispatch]
         if can_manage_orders? || @api_user
-          can %i[create index show update transition summary fetch_shipment_or_carryout_code], Order
+          can %i[create index show update transition summary next_code], Order
           can %i[destroy], Order, state: %w[draft submitted processing awaiting_dispatch dispatching]
           can :index, ProcessChecklist
         end

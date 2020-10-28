@@ -1,9 +1,4 @@
 class Order < ApplicationRecord
-  module Type
-    SHIPMENT = 'Shipment'.freeze
-    CARRY_OUT = 'CarryOut'.freeze
-    MAX_INTERNATIONAL_ORDER_CODE = 99_999
-  end
 
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdatesMinimal
@@ -41,21 +36,22 @@ class Order < ApplicationRecord
 
   has_many :packages
   has_many :goodcity_requests, dependent: :destroy
-  has_many :purposes, through: :orders_purposes
   has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
+  has_many :purposes, through: :orders_purposes
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy
   has_many :orders_process_checklists, inverse_of: :order
   has_many :process_checklists, through: :orders_process_checklists
 
+  before_validation :assign_code, on: [:create]
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
   validates :code, format: { with: /\A[SC]\d{4,5}([A-Z]{1})?\z/ }, if: :international_orders?
-  validates_uniqueness_of :code, if: :international_orders?
+  validates :code, format: { with: /\A[GC-]{3}\d{5}\z/ }, if: :goodcity_order?
+  validates_uniqueness_of :code
 
   after_initialize :set_initial_state
-  before_create :assign_code
 
   after_destroy :delete_orders_packages
 
@@ -72,6 +68,8 @@ class Order < ApplicationRecord
   MY_ORDERS_AUTHORISED_STATES = ["submitted", "closed", "cancelled", "processing", "awaiting_dispatch", "dispatching"].freeze
 
   NON_PROCESSED_STATES = ["processing", "submitted", "draft"].freeze
+
+  INTERNATIONAL_ORDERS=["Shipment","CarryOut"].freeze
 
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, "submitted", "processing", "draft"].flatten.uniq.freeze
 
@@ -137,17 +135,7 @@ class Order < ApplicationRecord
   end
 
   def international_orders?
-    [Type::SHIPMENT, Type::CARRY_OUT].include?(detail_type)
-  end
-
-  def self.get_subsequent_international_code(params)
-    record = Order.where(detail_type: params).order("id desc").pluck(:code)
-    unless record.empty?
-      susequent_value = record.map{|s| s.gsub(/\D/, "")}
-      susequent_value.map!(&:to_i).max + 1
-    else
-      1000
-    end
+    INTERNATIONAL_ORDERS.include?(detail_type)
   end
 
   def update_transition_and_reason(event, cancel_opts)
@@ -451,9 +439,23 @@ class Order < ApplicationRecord
     orders.each { |key, value| orders[key] = value.count }
   end
 
-  def self.generate_gc_code
-    record = where(detail_type: "GoodCity").order("id desc").first
-    "GC-" + gc_code(record).to_s.rjust(5, "0")
+  def self.order_code_prefix(detail_type)
+    return 'GC-' if detail_type.match(/goodcity/i)
+    return "S" if detail_type.match(/shipment/i)
+    return "C" if detail_type.match(/carryout/i)
+    return ""
+  end
+
+  def self.generate_gc_code(detail_type)
+    prefix = order_code_prefix(detail_type)
+    splitter= prefix.length.to_i+1
+    reg = %r/^\d+$/
+
+    sql_for_max_code = sanitize_sql_array([%{
+      SELECT max(CAST(substring(orders.code, :splitter) as INTEGER)) as code from orders where orders.detail_type = :type and substring(orders.code, :splitter) ~ :term
+    },splitter: splitter,term: reg.source,type: detail_type])
+    missing_number = Order.connection.exec_query(sql_for_max_code).first["code"] || {}
+    prefix + (missing_number + 1).to_s.rjust(5, "0")
   end
 
   def self.gc_code(record)
@@ -507,7 +509,7 @@ class Order < ApplicationRecord
   private
 
   def assign_code
-    self.code = Order.generate_gc_code if goodcity_order?
+    self.code = Order.generate_gc_code(detail_type) if goodcity_order?
   end
 
   #to satisfy push_updates

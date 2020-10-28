@@ -189,6 +189,7 @@ Rails.application.routes.draw do
       resources :stockit_local_orders, only: [:create]
       resources :orders, only: [:create, :show, :index, :update, :destroy] do
         get 'summary', on: :collection
+        get 'next_code', on: :collection
         member do
           put :transition
         end
@@ -206,7 +207,6 @@ Rails.application.routes.draw do
       resources :printers_users, only: [:create, :update]
 
       # routes used in stock app
-      get "fetch_shipment_or_carryout_code", to: "orders#fetch_shipment_or_carryout_code"
       get "designations", to: "orders#index"
       get "designations/:id", to: "orders#show"
       get "items", to: "packages#search_stockit_items"

@@ -631,11 +631,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
   end
 
-  describe 'GET /fetch_shipment_or_carryout_code' do
+  describe 'Order Next Code' do
     before { generate_and_set_token(user) }
 
     it 'returns 200' do
-      get :fetch_shipment_or_carryout_code, params: { detail_type: "Shipment"}
+      get :next_code, params: { detail_type: "Shipment"}
       expect(response).to have_http_status(:success)
     end
 
@@ -643,7 +643,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       let(:order){create(:order,detail_type: "Shipment",code:"S2233A")}
 
       it "returns valid Shipment code"do
-        get :fetch_shipment_or_carryout_code, params: { detail_type: "Shipment"}
+        get :next_code, params: { detail_type: "Shipment"}
         expect(parsed_body["code"]).to eq(2234)
       end
     end
@@ -652,20 +652,20 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       let(:order){create(:order)}
 
       it "returns valid CarryOut code if CarryOut Order not present"do
-       get :fetch_shipment_or_carryout_code, params: { detail_type: "CarryOut"}
-       expect(parsed_body["code"]).to eq(1000)
+       get :next_code, params: { detail_type: "CarryOut"}
+       expect(parsed_body["code"]).to eq(00001)
       end
     end
 
-    context 'returns error'do
-      let(:order){create(:order,detail_type: "CarryOut",code:"C99999A")}
+    # context 'returns error'do
+    #   let(:order){create(:order,detail_type: "CarryOut",code:"C99999A")}
 
-      it "returns exhausted error"do
-        get :fetch_shipment_or_carryout_code, params: { detail_type: "CarryOut"}
-        expect(response.code).to eq("404")
-        expect(parsed_body["errors"]).to eq("Code Limit Exhausted")
-      end
-    end
+    #   it "returns exhausted error"do
+    #     get :next_code, params: { detail_type: "CarryOut"}
+    #     expect(response.code).to eq("404")
+    #     expect(parsed_body["errors"]).to eq("Code Limit Exhausted")
+    #   end
+    # end
   end
 
   describe "POST orders" do
