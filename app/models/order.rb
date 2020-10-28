@@ -446,16 +446,34 @@ class Order < ApplicationRecord
     return ""
   end
 
-  def self.generate_gc_code(detail_type)
+  def self.generate_gc_code(detail_type='GoodCity')
     prefix = order_code_prefix(detail_type)
     splitter= prefix.length.to_i+1
     reg = %r/^\d+$/
 
-    sql_for_max_code = sanitize_sql_array([%{
-      SELECT max(CAST(substring(orders.code, :splitter) as INTEGER)) as code from orders where orders.detail_type = :type and substring(orders.code, :splitter) ~ :term
-    },splitter: splitter,term: reg.source,type: detail_type])
-    missing_number = Order.connection.exec_query(sql_for_max_code).first["code"] || {}
-    prefix + (missing_number + 1).to_s.rjust(5, "0")
+    code = missing_code_for(detail_type, splitter, reg) || next_code(detail_type, splitter, reg) + 1
+    code = code.to_s.rjust(5, '0')
+    "#{prefix}#{code}"
+  end
+
+  def self.missing_code_for(type, splitter, reg)
+    query = <<-query
+      select s.i as first_missing_code from generate_series(1, :max) s(i) WHERE s.i not in (
+          select CAST(substring(orders.code, :splitter) as INTEGER) as code from orders where orders.detail_type = :type and substring(orders.code, :splitter) ~ :reg
+      ) limit 1
+    query
+
+    code = connection.exec_query(sanitize_sql_array([query, type: type, reg: reg.source, splitter: splitter, max: Order.where(detail_type: type).count]))
+    code.first.present? ? code.first["first_missing_code"] : nil
+  end
+
+  def self.next_code(type, splitter, reg)
+    query = <<-query
+    SELECT max(CAST(substring(orders.code, :splitter) as INTEGER)) as code from orders where orders.detail_type = :type and substring(orders.code, :splitter) ~ :reg
+    query
+
+    code = connection.exec_query(sanitize_sql_array([query, type: type, splitter: splitter, reg: reg.source])).first["code"] || 0
+    code
   end
 
   def self.gc_code(record)
