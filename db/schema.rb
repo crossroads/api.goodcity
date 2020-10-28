@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_27_092800) do
+ActiveRecord::Schema.define(version: 2020_10_28_061512) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -117,7 +117,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.string "interface"
     t.string "comp_voltage"
     t.integer "updated_by_id"
-    t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "comp_test_status_id"
@@ -145,7 +144,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.string "mar_os_serial_num"
     t.string "mar_ms_office_serial_num"
     t.integer "updated_by_id"
-    t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "comp_test_status_id"
@@ -162,7 +160,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
   create_table "countries", id: :serial, force: :cascade do |t|
     t.string "name_en"
     t.string "name_zh_tw"
-    t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -223,7 +220,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.string "system_or_region"
     t.date "tested_on"
     t.integer "updated_by_id"
-    t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "test_status_id"
@@ -328,12 +324,10 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
   create_table "locations", id: :serial, force: :cascade do |t|
     t.string "building"
     t.string "area"
-    t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["area"], name: "index_locations_on_area", using: :gin
     t.index ["building"], name: "index_locations_on_building", using: :gin
-    t.index ["stockit_id"], name: "index_locations_on_stockit_id"
   end
 
   create_table "lookups", id: :serial, force: :cascade do |t|
@@ -354,7 +348,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.string "brand"
     t.integer "country_id"
     t.integer "updated_by_id"
-    t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -447,13 +440,9 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.string "code"
     t.string "detail_type"
     t.integer "detail_id"
-    t.integer "stockit_contact_id"
-    t.integer "stockit_organisation_id"
-    t.integer "stockit_id"
     t.datetime "created_at"
     t.datetime "updated_at", null: false
     t.text "description"
-    t.integer "stockit_activity_id"
     t.integer "country_id"
     t.integer "created_by_id"
     t.integer "processed_by_id"
@@ -496,9 +485,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.index ["processed_by_id"], name: "index_orders_on_processed_by_id"
     t.index ["shipment_date"], name: "index_orders_on_shipment_date"
     t.index ["state"], name: "index_orders_on_state"
-    t.index ["stockit_activity_id"], name: "index_orders_on_stockit_activity_id"
-    t.index ["stockit_contact_id"], name: "index_orders_on_stockit_contact_id"
-    t.index ["stockit_organisation_id"], name: "index_orders_on_stockit_organisation_id"
     t.index ["submitted_by_id"], name: "index_orders_on_submitted_by_id"
   end
 
@@ -610,7 +596,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "visible_in_selects", default: false
-    t.integer "stockit_id"
     t.integer "location_id"
     t.boolean "allow_requests", default: true
     t.boolean "allow_stock", default: false
@@ -628,7 +613,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.index ["location_id"], name: "index_package_types_on_location_id"
     t.index ["name_en"], name: "package_types_name_en_search_idx", using: :gin
     t.index ["name_zh_tw"], name: "package_types_name_zh_tw_search_idx", using: :gin
-    t.index ["stockit_id"], name: "index_package_types_on_stockit_id"
     t.index ["visible_in_selects"], name: "index_package_types_on_visible_in_selects"
   end
 
@@ -653,17 +637,10 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.string "grade"
     t.integer "box_id"
     t.integer "pallet_id"
-    t.integer "stockit_id"
     t.integer "order_id"
     t.integer "on_hand_boxed_quantity", default: 0
     t.integer "on_hand_palletized_quantity", default: 0
-    t.date "stockit_sent_on"
-    t.date "stockit_designated_on"
-    t.integer "stockit_designated_by_id"
-    t.integer "stockit_sent_by_id"
     t.integer "favourite_image_id"
-    t.date "stockit_moved_on"
-    t.integer "stockit_moved_by_id"
     t.boolean "saleable"
     t.string "case_number"
     t.boolean "allow_web_publish"
@@ -703,10 +680,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.index ["package_type_id"], name: "index_packages_on_package_type_id"
     t.index ["pallet_id"], name: "index_packages_on_pallet_id"
     t.index ["state"], name: "index_packages_on_state", using: :gin
-    t.index ["stockit_designated_by_id"], name: "index_packages_on_stockit_designated_by_id"
-    t.index ["stockit_id"], name: "index_packages_on_stockit_id"
-    t.index ["stockit_moved_by_id"], name: "index_packages_on_stockit_moved_by_id"
-    t.index ["stockit_sent_by_id"], name: "index_packages_on_stockit_sent_by_id"
     t.index ["storage_type_id"], name: "index_packages_on_storage_type_id"
   end
 
@@ -752,7 +725,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.string "pallet_number"
     t.string "description"
     t.text "comments"
-    t.integer "stockit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -930,8 +902,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.boolean "is_default", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["package_type_id", "package_type_id"], name: "index_subpackage_types_on_package_type_id_and_package_type_id"
     t.index ["package_type_id"], name: "index_subpackage_types_on_package_type_id"
+    t.index ["package_type_id"], name: "index_subpackage_types_on_package_type_id_and_package_type_id"
     t.index ["subpackage_type_id"], name: "index_subpackage_types_on_subpackage_type_id"
   end
 
@@ -1069,10 +1041,7 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
   add_foreign_key "orders", "countries", name: "orders_country_id_fk"
   add_foreign_key "orders", "districts", name: "orders_district_id_fk"
   add_foreign_key "orders", "organisations", name: "orders_organisation_id_fk"
-  add_foreign_key "orders", "stockit_activities", name: "orders_stockit_activity_id_fk"
-  add_foreign_key "orders", "stockit_contacts", name: "orders_stockit_contact_id_fk"
   add_foreign_key "orders", "stockit_local_orders", column: "detail_id", name: "orders_detail_id_fk"
-  add_foreign_key "orders", "stockit_organisations", name: "orders_stockit_organisation_id_fk"
   add_foreign_key "orders", "users", column: "cancelled_by_id", name: "orders_cancelled_by_id_fk"
   add_foreign_key "orders", "users", column: "closed_by_id", name: "orders_closed_by_id_fk"
   add_foreign_key "orders", "users", column: "created_by_id", name: "orders_created_by_id_fk"
@@ -1106,9 +1075,6 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
   add_foreign_key "packages", "pallets", name: "packages_pallet_id_fk"
   add_foreign_key "packages", "restrictions", name: "packages_restriction_id_fk"
   add_foreign_key "packages", "storage_types", name: "packages_storage_type_id_fk"
-  add_foreign_key "packages", "users", column: "stockit_designated_by_id", name: "packages_stockit_designated_by_id_fk"
-  add_foreign_key "packages", "users", column: "stockit_moved_by_id", name: "packages_stockit_moved_by_id_fk"
-  add_foreign_key "packages", "users", column: "stockit_sent_by_id", name: "packages_stockit_sent_by_id_fk"
   add_foreign_key "packages_inventories", "locations"
   add_foreign_key "packages_inventories", "packages"
   add_foreign_key "packages_inventories", "users"
