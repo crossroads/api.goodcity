@@ -18,7 +18,8 @@ module Api::V1
                :detail_type, :detail_id, :on_hand_quantity, :available_quantity,
                :designated_quantity, :dispatched_quantity, :quantity,
                :favourite_image_id, :saleable, :value_hk_dollar, :package_set_id,
-               :on_hand_boxed_quantity, :on_hand_palletized_quantity
+               :on_hand_boxed_quantity, :on_hand_palletized_quantity,
+               :notes_zh_tw
 
     # note: Quantity is a deprecated field, used only for backwards compatibility
     def quantity
