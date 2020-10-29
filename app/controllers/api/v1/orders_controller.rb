@@ -73,9 +73,9 @@ module Api
         render json: serializer.new(@order, include_allowed_actions: true)
       end
 
-      # GET /orders/next_code?detail_type=
+      # GET /orders/next_code?detail_type="Shipment"
       def next_code
-        record = Order.generate_gc_code(params['detail_type'])
+        record = Order.generate_code(params['detail_type'])
         render json: { code: record }
       end
 

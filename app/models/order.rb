@@ -46,8 +46,7 @@ class Order < ApplicationRecord
 
   before_validation :assign_code, on: [:create]
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
-  validates :code, format: { with: /\A[SC]\d{4,5}([A-Z]{1})?\z/ }, if: :international_orders?
-  validates :code, format: { with: /\A[GC-]{3}\d{5}\z/ }, if: :goodcity_order?
+  validate :verify_code_format, on: [ :create, :update ]
   validates_uniqueness_of :code
 
   after_initialize :set_initial_state
@@ -67,8 +66,6 @@ class Order < ApplicationRecord
   MY_ORDERS_AUTHORISED_STATES = ["submitted", "closed", "cancelled", "processing", "awaiting_dispatch", "dispatching"].freeze
 
   NON_PROCESSED_STATES = ["processing", "submitted", "draft"].freeze
-
-  INTERNATIONAL_ORDERS = ["Shipment", "CarryOut"].freeze
 
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, "submitted", "processing", "draft"].flatten.uniq.freeze
 
@@ -131,10 +128,6 @@ class Order < ApplicationRecord
     if self.orders_packages.exists?
       orders_packages.map(&:destroy)
     end
-  end
-
-  def international_orders?
-    INTERNATIONAL_ORDERS.include?(detail_type)
   end
 
   def update_transition_and_reason(event, cancel_opts)
@@ -439,15 +432,15 @@ class Order < ApplicationRecord
   end
 
   def self.order_code_prefix(detail_type)
+    return "" if detail_type.blank?
     return 'GC-' if detail_type.match(/goodcity/i)
     return "S" if detail_type.match(/shipment/i)
     return "C" if detail_type.match(/carryout/i)
-    return ""
   end
 
-  def self.generate_gc_code(detail_type)
+  def self.generate_code(detail_type)
     prefix = order_code_prefix(detail_type)
-    splitter = prefix.length.to_i + 1
+    splitter = prefix.length.to_i+1
     reg = %r/^\d+$/
 
     code = next_code(detail_type, splitter, reg) + 1
@@ -462,6 +455,11 @@ class Order < ApplicationRecord
 
     code = connection.exec_query(sanitize_sql_array([query, type: type, splitter: splitter, reg: reg.source])).first["code"] || 0
     code
+  end
+
+  def verify_code_format
+    prefix = Order.order_code_prefix(self.detail_type)
+    errors.add(:base, 'Invalid order code format') unless /\A#{prefix}\d{4,5}([A-Z]{1})?\z/.match(self.code)
   end
 
   def goodcity_order?
@@ -511,7 +509,7 @@ class Order < ApplicationRecord
   private
 
   def assign_code
-    self.code = Order.generate_gc_code(detail_type) if goodcity_order?
+    self.code = Order.generate_code(detail_type) if goodcity_order?
   end
 
   #to satisfy push_updates
