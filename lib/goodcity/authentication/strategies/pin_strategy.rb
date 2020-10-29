@@ -41,10 +41,10 @@ module Goodcity
         end
 
         def valid_app_store_credentials?(auth_token)
-          appstore.try(:[], 'number').present? &&
-            appstore.try(:[], 'pin').present? &&
-            appstore['pin'] == request_params['pin'] &&
-            appstore['number'] == auth_token.try(:user).try(:mobile)
+          appstore.try(:[], :number).present? &&
+            appstore.try(:[], :pin).present? &&
+            appstore[:pin] == request_params['pin'] &&
+            appstore[:number] == auth_token.try(:user).try(:mobile)
         end
 
         def otp_code_validity

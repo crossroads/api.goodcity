@@ -124,12 +124,8 @@ Rails.application.routes.draw do
       resources :holidays, only: [:index, :create, :destroy, :update]
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
-      resources :organisations_users, only: [:create, :index, :update, :show] do
-        collection do
-          get :status_list
-        end
-      end
-      resources :gc_organisations do
+      resources :organisations_users, only: [:create, :index, :update, :show]
+      resources :organisations do
         get 'names', on: :collection
         member do
           get :orders

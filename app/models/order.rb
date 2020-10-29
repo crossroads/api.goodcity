@@ -35,9 +35,9 @@ class Order < ApplicationRecord
 
   has_many :packages
   has_many :goodcity_requests, dependent: :destroy
-  has_many :orders_packages, dependent: :destroy
   has_many :orders_purposes, dependent: :destroy
   has_many :purposes, through: :orders_purposes
+  has_many :orders_packages, dependent: :destroy
   has_many :messages, as: :messageable, dependent: :destroy
   has_many :subscriptions, as: :subscribable, dependent: :destroy
   has_one :order_transport, dependent: :destroy

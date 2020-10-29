@@ -458,4 +458,40 @@ describe User, :type => :model do
       end
     end
   end
+
+  describe '.with_organisation_status' do
+    let(:role_1) { create(:role, name: "Role 1", level: 1) }
+    let(:role_2) { create(:role, name: "Role 2", level: 5) }
+
+    let(:user_1) { create(:user, :charity) }
+    let(:user_2) { create(:user, :charity) }
+    let(:user_3) { create(:user, :charity) }
+    let(:user_4) { create(:user, :charity) }
+    let(:user_5) { create(:user, :charity) }
+    let(:user_6) { create(:user) }
+
+    before do
+      User.destroy_all # Ensure no lingering users exist
+
+      role_1.grant(user_1)
+      role_2.grant(user_2)
+      role_1.grant(user_3)
+      role_1.grant(user_4)
+      role_2.grant(user_5)
+      role_2.grant(user_6)
+
+      user_5.organisations_users.first.update(status: 'expired')
+      user_4.organisations_users.first.update(status: 'denied')
+    end
+
+    it 'search users by organisation status' do
+      users = User.with_organisation_status(%w[pending approved])
+      expect(users.count).to eq(3)
+      expect(users).to match_array([user_1, user_2, user_3])
+
+      users = User.with_organisation_status(%w[expired denied])
+      expect(users.count).to eq(2)
+      expect(users).to match_array([user_4, user_5])
+    end
+  end
 end

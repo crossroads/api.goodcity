@@ -1292,7 +1292,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package) { create :package }
     let!(:printer_1) { create :printer, :active }
     let!(:printer_2) { create :printer }
-
+    let!(:printer_user) { create :printers_user, user: user, printer: printer_1, tag: 'stock'}
 
     it "returns 400 if package does not exist" do
       post :print_barcode, params: { package_id: 1, labels:1 }
@@ -1310,13 +1310,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "should print barcode service call with inventory number" do
       package.inventory_number = inventory_number
       package.save
-      expect(PrintLabelJob).to receive(:perform_later).with(package.id, user.id, 'inventory_label', 1)
+      expect(PrintLabelJob).to receive(:perform_later).with(package.id, printer_user.printer.id, {label_type: 'inventory_label', print_count:1})
 
-      post :print_barcode, params: { package_id: package.id, labels: 1 }
+      post :print_barcode, params: { package_id: package.id, labels: 1, tag: 'stock' }
     end
 
     it "return 204 status" do
-      post :print_barcode, params: { package_id: package.id, labels:1 }
+      post :print_barcode, params: { package_id: package.id, labels: 1, tag: 'stock' }
       expect(response.status).to eq(204)
     end
 

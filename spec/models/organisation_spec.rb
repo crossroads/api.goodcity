@@ -38,6 +38,7 @@ RSpec.describe Organisation, type: :model do
         it 'performs case insensitive search for organisation with matching name_en' do
           expect(Organisation.search("zun")).to include(organisation)
           expect(Organisation.search("ZUNI")).to include(organisation)
+          expect(Organisation.search("ZUNI'")).to include(organisation)
         end
 
         it 'performs case insensitive search for organisation with matching name_zh_tw' do

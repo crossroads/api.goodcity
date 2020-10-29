@@ -22,7 +22,7 @@ module Api
       def index
         @users = @users.except_stockit_user
         return search_user_and_render_json if params[:searchText].present?
-        
+
         @users = @users.with_roles(params[:roles]) if params[:roles].present?
         @users = @users.where(id: ids_param) if ids_param.present?
         render json: @users, each_serializer: serializer
@@ -88,14 +88,14 @@ module Api
 
       def search_user_and_render_json
         records = @users.limit(25)
-        records = records.search(params['searchText'])               if params['searchText'].present?
-        records = records.with_roles(params['role_name'])            if params['role_name'].present?
+        records = records.filter_users(params)
+
         data = ActiveModel::ArraySerializer.new(records,
           each_serializer: Api::V1::UserDetailsSerializer,
           include_user_roles: true,
-          root: "users"
+          root: 'users'
         ).as_json
-        render json: { "meta": {"search": params["searchText"] } }.merge(data)
+        render json: { 'meta': { 'search': params['searchText'] } }.merge(data)
       end
 
       def user_params

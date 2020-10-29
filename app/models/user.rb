@@ -103,6 +103,7 @@ class User < ApplicationRecord
   scope :active, -> { where(disabled: false) }
   scope :exclude_user, ->(id) { where.not(id: id) }
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
+  scope :with_organisation_status, ->(status_list) { joins(:organisations_users).where(organisations_users: { status: status_list }) }
 
   # --------------------
   # Methods
@@ -169,6 +170,13 @@ class User < ApplicationRecord
   def self.recent_orders_created_for(user_id)
     joins(:created_orders).where(orders: {submitted_by_id: user_id})
       .order("orders.id DESC").limit(5)
+  end
+
+  def self.filter_users(opts)
+    res = search(opts['searchText']) if opts['searchText'].present?
+    res = res.with_organisation_status(opts['organisation_status'].split(',')) if opts['organisation_status'].present?
+    res = res.with_roles(opts['role_name']) if opts['role_name'].present?
+    res
   end
 
   def allowed_login?(app_name)
