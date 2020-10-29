@@ -622,6 +622,10 @@ ActiveRecord::Schema.define(version: 2020_10_28_052740) do
     t.decimal "default_value_hk_dollar"
     t.text "description_en"
     t.text "description_zh_tw"
+    t.integer "length"
+    t.integer "width"
+    t.integer "height"
+    t.string "department"
     t.index ["allow_requests"], name: "index_package_types_on_allow_requests"
     t.index ["location_id"], name: "index_package_types_on_location_id"
     t.index ["name_en"], name: "package_types_name_en_search_idx", using: :gin
