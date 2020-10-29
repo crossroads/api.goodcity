@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
   include AppMatcher
 
   check_authorization
-
+  before_action :set_paper_trail_whodunnit
   # User.current is required to be set for OffersController.before_filter
   before_action :set_locale, :set_device_id, :current_user
   helper_method :current_user
