@@ -8,7 +8,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch, booking_type: booking_type }
   let!(:processing_order) { create :order, :with_state_processing, booking_type: booking_type }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
-  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder" }
+  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder",code: "1234" }
   let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
@@ -238,8 +238,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           it "can return a single order of type #{type}" do
             create :appointment, :with_state_submitted, description: "IPhone 100s"
             create :online_order, :awaiting_dispatch, description: "IPhone 100s", order_transport: ggv_transport
-            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "shipment"
-            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "other"
+            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "Shipment", code: "S1234"
+            create :order, :with_state_processing, description: "IPhone 100s", detail_type: "other" , code: "2345"
 
             get :index, params: { searchText: "iphone", type: type }
             expect(response.status).to eq(200)
@@ -480,7 +480,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         it "returns a draft stockit order" do
-          record = create :order, :with_state_draft, detail_type: "StockitLocalOrder"
+          record = stockit_draft_order
           get :index, params: { searchText: record.code, toDesignateItem: true }
           expect(response.status).to eq(200)
           expect(parsed_body["designations"].count).to eq(1)
@@ -642,18 +642,26 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     context 'Shipment Order'do
       let(:order){create(:order,detail_type: "Shipment",code: "S2233")}
 
-      it "returns valid Shipment code"do
+      it "returns valid code"do
         get :next_code, params: { detail_type: "Shipment"}
         expect(parsed_body["code"]).to eq("S02234")
       end
     end
 
-    context 'CarryOut Order'do
-      let(:order){create(:order)}
+    context 'GoodCity Order'do
 
-      it "returns valid CarryOut code if CarryOut Order not present"do
+      it "returns valid code"do
+        get :next_code, params: { detail_type: "GoodCity"}
+        expect(parsed_body["code"]).to eq("GC-00006")
+      end
+    end
+
+    context 'CarryOut Order'do
+      let(:order){create(:order,detail_type: "CarryOut",code: "C0213")}
+
+      it "returns valid code"do
        get :next_code, params: { detail_type: "CarryOut"}
-       expect(parsed_body["code"]).to eq("C00001")
+       expect(parsed_body["code"]).to eq("C00214")
       end
     end
 
