@@ -144,7 +144,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         get :index, params: { searchText: "crossroads" }
         expect(response.status).to eq(200)
         expect(parsed_body["designations"].count).to eq(1)
-        expect(parsed_body["designations"][0]["gc_organisation_id"]).to eq(organisation.id)
+        expect(parsed_body["designations"][0]["organisation_id"]).to eq(organisation.id)
         expect(parsed_body["meta"]["total_pages"]).to eql(1)
         expect(parsed_body["meta"]["search"]).to eql("crossroads")
       end
