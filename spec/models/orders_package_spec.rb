@@ -3,8 +3,6 @@ require 'rails_helper'
 RSpec.describe OrdersPackage, type: :model do
   before do
     User.current_user = create(:user)
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
   end
 
   describe "Associations" do

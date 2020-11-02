@@ -174,7 +174,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     before do
       generate_and_set_token(user)
-      allow(Stockit::ItemSync).to receive(:delete)
     end
 
     it 'adds an uninventory action to the packages_inventory' do
@@ -236,8 +235,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'fails to designate an uninventorized package' do
-      expect(Stockit::OrdersPackageSync).not_to receive(:create)
-
       put :designate, params: { id: uninventorized_package.id, quantity: 5, order_id: order.id }
 
       expect(response.status).to eq(422)
@@ -245,8 +242,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'designates the entire quantity to the order' do
-      allow(Stockit::OrdersPackageSync).to receive(:create)
-
       expect {
         put :designate, params: { id: package.id, quantity: 5, order_id: order.id }
       }.to change { package.reload.orders_packages.count }.from(0).to(1)
@@ -257,8 +252,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'designates the part of the quantity to the order' do
-      allow(Stockit::OrdersPackageSync).to receive(:create)
-
       expect {
         put :designate, params: { id: package.id, quantity: 2, order_id: order.id }
       }.to change { package.reload.orders_packages.count }.from(0).to(1)
@@ -269,9 +262,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     end
 
     it 'updates an existing designation' do
-      allow(Stockit::OrdersPackageSync).to receive(:create)
-      allow(Stockit::OrdersPackageSync).to receive(:update)
-
       Package::Operations.designate(package, quantity: 3, to_order: order)
 
       expect(PackagesInventory::Computer.available_quantity_of(package)).to eq(2)
@@ -316,7 +306,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let!(:packages_location) { create(:packages_location, package: package, location: location1, quantity: 5) }
 
     it 'moves the entire quantity to the desired location' do
-      allow(Stockit::ItemSync).to receive(:move)
       expect(package.packages_locations.length).to eq(1)
       expect(package.packages_locations.first.location).to eq(location1)
       expect(package.packages_locations.first.quantity).to eq(5)
@@ -734,7 +723,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       describe "creating package with detail" do
         it "creates package with detail" do
-          allow(Stockit::ItemDetailSync).to receive(:create).and_return({"status"=>201, "computer_id"=> 12})
           post :create, params: { package: package_params_with_details }
           expect(response.status).to eq(201)
           package = Package.last
@@ -744,7 +732,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         it "does not create package with detail if anything fails in package" do
-          allow(Stockit::ItemDetailSync).to receive(:create).and_return({"status"=>201, "computer_id"=> 12})
           post :create, params: { package: package_params_with_details_incorrect_params }
           expect(parsed_body["errors"]).to_not be_nil
         end
@@ -1084,8 +1071,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package) { create :package, :with_inventory_record, received_quantity: 5 }
 
     before do
-      allow(Stockit::ItemSync).to receive(:create)
-      allow(Stockit::ItemSync).to receive(:update)
       generate_and_set_token(user)
       touch(package)
     end
@@ -1127,7 +1112,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
       before do
         generate_and_set_token(user)
-        allow(Stockit::ItemDetailSync).to receive(:create).and_return({ 'success' => 201 })
       end
 
       it "returns 200" do
