@@ -9,7 +9,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
   let(:item)  { create :item, offer: offer }
   let(:package_type)  { create :package_type }
   let(:package) { create :package, :with_inventory_record, item: item }
-  let(:package_with_stockit_id) { create :package, :with_inventory_record, :stockit_package, item: item }
+  let(:package_1) { create :package, :with_inventory_record, item: item }
   let(:orders_package) { create :orders_package, package: package }
   let(:serialized_package) { Api::V1::PackageSerializer.new(package).as_json }
   let(:serialized_package_json) { JSON.parse( serialized_package.to_json ) }
@@ -562,7 +562,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context "create package with storage type with creation of box/pallet setting enabled" do
       let!(:location) { create :location }
-      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:code) { create :package_type }
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
@@ -575,8 +575,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           inventory_number: "123456",
           location_id: location.id,
           grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id,
         }
       }
       let(:package_params){
@@ -585,7 +583,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: package.received_quantity,
           package_type_id:package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           storage_type: "Package"
         })
@@ -640,7 +637,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context "should not create package with creation of box/pallet setting disabled" do
       let!(:location) { create :location }
-      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:code) { create :package_type }
       let!(:box) { create :storage_type, :with_box }
       let!(:pallet) { create :storage_type, :with_pallet }
       let!(:pkg_storage) { create :storage_type, :with_pkg }
@@ -651,10 +648,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         {
           quantity: 1,
           inventory_number: "123456",
-          location_id: location.stockit_id,
           grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id,
         }
       }
       let(:package_params) {
@@ -663,7 +657,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: package.received_quantity,
           package_type_id: package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           storage_type: "Package"
         })
@@ -683,16 +676,14 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     context "create package from gc with sub detail" do
       let!(:location) { create :location }
-      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:code) { create :package_type }
       let(:computer_params) { FactoryBot.attributes_for(:computer) }
       let(:stockit_item_params) {
         {
           quantity: 1,
           inventory_number: '123456',
           location_id: location.id,
-          grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id
+          grade: "C"
         }
       }
       let(:package_params_with_details){
@@ -701,7 +692,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: package.received_quantity,
           package_type_id:package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
           detail_type: "computer"
@@ -714,7 +704,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           received_quantity: 0,
           package_type_id:package.package_type_id,
           state: package.state,
-          stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
           detail_type: "computer"
@@ -740,9 +729,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
     describe "Received from Stockit" do
       let!(:location) { create :location }
-      let!(:order) { create :order, :with_stockit_id }
-      let(:order_1) { create :order, :with_stockit_id }
-      let!(:code) { create :package_type, :with_stockit_id }
+      let!(:order) { create :order }
+      let(:order_1) { create :order }
+      let!(:code) { create :package_type }
       let(:donor_condition) { create :donor_condition }
       let!(:dispatched_location) { create :location, :dispatched }
       # let!(:location_1) { create :location }
@@ -750,11 +739,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         {
           quantity: 1,
           inventory_number: '123456',
-          location_id: location.stockit_id,
           donor_condition_id: donor_condition.id,
-          grade: "C",
-          stockit_id: 1,
-          code_id: code.stockit_id
+          grade: "C"
         }
       }
 
@@ -777,22 +763,18 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         let(:stockit_item_params_with_designation){
           stockit_item_params.merge({
             stockit_designated_on: Date.today,
-            designation_name: order.code,
-            order_id: order.stockit_id,
-            location_id: location.stockit_id
+            designation_name: order.code
           })
         }
 
         let(:stockit_item_params_without_designation){
           stockit_item_params.merge({
             designation_name: '',
-            order_id: nil,
-            stockit_id: package_with_stockit_id.stockit_id,
-            location_id: location.stockit_id
+            order_id: nil
           })
         }
 
-        before(:each) { initialize_inventory(package_with_stockit_id, location: location) }
+        before(:each) { initialize_inventory(package_1, location: location) }
 
         it "create new package with designation for newly created item from stockit with designation", :show_in_doc do
           expect{
@@ -815,14 +797,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             post :create, params: { package: stockit_item_params_without_designation }
           }.to change(OrdersPackage, :count).by(0)
           expect(response.status).to eq(201)
-          test_package_changes(package_with_stockit_id, response.status, '', location)
+          test_package_changes(package_1, response.status, '', location)
           stockit_request = GoodcitySync.request_from_stockit
           test_orders_packages(package, stockit_request, 0)
         end
 
         it 'creates orders_package for already existing item which is now designated from stockit' do
           package = create :package, :stockit_package, item: item
-          stockit_item_params_with_designation[:stockit_id] = package.stockit_id
           stockit_item_params_with_designation[:quantity] = package.received_quantity
           expect{
             post :create, params: { package: stockit_item_params_with_designation }
@@ -838,7 +819,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           order1 = create :order
           orders_package = create :orders_package, :with_state_designated, order: order1,
             package: package, quantity: 1
-          stockit_item_params_with_designation[:stockit_id] = package.stockit_id
           expect{
             post :create, params: { package: stockit_item_params_with_designation }
           }.to change(OrdersPackage, :count).by(1)
@@ -858,7 +838,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             package: package, quantity: 1
           packages_location = create :packages_location, package: package, location: location,
             quantity: package.received_quantity
-          stockit_item_params_without_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, params: { package: stockit_item_params_without_designation }
           }.to change(OrdersPackage, :count).by(0)
@@ -874,7 +853,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           package = create :package, :stockit_package, designation_name: order1.code, received_quantity: 1
           initialize_inventory(package, location: location)
           orders_package = create :orders_package, :with_state_designated, order: order1, package: package, quantity: 1
-          stockit_item_params_with_designation[:stockit_id] = package.reload.stockit_id
           expect{
             post :create, params: { package: stockit_item_params_with_designation }
           }.to change(OrdersPackage, :count).by(1)
@@ -889,7 +867,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Update quantity from Stockit' do
-        let(:order) { create :order, :with_stockit_id }
+        let(:order) { create :order }
         let(:package) { create :package, :with_inventory_record, :stockit_package, received_quantity: 1 }
         let!(:orders_package) { create :orders_package, :with_state_designated, order: order, package: package, quantity: 1 }
 
@@ -898,10 +876,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             quantity: 100,
             package_type_id:package.package_type_id,
             state: package.state,
-            stockit_id: package.stockit_id,
             donor_condition_id: package.donor_condition_id,
             designation_name: order.code,
-            order_id: order.stockit_id
           })
         }
 
@@ -923,14 +899,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         let(:order1) { create :order }
-        let(:order) { create :order, :with_stockit_id, :with_state_awaiting_dispatch }
+        let(:order) { create :order, :with_state_awaiting_dispatch }
         let(:package) {create :package, :with_inventory_record, :stockit_package, designation_name: order1.code, received_quantity: 10 }
 
         let(:stockit_params_with_designation){
           stockit_item_params.merge({
             stockit_designated_on: Date.today,
             designation_name: order.code,
-            order_id: order.stockit_id
           })
         }
 
@@ -945,7 +920,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             package: package, quantity: 10
           initialize_inventory(package)
           stockit_params_with_designation[:quantity] = 8
-          stockit_params_with_designation[:stockit_id] = package.stockit_id
           expect{
             post :create, params: { package: stockit_params_with_designation }
           }.to change(OrdersPackage, :count).by(0)
@@ -959,7 +933,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
 
       context 'Dispatch & Undispatch from stockit' do
-        let(:order) { create :order, :with_stockit_id, :with_state_dispatching }
+        let(:order) { create :order, :with_state_dispatching }
 
         before(:all) do
           WebMock.disable!
@@ -974,7 +948,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             stockit_designated_on: Date.today,
             stockit_sent_on: Date.today,
             designation_name: order.code,
-            order_id: order.stockit_id
           })
         }
 
@@ -982,7 +955,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_item_params.merge({
             stockit_sent_on: '',
             designation_name: order.code,
-            order_id: order.stockit_id,
             location_id: ""
           })
         }
@@ -991,7 +963,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           package = create :package, :with_inventory_record, :stockit_package, designation_name: 'abc', received_quantity: 1
           orders_package = create :orders_package, package: package, order: order,
             state: 'designated', quantity: 1
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.stockit_id
            expect{
             post :create, params: { package: stockit_params_with_sent_on_and_designation }
           }.to change(OrdersPackage, :count).by(0)
@@ -1003,7 +974,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
 
         it 'creates new designation and then dispatch if package is not designated before dispatch from stockit' do
           package = create :package, :with_inventory_record, :stockit_package, designation_name: order.code, received_quantity: 1
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           stockit_params_with_sent_on_and_designation[:quantity] = 1
           expect{
             post :create, params: { package: stockit_params_with_sent_on_and_designation }
@@ -1021,7 +991,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         it 'cancels existing designation and dispatches a new designation with new order_id it when dispatched from stockit with another order' do
           package = create :package, :with_inventory_record, :stockit_package, designation_name: order_1.code, received_quantity: 5
           orders_package = create :orders_package, package: package, order: order_1, state: 'designated'
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.stockit_id
+
           expect{
             post :create, params: { package: stockit_params_with_sent_on_and_designation }
           }.to change(OrdersPackage, :count).by(1)
@@ -1037,7 +1007,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         it 'dispatches existing designation if available with same order_id' do
           package = create :package, :with_inventory_record, :stockit_package, received_quantity: 10
           orders_package = create :orders_package, :with_state_designated, package: package, order: order, quantity: 1
-          stockit_params_with_sent_on_and_designation[:stockit_id] = package.reload.stockit_id
           stockit_params_with_sent_on_and_designation[:quantity]   = 1
           expect{
             post :create, params: { package: stockit_params_with_sent_on_and_designation }
@@ -1051,8 +1020,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             order_id: order.id, received_quantity: 1, stockit_designated_by: stockit_user
           orders_package = create :orders_package, :with_inventory_record, package: package,
             order: order, state: 'dispatched', sent_on: Date.today, quantity: 1
-          stockit_params_without_sent_on[:stockit_id] = package.reload.stockit_id
-          stockit_params_without_sent_on[:location_id] = dispatched_location.stockit_id
+
           expect{
             post :create, params: { package: stockit_params_without_sent_on }
           }.to change(OrdersPackage, :count).by(0)

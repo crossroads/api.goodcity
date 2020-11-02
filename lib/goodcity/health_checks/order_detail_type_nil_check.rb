@@ -3,7 +3,7 @@ require 'goodcity/health_checks/base'
 module Goodcity
   class HealthChecks
     class OrderDetailTypeNilCheck < Base
-      desc "Orders should contain a stockit_id reference."
+      desc "Orders should contain a detail_type reference."
       def run
         ids = Order.where(detail_type: nil).pluck(:id)
         if ids.empty?

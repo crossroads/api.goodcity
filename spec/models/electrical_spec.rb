@@ -22,7 +22,6 @@ RSpec.describe Electrical, type: :model do
     it{ is_expected.to have_db_column(:test_status_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:tested_on).of_type(:date)}
     it{ is_expected.to have_db_column(:updated_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
   end
 
   describe "before_save" do

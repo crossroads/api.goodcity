@@ -78,7 +78,6 @@ class Package < ApplicationRecord
   scope :inventorized, -> { where.not(inventory_number: nil) }
   scope :published, -> { where(allow_web_publish: true) }
   scope :latest, -> { order('id desc') }
-  scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
   scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :undesignated, -> { where(order_id: nil) }
@@ -131,7 +130,6 @@ class Package < ApplicationRecord
 
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
-      package.add_to_stockit if STOCKIT_ENABLED
     end
 
     before_transition on: :mark_missing do |package|
@@ -139,7 +137,6 @@ class Package < ApplicationRecord
       package.received_at = nil
       package.location_id = nil
       package.allow_web_publish = false
-      package.remove_from_stockit
     end
   end
 
@@ -216,29 +213,6 @@ class Package < ApplicationRecord
     !STOCKIT_ENABLED && inventory_number.present?
   end
 
-  def add_to_stockit
-    return if box_or_pallet? || (detail.present? && !detail.valid?)
-
-    response = Stockit::ItemSync.create(self)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (item_id = response["item_id"]).present?
-      self.stockit_id = item_id
-    end
-  end
-
-  def remove_from_stockit
-    if self.inventory_number.present?
-      response = Stockit::ItemSync.delete(inventory_number)
-      if response && (errors = response["errors"]).present?
-        errors.each { |key, value| self.errors.add(key, value) }
-      else
-        self.inventory_number = nil
-        self.stockit_id = nil
-      end
-    end
-  end
-
   # Required by PushUpdates and PaperTrail modules
   def offer
     item.try(:offer)
@@ -259,16 +233,12 @@ class Package < ApplicationRecord
     self.stockit_designated_on = Date.today
     self.stockit_designated_by = User.current_user
     self.donor_condition_id =  donor_condition_id.presence || 3
-    response = Stockit::ItemSync.update(self)
-    add_errors(response)
   end
 
   def undesignate_from_stockit_order
     self.order = nil
     self.stockit_designated_on = nil
     self.stockit_designated_by = nil
-    response = Stockit::ItemSync.update(self)
-    add_errors(response)
   end
 
   # @TODO: remove
@@ -279,8 +249,6 @@ class Package < ApplicationRecord
     self.stockit_sent_by = User.current_user
     self.box = nil
     self.pallet = nil
-    response = Stockit::ItemSync.dispatch(self)
-    add_errors(response)
   end
 
   def undispatch_stockit_item
@@ -288,8 +256,6 @@ class Package < ApplicationRecord
     self.stockit_sent_by = nil
     self.pallet = nil
     self.box = nil
-    response = Stockit::ItemSync.undispatch(self)
-    add_errors(response)
   end
 
   def has_box_or_pallet_error
@@ -372,12 +338,6 @@ class Package < ApplicationRecord
 
   def singleton_package?
     received_quantity == 1
-  end
-
-  def stockit_order_id
-    if (orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
-      orders_packages.first.order.try(:stockit_id)
-    end
   end
 
   def donor_condition_name

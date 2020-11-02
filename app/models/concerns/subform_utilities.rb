@@ -16,31 +16,6 @@ module SubformUtilities
     end
   end
 
-  def create_on_stockit
-    return if request_from_stockit?
-
-    response = Stockit::ItemDetailSync.create(self)
-    add_stockit_id(response)
-  end
-
-  def update_on_stockit
-    return if request_from_stockit?
-
-    response = Stockit::ItemDetailSync.update(self)
-    add_stockit_id(response)
-  end
-
-  def delete_on_stockit
-    return if request_from_stockit?
-    Stockit::ItemDetailSync.destroy(self)
-  end
-
-  def add_stockit_id(response)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    end
-  end
-
   def downcase_brand
     self.brand = brand&.downcase
   end

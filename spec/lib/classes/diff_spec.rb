@@ -6,7 +6,7 @@ describe Diff do
   let(:klass_name) { "TestClass" }
   let(:goodcity_name) { "GC Name" }
   let(:stockit_name) { "Stockit Name" }
-  let(:goodcity_struct) { OpenStruct.new(id: 1, stockit_id: 2, name: goodcity_name ) }
+  let(:goodcity_struct) { OpenStruct.new(id: 1,   name: goodcity_name ) }
   let(:stockit_struct) { OpenStruct.new(id: 2, name: stockit_name) }
   let(:sync_attributes) { [:name] }
   let(:diff) { Diff.new(klass_name, goodcity_struct, stockit_struct, sync_attributes) }
@@ -22,7 +22,7 @@ describe Diff do
   end
 
   context "key" do
-    context "should generate a key based on ids/stockit_id" do
+    context "should generate a key based on ids" do
       it { expect(diff.key).to eql("1:2:2") }
     end
   end
@@ -32,21 +32,24 @@ describe Diff do
       before { diff.compare }
       it { expect(diff.instance_variable_get("@diff")).to eql({name: [goodcity_name, stockit_name]}) }
     end
+
     context "should be empty if no attribute/value differences" do
       let(:goodcity_name) { "Name" }
       let(:stockit_name) { "Name"}
       before { diff.compare }
       it { expect(diff.instance_variable_get("@diff")).to eql({}) }
     end
+
     context "should ignore id" do
-      let(:goodcity_struct) { OpenStruct.new(id: 1, stockit_id: 2, name: "Name" ) }
+      let(:goodcity_struct) { OpenStruct.new(id: 1, name: "Name" ) }
       let(:stockit_struct) { OpenStruct.new(id: 2, name: "Name") }
       before { diff.compare }
       it { expect(diff.instance_variable_get("@diff").keys).to_not include(:id) }
     end
+
     context "should ignore stockit_id" do
-      let(:goodcity_struct) { OpenStruct.new(id: 1, stockit_id: 2, name: "Name" ) }
-      let(:stockit_struct) { OpenStruct.new(id: 2, stockit_id: 3, name: "Name") }
+      let(:goodcity_struct) { OpenStruct.new(id: 1, name: "Name" ) }
+      let(:stockit_struct) { OpenStruct.new(id: 2, name: "Name") }
       before { diff.compare }
       it { expect(diff.instance_variable_get("@diff").keys).to_not include(:stockit_id) }
     end
@@ -79,7 +82,7 @@ describe Diff do
   end
 
   context "<=>" do
-    let(:goodcity_struct2) { OpenStruct.new(id: id2, stockit_id: 2, name: goodcity_name ) }
+    let(:goodcity_struct2) { OpenStruct.new(id: id2, name: goodcity_name ) }
     let(:diff2) { Diff.new(klass_name, goodcity_struct2, stockit_struct, sync_attributes) }
     context "should be ordered correctly" do
       let(:id2) { 2 }
