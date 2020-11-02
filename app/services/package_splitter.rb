@@ -66,7 +66,6 @@ class PackageSplitter
     copy = @package.dup
     copy.received_quantity = @qty_to_split
     copy.inventory_number = generate_q_inventory_number
-    copy.add_to_stockit
     copy.save!
     copy_and_save_images(copy)
     Package::Operations.inventorize(copy, source_location)
