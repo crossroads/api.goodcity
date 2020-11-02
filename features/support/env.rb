@@ -48,9 +48,9 @@ Before('@supervisor') do
   User.current_user = FactoryBot.create(:user, :supervisor)
 end
 
-Before('@stockit_enabled') do
-  STOCKIT_ENABLED = true
-end
+# Before('@stockit_enabled') do
+#   STOCKIT_ENABLED = true
+# end
 
 Before do
   FactoryBot.create :location, :dispatched
