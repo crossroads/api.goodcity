@@ -23,7 +23,6 @@ RSpec.describe ComputerAccessory, type: :model do
   describe "before_save" do
     it "should convert brand to lowercase" do
       computer_accessory = build :computer_accessory, brand: "DeLL"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(computer_accessory).and_return({"status"=>201, "computer_id"=> 12})
       computer_accessory.save
       expect(computer_accessory.brand).to eq("dell")
     end
@@ -32,7 +31,7 @@ RSpec.describe ComputerAccessory, type: :model do
       user = create(:user, :reviewer)
       User.current_user = user
       computer_accessory = build :computer_accessory, brand: "DeLL"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(computer_accessory).and_return({"status"=>201, "computer_accessory_id"=> 12})
+
       expect {
         computer_accessory.save
       }.to change(ComputerAccessory, :count).by(1)

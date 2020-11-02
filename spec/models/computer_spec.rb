@@ -38,7 +38,6 @@ RSpec.describe Computer, type: :model do
   describe "before_save" do
     it "should convert brand to lowercase" do
       computer = build :computer, brand: "AppLE"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
       expect {
         computer.save
       }.to change(Computer, :count).by(1)
@@ -49,7 +48,6 @@ RSpec.describe Computer, type: :model do
       user = create(:user, :reviewer)
       User.current_user = user
       computer = build :computer, brand: "DeLL"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
       expect {
         computer.save
       }.to change(Computer, :count).by(1)

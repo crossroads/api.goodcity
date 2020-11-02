@@ -9,11 +9,6 @@ RSpec.describe Order, type: :model do
   let!(:appointment_type) { create(:booking_type, :appointment) }
   let!(:online_type) { create(:booking_type, :online_order) }
 
-  before(:all) {
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
-  }
-
   context "create an order" do
     let(:order) { Order.new }
     it "state should not be blank" do

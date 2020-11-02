@@ -5,8 +5,6 @@ describe SendgridService do
   let(:sendgrid) { SendgridService.new(user) }
 
   before do
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
     allow(sendgrid).to receive(:send_to_sendgrid?).and_return(true)
   end
 

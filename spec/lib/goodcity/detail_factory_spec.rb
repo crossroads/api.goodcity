@@ -38,9 +38,6 @@ describe Goodcity::DetailFactory do
   end
 
   context "run" do
-    before do
-      allow(Stockit::ItemDetailSync).to receive(:create).and_return('success' => true)
-    end
     describe "creates a detail record with data and assigns it to package" do
       it "creates computer" do
         package = create(:package, :with_inventory_number, stockit_id: "1231")

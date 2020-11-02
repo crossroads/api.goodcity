@@ -13,11 +13,6 @@ context DesignationOperations do
     Class.new { include DesignationOperations }
   }
 
-  before do
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
-  end
-
   before(:each) do
     expect(PackagesInventory::Computer.package_quantity(package)).to eq(5)
     expect(PackagesInventory.count).to eq(1)
@@ -34,7 +29,6 @@ context DesignationOperations do
   describe 'Designation operation' do
 
     it 'designates the entire quantity successfully' do
-      expect(Stockit::OrdersPackageSync).to receive(:create).once
       expect { designate(5, shipping_number: 9999) }.to change(OrdersPackage, :count).by(1)
       expect(OrdersPackage.last.quantity).to eq(5)
       expect(OrdersPackage.last.state).to eq('designated')
@@ -42,7 +36,6 @@ context DesignationOperations do
     end
 
     it 'designates a partial quantity successfully' do
-      expect(Stockit::OrdersPackageSync).to receive(:create).once
       expect { designate(3) }.to change(OrdersPackage, :count).by(1)
       expect(OrdersPackage.last.quantity).to eq(3)
       expect(OrdersPackage.last.state).to eq('designated')
@@ -50,17 +43,11 @@ context DesignationOperations do
 
     describe 'when already designated' do
       it 'updates the existing orders_packages' do
-        expect(Stockit::OrdersPackageSync).to receive(:create).once
-        expect(Stockit::OrdersPackageSync).to receive(:update).once
-
         ord_pkg = designate(4)
         expect { designate(5) }.to change { OrdersPackage.find(ord_pkg.id).quantity }.from(4).to(5)
       end
 
       it 'marks the orders_package as dispatched if the quantity is lowered to match the already dispatched quantity' do
-        expect(Stockit::OrdersPackageSync).to receive(:create)
-        expect(Stockit::OrdersPackageSync).to receive(:update).twice
-
         ord_pkg = designate(4, to_order: dispatching_order)
         OrdersPackage::Operations.dispatch(ord_pkg, quantity: 3, from_location: package.locations.first)
         expect { designate(3, to_order: dispatching_order) }.to change {
@@ -69,9 +56,6 @@ context DesignationOperations do
       end
 
       it 'marks the orders_package as dispatched if the remaining undispatched quantity is dispatched' do
-        allow(Stockit::OrdersPackageSync).to receive(:create)
-        allow(Stockit::OrdersPackageSync).to receive(:update)
-
         ord_pkg = designate(4, to_order: dispatching_order)
         expect(ord_pkg.quantity).to eq(4)
         expect(ord_pkg.dispatched_quantity).to eq(0)
@@ -88,23 +72,16 @@ context DesignationOperations do
       end
 
       it 'can designate the remaining quantity to another order' do
-        expect(Stockit::OrdersPackageSync).to receive(:create).twice
-
         designate(4, to_order: order)
         expect { designate(1, to_order: other_order) }.to change(OrdersPackage, :count).by(1)
       end
 
       it 'fails to designate more than the remaining quantity to another order' do
-        expect(Stockit::OrdersPackageSync).to receive(:create).once
-
         designate(4, to_order: order)
         expect { designate(2, to_order: other_order) }.to raise_error(Goodcity::InsufficientQuantityError).with_message("The selected quantity (2) is unavailable")
       end
 
       it 'fails to set a new quantity if more has already been dispatched' do
-        expect(Stockit::OrdersPackageSync).to receive(:create).once
-        expect(Stockit::OrdersPackageSync).to receive(:update).once
-
         orders_package = designate(4, to_order: dispatching_order)
         expect(orders_package.quantity).to eq(4)
         expect(
@@ -126,9 +103,6 @@ context DesignationOperations do
 
     describe 'when previously cancelled' do
       it 'updates the state of the existing orders_package' do
-        expect(Stockit::OrdersPackageSync).to receive(:create).once
-        expect(Stockit::OrdersPackageSync).to receive(:update).twice
-
         ord_pkg = designate(4)
         ord_pkg.cancel
         expect { designate(5) }.to change { OrdersPackage.find(ord_pkg.id).state }.from('cancelled').to('designated')
