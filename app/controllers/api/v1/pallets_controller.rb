@@ -23,7 +23,7 @@ module Api
       api :POST, '/v1/pallets', "Create an pallet"
       param_group :pallet
       def create
-        fetch_pallet.attributes = pallet_params
+        @pallet.attributes = pallet_params
         if @pallet.save
           render json: {}, status: 201
         else
@@ -35,10 +35,6 @@ module Api
 
       def pallet_params
         params.require(:pallet).permit(:pallet_number, :description, :comments)
-      end
-
-      def fetch_pallet
-        @pallet = Pallet.find_by(stockit_id: params["pallet"]["stockit_id"]) || @pallet
       end
     end
   end

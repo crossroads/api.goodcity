@@ -41,9 +41,8 @@ class Package < ApplicationRecord
   has_many   :offers, through: :offers_packages
   has_many   :package_actions, -> { where action: PackagesInventory::INVENTORY_ACTIONS }, class_name: "PackagesInventory"
 
-  before_destroy :delete_item_from_stockit, if: :inventory_number
+  before_destroy :remove_inventory_number, if: :inventory_number
   before_create :set_default_values
-  after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
   before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
   before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
@@ -411,15 +410,6 @@ class Package < ApplicationRecord
     self.grade ||= "B"
     self.saleable ||= offer.try(:saleable) || false
     true
-  end
-
-  def delete_item_from_stockit
-    StockitDeleteJob.perform_later(self.inventory_number)
-    remove_inventory_number
-  end
-
-  def update_stockit_item
-    StockitUpdateJob.perform_later(id)
   end
 
   def save_inventory_number

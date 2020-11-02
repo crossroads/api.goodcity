@@ -28,13 +28,6 @@ class Item < ApplicationRecord
   scope :accepted, -> { where("state = 'accepted'") }
   scope :donor_items, ->(donor_id) { joins(:offer).where(offers: { created_by_id: donor_id }) }
 
-  # Workaround to set initial state fror the state_machine
-  # StateMachine has Issue with rails 4.2, it does not set initial
-  # state by default
-  # refer - https://github.com/pluginaweek/state_machine/issues/334
-  # after_initialize :set_initial_state
-  after_commit :update_stockit_item, on: :update, unless: :from_stockit?
-
   def set_initial_state
     self.state ||= :draft
   end
@@ -116,13 +109,5 @@ class Item < ApplicationRecord
 
   def not_received_packages?
     packages.received.count.zero?
-  end
-
-  def update_stockit_item
-    if previous_changes.key?("donor_condition_id")
-      packages.received.each do |package|
-        StockitUpdateJob.perform_later(package.id)
-      end
-    end
   end
 end
