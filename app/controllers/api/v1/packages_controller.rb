@@ -386,14 +386,13 @@ module Api
       end
 
       def package_params
-        get_package_type_id_value
         attributes = [
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
           :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
           :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
           :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
+          :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
           :comment, :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,
@@ -435,14 +434,6 @@ module Api
 
       def medical_attributes
         %i[brand country_id serial_number updated_by_id]
-      end
-
-      def get_package_type_id_value
-        code_id = params["package"]["code_id"]
-        if params["package"]["package_type_id"].blank? and code_id.present?
-          params["package"]["package_type_id"] = PackageType.find_by(stockit_id: code_id).try(:id)
-          params["package"].delete("code_id")
-        end
       end
 
       def serializer
@@ -525,16 +516,13 @@ module Api
       def assign_values_to_existing_or_new_package
         new_package_params = package_params
         GoodcitySync.request_from_stockit = is_stockit_request? # @TODO remove
-        @package = existing_package || Package.new()
+        @package = Package.new()
         delete_params_quantity_if_all_quantity_designated(new_package_params)
         @package.assign_attributes(new_package_params)
         @package.received_quantity = received_quantity
         @package.location_id = location_id
         @package.state = "received"
-        @package.order_id = order_id
         @package.inventory_number = inventory_number
-        @package.box_id = box_id
-        @package.pallet_id = pallet_id
         @package
       end
 
@@ -547,35 +535,11 @@ module Api
       end
 
       def location_id
-        if is_stockit_request? # @TODO remove
-          Location.find_by(stockit_id: package_params[:location_id]).try(:id)
-        else
-          package_params[:location_id]
-        end
-      end
-
-      def box_id
-        Box.find_by(stockit_id: package_params[:box_id]).try(:id)
-      end
-
-      def pallet_id
-        Pallet.find_by(stockit_id: package_params[:pallet_id]).try(:id)
-      end
-
-      def order_id
-        if package_params[:order_id]
-          Order.accessible_by(current_ability).find_by(stockit_id: package_params[:order_id]).try(:id)
-        end
+        package_params[:location_id]
       end
 
       def barcode_service
         BarcodeService.new
-      end
-
-      def existing_package
-        if (stockit_id = package_params[:stockit_id])
-          Package.find_by(stockit_id: stockit_id)
-        end
       end
 
       def assign_detail

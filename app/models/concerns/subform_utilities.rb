@@ -38,8 +38,6 @@ module SubformUtilities
   def add_stockit_id(response)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (stockit_id = response["#{self.class.name.underscore}_id"]).present?
-      update_column(:stockit_id, stockit_id)
     end
   end
 
@@ -56,7 +54,6 @@ module SubformUtilities
   end
 
   def save_correct_country
-    self.country_id = Country.find_by(stockit_id: country_id)&.id
   end
 
   def request_from_stockit?

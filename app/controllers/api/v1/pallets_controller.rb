@@ -17,7 +17,6 @@ module Api
           param :pallet_number, String, desc: ""
           param :description, String, desc: "", allow_nil: true
           param :comments, String, desc: "", allow_nil: true
-          param :stockit_id, String, desc: "", allow_nil: true
         end
       end
 
@@ -35,7 +34,7 @@ module Api
       private
 
       def pallet_params
-        params.require(:pallet).permit(:pallet_number, :description, :comments, :stockit_id)
+        params.require(:pallet).permit(:pallet_number, :description, :comments)
       end
 
       def fetch_pallet

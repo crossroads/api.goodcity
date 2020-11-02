@@ -352,8 +352,6 @@ class Order < ApplicationRecord
     response = Stockit::DesignationSync.create(self)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (designation_id = response["designation_id"]).present?
-      self.stockit_id = designation_id
     end
   end
 

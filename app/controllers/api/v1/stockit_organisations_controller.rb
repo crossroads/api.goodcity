@@ -14,7 +14,6 @@ module Api
       def_param_group :stockit_organisation do
         param :stockit_organisation, Hash, required: true do
           param :name, String, desc: "Name of organisation"
-          param :stockit_id, String, desc: "stockit organisation record id"
         end
       end
 
@@ -31,13 +30,13 @@ module Api
       private
 
       def stockit_organisation_record
-        @stockit_organisation = StockitOrganisation.where(stockit_id: stockit_organisation_params[:stockit_id]).first_or_initialize
+        @stockit_organisation = StockitOrganisation.new
         @stockit_organisation.assign_attributes(stockit_organisation_params)
         @stockit_organisation
       end
 
       def stockit_organisation_params
-        params.require(:stockit_organisation).permit(:stockit_id, :name)
+        params.require(:stockit_organisation).permit(:name)
       end
 
       def serializer

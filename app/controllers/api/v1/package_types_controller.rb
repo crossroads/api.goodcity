@@ -24,7 +24,7 @@ module Api
       end
 
       def create
-        fetch_package_type.assign_attributes(package_type_params)
+        @package_type.assign_attributes(package_type_params)
         if @package_type.save
           render json: {}, status: 201
         else
@@ -35,22 +35,11 @@ module Api
       private
 
       def package_type_params
-        params.require(:package_type).permit(:stockit_id, :code, :name_en, :name_zh_tw, :visible_in_selects, :allow_requests, :allow_stock)
+        params.require(:package_type).permit(:code, :name_en, :name_zh_tw, :visible_in_selects, :allow_requests, :allow_stock)
       end
 
       def serializer
         Api::V1::PackageTypeSerializer
-      end
-
-      def fetch_package_type
-        values = params["package_type"]
-        @package_type = PackageType.find_by(stockit_id: values["stockit_id"]) || @package_type
-        @package_type.location_id = values["location_id"].present? ? fetch_location_id(values["location_id"]) : nil
-        @package_type
-      end
-
-      def fetch_location_id(stockit_location_id)
-        Location.find_by(stockit_id: stockit_location_id).try(:id)
       end
     end
   end
