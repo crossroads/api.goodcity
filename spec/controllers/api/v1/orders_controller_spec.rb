@@ -2,8 +2,10 @@ require "rails_helper"
 
 RSpec.describe Api::V1::OrdersController, type: :controller do
   let(:booking_type) { create :booking_type, :appointment }
+  let(:online_booking_type) { create :booking_type, :online_order }
   let(:charity_user) { create :user, :charity }
   let!(:order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: booking_type }
+  let!(:online_order) { create :order, :with_state_submitted, created_by: charity_user, booking_type: online_booking_type }
   let!(:dispatching_order) { create :order, :with_state_dispatching, booking_type: booking_type }
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch, booking_type: booking_type }
   let!(:processing_order) { create :order, :with_state_processing, booking_type: booking_type }
@@ -60,7 +62,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       it "returns orders created by logged in user" do
         request.headers["X-GOODCITY-APP-NAME"] = "browse.goodcity"
         get :index
-        expect(parsed_body["orders"].count).to eq(1)
+        expect(parsed_body["orders"].count).to eq(2)
         expect(parsed_body["orders"][0]["id"]).to eq(order.id)
       end
     end
@@ -72,7 +74,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         request.headers["X-GOODCITY-APP-NAME"] = "admin.goodcity"
         get :index
         expect(response.status).to eq(200)
-        expect(parsed_body["designations"].count).to eq(5)
+        expect(parsed_body["designations"].count).to eq(6)
       end
     end
 
@@ -507,7 +509,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
       it "returns orders count for each category" do
         get :summary
-        expect(parsed_body["submitted"]).to eq(2)
+        expect(parsed_body["submitted"]).to eq(3)
         expect(parsed_body["awaiting_dispatch"]).to eq(1)
         expect(parsed_body["processing"]).to eq(1)
         expect(parsed_body["dispatching"]).to eq(1)
