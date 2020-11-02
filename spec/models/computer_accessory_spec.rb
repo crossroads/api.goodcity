@@ -17,7 +17,6 @@ RSpec.describe ComputerAccessory, type: :model do
     it{ is_expected.to have_db_column(:comp_voltage).of_type(:string)}
     it{ is_expected.to have_db_column(:comp_test_status_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:updated_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
   end
 
   describe "before_save" do

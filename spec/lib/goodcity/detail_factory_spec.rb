@@ -4,7 +4,6 @@ require "goodcity/detail_factory"
 describe Goodcity::DetailFactory do
   PACKAGE_DETAIL_TYPES = {
     computer: {
-      "stockit_id": "1231",
       "brand": "asus",
       "cpu": "1GhZ",
       "detail_id": "1234",
@@ -15,7 +14,6 @@ describe Goodcity::DetailFactory do
       "serial_num": "serialNumber"
     },
     electrical: {
-      "stockit_id": "1230",
       "brand": "havells",
       "detail_id": "1239",
       "id": "1239",
@@ -24,7 +22,6 @@ describe Goodcity::DetailFactory do
       "power": "power",
     },
     computer_accessory: {
-      "stockit_id": "1232",
       "brand": "dell",
       "model": "GCW123SAD1235",
       "detail_id": "12431",
@@ -40,7 +37,7 @@ describe Goodcity::DetailFactory do
   context "run" do
     describe "creates a detail record with data and assigns it to package" do
       it "creates computer" do
-        package = create(:package, :with_inventory_number, stockit_id: "1231")
+        package = create(:package, :with_inventory_number)
         detail_factory = described_class.new(stock_item_hash_for("computer", package.id), package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -50,7 +47,7 @@ describe Goodcity::DetailFactory do
       end
 
       it "creates electrical" do
-        package = create(:package, :with_inventory_number, stockit_id: "1230")
+        package = create(:package, :with_inventory_number)
         detail_factory = described_class.new(stock_item_hash_for("electrical", package.id), package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -60,7 +57,7 @@ describe Goodcity::DetailFactory do
       end
 
       it "creates computer_accessory" do
-        package = create(:package, :with_inventory_number, stockit_id: "1232")
+        package = create(:package, :with_inventory_number)
         detail_factory = described_class.new(stock_item_hash_for("computer_accessory", package.id), package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -72,7 +69,7 @@ describe Goodcity::DetailFactory do
 
     describe "creates a blank detail record" do
       it "with computer" do
-        package = create(:package, :with_inventory_number, stockit_id: 2221)
+        package = create(:package, :with_inventory_number)
         detail_factory = described_class.new({detail_type: "computer"}, package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -82,7 +79,7 @@ describe Goodcity::DetailFactory do
       end
 
       it "with electrical" do
-        package = create(:package, :with_inventory_number, stockit_id: 2220)
+        package = create(:package, :with_inventory_number)
         detail_factory = described_class.new({detail_type: "electrical"}, package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -92,7 +89,7 @@ describe Goodcity::DetailFactory do
       end
 
       it "with computer_accessory" do
-        package = create(:package, :with_inventory_number, stockit_id: 2223)
+        package = create(:package, :with_inventory_number)
         detail_factory = described_class.new({detail_type: "computer_accessory"}, package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -105,7 +102,7 @@ describe Goodcity::DetailFactory do
     describe 'creates empty record on gc if not present on stockit' do
       it "with computer" do
         package_type = create(:package_type, subform: "computer")
-        package = create(:package, :with_inventory_number, stockit_id: 2221, package_type: package_type)
+        package = create(:package, :with_inventory_number, package_type: package_type)
         detail_factory = described_class.new({detail_type: "computer"}, package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -116,7 +113,7 @@ describe Goodcity::DetailFactory do
 
       it "with electrical" do
         package_type = create(:package_type, subform: "electrical")
-        package = create(:package, :with_inventory_number, stockit_id: 2220, package_type: package_type)
+        package = create(:package, :with_inventory_number, package_type: package_type)
         detail_factory = described_class.new({}, package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -127,7 +124,7 @@ describe Goodcity::DetailFactory do
 
       it "with computer_accessory" do
         package_type = create(:package_type, subform: "computer_accessory")
-        package = create(:package, :with_inventory_number, stockit_id: 2222, package_type: package_type)
+        package = create(:package, :with_inventory_number, package_type: package_type)
         detail_factory = described_class.new({}, package)
         detail_factory.run
         expect(package.detail.present?).to eq(true)
@@ -139,7 +136,7 @@ describe Goodcity::DetailFactory do
 
     describe "doesnot create detail if subform comes as medical" do
       it "with computer" do
-        package = create(:package, :with_inventory_number, stockit_id: 2221)
+        package = create(:package, :with_inventory_number)
         detail_factory = described_class.new({detail_type: "medical"}, package)
         detail_factory.run
         expect(package.detail.present?).to eq(false)

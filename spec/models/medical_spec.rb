@@ -14,7 +14,6 @@ RSpec.describe Medical, type: :model do
     it { is_expected.to have_db_column(:model).of_type(:string) }
     it { is_expected.to have_db_column(:country_id).of_type(:integer) }
     it { is_expected.to have_db_column(:updated_by_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:stockit_id).of_type(:integer) }
   end
 
   describe 'before_save' do
