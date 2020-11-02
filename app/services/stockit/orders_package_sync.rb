@@ -65,18 +65,18 @@ module Stockit
     def item_params
       {
         quantity: @orders_package.quantity,
-        code_id: package.package_type.try(:stockit_id),
+        # code_id: package.package_type.try(:stockit_id),
         inventory_number: add_stockit_prefix(package.inventory_number),
         case_number: package.case_number.presence,
         condition: PackageConditionMapper.to_stockit(@package.donor_condition_name),
         grade: package.grade,
         description: package.notes,
-        location_id: stockit_location_id,
-        id: package.stockit_id,
-        designation_id: @orders_package.order.try(:stockit_id),
+        # location_id: stockit_location_id,
+        # id: package.stockit_id,
+        # designation_id: @orders_package.order.try(:stockit_id),
         designated_on: @orders_package.created_at,
         gc_orders_package_id: @orders_package.id,
-        parent_id: package.stockit_id,
+        # parent_id: package.stockit_id,
         sent_on: @orders_package.sent_on
       }
     end
