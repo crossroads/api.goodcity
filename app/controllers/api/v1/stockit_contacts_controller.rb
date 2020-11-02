@@ -17,7 +17,6 @@ module Api
           param :last_name, String
           param :mobile_phone_number, String
           param :phone_number, String
-          param :stockit_id, String, desc: "stockit contact record id"
         end
       end
 
@@ -34,13 +33,13 @@ module Api
       private
 
       def stockit_contact_record
-        @stockit_contact = StockitContact.where(stockit_id: stockit_contact_params[:stockit_id]).first_or_initialize
+        @stockit_contact = StockitContact.new
         @stockit_contact.assign_attributes(stockit_contact_params)
         @stockit_contact
       end
 
       def stockit_contact_params
-        params.require(:stockit_contact).permit(:stockit_id, :first_name,
+        params.require(:stockit_contact).permit(:first_name,
           :last_name, :mobile_phone_number, :phone_number)
       end
 
