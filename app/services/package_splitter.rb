@@ -39,7 +39,7 @@ class PackageSplitter
   private
 
   def assert_splittable!
-    raise Goodcity::DisabledFeatureError.new(params: { feature: 'split' }) unless STOCKIT_ENABLED
+    raise Goodcity::DisabledFeatureError.new(params: { feature: 'split' })
     raise Goodcity::NotInventorizedError unless inventorized?
     raise InvalidSplitQuantityError.new(@package.available_quantity) unless splittable?
     raise InvalidSplitLocationError if @package.locations.count > 1

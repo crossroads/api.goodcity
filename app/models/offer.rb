@@ -3,7 +3,7 @@ class Offer < ApplicationRecord
   include Paranoid
   include StateMachineScope
   include PushUpdates
-  include RollbarSpecification
+
   include OfferSearch
   include OfferFiltering
 

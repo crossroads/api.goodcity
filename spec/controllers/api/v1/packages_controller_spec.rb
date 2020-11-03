@@ -37,9 +37,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     expect(response_status).to eq(201)
   end
 
-  def test_orders_packages(package, stockit_request, count)
+  def test_orders_packages(package, count)
     expect(package.orders_packages.count).to eq count
-    expect(stockit_request).to eq(true)
   end
 
   def test_packages_location_changes(package)
@@ -397,7 +396,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "reviewer can create", :show_in_doc do
         post :create, params: { package: package_params }
         expect(response.status).to eq(201)
-        expect(GoodcitySync.request_from_stockit).to eq(false)
       end
 
       context 'when saleable value is provided in package parameters' do
@@ -523,10 +521,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         let(:package) { create(:package, :with_inventory_number) }
 
         context 'if STOCKIT is disabled' do
-          before do
-            stub_const('STOCKIT_ENABLED', false)
-          end
-
           it 'does not allow creation of package with duplicate inventory number' do
             package_params[:inventory_number] = package.inventory_number
             expect {
@@ -542,20 +536,12 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         end
 
         context 'if STOCKIT is enabled' do
-          before do
-            stub_const('STOCKIT_ENABLED', true)
-          end
-
           it 'does allow creation of package with duplicate inventory number' do
             package_params[:inventory_number] = package.inventory_number
             expect {
               post :create, params: { package: package_params }
             }.to change(Package, :count).by(1)
           end
-        end
-
-        after do
-          stub_const('STOCKIT_ENABLED', true)
         end
       end
     end
@@ -782,8 +768,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           }.to change(Package, :count).by(1)
           package = Package.where(inventory_number: stockit_item_params_with_designation[:inventory_number]).first
           test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 1)
+          test_orders_packages(package, 1)
           expect(package.orders_packages.first.state).to eq 'designated'
           expect(package.orders_packages.first.quantity).to eq 1
           expect(PackagesInventory::Computer.package_quantity(package)).to eq(1)
@@ -798,8 +783,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           }.to change(OrdersPackage, :count).by(0)
           expect(response.status).to eq(201)
           test_package_changes(package_1, response.status, '', location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 0)
+          test_orders_packages(package, 0)
         end
 
         it 'creates orders_package for already existing item which is now designated from stockit' do
@@ -809,9 +793,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             post :create, params: { package: stockit_item_params_with_designation }
           }.to change(OrdersPackage, :count).by(1)
           test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
           expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
-          test_orders_packages(package, stockit_request, 1)
+          test_orders_packages(package, 1)
         end
 
         it 'cancels designation and recreates one if Stockit re-designates' do
@@ -823,8 +806,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             post :create, params: { package: stockit_item_params_with_designation }
           }.to change(OrdersPackage, :count).by(1)
           test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 2)
+          test_orders_packages(package, 2)
           expect(package.reload.stockit_designated_by_id).to eq(stockit_user.id)
           expect(package.orders_packages.first.order).to eq order1
           expect(package.orders_packages.first.state).to eq 'cancelled'
@@ -844,8 +826,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           test_package_changes(package, response.status, '', location)
           expect(package.reload.stockit_designated_by_id).to be_nil
           expect(package.reload.stockit_sent_by_id).to be_nil
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 1)
+          test_orders_packages(package, 1)
           expect(orders_package.reload.state).to eq('cancelled')
         end
 
@@ -857,8 +838,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
             post :create, params: { package: stockit_item_params_with_designation }
           }.to change(OrdersPackage, :count).by(1)
           test_package_changes(package, response.status, order.code, location)
-          stockit_request = GoodcitySync.request_from_stockit
-          test_orders_packages(package, stockit_request, 2)
+          test_orders_packages(package, 2)
           expect(package.orders_packages.first.state).to eq('cancelled')
           expect(package.orders_packages.first.order).to eq(order1)
           expect(package.orders_packages.last.state).to eq('designated')
@@ -923,9 +903,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect{
             post :create, params: { package: stockit_params_with_designation }
           }.to change(OrdersPackage, :count).by(0)
-          stockit_request = GoodcitySync.request_from_stockit
           expect(response.status).to eq(201)
-          test_orders_packages(package, stockit_request, 1)
+          test_orders_packages(package, 1)
           expect(PackagesInventory::Computer.package_quantity(package)).to eq(8)
           expect(orders_package.reload.quantity).to eq(8)
           expect(package.packages_locations.first.quantity).to eq(8)
@@ -1735,7 +1714,6 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         let(:params) { { id: box.id, item_id: package2.id, location_id: location.id, task: 'pack', quantity: 2 } }
 
         before(:each) do
-          GoodcitySync.request_from_stockit = true
           Package::Operations.designate(package2, quantity: package2.available_quantity, to_order: create(:order, state: "submitted").id)
         end
 

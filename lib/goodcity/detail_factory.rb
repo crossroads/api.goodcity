@@ -50,13 +50,11 @@ module Goodcity
       klass = detail_type.classify.constantize
       # create detail record with data
       if detail_present_on_stockit?
-        GoodcitySync.request_from_stockit = true
         klass.create(
           package_detail_attributes(PACKAGE_DETAIL_ATTRIBUTES["#{detail_type.underscore}".to_sym])
         )
       else
         # create empty detail record
-        GoodcitySync.request_from_stockit = false
         klass.create({})
       end
     end

@@ -27,11 +27,4 @@ module SubformUtilities
   def set_updated_by
     self.updated_by_id = User.current_user&.id if changes.any?
   end
-
-  def save_correct_country
-  end
-
-  def request_from_stockit?
-    GoodcitySync.request_from_stockit
-  end
 end

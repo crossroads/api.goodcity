@@ -1,5 +1,5 @@
 class OrdersPackage < ApplicationRecord
-  include RollbarSpecification
+
   include OrdersPackageActions
   include HookControls
   include Watcher

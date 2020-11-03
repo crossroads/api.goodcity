@@ -1,5 +1,5 @@
 class Holiday < ApplicationRecord
-  include RollbarSpecification
+
   by_star_field :holiday
 
   validates :holiday, :name, presence: true

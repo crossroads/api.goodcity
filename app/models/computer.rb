@@ -8,7 +8,7 @@ class Computer < ApplicationRecord
   belongs_to :country, required: false
   has_one :package, as: :detail
 
-  before_save :save_correct_country, if: :request_from_stockit?
+
   before_save :downcase_brand, if: :brand_changed?
   before_save :set_updated_by
 

@@ -15,10 +15,6 @@ module AppMatcher
     app_name == BROWSE_APP
   end
 
-  def is_stockit_request?
-    app_name == STOCKIT_APP
-  end
-
   def donor_app?
     app_name == DONOR_APP
   end
