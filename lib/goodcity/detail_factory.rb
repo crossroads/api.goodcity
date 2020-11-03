@@ -51,7 +51,7 @@ module Goodcity
       # create detail record with data
       if detail_present_on_stockit?
         GoodcitySync.request_from_stockit = true
-        klass.where(stockit_id: stockit_detail_id).first_or_create(
+        klass.create(
           package_detail_attributes(PACKAGE_DETAIL_ATTRIBUTES["#{detail_type.underscore}".to_sym])
         )
       else
