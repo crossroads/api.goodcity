@@ -60,10 +60,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       it "returns orders created by logged in user" do
-        request.headers["X-GOODCITY-APP-NAME"] = "browse.goodcity"
+        request.headers['X-GOODCITY-APP-NAME'] = 'browse.goodcity'
         get :index
-        expect(parsed_body["orders"].count).to eq(2)
-        expect(parsed_body["orders"][0]["id"]).to eq(order.id)
+        expect(parsed_body['orders'].count).to eq(2)
+        expect([parsed_body['orders'][0]['id'], parsed_body['orders'][1]['id']]).to match_array([order.id, online_order.id])
       end
     end
 
