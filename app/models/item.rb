@@ -54,10 +54,6 @@ class Item < ApplicationRecord
     after_transition on: :submit, do: :send_new_item_message
   end
 
-  def from_stockit?
-    GoodcitySync.request_from_stockit
-  end
-
   def set_description
     self.donor_description = donor_description.presence || package_notes
   end

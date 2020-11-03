@@ -1,7 +1,6 @@
 module Api
   module V1
     class PackagesController < Api::V1::ApiController
-      include GoodcitySync
 
       load_and_authorize_resource :package, parent: false
       skip_before_action :validate_token, only: [:index, :show]
@@ -93,16 +92,10 @@ module Api
 
         success = ActiveRecord::Base.transaction do
           initialize_package_record
-          dispatch_from_stockit = is_stockit_request? && (@package.stockit_sent_on_changed? || @package.order_id_changed?)
           quantity_changed = @package.received_quantity_changed?
           quantity_was = @package.received_quantity_was || 0
           if @package.valid? && @package.save
             try_inventorize_package(@package) if @package.inventory_number.present?
-            if is_stockit_request?
-              apply_stockit_quantity_change(@package, previous: quantity_was, current: @package.received_quantity) if quantity_changed && quantity_was > 0
-              apply_stockit_dispatch(@package) if dispatch_from_stockit
-              apply_stockit_move(@package) unless location_id == @package.locations.first.try(:id)
-            end
             true
           else
             false
@@ -467,55 +460,8 @@ module Api
         end
       end
 
-      # @TODO: remove
-      # Case: Stockit changes the location_id
-      # We assume aingle location
-      #
-      def apply_stockit_move(pkg)
-        quantity = PackagesInventory::Computer.package_quantity(pkg)
-        return if !STOCKIT_ENABLED || location_id.nil? || quantity.zero?
-
-        Package::Operations.move(quantity, pkg, from: pkg.locations.first, to: location_id)
-      end
-
-      # @TODO: remove
-      # We assume aingle location and orders_package
-      #
-      def apply_stockit_quantity_change(pkg, current:, previous:)
-        OrdersPackage.where(package: pkg).where('quantity > 0').each { |ord_pkg| ord_pkg.update(quantity: current) }
-        delta = current - previous
-        action = delta.positive? ? PackagesInventory::Actions::GAIN : PackagesInventory::Actions::LOSS
-        Package::Operations.register_quantity_change(pkg, quantity: delta.abs, action: action, location: pkg.locations.first)
-      end
-
-      # @TODO: remove
-      #
-      def apply_stockit_dispatch(pkg)
-
-        return unless is_stockit_request? && STOCKIT_ENABLED
-
-        qty = pkg.received_quantity # StockIt only deals with full quantity
-
-        if pkg.stockit_sent_on.nil?
-          # Case: stockit undispatched the package
-          OrdersPackage.dispatched.where(package: pkg).each do |ord_pkg|
-            OrdersPackage::Operations.undispatch(ord_pkg, quantity: qty, to_location: location_id)
-          end
-        end
-
-        OrdersPackage.designated.where(package: pkg).each do |ord_pkg|
-          ord_pkg.cancel if order_id != ord_pkg.order_id
-        end
-
-        if order_id.present?
-          ord_pkg = OrdersPackage.where(package: pkg, order_id: order_id).first_or_create(state: OrdersPackage::States::DESIGNATED, quantity: qty)
-          OrdersPackage::Operations.dispatch(ord_pkg, quantity: qty, from_location: pkg.locations.first) if ord_pkg&.designated? && pkg.stockit_sent_on.present?
-        end
-      end
-
       def assign_values_to_existing_or_new_package
         new_package_params = package_params
-        GoodcitySync.request_from_stockit = is_stockit_request? # @TODO remove
         @package = Package.new()
         delete_params_quantity_if_all_quantity_designated(new_package_params)
         @package.assign_attributes(new_package_params)
@@ -543,10 +489,9 @@ module Api
       end
 
       def assign_detail
-        request_from_stockit = GoodcitySync.request_from_stockit
         PackageDetailBuilder.new(
           package_params,
-          request_from_stockit
+          false
         ).build_or_update_record
       end
 

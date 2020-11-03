@@ -1,5 +1,5 @@
 class PackageCategoriesPackageType < ApplicationRecord
-  include RollbarSpecification
+
   belongs_to :package_type, touch: true
   belongs_to :package_category, touch: true
 

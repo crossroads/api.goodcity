@@ -3,7 +3,7 @@ class Package < ApplicationRecord
   include Paranoid
   include StateMachineScope
   include PushUpdatesMinimal
-  include RollbarSpecification
+
   include PackageFiltering
   include LocationOperations
   include DesignationOperations
@@ -44,8 +44,6 @@ class Package < ApplicationRecord
   before_destroy :remove_inventory_number, if: :inventory_number
   before_create :set_default_values
   before_save :save_inventory_number, if: :inventory_number_changed?
-  before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   before_save :set_favourite_image, if: :valid_favourite_image_id?
 
   # Live update rules
@@ -148,23 +146,8 @@ class Package < ApplicationRecord
     end
   end
 
-  def assign_stockit_sent_by_and_designated_by
-    if stockit_sent_on.presence && stockit_designated_on.presence
-      self.stockit_sent_by = User.stockit_user
-      self.stockit_designated_by = User.stockit_user
-    elsif stockit_sent_on.presence
-      self.stockit_sent_by = User.stockit_user
-    else
-      self.stockit_sent_by = nil
-    end
-  end
-
   def quantity_contained_in(container_id)
     PackagesInventory::Computer.quantity_contained_in(package: self, container: Package.find(container_id))
-  end
-
-  def dispatch_from_stockit?
-    stockit_sent_on_changed? && GoodcitySync.request_from_stockit
   end
 
   def order_id_nil?
@@ -181,10 +164,6 @@ class Package < ApplicationRecord
 
   def designation
     orders_packages.designated.first
-  end
-
-  def unless_dispatch_and_order_id_changed_with_request_from_stockit?
-    !stockit_sent_on_changed? && order_id_changed? && GoodcitySync.request_from_stockit
   end
 
   def orders_package_with_different_designation
@@ -210,7 +189,7 @@ class Package < ApplicationRecord
   end
 
   def should_validate_inventory_number?
-    !STOCKIT_ENABLED && inventory_number.present?
+    inventory_number.present?
   end
 
   # Required by PushUpdates and PaperTrail modules
@@ -219,8 +198,7 @@ class Package < ApplicationRecord
   end
 
   def updated_received_package?
-    !self.previous_changes.key?("state") && received? &&
-    !GoodcitySync.request_from_stockit
+    !self.previous_changes.key?("state") && received?
   end
 
   def designate_to_stockit_order!(order_id)
