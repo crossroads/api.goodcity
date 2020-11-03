@@ -100,7 +100,7 @@ class Offer < ApplicationRecord
     end
 
     event :reopen do
-      transition [:closed, :cancelled] => :under_review
+      transition [:received, :closed, :cancelled] => :under_review
     end
 
     event :start_review do

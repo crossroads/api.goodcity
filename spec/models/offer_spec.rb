@@ -65,8 +65,13 @@ RSpec.describe Offer, type: :model do
       expect{ offer.reopen }.to change(offer, :under_review?)
     end
 
+    it "should reopen received offer" do
+      offer = create :offer, :received
+      expect{ offer.reopen }.to change(offer, :under_review?)
+    end
+
     it "should not reopen offer from states other than closed and cancelled" do
-      [:submitted, :under_review, :reviewed, :scheduled, :received, :receiving, :inactive].each do |state|
+      [:submitted, :under_review, :reviewed, :scheduled, :receiving, :inactive].each do |state|
         offer = create :offer, state
         expect{ offer.reopen }.to_not change(offer, :under_review?)
       end
