@@ -37,7 +37,7 @@ RSpec.describe Api::V1::LocationsController, type: :controller do
     end
 
     it "updates location if stockit_id is already present", :show_in_doc do
-      location = create :location, stockit_id: 123
+      location = create :location
       expect {
         post :create, params: { location: location.attributes }
       }.to_not change(Location, :count)
