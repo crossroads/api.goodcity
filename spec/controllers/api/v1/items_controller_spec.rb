@@ -87,10 +87,9 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
   describe "PUT item/1" do
     before { generate_and_set_token(user) }
     it "owner can update", :show_in_doc do
-      extra_params = { donor_description: "Test item" }
-      put :update, params: { id: item.id, item: item_params.merge(extra_params) }
+      put :update, params: { id: item.id, item: { donor_description: 'Test item' } }
       expect(response.status).to eq(200)
-      expect(item.reload.donor_description).to eq("Test item")
+      expect(item.reload.donor_description).to eq('Test item')
     end
 
     let!(:gogovan_order) { create :gogovan_order, :active }
