@@ -50,8 +50,8 @@ describe Api::V1::OrderSerializer do
     expect(order_process_checklist.process_checklist_id).to eq(order.process_checklists[0].id)
   end
 
-  it 'returns organisation id as gc_organisation_id in json response if stockit_organisation is not assigned' do
-    expect(json['order']['gc_organisation_id']).to eq(order.organisation_id)
+  it 'returns organisation id as organisation_id in json response if stockit_organisation is not assigned' do
+    expect(json['order']['organisation_id']).to eq(order.organisation_id)
   end
 
   it 'returns stockit_organisation id as organisation_id in json response if stockit_organisation assigned' do

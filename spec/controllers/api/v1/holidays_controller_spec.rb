@@ -56,10 +56,9 @@ RSpec.describe Api::V1::HolidaysController, type: :controller do
 
   describe "PUT holiday/1" do
     it "admin can update", :show_in_doc do
-      extra_params = { name: "Test holiday" }
-      put :update, params: { id: holiday.id, holiday: holiday.attributes.merge(extra_params) }
+      put :update, params: { id: holiday.id, holiday: { name: 'Test holiday' } }
       expect(response.status).to eq(200)
-      expect(holiday.reload.name).to eq("Test holiday")
+      expect(holiday.reload.name).to eq('Test holiday')
     end
   end
 end
