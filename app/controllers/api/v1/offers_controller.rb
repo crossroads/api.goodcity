@@ -146,6 +146,12 @@ module Api
         render json: @offer, serializer: offer_serializer
       end
 
+      api :PUT, '/v1/offers/1/resume_receiving', "Change Offer to Receiving state"
+      def resume_receiving
+        @offer.update_attributes({ state_event: 'start_receiving' })
+        render json: @offer, serializer: offer_serializer
+      end
+
       def summary
         all_offers_count = Offer.offers_count_for(self_reviewer: false).merge(
           Offer.offers_count_for(self_reviewer: true)
