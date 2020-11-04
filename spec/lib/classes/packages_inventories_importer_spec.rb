@@ -73,12 +73,12 @@ describe PackagesInventoriesImporter do
 
     describe 'Verifying values' do
       it "inventories the package's received_quantity" do
-        expect(inventory_rows.pluck(:quantity)).to eq(quantities)
+        expect(inventory_rows.pluck(:quantity)).to match_array(quantities)
       end
 
       it "inventories the package to its known location" do
         expected_locations = on_hand_packages.map { |p| p.packages_locations.first.location_id }
-        expect(inventory_rows.pluck(:location_id)).to eq(expected_locations)
+        expect(inventory_rows.pluck(:location_id)).to match_array(expected_locations)
       end
 
       it "should compute the correct quantity in the inventory" do
@@ -109,21 +109,21 @@ describe PackagesInventoriesImporter do
     describe 'Verifying values' do
 
       it "inventories the package's received_quantity" do
-        expect(inventory_rows.pluck(:quantity)).to eq(quantities)
+        expect(inventory_rows.pluck(:quantity)).to match_array(quantities)
       end
 
       it "negates the quantity in the dispach row" do
-        expect(dispatch_rows.pluck(:quantity)).to eq(quantities.map { |n| -n })
+        expect(dispatch_rows.pluck(:quantity)).to match_array(quantities.map { |n| -n })
       end
 
       it "inventories the package to its type's default location" do
         expected_locations = dispatched_packages.map { |p| p.reload.package_type.location_id }
-        expect(inventory_rows.pluck(:location_id)).to eq(expected_locations)
+        expect(inventory_rows.pluck(:location_id)).to match_array(expected_locations)
       end
 
       it "dispatches the package from its type's default location" do
         expected_locations = dispatched_packages.map { |p| p.reload.package_type.location_id }
-        expect(dispatch_rows.pluck(:location_id)).to eq(expected_locations)
+        expect(dispatch_rows.pluck(:location_id)).to match_array(expected_locations)
       end
 
       it "dispatch actions should point to an OrdersPackage record" do

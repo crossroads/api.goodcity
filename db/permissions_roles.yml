@@ -30,6 +30,7 @@ Reviewer:
 - can_mention_users
 - can_manage_offer_messages
 - can_update_my_printers
+- can_read_or_modify_user
 
 Supervisor:
 - can_manage_packages

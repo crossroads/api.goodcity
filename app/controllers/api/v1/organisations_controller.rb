@@ -26,7 +26,7 @@ module Api::V1
       end
     end
 
-    api :POST, '/v1/gc_organisation', 'Create Organisation'
+    api :POST, '/v1/organisation', 'Create Organisation'
     param_group :organisation
 
     def create
@@ -37,7 +37,7 @@ module Api::V1
       render json: { errors: @organisation.errors.full_messages }, status: 422
     end
 
-    api :PUT, '/v1/gc_organisation/1', 'Update Organisation'
+    api :PUT, '/v1/organisation/1', 'Update Organisation'
     param_group :organisation
 
     def update
