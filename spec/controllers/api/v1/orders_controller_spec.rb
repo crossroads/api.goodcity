@@ -733,6 +733,12 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     context 'when creating international orders' do
       context 'shipment' do
         let(:shipment_params) { FactoryBot.attributes_for(:order, :with_state_draft, :shipment) }
+        let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
+
+        before do
+          Timecop.freeze(Time.local(Time.current.year, Time.current.month, Time.current.day, 12, 0, 0))
+          generate_and_set_token(user)
+        end
 
         it 'creates shipment orders' do
           post :create, params: { order: shipment_params }
@@ -755,27 +761,15 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         end
 
         context 'when shipment date is today' do
-          before do
-            Timecop.freeze(Time.local(2020, Time.current.month, Time.current.day, 12, 0, 0))
-          end
-
           it 'creates shipment order' do
             shipment_params[:shipment_date] = Date.current
             expect {
               post :create, params: { order: shipment_params }
             }.to change{ Order.count }.by(1)
           end
-
-          after do
-            Timecop.return
-          end
         end
 
         context 'when shipment date is previous day' do
-          before do
-            Timecop.freeze(Time.local(2020, Time.current.month, Time.current.day, 12, 0, 0))
-          end
-
           it 'does not create shipment order' do
             shipment_params[:shipment_date] = Date.current.prev_day
             expect {
@@ -783,10 +777,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
               expect(parsed_body['errors'][0]).to match(/Shipment date cannot be less than today's date/)
             }.not_to change{ Order.count }
           end
+        end
 
-          after do
-            Timecop.return
-          end
+        after do
+          Timecop.return
         end
       end
 
@@ -819,6 +813,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       context 'shipment' do
         let(:shipment) { create(:order, :with_state_draft, :shipment) }
 
+        before do
+          Timecop.freeze(Time.local(Time.current.year, Time.current.month, Time.current.day, 12, 0, 0))
+          generate_and_set_token(user)
+        end
+
         it 'edits shipment orders' do
           desc = 'An international shipment'
           put :update, params: { id: shipment.id, order: { description: desc } }
@@ -847,6 +846,10 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             }.to change{ shipment.reload.shipment_date }
             expect(shipment.reload.shipment_date).to eq(Date.current.next_day)
           end
+        end
+
+        after do
+          Timecop.return
         end
       end
 

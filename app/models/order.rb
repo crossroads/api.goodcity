@@ -57,6 +57,7 @@ class Order < ApplicationRecord
   validate :validate_shipment_date, on: [:create, :update], if: :shipment_order?
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
   validates_uniqueness_of :code
+  validates_presence_of :code
 
   after_initialize :set_initial_state
 
@@ -434,7 +435,7 @@ class Order < ApplicationRecord
   def self.active_orders_count_as_per_priority_and_state(is_priority: false)
     orders = filter(states: ACTIVE_ORDERS, priority: is_priority, types: GOODCITY_BOOKING_TYPES).group_by(&:state)
     if is_priority
-      orders_count_per_state(orders).transform_keys { |key| "priority_".concat(key) }
+      orders_count_per_state(orders).transform_keys { |key| "priority_#{key}" }
     else
       orders_count_per_state(orders)
     end
@@ -519,9 +520,7 @@ class Order < ApplicationRecord
   def assign_code
     return if code.present?
 
-    raise Goodcity::DetailTypeNotAllowed unless valid_order?
-
-    self.code = Order.generate_code(detail_type)
+    self.code = Order.generate_code(detail_type) if valid_order?
   end
 
   #to satisfy push_updates
