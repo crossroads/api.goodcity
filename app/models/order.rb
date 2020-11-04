@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 class Order < ApplicationRecord
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdatesMinimal
   include OrderFiltering
+  include OrderCodeGenerator
 
   # Live update rules
   after_save :push_changes
@@ -11,6 +14,12 @@ class Order < ApplicationRecord
       Channel.private_channels_for(record.created_by, BROWSE_APP),
       Channel::ORDER_FULFILMENT_CHANNEL
     ]
+  end
+
+  module DetailType
+    SHIPMENT = 'Shipment'
+    GOODCITY = 'GoodCity'
+    CARRYOUT = 'CarryOut'
   end
 
   belongs_to :cancellation_reason
@@ -45,8 +54,8 @@ class Order < ApplicationRecord
   has_many :process_checklists, through: :orders_process_checklists
 
   before_validation :assign_code, on: [:create]
+  validate :validate_shipment_date, on: [:create, :update], if: :shipment_order?
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
-  validate :verify_code_format, on: [ :create, :update ]
   validates_uniqueness_of :code
 
   after_initialize :set_initial_state
@@ -113,8 +122,8 @@ class Order < ApplicationRecord
 
   scope :my_orders, -> { where("created_by_id = (?) and ((state = 'draft' and submitted_by_id is NULL) OR state IN (?))", User.current_user.try(:id), MY_ORDERS_AUTHORISED_STATES) }
 
-  scope :goodcity_orders, -> { where(detail_type: "GoodCity") }
-  scope :shipments, -> { where(detail_type: "Shipment") }
+  scope :goodcity_orders, -> { where(detail_type: Order::DetailType::GOODCITY) }
+  scope :shipments, -> { where(detail_type: Order::DetailType::SHIPMENT) }
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
@@ -175,8 +184,8 @@ class Order < ApplicationRecord
     end
 
     event :restart_process do
-      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.goodcity_order? }
-      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.goodcity_order? }
+      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.valid_order? }
+      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.valid_order? }
     end
 
     event :resubmit do
@@ -277,7 +286,7 @@ class Order < ApplicationRecord
     end
 
     after_transition on: :submit do |order|
-      if order.goodcity_order?
+      if order.valid_order?
         order.designate_orders_packages
         order.send_new_order_notification
         order.send_new_order_confirmed_sms_to_charity
@@ -286,7 +295,7 @@ class Order < ApplicationRecord
     end
 
     after_transition on: :finish_processing do |order|
-      if order.awaiting_dispatch? && order.goodcity_order?
+      if order.awaiting_dispatch? && order.valid_order?
         order.send_confirmation_email
       end
     end
@@ -344,6 +353,10 @@ class Order < ApplicationRecord
 
   def send_new_order_confirmed_sms_to_charity
     TwilioService.new(created_by).order_confirmed_sms_to_charity(self)
+  end
+
+  def shipment_order?
+    detail_type == DetailType::SHIPMENT
   end
 
   def nullify_columns(*columns)
@@ -457,17 +470,12 @@ class Order < ApplicationRecord
     code
   end
 
-  def verify_code_format
-    prefix = Order.order_code_prefix(self.detail_type)
-    errors.add(:base, 'Invalid order code format') unless /\A#{prefix}\d{4,5}([A-Z]{1})?\z/.match(self.code)
+  def valid_order?
+    [DetailType::SHIPMENT, DetailType::GOODCITY, DetailType::CARRYOUT].include? detail_type
   end
 
-  def goodcity_order?
-    detail_type == "GoodCity"
-  end
-
-  def draft_goodcity_order?
-    state == "draft" && goodcity_order?
+  def draft_valid_order?
+    state == 'draft' && valid_order?
   end
 
   def email_properties
@@ -509,7 +517,11 @@ class Order < ApplicationRecord
   private
 
   def assign_code
-    self.code = Order.generate_code(detail_type) if goodcity_order?
+    return if code.present?
+
+    raise Goodcity::DetailTypeNotAllowed unless valid_order?
+
+    self.code = Order.generate_code(detail_type)
   end
 
   #to satisfy push_updates
@@ -520,5 +532,10 @@ class Order < ApplicationRecord
   #to satisfy push_updates
   def offer
     nil
+  end
+
+  def validate_shipment_date
+    is_valid = shipment_date >= Date.current
+    errors.add(:error, I18n.t('order.errors.shipment_date')) unless is_valid
   end
 end
