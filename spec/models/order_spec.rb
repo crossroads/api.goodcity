@@ -724,12 +724,12 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe "Callbacks" do
+  describe ".assign_code", focus: true do
     let(:order) { create(:order, :with_state_draft, :with_orders_packages) }
 
     context 'Goodcity orders' do
       it "Assigns GC Code" do
-        expect(order.code).to include("GC-")
+        expect(order.code).to include('GC-')
       end
     end
 
@@ -742,6 +742,35 @@ RSpec.describe Order, type: :model do
         let(:shipment) { create(:order, :with_state_draft, :shipment) }
         it 'assigns code' do
           expect(shipment.code).to match(/^S/)
+        end
+
+        context 'for first shipment order' do
+          before { Order.destroy_all }
+          it 'creates with code S000001' do
+            expect(shipment.code).to eq('S00001')
+          end
+        end
+
+        context 'for subsequent shipment order' do
+          before do
+            Order.destroy_all
+            create(:order, :with_state_draft, :shipment)
+          end
+          it 'creates incremental codes' do
+            expect(shipment.code).to eq('S00002')
+          end
+        end
+
+        context 'for missing codes' do
+          before do
+            Order.destroy_all
+            create(:order, :with_state_draft, :shipment, code: 'S00001')
+            create(:order, :with_state_draft, :shipment, code: 'S00004')
+          end
+
+          it 'creates order with missing code number' do
+            expect(shipment.code).to eq('S00002')
+          end
         end
       end
 
@@ -762,6 +791,60 @@ RSpec.describe Order, type: :model do
         expect {
           create(:order, detail_type: 'greatcity')
         }.to raise_exception(StandardError)
+      end
+    end
+  end
+
+  describe '.validate_code_format', focus: true do
+    context 'when code is invalid' do
+      context 'GoodCity order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, code: 'GC-01')
+          }.to raise_exception(StandardError)
+        end
+      end
+
+      context 'Shipment order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, :shipment, code: 'SH001')
+          }.to raise_exception(StandardError)
+        end
+      end
+
+      context 'CarryOut order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, :carry_out, code: 'A20001')
+          }.to raise_exception(StandardError)
+        end
+      end
+    end
+
+    context 'when code is valid' do
+      context 'GoodCity order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, code: 'GC-12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
+
+      context 'Shipment order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, :shipment, code: 'S12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
+
+      context 'CarryOut order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, :carry_out, code: 'C12345')
+          }.to change{ Order.count }.by(1)
+        end
       end
     end
   end
