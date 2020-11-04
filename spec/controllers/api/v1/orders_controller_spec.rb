@@ -633,46 +633,62 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
   end
 
-  describe 'Order Next Code' do
+  describe 'GET /next_code' do
     before { generate_and_set_token(user) }
 
-    it 'returns 200' do
-      get :next_code, params: { detail_type: "Shipment"}
-      expect(response).to have_http_status(:success)
-    end
+    context 'for invalid user' do
+      let(:user) { create :user, :charity }
+      before { generate_and_set_token(user) }
 
-    context 'Shipment Order'do
-      let(:order){create(:order,detail_type: "Shipment",code: "S2233")}
-
-      it "returns valid code"do
-        get :next_code, params: { detail_type: "Shipment"}
-        expect(parsed_body["code"]).to eq("S02234")
+      it 'returns unauthorized' do
+        get :next_code, params: { detail_type: 'Shipment' }
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
-    context 'GoodCity Order'do
+    context 'for valid user' do
+      before { generate_and_set_token(user) }
 
-      it "returns valid code"do
-        get :next_code, params: { detail_type: "GoodCity"}
-        expect(parsed_body["code"]).to eq("GC-00006")
+      it 'returns 200' do
+        get :next_code, params: { detail_type: 'Shipment' }
+        expect(response).to have_http_status(:success)
       end
     end
 
-    context 'CarryOut Order'do
-      let(:order){create(:order,detail_type: "CarryOut",code: "C0213")}
+    %w[Shipment CarryOut GoodCity].each do |detail_type|
+      context 'for first order' do
+        before { Order.destroy_all }
 
-      it "returns valid code"do
-       get :next_code, params: { detail_type: "CarryOut"}
-       expect(parsed_body["code"]).to eq("C00214")
+        it "creates order number for #{detail_type} as 00001" do
+          get :next_code, params: { detail_type: detail_type }
+          expect(parsed_body['code']).to match(/00001/)
+        end
+      end
+
+      context 'for subsequent order' do
+        before { Order.destroy_all }
+
+        it 'creates an incremntal order number' do
+          create(:order, :with_state_draft, detail_type: detail_type)
+          get :next_code, params: { detail_type: detail_type }
+          expect(parsed_body['code']).to match(/00002/)
+        end
       end
     end
 
+    context 'for invalid detail type' do
+      it 'returns 422 response' do
+        get :next_code, params: { detail_type: 'something else' }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(parsed_body['error']).to eq('Invalid detail type')
+      end
+    end
   end
 
   describe "POST orders" do
-    context "If logged in user is Supervisor in Browse app " do
-      before { generate_and_set_token(user) }
+    before { generate_and_set_token(user) }
 
+    context "If logged in user is Supervisor in Browse app " do
       it "should create an order via POST method" do
         set_browse_app_header
         post :create, params: { order: order_params }
@@ -712,6 +728,140 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(response.status).to eql(201)
           expect(parsed_body["designation"]["detail_type"]).to eq("Shipment")
           expect(parsed_body["designation"]["state"]).to eq("processing")
+        end
+      end
+    end
+
+    context 'when creating international orders' do
+      context 'shipment' do
+        let(:shipment_params) { FactoryBot.attributes_for(:order, :with_state_draft, :shipment) }
+        let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
+
+        before do
+          Timecop.freeze(Time.local(Time.current.year, Time.current.month, Time.current.day, 12, 0, 0))
+          generate_and_set_token(user)
+        end
+
+        it 'creates shipment orders' do
+          post :create, params: { order: shipment_params }
+          expect(response).to have_http_status(:success)
+          expect(parsed_body['designation']['detail_type']).to eq('Shipment')
+          expect(parsed_body['designation']['state']).to eq('submitted')
+          expect(parsed_body['designation']['code']).to match(/S[0-9]+/)
+        end
+
+        context 'when shipment code already exists' do
+          let(:shipment) { create(:order, :with_state_draft, :shipment) }
+
+          it 'does not create order' do
+            shipment_params[:code] = shipment.code
+            expect {
+              post :create, params: { order: shipment_params }
+              expect(parsed_body['errors'][0]).to eq('Code has already been taken.')
+            }.not_to change{ Order.count }
+          end
+        end
+
+        context 'when shipment date is today' do
+          it 'creates shipment order' do
+            shipment_params[:shipment_date] = Date.current
+            expect {
+              post :create, params: { order: shipment_params }
+            }.to change{ Order.count }.by(1)
+          end
+        end
+
+        context 'when shipment date is previous day' do
+          it 'does not create shipment order' do
+            shipment_params[:shipment_date] = Date.current.prev_day
+            expect {
+              post :create, params: { order: shipment_params }
+              expect(parsed_body['errors'][0]).to match(/Shipment date cannot be less than today's date/)
+            }.not_to change{ Order.count }
+          end
+        end
+
+        after do
+          Timecop.return
+        end
+      end
+
+      context 'carryouts' do
+        let(:carryout_params) { FactoryBot.attributes_for(:order, :with_state_draft, :carry_out) }
+
+        it 'creates carryout orders' do
+          post :create, params: { order: carryout_params }
+          expect(response).to have_http_status(:success)
+          expect(parsed_body['designation']['detail_type']).to eq('CarryOut')
+          expect(parsed_body['designation']['state']).to eq('submitted')
+          expect(parsed_body['designation']['code']).to match(/C[0-9]+/)
+        end
+
+        context 'when carryout code already exists' do
+          let(:carryout) { create(:order, :with_state_draft, :carry_out) }
+
+          it 'does not create order' do
+            carryout_params[:code] = carryout.code
+            expect {
+              post :create, params: { order: carryout_params }
+              expect(parsed_body['errors'][0]).to eq('Code has already been taken.')
+            }.not_to change{ Order.count }
+          end
+        end
+      end
+    end
+
+    context 'when editing international orders' do
+      context 'shipment' do
+        let(:shipment) { create(:order, :with_state_draft, :shipment) }
+
+        before do
+          Timecop.freeze(Time.local(Time.current.year, Time.current.month, Time.current.day, 12, 0, 0))
+          generate_and_set_token(user)
+        end
+
+        it 'edits shipment orders' do
+          desc = 'An international shipment'
+          put :update, params: { id: shipment.id, order: { description: desc } }
+          expect(shipment.reload.description).to eq(desc)
+        end
+
+        context 'if shipment date is changed to previous day' do
+          it 'does not update the order' do
+            put :update, params: { id: shipment.id, order: { shipment_date: Date.current.prev_day } }
+            expect{
+              expect(response).to have_http_status(:unprocessable_entity)
+            }.not_to change{ shipment.reload.shipment_date }
+
+          end
+
+          it 'gives error in the response' do
+            put :update, params: { id: shipment.id, order: { shipment_date: Date.current.prev_day } }
+            expect(parsed_body['errors'][0]).to match(/Shipment date cannot be less than today's date/)
+          end
+        end
+
+        context 'if shipment date is changed to next date' do
+          it 'updates the shipment date' do
+            expect{
+              put :update, params: { id: shipment.id, order: { shipment_date: Date.current.next_day } }
+            }.to change{ shipment.reload.shipment_date }
+            expect(shipment.reload.shipment_date).to eq(Date.current.next_day)
+          end
+        end
+
+        after do
+          Timecop.return
+        end
+      end
+
+      context 'carryouts' do
+        let(:carryout) { create(:order, :with_state_draft, :carry_out) }
+
+        it 'edits carryout orders' do
+          desc = 'An international carryout'
+          put :update, params: { id: carryout.id, order: { description: desc } }
+          expect(carryout.reload.description).to eq(desc)
         end
       end
     end
