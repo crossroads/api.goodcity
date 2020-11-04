@@ -8,6 +8,7 @@ RSpec.describe Api::V1::OffersController, type: :controller do
   let(:offer) { create(:offer, :with_transport, created_by: user) }
   let(:submitted_offer) { create(:offer, created_by: user, state: 'submitted') }
   let(:in_review_offer) { create(:offer, created_by: user, state: 'under_review', reviewed_by: reviewer) }
+  let(:received_offer) { create(:offer, created_by: user, state: 'received') }
   let(:serialized_offer) { Api::V1::OfferSerializer.new(offer) }
   let(:serialized_offer_json) { JSON.parse( serialized_offer.to_json ) }
   let(:allowed_params) { [:language, :origin, :stairs, :parking, :estimated_size, :notes] }
@@ -351,6 +352,19 @@ RSpec.describe Api::V1::OffersController, type: :controller do
         }.to change(in_review_offer.messages, :count).by(1)
         expect(response.status).to eq(200)
         expect(in_review_offer.reload).to be_received
+      end
+    end
+  end
+
+  describe "PUT offers/1/resume_receiving" do
+    context "reviewer" do
+      before { generate_and_set_token(reviewer) }
+
+      it "can transition to receiving from received state", :show_in_doc do
+        expect(received_offer).to be_received
+        put :resume_receiving, params: { id: received_offer.id }
+        expect(response.status).to eq(200)
+        expect(received_offer.reload).to be_receiving
       end
     end
   end
