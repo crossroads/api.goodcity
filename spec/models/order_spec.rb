@@ -724,7 +724,7 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe ".assign_code", focus: true do
+  describe ".assign_code" do
     let(:order) { create(:order, :with_state_draft, :with_orders_packages) }
 
     context 'Goodcity orders' do
@@ -795,7 +795,7 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe '.validate_code_format', focus: true do
+  describe '.validate_code_format' do
     context 'when code is invalid' do
       context 'GoodCity order' do
         it 'does not create order record' do

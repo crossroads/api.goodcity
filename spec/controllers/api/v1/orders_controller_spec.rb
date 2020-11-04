@@ -633,7 +633,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
   end
 
-  describe 'GET /next_code', focus: true do
+  describe 'GET /next_code' do
     before { generate_and_set_token(user) }
 
     context 'for invalid user' do
