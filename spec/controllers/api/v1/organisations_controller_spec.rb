@@ -78,7 +78,7 @@ RSpec.describe Api::V1::OrganisationsController, type: :controller do
 
   describe "GET GC Organisation" do
     let(:organisation) { create :organisation }
-    let(:serialized_gc_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "organisations", include_orders_count: true).as_json.to_json) }
+    let(:serialized_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "organisations", include_orders_count: true).as_json.to_json) }
 
     before { get :show, params: { id: organisation.id } }
     it "returns 200" do
@@ -86,7 +86,7 @@ RSpec.describe Api::V1::OrganisationsController, type: :controller do
     end
 
     it "return serialized address", :show_in_doc do
-      expect(parsed_body).to eq(serialized_gc_organisation)
+      expect(parsed_body).to eq(serialized_organisation)
     end
   end
 
