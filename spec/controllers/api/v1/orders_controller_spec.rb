@@ -10,7 +10,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch, booking_type: booking_type }
   let!(:processing_order) { create :order, :with_state_processing, booking_type: booking_type }
   let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
-  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder",code: "1234" }
+  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder",code: "S1234" }
   let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
@@ -633,7 +633,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
     end
   end
 
-  describe 'GET /next_code' do
+  describe 'GET /next_code', focus: true do
     before { generate_and_set_token(user) }
 
     context 'for invalid user' do
@@ -672,6 +672,22 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           create(:order, :with_state_draft, detail_type: detail_type)
           get :next_code, params: { detail_type: detail_type }
           expect(parsed_body['code']).to match(/00002/)
+        end
+      end
+
+      context 'for missing codes' do
+        before do
+          Order.destroy_all
+          create(:order, :with_state_draft, :shipment, code: 'S00001')
+          create(:order, :with_state_draft, :shipment, code: 'S00003')
+          create(:order, :with_state_draft, :carry_out, code: 'C00001')
+          create(:order, :with_state_draft, :carry_out, code: 'C00003')
+          create(:order, :with_state_draft, code: 'GC-00001')
+          create(:order, :with_state_draft, code: 'GC-00003')
+        end
+        it 'generates missing order code' do
+          get :next_code, params: { detail_type: detail_type }
+          expect(parsed_body["code"]).to match(/00002/)
         end
       end
     end
@@ -781,6 +797,16 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           end
         end
 
+        context 'when code is invalid' do
+          it 'does not create shipment order' do
+            shipment_params[:code] = 'S0000000'
+            expect {
+              post :create, params: { order: shipment_params }
+              expect(parsed_body['errors'][0]).to match(/Invalid order code format/)
+            }
+          end
+        end
+
         after do
           Timecop.return
         end
@@ -808,6 +834,16 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             }.not_to change{ Order.count }
           end
         end
+
+        context 'when code is invalid' do
+          it 'does not create shipment order' do
+            carryout_params[:code] = 'GC-12345'
+            expect {
+              post :create, params: { order: carryout_params }
+              expect(parsed_body['errors'][0]).to match(/Invalid order code format/)
+            }
+          end
+        end
       end
     end
 
@@ -832,7 +868,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
             expect{
               expect(response).to have_http_status(:unprocessable_entity)
             }.not_to change{ shipment.reload.shipment_date }
-
           end
 
           it 'gives error in the response' do

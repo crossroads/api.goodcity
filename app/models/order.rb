@@ -54,8 +54,9 @@ class Order < ApplicationRecord
   has_many :process_checklists, through: :orders_process_checklists
 
   before_validation :assign_code, on: [:create]
-  validate :validate_shipment_date, on: [:create, :update], if: :shipment_order?
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
+  validate :validate_shipment_date, on: %i[create update], if: :shipment_order?
+  validate :validate_code_format, on: %i[create update]
   validates_uniqueness_of :code
   validates_presence_of :code
 
@@ -445,32 +446,6 @@ class Order < ApplicationRecord
     orders.each { |key, value| orders[key] = value.count }
   end
 
-  def self.order_code_prefix(detail_type)
-    return "" if detail_type.blank?
-    return 'GC-' if detail_type.match(/goodcity/i)
-    return "S" if detail_type.match(/shipment/i)
-    return "C" if detail_type.match(/carryout/i)
-  end
-
-  def self.generate_code(detail_type)
-    prefix = order_code_prefix(detail_type)
-    splitter = prefix.length.to_i+1
-    reg = %r/^\d+$/
-
-    code = next_code(detail_type, splitter, reg) + 1
-    code = code.to_s.rjust(5, '0')
-    "#{prefix}#{code}"
-  end
-
-  def self.next_code(type, splitter, reg)
-    query = <<-query
-    SELECT max(CAST(substring(orders.code, :splitter) as INTEGER)) as code from orders where orders.detail_type = :type and substring(orders.code, :splitter) ~ :reg
-    query
-
-    code = connection.exec_query(sanitize_sql_array([query, type: type, splitter: splitter, reg: reg.source])).first["code"] || 0
-    code
-  end
-
   def valid_order?
     [DetailType::SHIPMENT, DetailType::GOODCITY, DetailType::CARRYOUT].include? detail_type
   end
@@ -520,7 +495,7 @@ class Order < ApplicationRecord
   def assign_code
     return if code.present?
 
-    self.code = Order.generate_code(detail_type) if valid_order?
+    self.code = Order.generate_next_code_for(detail_type) if valid_order?
   end
 
   #to satisfy push_updates
@@ -536,5 +511,20 @@ class Order < ApplicationRecord
   def validate_shipment_date
     is_valid = shipment_date >= Date.current
     errors.add(:error, I18n.t('order.errors.shipment_date')) unless is_valid
+  end
+
+  def validate_code_format
+    reg = nil
+    case detail_type
+    when DetailType::GOODCITY
+      reg = /^GC-[0-9]{5}/
+    when DetailType::SHIPMENT
+      reg = /^S[0-9]{4,5}/
+    when DetailType::CARRYOUT
+      reg = /^C[0-9]{4,5}/
+    else
+      reg = /[A-Z0-9]+/
+    end
+    errors.add(:base, I18n.t('order.errors.invalid_code_format')) unless reg.match(code)
   end
 end
