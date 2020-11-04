@@ -75,8 +75,8 @@ module Api
 
       # GET /orders/next_code?detail_type="Shipment"
       def next_code
-        record = Order.generate_code(params['detail_type'])
-        render json: { code: record }
+        code = Order.generate_next_code_for(params['detail_type'])
+        render json: { code: code }
       end
 
       api :PUT, '/v1/orders/1', "Update an order"
