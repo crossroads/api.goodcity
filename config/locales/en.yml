@@ -191,3 +191,7 @@ en:
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
+  order:
+    errors:
+      invalid_detail_type: Invalid detail type
+      shipment_date: Shipment date cannot be less than today's date
