@@ -32,11 +32,6 @@ describe AppMatcherFakeController do
       it { expect(controller.app_name).to eql(BROWSE_APP) }
     end
 
-    context "stockit app (special case)" do
-      let(:goodcity_app_name) { 'stockit.goodcity' }
-      it { expect(controller.app_name).to eql(STOCKIT_APP) }
-    end
-
     context "unknown app" do
       let(:goodcity_app_name) { 'unknown.goodcity' }
       it { expect(controller.app_name).to eql(nil) }

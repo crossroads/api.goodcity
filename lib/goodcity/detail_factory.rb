@@ -63,7 +63,7 @@ module Goodcity
       attr_hash = attributes.each_with_object({}) do |attr, hash|
                     hash["#{attr}"] = stockit_item_hash[attr.to_s]
                   end
-      attr_hash["stockit_id"] = stockit_detail_id
+      # attr_hash["stockit_id"] = stockit_detail_id
       attr_hash.merge(lookup_hash)
       attr_hash.except(*REJECT_ATTRIBUTES)
     end

@@ -108,14 +108,13 @@ RSpec.describe Api::V1::ItemsController, type: :controller do
     describe "update donor_condition" do
       before { generate_and_set_token(create(:user, :with_reviewer_role, :with_can_manage_items_permission)) }
 
-      # TODO refactor this test, is not actually checking job is created
-      it "should add stockit-update-item request job" do
+      it "should update donor_condition" do
         item = create :item, state: "accepted"
         package = create :package, :received, item: item
         conditions = create_list :donor_condition, 3
         conditions.delete(item.donor_condition)
         extra_params = { donor_condition_id: conditions.last.id }
-        # expect(StockitUpdateJob).to receive(:perform_later).with(package.id)
+
         put :update, params: { id: item.id, item: item.attributes.except("id").merge(extra_params) }
         expect(response.status).to eq(200)
       end
