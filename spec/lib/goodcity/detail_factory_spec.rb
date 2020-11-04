@@ -99,7 +99,7 @@ describe Goodcity::DetailFactory do
       end
     end
 
-    describe 'creates empty record on gc if not present on stockit' do
+    describe 'creates empty record on gc' do
       it "with computer" do
         package_type = create(:package_type, subform: "computer")
         package = create(:package, :with_inventory_number, package_type: package_type)

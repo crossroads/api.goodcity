@@ -13,30 +13,11 @@ RSpec.describe Api::V1::CountriesController, type: :controller do
   describe "POST countries" do
     before { generate_and_set_token(user) }
 
-    context 'if stockit_id present in params' do
-      it 'builds new record if record with stockit id do not exists in db' do
-        expect{
-          post :create, params: { country: country_params }
-        }.to change(Country, :count).by(1)
-        expect(response.status).to eq(201)
-      end
-
-      it 'assigns values to existing record having stockit_id same as stockit_id in params' do
-        country = create :country, country_params
-        expect{
-          post :create, params: { country: country_params }
-        }.to change(Country, :count).by(0)
-        expect(response.status).to eq(201)
-      end
-    end
-
-    context 'stockit_id is not present in params' do
-      it "creates new record" do
-        expect{
-          post :create, params: { country: country_params }
-        }.to change(Country, :count).by(1)
-        expect(response.status).to eq(201)
-      end
+    it "creates new record" do
+      expect{
+        post :create, params: { country: country_params }
+      }.to change(Country, :count).by(1)
+      expect(response.status).to eq(201)
     end
 
     context "GET countries" do
