@@ -24,7 +24,6 @@ module Api
       api :POST, '/v1/boxes', "Create an box"
       param_group :box
       def create
-        # assign_pallet
         @box.attributes = box_params
         if @box.save
           render json: {}, status: 201
@@ -40,12 +39,6 @@ module Api
           :box_number, :description, :comments, :pallet_id
         )
       end
-
-      # TODO: what logic should be applied here?
-      # def assign_pallet
-      #   params["box"]["pallet_id"] = Pallet.find_by(stockit_id: params["box"]["pallet_id"]).try(:id)
-      # end
-
     end
   end
 end

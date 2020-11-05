@@ -77,7 +77,6 @@ class Package < ApplicationRecord
   scope :published, -> { where(allow_web_publish: true) }
   scope :latest, -> { order('id desc') }
   scope :except_package, ->(id) { where.not(id: id) }
-  scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :undesignated, -> { where(order_id: nil) }
   scope :not_multi_quantity, -> { where("received_quantity = 1") }
   scope :exclude_designated, ->(designation_id) {
@@ -138,28 +137,8 @@ class Package < ApplicationRecord
     end
   end
 
-  def assign_stockit_designated_by
-    if (stockit_designated_on.presence && order_id.presence)
-      self.stockit_designated_by = User.stockit_user
-    else
-      self.stockit_designated_by = nil
-    end
-  end
-
   def quantity_contained_in(container_id)
     PackagesInventory::Computer.quantity_contained_in(package: self, container: Package.find(container_id))
-  end
-
-  def order_id_nil?
-    order_id.nil?
-  end
-
-  def stockit_sent_on_present?
-    stockit_sent_on.present?
-  end
-
-  def same_order_id_as_designation?
-    designation.order_id == order_id
   end
 
   def designation
@@ -201,55 +180,6 @@ class Package < ApplicationRecord
     !self.previous_changes.key?("state") && received?
   end
 
-  def designate_to_stockit_order!(order_id)
-    designate_to_stockit_order(order_id)
-    save
-  end
-
-  def designate_to_stockit_order(order_id)
-    self.update(order_id: order_id) if Order.find_by(id: order_id)
-    self.stockit_designated_on = Date.today
-    self.stockit_designated_by = User.current_user
-    self.donor_condition_id =  donor_condition_id.presence || 3
-  end
-
-  def undesignate_from_stockit_order
-    self.order = nil
-    self.stockit_designated_on = nil
-    self.stockit_designated_by = nil
-  end
-
-  # @TODO: remove
-  #
-  def dispatch_stockit_item(_orders_package = nil, package_location_changes = nil, skip_set_relation_update = false)
-    self.skip_set_relation_update = skip_set_relation_update
-    self.stockit_sent_on = Date.today
-    self.stockit_sent_by = User.current_user
-    self.box = nil
-    self.pallet = nil
-  end
-
-  def undispatch_stockit_item
-    self.stockit_sent_on = nil
-    self.stockit_sent_by = nil
-    self.pallet = nil
-    self.box = nil
-  end
-
-  def has_box_or_pallet_error
-    error =
-      if pallet_id?
-        I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
-      else
-        I18n.t("package.has_box_error", box_number: box.box_number)
-      end
-    {
-      "errors" => {
-        error: "#{error} #{I18n.t('package.move_stockit')}"
-      }
-    }
-  end
-
   def add_errors(response)
     if response && (errors = response["errors"]).present?
       errors.each { |key, value| self.errors.add(key, value) }
@@ -264,10 +194,6 @@ class Package < ApplicationRecord
       end
     end
     total_quantity
-  end
-
-  def inventory_package_set
-    item.packages.inventorized.undispatched
   end
 
   def self.browse_public_packages
@@ -316,10 +242,6 @@ class Package < ApplicationRecord
 
   def singleton_package?
     received_quantity == 1
-  end
-
-  def donor_condition_name
-    donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
   end
 
   def storage_type_name
