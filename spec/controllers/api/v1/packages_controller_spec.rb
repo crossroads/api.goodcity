@@ -671,6 +671,16 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           expect(response).to have_http_status(:unprocessable_entity)
         end
       end
+
+      context 'if only zh_tw note is empty' do
+        it 'creates package successfully' do
+          package_params[:notes] = en_note
+          package_params[:notes_zh_tw] = nil
+          expect {
+            post :create, params: { package: package_params }
+          }.to change(Package, :count)
+        end
+      end
     end
 
     context "should not create package with creation of box/pallet setting disabled" do
