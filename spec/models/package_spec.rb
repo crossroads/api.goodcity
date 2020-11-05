@@ -156,27 +156,6 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  # @TODO: remove
-  #
-  describe 'dispatch_stockit_item' do
-    let(:package) { create :package }
-    let(:location) { create :location, :dispatched }
-    let!(:packages_location) { create :packages_location, location: location, package: package }
-
-    it 'set dispatch related details' do
-      package.dispatch_stockit_item
-      expect(package.locations.first).to eq(location)
-      expect(package.stockit_sent_on).to_not be_nil
-    end
-  end
-
-  describe '#donor_condition_name' do
-    let(:package){ create :package, :with_lightly_used_donor_condition}
-    it 'returns name of package donor condition' do
-      expect(package.donor_condition_name).to eq package.donor_condition.name_en
-    end
-  end
-
   describe "Live updates" do
     let(:push_service) { PushService.new }
     let!(:package) { create :package, received_quantity: 1 }

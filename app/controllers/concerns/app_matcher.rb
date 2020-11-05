@@ -20,7 +20,7 @@ module AppMatcher
   end
 
   # return sanitized app name from request header
-  # return 'app', 'admin', 'stock', 'browse', 'stockit'
+  # return 'app', 'admin', 'stock', 'browse'
 
   def app_name
     @request_app_name ||= begin
