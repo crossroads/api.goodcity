@@ -134,6 +134,7 @@ class Package < ApplicationRecord
       package.received_at = nil
       package.location_id = nil
       package.allow_web_publish = false
+      true
     end
   end
 
