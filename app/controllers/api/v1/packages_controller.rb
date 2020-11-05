@@ -490,8 +490,7 @@ module Api
 
       def assign_detail
         PackageDetailBuilder.new(
-          package_params,
-          false
+          package_params
         ).build_or_update_record
       end
 
