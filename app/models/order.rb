@@ -288,7 +288,7 @@ class Order < ApplicationRecord
     end
 
     after_transition on: :submit do |order|
-      if order.valid_order?
+      if order.goodcity_order?
         order.designate_orders_packages
         order.send_new_order_notification
         order.send_new_order_confirmed_sms_to_charity
@@ -450,8 +450,8 @@ class Order < ApplicationRecord
     [DetailType::SHIPMENT, DetailType::GOODCITY, DetailType::CARRYOUT].include? detail_type
   end
 
-  def draft_valid_order?
-    state == 'draft' && valid_order?
+  def goodcity_order?
+    detail_type == DetailType::GOODCITY
   end
 
   def email_properties
