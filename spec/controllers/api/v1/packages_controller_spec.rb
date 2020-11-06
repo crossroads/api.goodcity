@@ -598,7 +598,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           state: package.state,
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
-          storage_type: "Package"
+          storage_type: "Package",
+          notes: 'Notes'
         })
       }
 
@@ -710,7 +711,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           state: package.state,
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
-          storage_type: "Package"
+          storage_type: "Package",
+          notes: 'Notes'
         })
       }
 
@@ -749,7 +751,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
-          detail_type: "computer"
+          detail_type: "computer",
+          notes: 'Notes'
         })
       }
 
@@ -762,7 +765,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
-          detail_type: "computer"
+          detail_type: "computer",
+          notes: 'Notes'
         })
       }
 
@@ -801,7 +805,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           donor_condition_id: donor_condition.id,
           grade: "C",
           stockit_id: 1,
-          code_id: code.stockit_id
+          code_id: code.stockit_id,
+          notes: 'Notes'
         }
       }
 
