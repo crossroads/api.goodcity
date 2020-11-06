@@ -46,6 +46,7 @@ RSpec.describe Package, type: :model do
 
   describe "validations" do
     it { is_expected.to validate_presence_of(:package_type_id) }
+    it { is_expected.to validate_presence_of(:notes) }
     it { is_expected.to_not allow_value(-1).for(:on_hand_quantity) }
     it { is_expected.to_not allow_value(-1).for(:available_quantity) }
     it { is_expected.to_not allow_value(-1).for(:designated_quantity) }

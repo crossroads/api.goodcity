@@ -4,7 +4,8 @@ module Api::V1
     attributes :id, :code, :other_child_packages,
                :default_child_packages, :other_terms, :visible_in_selects,
                :allow_requests, :allow_pieces, :allow_expiry_date,
-               :subform, :allow_box, :allow_pallet, :name
+               :subform, :allow_box, :allow_pallet, :name,
+               :description_en, :description_zh_tw
 
     has_one :location, serializer: LocationSerializer
 

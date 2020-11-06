@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_27_092800) do
+ActiveRecord::Schema.define(version: 2020_11_05_105317) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -620,6 +620,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.boolean "allow_pallet", default: false
     t.boolean "allow_expiry_date", default: false
     t.decimal "default_value_hk_dollar"
+    t.text "description_en"
+    t.text "description_zh_tw"
     t.integer "length"
     t.integer "width"
     t.integer "height"
@@ -636,7 +638,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_092800) do
     t.integer "length"
     t.integer "width"
     t.integer "height"
-    t.text "notes"
+    t.text "notes", null: false
+    t.text "notes_zh_tw"
     t.integer "item_id"
     t.string "state"
     t.datetime "received_at"
