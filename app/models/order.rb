@@ -519,12 +519,13 @@ class Order < ApplicationRecord
     when DetailType::GOODCITY
       reg = /^GC-[0-9]{5}/
     when DetailType::SHIPMENT
-      reg = /^S[0-9]{4,5}/
+      reg = /^S[0-9]{4,5}[A-Z]{1}?/
     when DetailType::CARRYOUT
-      reg = /^C[0-9]{4,5}/
+      reg = /^C[0-9]{4,5}[A-Z]{1}?/
     else
       reg = /[A-Z0-9]+/
     end
+    debugger
     errors.add(:base, I18n.t('order.errors.invalid_code_format')) unless reg.match(code)
   end
 end
