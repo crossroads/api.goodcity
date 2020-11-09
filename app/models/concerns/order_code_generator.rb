@@ -27,7 +27,7 @@ module OrderCodeGenerator
       @klass = klass
       @detail_type = detail_type
       @delimiter = delimiter
-      @matcher = %r/^\d+$/
+      @matcher = %r{^\d+$}
     end
 
     def self.generate(klass, detail_type, delimiter)
@@ -43,7 +43,7 @@ module OrderCodeGenerator
         SELECT MAX(CAST(SUBSTRING(orders.code, :delimiter) as INTEGER)) as CODE FROM orders
           WHERE orders.detail_type = :detail_type AND SUBSTRING(orders.code, :delimiter) ~ :matcher
       QUERY
-      result = exec_query(query, { detail_type: detail_type, delimiter: delimiter, matcher: matcher.source})
+      result = exec_query(query, detail_type: detail_type, delimiter: delimiter, matcher: matcher.source)
       (result.first['code'] || 0) + 1
     end
 
@@ -55,8 +55,8 @@ module OrderCodeGenerator
               orders.detail_type = :detail_type and SUBSTRING(orders.code, :delimiter) ~ :matcher
           ) limit 1
       QUERY
-      code = exec_query(query, { detail_type: detail_type, matcher: matcher.source,
-                                 max: Order.where(detail_type: detail_type).count, delimiter: delimiter })
+      code = exec_query(query, detail_type: detail_type, matcher: matcher.source,
+                                 max: Order.where(detail_type: detail_type).count, delimiter: delimiter)
       code.first.present? ? code.first['first_missing_code'] : nil
     end
 
