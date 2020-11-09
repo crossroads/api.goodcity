@@ -525,7 +525,6 @@ class Order < ApplicationRecord
     else
       reg = /[A-Z0-9]+/
     end
-    debugger
-    errors.add(:base, I18n.t('order.errors.invalid_code_format')) unless reg.match(code)
+    errors.add(:base, I18n.t('order.errors.invalid_code_format')) unless reg.match?(code)
   end
 end
