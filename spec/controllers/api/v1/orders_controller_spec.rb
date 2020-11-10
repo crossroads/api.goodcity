@@ -674,28 +674,18 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           expect(parsed_body['code']).to match(/00002/)
         end
       end
-
-      context 'for missing codes' do
-        before do
-          Order.destroy_all
-          create(:order, :with_state_draft, :shipment, code: 'S00001')
-          create(:order, :with_state_draft, :shipment, code: 'S00003')
-          create(:order, :with_state_draft, :carry_out, code: 'C00001')
-          create(:order, :with_state_draft, :carry_out, code: 'C00003')
-          create(:order, :with_state_draft, code: 'GC-00001')
-          create(:order, :with_state_draft, code: 'GC-00003')
-        end
-        it 'generates missing order code' do
-          get :next_code, params: { detail_type: detail_type }
-          expect(parsed_body["code"]).to match(/00002/)
-        end
-      end
     end
 
     context 'for invalid detail type' do
-      it 'returns 422 response' do
-        get :next_code, params: { detail_type: 'something else' }
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "fails to create a code for invalid detail types" do
+        get :next_code, params: { detail_type: "Local Order" }
+        expect(response.status).to eq(422)
+        expect(parsed_body['error']).to eq('Invalid detail type')
+      end
+
+      it "fails to create a code for missing detail types" do
+        get :next_code, params: {}
+        expect(response.status).to eq(422)
         expect(parsed_body['error']).to eq('Invalid detail type')
       end
     end
@@ -860,20 +850,6 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
           desc = 'An international shipment'
           put :update, params: { id: shipment.id, order: { description: desc } }
           expect(shipment.reload.description).to eq(desc)
-        end
-
-        context 'if shipment date is changed to previous day' do
-          it 'does not update the order' do
-            put :update, params: { id: shipment.id, order: { shipment_date: Date.current.prev_day } }
-            expect{
-              expect(response).to have_http_status(:unprocessable_entity)
-            }.not_to change{ shipment.reload.shipment_date }
-          end
-
-          it 'gives error in the response' do
-            put :update, params: { id: shipment.id, order: { shipment_date: Date.current.prev_day } }
-            expect(parsed_body['errors'][0]).to match(/Shipment date cannot be less than today's date/)
-          end
         end
 
         context 'if shipment date is changed to next date' do

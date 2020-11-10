@@ -55,7 +55,7 @@ class Order < ApplicationRecord
 
   before_validation :assign_code, on: [:create]
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
-  validate :validate_shipment_date, on: %i[create update], if: :shipment_order?
+  validate :validate_shipment_date, on: %i[create], if: :shipment_order?
   validate :validate_code_format, on: %i[create update]
   validates_uniqueness_of :code
   validates_presence_of :code
@@ -186,8 +186,8 @@ class Order < ApplicationRecord
     end
 
     event :restart_process do
-      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.valid_order? }
-      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.valid_order? }
+      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.valid_detail_type? }
+      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.valid_detail_type? }
     end
 
     event :resubmit do
@@ -297,7 +297,7 @@ class Order < ApplicationRecord
     end
 
     after_transition on: :finish_processing do |order|
-      if order.awaiting_dispatch? && order.valid_order?
+      if order.awaiting_dispatch? && order.valid_detail_type?
         order.send_confirmation_email
       end
     end
@@ -446,7 +446,7 @@ class Order < ApplicationRecord
     orders.each { |key, value| orders[key] = value.count }
   end
 
-  def valid_order?
+  def valid_detail_type?
     [DetailType::SHIPMENT, DetailType::GOODCITY, DetailType::CARRYOUT].include? detail_type
   end
 
@@ -495,7 +495,7 @@ class Order < ApplicationRecord
   def assign_code
     return if code.present?
 
-    self.code = Order.generate_next_code_for(detail_type) if valid_order?
+    self.code = Order.generate_next_code_for(detail_type) if valid_detail_type?
   end
 
   #to satisfy push_updates
