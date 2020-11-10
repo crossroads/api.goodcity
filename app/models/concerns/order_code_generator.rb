@@ -6,10 +6,22 @@ module OrderCodeGenerator
 
   included do
     def self.generate_next_code_for(detail_type)
-      prefix = prefix_for(detail_type)
-      delimiter = prefix.length.to_i + 1
-      code = Generator.generate(self, detail_type, delimiter)
+      code = Generator.generate(detail_type)
+      prefix = Generator.prefix_for(detail_type)
       "#{prefix}#{code.to_s.rjust(5, '0')}"
+    end
+  end
+
+  class Generator
+    attr_reader :detail_type, :delimiter, :matcher
+    def initialize(detail_type)
+      @detail_type = detail_type
+      @delimiter = self.class.prefix_for(detail_type).length.to_i + 1
+      @matcher = %r{^\d+$}
+    end
+
+    def self.generate(detail_type)
+      new(detail_type).generate
     end
 
     def self.prefix_for(detail_type)
@@ -19,23 +31,9 @@ module OrderCodeGenerator
 
       raise Goodcity::DetailTypeNotAllowed
     end
-  end
-
-  class Generator
-    attr_reader :klass, :detail_type, :delimiter, :matcher
-    def initialize(klass, detail_type, delimiter)
-      @klass = klass
-      @detail_type = detail_type
-      @delimiter = delimiter
-      @matcher = %r{^\d+$}
-    end
-
-    def self.generate(klass, detail_type, delimiter)
-      new(klass, detail_type, delimiter).generate
-    end
 
     def generate
-      generate_missing_code || generate_next_code
+      generate_next_code
     end
 
     def generate_next_code
@@ -47,21 +45,9 @@ module OrderCodeGenerator
       (result.first['code'] || 0) + 1
     end
 
-    def generate_missing_code
-      query = <<-QUERY
-        SELECT s.i AS first_missing_code from GENERATE_SERIES(1, :max) s(i)
-          WHERE s.i NOT IN (
-            SELECT CAST(SUBSTRING(orders.code, :delimiter) AS INTEGER) AS code FROM orders WHERE
-              orders.detail_type = :detail_type and SUBSTRING(orders.code, :delimiter) ~ :matcher
-          ) limit 1
-      QUERY
-      code = exec_query(query, detail_type: detail_type, matcher: matcher.source,
-                                 max: Order.where(detail_type: detail_type).count, delimiter: delimiter)
-      code.first.present? ? code.first['first_missing_code'] : nil
-    end
-
     def exec_query(query, params)
-      klass.connection.exec_query(klass.sanitize_sql_array([query, params]))
+      sanitized_query = ActiveRecord::Base.send(:sanitize_sql_array, [query, params])
+      ActiveRecord::Base.connection.exec_query(sanitized_query)
     end
   end
 end
