@@ -241,6 +241,10 @@ class Order < ApplicationRecord
     end
 
     before_transition on: :close do |order|
+      if order.orders_packages.designated.count.positive?
+        raise Goodcity::InvalidStateError.new(I18n.t('order.cannot_close_with_undispatched_packages'))
+      end
+
       if order.dispatching?
         order.closed_at = Time.now
         order.closed_by = User.current_user

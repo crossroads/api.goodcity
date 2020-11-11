@@ -607,6 +607,14 @@ RSpec.describe Order, type: :model do
         expect(order.reload.closed_at).to eq(nil)
         expect(order.reload.closed_by_id).to eq(nil)
       end
+
+      it 'fails to close an order with designated orders packages' do
+        order = create :order, state: 'dispatching'
+        create(:orders_package, order: order, state: 'designated')
+        expect {
+          order.close
+        }.to raise_error(Goodcity::InvalidStateError).with_message('All packages must be dispatched before closing an order')
+      end
     end
 
     describe '#reopen' do
@@ -680,6 +688,14 @@ RSpec.describe Order, type: :model do
         order.cancel
         expect(order.reload.cancelled_at).to eq(Time.now)
         expect(order.reload.cancelled_by_id).to eq(user.id)
+      end
+
+      it 'fails to cancel an order with dispatched orders packages' do
+        order = create :order, state: 'dispatching'
+        create(:orders_package, order: order, state: 'dispatched')
+        expect {
+          order.cancel
+        }.to raise_error(Goodcity::InvalidStateError).with_message('Unable to cancel during dispatch, please undispatch and try again')
       end
     end
 
