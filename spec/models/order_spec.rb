@@ -740,11 +740,57 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe "Callbacks" do
-    let(:order) { create(:order, :with_state_draft, :with_orders_packages) }
+  describe '.validate_code_format' do
+    context 'when code is invalid' do
+      context 'GoodCity order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, code: 'GC-01')
+          }.to raise_exception(StandardError)
+        end
+      end
 
-    it "Assigns GC Code" do
-      expect(order.code).to include("GC-")
+      context 'Shipment order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, :shipment, code: 'SH001')
+          }.to raise_exception(StandardError)
+        end
+      end
+
+      context 'CarryOut order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, :carry_out, code: 'A20001')
+          }.to raise_exception(StandardError)
+        end
+      end
+    end
+
+    context 'when code is valid' do
+      context 'GoodCity order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, code: 'GC-12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
+
+      context 'Shipment order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, :shipment, code: 'S12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
+
+      context 'CarryOut order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, :carry_out, code: 'C12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
     end
   end
 

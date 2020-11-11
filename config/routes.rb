@@ -186,6 +186,7 @@ Rails.application.routes.draw do
       resources :stockit_local_orders, only: [:create]
       resources :orders, only: [:create, :show, :index, :update, :destroy] do
         get 'summary', on: :collection
+        get 'next_code', on: :collection
         member do
           put :transition
         end

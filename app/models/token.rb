@@ -107,7 +107,7 @@ class Token
       return errors.add(:base, I18n.t('token.invalid')) unless ALL_TYPES.include?(access_type)
       if exp_time < cur_time
         errors.add(:base, I18n.t('token.expired'))
-      elsif !(iat_time < cur_time && iat_time < exp_time)
+      elsif !(iat_time <= cur_time && iat_time < exp_time)
         errors.add(:base, I18n.t('token.invalid'))
       end
     else
