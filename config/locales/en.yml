@@ -142,8 +142,6 @@ en:
     invalid_qty: "Invalid quantity"
     cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
     exceed_dispatch_quantity: "You cannot dispatch more than were ordered."
-  order:
-    cannot_close_with_undispatched_packages: "All packages must be dispatched before closing an order"
   stocktakes:
     invalid_state: Cannot process a closed or cancelled Stocktake
     dirty_revisions: Some quantity revisions require a re-count
@@ -194,6 +192,7 @@ en:
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
   order:
+    cannot_close_with_undispatched_packages: "All packages must be dispatched before closing an order"
     errors:
       invalid_detail_type: Invalid detail type
       shipment_date: Shipment date cannot be less than today's date
