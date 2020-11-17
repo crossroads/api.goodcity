@@ -22,7 +22,7 @@ module Api
           param :detail_id, String, allow_nil: true
           param :beneficiary_id, String, allow_nil: true
           param :address_id, String
-          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)'
+          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)', allow_nil: true
           param :staff_note, String, desc: 'Notes for internal use'
         end
       end
@@ -34,7 +34,7 @@ module Api
         if order_record.save
           render json: @order, serializer: serializer, root: root, status: 201
         else
-          render json: @order.errors, status: 422
+          render json: { errors: @order.errors.full_messages }, status: 422
         end
       end
 
@@ -70,6 +70,12 @@ module Api
         event = params['transition'].to_sym
         @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
         render json: serializer.new(@order, include_allowed_actions: true)
+      end
+
+      # GET /orders/next_code?detail_type="Shipment"
+      def next_code
+        code = Order.generate_next_code_for(params['detail_type'])
+        render json: { code: code }
       end
 
       api :PUT, '/v1/orders/1', "Update an order"
@@ -155,13 +161,13 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
-          :created_by_id, :code, :status,
+          :created_by_id, :code, :status, :country_id,
           :created_at, :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
           :stockit_activity_id,
           :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
-          :address_id,:submitted_by_id, :staff_note,
+          :address_id,:submitted_by_id, :staff_note, :shipment_date,
           :exclude_message_sender, :include_messages,
           purpose_ids: [],
           beneficiary_attributes: beneficiary_attributes,

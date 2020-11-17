@@ -56,7 +56,8 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
       it "Does not assign higher level role to user" do
         post :create, params: { user_role: { user_id: reviewer_user.id, role_id: system_admin_role.id } }
 
-        expect(response.status).to eq(401)
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"][0]["message"]["error"]).to eq("You are not authorized to update roles of this user.")
       end
 
       it "Does assign lower level and same level role to user", :show_in_doc do
@@ -93,7 +94,8 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
 
       it "Does not assign role to other user" do
         post :create, params: { user_role: { user_id: reviewer.id, role_id: system_admin_role.id } }
-        expect(response.status).to eq(401)
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"][0]["message"]["error"]).to eq("You are not authorized to update roles of this user.")
       end
     end
   end
@@ -110,7 +112,8 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
           delete :destroy, params: { id: admin_user.user_roles.first.id }
         }.to change(admin_user.user_roles, :count).by(0)
 
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(422)
+        expect(parsed_body["errors"][0]["message"]["error"]).to eq("You are not authorized to update roles of this user.")
         expect(admin_user.reload.user_roles.first.role_id).to eq(system_admin_role.id)
       end
 
@@ -125,3 +128,4 @@ RSpec.describe Api::V1::UserRolesController, type: :controller do
     end
   end
 end
+
