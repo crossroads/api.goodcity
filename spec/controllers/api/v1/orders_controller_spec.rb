@@ -730,7 +730,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
 
     context 'when creating international orders' do
       context 'shipment' do
-        let(:shipment_params) { FactoryBot.attributes_for(:order, :with_state_draft, :shipment) }
+        let(:shipment_params) { FactoryBot.attributes_for(:order, :with_state_draft, :shipment, state_event: 'submit') }
         let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
 
         before do
@@ -793,7 +793,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       context 'carryouts' do
-        let(:carryout_params) { FactoryBot.attributes_for(:order, :with_state_draft, :carry_out) }
+        let(:carryout_params) { FactoryBot.attributes_for(:order, :with_state_draft, :carry_out, state_event: 'submit') }
 
         it 'creates carryout orders' do
           post :create, params: { order: carryout_params }
