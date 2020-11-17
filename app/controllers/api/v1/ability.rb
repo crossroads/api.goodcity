@@ -53,6 +53,7 @@ module Api
         medical_abilities
         printer_abilities
         offers_package_abilities
+        canned_response_abilities
       end
 
       def printer_abilities
@@ -87,6 +88,10 @@ module Api
         if can_manage_orders? || @api_user
           can [:create, :index, :show, :update, :destroy], Beneficiary
         end
+      end
+
+      def canned_response_abilities
+        can :index, CannedResponse if can_manage_canned_response?
       end
 
       def computer_abilities
