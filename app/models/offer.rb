@@ -249,6 +249,10 @@ class Offer < ApplicationRecord
     end
   end
 
+  def start_receiving
+    update_attributes({ state_event: 'start_receiving' })
+  end
+
   def gogovan_order
     self.try(:delivery).try(:gogovan_order)
   end

@@ -75,7 +75,7 @@ module OrderFulfilmentOperations
       location = Utils.to_model(from_location, Location)
       quantity = quantity.to_i
 
-      raise Goodcity::ActionNotAllowedError.with_translation("orders_package.exceed_dispatch_quantity") if quantity > ord_pkg.quantity
+      raise Goodcity::ActionNotAllowedError.with_translation("orders_package.exceed_dispatch_quantity") if quantity > (ord_pkg.quantity - ord_pkg.dispatched_quantity)
 
       package.inventory_lock do
         assert_can_dispatch(ord_pkg, quantity, location)

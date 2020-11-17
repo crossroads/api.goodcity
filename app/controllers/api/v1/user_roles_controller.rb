@@ -21,8 +21,11 @@ module Api
       end
 
       def destroy
-        current_user.remove_role_for_user(@user_role)
-        render json: {}
+        if current_user.remove_role_for_user(@user_role)
+          render json: {}
+        else
+          render_error({error: "You are not authorized to update roles of this user."})
+        end
       end
 
       api :POST, "/v1/user_roles", "Add an user_role"
@@ -39,7 +42,7 @@ module Api
         if @user_role
           save_and_render_object(@user_role)
         else
-          render json: {}, status: 401
+          render_error({error: "You are not authorized to update roles of this user."})
         end
       end
 

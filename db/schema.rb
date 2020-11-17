@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_28_061512) do
+ActiveRecord::Schema.define(version: 2020_11_05_105317) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -612,6 +612,8 @@ ActiveRecord::Schema.define(version: 2020_10_28_061512) do
     t.integer "width"
     t.integer "height"
     t.string "department"
+    t.text "description_en"
+    t.text "description_zh_tw"
     t.index ["allow_requests"], name: "index_package_types_on_allow_requests"
     t.index ["location_id"], name: "index_package_types_on_location_id"
     t.index ["name_en"], name: "package_types_name_en_search_idx", using: :gin
@@ -623,7 +625,7 @@ ActiveRecord::Schema.define(version: 2020_10_28_061512) do
     t.integer "length"
     t.integer "width"
     t.integer "height"
-    t.text "notes"
+    t.text "notes", null: false
     t.integer "item_id"
     t.string "state"
     t.datetime "received_at"
@@ -668,6 +670,7 @@ ActiveRecord::Schema.define(version: 2020_10_28_061512) do
     t.integer "stockit_designated_by_id"
     t.datetime "stockit_designated_on"
     t.datetime "stockit_sent_on"
+    t.text "notes_zh_tw"
     t.index ["allow_web_publish"], name: "index_packages_on_allow_web_publish"
     t.index ["available_quantity"], name: "index_packages_on_available_quantity"
     t.index ["box_id"], name: "index_packages_on_box_id"

@@ -16,7 +16,7 @@ module Api
       def index
         return stock_codes if params['stock'].present?
         @package_types = @package_types.find(params[:ids].split(",")) if params[:ids].present?
-        render json: @package_types.visible, each_serializer: serializer
+        render json: @package_types, each_serializer: serializer
       end
 
       def stock_codes

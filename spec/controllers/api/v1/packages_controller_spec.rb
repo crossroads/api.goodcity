@@ -559,7 +559,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           package_type_id:package.package_type_id,
           state: package.state,
           donor_condition_id: package.donor_condition_id,
-          storage_type: "Package"
+          storage_type: "Package",
+          notes: 'Notes'
         })
       }
 
@@ -610,6 +611,40 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
     end
 
+    context 'package notes' do
+      let(:en_note) { 'A sample note' }
+      let(:zh_note) { '如此申請不再受惠於個案受惠者，你可刪除受惠者資料。' }
+
+      it 'creates package with notes in en and zh_tw languages' do
+        package_params[:notes] = en_note
+        package_params[:notes_zh_tw] = zh_note
+        post :create, params: { package: package_params }
+        expect(parsed_body['package']['notes']).to eq(en_note)
+        expect(parsed_body['package']['notes_zh_tw']).to eq(zh_note)
+      end
+
+      context 'if english note is empty' do
+        it 'returns error' do
+          package_params[:notes] = nil
+          package_params[:notes_zh_tw] = zh_note
+          expect {
+            post :create, params: { package: package_params }
+          }.not_to change(Package, :count)
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'if only zh_tw note is empty' do
+        it 'creates package successfully' do
+          package_params[:notes] = en_note
+          package_params[:notes_zh_tw] = nil
+          expect {
+            post :create, params: { package: package_params }
+          }.to change(Package, :count)
+        end
+      end
+    end
+
     context "should not create package with creation of box/pallet setting disabled" do
       let!(:location) { create :location }
       let!(:code) { create :package_type }
@@ -633,7 +668,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           package_type_id: package.package_type_id,
           state: package.state,
           donor_condition_id: package.donor_condition_id,
-          storage_type: "Package"
+          storage_type: "Package",
+          notes: 'Notes'
         })
       }
 
@@ -669,7 +705,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           state: package.state,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
-          detail_type: "computer"
+          detail_type: "computer",
+          notes: 'Notes'
         })
       }
 
@@ -681,7 +718,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           state: package.state,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
-          detail_type: "computer"
+          detail_type: "computer",
+          notes: 'Notes'
         })
       }
 

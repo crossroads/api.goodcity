@@ -382,9 +382,10 @@ module Api
         attributes = [
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
-          :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
-          :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
-          :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
+          :inventory_number, :item_id, :length, :location_id, :notes,
+          :notes_zh_tw, :order_id, :package_type_id, :pallet_id, :pieces,
+          :received_at, :saleable, :received_quantity, :rejected_at,
+          :state, :state_event, :stockit_designated_on,
           :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
           :comment, :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
