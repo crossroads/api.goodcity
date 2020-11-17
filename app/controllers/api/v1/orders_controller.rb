@@ -15,7 +15,6 @@ module Api
 
       def_param_group :order do
         param :order, Hash, required: true do
-          param :status, String
           param :code, String
           param :created_at, String
           param :people_helped, :number
@@ -143,7 +142,6 @@ module Api
           @order.stockit_contact = stockit_contact
           @order.stockit_organisation = stockit_organisation
           @order.detail_type, @order.detail_id = set_stockit_detail
-          @order.state = set_stockit_status_map if order_params["status"].present?
         elsif is_browse_app?
           @order.assign_attributes(order_params)
           @order.created_by = current_user
@@ -171,7 +169,7 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
-          :created_by_id, :stockit_id, :code, :status, :country_id,
+          :created_by_id, :stockit_id, :code, :country_id,
           :created_at, :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
@@ -232,17 +230,6 @@ module Api
           detail_id = nil
         end
         [detail_type, detail_id]
-      end
-
-      def set_stockit_status_map
-        case order_params["detail_type"]
-        when "CarryOut", "Shipment"
-          Order::SHIPMENT_STATUS_MAP[order_params["status"]] || "submitted"
-        when "LocalOrder"
-          Order::LOCAL_ORDER_STATUS_MAP[order_params["status"]] || "submitted"
-        else
-          'submitted'
-        end
       end
 
       def eager_load_designation

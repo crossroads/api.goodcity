@@ -19,7 +19,7 @@ namespace :demo do
 
     def create_offers
       actions = %w(create_submitted_offer create_reviewing_offer create_reviewed_offer
-         create_scheduled_offer create_closed_offer create_inactive_offer 
+         create_scheduled_offer create_closed_offer create_inactive_offer
          create_receiving_offer create_received_offer)
       actions.each do |action|
         puts "Creating #{count} #{action}"
@@ -88,7 +88,7 @@ namespace :demo do
     end
 
     def create_single_order
-      FactoryBot.create(:order, :with_status_processing, :with_created_by, processed_by: reviewer, organisation: create_organisation)
+      FactoryBot.create(:order, :with_created_by, processed_by: reviewer, organisation: create_organisation)
     end
 
     def create_designated_packages
