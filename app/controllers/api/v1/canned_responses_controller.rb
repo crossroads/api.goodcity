@@ -12,12 +12,12 @@ module Api
         render json: CannedResponse.cached_json, each_serializer: serializer
       end
 
+      private
+
       def search_and_render_canned_message
         result = @canned_responses.search(params['searchText'])
         render json: result, each_serializer: serializer
       end
-
-      private
 
       def serializer
         Api::V1::CannedResponseSerializer

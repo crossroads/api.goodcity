@@ -11,4 +11,7 @@ class CannedResponse < ApplicationRecord
     ],
     default_tolerance: 0.8
   )
+
+  validates_presence_of :name_en
+  validates_presence_of :content_en
 end
