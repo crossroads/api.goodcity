@@ -7,7 +7,7 @@ describe Api::V1::OrderSerializer do
   let(:stockit_local_order) { create :stockit_local_order }
   let(:stockit_activity) { create :stockit_activity }
   let(:process_checklist) { create :process_checklist }
-  let(:order) { create :order, country: country, detail: stockit_local_order,
+  let(:order) { create :order, country: country, detail: stockit_local_order,code: "1234",
     stockit_activity: stockit_activity, processed_by: user, cancelled_by_id: user.id, process_checklists: [process_checklist],
     process_completed_by_id: user.id, closed_by_id: user, district: district, staff_note: 'this is a note' }
   let(:serializer) { Api::V1::OrderSerializer.new(order).as_json }
@@ -50,8 +50,8 @@ describe Api::V1::OrderSerializer do
     expect(order_process_checklist.process_checklist_id).to eq(order.process_checklists[0].id)
   end
 
-  it 'returns organisation id as gc_organisation_id in json response if stockit_organisation is not assigned' do
-    expect(json['order']['gc_organisation_id']).to eq(order.organisation_id)
+  it 'returns organisation id as organisation_id in json response if stockit_organisation is not assigned' do
+    expect(json['order']['organisation_id']).to eq(order.organisation_id)
   end
 
   it 'returns stockit_organisation id as organisation_id in json response if stockit_organisation assigned' do

@@ -5,13 +5,12 @@ FactoryBot.define do
     status   { %w[draft submitted processing closed cancelled].sample }
     state    { %w[draft submitted processing closed cancelled].sample }
 
-    code          { generate(:code) }
     description     { FFaker::Lorem.sentence }
     purpose_description { FFaker::Lorem.sentence }
     stockit_id      { nil }
     detail_type     { 'GoodCity' }
     people_helped   { rand(10) + 1 }
-    shipment_date    { Date.today }
+    shipment_date    { Date.current }
     booking_type    { create :booking_type, :online_order }
     association     :stockit_organisation
     association     :stockit_activity

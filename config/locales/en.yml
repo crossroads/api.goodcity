@@ -62,6 +62,8 @@ en:
     no_checkout_to_appointment: "Cannot checkout an appointment"
   activerecord:
     attributes:
+      order:
+        code: "Code"
       user:
         mobile: "Mobile"
         email: "Email"
@@ -90,6 +92,10 @@ en:
           attributes:
             name_en:
               taken: 'is already been taken'
+        order:
+          attributes:
+            code:
+              taken: "has already been taken."
 
   notification:
     new_offer: New offer submitted by %{name}
@@ -118,6 +124,7 @@ en:
     cannot_undo: Action cannot be undone
   package:
     max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
+    printer_not_found: "Printer not found"
     creation_of_box/pallet_error: "Creation of %{storage_type} not allowed."
     has_pallet_error: "This item is on pallet %{pallet_number}."
     has_box_error: "This item is on box %{box_number}."
@@ -134,6 +141,7 @@ en:
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
     cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
+    exceed_dispatch_quantity: "You cannot dispatch more than were ordered."
   stocktakes:
     invalid_state: Cannot process a closed or cancelled Stocktake
     dirty_revisions: Some quantity revisions require a re-count
@@ -183,3 +191,9 @@ en:
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
+  order:
+    cannot_close_with_undispatched_packages: "All packages must be dispatched before closing an order"
+    errors:
+      invalid_detail_type: Invalid detail type
+      shipment_date: Shipment date cannot be less than today's date
+      invalid_code_format: Invalid order code format

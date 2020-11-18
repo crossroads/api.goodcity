@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
+RSpec.describe Api::V1::OrganisationsController, type: :controller do
   let(:supervisor) { create(:user, :with_token, :with_can_check_organisations_permission, role_name: 'Supervisor') }
   let!(:country) { create(:country, name_en: DEFAULT_COUNTRY) }
   let(:parsed_body) { JSON.parse(response.body) }
@@ -13,7 +13,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     it "returns first 25 results only" do
       organisations.map{|org| org.update_column(:name_en, org.name_en + " (HongKong)")}
       get :index, params: { searchText: "(HongKong)" }
-      expect(parsed_body['gc_organisations'].length).to eq(25)
+      expect(parsed_body['organisations'].length).to eq(25)
     end
   end
 
@@ -27,15 +27,15 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
 
     it "return serialized organisations", :show_in_doc do
       get :index
-      expect(parsed_body['gc_organisations'].length).to eq(Organisation.count)
+      expect(parsed_body['organisations'].length).to eq(Organisation.count)
     end
 
     it "returns serialized organisations with matching search text" do
       name = "Zuni"
       organisation = create :organisation, name_en: name
       get :index, params: { searchText: name }
-      expect(parsed_body['gc_organisations'].length ).to eq(1)
-      expect(parsed_body['gc_organisations'][0]["id"]).to eq(organisation.id)
+      expect(parsed_body['organisations'].length ).to eq(1)
+      expect(parsed_body['organisations'][0]["id"]).to eq(organisation.id)
       expect(parsed_body['meta']['search']).to eql(name)
     end
 
@@ -43,11 +43,11 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       name = "Zuni"
       organisation = create :organisation, name_en: name
       get :names, params: { searchText: name }
-      expect(parsed_body['gc_organisations'].length ).to eq(1)
-      expect(parsed_body['gc_organisations'][0]["id"]).to eq(organisation.id)
+      expect(parsed_body['organisations'].length ).to eq(1)
+      expect(parsed_body['organisations'][0]["id"]).to eq(organisation.id)
       expect(parsed_body['meta']['search']).to eql(name)
-      expect(parsed_body['gc_organisations'].first['name_en']).to eql(organisation.name_en)
-      expect(parsed_body['gc_organisations'].first['name_zh_tw']).to eql(organisation.name_zh_tw)
+      expect(parsed_body['organisations'].first['name_en']).to eql(organisation.name_en)
+      expect(parsed_body['organisations'].first['name_zh_tw']).to eql(organisation.name_zh_tw)
     end
 
     it "returns serialized organisations from an ID list" do
@@ -56,9 +56,9 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       ids =  more_organisations.map(&:id)
 
       get :index, params: { ids: ids }
-      expect(parsed_body['gc_organisations'].length).to eq(ids.length)
+      expect(parsed_body['organisations'].length).to eq(ids.length)
 
-      received_ids = parsed_body['gc_organisations'].map { |o| o["id"] }
+      received_ids = parsed_body['organisations'].map { |o| o["id"] }
       expect(received_ids).to match_array(ids)
     end
 
@@ -69,16 +69,16 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
       names =  more_organisations.map(&:name_en)
 
       get :index, params: { ids: ids }
-      expect(parsed_body['gc_organisations'].length).to eq(ids.length)
+      expect(parsed_body['organisations'].length).to eq(ids.length)
 
-      received_names = parsed_body['gc_organisations'].map { |o| o["name_en"] }
+      received_names = parsed_body['organisations'].map { |o| o["name_en"] }
       expect(received_names).to match_array(names)
     end
   end
 
   describe "GET GC Organisation" do
     let(:organisation) { create :organisation }
-    let(:serialized_gc_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "gc_organisations", include_orders_count: true).as_json.to_json) }
+    let(:serialized_organisation) { JSON.parse(Api::V1::OrganisationSerializer.new(organisation, root: "organisations", include_orders_count: true).as_json.to_json) }
 
     before { get :show, params: { id: organisation.id } }
     it "returns 200" do
@@ -86,7 +86,7 @@ RSpec.describe Api::V1::GcOrganisationsController, type: :controller do
     end
 
     it "return serialized address", :show_in_doc do
-      expect(parsed_body).to eq(serialized_gc_organisation)
+      expect(parsed_body).to eq(serialized_organisation)
     end
   end
 

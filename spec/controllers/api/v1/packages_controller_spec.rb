@@ -598,7 +598,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           state: package.state,
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
-          storage_type: "Package"
+          storage_type: "Package",
+          notes: 'Notes'
         })
       }
 
@@ -649,6 +650,40 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       end
     end
 
+    context 'package notes' do
+      let(:en_note) { 'A sample note' }
+      let(:zh_note) { '如此申請不再受惠於個案受惠者，你可刪除受惠者資料。' }
+
+      it 'creates package with notes in en and zh_tw languages' do
+        package_params[:notes] = en_note
+        package_params[:notes_zh_tw] = zh_note
+        post :create, params: { package: package_params }
+        expect(parsed_body['package']['notes']).to eq(en_note)
+        expect(parsed_body['package']['notes_zh_tw']).to eq(zh_note)
+      end
+
+      context 'if english note is empty' do
+        it 'returns error' do
+          package_params[:notes] = nil
+          package_params[:notes_zh_tw] = zh_note
+          expect {
+            post :create, params: { package: package_params }
+          }.not_to change(Package, :count)
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'if only zh_tw note is empty' do
+        it 'creates package successfully' do
+          package_params[:notes] = en_note
+          package_params[:notes_zh_tw] = nil
+          expect {
+            post :create, params: { package: package_params }
+          }.to change(Package, :count)
+        end
+      end
+    end
+
     context "should not create package with creation of box/pallet setting disabled" do
       let!(:location) { create :location }
       let!(:code) { create :package_type, :with_stockit_id }
@@ -676,7 +711,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           state: package.state,
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
-          storage_type: "Package"
+          storage_type: "Package",
+          notes: 'Notes'
         })
       }
 
@@ -715,7 +751,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
-          detail_type: "computer"
+          detail_type: "computer",
+          notes: 'Notes'
         })
       }
 
@@ -728,7 +765,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           stockit_id: package.stockit_id,
           donor_condition_id: package.donor_condition_id,
           detail_attributes: computer_params,
-          detail_type: "computer"
+          detail_type: "computer",
+          notes: 'Notes'
         })
       }
 
@@ -767,7 +805,8 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
           donor_condition_id: donor_condition.id,
           grade: "C",
           stockit_id: 1,
-          code_id: code.stockit_id
+          code_id: code.stockit_id,
+          notes: 'Notes'
         }
       }
 
@@ -1292,7 +1331,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     let(:package) { create :package }
     let!(:printer_1) { create :printer, :active }
     let!(:printer_2) { create :printer }
-
+    let!(:printer_user) { create :printers_user, user: user, printer: printer_1, tag: 'stock'}
 
     it "returns 400 if package does not exist" do
       post :print_barcode, params: { package_id: 1, labels:1 }
@@ -1310,13 +1349,13 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
     it "should print barcode service call with inventory number" do
       package.inventory_number = inventory_number
       package.save
-      expect(PrintLabelJob).to receive(:perform_later).with(package.id, user.id, 'inventory_label', 1)
+      expect(PrintLabelJob).to receive(:perform_later).with(package.id, printer_user.printer.id, {label_type: 'inventory_label', print_count:1})
 
-      post :print_barcode, params: { package_id: package.id, labels: 1 }
+      post :print_barcode, params: { package_id: package.id, labels: 1, tag: 'stock' }
     end
 
     it "return 204 status" do
-      post :print_barcode, params: { package_id: package.id, labels:1 }
+      post :print_barcode, params: { package_id: package.id, labels: 1, tag: 'stock' }
       expect(response.status).to eq(204)
     end
 

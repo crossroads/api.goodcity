@@ -734,18 +734,6 @@ RSpec.describe Api::V1::OrganisationsUsersController, type: :controller do
           end
         end
       end
-
-      describe '/GET all_status' do
-        it 'returns 200' do
-          get :status_list
-          expect(response).to have_http_status(:success)
-        end
-
-        it 'returns all status' do
-          get :status_list
-          expect(parsed_body['status']).to match_array(OrganisationsUser.all_status)
-        end
-      end
     end
   end
 end

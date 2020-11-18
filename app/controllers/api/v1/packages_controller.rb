@@ -212,7 +212,13 @@ module Api
       end
 
       def print_inventory_label
-        PrintLabelJob.perform_later(@package.id, User.current_user.id, "inventory_label", print_count)
+        printer = PrintersUser.where(user_id: current_user.id, tag: params[:tag]).first.try(:printer)
+        return render json: { errors: I18n.t("package.printer_not_found") }, status: 400 unless printer
+        opts = {
+          print_count: print_count,
+          label_type: "inventory_label"
+        }
+        PrintLabelJob.perform_later(@package.id, printer.id, opts)
         render json: {}, status: 204
       end
 
@@ -384,10 +390,11 @@ module Api
         attributes = [
           :allow_web_publish, :box_id, :case_number, :designation_name,
           :detail_id, :detail_type, :donor_condition_id, :grade, :height,
-          :inventory_number, :item_id, :length, :location_id, :notes, :order_id,
-          :package_type_id, :pallet_id, :pieces, :received_at, :saleable,
-          :received_quantity, :rejected_at, :state, :state_event, :stockit_designated_on,
-          :stockit_id, :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
+          :inventory_number, :item_id, :length, :location_id, :notes,
+          :notes_zh_tw, :order_id, :package_type_id, :pallet_id, :pieces,
+          :received_at, :saleable, :received_quantity, :rejected_at,
+          :state, :state_event, :stockit_designated_on, :stockit_id,
+          :stockit_sent_on, :weight, :width, :favourite_image_id, :restriction_id,
           :comment, :expiry_date, :value_hk_dollar, :package_set_id, offer_ids: [],
           packages_locations_attributes: %i[id location_id quantity],
           detail_attributes: [:id, computer_attributes, electrical_attributes,

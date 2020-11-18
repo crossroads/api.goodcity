@@ -70,6 +70,7 @@ Rails.application.routes.draw do
           put :mark_inactive
           put :merge_offer
           put :reopen_offer
+          put :resume_receiving
         end
       end
       resources :offers_packages, only: [:destroy]
@@ -124,12 +125,8 @@ Rails.application.routes.draw do
       resources :holidays, only: [:index, :create, :destroy, :update]
       resources :orders_packages
       resources :packages_locations, only: [:index, :show]
-      resources :organisations_users, only: [:create, :index, :update, :show] do
-        collection do
-          get :status_list
-        end
-      end
-      resources :gc_organisations do
+      resources :organisations_users, only: [:create, :index, :update, :show]
+      resources :organisations do
         get 'names', on: :collection
         member do
           get :orders
@@ -189,6 +186,7 @@ Rails.application.routes.draw do
       resources :stockit_local_orders, only: [:create]
       resources :orders, only: [:create, :show, :index, :update, :destroy] do
         get 'summary', on: :collection
+        get 'next_code', on: :collection
         member do
           put :transition
         end

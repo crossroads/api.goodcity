@@ -62,6 +62,8 @@ zh-tw:
     no_checkout_to_appointment: "Cannot checkout an appointment"
   activerecord:
     attributes:
+      order:
+        code: "編碼"
       user:
         mobile: "手提電話"
         email: "電郵"
@@ -92,6 +94,10 @@ zh-tw:
               taken: '已被登記'
             registration:
               taken: '已被登記'
+        order:
+          attributes:
+            code:
+              taken: "已被登記."
 
   notification:
     new_offer: "%{name} 的新捐獻。"
@@ -115,6 +121,7 @@ zh-tw:
     cannot_undo: Action cannot be undone
   package:
     max_print_error: "Print value should be between 0 and %{max_barcode_qty}."
+    printer_not_found: "Printer not found"
     creation_of_box/pallet_error: "Creation of %{storage_type} not allowed."
     allow_box_pallet_item_addition: "Addition of items to box/pallet are not allowed."
     has_pallet_error: "This item is on pallet %{pallet_number}."
@@ -132,6 +139,7 @@ zh-tw:
     qty_edit_denied_for_inactive: "Quantity of already dispatched/cancelled items cannot be modified"
     invalid_qty: "Invalid quantity"
     cancel_requires_undispatch: "Unable to cancel during dispatch, please undispatch and try again"
+    exceed_dispatch_quantity: "You cannot dispatch more than were ordered."
   stocktakes:
     invalid_state: Cannot process a closed or cancelled Stocktake
     dirty_revisions: Some quantity revisions require a re-count
@@ -181,3 +189,9 @@ zh-tw:
       zero_invalid: Zero is not a valid change record
       enforced_positive: Negative values are not allowed for %{action} actions
       enforced_negative: Positive values are not allowed for %{action} actions
+  order:
+    cannot_close_with_undispatched_packages: "All packages must be dispatched before closing an order"
+    errors:
+      invalid_detail_type: Invalid detail type
+      shipment_date: Shipment date cannot be less than today's date
+      invalid_code_format: Invalid order code format
