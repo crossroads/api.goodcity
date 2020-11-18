@@ -105,10 +105,8 @@ ActiveRecord::Schema.define(version: 2020_11_13_074251) do
     t.string "content_en"
     t.string "content_zh_tw"
     t.string "respondable_type"
-    t.bigint "respondable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["respondable_type", "respondable_id"], name: "index_canned_responses_on_respondable_type_and_respondable_id"
   end
 
   create_table "companies", id: :serial, force: :cascade do |t|

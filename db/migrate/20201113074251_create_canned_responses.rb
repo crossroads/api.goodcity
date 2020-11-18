@@ -5,7 +5,7 @@ class CreateCannedResponses < ActiveRecord::Migration[5.2]
       t.string :name_zh_tw
       t.string :content_en
       t.string :content_zh_tw
-      t.references :respondable, polymorphic: true
+      t.string :respondable_type
       t.timestamps
     end
   end
