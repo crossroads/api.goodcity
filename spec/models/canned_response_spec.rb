@@ -9,7 +9,6 @@ RSpec.describe CannedResponse, type: :model do
     it { is_expected.to have_db_column(:content_en).of_type(:string) }
     it { is_expected.to have_db_column(:content_zh_tw).of_type(:string) }
     it { is_expected.to have_db_column(:respondable_type).of_type(:string) }
-    it { is_expected.to have_db_column(:respondable_id).of_type(:integer) }
   end
 
   describe 'Validations' do
