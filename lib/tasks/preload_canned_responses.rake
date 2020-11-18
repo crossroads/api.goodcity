@@ -14,6 +14,6 @@ namespace :goodcity do
         puts "Error while creating #{v} \n Error: #{canned_response.errors.full_messages}"
       end
     end
-    puts "Succesfully create #{count} records"
+    puts "Succesfully created #{count} records"
   end
 end
