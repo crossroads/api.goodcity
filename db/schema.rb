@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_05_105317) do
+ActiveRecord::Schema.define(version: 2020_11_13_074251) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -97,6 +97,18 @@ ActiveRecord::Schema.define(version: 2020_11_05_105317) do
     t.datetime "updated_at", null: false
     t.boolean "visible_to_offer", default: true
     t.boolean "visible_to_order", default: false
+  end
+
+  create_table "canned_responses", force: :cascade do |t|
+    t.string "name_en"
+    t.string "name_zh_tw"
+    t.string "content_en"
+    t.string "content_zh_tw"
+    t.string "respondable_type"
+    t.bigint "respondable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["respondable_type", "respondable_id"], name: "index_canned_responses_on_respondable_type_and_respondable_id"
   end
 
   create_table "companies", id: :serial, force: :cascade do |t|
