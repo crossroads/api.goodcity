@@ -88,7 +88,7 @@ namespace :demo do
     end
 
     def create_single_order
-      FactoryBot.create(:order, :with_status_processing, :with_created_by, processed_by: reviewer, organisation: create_organisation)
+      FactoryBot.create(:order, :with_created_by, processed_by: reviewer, organisation: create_organisation)
     end
 
     def create_designated_packages

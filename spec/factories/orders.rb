@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :order do
-    status   { %w[draft submitted processing closed cancelled].sample }
     state    { %w[draft submitted processing closed cancelled].sample }
 
     description     { FFaker::Lorem.sentence }
@@ -66,10 +65,6 @@ FactoryBot.define do
 
     trait :with_state_submitted do
       state { 'submitted' }
-    end
-
-    trait :with_status_processing do
-      status { 'processing' }
     end
 
     trait :with_state_processing do

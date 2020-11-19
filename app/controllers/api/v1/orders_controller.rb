@@ -15,7 +15,6 @@ module Api
 
       def_param_group :order do
         param :order, Hash, required: true do
-          param :status, String
           param :code, String
           param :created_at, String
           param :people_helped, :number
@@ -161,7 +160,7 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
-          :created_by_id, :code, :status, :country_id,
+          :created_by_id, :code, :country_id,
           :created_at, :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,

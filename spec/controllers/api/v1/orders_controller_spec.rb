@@ -9,8 +9,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let!(:dispatching_order) { create :order, :with_state_dispatching, booking_type: booking_type }
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch, booking_type: booking_type }
   let!(:processing_order) { create :order, :with_state_processing, booking_type: booking_type }
-  let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
-  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder",code: "S1234" }
+  let(:draft_order) { create :order, :with_orders_packages, :with_state_draft }
+  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, detail_type: "StockitLocalOrder",code: "S1234" }
   let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
