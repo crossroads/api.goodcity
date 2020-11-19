@@ -3,7 +3,7 @@ class Package < ApplicationRecord
   include Paranoid
   include StateMachineScope
   include PushUpdatesMinimal
-  include RollbarSpecification
+
   include PackageFiltering
   include LocationOperations
   include DesignationOperations
@@ -41,12 +41,9 @@ class Package < ApplicationRecord
   has_many   :offers, through: :offers_packages
   has_many   :package_actions, -> { where action: PackagesInventory::INVENTORY_ACTIONS }, class_name: "PackagesInventory"
 
-  before_destroy :delete_item_from_stockit, if: :inventory_number
+  before_destroy :remove_inventory_number, if: :inventory_number
   before_create :set_default_values
-  after_commit :update_stockit_item, on: :update, if: :updated_received_package?
   before_save :save_inventory_number, if: :inventory_number_changed?
-  before_save :assign_stockit_designated_by, if: :unless_dispatch_and_order_id_changed_with_request_from_stockit?
-  before_save :assign_stockit_sent_by_and_designated_by, if: :dispatch_from_stockit?
   before_save :set_favourite_image, if: :valid_favourite_image_id?
 
   # Live update rules
@@ -80,9 +77,7 @@ class Package < ApplicationRecord
   scope :inventorized, -> { where.not(inventory_number: nil) }
   scope :published, -> { where(allow_web_publish: true) }
   scope :latest, -> { order('id desc') }
-  scope :stockit_items, -> { where.not(stockit_id: nil) }
   scope :except_package, ->(id) { where.not(id: id) }
-  scope :undispatched, -> { where(stockit_sent_on: nil) }
   scope :undesignated, -> { where(order_id: nil) }
   scope :not_multi_quantity, -> { where("received_quantity = 1") }
   scope :exclude_designated, ->(designation_id) {
@@ -133,7 +128,6 @@ class Package < ApplicationRecord
 
     before_transition on: :mark_received do |package|
       package.received_at = Time.now
-      package.add_to_stockit if STOCKIT_ENABLED
     end
 
     before_transition on: :mark_missing do |package|
@@ -141,26 +135,7 @@ class Package < ApplicationRecord
       package.received_at = nil
       package.location_id = nil
       package.allow_web_publish = false
-      package.remove_from_stockit
-    end
-  end
-
-  def assign_stockit_designated_by
-    if (stockit_designated_on.presence && order_id.presence)
-      self.stockit_designated_by = User.stockit_user
-    else
-      self.stockit_designated_by = nil
-    end
-  end
-
-  def assign_stockit_sent_by_and_designated_by
-    if stockit_sent_on.presence && stockit_designated_on.presence
-      self.stockit_sent_by = User.stockit_user
-      self.stockit_designated_by = User.stockit_user
-    elsif stockit_sent_on.presence
-      self.stockit_sent_by = User.stockit_user
-    else
-      self.stockit_sent_by = nil
+      true
     end
   end
 
@@ -168,28 +143,8 @@ class Package < ApplicationRecord
     PackagesInventory::Computer.quantity_contained_in(package: self, container: Package.find(container_id))
   end
 
-  def dispatch_from_stockit?
-    stockit_sent_on_changed? && GoodcitySync.request_from_stockit
-  end
-
-  def order_id_nil?
-    order_id.nil?
-  end
-
-  def stockit_sent_on_present?
-    stockit_sent_on.present?
-  end
-
-  def same_order_id_as_designation?
-    designation.order_id == order_id
-  end
-
   def designation
     orders_packages.designated.first
-  end
-
-  def unless_dispatch_and_order_id_changed_with_request_from_stockit?
-    !stockit_sent_on_changed? && order_id_changed? && GoodcitySync.request_from_stockit
   end
 
   def orders_package_with_different_designation
@@ -215,30 +170,7 @@ class Package < ApplicationRecord
   end
 
   def should_validate_inventory_number?
-    !STOCKIT_ENABLED && inventory_number.present?
-  end
-
-  def add_to_stockit
-    return if box_or_pallet? || (detail.present? && !detail.valid?)
-
-    response = Stockit::ItemSync.create(self)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (item_id = response["item_id"]).present?
-      self.stockit_id = item_id
-    end
-  end
-
-  def remove_from_stockit
-    if self.inventory_number.present?
-      response = Stockit::ItemSync.delete(inventory_number)
-      if response && (errors = response["errors"]).present?
-        errors.each { |key, value| self.errors.add(key, value) }
-      else
-        self.inventory_number = nil
-        self.stockit_id = nil
-      end
-    end
+    inventory_number.present?
   end
 
   # Required by PushUpdates and PaperTrail modules
@@ -247,65 +179,7 @@ class Package < ApplicationRecord
   end
 
   def updated_received_package?
-    !self.previous_changes.key?("state") && received? &&
-    !GoodcitySync.request_from_stockit
-  end
-
-  def designate_to_stockit_order!(order_id)
-    designate_to_stockit_order(order_id)
-    save
-  end
-
-  def designate_to_stockit_order(order_id)
-    self.update(order_id: order_id) if Order.find_by(id: order_id)
-    self.stockit_designated_on = Date.today
-    self.stockit_designated_by = User.current_user
-    self.donor_condition_id =  donor_condition_id.presence || 3
-    response = Stockit::ItemSync.update(self)
-    add_errors(response)
-  end
-
-  def undesignate_from_stockit_order
-    self.order = nil
-    self.stockit_designated_on = nil
-    self.stockit_designated_by = nil
-    response = Stockit::ItemSync.update(self)
-    add_errors(response)
-  end
-
-  # @TODO: remove
-  #
-  def dispatch_stockit_item(_orders_package = nil, package_location_changes = nil, skip_set_relation_update = false)
-    self.skip_set_relation_update = skip_set_relation_update
-    self.stockit_sent_on = Date.today
-    self.stockit_sent_by = User.current_user
-    self.box = nil
-    self.pallet = nil
-    response = Stockit::ItemSync.dispatch(self)
-    add_errors(response)
-  end
-
-  def undispatch_stockit_item
-    self.stockit_sent_on = nil
-    self.stockit_sent_by = nil
-    self.pallet = nil
-    self.box = nil
-    response = Stockit::ItemSync.undispatch(self)
-    add_errors(response)
-  end
-
-  def has_box_or_pallet_error
-    error =
-      if pallet_id?
-        I18n.t("package.has_pallet_error", pallet_number: pallet.pallet_number)
-      else
-        I18n.t("package.has_box_error", box_number: box.box_number)
-      end
-    {
-      "errors" => {
-        error: "#{error} #{I18n.t('package.move_stockit')}"
-      }
-    }
+    !self.previous_changes.key?("state") && received?
   end
 
   def add_errors(response)
@@ -322,10 +196,6 @@ class Package < ApplicationRecord
       end
     end
     total_quantity
-  end
-
-  def inventory_package_set
-    item.packages.inventorized.undispatched
   end
 
   def self.browse_public_packages
@@ -376,16 +246,6 @@ class Package < ApplicationRecord
     received_quantity == 1
   end
 
-  def stockit_order_id
-    if (orders_packages = OrdersPackage.get_designated_and_dispatched_packages(id)).exists?
-      orders_packages.first.order.try(:stockit_id)
-    end
-  end
-
-  def donor_condition_name
-    donor_condition.try(:name_en) || item.try(:donor_condition).try(:name_en)
-  end
-
   def storage_type_name
     storage_type&.name
   end
@@ -412,15 +272,6 @@ class Package < ApplicationRecord
     self.grade ||= "B"
     self.saleable ||= offer.try(:saleable) || false
     true
-  end
-
-  def delete_item_from_stockit
-    StockitDeleteJob.perform_later(self.inventory_number)
-    remove_inventory_number
-  end
-
-  def update_stockit_item
-    StockitUpdateJob.perform_later(id)
   end
 
   def save_inventory_number

@@ -25,7 +25,6 @@ describe PackagesInventoriesImporter do
   }
 
   before(:each) do
-    allow(Stockit::OrdersPackageSync).to receive(:create)
     touch(uninventorized_packages)
   end
 
