@@ -1,5 +1,5 @@
 class OrdersPackage < ApplicationRecord
-  include RollbarSpecification
+
   include OrdersPackageActions
   include HookControls
   include Watcher
@@ -17,9 +17,6 @@ class OrdersPackage < ApplicationRecord
   validates :quantity,  numericality: { greater_than_or_equal_to: 0 }
   validates :package, :order, :quantity, presence: true
   after_initialize :set_initial_state
-  after_create -> { push_to_stockit("create") }
-  after_update -> { push_to_stockit("update") }
-  before_destroy -> { push_to_stockit("destroy") }
   managed_hook :save, :before, :assert_availability!
 
   scope :get_records_associated_with_order_id, ->(order_id) { where(order_id: order_id) }
@@ -140,10 +137,5 @@ class OrdersPackage < ApplicationRecord
     if requires_recompute && PackagesInventory::Computer.available_quantity_of(package) < quantity
       raise Goodcity::InsufficientQuantityError.new(quantity)
     end
-  end
-
-  def push_to_stockit(operation)
-    return if state == "requested" || GoodcitySync.request_from_stockit
-    StockitSyncOrdersPackageJob.perform_now(package.id, self.id, operation) unless package.singleton_package?
   end
 end

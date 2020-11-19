@@ -8,7 +8,6 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
   before do
     generate_and_set_token(user)
     @computer = build(:computer)
-    allow(Stockit::ItemDetailSync).to receive(:create).with(@computer).and_return({"status"=>201, "computer_id"=> 12})
     @computer.save
     serialized_computer_with_country = Api::V1::ComputerSerializer.new(@computer, include_country: true).as_json
     @parsed_body_with_country = JSON.parse( serialized_computer_with_country.to_json )
@@ -44,7 +43,6 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
 
   describe "PUT update" do
     it "returns 200" do
-      allow(Stockit::ItemDetailSync).to receive(:update).with(@computer).and_return({"status"=>201, "computer_id"=> 12})
       put :update, params: { id: @computer.id, :computer => { brand: "lenovo" } }
       expect(response.status).to eq(200)
       expect(@computer.reload.brand).to eq("lenovo")
@@ -53,7 +51,6 @@ RSpec.describe Api::V1::ComputersController, type: :controller do
 
   describe "DELETE destroy" do
     it "returns 200" do
-      allow(Stockit::ItemDetailSync).to receive(:destroy).with(@computer).and_return({"status"=>201})
       delete :destroy, params: { id: @computer.id }
       expect(response.status).to eq(200)
     end

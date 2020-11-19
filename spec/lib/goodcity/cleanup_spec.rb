@@ -5,8 +5,6 @@ context Goodcity::Cleanup do
   let(:dispatch_location) { create(:location, :dispatched) }
 
   before do
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
     touch(dispatch_location)
   end
 
