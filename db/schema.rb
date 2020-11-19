@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 2020_11_05_105317) do
+ActiveRecord::Schema.define(version: 2020_11_17_034323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -437,7 +436,6 @@ ActiveRecord::Schema.define(version: 2020_11_05_105317) do
   end
 
   create_table "orders", id: :serial, force: :cascade do |t|
-    t.string "status"
     t.string "code"
     t.string "detail_type"
     t.integer "detail_id"

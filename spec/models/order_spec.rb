@@ -56,7 +56,6 @@ RSpec.describe Order, type: :model do
    end
 
   describe 'Database columns' do
-    it{ is_expected.to have_db_column(:status).of_type(:string)}
     it{ is_expected.to have_db_column(:code).of_type(:string)}
     it{ is_expected.to have_db_column(:detail_type).of_type(:string)}
     it{ is_expected.to have_db_column(:description).of_type(:text)}
@@ -83,7 +82,7 @@ RSpec.describe Order, type: :model do
     let(:user) { create :user }
     let(:user1) { create :user }
     TOTAL_REQUESTS_STATES.each do |state|
-      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id, status: nil }
+      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id }
     end
 
     it "will return submitted orders count for the user" do
@@ -235,13 +234,13 @@ RSpec.describe Order, type: :model do
 
       let!(:user1) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
       let(:package1) { create(:package, :with_inventory_record)}
-      let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
+      let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now }
       let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
 
-      let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + 1.hour }
+      let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now + 1.hour }
       let!(:version2) {order2.versions.first.update(whodunnit: order2.created_by_id)}
 
-      let!(:order3) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
+      let!(:order3) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now }
       let!(:version3) {order3.versions.first.update(whodunnit: order3.created_by_id)}
 
       before(:each) {
