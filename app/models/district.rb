@@ -1,6 +1,6 @@
 class District < ApplicationRecord
   include CacheableJson
-  include RollbarSpecification
+
 
   belongs_to :territory, inverse_of: :districts
   has_many :addresses

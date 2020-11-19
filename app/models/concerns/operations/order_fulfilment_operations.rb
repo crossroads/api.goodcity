@@ -44,7 +44,6 @@ module OrderFulfilmentOperations
 
         if ord_pkg.dispatched?
           ord_pkg.update!(state: "designated", sent_on: nil)
-          package.undispatch_stockit_item if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
           package.save!
         end
       end
@@ -91,7 +90,6 @@ module OrderFulfilmentOperations
 
         unless ord_pkg.dispatched? || dispatched_count(ord_pkg) < ord_pkg.quantity
           ord_pkg.dispatch
-          package.dispatch_stockit_item(ord_pkg) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
           package.save!
         end
       end
@@ -105,7 +103,7 @@ module OrderFulfilmentOperations
 
     def assert_can_dispatch(ord_pkg, quantity, from_location)
       raise Goodcity::AlreadyDispatchedError.new if ord_pkg.dispatched?
-      raise Goodcity::UnprocessedError.new if order_unprocessed?(ord_pkg.order) && !GoodcitySync.request_from_stockit # @TODO: remove stockit reference
+      raise Goodcity::UnprocessedError.new if order_unprocessed?(ord_pkg.order)
       raise Goodcity::MissingQuantityforDispatchError.new if quantity > on_hand(ord_pkg.package, from_location)
     end
 

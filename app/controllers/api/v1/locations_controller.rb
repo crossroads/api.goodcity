@@ -15,7 +15,6 @@ module Api
         param :location, Hash, required: true do
           param :building, String, desc: "Name of building"
           param :area, String, desc: "Name of area"
-          param :stockit_id, String, desc: "stockit location record id"
         end
       end
 
@@ -36,7 +35,8 @@ module Api
       api :POST, "/v1/locations", "Create or Update a location"
       param_group :location
       def create
-        if location_record.save
+        @location.assign_attributes(location_params)
+        if @location.save
           render json: @location, serializer: serializer, status: 201
         else
           render json: @location.errors, status: 422
@@ -44,9 +44,7 @@ module Api
       end
 
       api :DELETE, "/v1/locations/1", "Delete Location"
-      description "If request comes from stockit, find record by matching it with stockit_id."
       def destroy
-        @location = Location.find_by(stockit_id: params[:id]) if is_stockit_request?
         @location.try(:destroy)
         render json: {}
       end
@@ -65,14 +63,8 @@ module Api
 
       private
 
-      def location_record
-        @location = Location.where(stockit_id: location_params[:stockit_id]).first_or_initialize
-        @location.assign_attributes(location_params)
-        @location
-      end
-
       def location_params
-        params.require(:location).permit(:stockit_id, :building, :area)
+        params.require(:location).permit(:building, :area)
       end
 
       def serializer

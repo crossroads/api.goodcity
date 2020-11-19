@@ -9,7 +9,5 @@
   - mailers
   - low
   - gogovan_orders
-  - stockit_updates
-  - stockit_sync_orders_package_updates
   - rollbar
   - [high, 2]

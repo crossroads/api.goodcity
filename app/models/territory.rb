@@ -1,6 +1,6 @@
 class Territory < ApplicationRecord
   include CacheableJson
-  include RollbarSpecification
+
 
   has_many :districts, inverse_of: :territory
   validates :name_en, presence: true

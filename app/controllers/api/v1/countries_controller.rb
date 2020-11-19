@@ -12,7 +12,8 @@ module Api
       end
 
       def create
-        if country_record.save
+        @country.assign_attributes(country_params)
+        if @country.save
           render json: {}, status: 201
         else
           render json: @country.errors, status: 422
@@ -21,19 +22,8 @@ module Api
 
       private
 
-      def country_record
-        @country =
-          if (stockit_id = country_params[:stockit_id]).present?
-            Country.where(stockit_id: stockit_id).first_or_initialize
-          else
-            @country
-          end
-        @country.assign_attributes(country_params)
-        @country
-      end
-
       def country_params
-        params.require(:country).permit(:stockit_id, :name_en, :name_zh_tw)
+        params.require(:country).permit(:name_en, :name_zh_tw)
       end
     end
   end
