@@ -1,4 +1,4 @@
-@stockit_enabled
+
 Feature: Listing OrdersPackage available actions
   As a Stock user, I retrieve the different operations
   I can apply to an orders package through the API

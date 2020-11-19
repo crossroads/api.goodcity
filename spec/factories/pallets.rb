@@ -5,6 +5,5 @@ FactoryBot.define do
     pallet_number { 'MyString' }
     description   { 'MyString' }
     comments      { 'MyText' }
-    stockit_id    { 1 }
   end
 end

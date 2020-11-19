@@ -70,10 +70,6 @@ module Api
 
       private
 
-      def stockit_serializer
-        Api::V1::StockitSetItemSerializer
-      end
-
       def update_offer_state(offer)
         offer.items.reload
         if [:reviewed, :scheduled].include?(offer.state_name) && offer.items.all? { |i| i.state_name == :rejected }

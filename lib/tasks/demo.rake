@@ -97,7 +97,6 @@ namespace :demo do
       orders_packages_ids = []
       offer.reload.items.each do |item|
         item.packages.each do |pkg|
-          pkg.designate_to_stockit_order(order.id)
           orders_package = OrdersPackage.create({
             order_id: order.id,
             package_id: pkg.id,
@@ -117,7 +116,6 @@ namespace :demo do
         orders_package = OrdersPackage.find(orders_pkg)
         pkg = orders_package.package
         orders_package.dispatch_orders_package
-        pkg.dispatch_stockit_item(orders_package)
       end
       orders_packages_ids
     end

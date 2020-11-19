@@ -185,7 +185,6 @@ class Order < ApplicationRecord
 
     before_transition on: :submit do |order|
       order.submitted_at = Time.now
-      order.add_to_stockit
     end
 
     before_transition on: :start_processing do |order|
@@ -344,15 +343,6 @@ class Order < ApplicationRecord
 
   def nullify_columns(*columns)
     columns.map { |column| send("#{column}=", nil) }
-  end
-
-  def add_to_stockit
-    response = Stockit::DesignationSync.create(self)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (designation_id = response["designation_id"]).present?
-      self.stockit_id = designation_id
-    end
   end
 
   def self.search(search_text, to_designate_item)
