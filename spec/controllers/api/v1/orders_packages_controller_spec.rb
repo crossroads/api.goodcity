@@ -8,13 +8,6 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
   let(:status) { response.status }
   subject { JSON.parse(response.body) }
 
-  before do
-    allow(Stockit::ItemSync).to receive(:create)
-    allow(Stockit::ItemSync).to receive(:update)
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
-  end
-
   describe "GET packages for Item" do
     let(:order) { create :order }
     let(:order2) { create :order }
@@ -38,7 +31,6 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
     end
 
     it 'returns designated and dispatched orders_packages' do
-      expect(Stockit::OrdersPackageSync).to receive(:create).exactly(3).times
       order = create :order
       package = create :package, :with_inventory_record, received_quantity: 8
       3.times{ create :orders_package, order_id: order.id, package_id: package.id, state: 'designated', quantity: 2 }
@@ -146,8 +138,6 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
         let(:orders_package) {create :orders_package, :with_state_cancelled, order_id: order.id, package: pkg}
 
         before do
-          allow(Stockit::OrdersPackageSync).to receive(:create)
-          allow(Stockit::OrdersPackageSync).to receive(:update)
           initialize_inventory(pkg)
           touch(orders_package)
         end
@@ -172,13 +162,11 @@ RSpec.describe Api::V1::OrdersPackagesController, type: :controller do
           }
 
           before do
-            expect(Stockit::OrdersPackageSync).to receive(:create)
             touch(orders_package)
             initialize_inventory(pkg)
           end
 
           it 'updates correctly' do
-            expect(Stockit::OrdersPackageSync).to receive(:update)
             expect(pkg.reload.available_quantity).to eq(8)
             put :exec_action, params: { id: orders_package.id, action_name: 'edit_quantity', quantity: 9 }
             expect(status).to eq(200)

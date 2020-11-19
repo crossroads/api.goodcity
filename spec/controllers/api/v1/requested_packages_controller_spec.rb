@@ -8,10 +8,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
   let(:designation_sync) { double "designation_sync", { create: nil, update: nil } }
 
-  before do
-    allow(Stockit::DesignationSync).to receive(:new).and_return(designation_sync)
-  end
-
   user_types = [
     :charity,
     :supervisor
@@ -216,8 +212,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "returns a submitted order" do
-          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(3).times
-
           post :checkout, params: { order_id: draft_order.id }
 
           expect(response.status).to eq(200)
@@ -235,8 +229,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "doesn't modify the state of a submitted order" do
-          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length).times
-
           post :checkout, params: { order_id: submitted_order.id }
           expect(response.status).to eq(200)
 
@@ -246,8 +238,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "doesn't modify the state of a processing order" do
-          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length).times
-
           post :checkout, params: { order_id: processing_order.id }
           expect(response.status).to eq(200)
 
@@ -258,8 +248,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
 
         it "ignores unavailable packages if the 'ignore_unavailable' flag is set" do
           requested_packages[0].package.update!(allow_web_publish: false)
-
-          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length - 1).times
 
           expect {
             post :checkout, params: { order_id: draft_order.id, ignore_unavailable: true }
@@ -280,8 +268,6 @@ RSpec.describe Api::V1::RequestedPackagesController, type: :controller do
         end
 
         it "clears the requested packages" do
-          expect(Stockit::OrdersPackageSync).to receive(:create).exactly(requested_packages.length).times
-
           expect {
             post :checkout, params: { order_id: draft_order.id }
           }.to change(RequestedPackage, :count).by(- requested_packages.length)

@@ -22,13 +22,11 @@ RSpec.describe Electrical, type: :model do
     it{ is_expected.to have_db_column(:test_status_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:tested_on).of_type(:date)}
     it{ is_expected.to have_db_column(:updated_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
   end
 
   describe "before_save" do
     it "should convert brand to lowercase" do
       electrical = build :electrical, brand: "PhiLips"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
       expect {
         electrical.save
       }.to change(Electrical, :count).by(1)
@@ -37,7 +35,6 @@ RSpec.describe Electrical, type: :model do
 
     it "should set tested on date on test status change" do
       electrical = build :electrical
-      allow(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
       expect {
         electrical.save
       }.to change(Electrical, :count).by(1)
@@ -48,7 +45,6 @@ RSpec.describe Electrical, type: :model do
       user = create(:user, :reviewer)
       User.current_user = user
       electrical = build :electrical, brand: "DeLL"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(electrical).and_return({"status"=>201, "electrical_id"=> 12})
       expect {
         electrical.save
       }.to change(Electrical, :count).by(1)

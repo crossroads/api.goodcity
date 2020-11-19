@@ -20,7 +20,6 @@ module Api
           param :created_at, String
           param :people_helped, :number
           param :detail_id, String, allow_nil: true
-          param :stockit_id, String, desc: "stockit designation record id", allow_nil: true
           param :beneficiary_id, String, allow_nil: true
           param :address_id, String
           param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)', allow_nil: true
@@ -135,16 +134,7 @@ module Api
       end
 
       def order_record
-        if order_params[:stockit_id]
-          # Stockit designation create/update
-          @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
-          @order.assign_attributes(order_params)
-          @order.stockit_activity = stockit_activity
-          @order.stockit_contact = stockit_contact
-          @order.stockit_organisation = stockit_organisation
-          @order.detail_type, @order.detail_id = set_stockit_detail
-          @order.state = set_stockit_status_map if order_params["status"].present?
-        elsif is_browse_app?
+        if is_browse_app?
           @order.assign_attributes(order_params)
           @order.created_by = current_user
           @order.detail_type = "GoodCity"
@@ -171,7 +161,7 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
-          :created_by_id, :stockit_id, :code, :status, :country_id,
+          :created_by_id, :code, :status, :country_id,
           :created_at, :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
@@ -208,41 +198,6 @@ module Api
 
       def select_serializer
         params[:shallow] == 'true' ? shallow_serializer : serializer
-      end
-
-      def stockit_activity
-        StockitActivity.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_activity_id"])
-      end
-
-      def stockit_contact
-        StockitContact.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_contact_id"])
-      end
-
-      def stockit_organisation
-        StockitOrganisation.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_organisation_id"])
-      end
-
-      def set_stockit_detail
-        if order_params["detail_type"] == "LocalOrder"
-          obj = StockitLocalOrder.accessible_by(current_ability).find_by(stockit_id: params["order"]["detail_id"])
-          detail_type = obj.class.name
-          detail_id = obj.id
-        else
-          detail_type = ([order_params["detail_type"]] & ["Shipment", "CarryOut", "GoodCity"]).first
-          detail_id = nil
-        end
-        [detail_type, detail_id]
-      end
-
-      def set_stockit_status_map
-        case order_params["detail_type"]
-        when "CarryOut", "Shipment"
-          Order::SHIPMENT_STATUS_MAP[order_params["status"]] || "submitted"
-        when "LocalOrder"
-          Order::LOCAL_ORDER_STATUS_MAP[order_params["status"]] || "submitted"
-        else
-          'submitted'
-        end
       end
 
       def eager_load_designation

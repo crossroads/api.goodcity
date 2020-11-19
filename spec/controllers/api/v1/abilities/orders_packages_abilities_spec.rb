@@ -2,14 +2,9 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe "OrdersPackage abilities" do
-    subject(:ability) { Api::V1::Ability.new(user) }
+  subject(:ability) { Api::V1::Ability.new(user) }
   let(:all_actions) { [:index, :search, :show, :destroy, :exec_action] }
   let(:orders_package) { create :orders_package }
-
-  before do
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
-  end
 
   context "when Supervisor" do
     let(:user)  { create(:user, :with_can_manage_orders_packages_permission, role_name: 'Supervisor') }

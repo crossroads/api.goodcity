@@ -23,10 +23,6 @@ FactoryBot.define do
   end
 
   factory :package_type, parent: :base_package_type do
-    trait :with_stockit_id do
-      sequence(:stockit_id) { |n| n }
-    end
-
     # Create the default and other sub package types
     after(:create) do |package|
       default_packages = (generate(:package_types)[package.code][:default_packages] || "").split(", ")

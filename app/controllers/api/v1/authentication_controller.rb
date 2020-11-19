@@ -64,7 +64,7 @@ module Api
       error 422, "Invalid mobile number - if mobile prefix doesn't start with +852"
       error 500, "Internal Server Error"
       # Lookup user based on mobile. Validate mobile format first.
-      def send_pin   
+      def send_pin
         @mobile = Mobile.new(params[:mobile])
         unless @mobile.valid?
           return render_error(@mobile.errors.full_messages.join(". "))

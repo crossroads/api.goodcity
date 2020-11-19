@@ -14,16 +14,13 @@ RSpec.describe Medical, type: :model do
     it { is_expected.to have_db_column(:model).of_type(:string) }
     it { is_expected.to have_db_column(:country_id).of_type(:integer) }
     it { is_expected.to have_db_column(:updated_by_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:stockit_id).of_type(:integer) }
   end
 
   describe 'before_save' do
     it 'should convert brand to lower case' do
       medical = build(:medical)
       name = medical.brand
-      allow(Stockit::ItemDetailSync).to receive(:create)
-        .with(medical)
-        .and_return('status' => 201)
+
       expect { medical.save }.to change(Medical, :count).by(1)
       expect(medical.brand).to eq(name.downcase)
     end
@@ -32,9 +29,6 @@ RSpec.describe Medical, type: :model do
       User.current_user = create(:user, :reviewer)
       medical = build(:medical)
 
-      allow(Stockit::ItemDetailSync).to receive(:create)
-        .with(medical)
-        .and_return('status' => 201)
       expect { medical.save }.to change(Medical, :count).by(1)
       expect(medical.updated_by_id).to eq(User.current_user.id)
     end
