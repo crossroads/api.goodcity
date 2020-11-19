@@ -11,7 +11,7 @@ describe AppMatcherFakeController do
     before do
       request.headers["X-GOODCITY-APP-NAME"] = goodcity_app_name
     end
-    
+
     context "donor app" do
       let(:goodcity_app_name) { 'app.goodcity' }
       it { expect(controller.app_name).to eql(DONOR_APP) }
@@ -30,11 +30,6 @@ describe AppMatcherFakeController do
     context "browse app" do
       let(:goodcity_app_name) { 'browse.goodcity' }
       it { expect(controller.app_name).to eql(BROWSE_APP) }
-    end
-
-    context "stockit app (special case)" do
-      let(:goodcity_app_name) { 'stockit.goodcity' }
-      it { expect(controller.app_name).to eql(STOCKIT_APP) }
     end
 
     context "unknown app" do
@@ -81,16 +76,4 @@ describe AppMatcherFakeController do
       expect(controller.is_browse_app?).to eql(false)
     end
   end
-
-  context "is_stockit_request?" do
-    it do
-      expect(controller).to receive(:app_name).and_return(STOCKIT_APP)
-      expect(controller.is_stockit_request?).to eql(true)
-    end
-    it do
-      expect(controller).to receive(:app_name).and_return(DONOR_APP)
-      expect(controller.is_stockit_request?).to eql(false)
-    end
-  end
-
 end

@@ -8,7 +8,6 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
   before do
     generate_and_set_token(user)
     @medical = build(:medical)
-    allow(Stockit::ItemDetailSync).to receive(:create).with(@medical).and_return( 'status' => :success)
     @medical.save
     serializer_with_country = Api::V1::MedicalSerializer.new(@medical, include_country: true).as_json
     @parsed_with_country = JSON.parse(serializer_with_country.to_json)
@@ -37,14 +36,12 @@ RSpec.describe Api::V1::MedicalsController, type: :controller do
 
   describe 'PUT medical' do
     it 'returns 200' do
-      allow(Stockit::ItemDetailSync).to receive(:update).with(@medical).and_return('status' => 201)
       put :update, params: { id: @medical.id, medical: { brand: 'Apollo' } }
       expect(response).to have_http_status(:success)
     end
 
     it 'updates the field' do
       brand = 'Apollo'
-      allow(Stockit::ItemDetailSync).to receive(:update).with(@medical).and_return("status" => 201)
       put :update, params: { id: @medical.id, medical: { brand: 'Apollo' } }
       expect(@medical.reload.brand).to eq(brand.downcase)
     end

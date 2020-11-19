@@ -7,11 +7,6 @@ context StockOperations do
     Class.new { include StockOperations }
   }
 
-  before do
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
-  end
-
   describe 'Inventorizing a package' do
     let(:package) { create(:package, :with_inventory_number, received_quantity: 21) }
 

@@ -93,7 +93,6 @@ RSpec.describe Package, type: :model do
   describe "state" do
     describe "#mark_received" do
       it "should set received_at value" do
-        expect(Stockit::ItemSync).to receive(:create).with(package)
         expect{
           package.mark_received
         }.to change(package, :received_at)
@@ -104,7 +103,6 @@ RSpec.describe Package, type: :model do
     describe "#mark_missing" do
       let(:received_package) { create :package, :with_inventory_record, state: 'received', received_at: Time.now, allow_web_publish: true }
       it "should set received_at value" do
-        expect(Stockit::ItemSync).to receive(:delete).with(received_package.inventory_number)
         expect{
           received_package.mark_missing
         }.to change(received_package, :received_at).to(nil)
@@ -119,82 +117,6 @@ RSpec.describe Package, type: :model do
       @package = create :package, allow_web_publish: true
       @package.unpublish
       expect(@package.allow_web_publish).to eq(false)
-    end
-  end
-
-  describe "add_to_stockit" do
-    it "should add API errors to package.errors" do
-      api_response = {"errors" => {"code" => "can't be blank"}}
-      expect(Stockit::ItemSync).to receive(:create).with(package).and_return(api_response)
-      package.add_to_stockit
-      expect(package.errors).to include(:code)
-    end
-
-    it "allows multi quantity stockit sync if package received from admin with inventory_number" do
-      package = build :package, :received, request_from_admin: true
-      expect(Stockit::ItemSync).to receive(:create).with(package).and_return({"status"=>201, "item_id"=> 12})
-      package.add_to_stockit
-      expect(package.stockit_id).to eq(12)
-    end
-
-    it "do not allows multi quantity stockit sync if package is not received from admin" do
-      package = build :package, :received, stockit_id: nil, request_from_admin: false
-      expect(Stockit::ItemSync).to receive(:create).with(package).and_return({})
-      package.add_to_stockit
-      expect(package.stockit_id).to be_nil
-    end
-
-    it "should not allow to send sync request to stockit if the detail is invalid" do
-      detail = build :computer, {os_serial_num: nil, mar_os_serial_num: "xyz"}
-      package = build :package, :received
-      package.detail = detail
-      expect(Stockit::ItemSync).to_not receive(:create)
-      package.save
-      package.add_to_stockit
-      expect(package.errors).to include(:"detail.mar_os_serial_num")
-    end
-
-    it "should not allow to send sync request to stockit if it is a box or pallet" do
-      storage_type = create(:storage_type, :with_box)
-      package = build(:package, :received, storage_type_id: storage_type.id)
-      expect(Stockit::ItemSync).to_not receive(:create)
-      package.add_to_stockit
-      package.save
-    end
-
-    it "should not allow to send sync request to stockit if it is a pallet" do
-      storage_type = create(:storage_type, :with_pallet)
-      package = build(:package, :received, storage_type_id: storage_type.id)
-      expect(Stockit::ItemSync).to_not receive(:create)
-      package.add_to_stockit
-      package.save
-    end
-
-    it "should allow to send sync request to stockit if it is a package" do
-      storage_type = create(:storage_type, :with_pkg)
-      package = build(:package, :received, storage_type_id: storage_type.id)
-      expect(Stockit::ItemSync).to receive(:create).with(package).and_return({"status" => 201, "item_id" => 12})
-      package.add_to_stockit
-      package.save
-    end
-  end
-
-  describe "remove_from_stockit" do
-    it "should add API errors to package.errors" do
-      package.inventory_number = "F12345"
-      api_response = {"errors" => {"base" => "already designated"}}
-      expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number).and_return(api_response)
-      package.remove_from_stockit
-      expect(package.errors).to include(:base)
-      expect(package.inventory_number).to_not be_nil
-    end
-
-    it "should add set inventory_number to nil" do
-      package.inventory_number = "F12345"
-      expect(Stockit::ItemSync).to receive(:delete).with(package.inventory_number).and_return({})
-      package.remove_from_stockit
-      expect(package.errors.full_messages).to eq([])
-      expect(package.inventory_number).to be_nil
     end
   end
 
@@ -232,28 +154,6 @@ RSpec.describe Package, type: :model do
       }.to change(package, :donor_condition).from(nil).to(item.donor_condition)
       expect(package.grade).to eq("B")
       expect(package.saleable).to eq(item.offer.saleable)
-    end
-  end
-
-  # @TODO: remove
-  #
-  describe 'dispatch_stockit_item' do
-    let(:package) { create :package }
-    let(:location) { create :location, :dispatched }
-    let!(:packages_location) { create :packages_location, location: location, package: package }
-    before { expect(Stockit::ItemSync).to receive(:dispatch).with(package) }
-
-    it 'set dispatch related details' do
-      package.dispatch_stockit_item
-      expect(package.locations.first).to eq(location)
-      expect(package.stockit_sent_on).to_not be_nil
-    end
-  end
-
-  describe '#donor_condition_name' do
-    let(:package){ create :package, :with_lightly_used_donor_condition}
-    it 'returns name of package donor condition' do
-      expect(package.donor_condition_name).to eq package.donor_condition.name_en
     end
   end
 
@@ -428,8 +328,6 @@ RSpec.describe Package, type: :model do
       let(:location) { create :location }
 
       before do
-        allow(Stockit::OrdersPackageSync).to receive(:create)
-        allow(Stockit::OrdersPackageSync).to receive(:update)
         initialize_inventory(package, location: location)
       end
 
@@ -476,8 +374,6 @@ RSpec.describe Package, type: :model do
       let(:location) { create :location }
 
       before do
-        allow(Stockit::OrdersPackageSync).to receive(:create)
-        allow(Stockit::OrdersPackageSync).to receive(:update)
         initialize_inventory(package, location: location)
         touch(orders_package_1, orders_package_2)
       end
@@ -529,8 +425,6 @@ RSpec.describe Package, type: :model do
       let(:location) { create :location }
 
       before do
-        allow(Stockit::OrdersPackageSync).to receive(:create)
-        allow(Stockit::OrdersPackageSync).to receive(:update)
         touch(orders_package_1, orders_package_2)
       end
 
