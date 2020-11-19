@@ -9,8 +9,8 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
   let!(:dispatching_order) { create :order, :with_state_dispatching, booking_type: booking_type }
   let!(:awaiting_dispatch_order) { create :order, :with_state_awaiting_dispatch, booking_type: booking_type }
   let!(:processing_order) { create :order, :with_state_processing, booking_type: booking_type }
-  let(:draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil }
-  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, status: nil, detail_type: "StockitLocalOrder",code: "S1234" }
+  let(:draft_order) { create :order, :with_orders_packages, :with_state_draft }
+  let(:stockit_draft_order) { create :order, :with_orders_packages, :with_state_draft, detail_type: "StockitLocalOrder",code: "S1234" }
   let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
   let!(:order_created_by_supervisor) { create :order, :with_state_submitted, booking_type: booking_type,  created_by: user }
   let(:parsed_body) { JSON.parse(response.body) }
@@ -726,21 +726,11 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
         expect(saved_address.district_id).to eq(address.district_id)
         expect(saved_address.building).to eq(address.building)
       end
-
-      context "from stockit" do
-        let(:order_params) { FactoryBot.attributes_for(:order, :with_stockit_id, code: "S1231", detail_type: "Shipment", status: "Processing") }
-        it "should process a Shipment" do
-          post :create, params: { order: order_params }
-          expect(response.status).to eql(201)
-          expect(parsed_body["designation"]["detail_type"]).to eq("Shipment")
-          expect(parsed_body["designation"]["state"]).to eq("processing")
-        end
-      end
     end
 
     context 'when creating international orders' do
       context 'shipment' do
-        let(:shipment_params) { FactoryBot.attributes_for(:order, :with_state_draft, :shipment) }
+        let(:shipment_params) { FactoryBot.attributes_for(:order, :with_state_draft, :shipment, state_event: 'submit') }
         let(:user) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
 
         before do
@@ -803,7 +793,7 @@ RSpec.describe Api::V1::OrdersController, type: :controller do
       end
 
       context 'carryouts' do
-        let(:carryout_params) { FactoryBot.attributes_for(:order, :with_state_draft, :carry_out) }
+        let(:carryout_params) { FactoryBot.attributes_for(:order, :with_state_draft, :carry_out, state_event: 'submit') }
 
         it 'creates carryout orders' do
           post :create, params: { order: carryout_params }

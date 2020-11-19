@@ -7,8 +7,6 @@ describe RequestedPackage, :type => :model do
 
   before do
     User.current_user = create(:user)
-    allow(Stockit::OrdersPackageSync).to receive(:new).and_return(orders_packages_sync)
-    allow(Stockit::DesignationSync).to receive(:new).and_return(designation_sync)
   end
 
   describe "Database columns" do
@@ -126,7 +124,6 @@ describe RequestedPackage, :type => :model do
     end
 
     it "cart item is still marked as unavailable after a designated package gets dispatched" do
-      expect(Stockit::ItemSync).to receive(:dispatch).once
       pkg = designated_orders_package.package
       requested_package = create(:requested_package, package: pkg)
       expect(requested_package.is_available).to eq(false)

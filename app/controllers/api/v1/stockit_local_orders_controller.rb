@@ -16,7 +16,6 @@ module Api
           param :client_name, String
           param :hkid_number, String
           param :reference_number, String
-          param :stockit_id, String, desc: "stockit local_order record id"
         end
       end
 
@@ -33,13 +32,13 @@ module Api
       private
 
       def stockit_local_order_record
-        @stockit_local_order = StockitLocalOrder.where(stockit_id: stockit_local_order_params[:stockit_id]).first_or_initialize
+        @stockit_local_order = StockitLocalOrder.new
         @stockit_local_order.assign_attributes(stockit_local_order_params)
         @stockit_local_order
       end
 
       def stockit_local_order_params
-        params.require(:stockit_local_order).permit(:stockit_id, :client_name,
+        params.require(:stockit_local_order).permit(:client_name,
           :hkid_number, :reference_number, :purpose_of_goods)
       end
 

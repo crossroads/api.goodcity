@@ -51,7 +51,6 @@ context Goodcity::PackageSafeDelete do
       subject.send(:destroy_package, package)
     end
     it "should delete related orders_packages records" do
-      allow(StockitSyncOrdersPackageJob).to receive(:perform_now) # drop Stockit sync job
       create(:orders_package, package: package)
       expect(package.orders_packages.size).to be > 0
       package.orders_packages.each do |orders_package|

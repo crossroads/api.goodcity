@@ -14,7 +14,6 @@ module Api
       def_param_group :stockit_activity do
         param :stockit_activity, Hash, required: true do
           param :name, String, desc: "Name of Activity"
-          param :stockit_id, String, desc: "stockit activity record id"
         end
       end
 
@@ -31,13 +30,13 @@ module Api
       private
 
       def stockit_activity_record
-        @stockit_activity = StockitActivity.where(stockit_id: stockit_activity_params[:stockit_id]).first_or_initialize
+        @stockit_activity = StockitActivity.new
         @stockit_activity.assign_attributes(stockit_activity_params)
         @stockit_activity
       end
 
       def stockit_activity_params
-        params.require(:stockit_activity).permit(:stockit_id, :name)
+        params.require(:stockit_activity).permit(:name)
       end
     end
   end

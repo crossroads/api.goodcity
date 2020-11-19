@@ -1,5 +1,5 @@
 class AuthToken < ApplicationRecord
-  include RollbarSpecification
+
   belongs_to :user
   has_one_time_password column_name: :otp_secret_key, length: 4
 
