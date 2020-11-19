@@ -19,7 +19,7 @@ namespace :demo do
 
     def create_offers
       actions = %w(create_submitted_offer create_reviewing_offer create_reviewed_offer
-         create_scheduled_offer create_closed_offer create_inactive_offer 
+         create_scheduled_offer create_closed_offer create_inactive_offer
          create_receiving_offer create_received_offer)
       actions.each do |action|
         puts "Creating #{count} #{action}"
@@ -88,7 +88,7 @@ namespace :demo do
     end
 
     def create_single_order
-      FactoryBot.create(:order, :with_status_processing, :with_created_by, processed_by: reviewer, organisation: create_organisation)
+      FactoryBot.create(:order, :with_created_by, processed_by: reviewer, organisation: create_organisation)
     end
 
     def create_designated_packages
@@ -97,7 +97,6 @@ namespace :demo do
       orders_packages_ids = []
       offer.reload.items.each do |item|
         item.packages.each do |pkg|
-          pkg.designate_to_stockit_order(order.id)
           orders_package = OrdersPackage.create({
             order_id: order.id,
             package_id: pkg.id,
@@ -117,7 +116,6 @@ namespace :demo do
         orders_package = OrdersPackage.find(orders_pkg)
         pkg = orders_package.package
         orders_package.dispatch_orders_package
-        pkg.dispatch_stockit_item(orders_package)
       end
       orders_packages_ids
     end

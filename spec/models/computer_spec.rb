@@ -29,16 +29,13 @@ RSpec.describe Computer, type: :model do
     it{ is_expected.to have_db_column(:ms_office_serial_num).of_type(:string)}
     it{ is_expected.to have_db_column(:mar_os_serial_num).of_type(:string)}
     it{ is_expected.to have_db_column(:mar_ms_office_serial_num).of_type(:string)}
-    it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
     it{ is_expected.to have_db_column(:comp_voltage).of_type(:string)}
     it{ is_expected.to have_db_column(:updated_by_id).of_type(:integer)}
-    it{ is_expected.to have_db_column(:stockit_id).of_type(:integer)}
   end
 
   describe "before_save" do
     it "should convert brand to lowercase" do
       computer = build :computer, brand: "AppLE"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
       expect {
         computer.save
       }.to change(Computer, :count).by(1)
@@ -49,7 +46,6 @@ RSpec.describe Computer, type: :model do
       user = create(:user, :reviewer)
       User.current_user = user
       computer = build :computer, brand: "DeLL"
-      allow(Stockit::ItemDetailSync).to receive(:create).with(computer).and_return({"status"=>201, "computer_id"=> 12})
       expect {
         computer.save
       }.to change(Computer, :count).by(1)

@@ -9,11 +9,6 @@ RSpec.describe Order, type: :model do
   let!(:appointment_type) { create(:booking_type, :appointment) }
   let!(:online_type) { create(:booking_type, :online_order) }
 
-  before(:all) {
-    allow(Stockit::OrdersPackageSync).to receive(:create)
-    allow(Stockit::OrdersPackageSync).to receive(:update)
-  }
-
   context "create an order" do
     let(:order) { Order.new }
     it "state should not be blank" do
@@ -61,7 +56,6 @@ RSpec.describe Order, type: :model do
    end
 
   describe 'Database columns' do
-    it{ is_expected.to have_db_column(:status).of_type(:string)}
     it{ is_expected.to have_db_column(:code).of_type(:string)}
     it{ is_expected.to have_db_column(:detail_type).of_type(:string)}
     it{ is_expected.to have_db_column(:description).of_type(:text)}
@@ -88,7 +82,7 @@ RSpec.describe Order, type: :model do
     let(:user) { create :user }
     let(:user1) { create :user }
     TOTAL_REQUESTS_STATES.each do |state|
-      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id, status: nil }
+      let!(:"#{state}_order_user") { create :order, :with_orders_packages, :"with_state_#{state}", created_by_id: user.id }
     end
 
     it "will return submitted orders count for the user" do
@@ -240,13 +234,13 @@ RSpec.describe Order, type: :model do
 
       let!(:user1) { create(:user, :with_token, :with_supervisor_role, :with_can_manage_orders_permission) }
       let(:package1) { create(:package, :with_inventory_record)}
-      let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
+      let!(:order1) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now }
       let!(:version1) {order1.versions.first.update(whodunnit: order1.created_by_id)}
 
-      let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now + 1.hour }
+      let!(:order2) { create :order, :with_orders_packages, :with_state_submitted, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now + 1.hour }
       let!(:version2) {order2.versions.first.update(whodunnit: order2.created_by_id)}
 
-      let!(:order3) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: user.id, status: nil, updated_at: Time.now }
+      let!(:order3) { create :order, :with_orders_packages, :with_state_draft, created_by_id: user.id, submitted_by_id: user.id, updated_at: Time.now }
       let!(:version3) {order3.versions.first.update(whodunnit: order3.created_by_id)}
 
       before(:each) {
@@ -607,6 +601,14 @@ RSpec.describe Order, type: :model do
         expect(order.reload.closed_at).to eq(nil)
         expect(order.reload.closed_by_id).to eq(nil)
       end
+
+      it 'fails to close an order with designated orders packages' do
+        order = create :order, state: 'dispatching'
+        create(:orders_package, order: order, state: 'designated')
+        expect {
+          order.close
+        }.to raise_error(Goodcity::InvalidStateError).with_message('All packages must be dispatched before closing an order')
+      end
     end
 
     describe '#reopen' do
@@ -681,6 +683,14 @@ RSpec.describe Order, type: :model do
         expect(order.reload.cancelled_at).to eq(Time.now)
         expect(order.reload.cancelled_by_id).to eq(user.id)
       end
+
+      it 'fails to cancel an order with dispatched orders packages' do
+        order = create :order, state: 'dispatching'
+        create(:orders_package, order: order, state: 'dispatched')
+        expect {
+          order.cancel
+        }.to raise_error(Goodcity::InvalidStateError).with_message('Unable to cancel during dispatch, please undispatch and try again')
+      end
     end
 
     describe '#resubmit' do
@@ -724,11 +734,57 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe "Callbacks" do
-    let(:order) { create(:order, :with_state_draft, :with_orders_packages) }
+  describe '.validate_code_format' do
+    context 'when code is invalid' do
+      context 'GoodCity order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, code: 'GC-01')
+          }.to raise_exception(StandardError)
+        end
+      end
 
-    it "Assigns GC Code" do
-      expect(order.code).to include("GC-")
+      context 'Shipment order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, :shipment, code: 'SH001')
+          }.to raise_exception(StandardError)
+        end
+      end
+
+      context 'CarryOut order' do
+        it 'does not create order record' do
+          expect {
+            create(:order, :with_state_draft, :carry_out, code: 'A20001')
+          }.to raise_exception(StandardError)
+        end
+      end
+    end
+
+    context 'when code is valid' do
+      context 'GoodCity order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, code: 'GC-12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
+
+      context 'Shipment order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, :shipment, code: 'S12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
+
+      context 'CarryOut order' do
+        it 'creates order record' do
+          expect {
+            create(:order, :with_state_draft, :carry_out, code: 'C12345')
+          }.to change{ Order.count }.by(1)
+        end
+      end
     end
   end
 
@@ -853,7 +909,6 @@ RSpec.describe Order, type: :model do
         allow(SendgridService).to receive(:new).and_return(sendgrid)
         [
           :send_new_order_notification,
-          :add_to_stockit,
           :send_new_order_confirmed_sms_to_charity
         ].each do |f|
           # mock calls that require external services
@@ -919,7 +974,6 @@ RSpec.describe Order, type: :model do
       allow(SendgridService).to receive(:new).and_return(sendgrid)
       [
         :send_new_order_notification,
-        :add_to_stockit,
         :send_new_order_confirmed_sms_to_charity
       ].each do |f|
         # mock calls that require external services

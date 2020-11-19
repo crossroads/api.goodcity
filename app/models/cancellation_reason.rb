@@ -1,6 +1,6 @@
 class CancellationReason < ApplicationRecord
   include CacheableJson
-  include RollbarSpecification
+
   CANCELLATION_REASONS_TYPE = ["offer", "order"].freeze
 
   has_many :offers
