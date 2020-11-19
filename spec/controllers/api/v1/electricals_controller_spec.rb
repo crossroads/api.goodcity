@@ -7,7 +7,6 @@ RSpec.describe Api::V1::ElectricalsController, type: :controller do
   before do
     generate_and_set_token(user)
     @electrical = build(:electrical)
-    allow(Stockit::ItemDetailSync).to receive(:create).with(@electrical).and_return({"status"=>201, "electrical_id"=> 12})
     @electrical.save
     serialized_electrical_with_country = Api::V1::ElectricalSerializer.new(@electrical, include_country: true).as_json
     @parsed_body_with_country = JSON.parse( serialized_electrical_with_country.to_json )
@@ -43,7 +42,6 @@ RSpec.describe Api::V1::ElectricalsController, type: :controller do
 
   describe "PUT update" do
     it "returns 200" do
-      allow(Stockit::ItemDetailSync).to receive(:update).with(@electrical).and_return({"status"=>201, "electrical_id"=> 12})
       put :update, params: { id: @electrical.id, :electrical => { brand: "Havells" } }
       expect(response.status).to eq(200)
       expect(@electrical.reload.brand).to eq("havells")
@@ -52,7 +50,6 @@ RSpec.describe Api::V1::ElectricalsController, type: :controller do
 
   describe "DELETE destroy" do
     it "returns 200" do
-      allow(Stockit::ItemDetailSync).to receive(:destroy).with(@electrical).and_return({"status"=>201})
       delete :destroy, params: { id: @electrical.id }
       expect(response.status).to eq(200)
     end

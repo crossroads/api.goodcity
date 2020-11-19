@@ -41,7 +41,6 @@ module LocationOperations
           decrement_origin
           increment_destination
         end
-        Stockit::ItemSync.move(@package) if STOCKIT_ENABLED && !GoodcitySync.request_from_stockit
       end
 
       private

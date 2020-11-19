@@ -1,6 +1,6 @@
 class DonorCondition < ApplicationRecord
   include CacheableJson
-  include RollbarSpecification
+
 
   has_many :items
   has_many :packages
