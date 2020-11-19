@@ -1,15 +1,13 @@
 class PackageDetailBuilder
   attr_reader :detail_type, :detail_params, :detail_class
 
-  FIXED_DETAIL_ATTRIBUTES = %w[comp_test_status test_status frequency voltage].freeze
   PERMITTED_DETAIL_TYPES = %w[computer electrical computer_accessory medical].freeze
   REJECT_ATTRIBUTES = %w[id comp_test_status test_status frequency voltage].freeze
 
-  def initialize(params, request_from_stockit)
+  def initialize(params)
     @detail_params = params["detail_attributes"]
     @detail_type = params["detail_type"]
     @detail_class = @detail_type&.classify&.safe_constantize
-    @request_from_stockit = request_from_stockit
   end
 
   def build_or_update_record
@@ -41,17 +39,6 @@ class PackageDetailBuilder
     # same and assign it to params hash for mapping stockit values to lookup ids on GC
     detail_params["stockit_id"] = detail_params["id"] if stockit_id_present?
     params = detail_params&.except(*REJECT_ATTRIBUTES) || {}
-    # map stockit values to lookup ids if request from stockit
-    lookup_hash = map_lookup_id if @request_from_stockit
-    lookup_hash ? params.merge(lookup_hash) : params
-  end
-
-  def map_lookup_id
-    FIXED_DETAIL_ATTRIBUTES.each_with_object({}) do |item, hash|
-      if (key = detail_params && detail_params[item].presence)
-        name = "electrical_#{item}" unless item.eql?("comp_test_status")
-        hash["#{item}_id"] = Lookup.find_by(name: name || item, key: key)&.id
-      end
-    end
+    params
   end
 end

@@ -1,5 +1,5 @@
 class PackagesLocation < ApplicationRecord
-  include RollbarSpecification
+
   include LocationOperations
   include PushUpdatesMinimal
   include InventoryLegacySupport

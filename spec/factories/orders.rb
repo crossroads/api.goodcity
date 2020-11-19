@@ -2,16 +2,14 @@
 
 FactoryBot.define do
   factory :order do
-    status   { %w[draft submitted processing closed cancelled].sample }
     state    { %w[draft submitted processing closed cancelled].sample }
 
-    code          { generate(:code) }
     description     { FFaker::Lorem.sentence }
     purpose_description { FFaker::Lorem.sentence }
-    stockit_id      { nil }
+
     detail_type     { 'GoodCity' }
     people_helped   { rand(10) + 1 }
-    shipment_date    { Date.today }
+    shipment_date    { Date.current }
     booking_type    { create :booking_type, :online_order }
     association     :stockit_organisation
     association     :stockit_activity
@@ -65,16 +63,8 @@ FactoryBot.define do
       goodcity_requests { create_list :goodcity_request, 1}
     end
 
-    trait :with_stockit_id do
-      sequence(:stockit_id) { |n| n }
-    end
-
     trait :with_state_submitted do
       state { 'submitted' }
-    end
-
-    trait :with_status_processing do
-      status { 'processing' }
     end
 
     trait :with_state_processing do

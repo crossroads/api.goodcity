@@ -15,15 +15,13 @@ module Api
 
       def_param_group :order do
         param :order, Hash, required: true do
-          param :status, String
           param :code, String
           param :created_at, String
           param :people_helped, :number
           param :detail_id, String, allow_nil: true
-          param :stockit_id, String, desc: "stockit designation record id", allow_nil: true
           param :beneficiary_id, String, allow_nil: true
           param :address_id, String
-          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)'
+          param :booking_type_id, String, desc: 'Booking type.(Online order or appointment)', allow_nil: true
           param :staff_note, String, desc: 'Notes for internal use'
         end
       end
@@ -35,7 +33,7 @@ module Api
         if order_record.save
           render json: @order, serializer: serializer, root: root, status: 201
         else
-          render json: @order.errors, status: 422
+          render json: { errors: @order.errors.full_messages }, status: 422
         end
       end
 
@@ -71,6 +69,12 @@ module Api
         event = params['transition'].to_sym
         @order.update_transition_and_reason(event, cancel_params) if @order.state_events.include?(event)
         render json: serializer.new(@order, include_allowed_actions: true)
+      end
+
+      # GET /orders/next_code?detail_type="Shipment"
+      def next_code
+        code = Order.generate_next_code_for(params['detail_type'])
+        render json: { code: code }
       end
 
       api :PUT, '/v1/orders/1', "Update an order"
@@ -129,16 +133,7 @@ module Api
       end
 
       def order_record
-        if order_params[:stockit_id]
-          # Stockit designation create/update
-          @order = Order.accessible_by(current_ability).where(stockit_id: order_params[:stockit_id]).first_or_initialize
-          @order.assign_attributes(order_params)
-          @order.stockit_activity = stockit_activity
-          @order.stockit_contact = stockit_contact
-          @order.stockit_organisation = stockit_organisation
-          @order.detail_type, @order.detail_id = set_stockit_detail
-          @order.state = set_stockit_status_map if order_params["status"].present?
-        elsif is_browse_app?
+        if is_browse_app?
           @order.assign_attributes(order_params)
           @order.created_by = current_user
           @order.detail_type = "GoodCity"
@@ -165,13 +160,13 @@ module Api
 
       def order_params
         params.require(:order).permit(:district_id,
-          :created_by_id, :stockit_id, :code, :status,
+          :created_by_id, :code, :country_id,
           :created_at, :organisation_id, :stockit_contact_id,
           :detail_id, :detail_type, :description,
           :state, :cancellation_reason, :state_event,
           :stockit_activity_id,
           :people_helped, :beneficiary_id, :booking_type_id, :purpose_description,
-          :address_id,:submitted_by_id, :staff_note,
+          :address_id,:submitted_by_id, :staff_note, :shipment_date,
           :exclude_message_sender, :include_messages,
           purpose_ids: [],
           beneficiary_attributes: beneficiary_attributes,
@@ -202,41 +197,6 @@ module Api
 
       def select_serializer
         params[:shallow] == 'true' ? shallow_serializer : serializer
-      end
-
-      def stockit_activity
-        StockitActivity.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_activity_id"])
-      end
-
-      def stockit_contact
-        StockitContact.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_contact_id"])
-      end
-
-      def stockit_organisation
-        StockitOrganisation.accessible_by(current_ability).find_by(stockit_id: params["order"]["stockit_organisation_id"])
-      end
-
-      def set_stockit_detail
-        if order_params["detail_type"] == "LocalOrder"
-          obj = StockitLocalOrder.accessible_by(current_ability).find_by(stockit_id: params["order"]["detail_id"])
-          detail_type = obj.class.name
-          detail_id = obj.id
-        else
-          detail_type = ([order_params["detail_type"]] & ["Shipment", "CarryOut", "GoodCity"]).first
-          detail_id = nil
-        end
-        [detail_type, detail_id]
-      end
-
-      def set_stockit_status_map
-        case order_params["detail_type"]
-        when "CarryOut", "Shipment"
-          Order::SHIPMENT_STATUS_MAP[order_params["status"]] || "submitted"
-        when "LocalOrder"
-          Order::LOCAL_ORDER_STATUS_MAP[order_params["status"]] || "submitted"
-        else
-          'submitted'
-        end
       end
 
       def eager_load_designation

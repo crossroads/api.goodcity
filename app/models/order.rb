@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 class Order < ApplicationRecord
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdatesMinimal
   include OrderFiltering
+  include OrderCodeGenerator
 
   # Live update rules
   after_save :push_changes
@@ -11,6 +14,12 @@ class Order < ApplicationRecord
       Channel.private_channels_for(record.created_by, BROWSE_APP),
       Channel::ORDER_FULFILMENT_CHANNEL
     ]
+  end
+
+  module DetailType
+    SHIPMENT = 'Shipment'
+    GOODCITY = 'GoodCity'
+    CARRYOUT = 'CarryOut'
   end
 
   belongs_to :cancellation_reason
@@ -44,18 +53,20 @@ class Order < ApplicationRecord
   has_many :orders_process_checklists, inverse_of: :order
   has_many :process_checklists, through: :orders_process_checklists
 
+  before_validation :assign_code, on: [:create]
   validates :people_helped, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
+  validate :validate_shipment_date, on: %i[create], if: :shipment_order?
+  validate :validate_code_format, on: %i[create update]
+  validates_uniqueness_of :code
+  validates_presence_of :code
 
   after_initialize :set_initial_state
-  before_create :assign_code
 
   after_destroy :delete_orders_packages
 
   accepts_nested_attributes_for :beneficiary
   accepts_nested_attributes_for :address
   accepts_nested_attributes_for :orders_process_checklists, allow_destroy: true
-
-  INACTIVE_STATUS = ["Closed", "Sent", "Cancelled"].freeze
 
   INACTIVE_STATES = ["cancelled", "closed", "draft"].freeze
 
@@ -67,36 +78,15 @@ class Order < ApplicationRecord
 
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, "submitted", "processing", "draft"].flatten.uniq.freeze
 
-  # Stockit Shipment Status => GoodCity State
-  SHIPMENT_STATUS_MAP = {
-    "Processing" => "processing",
-    "Sent" => "closed",
-    "Loaded" => "dispatching",
-    "Cancelled" => "cancelled",
-    "Upcoming" => "awaiting_dispatch"
-  }.freeze
-
-  # Stockit LocalOrder Status => GoodCity State
-  LOCAL_ORDER_STATUS_MAP = {
-    "From website" => "processing",
-    "Active" => "processing",
-    "Pending agreement" => "processing",
-    "Cancelled" => "cancelled",
-    "Closed" => "closed"
-  }.freeze
-
   scope :non_draft_orders, -> { where.not("orders.state = 'draft' AND detail_type = 'GoodCity'") }
-
   scope :closed, -> { where(state: 'closed') }
-
   scope :with_eager_load, -> {
           includes([:subscriptions, :order_transport,
                     { packages: [:locations, :package_type] }])
         }
 
   scope :descending, -> { order("orders.id desc") }
-
-  scope :active_orders, -> { where("orders.state NOT IN (?)", INACTIVE_STATUS, INACTIVE_STATES) }
+  scope :active_orders, -> { where("orders.state NOT IN (?)", INACTIVE_STATES) }
 
   scope :designatable_orders, -> {
           query = <<-SQL
@@ -111,8 +101,8 @@ class Order < ApplicationRecord
 
   scope :my_orders, -> { where("created_by_id = (?) and ((state = 'draft' and submitted_by_id is NULL) OR state IN (?))", User.current_user.try(:id), MY_ORDERS_AUTHORISED_STATES) }
 
-  scope :goodcity_orders, -> { where(detail_type: "GoodCity") }
-  scope :shipments, -> { where(detail_type: "Shipment") }
+  scope :goodcity_orders, -> { where(detail_type: Order::DetailType::GOODCITY) }
+  scope :shipments, -> { where(detail_type: Order::DetailType::SHIPMENT) }
 
   def can_dispatch_item?
     ORDER_UNPROCESSED_STATES.include?(state)
@@ -173,8 +163,8 @@ class Order < ApplicationRecord
     end
 
     event :restart_process do
-      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.goodcity_order? }
-      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.goodcity_order? }
+      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.valid_detail_type? }
+      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.valid_detail_type? }
     end
 
     event :resubmit do
@@ -195,7 +185,6 @@ class Order < ApplicationRecord
 
     before_transition on: :submit do |order|
       order.submitted_at = Time.now
-      order.add_to_stockit
     end
 
     before_transition on: :start_processing do |order|
@@ -241,6 +230,10 @@ class Order < ApplicationRecord
     end
 
     before_transition on: :close do |order|
+      if order.orders_packages.designated.count.positive?
+        raise Goodcity::InvalidStateError.new(I18n.t('order.cannot_close_with_undispatched_packages'))
+      end
+
       if order.dispatching?
         order.closed_at = Time.now
         order.closed_by = User.current_user
@@ -284,7 +277,7 @@ class Order < ApplicationRecord
     end
 
     after_transition on: :finish_processing do |order|
-      if order.awaiting_dispatch? && order.goodcity_order?
+      if order.awaiting_dispatch? && order.valid_detail_type?
         order.send_confirmation_email
       end
     end
@@ -344,17 +337,12 @@ class Order < ApplicationRecord
     TwilioService.new(created_by).order_confirmed_sms_to_charity(self)
   end
 
-  def nullify_columns(*columns)
-    columns.map { |column| send("#{column}=", nil) }
+  def shipment_order?
+    detail_type == DetailType::SHIPMENT
   end
 
-  def add_to_stockit
-    response = Stockit::DesignationSync.create(self)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (designation_id = response["designation_id"]).present?
-      self.stockit_id = designation_id
-    end
+  def nullify_columns(*columns)
+    columns.map { |column| send("#{column}=", nil) }
   end
 
   def self.search(search_text, to_designate_item)
@@ -419,7 +407,7 @@ class Order < ApplicationRecord
   def self.active_orders_count_as_per_priority_and_state(is_priority: false)
     orders = filter(states: ACTIVE_ORDERS, priority: is_priority, types: GOODCITY_BOOKING_TYPES).group_by(&:state)
     if is_priority
-      orders_count_per_state(orders).transform_keys { |key| "priority_".concat(key) }
+      orders_count_per_state(orders).transform_keys { |key| "priority_#{key}" }
     else
       orders_count_per_state(orders)
     end
@@ -429,21 +417,12 @@ class Order < ApplicationRecord
     orders.each { |key, value| orders[key] = value.count }
   end
 
-  def self.generate_gc_code
-    record = where(detail_type: "GoodCity").order("id desc").first
-    "GC-" + gc_code(record).to_s.rjust(5, "0")
-  end
-
-  def self.gc_code(record)
-    record ? record.code.gsub(/\D/, "").to_i + 1 : 1
+  def valid_detail_type?
+    [DetailType::SHIPMENT, DetailType::GOODCITY, DetailType::CARRYOUT].include? detail_type
   end
 
   def goodcity_order?
-    detail_type == "GoodCity"
-  end
-
-  def draft_goodcity_order?
-    state == "draft" && goodcity_order?
+    detail_type == DetailType::GOODCITY
   end
 
   def email_properties
@@ -485,7 +464,9 @@ class Order < ApplicationRecord
   private
 
   def assign_code
-    self.code = Order.generate_gc_code if goodcity_order?
+    return if code.present?
+
+    self.code = Order.generate_next_code_for(detail_type) if valid_detail_type?
   end
 
   #to satisfy push_updates
@@ -496,5 +477,25 @@ class Order < ApplicationRecord
   #to satisfy push_updates
   def offer
     nil
+  end
+
+  def validate_shipment_date
+    is_valid = shipment_date >= Date.current
+    errors.add(:error, I18n.t('order.errors.shipment_date')) unless is_valid
+  end
+
+  def validate_code_format
+    reg = nil
+    case detail_type
+    when DetailType::GOODCITY
+      reg = /^GC-[0-9]{5}/
+    when DetailType::SHIPMENT
+      reg = /^S[0-9]{4,5}[A-Z]{1}?/
+    when DetailType::CARRYOUT
+      reg = /^C[0-9]{4,5}[A-Z]{1}?/
+    else
+      reg = /[A-Z0-9]+/
+    end
+    errors.add(:base, I18n.t('order.errors.invalid_code_format')) unless reg.match?(code)
   end
 end
