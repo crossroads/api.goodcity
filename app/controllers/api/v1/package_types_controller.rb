@@ -20,7 +20,7 @@ module Api
       end
 
       def stock_codes
-        render json: @package_types.visible, each_serializer: serializer, root: :codes
+        render json: @package_types.visible.with_eager_load, each_serializer: serializer, root: :codes
       end
 
       def create
