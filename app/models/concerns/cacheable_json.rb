@@ -21,17 +21,17 @@ module CacheableJson
     end
 
     # Save the json representation to cache (operates on all objects)
-    def cache_json
+    def cache_json(opts)
       records = try(:with_eager_load) || all
-      root = name.underscore.pluralize
+      root = opts[:root] || name.underscore.pluralize
       objects = ActiveModel::ArraySerializer.new(records, each_serializer: "Api::V1::#{name}Serializer".constantize, root: root).as_json
       Rails.cache.write(cache_key, objects)
       objects
     end
 
     # Return the cached json or generate it if needed
-    def cached_json
-      Rails.cache.fetch(cache_key) || cache_json
+    def cached_json(opts = {})
+      Rails.cache.fetch(cache_key) || cache_json(opts)
     end
   end
 end

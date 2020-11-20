@@ -28,9 +28,12 @@ Rails.application.configure do
   # Places email in tmp/mails/
   config.action_mailer.delivery_method = :file
 
-  # config.after_initialize do
-  #   Bullet.enable = true
-  #   Bullet.bullet_logger = true
-  #   Bullet.raise = true
-  # end
+  # Enable bullet logging in development mode
+  # Bullet logs n+1 queries errors
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.bullet_logger = true
+    Bullet.raise = false
+    Bullet.rails_logger = true
+  end
 end

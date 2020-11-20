@@ -104,6 +104,7 @@ class User < ApplicationRecord
   scope :exclude_user, ->(id) { where.not(id: id) }
   scope :with_roles, ->(role_names) { where(roles: { name: role_names }).joins(:active_roles) }
   scope :with_organisation_status, ->(status_list) { joins(:organisations_users).where(organisations_users: { status: status_list }) }
+  scope :with_eager_loading, -> { includes([:image, address: [:district]]) }
 
   # --------------------
   # Methods
