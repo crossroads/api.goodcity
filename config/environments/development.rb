@@ -29,7 +29,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :file
 
   # Enable bullet logging in development mode
-  # Bullet logs n+1 queries errors
+  # Bullet logs a scope of n+1 query improvements
   config.after_initialize do
     Bullet.enable = true
     Bullet.bullet_logger = true
