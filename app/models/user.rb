@@ -62,13 +62,12 @@ class User < ApplicationRecord
   # --------------------
 
   validates :mobile, format: {with: Mobile::HONGKONGMOBILEREGEXP}, if: lambda { mobile.present? }
-  validates :mobile, presence: true, if: lambda { email.blank? }
+  validates :mobile, presence: true, if: lambda { email.blank? && !disabled }
   validates :mobile, uniqueness: true, if: lambda { mobile.present? }
 
   validates :email, allow_blank: true,
                     format: {with: /\A[^@\s]+@[^@\s]+\Z/}
   validates :email, uniqueness: true, if: lambda { email.present? }
-
   validates :email, fake_email: true, :if => lambda { Rails.env.production? }
 
   validates :title, :inclusion => {:in => TITLE_OPTIONS}, :allow_nil => true
@@ -83,6 +82,9 @@ class User < ApplicationRecord
   after_create :refresh_auth_token!
 
   before_validation :downcase_email
+
+  before_save :reset_email_verification_flag, if: :email_changed?
+  before_save :reset_mobile_verification_flag, if: :mobile_changed?
 
   before_destroy :delete_auth_tokens
 
@@ -326,5 +328,15 @@ class User < ApplicationRecord
   # required by PushUpdates module
   def offer
     nil
+  end
+
+  def reset_email_verification_flag
+    self.is_email_verified = false
+    true
+  end
+
+  def reset_mobile_verification_flag
+    self.is_mobile_verified = false
+    true
   end
 end
