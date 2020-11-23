@@ -4,8 +4,6 @@ describe PackageSplitter do
 
   let(:package_splitter) { PackageSplitter.new(package, qty_to_split) }
 
-  before { allow(Stockit::ItemSync).to receive(:create) }
-
   context "exception handling" do
     context "should fail if qty to split == qty" do
       let(:qty_to_split) { 1 }
@@ -39,7 +37,6 @@ describe PackageSplitter do
       let(:inventory_number_q) { "#{inventory_number}Q" }
       let(:package) { create(:package, :with_inventory_record, received_quantity: 5, inventory_number: inventory_number) }
       it do
-        expect(Stockit::ItemSync).to receive(:create).exactly(1).times
         expect{ package_splitter.split! }.to change(package.reload, :on_hand_quantity).from(5).to(3)
           .and change {package.received_quantity}.from(5).to(3)
         packages = Package.where("inventory_number LIKE ?", "#{inventory_number_q}%").order(:created_at)

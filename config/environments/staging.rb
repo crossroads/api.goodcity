@@ -38,9 +38,8 @@ Rails.application.configure do
   # Use a different logger for distributed setups.
   # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
 
-  # Use a different cache store in production.
-  # config.cache_store = :dalli_store, 'localhost', { :pool_size => 5 } # this is threadsafe
-  # see config/initializers/redis.rb
+  # Configure Redis e.g. ENV['REDIS_URL']=rediss://:<password>@<url to redis cache>:<port>/<database>
+  config.cache_store = :redis_store, ENV['REDIS_URL'] || 'redis://localhost:6379'
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = "http://assets.example.com"

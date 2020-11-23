@@ -68,8 +68,6 @@ class Order < ApplicationRecord
   accepts_nested_attributes_for :address
   accepts_nested_attributes_for :orders_process_checklists, allow_destroy: true
 
-  INACTIVE_STATUS = ["Closed", "Sent", "Cancelled"].freeze
-
   INACTIVE_STATES = ["cancelled", "closed", "draft"].freeze
 
   ACTIVE_STATES = ["submitted", "processing", "awaiting_dispatch", "dispatching"].freeze
@@ -80,36 +78,15 @@ class Order < ApplicationRecord
 
   ORDER_UNPROCESSED_STATES = [INACTIVE_STATES, "submitted", "processing", "draft"].flatten.uniq.freeze
 
-  # Stockit Shipment Status => GoodCity State
-  SHIPMENT_STATUS_MAP = {
-    "Processing" => "processing",
-    "Sent" => "closed",
-    "Loaded" => "dispatching",
-    "Cancelled" => "cancelled",
-    "Upcoming" => "awaiting_dispatch"
-  }.freeze
-
-  # Stockit LocalOrder Status => GoodCity State
-  LOCAL_ORDER_STATUS_MAP = {
-    "From website" => "processing",
-    "Active" => "processing",
-    "Pending agreement" => "processing",
-    "Cancelled" => "cancelled",
-    "Closed" => "closed"
-  }.freeze
-
   scope :non_draft_orders, -> { where.not("orders.state = 'draft' AND detail_type = 'GoodCity'") }
-
   scope :closed, -> { where(state: 'closed') }
-
   scope :with_eager_load, -> {
           includes([:subscriptions, :order_transport,
                     { packages: [:locations, :package_type] }])
         }
 
   scope :descending, -> { order("orders.id desc") }
-
-  scope :active_orders, -> { where("orders.state NOT IN (?)", INACTIVE_STATUS, INACTIVE_STATES) }
+  scope :active_orders, -> { where("orders.state NOT IN (?)", INACTIVE_STATES) }
 
   scope :designatable_orders, -> {
           query = <<-SQL
@@ -186,8 +163,7 @@ class Order < ApplicationRecord
     end
 
     event :restart_process do
-      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.valid_detail_type? }
-      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.valid_detail_type? }
+      transition awaiting_dispatch: :submitted
     end
 
     event :resubmit do
@@ -208,7 +184,6 @@ class Order < ApplicationRecord
 
     before_transition on: :submit do |order|
       order.submitted_at = Time.now
-      order.add_to_stockit
     end
 
     before_transition on: :start_processing do |order|
@@ -367,15 +342,6 @@ class Order < ApplicationRecord
 
   def nullify_columns(*columns)
     columns.map { |column| send("#{column}=", nil) }
-  end
-
-  def add_to_stockit
-    response = Stockit::DesignationSync.create(self)
-    if response && (errors = response["errors"]).present?
-      errors.each { |key, value| self.errors.add(key, value) }
-    elsif response && (designation_id = response["designation_id"]).present?
-      self.stockit_id = designation_id
-    end
   end
 
   def self.search(search_text, to_designate_item)

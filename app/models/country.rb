@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Country < ApplicationRecord
-  include RollbarSpecification
+
   translates :name
   validates :name_en, presence: true
 
