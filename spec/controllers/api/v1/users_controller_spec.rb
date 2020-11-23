@@ -206,7 +206,6 @@ RSpec.describe Api::V1::UsersController, type: :controller do
   end
 
   describe "PUT user/1" do
-
     context "Reviewer" do
       let(:reviewer) { create(:user, :with_token, :reviewer) }
       let(:role) { create(:role, name: "Supervisor") }
@@ -243,6 +242,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     context "as a Supervisor" do
       let(:supervisor) { create(:user, :with_token, :supervisor) }
+      let!(:charity) { create(:user, :charity) }
+      let!(:order_fulfilment) { create(:user, :order_fulfilment) }
 
       before { generate_and_set_token(supervisor_user) }
 
@@ -251,6 +252,19 @@ RSpec.describe Api::V1::UsersController, type: :controller do
           put :update, params: { id: supervisor_user.id, user: {disabled: true} }
           expect(response.status).to eq(200)
           expect(supervisor_user.reload.disabled).to eq(false)
+        end
+      end
+
+      context "Edit other user details" do
+        it "cannot assign assign already taken email to a user" do
+          put :update, params: { id: charity.id, user: {email: order_fulfilment.email} }
+          expect(response.status).to eq(422)
+          expect(parsed_body['errors']).to eql([{"message" => "Email has already been taken.", "status" => 422}])
+        end
+
+        it "can assign assign valid email to a user" do
+          put :update, params: { id: charity.id, user: {email: 'something@gmail.com'} }
+          expect(response.status).to eq(200)
         end
       end
     end

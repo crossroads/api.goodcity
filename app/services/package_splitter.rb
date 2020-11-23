@@ -39,7 +39,7 @@ class PackageSplitter
   private
 
   def assert_splittable!
-    raise Goodcity::DisabledFeatureError.new(params: { feature: 'split' }) unless STOCKIT_ENABLED
+    # raise Goodcity::DisabledFeatureError.new(params: { feature: 'split' })
     raise Goodcity::NotInventorizedError unless inventorized?
     raise InvalidSplitQuantityError.new(@package.available_quantity) unless splittable?
     raise InvalidSplitLocationError if @package.locations.count > 1
@@ -66,8 +66,6 @@ class PackageSplitter
     copy = @package.dup
     copy.received_quantity = @qty_to_split
     copy.inventory_number = generate_q_inventory_number
-    copy.stockit_id = nil
-    copy.add_to_stockit
     copy.save!
     copy_and_save_images(copy)
     Package::Operations.inventorize(copy, source_location)

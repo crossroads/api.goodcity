@@ -87,11 +87,6 @@ context OrderFulfilmentOperations do
             expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
             expect(orders_package.reload.sent_on).not_to be_nil
           end
-
-          it "sets the stockit_sent_on field on the package" do
-            expect(PackagesLocation.find_by(id: pkg_loc.id)).to be_nil
-            expect(orders_package.package.reload.stockit_sent_on).not_to be_nil
-          end
         end
       end
 

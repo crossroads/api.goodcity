@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   has_paper_trail versions: { class_name: "Version" }
   include PushUpdates
-  include RollbarSpecification
+
   include ManageUserRoles
   include FuzzySearch
 

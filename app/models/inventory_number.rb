@@ -1,5 +1,5 @@
 class InventoryNumber < ApplicationRecord
-  include RollbarSpecification
+
 
   validates :code, presence: true, uniqueness: true
 

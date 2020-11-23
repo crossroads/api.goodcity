@@ -59,7 +59,6 @@ describe Package do
 
   context 'designated packages' do
     before(:each) do
-      GoodcitySync.request_from_stockit = true
       package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
       order = create(:order)
       create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
@@ -74,7 +73,6 @@ describe Package do
 
   context 'dispatched packages' do
     before(:each) do
-      GoodcitySync.request_from_stockit = true
       package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 1)
       order = create(:order)
       create(:package, :with_inventory_record, :with_images, state: 'received', received_quantity: 1)
@@ -90,7 +88,6 @@ describe Package do
   describe "loss actions on packages" do
     context 'processed packages' do
       before(:each) do
-        GoodcitySync.request_from_stockit = true
         package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
         create(:packages_inventory, :process, location: package.locations.first, package: package)
         create(:packages_inventory, :process, location: package.locations.first, package: package)
@@ -106,7 +103,6 @@ describe Package do
 
     context 'lost packages' do
       before(:each) do
-        GoodcitySync.request_from_stockit = true
         package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
         create(:packages_inventory, :loss, location: package.locations.first, package: package)
         create(:packages_inventory, :loss, location: package.locations.first, package: package)
@@ -122,7 +118,6 @@ describe Package do
 
     context 'packed packages' do
       before(:each) do
-        GoodcitySync.request_from_stockit = true
         package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
         create(:packages_inventory, :pack, location: package.locations.first, package: package)
         create(:packages_inventory, :pack, location: package.locations.first, package: package)
@@ -138,7 +133,6 @@ describe Package do
 
     context 'trashed packages' do
       before(:each) do
-        GoodcitySync.request_from_stockit = true
         package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
         create(:packages_inventory, :trash, location: package.locations.first, package: package)
         create(:packages_inventory, :trash, location: package.locations.first, package: package)
@@ -154,7 +148,6 @@ describe Package do
 
     context 'recycled packages' do
       before(:each) do
-        GoodcitySync.request_from_stockit = true
         package = create(:package, :with_inventory_record, :with_images, allow_web_publish: true, state: 'received', received_quantity: 10)
         create(:packages_inventory, :recycle, location: package.locations.first, package: package)
         create(:packages_inventory, :recycle, location: package.locations.first, package: package)
