@@ -630,6 +630,7 @@ RSpec.describe Order, type: :model do
         expect(order.reload.processed_at).to eq(nil)
         expect(order.reload.process_completed_by_id).to eq(nil)
         expect(order.reload.process_completed_at).to eq(nil)
+        expect(order.reload.state).to eq("submitted")
       end
     end
 
