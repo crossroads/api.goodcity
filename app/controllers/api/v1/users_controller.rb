@@ -57,7 +57,11 @@ module Api
 
       def update
         @user.update_attributes(user_params)
-        render json: @user, serializer: serializer
+        if @user.valid?
+          render json: @user, serializer: serializer
+        else
+          render_error(@user.errors.full_messages.join(". "))
+        end
       end
 
       def recent_users
