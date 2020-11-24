@@ -99,6 +99,16 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
     t.boolean "visible_to_order", default: false
   end
 
+  create_table "canned_responses", force: :cascade do |t|
+    t.string "name_en"
+    t.string "name_zh_tw"
+    t.string "content_en"
+    t.string "content_zh_tw"
+    t.string "respondable_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "companies", id: :serial, force: :cascade do |t|
     t.string "name"
     t.integer "crm_id"

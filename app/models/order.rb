@@ -163,8 +163,7 @@ class Order < ApplicationRecord
     end
 
     event :restart_process do
-      transition awaiting_dispatch: :submitted, :if => lambda { |order| order.valid_detail_type? }
-      transition awaiting_dispatch: :processing, :if => lambda { |order| !order.valid_detail_type? }
+      transition awaiting_dispatch: :submitted
     end
 
     event :resubmit do
