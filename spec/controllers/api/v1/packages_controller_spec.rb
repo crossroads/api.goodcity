@@ -1194,7 +1194,9 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         current_user = user
         pack(5, package1, into: box)
         pack(2, package2, into: box)
-        pack(5, package2, into: pallet)
+        pack(5, package1, into: pallet)
+        pack(1, box_package, into: pallet)
+        pack(3, package2, into: pallet)
       end
 
       it "fetches all the items that are present inside a box" do
@@ -1203,10 +1205,22 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(parsed_body["items"].length).to eq(2)
       end
 
+      it "returns total contents in a box" do
+        get :contained_packages, params: { id: box.id }
+        expect(response.status).to eq(200)
+        expect(parsed_body["totalBoxAndPalletContents"]).to eq(7)
+      end
+
       it "fetches all the items that are present inside a pallet" do
         get :contained_packages, params: { id: pallet }
         expect(response.status).to eq(200)
-        expect(parsed_body["items"].length).to eq(1)
+        expect(parsed_body["items"].length).to eq(3)
+      end
+
+      it "returns total contents in a box" do
+        get :contained_packages, params: { id: pallet }
+        expect(response.status).to eq(200)
+        expect(parsed_body["totalBoxAndPalletContents"]).to eq(9)
       end
     end
 
