@@ -83,8 +83,8 @@ class User < ApplicationRecord
 
   before_validation :downcase_email
 
-  before_save :reset_email_verification_flag, if: :email_changed?
-  before_save :reset_mobile_verification_flag, if: :mobile_changed?
+  before_save :reset_email_verification_flag, if: lambda { email_changed? && !new_record? }
+  before_save :reset_mobile_verification_flag, if: lambda { mobile_changed? && !new_record? }
 
   before_destroy :delete_auth_tokens
 
