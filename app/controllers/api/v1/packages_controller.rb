@@ -334,7 +334,8 @@ module Api
           include_donor_conditions: false,
           root: "items"
         ).as_json
-        render json: {totalBoxAndPalletContents: fetch_total_items_in_container(container.id)}.merge(response)
+        meta = { total_count: @package&.total_quantity_in(container.id) }
+        render json: { meta: meta }.merge(response)
       end
 
       api :GET, "/v1/packages/1/parent_containers", "Returns the packages which contain current package"
@@ -503,10 +504,6 @@ module Api
         return unless %w[Box Pallet Package].include?(storage_type_name)
 
         StorageType.find_by(name: storage_type_name)
-      end
-
-      def fetch_total_items_in_container(pkgId)
-        PackagesInventory::Computer.total_quantity_in(pkgId)
       end
 
       def inventory_number
