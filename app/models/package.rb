@@ -143,6 +143,10 @@ class Package < ApplicationRecord
     PackagesInventory::Computer.quantity_contained_in(package: self, container: Package.find(container_id))
   end
 
+  def total_quantity_in(pkg_id)
+    PackagesInventory::Computer.total_quantity_in(pkg_id)
+  end
+
   def designation
     orders_packages.designated.first
   end
