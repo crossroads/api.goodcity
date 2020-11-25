@@ -1217,7 +1217,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
         expect(parsed_body["items"].length).to eq(3)
       end
 
-      it "returns total contents in a box" do
+      it "returns total contents in a pallet" do
         get :contained_packages, params: { id: pallet }
         expect(response.status).to eq(200)
         expect(parsed_body["totalBoxAndPalletContents"]).to eq(9)
