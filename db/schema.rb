@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_17_034323) do
+ActiveRecord::Schema.define(version: 2020_11_25_031936) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -365,13 +365,13 @@ ActiveRecord::Schema.define(version: 2020_11_17_034323) do
   create_table "messages", id: :serial, force: :cascade do |t|
     t.text "body"
     t.integer "sender_id"
-    t.boolean "is_private", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.string "messageable_type"
     t.integer "messageable_id"
     t.jsonb "lookup", default: {}
+    t.string "audience", null: false
     t.index ["body"], name: "messages_body_search_idx", using: :gin
     t.index ["lookup"], name: "index_messages_on_lookup", using: :gin
     t.index ["sender_id"], name: "index_messages_on_sender_id"
