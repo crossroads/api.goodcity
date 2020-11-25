@@ -334,7 +334,7 @@ module Api
           include_donor_conditions: false,
           root: "items"
         ).as_json
-        meta = { total_count: @package&.total_quantity_in(container.id) }
+        meta = { total_count: Package.total_quantity_in(container.id) }
         render json: { meta: meta }.merge(response)
       end
 
