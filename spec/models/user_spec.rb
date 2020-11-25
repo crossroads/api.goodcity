@@ -61,6 +61,11 @@ describe User, :type => :model do
         expect(user.valid?).to be_truthy
       end
 
+      it "allows a blank email and blank email for disabled user" do
+        user = User.new(mobile: "", email: "", disabled: true)
+        expect(user.valid?).to be_truthy
+      end
+
       it "do not allows invalid hk number" do
         user = User.new(mobile: "+44123456675")
         expect(user.valid?).to be_falsey
@@ -236,7 +241,7 @@ describe User, :type => :model do
   end
 
   describe "#set_verified_flag for email and mobile" do
-    let(:user) { create(:user) }
+    let(:user) { create(:user, mobile: "+85289898978", email: "test@hk.org") }
 
     it "should set verified flag for email" do
       expect(user.is_email_verified).to be_falsey
@@ -248,6 +253,24 @@ describe User, :type => :model do
       expect(user.is_mobile_verified).to be_falsey
       user.set_verified_flag('mobile')
       expect(user.is_mobile_verified).to be_truthy
+    end
+
+    it "should reset verified flag when mobile is updated" do
+      user.update_column(:is_mobile_verified, true)
+
+      expect{
+        user.mobile = nil
+        user.save
+      }.to change{ user.is_mobile_verified}.to(false)
+    end
+
+    it "should reset verified flag when email is updated" do
+      user.update_column(:is_email_verified, true)
+
+      expect{
+        user.email = nil
+        user.save
+      }.to change{ user.is_email_verified}.to(false)
     end
   end
 
