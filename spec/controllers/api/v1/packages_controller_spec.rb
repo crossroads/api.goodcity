@@ -1208,7 +1208,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "returns total contents in a box" do
         get :contained_packages, params: { id: box.id }
         expect(response.status).to eq(200)
-        expect(parsed_body["totalBoxAndPalletContents"]).to eq(7)
+        expect(parsed_body["meta"]["total_count"]).to eq(7)
       end
 
       it "fetches all the items that are present inside a pallet" do
@@ -1220,7 +1220,7 @@ RSpec.describe Api::V1::PackagesController, type: :controller do
       it "returns total contents in a pallet" do
         get :contained_packages, params: { id: pallet }
         expect(response.status).to eq(200)
-        expect(parsed_body["totalBoxAndPalletContents"]).to eq(9)
+        expect(parsed_body["meta"]["total_count"]).to eq(9)
       end
     end
 
